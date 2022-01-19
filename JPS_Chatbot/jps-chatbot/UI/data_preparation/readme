@@ -1,0 +1,12 @@
+# This folder contains scripts to train NER and Question classification models
+# from a set of files we have scraped from Wikidata and TWA
+
+
+# To create the training set for Wiki, the following files are required
+
+FULL_PROPERTY_TAG_DICT
+instance_property_mapping_first_2000
+instance_property_mapping_random_3000
+EXTRA_PROPERTIES
+URI_SMILES_DICT
+PLURALIZE_DICT

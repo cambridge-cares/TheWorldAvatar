@@ -3,7 +3,7 @@
   <display-name>Bigdata</display-name>
   <description>Bigdata</description>
 
-  <!-- Require authentication for all urls -->
+  <!-- Require authentication for all urls 
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Blazegraph</web-resource-name>
@@ -21,6 +21,7 @@
   <security-role>
     <role-name>blazegraph</role-name>
   </security-role>
+  -->
 
   <context-param>
     <description>The property file (for a standalone database instance) or the

@@ -1,0 +1,83 @@
+{
+    "Empirical formula": "Cl4Ti1",
+    "Atom counts": {
+        "Cl": 4,
+        "Ti": 1
+    },
+    "Atom types": [
+        "Cl",
+        "Ti",
+        "Cl",
+        "Cl",
+        "Cl"
+    ],
+    "Atomic masses": [
+        34.9688527,
+        47.9479467,
+        34.9688527,
+        34.9688527,
+        34.9688527
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "RB971",
+    "Basis set": "6-311+G(d,p)",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            -2.44155,
+            1.30134,
+            -0.88072
+        ],
+        [
+            -0.90475,
+            0.14582,
+            0.13755
+        ],
+        [
+            0.07915,
+            -1.16904,
+            -1.28966
+        ],
+        [
+            0.56107,
+            1.49734,
+            1.00851
+        ],
+        [
+            -1.81756,
+            -1.04628,
+            1.71222
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
+    "Rotational symmetry number": 1.0,
+    "Rotational constants": [
+        1.14488,
+        1.14487,
+        1.14483
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
+    "Frequencies": [
+        113.5631,
+        113.5948,
+        133.5656,
+        133.5847,
+        133.6283,
+        385.593,
+        496.0853,
+        496.247,
+        496.3119
+    ],
+    "Frequencies number": 9,
+    "Frequencies unit": "cm^-1",
+    "Electronic energy": -2690.31130539,
+    "Electronic and ZPE energy": -2690.305605,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Wed Feb 11 16:51:20 2015",
+    "Log file name": "TiCl4.g09"
+}

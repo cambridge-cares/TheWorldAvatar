@@ -20,6 +20,7 @@ public enum MediaType {
     APPLICATION_SPARQL_RESULTS_XML("application/sparql-results+xml"),
     APPLICATION_SPARQL_UPDATE("application/sparql-update"),
 	APPLICATION_RDF_XML("application/rdf+xml"),
+	APPLICATION_N_TRIPLES("application/n-triples"),
 	APPLICATION_X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded");
 
     public String type = null;

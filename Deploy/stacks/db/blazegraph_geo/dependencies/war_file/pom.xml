@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>uk.ac.cam.cares.jps.tstore.blazegraph-geo</groupId>
+    <artifactId>blazegraph_war</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.1</version>
+    
+    <distributionManagement>
+        <repository>
+            <id>worldavatar-github</id>
+            <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
+        </repository>
+    </distributionManagement>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.nicoulaj.maven.plugins</groupId>
+                <artifactId>checksum-maven-plugin</artifactId>
+                <version>1.9</version>
+                <executions>
+                    <execution>
+                    <goals>
+                        <goal>artifacts</goal>
+                    </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                <algorithms>
+                    <algorithm>SHA-256</algorithm>
+                </algorithms>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptors>
+                        <descriptor>descriptor.xml</descriptor>
+                    </descriptors>
+                    <finalName>${project.artifactId}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <outputDirectory></outputDirectory>
+                    <attach>true</attach>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

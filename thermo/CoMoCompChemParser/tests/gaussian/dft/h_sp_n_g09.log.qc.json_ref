@@ -1,0 +1,36 @@
+{
+    "Empirical formula": "H1",
+    "Atom counts": {
+        "H": 1
+    },
+    "Atom types": [
+        "H"
+    ],
+    "Atomic masses": [
+        1.00783
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "UB3LYP",
+    "Basis set": "CC-pVTZ",
+    "Spin multiplicity": 2,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            -1.38032,
+            -0.85577,
+            0.0
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "atomic",
+    "Electronic energy": -0.502156338827,
+    "HOMO energy": -0.3217,
+    "LUMO energy": 0.24493,
+    "LUMO+1 energy": 0.5724,
+    "LUMO+2 energy": 0.5724,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Fri Jul 17 17:40:10 2020",
+    "Log file name": "h_sp_n_g09.log"
+}

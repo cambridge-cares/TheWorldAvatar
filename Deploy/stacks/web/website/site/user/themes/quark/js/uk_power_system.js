@@ -21,7 +21,7 @@
 var root = window.location.hostname;
 var port = window.location.port;
 var protocol = window.location.protocol;
-var originalPage = protocol + "//" + root + ":" + port + "/digital-twin/power/ontotwinuk";
+var originalPage = protocol + "//" + root + ":" + port + "/digital-twin/power/";
 console.log("Pulling map element from: " + originalPage);
 
 // Pipe into iframe

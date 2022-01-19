@@ -1,0 +1,19 @@
+# This configuration file should include any docker-compose options used only when deploying the
+# stack in development mode WITH the '--test' flag.
+# Its counterpart is docker-compose.dev.live.yml.
+#
+# The expectation is that this file will contain 'ports' nodes for any services that need to map a
+# host port, but other options may be valid too - please consult CMCL admins for more details.
+# For guidance in setting an appropriate port number, please see the instructions at
+# https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker:-Stacks#instructions-1
+# =================================================================================================
+
+version: "3.8"
+
+# Services
+services:
+
+  # Status Agent
+  status-agent:
+    ports:
+      - 49087:8080

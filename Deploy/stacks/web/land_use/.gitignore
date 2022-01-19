@@ -1,0 +1,4 @@
+head.html
+*.json
+*.geojson
+geoJSON_assets/*

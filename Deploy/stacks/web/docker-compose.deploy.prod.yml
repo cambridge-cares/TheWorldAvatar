@@ -1,0 +1,55 @@
+# This configuration file should include any docker-compose options used only when deploying the
+# stack in production ('prod') mode and not in development ('dev') mode.
+# It can also include whole services that are only required in production mode, and therefore 
+# aren't declared in docker-compose.deploy.yml .
+
+# Its counterpart is docker-compose.dev.yml, although that file isn't necessarily required.
+# =================================================================================================
+
+version: "3.8"
+
+# Services
+services:
+
+  # Add a Certbot container to handle certificate renewal
+  certbot:
+    image: docker.cmclinnovations.com/certbot/certbot:v1.12.0
+    container_name: "certbot-${MODE}"
+    # After starting, run 'certbot renew' every 12 hours
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    restart: unless-stopped
+    volumes:
+      # Add a bind volume (shared with the reverse_proxy container) for the letsencrypt config dir
+      - type: bind
+        source: /etc/letsencrypt
+        target: /etc/letsencrypt
+      # Add a volume (shared with the reverse_proxy container) to manage the certbot server verification challenge
+      - type: volume
+        source: certbot-challenge
+        target: /var/www/certbot
+      # Add a volume that acts as an alternative location for the verification challenge - not shared with reverse_proxy for now, named here purely for clarity
+      - type: volume
+        source: certbot-challenge_alt
+        target: /var/lib/letsencrypt
+
+  # Reverse Proxy
+  reverse-proxy:
+    volumes:
+      # Add a bind volume (shared with the certbot container) for the letsencrypt config dir
+      - type: bind
+        source: /etc/letsencrypt
+        target: /etc/letsencrypt
+      # Add a volume (shared with the certbot container) to manage the certbot server verification challenge
+      - type: volume
+        source: certbot-challenge
+        target: /var/www/certbot
+
+
+# Volumes
+volumes:
+  certbot-challenge:
+    name: certbot-challenge
+  certbot-challenge_alt:
+    name: certbot-challenge_alt

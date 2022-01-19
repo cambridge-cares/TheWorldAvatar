@@ -1,0 +1,35 @@
+[
+	{
+		"result": true,
+		"definition": {
+			"inputs": {
+				"endpoint": "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/landuse/sparql"
+			},
+			"name": "dev/landuse",
+			"type": "AVAILABILITY"
+		},
+		"time": "2021-09-07_18-33-34"
+	},
+	{
+		"result": true,
+		"definition": {
+			"inputs": {
+				"endpoint": "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ts_backup/sparql"
+			},
+			"name": "dev/ts_backup",
+			"type": "AVAILABILITY"
+		},
+		"time": "2021-09-07_18-33-34"
+	},
+	{
+		"result": true,
+		"definition": {
+			"inputs": {
+				"endpoint": "https://kg.cmclinnovations.com/blazegraph_geo/namespace/ontogasgrid/sparql"
+			},
+			"name": "prod/ontogasgrid",
+			"type": "AVAILABILITY"
+		},
+		"time": "2021-09-07_18-33-34"
+	}
+]

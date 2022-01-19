@@ -1,0 +1,1713 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#"
+xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:ns2="http://www.bigdata.com/rdf/geospatial/literals/v1#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+
+<owl:Ontology>
+<owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl"/>
+</owl:Ontology>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Shorne">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SHORNETOFARNINGHAM1Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <rdfs:label>Shorne</rdfs:label>
+    <ns2:lat-lon>51.43027059#0.427266595</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/PhillipsPetroleumTeesside">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>54.61043959#-1.196503798</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOTEESSIDE91Connection"/>
+    <rdfs:label>Phillips Petroleum Teesside</rdfs:label>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Careston">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>56.73503023#-2.726519436</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ABERDEENTOKIRRIEMUIRONE855Connection"/>
+    <rdfs:label>Careston</rdfs:label>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Ilchester">
+    <ns2:lat-lon>51.00394026#-2.701567198</ns2:lat-lon>
+    <rdfs:label>Ilchester</rdfs:label>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ILCHESTERTOBARRINGTON0Connection"/>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E07</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StFergusShellBlackstart">
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>57.57698343#-1.841808743</ns2:lat-lon>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ST.FERGUSTOABERDEENONE0Connection"/>
+    <rdfs:label>St Fergus Shell Blackstart</rdfs:label>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/WestWinch">
+    <rdfs:label>West Winch</rdfs:label>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SADDLEBOWTOKINGSLYNNPS35Connection"/>
+    <ns1:hasNTSExitZone>E13</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>52.72610888#0.378914579</ns2:lat-lon>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Towlaw">
+    <ns2:lat-lon>54.78308083#-1.890999936</ns2:lat-lon>
+    <rdfs:label>Towlaw</rdfs:label>
+    <ns1:hasNTSExitZone>E01</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/LONGTOWNTOBISHOPAUCKLAND674Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/SeabankPowerStationphaseII">
+    <ns2:lat-lon>51.53799244#-2.670832752</ns2:lat-lon>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <rdfs:label>Seabank Power Station phase II</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E14</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PUCKLECHURCHTOSEABANK0Connection"/>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/PetersGreen">
+    <ns2:lat-lon>51.85675075#-0.36079031</ns2:lat-lon>
+    <rdfs:label>Peters Green</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WHITWELLTOPETERSGREEN77Connection"/>
+    <ns1:hasLinepackZone>8.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E08</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Burnhervie">
+    <ns2:lat-lon>57.28353928#-2.466060143</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <rdfs:label>Burnhervie</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ST.FERGUSTOABERDEENFOURONE1146Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>2.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Warburton">
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Warburton</rdfs:label>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.4090024#-2.482456208</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BRETHERTONTOWARBURTON555Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MilfordHavenTerminal">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#GasTerminal"/>
+    <rdfs:label>Milford Haven Terminal</rdfs:label>
+    <ns2:lat-lon>51.70648879#-5.001933575</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HERBRANDSTONTOFELINDRE1268Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Stratford-upon-Avon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CHURCHOVERTOWORMINGTON564Connection"/>
+    <ns2:lat-lon>52.16726884#-1.699864445</ns2:lat-lon>
+    <rdfs:label>Stratford-upon-Avon</rdfs:label>
+    <ns1:hasNTSExitZone>E06</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ThorntonCurtisKillingholme">
+    <rdfs:label>Thornton Curtis Killingholme</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PAULLTOHATTON135Connection"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>53.63044988#-0.292530209</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E11</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/WillingtonPowerStation">
+    <ns1:hasNTSExitZone>nan</ns1:hasNTSExitZone>
+    <rdfs:label>Willington Power Station</rdfs:label>
+    <ns1:hasNTSExitArea>nan</ns1:hasNTSExitArea>
+    <ns2:lat-lon>#VALUE!##VALUE!</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/0"/>
+    <ns1:hasLinepackZone>nan</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ShellstarakaKemiranotKemiraCHP">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HELSBYTOSHELLSTAR30Connection"/>
+    <ns2:lat-lon>53.28085867#-2.791962874</ns2:lat-lon>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdfs:label>Shellstar aka Kemira not Kemira CHP</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BurleyBank">
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BISHOPAUCKLANDTOPANNAL694Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>54.00428352#-1.602649055</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdfs:label>Burley Bank</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EppingGreenEnfieldEnergyakaBrimsdown">
+    <ns2:lat-lon>51.61575598#0.062678154</ns2:lat-lon>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>10.0</ns1:hasLinepackZone>
+    <rdfs:label>Epping Green Enfield Energy aka Brimsdown</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ROXWELLTOLUXBOROUGHLANE388Connection"/>
+    <ns1:hasNTSExitZone>E10</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BarrowBlackStart">
+    <ns2:lat-lon>54.09740568#-3.176123215</ns2:lat-lon>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdfs:label>Barrow Black Start</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BARROWTOLUPTON11Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonIPsTerminal">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#GasTerminal"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BACTONTOYELVERTON0Connection"/>
+    <ns2:lat-lon>52.85841656#1.46017313</ns2:lat-lon>
+    <rdfs:label>Bacton IPs Terminal</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ShotwickBridgewaterPaper">
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/MICKLETRAFFORDTODEESIDE277Connection"/>
+    <ns2:lat-lon>53.23679922#-3.011112557</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <rdfs:label>Shotwick Bridgewater Paper</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Seabank">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PUCKLECHURCHTOSEABANK0Connection"/>
+    <rdfs:label>Seabank </rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E14</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns2:lat-lon>51.53797595#-2.670927143</ns2:lat-lon>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/RosehillSaltendPowerStation">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PAULLTOSALTEND120Connection"/>
+    <ns2:lat-lon>53.74096936#-0.232921429</ns2:lat-lon>
+    <rdfs:label>Rosehill Saltend Power Station</rdfs:label>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MedwayakaIsleofGrainPowerStation">
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+    <rdfs:label>Medway aka Isle of Grain Power Station</rdfs:label>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ISLEOFGRAINTOMEDWAY53Connection"/>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>51.44083131#0.688116148</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Winkfield">
+    <ns2:lat-lon>51.44900144#-0.688943145</ns2:lat-lon>
+    <ns2:lat-lon>51.44920611#-0.68870932</ns2:lat-lon>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/NUFFIELDTOWINKFIELD491Connection"/>
+    <rdfs:label>Winkfield</rdfs:label>
+    <ns1:hasNTSExitZone>E16</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>51.44921969#-0.688756004</ns2:lat-lon>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Brisley">
+    <ns2:lat-lon>52.76603091#0.87814288</ns2:lat-lon>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BACTONTOWISBECHNENEWESTONE562Connection"/>
+    <rdfs:label>Brisley</rdfs:label>
+    <ns1:hasNTSExitZone>E13</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/PeterboroughPowerStation">
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E05</ns1:hasNTSExitZone>
+    <rdfs:label>Peterborough Power Station</rdfs:label>
+    <ns2:lat-lon>52.57573962#-0.200531456</ns2:lat-lon>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PETERBOROUGHTEETOPETERBOROUGHPS129Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BrineFieldTeessidePowerStation">
+    <ns2:lat-lon>54.61044188#-1.196606366</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOTEESSIDE91Connection"/>
+    <rdfs:label>Brine Field Teesside Power Station</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Langholm">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <rdfs:label>Langholm</rdfs:label>
+    <ns1:hasNTSExitZone>E01</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BATHGATETOLONGTOWNTWO1429Connection"/>
+    <ns2:lat-lon>55.04513307#-2.933008983</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Gosberton">
+    <rdfs:label>Gosberton</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HATTONTOGOSBERTON396Connection"/>
+    <ns1:hasNTSExitZone>E15</ns1:hasNTSExitZone>
+    <ns2:lat-lon>52.88607104#-0.106742682</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StFergusPeterhead">
+    <ns2:lat-lon>57.55970732#-1.855907807</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <rdfs:label>St Fergus Peterhead</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ST.FERGUSTOABERDEENONE37Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Horndon">
+    <ns2:lat-lon>51.52933566#0.393326624</ns2:lat-lon>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <rdfs:label>Horndon</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HORNDONTOTILBURYTHAMESNORTH2Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Didcot">
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/DIDCOTTODIDCOT'A'48Connection"/>
+    <ns1:hasNTSExitZone>E16</ns1:hasNTSExitZone>
+    <rdfs:label>Didcot</rdfs:label>
+    <ns2:lat-lon>51.62320336#-1.261920576</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Stallingborough">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E11</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdfs:label>Stallingborough</rdfs:label>
+    <ns2:lat-lon>53.60318718#-0.144662357</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BROCKLESBYTOSTALLINGBOROUGH116Connection"/>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Broxburn">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E02</ns1:hasNTSExitZone>
+    <ns2:lat-lon>55.92172244#-3.455414104</ns2:lat-lon>
+    <rdfs:label>Broxburn</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BATHGATETOPENICUIK186Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/LittleBurdon">
+    <rdfs:label>Little Burdon</rdfs:label>
+    <ns2:lat-lon>54.55110941#-1.494083118</ns2:lat-lon>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/LITTLEBURDONTOBILLINGHAM0Connection"/>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Spalding2SouthHollandPowerStation">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>52.88605029#-0.106613948</ns2:lat-lon>
+    <rdfs:label>Spalding 2 South Holland Power Station</rdfs:label>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GOSBERTONTOTYDDST.GILES0Connection"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E15</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Glenmavis">
+    <ns2:lat-lon>55.89109364#-4.00945623</ns2:lat-lon>
+    <rdfs:label>Glenmavis</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E01</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BATHGATETOGLENMAVIS247Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BarkingHorndon">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ROXWELLTOLUXBOROUGHLANE388Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <rdfs:label>Barking Horndon</rdfs:label>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>51.61565261#0.062708816</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MatchingGreen">
+    <ns1:hasLinepackZone>10.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Matching Green</rdfs:label>
+    <ns2:lat-lon>51.78277179#0.219979659</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/MATCHINGGREENTOTILBURY2Connection"/>
+    <ns1:hasNTSExitZone>E10</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/WestonPointRocksavage">
+    <rdfs:label>Weston Point Rocksavage</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SHOCKLACHTOWESTONPOINT608Connection"/>
+    <ns2:lat-lon>53.31383275#-2.729016767</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Evesham">
+    <ns1:hasNTSExitZone>E06</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WORMINGTONTOPUCKLECHURCH0Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdfs:label>Evesham</rdfs:label>
+    <ns2:lat-lon>52.03005225#-1.926927131</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Dowlais">
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E17</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/DOWLAISTODYFFRYNCLYDACH0Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>51.77963606#-3.35393229</ns2:lat-lon>
+    <rdfs:label>Dowlais</rdfs:label>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/CaldecottCorbyPowerStation">
+    <ns1:hasNTSExitZone>E05</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <rdfs:label>Caldecott Corby Power Station</rdfs:label>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CALDECOTTTOCORBYPOWERSTATION105Connection"/>
+    <ns2:lat-lon>52.51152688#-0.682033399</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Hume">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BOONTOCOLDSTREAM174Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdfs:label>Hume</rdfs:label>
+    <ns2:lat-lon>55.66964615#-2.419757729</ns2:lat-lon>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E02</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Austrey">
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdfs:label>Austrey</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ALREWASTOCHURCHOVER435Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>52.6430366#-1.57899115</ns2:lat-lon>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E12</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/SellafieldPowerStation">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PENNINGTONTOSELLAFIELD634Connection"/>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>54.41467134#-3.482476119</ns2:lat-lon>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdfs:label>Sellafield Power Station</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Ross">
+    <ns1:hasNTSExitZone>E17</ns1:hasNTSExitZone>
+    <ns2:lat-lon>51.9312255#-2.618878731</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E14</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <rdfs:label>Ross</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WORMINGTONTOTREADDOW427Connection"/>
+    <ns2:lat-lon>51.93123695#-2.618863741</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Towton">
+    <rdfs:label>Towton</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.86343424#-1.305146694</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/YAFFORTHTOTOWTON733Connection"/>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BraishfieldB">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/MICHELMERSHTOBRAISHFIELDOFFTAKE2Connection"/>
+    <rdfs:label>Braishfield B</rdfs:label>
+    <ns1:hasNTSExitZone>E16</ns1:hasNTSExitZone>
+    <ns2:lat-lon>51.04192942#-1.497727186</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Blaby">
+    <ns2:lat-lon>52.54598408#-1.17728498</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BLABYTOALREWAS0Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E05</ns1:hasNTSExitZone>
+    <rdfs:label>Blaby</rdfs:label>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BillinghamICITerraBillingham">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOTEESSIDE91Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns2:lat-lon>54.6104779#-1.196672088</ns2:lat-lon>
+    <rdfs:label>Billingham ICI Terra Billingham</rdfs:label>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Royston">
+    <ns1:hasNTSExitZone>E08</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns2:lat-lon>52.03290968#-0.010426712</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>8.0</ns1:hasLinepackZone>
+    <rdfs:label>Royston</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GREATWILBRAHAMTOWHITWELL330Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/RoudhamHeath">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BACTONTOROUDHAMHEATH902Connection"/>
+    <ns2:lat-lon>52.46049641#0.841981154</ns2:lat-lon>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>8.0</ns1:hasLinepackZone>
+    <rdfs:label>Roudham Heath</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E08</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TilburyPowerStation">
+    <ns1:hasNTSExitZone>nan</ns1:hasNTSExitZone>
+    <rdfs:label>Tilbury Power Station</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/TILBURYT.N.TOGRAVESENDT.S.22Connection"/>
+    <ns1:hasNTSExitArea>nan</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>51.46088631#0.430147848</ns2:lat-lon>
+    <ns1:hasLinepackZone>nan</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/GowkhallLongannet">
+    <rdfs:label>Gowkhall Longannet</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/KIRRIEMUIRTOBATHGATETHREEONE2534Connection"/>
+    <ns2:lat-lon>56.07753909#-3.519298815</ns2:lat-lon>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Maelor">
+    <ns2:lat-lon>53.02676147#-2.921304202</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Maelor</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SHOCKLACH-MAELOR62Connection"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E12</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Aylesbeare">
+    <ns2:lat-lon>50.70930806#-3.35282883</ns2:lat-lon>
+    <rdfs:label>Aylesbeare</rdfs:label>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E07</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BARRINGTONTOKENN416Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TeessideHydrogen">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>54.59917641#-1.195387967</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdfs:label>Teesside Hydrogen</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOTEESSIDE83Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Pannal">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PANNALTOCAWOOD2Connection"/>
+    <rdfs:label>Pannal</rdfs:label>
+    <ns2:lat-lon>53.95230966#-1.617592619</ns2:lat-lon>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TurLangton">
+    <ns1:hasNTSExitZone>E05</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns2:lat-lon>52.55290532#-0.94839713</ns2:lat-lon>
+    <rdfs:label>Tur Langton</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SHANGTONTOTURLANGTON19Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Drointon">
+    <ns2:lat-lon>52.74000026#-1.774846543</ns2:lat-lon>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E12</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/AUDLEYTOALREWASONE876Connection"/>
+    <rdfs:label>Drointon</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Deeside">
+    <ns2:lat-lon>53.2372021#-3.05332832</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdfs:label>Deeside</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/MICKLETRAFFORDTODEESIDE332Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Tatsfield">
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+    <rdfs:label>Tatsfield</rdfs:label>
+    <ns2:lat-lon>51.28593318#0.006066007</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1169Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/WestBurtonPowerStation">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BLYBOROUGHTOBRIGGPS0Connection"/>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdfs:label>West Burton Power Station</rdfs:label>
+    <ns2:lat-lon>53.44421195#-0.581858645</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E11</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StanfordLeHopeCoryton">
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HORNDONTOTILBURYTHAMESNORTH0Connection"/>
+    <rdfs:label>Stanford Le Hope Coryton</rdfs:label>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>51.52925153#0.393622873</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/WyrePowerStation">
+    <ns2:lat-lon>53.86822014#-2.839326144</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>nan</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>nan</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CARNFORTHTOTREALES458Connection"/>
+    <rdfs:label>Wyre Power Station</rdfs:label>
+    <ns1:hasNTSExitArea>nan</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Milwich">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/AUDLEYTOALREWASONE554Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Milwich</rdfs:label>
+    <ns1:hasNTSExitZone>E12</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns2:lat-lon>52.8944863#-2.043089807</ns2:lat-lon>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/DrakelowPowerStation">
+    <rdfs:label>Drakelow Power Station</rdfs:label>
+    <ns1:hasNTSExitArea>nan</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/0"/>
+    <ns1:hasLinepackZone>nan</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>nan</ns1:hasNTSExitZone>
+    <ns2:lat-lon>#VALUE!##VALUE!</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/WestonPoint">
+    <ns2:lat-lon>53.31462443#-2.717170246</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SHOCKLACHTOWESTONPOINT622Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdfs:label>Weston Point</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Walesby">
+    <ns2:lat-lon>53.42221618#-0.272044354</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E11</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GOXHILLTOHATTON312Connection"/>
+    <rdfs:label>Walesby</rdfs:label>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/SandyLaneBlackburnCHPakaSappiPaperMill">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>53.75172116#-2.636209797</ns2:lat-lon>
+    <rdfs:label>Sandy Lane Blackburn CHP aka Sappi Paper Mill</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SAMLESBURYTOBLACKROD355Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BlyboroughBrigg">
+    <rdfs:label>Blyborough Brigg</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E11</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>53.54194779#-0.501709718</ns2:lat-lon>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BLYBOROUGHTOBRIGGPS110Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Pitcairngreen">
+    <rdfs:label>Pitcairngreen</rdfs:label>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>56.43665055#-3.517581191</ns2:lat-lon>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/KIRRIEMUIRTOBATHGATEONE728Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MarketHarborough">
+    <ns2:lat-lon>52.49929888#-0.92919987</ns2:lat-lon>
+    <rdfs:label>Market Harborough</rdfs:label>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/DUDDINGTONTOCHURCHOVER486Connection"/>
+    <ns1:hasNTSExitZone>E05</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BishopAuckland">
+    <rdfs:label>Bishop Auckland</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BISHOPAUCKLANDTOPANNAL0Connection"/>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>54.67138019#-1.566847585</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TerraNitrogenakaICITerraSevernsideConnectiondecommissioned">
+    <ns1:hasNTSExitArea>nan</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/0"/>
+    <ns2:lat-lon>#VALUE!##VALUE!</ns2:lat-lon>
+    <rdfs:label>Terra Nitrogen aka ICI Terra Severnside Connection decommissioned</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>nan</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>nan</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Hardwick">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>51.86937202#-0.843043632</ns2:lat-lon>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E08</ns1:hasNTSExitZone>
+    <rdfs:label>Hardwick</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/OLDWARDENTOCHALGROVE486Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/WraggMarshSpalding">
+    <ns2:lat-lon>52.85237533#-0.057979679</ns2:lat-lon>
+    <rdfs:label>Wragg Marsh Spalding</rdfs:label>
+    <ns1:hasNTSExitZone>E15</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GOSBERTONTOTYDDST.GILES53Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Partington">
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WARBURTONTOPARTINGTON65Connection"/>
+    <rdfs:label>Partington</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.42211487#-2.411283982</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TeessideTerminal">
+    <ns2:lat-lon>54.61005615#-1.202487946</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOTEESSIDE82Connection"/>
+    <rdfs:label>Teesside Terminal</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#GasTerminal"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Kinknockie">
+    <rdfs:label>Kinknockie</rdfs:label>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <ns2:lat-lon>57.47372062#-1.896472391</ns2:lat-lon>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ST.FERGUSTOABERDEENONE409Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/LuxboroughLane">
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ROXWELLTOLUXBOROUGHLANE388Connection"/>
+    <ns2:lat-lon>51.61571227#0.062717127</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E10</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <rdfs:label>Luxborough Lane</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Corbridge">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>2.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CORBRIDGETOBISHOPAUCKLAND210Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdfs:label>Corbridge</rdfs:label>
+    <ns2:lat-lon>54.95942521#-1.948578716</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E02</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Pucklechurch">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WORMINGTONTOPUCKLECHURCH568Connection"/>
+    <ns1:hasNTSExitZone>E14</ns1:hasNTSExitZone>
+    <ns2:lat-lon>51.47936788#-2.416381642</ns2:lat-lon>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <rdfs:label>Pucklechurch</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTermin">
+    <ns2:lat-lon>53.36136029#0.232686996</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/THEDDLETHORPETOHATTONONE0Connection"/>
+    <rdfs:label>Theddlethorpe Termin</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#GasTerminal"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/LangagePowerStation">
+    <ns1:hasNTSExitZone>E07</ns1:hasNTSExitZone>
+    <ns2:lat-lon>50.37492788#-3.985603786</ns2:lat-lon>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/KENNSOUTHTOCHOAKFORD3429Connection"/>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <rdfs:label>Langage Power Station</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Coldstream">
+    <ns1:hasNTSExitZone>E02</ns1:hasNTSExitZone>
+    <ns2:lat-lon>55.67065459#-2.220684073</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Coldstream</rdfs:label>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HADDINGTONTOSIMPRIM720Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/SaltendBPHPBPSaltendHP">
+    <rdfs:label>Saltend BPHP BP Saltend HP</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.73972932#-0.232379709</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PAULLTOSALTEND119Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MickleTrafford">
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Mickle Trafford</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BRIDGEFARMTOMICKLETRAFFORD470Connection"/>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.22347232#-2.821248625</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Ecclestone">
+    <rdfs:label>Ecclestone</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/TREALESTOBURSCOUGH335Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>53.61961025#-2.750757647</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/RoosecotePowerStation">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <rdfs:label>Roosecote Power Station</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BARROWTOLUPTON11Connection"/>
+    <ns2:lat-lon>54.09718078#-3.176413415</ns2:lat-lon>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/SaddleBowKingsLynn">
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E13</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SADDLEBOWTOKINGSLYNNPS34Connection"/>
+    <rdfs:label>Saddle Bow Kings Lynn</rdfs:label>
+    <ns2:lat-lon>52.72605028#0.378975224</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/PeterboroughEye">
+    <ns2:lat-lon>52.57576614#-0.200458517</ns2:lat-lon>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdfs:label>Peterborough Eye</rdfs:label>
+    <ns1:hasNTSExitZone>E05</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PETERBOROUGHTEETOPETERBOROUGHPS129Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Audley">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>53.05785883#-2.35529551</ns2:lat-lon>
+    <ns2:lat-lon>53.05774762#-2.355600664</ns2:lat-lon>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E12</ns1:hasNTSExitZone>
+    <rdfs:label>Audley</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/AUDLEYTOSHOCKLACH2Connection"/>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WARBURTONTOAUDLEYTWO627Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BlacknessBPGrangemouth">
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <ns2:lat-lon>56.00168461#-3.542225448</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/KIRRIEMUIRTOBATHGATETHREE2258Connection"/>
+    <rdfs:label>Blackness BP Grangemouth</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/CentraxIndustrial">
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <rdfs:label>Centrax Industrial</rdfs:label>
+    <ns2:lat-lon>50.52499709#-3.576090592</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:hasNTSExitZone>E07</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CENTRAXTEETOCENTRAXOT104Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BlyboroughCottam">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BLYBOROUGHTOBRIGGPS0Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdfs:label>Blyborough Cottam</rdfs:label>
+    <ns2:lat-lon>53.44438524#-0.581514541</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E11</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Melkinthorpe">
+    <ns1:hasNTSExitZone>E01</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Melkinthorpe</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PLUMPTONHEADTOLUPTON381Connection"/>
+    <ns2:lat-lon>54.59454406#-2.674451533</ns2:lat-lon>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Whitwell">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>8.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E08</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns2:lat-lon>52.60032753#-0.558308459</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/TIXOVERTOBLABY0Connection"/>
+    <rdfs:label>Whitwell</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Ganstead">
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Ganstead</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/EASINGTONTOASSELBY4380Connection"/>
+    <ns2:lat-lon>53.8147688#-0.235665281</ns2:lat-lon>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MarchwoodPowerStation">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>51.02371979#-1.484462179</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E16</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/MICHELMERSHTOBRAISHFIELDOFFTAKE28Connection"/>
+    <rdfs:label>Marchwood Power Station</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/PickmereWinningtonPowerakaBrunnerMond">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <rdfs:label>Pickmere Winnington Power aka Brunner Mond</rdfs:label>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.27277806#-2.443722908</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WARBURTONTOAUDLEYONE318Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Mappowder">
+    <ns2:lat-lon>50.84825376#-2.376353254</ns2:lat-lon>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BARTONSTACEYTOMAPPOWDER766Connection"/>
+    <ns1:hasNTSExitZone>E07</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Mappowder</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BarrowTerminal">
+    <ns2:lat-lon>54.103288#-3.236063719</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BARROWTOLUPTON0Connection"/>
+    <rdfs:label>Barrow Terminal</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#GasTerminal"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/SilkWilloughby">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SILKWILLOUGHBYTOSTAYTHORPEPS10Connection"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E05</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>52.98003463#-0.387292307</ns2:lat-lon>
+    <rdfs:label>Silk Willoughby</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/GreatWilbraham">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GREATWILBRAHAMTOWHITWELL0Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E08</ns1:hasNTSExitZone>
+    <ns2:lat-lon>52.18456636#0.270338029</ns2:lat-lon>
+    <rdfs:label>Great Wilbraham</rdfs:label>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>8.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Soutra">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E02</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PENICUIKTOBOON235Connection"/>
+    <ns2:lat-lon>55.80583881#-2.882228825</ns2:lat-lon>
+    <rdfs:label>Soutra</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Lyneham">
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/KENNSOUTHTOCHOAKFORD3429Connection"/>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E07</ns1:hasNTSExitZone>
+    <rdfs:label>Lyneham </rdfs:label>
+    <ns2:lat-lon>50.37498448#-3.985544773</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/LittletonDrew">
+    <rdfs:label>Littleton Drew</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WORMINGTONTOPUCKLECHURCH502Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>51.51623487#-2.252245404</ns2:lat-lon>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E14</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Staythorpe">
+    <ns2:lat-lon>53.07050331#-0.862375685</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E05</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <rdfs:label>Staythorpe</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SILKWILLOUGHBYTOSTAYTHORPEPS381Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Shustoke">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/AUSTREYTOSHUSTOKE239Connection"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdfs:label>Shustoke</rdfs:label>
+    <ns2:lat-lon>52.51727406#-1.679692707</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E12</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Malpas">
+    <rdfs:label>Malpas</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SHOCKLACHTOWESTONPOINT5Connection"/>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>53.02654411#-2.833150384</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E12</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/WestonPointCastnerKelnerakaICIRuncorn">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SHOCKLACHTOWESTONPOINT596Connection"/>
+    <ns2:lat-lon>53.31574513#-2.743900555</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdfs:label>Weston Point Castner Kelner aka ICI Runcorn</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/AbsonSeabank">
+    <ns2:lat-lon>51.47929839#-2.416472622</ns2:lat-lon>
+    <rdfs:label>Abson Seabank</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WORMINGTONTOPUCKLECHURCH568Connection"/>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E14</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/CrawleyDown">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1169Connection"/>
+    <ns2:lat-lon>51.28601926#0.00636798</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E07</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <rdfs:label>Crawley Down</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/GooleGuardianGlass">
+    <ns2:lat-lon>53.69447398#-0.911912944</ns2:lat-lon>
+    <rdfs:label>Goole Guardian Glass</rdfs:label>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CAWOODTOSUSWORTHTRENTWESTONE347Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Caldecott">
+    <ns1:hasNTSExitZone>E05</ns1:hasNTSExitZone>
+    <ns2:lat-lon>52.54299981#-0.719830985</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CALDECOTTTOCORBYPOWERSTATION1Connection"/>
+    <rdfs:label>Caldecott</rdfs:label>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>5.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/HarwardenShottonakaShottonPaper">
+    <ns2:lat-lon>53.23737171#-3.053472934</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/MICKLETRAFFORDTODEESIDE332Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdfs:label>Harwarden Shotton aka Shotton Paper</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Guyzance">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E02</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>2.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>55.32629698#-1.700285235</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SIMPRIMTOCORBRIDGE706Connection"/>
+    <rdfs:label>Guyzance</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Lockerbie">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BATHGATETOLONGTOWNTWO1148Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Lockerbie</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E01</ns1:hasNTSExitZone>
+    <ns2:lat-lon>55.20031459#-3.294234097</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Coffinswell">
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E07</ns1:hasNTSExitZone>
+    <rdfs:label>Coffinswell</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>50.49944896#-3.567900601</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/KENNSOUTHTOCHOAKFORD145Connection"/>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Thrintoft">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOYAFFORTHONE448Connection"/>
+    <ns2:lat-lon>54.33844536#-1.484032384</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Thrintoft</rdfs:label>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/HollingsgreenHaysChemicals">
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/0"/>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns2:lat-lon>#VALUE!##VALUE!</ns2:lat-lon>
+    <rdfs:label>Hollingsgreen Hays Chemicals</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Bathgate">
+    <ns2:lat-lon>55.91785855#-3.744387102</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Bathgate</rdfs:label>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BATHGATETOPENICUIK1Connection"/>
+    <ns1:hasNTSExitZone>E01</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/CarringtonPartingtonPowerStation">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WARBURTONTOPARTINGTON65Connection"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdfs:label>Carrington Partington Power Station</rdfs:label>
+    <ns2:lat-lon>53.42204053#-2.411343929</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StFergus">
+    <rdfs:label>St Fergus</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ST.FERGUSTOABERDEENTWO66Connection"/>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>57.55787533#-1.858131089</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ThorntonCurtis">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.69252148#-0.282928273</ns2:lat-lon>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GOXHILLTOHATTON1Connection"/>
+    <ns1:hasNTSExitZone>E11</ns1:hasNTSExitZone>
+    <rdfs:label>Thornton Curtis</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ThorntonCurtisHumberRefinery">
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>53.60657533#-0.281174925</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E11</ns1:hasNTSExitZone>
+    <rdfs:label>Thornton Curtis Humber Refinery</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BROCKLESBYTOSTALLINGBOROUGH1Connection"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/CowpenBewley">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns2:lat-lon>54.5989719#-1.261854428</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/LITTLEBURDONTOBILLINGHAM264Connection"/>
+    <rdfs:label>Cowpen Bewley</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/UpperNeestonMilfordHavenRefinery">
+    <ns2:lat-lon>51.68901946#-5.020254136</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <rdfs:label>Upper Neeston Milford Haven Refinery</rdfs:label>
+    <ns1:hasLinepackZone>11.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E17</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HERBRANDSTONTOFELINDRE1183Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StFergusTerminal">
+    <ns2:lat-lon>57.5775403#-1.83763504</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#GasTerminal"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ST.FERGUSTOABERDEENONE0Connection"/>
+    <rdfs:label>St Fergus Terminal</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Bacton">
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BACTONTOYELVERTON0Connection"/>
+    <ns1:hasLinepackZone>8.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E18</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>52.85443098#1.46089155</ns2:lat-lon>
+    <rdfs:label>Bacton</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Elton">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns2:lat-lon>54.55289053#-1.40115491</ns2:lat-lon>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ELTONTOPICKERING0Connection"/>
+    <rdfs:label>Elton</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Drum">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdfs:label>Drum</rdfs:label>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <ns2:lat-lon>57.13592317#-2.383427147</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ABERDEENTOKIRRIEMUIRONE1Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Kirkstead">
+    <ns1:hasNTSExitZone>E15</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <rdfs:label>Kirkstead</rdfs:label>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.14400048#-0.252475542</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HATTONTOGOSBERTON130Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Rugby">
+    <ns2:lat-lon>52.4130366#-1.270195638</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdfs:label>Rugby</rdfs:label>
+    <ns1:hasNTSExitZone>E17</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CHURCHOVERCOMPTEETOHONEYBOURNE0Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Ipsden">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns2:lat-lon>51.56517267#-1.102623317</ns2:lat-lon>
+    <rdfs:label>Ipsden</rdfs:label>
+    <ns1:hasNTSExitZone>E16</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CHALGROVETOBARTONSTACEY91Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Cirencester">
+    <ns2:lat-lon>51.69864842#-1.965841543</ns2:lat-lon>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SAPPERTONTOCIRENCESTER94Connection"/>
+    <ns1:hasNTSExitZone>E14</ns1:hasNTSExitZone>
+    <rdfs:label>Cirencester</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/GrainPowerStation">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ISLEOFGRAINTOMEDWAY43Connection"/>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>51.44534627#0.712108789</ns2:lat-lon>
+    <rdfs:label>Grain Power Station</rdfs:label>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EastoftKeadbyBlackstart">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>53.59404984#-0.751473551</ns2:lat-lon>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdfs:label>Eastoft Keadby Blackstart</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/EASTOFTTOKEADBY61Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/SuttonBridge">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GOSBERTONTOTYDDST.GILES280Connection"/>
+    <rdfs:label>Sutton Bridge</rdfs:label>
+    <ns2:lat-lon>52.72326779#0.164681077</ns2:lat-lon>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E15</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/IsleofGrainTerminal">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ISLEOFGRAINTOMEDWAY51Connection"/>
+    <ns2:lat-lon>51.44181076#0.686924458</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#GasTerminal"/>
+    <rdfs:label>Isle of Grain Terminal</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/SuttonBridgePowerStation">
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GOSBERTONTOTYDDST.GILES280Connection"/>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E15</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>52.72318656#0.164655677</ns2:lat-lon>
+    <rdfs:label>Sutton Bridge Power Station</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MiddleStokeDamheadCreekakaKingsnorthPowerStation">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <rdfs:label>Middle Stoke Damhead Creek aka  Kingsnorth Power Station</rdfs:label>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns2:lat-lon>#VALUE!##VALUE!</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/0"/>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Pickering">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ELTONTOPICKERING532Connection"/>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdfs:label>Pickering</rdfs:label>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>54.2353496#-0.762520795</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TeessideBASFakaBASFTeesside">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#IndustrialUser"/>
+    <ns2:lat-lon>54.60955127#-1.187161347</ns2:lat-lon>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdfs:label>Teesside BASF aka BASF Teesside</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOTEESSIDE87Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Farningham">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SHORNETOFARNINGHAM563Connection"/>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns2:lat-lon>51.38033612#0.265450299</ns2:lat-lon>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <rdfs:label>Farningham</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Alrewas">
+    <ns2:lat-lon>52.73993349#-1.775052644</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>52.74021612#-1.775106267</ns2:lat-lon>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/AUDLEYTOALREWASONE876Connection"/>
+    <rdfs:label>Alrewas</rdfs:label>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E12</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/AUDLEYTOALREWASTWO0Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Aspley">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>51.99779966#-0.530853689</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HUNTINGDONTOSTEPPINGLEY500Connection"/>
+    <rdfs:label>Aspley</rdfs:label>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E12</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Ipsden2">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns2:lat-lon>51.58454122#-1.056123562</ns2:lat-lon>
+    <rdfs:label>Ipsden 2</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/NUFFIELDTOWINKFIELD2Connection"/>
+    <ns1:hasNTSExitZone>E16</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Armadale">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdfs:label>Armadale</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E02</ns1:hasNTSExitZone>
+    <ns2:lat-lon>55.91836067#-3.744028434</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BATHGATETOPENICUIK0Connection"/>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TonnaBaglanBay">
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns2:lat-lon>51.68477376#-3.835409121</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitZone>E17</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <rdfs:label>Tonna Baglan Bay</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/DOWLAISTODYFFRYNCLYDACH582Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/FarninghamB">
+    <ns2:lat-lon>51.38097116#0.266858584</ns2:lat-lon>
+    <rdfs:label>Farningham B</rdfs:label>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD614Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/HatfieldPowerStation">
+    <ns1:hasNTSExitZone>nan</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>nan</ns1:hasLinepackZone>
+    <rdfs:label>Hatfield Power Station</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/EASTOFTTOKEADBY7Connection"/>
+    <ns2:lat-lon>53.60108104#-0.792264364</ns2:lat-lon>
+    <ns1:hasNTSExitArea>nan</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EastonGrey">
+    <ns2:lat-lon>51.58984199#-2.150057277</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WORMINGTONTOPUCKLECHURCH438Connection"/>
+    <rdfs:label>Easton Grey</rdfs:label>
+    <ns1:hasNTSExitZone>E14</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Paull">
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdfs:label>Paull</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PAULLTOSALTEND120Connection"/>
+    <ns2:lat-lon>53.74114289#-0.232850846</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Asselby">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ASSELBYTOPANNAL0Connection"/>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdfs:label>Asselby</rdfs:label>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>53.737022#-0.939939442</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Ryehouse">
+    <rdfs:label>Ryehouse</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/MATCHINGGREENTORYEHOUSE254Connection"/>
+    <ns2:lat-lon>51.76401997#0.01063627</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E10</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>10.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Samlesbury">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.75175861#-2.636491408</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SAMLESBURYTOBLACKROD355Connection"/>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdfs:label>Samlesbury</rdfs:label>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/PembrokePowerStation">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <rdfs:label>Pembroke Power Station</rdfs:label>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns2:lat-lon>51.68451934#-4.992543837</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E17</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/HERBRANDSTONTOFELINDRE1253Connection"/>
+    <ns1:hasLinepackZone>11.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Baldersby">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>54.22450724#-1.419054888</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/YAFFORTHTOTOWTON174Connection"/>
+    <rdfs:label>Baldersby</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Rawcliffe">
+    <rdfs:label>Rawcliffe</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.69452372#-0.911712604</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CAWOODTOSUSWORTHTRENTWESTONE347Connection"/>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/LowerQuinton">
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CHURCHOVERTOWORMINGTONDUPLICATE574Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E06</ns1:hasNTSExitZone>
+    <rdfs:label>Lower Quinton</rdfs:label>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns2:lat-lon>52.13155053#-1.737572473</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/HolmesChapel">
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns2:lat-lon>53.20128945#-2.385779315</ns2:lat-lon>
+    <rdfs:label>Holmes Chapel</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WARBURTONTOAUDLEYTWO343Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/FernyKnollAMPaperConnectiondecommissioned">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>nan</ns1:hasLinepackZone>
+    <ns2:lat-lon>#VALUE!##VALUE!</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/0"/>
+    <ns1:hasNTSExitArea>nan</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>nan</ns1:hasNTSExitZone>
+    <rdfs:label>Ferny Knoll AM Paper Connection decommissioned</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/PetersGreenSouthMimms">
+    <rdfs:label>Peters Green South Mimms</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/WHITWELLTOPETERSGREEN3Connection"/>
+    <ns1:hasLinepackZone>8.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns2:lat-lon>51.88303519#-0.295193227</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E08</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonGreatYarmouth">
+    <ns1:hasNTSExitZone>E08</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns2:lat-lon>52.85405951#1.462380785</ns2:lat-lon>
+    <rdfs:label>Bacton Great Yarmouth</rdfs:label>
+    <ns1:hasLinepackZone>8.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BACTONTOYELVERTON6Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Lupton">
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns2:lat-lon>54.2175077#-2.652054605</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Lupton</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BARROWTOLUPTON803Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonUKCSTerminal">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BACTONTOYELVERTON5Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#GasTerminal"/>
+    <rdfs:label>Bacton UKCS Terminal</rdfs:label>
+    <ns2:lat-lon>52.85703026#1.464486122</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Blackrod">
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>53.60202952#-2.597963933</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SAMLESBURYTOBLACKROD0Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Blackrod</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Blyborough">
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E11</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Blyborough</rdfs:label>
+    <ns2:lat-lon>53.44445483#-0.58161699</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BLYBOROUGHTOBRIGGPS0Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Yelverton">
+    <rdfs:label>Yelverton</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BACTONTOYELVERTON406Connection"/>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <ns2:lat-lon>52.58354577#1.380698437</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Coryton2ThamesHavenPowerStation">
+    <ns2:lat-lon>51.46076039#0.430335165</ns2:lat-lon>
+    <rdfs:label>Coryton 2 Thames Haven Power Station</rdfs:label>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>9.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/TILBURYT.N.TOGRAVESENDT.S.25Connection"/>
+    <ns1:hasNTSExitZone>E09</ns1:hasNTSExitZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Humbleton">
+    <ns2:lat-lon>53.79857018#-0.145387926</ns2:lat-lon>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Humbleton</rdfs:label>
+    <ns1:hasNTSExitZone>E02</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/SPROATLEYTOALDBROUGH401Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Aberdeen">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>57.13682874#-2.383099662</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ABERDEENTOKIRRIEMUIRTHREE2Connection"/>
+    <rdfs:label>Aberdeen</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ZenecaICIAveciaakaZenica">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/0"/>
+    <ns2:lat-lon>#VALUE!##VALUE!</ns2:lat-lon>
+    <rdfs:label>Zeneca ICI Avecia aka Zenica</rdfs:label>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BurtonPointConnahsQuay">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/MICKLETRAFFORDTODEESIDE332Connection"/>
+    <ns2:lat-lon>53.23736766#-3.053587662</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E04</ns1:hasNTSExitZone>
+    <ns1:hasLinepackZone>4.0</ns1:hasLinepackZone>
+    <rdfs:label>Burton Point Connahs Quay</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Balgray">
+    <ns2:lat-lon>56.54967363#-2.95175581</ns2:lat-lon>
+    <ns1:hasLinepackZone>0.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/KIRRIEMUIRTOBATHGATETHREE317Connection"/>
+    <ns1:hasNTSExitZone>E00</ns1:hasNTSExitZone>
+    <rdfs:label>Balgray</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Leamington">
+    <ns1:hasNTSExitZone>E06</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CHURCHOVERTOWORMINGTON344Connection"/>
+    <ns2:lat-lon>52.2689849#-1.492639011</ns2:lat-lon>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitArea>Central</ns1:hasNTSExitArea>
+    <rdfs:label>Leamington</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EasingtonTerminal">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/EASINGTONTOLANGELEDONE8Connection"/>
+    <rdfs:label>Easington Terminal</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#GasTerminal"/>
+    <ns2:lat-lon>53.65436745#0.117008686</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Wetheral">
+    <rdfs:label>Wetheral</rdfs:label>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/LONGTOWNTOGRAYRIGG1162Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasNTSExitZone>E01</ns1:hasNTSExitZone>
+    <ns2:lat-lon>54.89495154#-2.845568273</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Stranraer">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E01</ns1:hasNTSExitZone>
+    <rdfs:label>Stranraer</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BATHGATETOLONGTOWNTWO895Connection"/>
+    <ns2:lat-lon>55.27741371#-3.440224012</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EastoftKeadby">
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>53.59404984#-0.751473551</ns2:lat-lon>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/EASTOFTTOKEADBY61Connection"/>
+    <rdfs:label>Eastoft Keadby</rdfs:label>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Gilwern">
+    <ns1:hasNTSExitZone>E17</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/TREADDOWTOGILWERN762Connection"/>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <rdfs:label>Gilwern</rdfs:label>
+    <ns2:lat-lon>51.82772132#-3.137542277</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BraishfieldA">
+    <ns1:hasNTSExitZone>E16</ns1:hasNTSExitZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <rdfs:label>Braishfield A</rdfs:label>
+    <ns1:hasLinepackZone>7.0</ns1:hasLinepackZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/MICHELMERSHTOBRAISHFIELDOFFTAKE28Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns2:lat-lon>51.02372422#-1.484453101</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/Keld">
+    <ns1:hasNTSExitZone>E01</ns1:hasNTSExitZone>
+    <ns2:lat-lon>54.5184604#-2.666836645</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>1.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <rdfs:label>Keld</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/PLUMPTONHEADTOLUPTON521Connection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EnronBillingham">
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/LITTLEBURDONTOBILLINGHAM264Connection"/>
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <ns2:lat-lon>54.59898992#-1.261878837</ns2:lat-lon>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <rdfs:label>Enron Billingham</rdfs:label>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StNeotsLittleBarford">
+    <ns1:hasNTSExitZone>E10</ns1:hasNTSExitZone>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ST.NEOTSTOLITTLEBARFORD49Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns2:lat-lon>52.20401915#-0.26850753</ns2:lat-lon>
+    <ns1:hasLinepackZone>10.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>East</ns1:hasNTSExitArea>
+    <rdfs:label>St Neots Little Barford</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BishopAucklandtestfacility">
+    <ns1:hasLinepackZone>3.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitZone>E03</ns1:hasNTSExitZone>
+    <rdfs:label>Bishop Auckland test facility</rdfs:label>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CORBRIDGETOBISHOPAUCKLAND960Connection"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation"/>
+    <ns1:hasNTSExitArea>North</ns1:hasNTSExitArea>
+    <ns2:lat-lon>54.671681#-1.564424452</ns2:lat-lon>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/DyffrynClydach">
+    <ns2:lat-lon>51.68469457#-3.835389581</ns2:lat-lon>
+    <ns1:hasNTSExitZone>E17</ns1:hasNTSExitZone>
+    <rdfs:label>Dyffryn Clydach</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
+    <ns1:hasNTSExitArea>West</ns1:hasNTSExitArea>
+    <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/DOWLAISTODYFFRYNCLYDACH582Connection"/>
+  </rdf:Description>
+</rdf:RDF>
