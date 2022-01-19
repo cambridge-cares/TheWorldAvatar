@@ -11,7 +11,7 @@
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
 
-    <version>1.6.0-144-dev-set-return-at-async-derivation-pendingupdate-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
 
     <!-- Project Properties -->
     <properties>
