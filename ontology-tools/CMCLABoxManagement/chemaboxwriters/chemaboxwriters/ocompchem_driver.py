@@ -1,62 +1,105 @@
-from docopt import docopt, DocoptExit
-from chemaboxwriters.ontocompchem import write_abox
-import json
+import docopt
+from chemaboxwriters.app import write_abox
 
-doc = """aboxwriter
+__doc__: str = """aboxwriter
 Usage:
     ocompchem <fileOrDir>   [--inp-file-type=<type>]
-                            [--qc-log-ext=<ext>]
                             [--out-dir=<dir>]
-                            [--out-base-name=<name>]
-                            [--handlers-args=<handlargs>]
+                            [--qc-log-ext=<ext>]
+                            [--log-file-name=<name>]
+                            [--log-file-dir=<dir>]
+                            [--no-file-logging]
+                            [--fs-upload-subdirs=<subdirs>]
+                            [--ts-upload-nmsp=<nmsp>]
+                            [--dry-run=<dry_run>]
+                            [--disable-uploads]
+                            [--info]
 
 Options:
---inp-file-type=<type>       Types of the allowed input files
-                             to the ocompchem abox writer:
-                              - quantum calculation log         [default: qc_log]
-                              - quantum calculation json        [qc_json]
-                              - ontocompchem meta json          [oc_json]
-                              - ontocompchem meta csv           [csv]
---qc-log-ext=<ext>           Extensions of the quantum
-                             calculation log files, defaults
-                             to ".log, .g09" if not specified
---out-dir=<dir>              Output directory to write the
-                             abox files to. If not provided
-                             defaults to the directory of the
-                             input file
---out-base-name=<name>       Base name of the produced output
-                             files. If not provided, defaults
-                             to the input file base name.
---handlers-args=<handlargs>  Any supported stage handlers'         [default: {}]
-                             arguments. The arguments are passed
-                             as a json formatted string, where
-                             the first level keys are handlers
-                             names followed by their arguments
-                             names and values, e.g:
-                             {\\"QC_JSON_TO_OC_JSON\\": {\\"random_id\\": \\"123\\"}}
-                             with all double quotes escaped.
+--inp-file-type=<type>         Types of the allowed input files
+                               to the ocompchem abox writer:
+                                 - quantum calculation log         [default: qc_log]
+                                 - quantum calculation json        [qc_json]
+                                 - ontocompchem meta json          [oc_json]
+                                 - ontocompchem meta csv           [oc_csv]
+--out-dir=<dir>                Output directory to write the
+                               abox files to. If not provided
+                               defaults to the directory of the
+                               input file
+--qc-log-ext=<ext>             Extensions of the quantum
+                               calculation log files, defaults
+                               to ".log, .g09" if not specified
+--log-file-name=<name>         Name of the generated log file.
+--log-file-dir=<dir>           Path to the abox writer log file.
+                               Defaults to the <file_or_dir> dir.
+--no-file-logging              No logging to a file flag.
+--dry-run=<dry_run>            Run the abox writer tool in a dry    [default: True]
+                               run mode (files are not uploaded).
+                               Choose between True / False
+--disable-uploads              Disables file server and triple store
+                               uploads. Differes from the --dry-run
+                               option in that it does require uploaders
+                               env variables to be set to run the
+                               pipeline.
+--fs-upload-subdirs=<subdirs>  Replaces any default file server
+                               subdirs used when uploading files.
+                               Use it as follows:
+                                 - Set subdirs for all handlers
+                                     <subdir>
+                                 - Set subdirs for a handler
+                                   all its sub-handlers (if any)
+                                     <handler1>:<subdir>
+                                 - Set subdirs for a nested handler
+                                     <handler1>.<handler2>:<subdir>
+                                 - Set subdirs for multiple handlers
+                                   at once
+                                     <handler1>:<subdir1>,<handler2>:<subdir2>
+                               To see handlers default subdirs
+                               use the --info option.
+--ts-upload-nmsp=<nmsp>        Replaces any default triple store
+                               namespaces used when uploading triples.
+                               Use it as follows:
+                                 - Set nmsp for all handlers
+                                     <nmsp>
+                                 - Set nmsp for a handler
+                                   all its sub-handlers (if any)
+                                     <handler1>:<nmsp>
+                                 - Set nmsp for a nested handler
+                                     <handler1>.<handler2>:<nmsp>
+                                 - Set nmsps for multiple handlers at once
+                                     <handler1>:<nmsp1>,<handler2>:<nmsp2>
+                               To see handlers default nmsp use the --info option.
+--info                         Prints the pipeline's info without running it.
 """
 
 def start():
     try:
-        args = docopt(doc)
-    except DocoptExit:
-        raise DocoptExit('Error: ocompchem called with wrong arguments.')
+        args = docopt.docopt(__doc__)
+    except docopt.DocoptExit: #type: ignore
+        raise docopt.DocoptExit('Error: ocompchem called with wrong arguments.') #type: ignore
 
-    try:
-        handlerFuncKwargs = json.loads(args['--handlers-args'])
-    except json.decoder.JSONDecodeError:
-        print('Error: Wrong --handlers-args input.')
-        return
+    if args["--dry-run"].upper() == "TRUE":
+        dry_run = True
+    elif args["--dry-run"].upper() == "FALSE": 
+        dry_run = False
+    else:
+        raise docopt.DocoptExit('Error: incorrect --dry-run option. Please choose between True and False.') #type: ignore
 
     write_abox(
-                fileOrDir=args['<fileOrDir>'],
-                inpFileType=args['--inp-file-type'],
-                qcLogExt=args['--qc-log-ext'],
-                outDir=args['--out-dir'],
-                outBaseName=args['--out-base-name'],
-                handlerFuncKwargs=handlerFuncKwargs
-                )
+        pipeline_type = 'oc',
+        fileOrDir = args['<fileOrDir>'],
+        inpFileType = args['--inp-file-type'],
+        outDir = args['--out-dir'],
+        qcLogExt = args['--qc-log-ext'],
+        log_file_dir = args['--log-file-dir'],
+        log_file_name = args['--log-file-name'],
+        no_file_logging = args['--no-file-logging'],
+        fs_upload_subdirs = args['--fs-upload-subdirs'],
+        ts_upload_nmsp = args['--ts-upload-nmsp'],
+        dry_run = dry_run,
+        disable_uploads=args["--disable-uploads"],
+        info = args['--info']
+    )
 
 if __name__ == '__main__':
     start()

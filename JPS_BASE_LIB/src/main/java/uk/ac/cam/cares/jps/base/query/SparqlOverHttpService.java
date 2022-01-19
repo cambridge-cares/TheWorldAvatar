@@ -16,9 +16,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.CDL;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 public class SparqlOverHttpService {
@@ -91,7 +91,7 @@ public class SparqlOverHttpService {
 	 */
 	public String executePost(String messageBody) throws SQLException{
 
-		URI uri = AgentCaller.createURI(sparqlServiceURIForUpdate);
+		URI uri = Http.createURI(sparqlServiceURIForUpdate);
 		HttpPost request = new HttpPost(uri);
 		//request.setHeader(HttpHeaders.ACCEPT, AgentCaller.MediaType.TEXT_CSV.type);
 		
@@ -172,7 +172,7 @@ public class SparqlOverHttpService {
 
 		URI uri = null;
 		if (RDFStoreType.RDF4J.equals(type)) {
-			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
+			uri = Http.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
 			kbClient = new RemoteStoreClient();
 			if(sparqlServiceURIForQuery == null){
@@ -192,7 +192,7 @@ public class SparqlOverHttpService {
 			}
 
 		}else {
-			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);
+			uri = Http.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);
 		}
 		HttpGet request = new HttpGet(uri);
 		request.setHeader(HttpHeaders.ACCEPT, MediaType.TEXT_CSV.type);
