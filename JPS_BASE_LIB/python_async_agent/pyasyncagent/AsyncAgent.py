@@ -122,20 +122,22 @@ class AsyncAgent(object):
 
             # If "PendingUpdate", check the immediate upstream derivations if they are up-to-date
             if statusType == 'PENDINGUPDATE':
-                self.derivationClient.checkAtPendingUpdate(derivation)
+                immediateUpstreamDerivationToUpdate = self.derivationClient.checkAtPendingUpdate(derivation)
+                self.logger.info(
+                    "Derivation <%s> has a list of immediate upstream derivations to be updated: <%s>." % (derivation, ">, <".join(immediateUpstreamDerivationToUpdate))
+                )
 
             # If "Requested", retrieve inputs, marks as "InProgress", start job, update status at job completion
             elif statusType == 'REQUESTED':
-                agentInputs = str(self.derivationClient.retrieveAgentInputs(derivation, self.agentIRI))
+                agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(derivation, self.agentIRI))
                 self.logger.info("Agent <%s> retrieved inputs of derivation <%s>: %s." % (self.agentIRI, derivation, agentInputs))
-
-                self.derivationClient.markAsInProgress(derivation)
                 self.logger.info("Derivation <%s> is in progress." % (derivation))
 
                 newDerivedIRI = self.setupJob(agentInputs)
                 self.logger.info("Derivation <%s> generated new derived IRI: <%s>." % (derivation, ">, <".join(newDerivedIRI)))
 
                 self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI)
+                self.logger.info("Derivation <%s> is now finished, to be cleaned up." % (derivation))
 
             # If "InProgress", pass
             elif statusType == 'INPROGRESS':
