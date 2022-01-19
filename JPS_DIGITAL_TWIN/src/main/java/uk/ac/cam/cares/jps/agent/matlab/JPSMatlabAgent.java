@@ -261,7 +261,7 @@ public class JPSMatlabAgent extends JPSAgent {
     } catch (IOException exception) {
       throw new JPSRuntimeException(exception.getMessage());
     }
-    String creationDate = new String(attributes.creationTime().toString());
+    String creationDate = attributes.creationTime().toString();
     return (creationDate);
   }
 

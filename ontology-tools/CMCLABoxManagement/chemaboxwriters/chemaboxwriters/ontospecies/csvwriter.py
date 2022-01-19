@@ -18,14 +18,20 @@ from chemaboxwriters.ontospecies.jsonwriter import MOLWT, \
                                                    SMILES, \
                                                    GEOM_STRING, \
                                                    BOND_STRING, \
-                                                   ATOMS_CAN_POSITIONS, \
                                                    PUBCHEM_ALT_LABEL, \
                                                    PUBCHEM_CID, \
                                                    CAS_NUMBER, \
                                                    ATOM_LIST, \
                                                    ATOM_COUNTS, \
-                                                   SPIN_MULT
-import chemaboxwriters.common.commonvars as commonv
+                                                   SPIN_MULT, \
+                                                   ENTH_FORM, \
+                                                   ENTH_UNIT, \
+                                                   ENTH_PHASE, \
+                                                   ENTH_REFTEMP, \
+                                                   ENTH_REFTEMP_UNIT, \
+                                                   ENTH_PROV
+
+import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
 
 
@@ -37,35 +43,39 @@ unit_pref = PREFIXES["unit_pref"]
 spec_pref = PREFIXES["spec_pref"]
 
 
-def os_csvwriter(data):
-    data = json.loads(data)
-    gen_id = data[commonv.ENTRY_UUID]
+def os_csvwriter(file_path, spec_pref = PREFIXES["spec_pref"]):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
+    gen_id = data[globals.ENTRY_UUID]
 
     csvfile = StringIO(newline='')
 
     spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    out_id = data[commonv.ENTRY_IRI]
+    out_id = data[globals.ENTRY_IRI]
 
     label = formula_clean(data[EMP_FORMULA]) #We will take the label as the molecular formula, but without any extraneous 1s.
 
     spamwriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
     spamwriter.writerow(['Source', 'Type', 'Target', 'Relation','Value','Data Type'])
 
-    write_prelim(spamwriter,out_id,label)
+    write_prelim(spamwriter,out_id,spec_pref,label)
     write_identifier_geom(spamwriter,out_id,data)
     write_atom_info(spamwriter,gen_id,out_id,data)
     write_charge_info(spamwriter,gen_id,out_id,data)
     write_atoms(spamwriter,gen_id,out_id,data)
     write_molwts(spamwriter,gen_id,out_id,data)
+    write_enth(spamwriter,gen_id,out_id,data)
 
     csvcontent = csvfile.getvalue()
     csvfile.close()
     return [csvcontent]
 
-def write_prelim(spamwriter,out_id,label):
+def write_prelim(spamwriter,out_id,spec_pref,label):
     spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_spec,'http://www.w3.org/2002/07/owl#imports','',''])
     spamwriter.writerow(['ABoxOntoSpecies','Ontology',spec_pref[:-1],'base','',''])
     spamwriter.writerow([out_id, 'Instance','Species','','',''])
@@ -73,13 +83,14 @@ def write_prelim(spamwriter,out_id,label):
     spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label,'String'])
 
 def write_identifier_geom(spamwriter,out_id,data):
-    if data[PUBCHEM_ALT_LABEL] is not None:
+    if PUBCHEM_ALT_LABEL in data:
         spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',data[PUBCHEM_ALT_LABEL],'String'])
-    if data[CAS_NUMBER] is not None:
+    if CAS_NUMBER in data:
         spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data[CAS_NUMBER],'String'])
     spamwriter.writerow([onto_spec + '#SMILES','Data Property',out_id,'',data[SMILES],'String'])
     spamwriter.writerow([onto_spec + '#inChI','Data Property',out_id,'',data[INCHI],'String'])
-    spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', data[PUBCHEM_CID],'String'])
+    if PUBCHEM_CID in data:
+        spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', data[PUBCHEM_CID],'String'])
     spamwriter.writerow([onto_spec + '#hasAtomicBond','Data Property',out_id,'',data[BOND_STRING],'String'])
     spamwriter.writerow([onto_spec + '#hasGeometry','Data Property',out_id,'',data[GEOM_STRING],'String'])
     spamwriter.writerow([onto_spec + '#spinMultiplicity','Data Property',out_id,'',data[SPIN_MULT],'String'])
@@ -101,8 +112,6 @@ def write_atom_info(spamwriter,gen_id,out_id,data):
         spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',gain_pref + 'Atom','','',''])
         spamwriter.writerow([out_id,'Instance','Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),gain_pref + 'hasAtom',
                                 '',''])
-        spamwriter.writerow([onto_spec + '#hasCanonicalPosition','Data Property','Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),
-                                '',data[ATOMS_CAN_POSITIONS][str(k)],'Integer'])
         spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',
                                 table_pref + '#' + data[ATOM_TYPES][k],gain_pref + 'isElement','',''])
         for i in range(3): #Write the atom coordinates.
@@ -120,14 +129,16 @@ def write_atom_info(spamwriter,gen_id,out_id,data):
         count += 1
 
 def write_charge_info(spamwriter,gen_id,out_id,data):
-    charge = data[FORMAL_CHARGE]
-    spamwriter.writerow(['Charge_' + gen_id,'Instance',onto_spec + '#Charge','','',''])
-    spamwriter.writerow([out_id,'Instance','Charge_' + gen_id, onto_spec + '#hasCharge','',''])
-    spamwriter.writerow([gain_pref + 'hasValue','Instance','Charge_' + gen_id,'',charge,'String'])
-    spamwriter.writerow(['Charge_' + gen_id,'Instance','Charge_' + gen_id,
-                        unit_pref + 'unit#AtomicChargeUnit',gain_pref + 'hasUnit','',''])
-    spamwriter.writerow(['MolecularFormula_'+ gen_id,'Instance',onto_spec + '#MolecularFormula','','',''])
-    spamwriter.writerow([out_id,'Instance','MolecularFormula_'+gen_id,onto_spec + '#hasMolecularFormula','',''])
+    if FORMAL_CHARGE in data:
+        charge = data[FORMAL_CHARGE]
+
+        spamwriter.writerow(['Charge_' + gen_id,'Instance',onto_spec + '#Charge','','',''])
+        spamwriter.writerow([out_id,'Instance','Charge_' + gen_id, onto_spec + '#hasCharge','',''])
+        spamwriter.writerow([onto_spec+'#value','Data Property','Charge_' + gen_id,'',charge,'String'])
+        spamwriter.writerow([onto_spec+'#units','Data Property','Charge_' + gen_id,'','e','String'])
+        spamwriter.writerow(['MolecularFormula_'+ gen_id,'Instance',onto_spec + '#MolecularFormula','','',''])
+        spamwriter.writerow([out_id,'Instance','MolecularFormula_'+gen_id,onto_spec + '#hasMolecularFormula','',''])
+
 
 def write_atoms(spamwriter,gen_id,out_id,data):
     atom_list = data[ATOM_LIST]
@@ -142,10 +153,29 @@ def write_atoms(spamwriter,gen_id,out_id,data):
     spamwriter.writerow([out_id,'Instance',onto_spec + '#Species','','',''])
 
 def write_molwts(spamwriter,gen_id,out_id,data):
-    molwt = data[MOLWT]
-    spamwriter.writerow(['MolecularWeight_'+ gen_id,'Instance',onto_spec + '#MolecularWeight','','',''])
-    spamwriter.writerow([out_id,'Instance','MolecularWeight_'+ gen_id,onto_spec + '#hasMolecularWeight','',''])
-    spamwriter.writerow([gain_pref + 'hasValue','Instance','MolecularWeight_' + gen_id,'',molwt,'String'])
-    spamwriter.writerow(['MolecularWeight_' + gen_id,'Instance',
-                          unit_pref + 'unit#Dalton', gain_pref + 'hasUnit','',''])
+    if MOLWT in data:
+        molwt = data[MOLWT]
+        spamwriter.writerow(['MolecularWeight_'+ gen_id,'Instance',onto_spec + '#MolecularWeight','','',''])
+        spamwriter.writerow([out_id,'Instance','MolecularWeight_'+ gen_id,onto_spec + '#hasMolecularWeight','',''])
+        spamwriter.writerow([onto_spec + '#value','Data Property','MolecularWeight_' + gen_id,'',molwt,'String'])
+        spamwriter.writerow([onto_spec + '#units','Data Property','MolecularWeight_' + gen_id,'','g/mol','String'])
 
+def write_enth(spamwriter,gen_id,out_id,data):
+    #Write enthalpy of formation data.
+    if ENTH_FORM in data:
+        spamwriter.writerow(['StandardEnthalpyOfFormation_'+ gen_id,'Instance',onto_spec + '#StandardEnthalpyOfFormation','','',''])
+        spamwriter.writerow([out_id,'Instance','StandardEnthalpyOfFormation_'+ gen_id,onto_spec + '#hasStandardEnthalpyOfFormation','',''])
+        spamwriter.writerow([onto_spec + '#value','Data Property','StandardEnthalpyOfFormation_'+ gen_id,'',data[ENTH_FORM],'String'])
+        spamwriter.writerow([onto_spec + '#units','Data Property','StandardEnthalpyOfFormation_'+ gen_id,'',data[ENTH_UNIT],'String'])
+        spamwriter.writerow(['Temperature_'+ gen_id,'Instance',onto_spec + '#Temperature','','',''])
+        spamwriter.writerow(['StandardEnthalpyOfFormation_'+ gen_id,'Instance',
+        'Temperature_'+ gen_id, onto_spec + '#hasReferenceTemperature','',''])
+        spamwriter.writerow([onto_spec + '#value','Data Property','Temperature_'+ gen_id,'',data[ENTH_REFTEMP],'String'])
+        spamwriter.writerow([onto_spec + '#units','Data Property','Temperature_'+ gen_id,'',data[ENTH_REFTEMP_UNIT],'String'])
+        spamwriter.writerow([data[ENTH_PHASE] + 'Phase_' + gen_id,'Instance',kin_pref + '#' + data[ENTH_PHASE] +'Phase','','',''])
+        spamwriter.writerow(['StandardEnthalpyOfFormation_'+ gen_id,'Instance',
+        data[ENTH_PHASE] + 'Phase_' + gen_id, onto_spec + '#hasPhase','',''])
+        spamwriter.writerow(['Reference_' + gen_id, 'Instance',kin_pref + '#Reference','','',''])
+        spamwriter.writerow(['StandardEnthalpyOfFormation_'+ gen_id,'Instance',
+        'Reference_'+ gen_id, onto_spec + '#hasProvenance','',''])
+        spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property', 'Reference_'+ gen_id,'',data[ENTH_PROV],'String'])

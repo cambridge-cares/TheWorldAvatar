@@ -4,4 +4,6 @@ dependencies:
   - pip
   - pip:
     - pytest
+    - pytest-html
+    - pytest-mock
     - -e .
