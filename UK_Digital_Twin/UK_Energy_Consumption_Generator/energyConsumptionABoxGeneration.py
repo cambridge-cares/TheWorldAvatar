@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 15 Dec 2021          #
+# Last Update Date: 19 Jan 2022          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK energy consumption graph."""
@@ -36,14 +36,6 @@ dt = UKDT.UKDigitalTwin()
 """Create an object of Class UKDigitalTwinTBox"""
 t_box = T_BOX.UKDigitalTwinTBox()
 
-"""Create an object of Class UKEnergyConsumption"""
-ukec = UKec.UKEnergyConsumption()
-
-"""Sleepycat storage path"""
-userSpecifiePath_Sleepycat = None # user specified path
-userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
-defaultPath_Sleepycat = ukec.SleepycatStoragePath
-
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
 ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
@@ -54,9 +46,6 @@ ontoeip_system_function         = owlready2.get_ontology(t_box.ontoeip_system_fu
 # bibtex         = owlready2.get_ontology(t_box.bibtex).load()
 # owl         = owlready2.get_ontology(t_box.owl).load()
 
-"""OWL file storage path"""
-defaultStoredPath = ukec.StoreGeneratedOWLs # default path
-
 """User specified folder path"""
 filepath = None
 userSpecified = False
@@ -65,7 +54,7 @@ userSpecified = False
 ukec_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn2017"
 
 """The UK digital twin URL and UK enelectricity system URL"""
-UKDigitalTwinURL = UKDT.nodeURIGenerator(1, dt.topNode, None)
+# UKDigitalTwinURL = UKDT.nodeURIGenerator(1, dt.topNode, None)
 UKElectricitySystem = UKDT.nodeURIGenerator(2, dt.electricitySystem, None)
 
 ### Functions ### 
@@ -74,42 +63,32 @@ def createEnergyConsumptionDataPropertyInstance(version):
     engconsump = EngConsump.EnergyConsumptionData(version)   
     elecConDataArrays = readFile(engconsump.ElectricityConsumptionData)      
     ukElectricityConsumption = UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION)
-    root_node = ukElectricityConsumption.split('#')[0]
-    root_namespace = ukElectricityConsumption.split('.owl')[0]
+    root_node = ukElectricityConsumption
     fileNum = len(elecConDataArrays)  # substruct the first header line 
     
-    return engconsump, elecConDataArrays, root_namespace, root_node, ukElectricityConsumption, fileNum
+    return engconsump, elecConDataArrays, root_node, ukElectricityConsumption, fileNum
 
 """Main function: Add Triples to the regional and local nodes"""
 def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, updateLocalOWLFile = True):
     print('Starts adding regional and local nodes.')
+    ukec = UKec.UKEnergyConsumption(version)
+    defaultStoredPath = ukec.StoreGeneratedOWLs
+    defaultPath_Sleepycat = ukec.SleepycatStoragePath 
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return
     store = LocalGraphStore(storeType)
-    global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
+    
     if isinstance(store, Sleepycat):    
         # Create Conjunctive graph maintain all power plant graphs
         eleConConjunctiveGraph = ConjunctiveGraph(store=store, identifier = ukec_cg_id)
-        if userSpecifiePath_Sleepycat == None and userSpecified_Sleepycat:
-            print('****Needs user to specify a Sleepycat storage path****')
-            userSpecifiePath_Sleepycat = selectStoragePath()
-            userSpecifiePath_Sleepycat_ = userSpecifiePath_Sleepycat + '\\' + 'ConjunctiveGraph_UKElectricityConsumption'
-            sl = eleConConjunctiveGraph.open(userSpecifiePath_Sleepycat_, create = False) 
-            
-        elif os.path.exists(defaultPath_Sleepycat) and not userSpecified_Sleepycat:
-            print('****Non user specified Sleepycat storage path, will use the default storage path****')
-            sl = eleConConjunctiveGraph.open(defaultPath_Sleepycat, create = False)        
-        else:
-            sl = eleConConjunctiveGraph.open(defaultPath_Sleepycat, create = True)   
-        
+        sl = eleConConjunctiveGraph.open(defaultPath_Sleepycat, create = False)
         if sl == NO_STORE:
-        # There is no underlying Sleepycat infrastructure, so create it
-            eleConConjunctiveGraph.open(defaultPath_Sleepycat, create=True)
-        else:
-            assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
-    
-    engconsump, elecConDataArrays, root_namespace, root_node, ukElectricityConsumption, fileNum = createEnergyConsumptionDataPropertyInstance(version)  
+            print('Cannot find the specified sleepycat store')
+    else:
+        eleConConjunctiveGraph = None
+
+    engconsump, elecConDataArrays, root_node, ukElectricityConsumption, fileNum = createEnergyConsumptionDataPropertyInstance(version)  
     
     # check the data file header
     if elecConDataArrays[0] == engconsump.headerElectricityConsumption:
@@ -117,16 +96,21 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
         elecConDataArrays.remove(elecConDataArrays[0])
     else:
         raise Exception('The raw data header does not match, please check the raw data file.')
- 
+    
+    # IRIs
+    ontologyIRI = root_node + dt.GB
+    GBElectricitySystemIRI = UKElectricitySystem + dt.GB
     # Create rdf graph with identifier, regional nodes are named graphs including its local nodes
-    graph = Graph(store = store, identifier = URIRef(root_node)) # graph(store='default', identifier)
+    graph = Graph(store = store, identifier = URIRef(ontologyIRI)) # graph(store='default', identifier)
+    
     # Import T-boxes
     graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
     graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))
+    graph.set((graph.identifier, RDFS.comment, Literal('This ontology represents the local energy consumption of Great Britain.')))
+    graph.set((graph.identifier, RDFS.label, Literal('UK Digital Twin - Energy Consumption - Electricity Consumption - ' + dt.GB)))
+   
     # Add connection between its father node                               
-    graph.add((URIRef(UKElectricitySystem), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(UKDigitalTwinURL)))
-    graph.add((URIRef(UKElectricitySystem), RDF.type, URIRef(t_box.ontoenergysystem + 'ElectricPowerSystem'))) 
-    graph.add((URIRef(UKDigitalTwinURL), RDF.type, URIRef(ontocape_upper_level_system.TopLevelSystem.iri)))  
+    graph.add((URIRef(GBElectricitySystemIRI), RDF.type, URIRef(t_box.ontoenergysystem + 'ElectricPowerSystem'))) 
     
     for elecConData in elecConDataArrays:
         print('*********************************************************')         
@@ -136,21 +120,20 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
        
         # Define the URL of the nodes
         ec_place_name = elecConData[0].strip('\n').replace('|',',')
-        ec_namespace = root_node + HASH
-        ec_root_node = ec_namespace + ukec.TotalConsumptionKey + ec_place_name # top node of the named graph
-        timeperiod_uri = ec_namespace + ukec.TimePeriodKey + ukec.TotalConsumptionKey + ec_place_name
-        value_timeperiod_uri = ec_namespace + ukec.valueKey + ukec.TimePeriodKey + ukec.TotalConsumptionKey + ec_place_name
-        starttime_uri = ec_namespace + ukec.StartTimeKey + ukec.TotalConsumptionKey + ec_place_name
-        value_totalconsumption_uri = ec_namespace + ukec.valueKey +ukec.TotalConsumptionKey + ec_place_name
-        domesticconsumption_uri = ec_namespace + ukec.DomesticConsumptionKey + ec_place_name
-        non_domesticconsumption_uri = ec_namespace + ukec.IndustrialAndCommercialConsumptionKey + ec_place_name
-        value_domesticconsumption_uri = ec_namespace + ukec.valueKey +ukec.DomesticConsumptionKey + ec_place_name
-        value_non_domesticconsumption_uri = ec_namespace + ukec.valueKey + ukec.IndustrialAndCommercialConsumptionKey + ec_place_name
+        ec_root_node = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TotalConsumptionKey + ec_place_name # top node of the named graph
+        timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TimePeriodKey + ec_place_name        
+        value_timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + ukec.TimePeriodKey + ec_place_name 
+        starttime_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.StartTimeKey + ec_place_name 
+        value_totalconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey +ukec.TotalConsumptionKey + ec_place_name
+        domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.DomesticConsumptionKey + ec_place_name
+        non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.IndustrialAndCommercialConsumptionKey + ec_place_name
+        value_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey +ukec.DomesticConsumptionKey + ec_place_name
+        value_non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + ukec.IndustrialAndCommercialConsumptionKey + ec_place_name
         observed_place_uri = t_box.dbr + ec_place_name
                
         # type of the root node                              
         graph.add((URIRef(ec_root_node), RDF.type, URIRef(t_box.ontoenergysystem + 'TotalElectricityConsumption')))
-        graph.add((URIRef(UKElectricitySystem), URIRef(t_box.ontoenergysystem + 'enablesElectricityConsumptionOf'), URIRef(ec_root_node)))    
+        graph.add((URIRef(GBElectricitySystemIRI), URIRef(t_box.ontoenergysystem + 'enablesElectricityConsumptionOf'), URIRef(ec_root_node)))    
         
         # Specify the time period of the current data and its start time 
         graph.add((URIRef(ec_root_node), URIRef(t_box.ontocape_derived_SI_units + 'hasTimePeriod'), URIRef(timeperiod_uri))) # T-box undefined
@@ -214,5 +197,4 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
 if __name__ == '__main__':
     path = "C:\\Users\\wx243\\Desktop\\test\\new_elec_consump\\"
     addUKElectricityConsumptionTriples('default', 2017, None, True)
-    # res = test_returnLACode(2019)
     print('terminated')

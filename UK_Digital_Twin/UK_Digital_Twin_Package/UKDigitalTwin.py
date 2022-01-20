@@ -123,7 +123,9 @@ if __name__ == '__main__':
     uri_grid_10_model_Egen = nodeURIGenerator(4, UKDigitalTwin.powerGridModel, 10, "EGen")
     uri_grid_10_model_Eline = nodeURIGenerator(4, UKDigitalTwin.powerGridModel, 10, "ELine") 
     uri_grid_10_model_Ebus = nodeURIGenerator(4, UKDigitalTwin.powerGridModel, 10, "EBus") 
-    print(uri_topnode, uri_pp, uri_es)
+    
+    ukElectricityConsumption = nodeURIGenerator(3, UKDigitalTwin.energyConsumption, 2017)
+    print(uri_pp)
     # print(uri_grid_10_model_Egen, uri_grid_10_model_Eline, uri_grid_10_model_Ebus )
     
     

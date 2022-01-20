@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 15 Dec 2021          #
+# Last Update Date: 19 Jan 2022          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power plant graph."""
@@ -64,7 +64,7 @@ filepath = None # user specified path
 userSpecified = False # storage mode: False: default, True: user specified
 
 """UK electricity system URL"""
-UKDigitalTwinURL = UKDT.nodeURIGenerator(1, dt.topNode, None)
+# UKDigitalTwinURL = UKDT.nodeURIGenerator(1, dt.topNode, None)
 UKElectricitySystem = UKDT.nodeURIGenerator(2, dt.electricitySystem, None)
 
 ### Functions ### 
@@ -148,8 +148,11 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             #attribute IRIs
             ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + plantname
             UKElectricitySystemIRI = UKElectricitySystem + dt.UK
-            LocalElectricitySystemIRI = UKElectricitySystem + plantname
-            RealizationAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + ukpp.RealizationAspectKey + plantname
+            if region == dt.NI:
+                LocalElectricitySystemIRI = UKElectricitySystem + dt.NI
+            else:
+                LocalElectricitySystemIRI = UKElectricitySystem + dt.GB
+            RealizationAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + plantname
             EnergyGenerationIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + energygen + UNDERSCORE + plantname
             GenerationTechnologyIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + ukpp.GenerationTechnologyKey + gentech
             PrimaryFuelTypeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + primaryfueltype + UNDERSCORE + plantname
@@ -168,8 +171,8 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoecape_technical_system)))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoeip_powerplant)))
-            graph.set((graph.identifier, RDFS.comment, Literal('This ontology represents the energy system of the UK')))
-            graph.set((graph.identifier, RDFS.label, Literal('UK Digital Twin - Energy System')))
+            graph.set((graph.identifier, RDFS.comment, Literal('This ontology represents power plant entities of the UK energy system.')))
+            graph.set((graph.identifier, RDFS.label, Literal('UK Digital Twin - Energy System - Power Plant - ' + plantname)))
             
             # Add rdf.type
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoeip_powerplant.PowerPlant.iri)))

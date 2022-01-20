@@ -36,7 +36,7 @@ def closestBus_withinMethod(res_queryBusTopologicalInformation, res_queryPowerPl
                   
                if min(distances) == 65534: # The power plant is not located in the area which the buses located in, like the pp in NI
                    print('######', pp['PowerGenerator'], pp['LACode_PP'])
-                   print('######The power plant is not located in GB, or the power plant is the type of offshore wind farm.')
+                   print('######The power plant is not located in GB.')
                else:
                    bus_index = distances.index(min(distances))    
                    powerPlantAndBusPair = {**busInGB[bus_index], **pp} 
@@ -169,9 +169,11 @@ if __name__ == '__main__':
     res_queryPowerPlantAttributes = query_topo.queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
     aggragatedBusList = [[8, 'E12000001']]
     
+    # ONS
     res1 = closestBus_withinMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
     print(res1, len(res1))
     
+    # Shapely
     # res2 = closestBus_shapelyMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
     # print(res2, len(res2))
     
