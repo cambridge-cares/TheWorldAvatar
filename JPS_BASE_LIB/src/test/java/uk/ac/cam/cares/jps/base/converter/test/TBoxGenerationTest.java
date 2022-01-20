@@ -55,19 +55,42 @@ public class TBoxGenerationTest {
 		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());
 	}
 	
+	/**
+	 * Tests the creation, hierarchy and inverse relation of object properties.
+	 */
 	@Test
-	public void testObjectPropertyHierachy(){
+	public void testObjectProperty(){
+		OWLOntology generatedOntology = generateOntology(SAMPLE_CSV_FILE_PATH+SAMPLE_TBOX_CSV_TEMPLATE_FILE_2);
+		if (generatedOntology == null) {
+			throw new JPSRuntimeException("The requested CSV file could not be converted into an ontology.");
+		}
+
+		OWLOntology referenceOntology = readReferenceOntology(REFERENCE_OWL_FILE_PATH+REFERENCE_OWL_FILE_2);
+		if (referenceOntology == null) {
+			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
+		}
 		
+		assertEquals(generatedOntology.getAxiomCount(), referenceOntology.getAxiomCount());
+		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());		
 	}
 
-	@Test
-	public void testObjectPropertyInverseOfRelation(){
-		
-	}
-
+	/**
+	 * Tests some characteristics of object property.
+	 */
 	@Test
 	public void testObjectPropertyCharacteristics(){
+		OWLOntology generatedOntology = generateOntology(SAMPLE_CSV_FILE_PATH+SAMPLE_TBOX_CSV_TEMPLATE_FILE_3);
+		if (generatedOntology == null) {
+			throw new JPSRuntimeException("The requested CSV file could not be converted into an ontology.");
+		}
+
+		OWLOntology referenceOntology = readReferenceOntology(REFERENCE_OWL_FILE_PATH+REFERENCE_OWL_FILE_3);
+		if (referenceOntology == null) {
+			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
+		}
 		
+		assertEquals(generatedOntology.getAxiomCount(), referenceOntology.getAxiomCount());
+		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());
 	}
 	
 	@Test
