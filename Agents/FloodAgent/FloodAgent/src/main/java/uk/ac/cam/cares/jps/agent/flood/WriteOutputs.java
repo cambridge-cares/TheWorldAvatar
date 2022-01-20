@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.flood;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -71,15 +74,8 @@ public class WriteOutputs {
     		WriteOutputs.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	}
     	
-    	// create directory
-    	File directories = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory).toString());
-    	if (!directories.exists()) {
-    		directories.mkdirs();
-    	}
-    	writeOverallMetaFile();
-    	writeLayerTree();
-    	writeMainMeta(date);
-    	
+    	// restrict query area based on these environment variables
+    	// need to be in the format of lat#lon, e.g. 50#0.1
     	String southwest = System.getenv("SOUTH_WEST");
     	String northeast = System.getenv("NORTH_EAST");
     	
@@ -90,9 +86,31 @@ public class WriteOutputs {
     		stations = sparqlClient.getStationsWithCoordinates();
     	}
     	
+    	// remove old outputs if exist
+    	removeOldOutput();
+    	
+    	// create directory
+    	File directories = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory).toString());
+    	directories.mkdirs();
+    	
+    	// then write the files..
+    	writeOverallMetaFile();
+    	writeLayerTree();
+    	writeMainMeta(date);
     	writeStationsToGeojson(stations);
     	writeStationsMeta(stations);
     	writeTimeSeriesJson(stations, date);
+	}
+	
+	static void removeOldOutput() {
+		LOGGER.info("Trying to delete old data files");
+		Path dataFolderPath = null;
+		try {
+			dataFolderPath = Paths.get(Config.outputdir, dataFolder);
+			FileUtils.cleanDirectory(dataFolderPath.toFile());
+		} catch (IOException | IllegalArgumentException e) {
+			LOGGER.warn(e.getMessage());
+		}
 	}
 	
 	static void writeOverallMetaFile() {
