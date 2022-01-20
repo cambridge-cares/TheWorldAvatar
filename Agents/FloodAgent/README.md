@@ -29,14 +29,6 @@ docker build --target default -t [TAGNAME]
 
 This docker image runs the `LaunchScheduledUpdaterAndWriter` class.
 
-### Option 2
-Skip update and only write the output files
-```
-docker build --target write-only -t [TAGNAME]
-```
-
-This docker image runs the `LaunchScheduledWriterOnly` class.
-### Execution
 To run
 ```
 docker run -d [TAGNAME]
@@ -44,6 +36,19 @@ docker run -d [TAGNAME]
 
 This will run the container in detached mode. This application is designed to be left in the background, there is a scheduler that runs the process once a day.
 
+### Option 2
+Skip update and only write the the latest output files
+```
+docker build --target write-only -t [TAGNAME]
+```
+
+This docker image runs the `LaunchWriterOnly` class.
+
+To run
+```
+docker run -d [TAGNAME]
+```
+### Logs
 Logs are saved at `root/.jps/` by default, you can copy the logs into your local environment by using the following command
 ```
 docker cp flood:/root/.jps .
@@ -55,7 +60,11 @@ The main entrypoint is the `LaunchScheduledUpdaterAndWriter` class, it is set as
 When launched, it will initialise the flood monitoring stations if they are not initialised, and start a scheduled task that runs once a day. The code will always download readings from the day before and upload the data to the time series tables in PostgreSQL.
 
 ## LaunchWriterOnly
-This will write the latest output files only.
+This will write the latest output files only. To restrict the number of stations to an area, the code reads two environment variables for the upper and lower corners
+- SOUTH_WEST
+- NORTH_EAST
+
+The coordinates need to be in the format "lat#lon", e.g. "50#0.1".
 
 ## Initialisation
 To initialise manually, it is possible to run the `InitialiseStations` class directly. It has a `main` function that does not need any inputs.
