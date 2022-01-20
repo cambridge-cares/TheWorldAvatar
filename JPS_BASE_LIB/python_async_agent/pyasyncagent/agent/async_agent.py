@@ -15,13 +15,13 @@ class FlaskConfig(object):
 class AsyncAgent(object):
     def __init__(
         self,
-        app: Flask,
         agent_iri: str,
         time_interval: int,
         derivation_instance_base_url: str,
         kg_url: str,
         kg_user: str = None,
         kg_password: str = None,
+        app: Flask = Flask(__name__),
         flask_config: FlaskConfig = FlaskConfig(),
         logger_name: str = "dev"):
         """
