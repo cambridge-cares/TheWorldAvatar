@@ -14,6 +14,16 @@ import uk.ac.cam.cares.jps.base.converter.ITBoxGeneration;
 import uk.ac.cam.cares.jps.base.converter.TBoxGeneration;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+/**
+ * Unit tests provided in this class cover the creation of following aspects of ontology.
+ *  - Class, class hierarchy and equivalent relationship between classes
+ *  - Object property, object property hierarchy and inverse
+ *    relation and characteristics of object property
+ *  - Data property, data property hierarchy and characteristics of data property
+ * 
+ * @author Feroz Farazi (msff2@cam.ac.uk)
+ *
+ */
 public class TBoxGenerationTest {
 	
 	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_1 = "sample-tbox-template-input-1.csv";
@@ -35,7 +45,7 @@ public class TBoxGenerationTest {
 	private final String REFERENCE_OWL_FILE_PATH = "TBoxManagerTest/owl/";
 	
 	static ITBoxGeneration iTBoxGeneration = new TBoxGeneration();
-	
+
 	/**
 	 * Tests the creation and hierarchy of classes
 	 */
@@ -130,7 +140,7 @@ public class TBoxGenerationTest {
 		assertEquals(generatedOntology.getAxiomCount(), referenceOntology.getAxiomCount());
 		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());		
 	}
-
+	
 	/**
 	 * Reads an ontology from a file located in the file system.
 	 * 
