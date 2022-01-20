@@ -1,0 +1,16 @@
+@prefix rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix :			    <http://www.example.com/ontology/random.owl#> .
+
+###################################
+## Random number generation TBox ##
+###################################
+:NumOfPoints :hasValue xsd:integer .
+
+:UpperLimit :hasValue xsd:integer .
+
+:LowerLimit :hasValue xsd:integer .
+
+:Point :hasValue xsd:integer .
+
+:ListOfPoints :hasPoint :Point .
