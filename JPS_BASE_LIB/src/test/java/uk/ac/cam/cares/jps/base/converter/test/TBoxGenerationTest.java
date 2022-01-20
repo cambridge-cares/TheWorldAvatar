@@ -1,13 +1,14 @@
 package uk.ac.cam.cares.jps.base.converter.test;
 
 import java.net.URL;
-
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import static org.junit.Assert.*;
 
 import uk.ac.cam.cares.jps.base.converter.ITBoxGeneration;
 import uk.ac.cam.cares.jps.base.converter.TBoxGeneration;
@@ -15,14 +16,43 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class TBoxGenerationTest {
 	
+	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_1 = "sample-tbox-template-input-1.csv";
+	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_2 = "sample-tbox-template-input-2.csv";
+	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_3 = "sample-tbox-template-input-3.csv";
+	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_4 = "sample-tbox-template-input-4.csv";
+	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_5 = "sample-tbox-template-input-5.csv";
+
+	private final String REFERENCE_OWL_FILE_1 = "sample-tbox-template-input-1.owl";
+	private final String REFERENCE_OWL_FILE_2 = "sample-tbox-template-input-2.owl";
+	private final String REFERENCE_OWL_FILE_3 = "sample-tbox-template-input-3.owl";
+	private final String REFERENCE_OWL_FILE_4 = "sample-tbox-template-input-4.owl";
+	private final String REFERENCE_OWL_FILE_5 = "sample-tbox-template-input-5.owl";
+
 	private final String FILE_EXTENSION_CSV = ".csv";
 	private final String FILE_EXTENSION_OWL = ".owl";
 	
+	private final String SAMPLE_CSV_FILE_PATH = "TBoxManagerTest/csv/";
+	private final String REFERENCE_OWL_FILE_PATH = "TBoxManagerTest/owl/";
+	
 	static ITBoxGeneration iTBoxGeneration = new TBoxGeneration();
 	
+	/**
+	 * Tests the creation and hierarchy of classes
+	 */
 	@Test
-	public void testClassHierachy(){
+	public void testClass(){
+		OWLOntology generatedOntology = generateOntology(SAMPLE_CSV_FILE_PATH+SAMPLE_TBOX_CSV_TEMPLATE_FILE_1);
+		if (generatedOntology == null) {
+			throw new JPSRuntimeException("The requested CSV file could not be converted into an ontology.");
+		}
+
+		OWLOntology referenceOntology = readReferenceOntology(REFERENCE_OWL_FILE_PATH+REFERENCE_OWL_FILE_1);
+		if (referenceOntology == null) {
+			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
+		}
 		
+		assertEquals(generatedOntology.getAxiomCount(), referenceOntology.getAxiomCount());
+		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());
 	}
 	
 	@Test
