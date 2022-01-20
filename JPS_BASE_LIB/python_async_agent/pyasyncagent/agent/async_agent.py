@@ -4,7 +4,7 @@ import json
 
 import agentlogging
 
-from pyasyncagent.gateway import jpsBaseLibGW
+from pyasyncagent.kg_operations import *
 
 class FlaskConfig(object):
     """
@@ -123,9 +123,12 @@ class AsyncAgent(object):
             # If "PendingUpdate", check the immediate upstream derivations if they are up-to-date
             if statusType == 'PENDINGUPDATE':
                 immediateUpstreamDerivationToUpdate = self.derivationClient.checkAtPendingUpdate(derivation)
-                self.logger.info(
-                    "Derivation <%s> has a list of immediate upstream derivations to be updated: <%s>." % (derivation, ">, <".join(immediateUpstreamDerivationToUpdate))
-                )
+                if immediateUpstreamDerivationToUpdate is not None:
+                    self.logger.info(
+                        "Derivation <%s> has a list of immediate upstream derivations to be updated: <%s>." % (derivation, ">, <".join(immediateUpstreamDerivationToUpdate))
+                    )
+                else:
+                    self.logger.info("All immediate upstream derivations of derivation <%s> are up-to-date." % (derivation))
 
             # If "Requested", retrieve inputs, marks as "InProgress", start job, update status at job completion
             elif statusType == 'REQUESTED':
