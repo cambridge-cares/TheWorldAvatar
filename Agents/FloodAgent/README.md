@@ -54,8 +54,8 @@ The main entrypoint is the `LaunchScheduledUpdaterAndWriter` class, it is set as
 
 When launched, it will initialise the flood monitoring stations if they are not initialised, and start a scheduled task that runs once a day. The code will always download readings from the day before and upload the data to the time series tables in PostgreSQL.
 
-## LaunchScheduledWriterOnly
-This class launches a scheduled process that writes a time series JSON file once a day.
+## LaunchWriterOnly
+This will write the latest output files only.
 
 ## Initialisation
 To initialise manually, it is possible to run the `InitialiseStations` class directly. It has a `main` function that does not need any inputs.
