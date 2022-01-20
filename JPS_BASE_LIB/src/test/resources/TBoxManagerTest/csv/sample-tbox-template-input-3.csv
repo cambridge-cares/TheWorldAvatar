@@ -1,0 +1,10 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoKin,TBox,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoKin,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
+hasSibling,"Object Property, Symmetric Property, Transitive Property",,,http://xmlns.com/foaf/0.1/Person,http://xmlns.com/foaf/0.1/Person,,,
+hasMother,"Object Property, Functional Property",isMotherOf,INVERSE-OF,,,,,
+isMotherOf,"Object Property, Inverse Functional Property",,,,,,,
+knownTo,"Object Property, Reflexive Property",,,,,,,
+hasMother,"Object Property, Irreflexive Property, Asymmetric Property",,,,,,,
