@@ -73,18 +73,13 @@ public class WriteOutputs {
     		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
     		WriteOutputs.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	}
-    	
+
     	// restrict query area based on these environment variables
     	// need to be in the format of lat#lon, e.g. 50#0.1
     	String southwest = System.getenv("SOUTH_WEST");
     	String northeast = System.getenv("NORTH_EAST");
     	
-    	List<Station> stations;
-    	if (southwest != null && northeast != null) {
-    		stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
-    	} else {
-    		stations = sparqlClient.getStationsWithCoordinates();
-    	}
+    	List<Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
     	
     	// remove old outputs if exist
     	removeOldOutput();
@@ -203,11 +198,12 @@ public class WriteOutputs {
 			
 			//properties (display name and styling)
 			JSONObject property = new JSONObject();
-			property.put("displayName", station.getName());
+			property.put("displayName", station.getLabel());
 			property.put("circle-color", "rgb(204,41,41)");
 			property.put("circle-stroke-width", 1);
 			property.put("circle-stroke-color", "#000000"); // black
 			property.put("circle-opacity", 0.75);
+			feature.put("properties", property);
 			
 			// geometry
 			JSONObject geometry = new JSONObject();
@@ -233,8 +229,22 @@ public class WriteOutputs {
 		for (Station station : stations) {
 			// meta
 			JSONObject metadata = new JSONObject();
+			
 			metadata.put("id", station.getVisId());
-			metadata.put("name",station.getName());
+			
+			for (String property : station.getDisplayProperties().keySet()) {
+				metadata.put(property, station.getDisplayProperties().get(property));
+			}
+			
+			// force order on the side panel
+			JSONArray properties_order = new JSONArray();
+			List<String> preferred_order = Arrays.asList("Name", "River", "Catchment", "Town", "Date opened", "Identifier", "Latitude", "Longitude");
+			for (String key : preferred_order) {
+				if (station.getDisplayProperties().containsKey(key)) {
+					properties_order.put(key);
+				}
+			}
+			metadata.put("display_order", properties_order);
 			metaDataCollection.put(metadata);
 		}
 		

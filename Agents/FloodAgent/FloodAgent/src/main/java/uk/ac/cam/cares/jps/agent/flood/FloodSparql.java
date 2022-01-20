@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.core.OrderCondition;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -341,7 +342,7 @@ public class FloodSparql {
 		List<Station> stations = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			Station stationObject = new Station(queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
-			stationObject.setName(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
+			stationObject.setIdentifier(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
 			stationObject.setLat(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
 			stationObject.setLon(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
 			stationObject.setVisId(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
@@ -359,6 +360,10 @@ public class FloodSparql {
 	List<Station> getStationsWithCoordinates(String southwest, String northeast) {
 		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
 		Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+		Iri river_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/riverName");
+		Iri catchment_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/catchmentName");
+		Iri town_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/town");
+		Iri dateOpen_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/dateOpened");
 		
 		SelectQuery query = Queries.SELECT();
 		
@@ -367,29 +372,63 @@ public class FloodSparql {
 		Variable station = query.var();
 		Variable ref = query.var();
 		Variable id = query.var();
+		Variable river = query.var();
+		Variable catchment = query.var();
+		Variable town = query.var();
+		Variable dateOpened = query.var();
+		Variable label = query.var();
 		
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
 				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id));
 		
-		GraphPattern coordinatesPattern = GraphPatterns.and(station.has(p_geo.iri("search"), "inRectangle")
-				.andHas(p_geo.iri("searchDatatype"),lat_lon)
-				.andHas(p_geo.iri("predicate"), hasCoordinates)
-				.andHas(p_geo.iri("spatialRectangleSouthWest"), southwest)
-				.andHas(p_geo.iri("spatialRectangleNorthEast"), northeast));
-
-    	GraphPattern geoPattern = new ServicePattern(p_geo.iri("search").getQueryString()).service(coordinatesPattern);
+		GraphPattern stationProperties = GraphPatterns.and(station.has(iri(RDFS.LABEL), label).optional(),
+				station.has(river_prop, river).optional(),
+				station.has(catchment_prop, catchment).optional(),
+				station.has(town_prop, town).optional(),
+				station.has(dateOpen_prop, dateOpened).optional());
 		
-		query.where(queryPattern,geoPattern).select(station,lat,lon,ref,id).prefix(p_geo,p_station);
+		// restrict query location
+		if (southwest != null && northeast != null) {
+			GraphPattern coordinatesPattern = GraphPatterns.and(station.has(p_geo.iri("search"), "inRectangle")
+					.andHas(p_geo.iri("searchDatatype"),lat_lon)
+					.andHas(p_geo.iri("predicate"), hasCoordinates)
+					.andHas(p_geo.iri("spatialRectangleSouthWest"), southwest)
+					.andHas(p_geo.iri("spatialRectangleNorthEast"), northeast));
+
+	    	GraphPattern geoPattern = new ServicePattern(p_geo.iri("search").getQueryString()).service(coordinatesPattern);
+	    	query.where(queryPattern,geoPattern,stationProperties).prefix(p_geo,p_station);
+		} else {
+			query.where(queryPattern,stationProperties).prefix(p_station);
+		}
+		
+		query.select(station,lat,lon,ref,id,river,catchment,town,dateOpened,label);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
 		List<Station> stations = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			Station stationObject = new Station(queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
-			stationObject.setName(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
+			stationObject.setIdentifier(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
 			stationObject.setLat(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
 			stationObject.setLon(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
 			stationObject.setVisId(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
+			
+			// optional properties
+			if (queryResult.getJSONObject(i).has(river.getQueryString().substring(1))) {
+				stationObject.setRiver(queryResult.getJSONObject(i).getString(river.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(catchment.getQueryString().substring(1))) {
+				stationObject.setCatchment(queryResult.getJSONObject(i).getString(catchment.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(town.getQueryString().substring(1))) {
+				stationObject.setTown(queryResult.getJSONObject(i).getString(town.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(dateOpened.getQueryString().substring(1))) {
+				stationObject.setDateOpened(queryResult.getJSONObject(i).getString(dateOpened.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(label.getQueryString().substring(1))) {
+				stationObject.setLabel(queryResult.getJSONObject(i).getString(label.getQueryString().substring(1)));
+			}
 			stations.add(stationObject);
 		}
 				
