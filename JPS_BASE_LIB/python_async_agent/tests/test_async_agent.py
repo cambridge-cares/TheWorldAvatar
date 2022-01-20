@@ -43,10 +43,8 @@ def initialise_agent(initialise_triple_store):
         # Create SparqlClient for testing
         sparql_client = PySparqlClientForTest(endpoint, endpoint)
 
-        # Initialise Flask app
-        flask_app = Flask(__name__)
         # Initialise Async Agent with temporary docker container endpoint
-        agent = RandomAgent(flask_app, ONTOAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE, DERIVATION_INSTANCE_BASE_URL, endpoint)
+        agent = RandomAgent(ONTOAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE, DERIVATION_INSTANCE_BASE_URL, endpoint)
 
         yield sparql_client, agent
 
