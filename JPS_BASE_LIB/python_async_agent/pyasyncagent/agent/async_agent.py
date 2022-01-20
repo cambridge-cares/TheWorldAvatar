@@ -136,7 +136,17 @@ class AsyncAgent(object):
                 self.logger.info("Agent <%s> retrieved inputs of derivation <%s>: %s." % (self.agentIRI, derivation, agentInputs))
                 self.logger.info("Derivation <%s> is in progress." % (derivation))
 
-                newDerivedIRI = self.setupJob(agentInputs)
+                # Preprocessing inputs to be sent to agent for setting up job, this is now in dict datatype
+                agent_input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
+                agent_input_key = str(self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
+                if agent_input_key in agent_input_json:
+                    inputs_to_send = agent_input_json[agent_input_key]
+                else:
+                    self.logger.error("Agent input key (%s) might be missing. Received input: %s." % (agent_input_key, agent_input_json.__dict__))
+                # The inputs_to_send should be a dictionary format,
+                # for example: {'OntoXX:Concept_A': 'Instance_A', 'OntoXX:Concept_B': 'Instance_B'}
+                # Developer can directly use it with dictionary operations
+                newDerivedIRI = self.setupJob(inputs_to_send)
                 self.logger.info("Derivation <%s> generated new derived IRI: <%s>." % (derivation, ">, <".join(newDerivedIRI)))
 
                 self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI)
