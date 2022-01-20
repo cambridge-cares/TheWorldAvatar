@@ -20,15 +20,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.ontomatch.LexicalProcessor;
-import uk.ac.cam.cares.jps.ontomatch.test.TestCoordinationAgent.CoordinationAgentForTest;
 
 public class TestLexicalProcessor extends Mockito{
-
-	class LexicalProcessorForTest extends LexicalProcessor{
-		 public void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-			 super.testGet(request, response);
-		 }
-		}
 
 	   
 	    @Test 
@@ -37,15 +30,14 @@ public class TestLexicalProcessor extends Mockito{
 	        HttpServletResponse response = mock(HttpServletResponse.class);
 
 
-	    	String stubIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
-	    	String stubAddress = "D:/workwork/ontoMatchFiles/targetOntology.pkl";
-	        JSONArray jaw = new JSONArray();
-	        jaw.put(0.4);jaw.put(0.4);jaw.put(0.2);
-			JSONObject jo  = new JSONObject();
+//	    	String stubIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
+//	        String stubAddress = "D:/workwork/ontoMatchFiles/targetOntology.pkl";
+ 			String stubIRI = "http://www.theworldavatar.com/kb/ONTOMATCH/sparqlpt.owl"; 
+            String stubAddress = "D:/workwork/jpslatest/JParkSimulator-git/JPS_ONTOMATCH/tmp/sparqlpt.pkl";
+      
+	        JSONObject jo  = new JSONObject();
 	        jo.put("ontologyIRI", stubIRI);
 	        jo.put("saveAddress", stubAddress);
-
-
 
 	        Reader inputString = new StringReader(jo.toString());
 	        BufferedReader reader = new BufferedReader(inputString);
@@ -53,15 +45,12 @@ public class TestLexicalProcessor extends Mockito{
 	        when(request.getMethod()).thenReturn("POST");
 	        when(request.getReader()).thenReturn(reader);
 
-	        StringWriter stringWriter = new StringWriter();
-	        PrintWriter writer = new PrintWriter(stringWriter);
 	        
-	        when(response.getWriter()).thenReturn(writer);
-
-	        new LexicalProcessorForTest().testGet(request, response);
-
-	        writer.flush(); // it may not have been flushed yet...
-	        assertTrue(stringWriter.toString().contains("success"));
+	        JSONObject result  = new LexicalProcessor().processRequestParameters(jo, request);
+	      if(result.has("error")) {
+	        throw new Exception(result.getString("error"));
+	      }
+	        assertTrue(result.has("success"));
 	    }
 	
 	
