@@ -28,7 +28,7 @@ usage() {
 	echo "  -h              : Print this usage message."
     echo ""
 	echo "Example usage:"
-    echo "./release_py4jps_to_pypi.sh -v 1.0.14   - release version 1.0.14"
+    echo "./release_py4jps_to_pypi.sh -v 1.0.15   - release version 1.0.15"
 	echo "==============================================================================================================="
 	read -n 1 -s -r -p "Press any key to continue"
     exit
@@ -141,7 +141,7 @@ build_py4jps_for_release() {
     python setup.py sdist bdist_wheel
     if [ $? -eq 0 ]; then
         echo "Build successfull. Checking the distribution artifacts."
-        twine check dist/*
+        python -m twine check dist/*
         if [ $? -ne 0 ]; then
             echo "Problem with distribution artifacts. Aborting the release."
             read -n 1 -s -r -p "Press any key to continue"
@@ -167,10 +167,10 @@ release_to_pypi() {
     echo
     if [ $1 = "main-pypi" ]; then
         echo "main release"
-        twine upload -u $username -p $password $SPATH/dist/*
+        python -m twine upload -u $username -p $password $SPATH/dist/*
     else
         echo "test release"
-        twine upload -u $username -p $password --repository-url $TEST_PYPI $SPATH/dist/*
+        python -m twine upload -u $username -p $password --repository-url $TEST_PYPI $SPATH/dist/*
     fi
     if [ $? -ne 0 ]; then
         echo "Couldnt upload artifacts to $1. Have you forgotten to increse the $PROJECT_NAME version number?"
