@@ -1,11 +1,6 @@
-from urllib import response
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
-import pandas as pd
-import collections
 import json
-import uuid
-import os
 
 from pyasyncagent.kg_operations.gateway import jpsBaseLibGW
 

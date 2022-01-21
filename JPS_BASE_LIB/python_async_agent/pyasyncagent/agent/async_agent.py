@@ -172,15 +172,13 @@ class AsyncAgent(object):
 
             Arguments:
                 agentInputs - a JSON/dictionary of the derivation inputs, an example:
-                                {
-                                    "agent_input": {
-                                    "https://www.example.com/triplestore/repository/Ontology.owl#Concept_1": "https://www.example.com/triplestore/repository/Concept_1/Instance_1",
-                                    "https://www.example.com/triplestore/repository/Ontology.owl#Concept_2": "https://www.example.com/triplestore/repository/Concept_2/Instance_2",
-                                    "https://www.example.com/triplestore/repository/Ontology.owl#Concept_3":
-                                        ["https://www.example.com/triplestore/repository/Concept_3/Instance_3_1", "https://www.example.com/triplestore/repository/Concept_3/Instance_3_2"],
-                                    "https://www.example.com/triplestore/repository/Ontology.owl#Concept_4": "https://www.example.com/triplestore/repository/Concept_4/Instance_4"
-                                    }
-                                }
+                    {
+                        "https://www.example.com/triplestore/repository/Ontology.owl#Concept_1": "https://www.example.com/triplestore/repository/Concept_1/Instance_1",
+                        "https://www.example.com/triplestore/repository/Ontology.owl#Concept_2": "https://www.example.com/triplestore/repository/Concept_2/Instance_2",
+                        "https://www.example.com/triplestore/repository/Ontology.owl#Concept_3":
+                            ["https://www.example.com/triplestore/repository/Concept_3/Instance_3_1", "https://www.example.com/triplestore/repository/Concept_3/Instance_3_2"],
+                        "https://www.example.com/triplestore/repository/Ontology.owl#Concept_4": "https://www.example.com/triplestore/repository/Concept_4/Instance_4"
+                    }
         """
         createdIRI = []
         return createdIRI
