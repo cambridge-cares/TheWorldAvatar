@@ -32,10 +32,11 @@ The above commands will create and activate the virtual environment `<venv_name>
 
 ## Installation via pip
 
-The following command can be used to install the `pyasyncagent` package:
+The following command can be used to install the `pyasyncagent` package and `agentlogging` package. This is a workaround as PyPI does NOT allow install_requires direct links, so we could NOT add package agentlogging from 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils' as dependency, therefore, in order to make semi-automated release process working, we here introduce a workaround to install agentlogging to the virtual environment but NOT as dependency in the setup.py of `pyasyncagent`. A long term solution could be that we publish `agentlogging` in PyPI as well.
 
 ```sh
 (<venv_name>) $ pip install pyasyncagent
+(<venv_name>) $ pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils"
 ```
 
 # How to use #

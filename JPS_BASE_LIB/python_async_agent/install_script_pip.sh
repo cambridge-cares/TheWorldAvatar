@@ -113,6 +113,36 @@ function install_project {
 
 }
 
+function install_agentlogging_workaround {
+    echo "Installing the agentlogging package"
+    echo "-----------------------------------------------"
+    echo "As PyPI does NOT allow install_requires direct"
+    echo "links, so we could NOT add package agentlogging"
+    echo "from 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'"
+    echo "as dependency, therefore, in order to pass the"
+    echo "run_pyasyncagent_tests() and release_to_pypi(),"
+    echo " we here introduce a workaround here to install"
+    echo "agentlogging to the virtual environment but NOT"
+    echo "as dependency in the setup.py"
+    echo "-----------------------------------------------"
+    echo
+    get_pip_path
+    $PIPPATH --disable-pip-version-check install "git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils"
+
+    if [ $? -eq 0 ]; then
+        echo ""
+        echo "    INFO: installation complete."
+        echo "-----------------------------------------"
+    else
+        echo ""
+        echo ""
+        echo "    ERROR: installation failed."
+        echo "-----------------------------------------"
+        read -n 1 -s -r -p "Press any key to continue"
+        exit -1
+    fi
+}
+
 # Scan command-line arguments
 if [[ $# = 0 ]]
 then
@@ -144,6 +174,7 @@ fi
 if [[ $INSTALL_PROJ == 'y' ]]
 then
     install_project
+    install_agentlogging_workaround
 fi
 
 echo

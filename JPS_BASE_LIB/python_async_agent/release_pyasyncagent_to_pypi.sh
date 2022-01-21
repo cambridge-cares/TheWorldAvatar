@@ -212,6 +212,8 @@ test_release() {
         $PYTHON_EXEC -m pip install --no-cache-dir --upgrade $PROJECT_NAME
     fi
     $PYTHON_EXEC -m pip install pytest
+    $PYTHON_EXEC -m pip install testcontainers
+    $PYTHON_EXEC -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils"
 
     run_pyasyncagent_tests $PYTHON_EXEC
 
