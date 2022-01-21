@@ -431,7 +431,7 @@ The release procedure is currently semi-automated and requires a few items:
 
 - Your Test-PyPI and PyPI account and password
 - The version number x.x.x for the release
-- The absolute path to `TheWorldAvatar` project folder on your machine
+- Clone of `TheWorldAvatar` repository on your local machine
 
 Please create and checkout to a new branch from the newest `develop` branch once these details are ready. The release process can then be started by using the commands below, depending on the operating system you're using. (REMEMBER TO CHANGE THE CORRECT VALUES IN THE COMMANDS BELOW!)
 
@@ -445,12 +445,10 @@ $ release_py4jps_to_pypi.sh -v x.x.x
 `(Linux)`
 ```sh
 $ cd /absolute_path_to/TheWorldAvatar/JPS_BASE_LIB/python_wrapper
-$ chmod u+x release_py4jps_to_pypi.sh
-$ chmod u+x install_script_pip.sh
 $ ./release_py4jps_to_pypi.sh -v x.x.x
 ```
 
-Please follow the instructions presented in the concole once the process has begun. If everything goes well, change the version number in `JPS_BASE_LIB/python_wrapper/release_py4jps_to_pypi.sh` to the one you used for the script release.
+Please follow the instructions presented in the console once the process has begun. If everything goes well, change the version number in `JPS_BASE_LIB/python_wrapper/release_py4jps_to_pypi.sh` to the one you used for the script release.
 ```sh
 echo "./release_py4jps_to_pypi.sh -v 1.0.15   - release version 1.0.15"
 ```
