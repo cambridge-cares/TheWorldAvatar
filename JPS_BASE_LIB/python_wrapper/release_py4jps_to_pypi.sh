@@ -1,9 +1,10 @@
 #!/bin/bash
 # D. Nurkowski (danieln@cmclinnovations.com)
+# J. Bai (jb2197@cam.ac.uk)
 #
 # py4jps release script
 #
-AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
+AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>; Jiaru Bai <jb2197@cam.ac.uk>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 VENV_NAME='py4jps_venv'
 TEST_VENV_NAME='test_venv'
@@ -28,13 +29,14 @@ usage() {
 	echo "  -h              : Print this usage message."
     echo ""
 	echo "Example usage:"
-    echo "./release_py4jps_to_pypi.sh -v 1.0.14   - release version 1.0.14"
+    echo "./release_py4jps_to_pypi.sh -v 1.0.15   - release version 1.0.15"
 	echo "==============================================================================================================="
 	read -n 1 -s -r -p "Press any key to continue"
     exit
 }
 
 main() {
+    install_packages_for_building
     bump_py4jps_version_number
     clean_and_build_jps_base_lib
     package_jps_base_lib_with_py4jps
@@ -44,6 +46,17 @@ main() {
     release_to_pypi main-pypi
     test_release main-pypi
     read -n 1 -s -r -p "Press any key to continue"
+}
+
+install_packages_for_building() {
+    echo "-------------------------------------------------------------------------"
+    echo "$STEP_NR. Installing wheel and twine for building/releasing $PROJECT_NAME"
+    echo "-------------------------------------------------------------------------"
+    echo ; echo
+
+    pip install wheel twine
+
+    STEP_NR=$((STEP_NR+1))
 }
 
 bump_py4jps_version_number() {
@@ -89,10 +102,12 @@ install_py4jps() {
 
     $SPATH/install_script_pip.sh -v -i -e -n $venv_name_local -d $venv_dir_local
 
-    if [ -d "$venv_dir_local/$venv_name_local/bin/pip3" ]; then
+    if [ -d "$venv_dir_local/$venv_name_local/bin" ]; then
         PYTHON_EXEC=$venv_dir_local/$venv_name_local/bin/python
+        PYTHON_EXEC_FOLDER=bin
     else
         PYTHON_EXEC=$venv_dir_local/$venv_name_local/Scripts/python
+        PYTHON_EXEC_FOLDER=Scripts
     fi
 }
 
@@ -122,8 +137,8 @@ package_jps_base_lib_with_py4jps() {
     echo
     install_py4jps $VENV_NAME $SPATH
 
-    $SPATH/$VENV_NAME/Scripts/jpsrm uninstall JpsBaseLib
-    $SPATH/$VENV_NAME/Scripts/jpsrm devinstall
+    $SPATH/$VENV_NAME/$PYTHON_EXEC_FOLDER/jpsrm uninstall JpsBaseLib
+    $SPATH/$VENV_NAME/$PYTHON_EXEC_FOLDER/jpsrm devinstall
 
     run_py4jps_tests $PYTHON_EXEC
 
@@ -141,7 +156,7 @@ build_py4jps_for_release() {
     python setup.py sdist bdist_wheel
     if [ $? -eq 0 ]; then
         echo "Build successfull. Checking the distribution artifacts."
-        twine check dist/*
+        python -m twine check dist/*
         if [ $? -ne 0 ]; then
             echo "Problem with distribution artifacts. Aborting the release."
             read -n 1 -s -r -p "Press any key to continue"
@@ -167,10 +182,10 @@ release_to_pypi() {
     echo
     if [ $1 = "main-pypi" ]; then
         echo "main release"
-        twine upload -u $username -p $password $SPATH/dist/*
+        python -m twine upload -u $username -p $password $SPATH/dist/*
     else
         echo "test release"
-        twine upload -u $username -p $password --repository-url $TEST_PYPI $SPATH/dist/*
+        python -m twine upload -u $username -p $password --repository-url $TEST_PYPI $SPATH/dist/*
     fi
     if [ $? -ne 0 ]; then
         echo "Couldnt upload artifacts to $1. Have you forgotten to increse the $PROJECT_NAME version number?"
@@ -193,7 +208,7 @@ test_release() {
     sleep .5
     python -m venv $SPATH/../$TEST_VENV_NAME
 
-    if [ -d "$SPATH/../$TEST_VENV_NAME/bin/pip3" ]; then
+    if [ -d "$SPATH/../$TEST_VENV_NAME/bin" ]; then
         PYTHON_EXEC=$SPATH/../$TEST_VENV_NAME/bin/python
     else
         PYTHON_EXEC=$SPATH/../$TEST_VENV_NAME/Scripts/python
