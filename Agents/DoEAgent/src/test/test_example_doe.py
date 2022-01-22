@@ -37,15 +37,16 @@ def initialise_agent(initialise_triple_store):
         # Initialise doe agent configuration
         config = DoEAgentConfig(str(Path(__file__).absolute().parent) + '/test_conf.json')
 
-        # Initialise Flask app
-        flask_app = Flask(__name__)
         # Initialise DoE agent with temporary docker container endpoint
-        doe_agent = DoEAgent(flask_app, config.ONTOAGENT_SERVICE, config.PERIODIC_TIMESCALE, config.DERIVATION_INSTANCE_BASE_URL, endpoint, config.KG_USERNAME, config.KG_PASSWORD)
+        doe_agent = DoEAgent(config.ONTOAGENT_SERVICE, config.PERIODIC_TIMESCALE, config.DERIVATION_INSTANCE_BASE_URL, endpoint, config.KG_USERNAME, config.KG_PASSWORD)
 
         yield sparql_client, doe_agent
 
         # Tear down scheduler of doe agent
         doe_agent.scheduler.shutdown()
+
+        # Clear logger at the end of the test
+        clear_loggers()
 
 def test_example_doe(initialise_agent):
     sparql_client, doe_agent = initialise_agent
@@ -107,3 +108,13 @@ def get_endpoint(docker_container):
     # 'kb' is default namespace in Blazegraph
     endpoint += '/blazegraph/namespace/kb/sparql'
     return endpoint
+
+# method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
+def clear_loggers():
+    """Remove handlers from all loggers"""
+    import logging
+    loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
+    for logger in loggers:
+        handlers = getattr(logger, 'handlers', [])
+        for handler in handlers:
+            logger.removeHandler(handler)
