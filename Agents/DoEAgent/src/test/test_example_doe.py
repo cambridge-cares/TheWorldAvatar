@@ -32,7 +32,7 @@ def initialise_agent(initialise_triple_store):
         endpoint = get_endpoint(container)
 
         # Create SparqlClient for testing
-        sparql_client = SparqlClient(endpoint, endpoint)
+        sparql_client = DoESparqlClient(endpoint, endpoint)
 
         # Initialise doe agent configuration
         config = DoEAgentConfig(str(Path(__file__).absolute().parent) + '/test_conf.json')

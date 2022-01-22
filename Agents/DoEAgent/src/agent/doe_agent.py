@@ -10,7 +10,7 @@ from pyasyncagent import AsyncAgent
 from kg_operations import *
 from doe_algo import *
 
-from flask import Flask
+# from flask import Flask
 from conf import *
 
 # # Initialise logger
@@ -38,7 +38,7 @@ class DoEAgent(AsyncAgent):
         input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
 
         # Create sparql_client
-        self.sparql_client = SparqlClient(
+        self.sparql_client = DoESparqlClient(
             self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword
         )
         # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance

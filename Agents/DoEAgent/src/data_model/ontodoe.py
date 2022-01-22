@@ -2,8 +2,8 @@ from pydantic.dataclasses import dataclass
 from typing import List
 
 from data_model.ontorxn import *
-from data_model.iris import *
-from data_model.utils import *
+from pyasyncagent.data_model.iris import *
+from pyasyncagent.data_model.utils import *
 
 @dataclass
 class Strategy:
