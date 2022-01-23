@@ -26,18 +26,18 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
-# Re-install the version of JPS_BASE_LIB that is been developing
-# (sinse the newly added code is not in the release version of py4jps)
-# TO BE REMOVED WHEN MERGE TO DEVELOP
-RUN jpsrm uninstall JpsBaseLib
-RUN mkdir /jpstemp
-COPY jps-base-lib.jar ./jpstemp/jps-base-lib.jar
-COPY lib ./jpstemp/lib
-RUN jpsrm install JpsBaseLib ./jpstemp/
+# # Re-install the version of JPS_BASE_LIB that is been developing
+# # (sinse the newly added code is not in the release version of py4jps)
+# # TO BE REMOVED WHEN MERGE TO DEVELOP
+# RUN jpsrm uninstall JpsBaseLib
+# RUN mkdir /jpstemp
+# COPY jps-base-lib.jar ./jpstemp/jps-base-lib.jar
+# COPY lib ./jpstemp/lib
+# RUN jpsrm install JpsBaseLib ./jpstemp/
 
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app
-ADD summit_agent /app/summit_agent
+ADD src /app/src
 
 # Switch to a non-root user before running the server, for security reasons
 # (See https://code.visualstudio.com/docs/containers/python-user-rights)
@@ -51,4 +51,5 @@ RUN chmod -R 755 /home/appuser
 # Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the 'python_agent' module
 # Note that port 5000 is *inside the container*; this can be mapped to a port on the host when running the container on the command line or in docker-compose.yml
 USER appuser
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "summit_agent:app"]
+# ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "summit_agent:app"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "src:flask_app"]
