@@ -112,59 +112,60 @@ class AsyncAgent(object):
         derivationAndStatusType = self.derivationClient.getDerivationsAndStatusType(self.agentIRI)
         if bool(derivationAndStatusType):
             self.logger.info("A list of derivations that <isDerivedUsing> <%s> are retrieved: %s." % (self.agentIRI, derivationAndStatusType))
+
+            # Iterate over the list of derivation, and do different things depend on the derivation status
+            for derivation in derivationAndStatusType:
+                statusType = str(derivationAndStatusType[derivation])
+                self.logger.info("Derivation <%s> has status type: %s." % (derivation, statusType))
+
+                # If "PendingUpdate", check the immediate upstream derivations if they are up-to-date
+                if statusType == 'PENDINGUPDATE':
+                    immediateUpstreamDerivationToUpdate = self.derivationClient.checkAtPendingUpdate(derivation)
+                    if immediateUpstreamDerivationToUpdate is not None:
+                        self.logger.info(
+                            "Derivation <%s> has a list of immediate upstream derivations to be updated: <%s>." % (derivation, ">, <".join(immediateUpstreamDerivationToUpdate))
+                        )
+                    else:
+                        self.logger.info("All immediate upstream derivations of derivation <%s> are up-to-date." % (derivation))
+
+                # If "Requested", retrieve inputs, marks as "InProgress", start job, update status at job completion
+                elif statusType == 'REQUESTED':
+                    agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(derivation, self.agentIRI))
+                    self.logger.info("Agent <%s> retrieved inputs of derivation <%s>: %s." % (self.agentIRI, derivation, agentInputs))
+                    self.logger.info("Derivation <%s> is in progress." % (derivation))
+
+                    # Preprocessing inputs to be sent to agent for setting up job, this is now in dict datatype
+                    agent_input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
+                    agent_input_key = str(self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
+                    if agent_input_key in agent_input_json:
+                        inputs_to_send = agent_input_json[agent_input_key]
+                    else:
+                        self.logger.error("Agent input key (%s) might be missing. Received input: %s." % (agent_input_key, agent_input_json.__dict__))
+                    # The inputs_to_send should be a dictionary format,
+                    # for example: {'OntoXX:Concept_A': 'Instance_A', 'OntoXX:Concept_B': 'Instance_B'}
+                    # Developer can directly use it with dictionary operations
+                    newDerivedIRI = self.setupJob(inputs_to_send)
+                    self.logger.info("Derivation <%s> generated new derived IRI: <%s>." % (derivation, ">, <".join(newDerivedIRI)))
+
+                    self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI)
+                    self.logger.info("Derivation <%s> is now finished, to be cleaned up." % (derivation))
+
+                # If "InProgress", pass
+                elif statusType == 'INPROGRESS':
+                    pass
+
+                # If "Finished", do all the clean-up steps
+                elif statusType == 'FINISHED':
+                    self.derivationClient.cleanUpFinishedDerivationUpdate(derivation)
+                    self.logger.info("Derivation <%s> is now cleand up." % (derivation))
+
+                # If anything else, pass
+                else:
+                    self.logger.info("Derivation <%s> has unhandled status type: %s." % (derivation, statusType))
+                    pass
+
         else:
             self.logger.info("Currently, no derivation <isDerivedUsing> <%s>." % (self.agentIRI))
-
-        # Iterate over the list of derivation, and do different things depend on the derivation status
-        for derivation in derivationAndStatusType:
-            statusType = str(derivationAndStatusType[derivation])
-            self.logger.info("Derivation <%s> has status type: %s." % (derivation, statusType))
-
-            # If "PendingUpdate", check the immediate upstream derivations if they are up-to-date
-            if statusType == 'PENDINGUPDATE':
-                immediateUpstreamDerivationToUpdate = self.derivationClient.checkAtPendingUpdate(derivation)
-                if immediateUpstreamDerivationToUpdate is not None:
-                    self.logger.info(
-                        "Derivation <%s> has a list of immediate upstream derivations to be updated: <%s>." % (derivation, ">, <".join(immediateUpstreamDerivationToUpdate))
-                    )
-                else:
-                    self.logger.info("All immediate upstream derivations of derivation <%s> are up-to-date." % (derivation))
-
-            # If "Requested", retrieve inputs, marks as "InProgress", start job, update status at job completion
-            elif statusType == 'REQUESTED':
-                agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(derivation, self.agentIRI))
-                self.logger.info("Agent <%s> retrieved inputs of derivation <%s>: %s." % (self.agentIRI, derivation, agentInputs))
-                self.logger.info("Derivation <%s> is in progress." % (derivation))
-
-                # Preprocessing inputs to be sent to agent for setting up job, this is now in dict datatype
-                agent_input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
-                agent_input_key = str(self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
-                if agent_input_key in agent_input_json:
-                    inputs_to_send = agent_input_json[agent_input_key]
-                else:
-                    self.logger.error("Agent input key (%s) might be missing. Received input: %s." % (agent_input_key, agent_input_json.__dict__))
-                # The inputs_to_send should be a dictionary format,
-                # for example: {'OntoXX:Concept_A': 'Instance_A', 'OntoXX:Concept_B': 'Instance_B'}
-                # Developer can directly use it with dictionary operations
-                newDerivedIRI = self.setupJob(inputs_to_send)
-                self.logger.info("Derivation <%s> generated new derived IRI: <%s>." % (derivation, ">, <".join(newDerivedIRI)))
-
-                self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI)
-                self.logger.info("Derivation <%s> is now finished, to be cleaned up." % (derivation))
-
-            # If "InProgress", pass
-            elif statusType == 'INPROGRESS':
-                pass
-
-            # If "Finished", do all the clean-up steps
-            elif statusType == 'FINISHED':
-                self.derivationClient.cleanUpFinishedDerivationUpdate(derivation)
-                self.logger.info("Derivation <%s> is now cleand up." % (derivation))
-
-            # If anything else, pass
-            else:
-                self.logger.info("Derivation <%s> has unhandled status type: %s." % (derivation, statusType))
-                pass
 
     def setupJob(self, agentInputs) -> list:
         """
