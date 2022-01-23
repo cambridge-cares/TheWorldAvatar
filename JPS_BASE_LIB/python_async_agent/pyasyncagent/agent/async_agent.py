@@ -184,7 +184,7 @@ class AsyncAgent(object):
         createdIRI = []
         return createdIRI
 
-    def run(self, **kwargs):
+    def start_monitoring_derivations(self):
         """
             This method starts the periodical job to monitor derivation, also runs the flask app as an HTTP servlet.
         """
@@ -192,4 +192,9 @@ class AsyncAgent(object):
         self.scheduler.add_job(id='monitor_derivations', func=self.monitorDerivations, trigger='interval', seconds=self.time_interval)
         self.scheduler.start()
         self.logger.info("Monitor derivations job is started with a time interval of %d seconds." % (self.time_interval))
+
+    def run_flask_app(self, **kwargs):
+        """
+            This method starts the periodical job to monitor derivation, also runs the flask app as an HTTP servlet.
+        """
         self.app.run(**kwargs)
