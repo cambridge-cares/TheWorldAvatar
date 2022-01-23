@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   example:
-    image: summit_agent:1.0.0
-    container_name: summit_agent
+    image: doe_agent:1.0.0
+    container_name: doe_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     build:

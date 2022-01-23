@@ -1,8 +1,12 @@
-flask==1.1.2
-gunicorn==20.0.4
+# flask==1.1.2
+# gunicorn==20.0.4
+pyasyncagent==0.0.4
 git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils
 summit
-py4jps
-Flask-APScheduler
+# py4jps
+# Flask-APScheduler
 pandas
-rdflib
+# rdflib
+pydantic
+testcontainers
+pytest
