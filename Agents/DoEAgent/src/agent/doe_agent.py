@@ -7,11 +7,17 @@ import os
 from pyasyncagent import AsyncAgent
 # import agentlogging
 
-from kg_operations import *
-from doe_algo import *
+from src.kg_operations import *
+from src.doe_algo import *
 
 # from flask import Flask
-from conf import *
+from src.conf import *
+
+# from kg_operations import *
+# from doe_algo import *
+
+# # from flask import Flask
+# from conf import *
 
 # # Initialise logger
 # logger = agentlogging.get_logger("dev")

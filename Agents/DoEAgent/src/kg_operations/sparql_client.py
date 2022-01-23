@@ -16,7 +16,8 @@ import os
 from pyasyncagent.kg_operations import PySparqlClient
 from pyasyncagent.data_model import *
 
-from data_model import *
+from src.data_model import *
+# from data_model import *
 
 class DoESparqlClient(PySparqlClient):
     # def __init__(self, query_endpoint, update_endpoint, kg_user=None, kg_password=None) -> None:
