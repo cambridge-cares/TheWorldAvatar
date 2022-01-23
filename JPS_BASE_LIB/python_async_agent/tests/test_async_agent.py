@@ -62,10 +62,7 @@ def test_async_agent(initialise_agent):
     assert res == 0
 
     # Start the scheduler to monitor derivations
-    # NOTE: this is only reqiured for test cases, the scheduler is started automatically when executing agent.run() in normal operation, i.e. spin up agent in docker container
-    agent.scheduler.init_app(agent.app)
-    agent.scheduler.add_job(id='monitor_derivations', func=agent.monitorDerivations, trigger='interval', seconds=agent.time_interval)
-    agent.scheduler.start()
+    agent.start_monitoring_derivations()
 
     # Upload all example triples provided in the resources folder to triple store
     folderpath = str(Path(__file__).absolute().parent) + '/resources/'
