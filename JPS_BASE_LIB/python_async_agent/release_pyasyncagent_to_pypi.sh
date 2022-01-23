@@ -27,7 +27,7 @@ usage() {
 	echo "  -h              : Print this usage message."
     echo ""
 	echo "Example usage:"
-    echo "./release_pyasyncagent_to_pypi.sh -v 0.0.3   - release version 0.0.3"
+    echo "./release_pyasyncagent_to_pypi.sh -v 0.0.4   - release version 0.0.4"
 	echo "==============================================================================================================="
 	read -n 1 -s -r -p "Press any key to continue"
     exit
