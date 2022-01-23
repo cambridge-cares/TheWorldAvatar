@@ -1,9 +1,12 @@
 from testcontainers.core.container import DockerContainer
+import logging
 import pytest
 import time
 
-from agent import *
-from conf import *
+from src.agent import *
+from src.conf import *
+
+logging.getLogger("py4j").setLevel(logging.INFO)
 
 # Hardcode the IRI to be used for the example, these should be identical with the ones specified in '/test/resources/doe.txt'
 derivation_output = ['https://www.example.com/triplestore/ontodoe/DoE_1/NewExperiment_1']
@@ -38,7 +41,7 @@ def initialise_agent(initialise_triple_store):
         config = DoEAgentConfig(str(Path(__file__).absolute().parent) + '/test_conf.json')
 
         # Initialise DoE agent with temporary docker container endpoint
-        doe_agent = DoEAgent(config.ONTOAGENT_SERVICE, config.PERIODIC_TIMESCALE, config.DERIVATION_INSTANCE_BASE_URL, endpoint, config.KG_USERNAME, config.KG_PASSWORD)
+        doe_agent = DoEAgent(config.ONTOAGENT_SERVICE, config.PERIODIC_TIMESCALE, config.DERIVATION_INSTANCE_BASE_URL, endpoint)
 
         yield sparql_client, doe_agent
 
@@ -56,10 +59,7 @@ def test_example_doe(initialise_agent):
     assert res == 0
 
     # Start the scheduler to monitor derivations
-    # NOTE: this is only reqiured for test cases, the scheduler is started automatically when executing agent.run() in normal operation, i.e. spin up agent in docker container
-    doe_agent.scheduler.init_app(doe_agent.app)
-    doe_agent.scheduler.add_job(id='monitor_derivations', func=doe_agent.monitorDerivations, trigger='interval', seconds=doe_agent.time_interval)
-    doe_agent.scheduler.start()
+    doe_agent.start_monitoring_derivations()
 
     # Upload all example triples provided in the resources folder to triple store
     folderpath = str(Path(__file__).absolute().parent) + '/resources/'
