@@ -4,7 +4,7 @@
 echo "Running start-up.sh script..."
 
 echo "Starting FloodAgent code in new process..."
-java -cp /app/FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.LaunchScheduledWriterOnly &
+java -cp /app/FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.LaunchWriterOnly &
 echo "FloodAgent has started."
 
 echo "Starting Apache web server..."

@@ -4,7 +4,6 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.core.OrderCondition;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -29,6 +29,8 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Station;
+import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ServicePattern;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ValuesPattern;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -46,6 +48,7 @@ public class FloodSparql {
  	private static String ontostation = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#";
     private static Prefix p_station = SparqlBuilder.prefix("station",iri(ontostation));
     private static Prefix p_time = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
+    private static Prefix p_geo = SparqlBuilder.prefix("geo",iri("http://www.bigdata.com/rdf/geospatial#"));
     
     // classes
     private static Iri Station = p_station.iri("Station");
@@ -57,6 +60,7 @@ public class FloodSparql {
     private static Iri hasTime = p_time.iri("hasTime");
     private static Iri inXSDDate = p_time.iri("inXSDDate");
     private static Iri stationReference = iri("http://environment.data.gov.uk/flood-monitoring/def/core/stationReference");
+    private static Iri lat_lon = iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon");
     // made up by KFL, purely for mapbox requirement
     private static Iri hasVisID = iri("http://environment.data.gov.uk/flood-monitoring/def/core/visID"); 
     
@@ -117,19 +121,40 @@ public class FloodSparql {
 		Variable measure = query.var();
 		Variable station = query.var();
 		Variable coord = query.var();
-		
-		Iri measures = iri("http://environment.data.gov.uk/flood-monitoring/def/core/measures");
-		
+				
 		GraphPattern queryPattern = station.has(measures, measure)
 				.andHas(hasCoordinates, coord);
 		
 		query.select(measure).where(queryPattern).prefix(p_station);
 		
 	    @SuppressWarnings("unchecked")
-		List<String> stations = storeClient.executeQuery(query.getQueryString()).toList().stream()
+		List<String> measure_iri_list = storeClient.executeQuery(query.getQueryString()).toList().stream()
 	    .map(datairi -> ((HashMap<String,String>) datairi).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
 	    
-	    return stations;
+	    return measure_iri_list;
+	}
+	
+	/**
+	 * similar function as above but only query for measures for the given stations
+	 * @param stations
+	 * @return
+	 */
+	List<String> getMeasures(List<Station> stations) {
+		SelectQuery query = Queries.SELECT();
+		
+		Variable measure = query.var();
+		Variable station = query.var();
+				
+		GraphPattern queryPattern = station.has(measures, measure);
+		ValuesPattern stationPattern = new ValuesPattern(station, stations.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()));
+		
+		query.select(measure).where(queryPattern, stationPattern);
+		
+		@SuppressWarnings("unchecked")
+		List<String> measure_iri_list = storeClient.executeQuery(query.getQueryString()).toList().stream()
+	    .map(datairi -> ((HashMap<String,String>) datairi).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
+	    
+	    return measure_iri_list;
 	}
 	
 	/**
@@ -172,7 +197,7 @@ public class FloodSparql {
 		// one triple per station
 		for (int i = 0; i < queryResult.length(); i++) {
 			// blazegraph's custom literal type
-			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon.get(i), iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"));
+			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon.get(i), lat_lon);
 			modify.insert(iri(stations.get(i)).has(hasCoordinates,coordinatesLiteral));
 			modify.insert(iri(stations.get(i)).has(hasVisID,visID.get(i)));
 		}
@@ -295,14 +320,9 @@ public class FloodSparql {
 	 * index 1 = station name (List<String>), 2 = lat (List<Double>), 3 = lon (List<Double>)
 	 * 4 = id (for visualisation
 	 */
-	List<List<?>> getStationsWithCoordinates() {
+	List<Station> getStationsWithCoordinates() {
 		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
 		Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
-		
-		List<String> stations = new ArrayList<>();
-		List<Double> latval = new ArrayList<>();
-		List<Double> lonval = new ArrayList<>();
-		List<Integer> ids = new ArrayList<>();
 		
 		SelectQuery query = Queries.SELECT();
 		
@@ -315,20 +335,104 @@ public class FloodSparql {
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
 				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id));
 		
-		query.where(queryPattern).select(lat,lon,ref,id);
+		query.where(queryPattern).select(station,lat,lon,ref,id);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
+		List<Station> stations = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
-			stations.add(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
-			latval.add(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
-			lonval.add(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
-			ids.add(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
+			Station stationObject = new Station(queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
+			stationObject.setIdentifier(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
+			stationObject.setLat(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
+			stationObject.setLon(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
+			stationObject.setVisId(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
+		}
+				
+		return stations;
+	}
+	
+	/**
+	 * Same as above, but only return
+	 * station with its lat/lon in 3 lists
+	 * index 1 = station name (List<String>), 2 = lat (List<Double>), 3 = lon (List<Double>)
+	 * 4 = id (for visualisation
+	 */
+	List<Station> getStationsWithCoordinates(String southwest, String northeast) {
+		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
+		Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+		Iri river_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/riverName");
+		Iri catchment_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/catchmentName");
+		Iri town_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/town");
+		Iri dateOpen_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/dateOpened");
+		
+		SelectQuery query = Queries.SELECT();
+		
+		Variable lat = query.var();
+		Variable lon = query.var();
+		Variable station = query.var();
+		Variable ref = query.var();
+		Variable id = query.var();
+		Variable river = query.var();
+		Variable catchment = query.var();
+		Variable town = query.var();
+		Variable dateOpened = query.var();
+		Variable label = query.var();
+		
+		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
+				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id));
+		
+		GraphPattern stationProperties = GraphPatterns.and(station.has(iri(RDFS.LABEL), label).optional(),
+				station.has(river_prop, river).optional(),
+				station.has(catchment_prop, catchment).optional(),
+				station.has(town_prop, town).optional(),
+				station.has(dateOpen_prop, dateOpened).optional());
+		
+		// restrict query location
+		if (southwest != null && northeast != null) {
+			GraphPattern coordinatesPattern = GraphPatterns.and(station.has(p_geo.iri("search"), "inRectangle")
+					.andHas(p_geo.iri("searchDatatype"),lat_lon)
+					.andHas(p_geo.iri("predicate"), hasCoordinates)
+					.andHas(p_geo.iri("spatialRectangleSouthWest"), southwest)
+					.andHas(p_geo.iri("spatialRectangleNorthEast"), northeast));
+
+	    	GraphPattern geoPattern = new ServicePattern(p_geo.iri("search").getQueryString()).service(coordinatesPattern);
+	    	query.where(queryPattern,geoPattern,stationProperties).prefix(p_geo,p_station);
+		} else {
+			query.where(queryPattern,stationProperties).prefix(p_station);
 		}
 		
-		List<List<?>> station_info = Arrays.asList(stations,latval,lonval,ids);
+		query.select(station,lat,lon,ref,id,river,catchment,town,dateOpened,label);
 		
-		return station_info;
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		List<Station> stations = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			Station stationObject = new Station(queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
+			stationObject.setIdentifier(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
+			stationObject.setLat(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
+			stationObject.setLon(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
+			stationObject.setVisId(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
+			
+			// optional properties
+			if (queryResult.getJSONObject(i).has(river.getQueryString().substring(1))) {
+				stationObject.setRiver(queryResult.getJSONObject(i).getString(river.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(catchment.getQueryString().substring(1))) {
+				stationObject.setCatchment(queryResult.getJSONObject(i).getString(catchment.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(town.getQueryString().substring(1))) {
+				stationObject.setTown(queryResult.getJSONObject(i).getString(town.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(dateOpened.getQueryString().substring(1))) {
+				stationObject.setDateOpened(queryResult.getJSONObject(i).getString(dateOpened.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(label.getQueryString().substring(1))) {
+				stationObject.setLabel(queryResult.getJSONObject(i).getString(label.getQueryString().substring(1)));
+			}
+			stations.add(stationObject);
+		}
+				
+		return stations;
 	}
     
     /**
@@ -413,7 +517,7 @@ public class FloodSparql {
     	// blazegraph coordinates
     	String blazegraph_latlon = String.valueOf(lat) + "#" + String.valueOf(lon);
     	StringLiteral coordinatesLiteral = Rdf.literalOfType(blazegraph_latlon, 
-    			iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"));
+    			lat_lon);
     	modify.insert(station_iri.has(hasCoordinates,coordinatesLiteral));
     	
     	modify.insert(station_iri.isA(Station));

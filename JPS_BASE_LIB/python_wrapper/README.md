@@ -423,6 +423,49 @@ def doTask2():
 
  The py4jps aim is to provide Python access to the `TheWorldAvatar` project classes and methods. However, it is important to understand that not all `TheWorldAvatar` classes can be accessed. Namely, **any servlet depending classes can not be instantiated in Python without running the TomCat server first**. Since this has not been tested, it is not guaranteed that running the TomCat server would fix the problem. However, this should not be an issue for the `py4jps` users, given that the main purpose of the wrapper is to use the client-side `TheWorldAvatar` code to perform KG queries or updates. In other words, it is not the `py4jps` purpose to develop the server-side code, which should happen in Java.
 
+# Package release
+
+Maintainers who package and publish the most up-to-date codes from the `develop` branch handle the distribution of package py4jps on PyPI and Test-PyPI. If you want to release the package independently, i.e. become a maintainer, please contact the repository's administrator to indicate your interest.
+
+The release procedure is currently semi-automated and requires a few items:
+
+- Your Test-PyPI and PyPI account and password
+- The version number x.x.x for the release
+- Clone of `TheWorldAvatar` repository on your local machine
+
+Please create and checkout to a new branch from the newest `develop` branch once these details are ready. The release process can then be started by using the commands below, depending on the operating system you're using. (REMEMBER TO CHANGE THE CORRECT VALUES IN THE COMMANDS BELOW!)
+
+`(Windows)`
+
+```cmd
+$ cd \absolute_path_to\TheWorldAvatar\JPS_BASE_LIB\python_wrapper
+$ release_py4jps_to_pypi.sh -v x.x.x
+```
+
+`(Linux)`
+```sh
+$ cd /absolute_path_to/TheWorldAvatar/JPS_BASE_LIB/python_wrapper
+$ ./release_py4jps_to_pypi.sh -v x.x.x
+```
+
+Please follow the instructions presented in the console once the process has begun. If everything goes well, change the version number in `JPS_BASE_LIB/python_wrapper/release_py4jps_to_pypi.sh` to the one you used for the script release.
+```sh
+echo "./release_py4jps_to_pypi.sh -v 1.0.15   - release version 1.0.15"
+```
+
+The changes mentioned above should then be committed with the changes performed automatically during the release process, specifically in python script `JPS_BASE_LIB/python_wrapper/py4jps/__init__.py`
+```
+__version__ = "1.0.15"
+```
+
+and `JPS_BASE_LIB/python_wrapper/setup.py`
+```
+version='1.0.15',
+```
+
+Finally, make a Pull Request for the branch and merge it back into the `develop` branch.
+
 # Authors #
 
 Daniel Nurkowski
+Jiaru Bai
