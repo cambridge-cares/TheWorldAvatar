@@ -61,7 +61,7 @@ class AsyncAgent(object):
         self.kgPassword = kg_password
 
         # initialise the derivationClient with SPARQL Query and Update endpoint
-        if self.kgUrl is None:
+        if self.kgUser is None:
             self.storeClient = self.jpsBaseLib_view.RemoteStoreClient(self.kgUrl, self.kgUrl)
         else:
             self.storeClient = self.jpsBaseLib_view.RemoteStoreClient(self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword)
