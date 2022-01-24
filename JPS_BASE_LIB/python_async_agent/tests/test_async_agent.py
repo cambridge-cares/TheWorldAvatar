@@ -12,6 +12,9 @@ from pyasyncagent.data_model import *
 from tests.random_agent import *
 from tests.sparql_client_for_test import PySparqlClientForTest
 
+import logging
+logging.getLogger("py4j").setLevel(logging.INFO)
+
 # Configurations for agent
 ONTOAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Random#Service' # should match one defined in Service__Random.ttl
 DERIVATION_PERIODIC_TIMESCALE = 3

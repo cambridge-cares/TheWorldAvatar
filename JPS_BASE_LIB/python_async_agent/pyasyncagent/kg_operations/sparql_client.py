@@ -49,13 +49,7 @@ class PySparqlClient:
             return False
 
     def getAmountOfTriples(self):
-        query = """SELECT (COUNT(*) AS ?triples) \
-                WHERE { \
-                    ?s ?p ?o . \
-                }"""
-
-        response = self.performQuery(query)
-        return int(response[0]['triples'])
+        return self.kg_client.getTotalNumberOfTriples() # return an integer of total number of triples
 
     def performQuery(self, query):
         """
