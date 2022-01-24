@@ -51,7 +51,7 @@ def checkNamespace(namespace):
 
 def trimIRI(iri):
     """
-        This method deletes the '<' and '>' around the given IRI.
+        This method deletes the '<' and '>' around the given IRI (or lists of IRIs).
         Arguments:
             iri - IRI of interest
     """
