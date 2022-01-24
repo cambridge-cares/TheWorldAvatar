@@ -101,10 +101,14 @@ def convert_csv_to_triple_dfs(csvName):
     #This converts the format of the output. Returns two dfs.
     #This is only for Search == 2 scenarios. 
     
+    #CSV Locations
+    plantfilelocation = 'https://www.dropbox.com/s/arwtg13rjj8ajoi/powerplanttriple.csv?dl=1'
+    genfilelocation = 'https://www.dropbox.com/s/a24f76icghonsf9/generatortriple.csv?dl=1'
+
     #Read csv
-    data = pd.read_csv(csvName) #Dataframe including DUKES stations.
-    powerplant_data = pd.read_csv('https://www.dropbox.com/s/441deu1nirq9wbf/powerplanttriple.csv?dl=1') #Fixed powerplant name
-    generator_data = pd.read_csv('https://www.dropbox.com/s/ovhqn9udlpfvy8p/generatortriple.csv?dl=1') #Fixed generator name
+    data = pd.read_csv(csvName) #Dataframe including DUKES stations. 
+    powerplant_data = pd.read_csv(plantfilelocation) #Fixed powerplant name
+    generator_data = pd.read_csv(genfilelocation) #Fixed generator name
 
     p_count = 0
     g_count = 0
@@ -143,8 +147,8 @@ def convert_csv_to_triple_dfs(csvName):
                 generator_data.iloc[g_count, generator_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
                 g_count += 1
     
-    powerplant_data.to_csv('https://www.dropbox.com/s/441deu1nirq9wbf/powerplanttriple.csv?dl=1', index = False)
-    generator_data.to_csv('https://www.dropbox.com/s/ovhqn9udlpfvy8p/generatortriple.csv?dl=1', index = False)
+    #powerplant_data.to_csv(plantfilelocation, index = False)
+    #generator_data.to_csv(genfilelocation, index = False)
     
     return powerplant_data, generator_data
 

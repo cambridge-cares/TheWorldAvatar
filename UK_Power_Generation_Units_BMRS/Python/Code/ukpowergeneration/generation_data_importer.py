@@ -43,22 +43,22 @@ def instantiate_generator(query_endpoint, update_endpoint, generator_name):
     print("Instantiate new generator: " + generator_name)
 
     # Create unique IRI for new generator based on generator name
-    generatorIRI = kg.PREFIXES['ontoenergyststem_kb'] + generator_name.replace(' ', '')
+    generatorIRI = kg.PREFIXES['ontoenergysystem_kb'] + generator_name.replace(' ', '')
     n = 1
     # Add number suffix in case pure name based IRI already exists
     while generatorIRI in kg.get_instantiated_generators(query_endpoint).values():
-        generatorIRI = kg.PREFIXES['ontoenergyststem_kb'] + generator_name.replace(' ', '') + str(n)
+        generatorIRI = kg.PREFIXES['ontoenergysystem_kb'] + generator_name.replace(' ', '') + str(n)
         n += 1
 
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
     
     # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-    query = kg.create_sparql_prefix('ontoenergyststem') + \
+    query = kg.create_sparql_prefix('ontoenergysystem') + \
             kg.create_sparql_prefix('rdf') + \
             kg.create_sparql_prefix('rdfs') + \
             kg.create_sparql_prefix('xsd') + \
-            '''INSERT DATA { <%s> rdf:type ontoenergyststem:PowerGenerator . \
+            '''INSERT DATA { <%s> rdf:type ontoenergysystem:PowerGenerator . \
                              <%s> rdfs:label "%s"^^xsd:string . }''' % \
             (generatorIRI, generatorIRI, generator_name)
     KGClient.executeUpdate(query)
@@ -77,18 +77,18 @@ def instantiate_powerplant(query_endpoint, update_endpoint, powerplant_name):
     print("Instantiate new powerplant: " + powerplant_name)
 
     # Create unique IRI for new powerplant based on powerplant name
-    powerplantIRI = kg.PREFIXES['ontoenergyststem_kb'] + powerplant_name.replace(' ', '')
+    powerplantIRI = kg.PREFIXES['ontoenergysystem_kb'] + powerplant_name.replace(' ', '')
     n = 1
     # Add number suffix in case pure name based IRI already exists
     while powerplantIRI in kg.get_instantiated_powerplants(query_endpoint).values():
-        powerplantIRI = kg.PREFIXES['ontoenergyststem_kb'] + powerplant_name.replace(' ', '') + str(n)
+        powerplantIRI = kg.PREFIXES['ontoenergysystem_kb'] + powerplant_name.replace(' ', '') + str(n)
         n += 1
 
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
     
     # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-    query = kg.create_sparql_prefix('ontoenergyststem') + \
+    query = kg.create_sparql_prefix('ontoenergysystem') + \
             kg.create_sparql_prefix('rdf') + \
             kg.create_sparql_prefix('rdfs') + \
             kg.create_sparql_prefix('xsd') + \
@@ -139,17 +139,17 @@ def instantiate_timeseries(query_endpoint, update_endpoint, generatorIRI, genera
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
 
     # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-    query = kg.create_sparql_prefix('ontoenergyststem') + \
-            kg.create_sparql_prefix('ontoenergyststem_kb') + \
+    query = kg.create_sparql_prefix('ontoenergysystem') + \
+            kg.create_sparql_prefix('ontoenergysystem_kb') + \
             kg.create_sparql_prefix('om') + \
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
-            <%s> ontoenergyststem:hasTaken ontoenergyststem_kb:%s . \
-            ontoenergyststem_kb:%s rdf:type ontoenergyststem:IntakenGas . \
-            ontoenergyststem_kb:%s rdf:type om:VolumetricpowerRate; \
-                     om:hasPhenomenon ontoenergyststem_kb:%s; \
-                     om:hasValue ontoenergyststem_kb:%s . \
-            ontoenergyststem_kb:%s rdf:type om:Measure; \
+            <%s> ontoenergysystem:hasTaken ontoenergysystem_kb:%s . \
+            ontoenergysystem_kb:%s rdf:type ontoenergysystem:IntakenGas . \
+            ontoenergysystem_kb:%s rdf:type om:VolumetricpowerRate; \
+                     om:hasPhenomenon ontoenergysystem_kb:%s; \
+                     om:hasValue ontoenergysystem_kb:%s . \
+            ontoenergysystem_kb:%s rdf:type om:Measure; \
                      om:hasUnit om:cubicMetrePerSecond-Time. }''' % (
                 generatorIRI, gas, gas, quantity, gas, measurement, measurement)
 
@@ -164,7 +164,7 @@ def instantiate_timeseries(query_endpoint, update_endpoint, generatorIRI, genera
     double_class = jpsBaseLibView.java.lang.Double.TYPE
 
     # Derive MeasurementIRI to which time series is actually connected to
-    measurement_iri = kg.PREFIXES['ontoenergyststem_kb'] + measurement
+    measurement_iri = kg.PREFIXES['ontoenergysystem_kb'] + measurement
     print("Measurement IRI for actual time series: ", measurement_iri)
 
     # Initialise time series in both KG and RDB using TimeSeriesClass
@@ -203,13 +203,20 @@ def get_power_data_from_api():
     #####BACK LATER#####
     #Key = '' #####NEED THIS#####
     #powerplant_df, generator_df = bmrs.Auto_Call(Key)
-    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1')
+    #Read the Input-Template.csv file from a URL. 
+    #eg. 'https://www.dropbox.com/s/mmmcto232y4q3or/Input-Template.csv?dl=1' for 'Dropbox (Cambridge CARES)\CoMo shared\ja685\BMRS\Script-BMRS-API/Input-Template.csv'
+    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/y303wmc2rzdyehz/Input-Template.csv?dl=1')
+    print("PowerPlants Dataframe: ")
+    print(powerplant_df)
+    print("Generators Dataframe: ")
+    print(generator_df)
     #####BACK LATER#####
+    print("Finished preparing dataframes.")
 
     # 2D array of data (triples [generatorName, time, power])
     #data = []
 
-    print("Reading power data CSV...")
+    #print("Reading power data CSV...")
     #data = pd.read_csv(csvName) #Dataframe including DUKES stations. 
     #These should both be EIC of (station or generator), time, power.  
     #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs(csvName)
@@ -248,7 +255,7 @@ def get_power_data_from_api():
     '''
 
     #print("Finished reading power data CSV, removing file...\n")
-    print("Finished reading power data CSV")
+    #print("Finished reading power data CSV")
     #os.remove(filename)
 
     '''
@@ -259,8 +266,6 @@ def get_power_data_from_api():
     # Capitalise generator names (for consistent comparisons by name)
     df['generator'] = df['generator'].str.upper()
     '''
-    print("PowerPlant DataFrame:")
-    print(powerplant_df)
     
     return powerplant_df, generator_df
 

@@ -28,8 +28,8 @@ FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
-    'ontoenergyststem':  'http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#',
-    'ontoenergyststem_kb': 'http://www.theworldavatar.com/kb/ontoenergysystem/',
+    'ontoenergysystem':  'http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#',
+    'ontoenergysystem_kb': 'http://www.theworldavatar.com/kb/ontoenergysystem/',
     'ontopowsys':  'http://www.theworldavatar.com/ontology/ontopowsys/electrical_system.owl#',
     'om':    'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
