@@ -24,7 +24,7 @@
 	-->
 	
 	<!-- Framework CSS -->
-	<link href='./css/digital_twin_style.css' rel='stylesheet' />
+	<link href='./css/dtvf.css' rel='stylesheet' />
 	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
 
 	<!-- Framework JS -->
@@ -47,6 +47,7 @@
 <body>
 	<!-- Element the MapBox map will be added to -->
 	<div id='map'></div>
+	<div id="tiltShift"></div>
 	
 	<!-- Element the map controls will be added to (normally on the left) -->
 	<div id="controlsContainer"></div>
@@ -86,9 +87,10 @@
 		function startUp() {
 			// Create the MapBox map
 			var map = manager.createMap("map");
+			var iconHandler = new IconHandler(map);
 
 			// Provide some default content for the side panel
-			let title = `Example Visualisation of Queried Data`;
+			let title = `<h1>Example Visualisation of Queried Data</h1>`;
 			let content = `
 					This section of default text should be used to give a brief introduction on the purpose of the
 					visualisation, and to detail how the user can interact with it. For the purpose of this example,
@@ -105,7 +107,7 @@
 
 			// Show content and store as default (so it can be returned to later)
 			manager.setPanelContent(title, content,	legend,	footer);
-			
+
 			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
 			// This means that we have to listen for this event (below) and re-add everything.
 			// Note: There does not seem to be a nice way to preverse the sources and layers when changing
@@ -114,27 +116,17 @@
 
 			map.on('style.load', function() {
 				console.log("INFO: A new style has been loaded.");
+				var imagePromises = [];
 
-				// Re-register icon images used by this visualisation
-				let winURL = window.location;
-				let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
-
-				var iconHandler = new IconHandler(map);
-				EXAMPLE_ICONS.forEach(relativeURL => {
-					let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
-					iconHandler.registerIcon(imageURL);
-				});
-
-				// Re-add the sky layer
-				manager.setSkyDetails();
-
-				// Re-plot the previously selected group
-				if(DT.currentGroup != null && DT.currentGroup.length > 0) {
-					manager.plotGroup(DT.currentGroup, false);
-				}
- 
-				// On first load only
 				if(!loadedOnce) {
+					// Load and cache icon images used by this visualisation
+					let winURL = window.location;
+					let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+					EXAMPLE_ICONS.forEach(relativeURL => {
+						let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
+						imagePromises.push(iconHandler.loadIcon(imageURL));
+					});
+
 					// This callback will be fired when a final group is selected in the dropdowns
 					let selectCallback = function(selectedGroups) {
 						manager.plotGroup(selectedGroups, false);
@@ -142,10 +134,42 @@
 
 					// Build and show the layer tree based on the metadata
 					manager.showControls(null, selectCallback);
-					manager.plotFirstGroup();
+
+					// Set up a callback that hides all connections whenever the user
+					// returns to the default side panel.
+					manager.setDefaultPanelCallback();
+					
+					// Show mouse position
+					manager.showDeveloperControls();
 
 					loadedOnce = true;
 				}
+				
+				// Add all cached icons to the new style. Using promises here
+				// ensures we only do this AFTER all images are loaded.
+				Promise.all(imagePromises).then(() => {
+					iconHandler.addAllIcons();
+
+					// Promise for loading data as sources and layers
+					var dataPromise;
+
+					// Re-plot the previously selected group
+					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
+						dataPromise = manager.plotGroup(DT.currentGroup, false);
+					} else {
+						dataPromise = manager.plotFirstGroup();
+					}
+
+					if(dataPromise != null) {
+						dataPromise.then(() => {
+							// Re-add the sky and (optionally) 3D terrain
+							manager.addSkyAndTerrain();
+							manager.set3DTerrain();
+							manager.setPlacenames();
+						});
+					}
+				});
+				
 			});
 		}
 	</script>
