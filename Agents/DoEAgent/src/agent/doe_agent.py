@@ -5,22 +5,10 @@ import json
 import os
 
 from pyasyncagent import AsyncAgent
-# import agentlogging
 
 from src.kg_operations import *
 from src.doe_algo import *
-
-# from flask import Flask
 from src.conf import *
-
-# from kg_operations import *
-# from doe_algo import *
-
-# # from flask import Flask
-# from conf import *
-
-# # Initialise logger
-# logger = agentlogging.get_logger("dev")
 
 class DoEAgent(AsyncAgent):
     def setupJob(self, agentInputs) -> List[str]:
@@ -151,13 +139,3 @@ def default():
     msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/133-dev-design-of-experiment/Agents/DoEAgent#readme<BR>"
     # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/DoEAgent#readme, before merging back to develop branch
     return msg
-
-# flask_app = Flask(__name__)
-
-# doe_agent_config = DoEAgentConfig(str(Path(__file__).absolute().parent.parent) + '/conf/doeagent_properties.json')
-
-# app = DoEAgent(flask_app, doe_agent_config.ONTOAGENT_SERVICE, doe_agent_config.PERIODIC_TIMESCALE, doe_agent_config.DERIVATION_INSTANCE_BASE_URL, doe_agent_config.SPARQL_QUERY_ENDPOINT)
-# app.add_url_pattern('/', 'root', default, methods=['GET'])
-
-# if __name__ == '__main__':
-#     app.run()
