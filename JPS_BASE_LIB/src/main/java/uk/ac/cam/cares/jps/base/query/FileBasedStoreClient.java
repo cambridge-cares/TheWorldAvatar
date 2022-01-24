@@ -923,16 +923,4 @@ public class FileBasedStoreClient implements StoreClientInterface {
         
 		executeUpdate(builder.buildRequest());	
 	}
-
-	/**
-	 * This method retrieves the total number of triples stored in the repository.
-     * NOTE: this can be slow (of order of minutes) for large repositories.
-	 */
-	@Override
-	public Integer getTotalNumberOfTriples() {
-		String query = "SELECT (COUNT(*) AS ?triples) WHERE { ?s ?p ?o . }";
-    	JSONArray results = executeQuery(query);
-    	int triples = Integer.parseInt(results.getJSONObject(0).get("triples").toString());
-    	return triples;
-	}
 }

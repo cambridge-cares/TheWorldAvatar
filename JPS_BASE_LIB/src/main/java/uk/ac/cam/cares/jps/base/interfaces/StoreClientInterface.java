@@ -148,5 +148,10 @@ public interface StoreClientInterface {
 	 * NOTE: this can be slow (of order of minutes) for large repositories.
 	 * @return
 	 */
-	Integer getTotalNumberOfTriples();
+	default Integer getTotalNumberOfTriples() {
+		String query = "SELECT (COUNT(*) AS ?triples) WHERE { ?s ?p ?o . }";
+    	JSONArray results = executeQuery(query);
+    	int triples = Integer.parseInt(results.getJSONObject(0).get("triples").toString());
+    	return triples;
+	}
 }

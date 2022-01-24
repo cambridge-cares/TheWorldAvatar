@@ -892,16 +892,4 @@ public class RemoteStoreClient implements StoreClientInterface {
             throw new JPSRuntimeException("Upload RDF file failed.", ex);
         }
     }
-
-    /**
-     * This method retrieves the total number of triples stored in the repository.
-     * NOTE: this can be slow (of order of minutes) for large repositories.
-     * @return
-     */
-    public Integer getTotalNumberOfTriples() {
-    	String query = "SELECT (COUNT(*) AS ?triples) WHERE { ?s ?p ?o . }";
-    	JSONArray results = executeQuery(query);
-    	int triples = Integer.parseInt(results.getJSONObject(0).get("triples").toString());
-    	return triples;
-    }
 }
