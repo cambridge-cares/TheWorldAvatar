@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-public class LaunchScheduledWriterOnly {
+public class LaunchWriterOnly {
 	// Logger for reporting info/errors
-    private static final Logger LOGGER = LogManager.getLogger(LaunchScheduledWriterOnly.class);
+    private static final Logger LOGGER = LogManager.getLogger(LaunchWriterOnly.class);
     
     private final static ScheduledExecutorService scheduler = Executors
     		.newScheduledThreadPool(1);
@@ -32,30 +32,23 @@ public class LaunchScheduledWriterOnly {
         	// arguments are not needed for the below function
         	LOGGER.error("Stations are not initialised, cannot write output files");
         } else {
-        	startScheduledTask();
+        	writeOutputFiles();
         }
     }
     
-    static void startScheduledTask() {
-    	scheduler.scheduleAtFixedRate(() -> {
-            try {
-            	Instant nextUpdate = Instant.now().plus(1, ChronoUnit.DAYS);
-            	LOGGER.info("Launching scheduled task to write output files");
-            	
-            	// date to query
-                LocalDate lastUpdate = sparqlClient.getLatestUpdate();
-                LOGGER.info("Last update is on " + lastUpdate);
-                
-                // write output files for visualisation
-            	LOGGER.info("Writing output files for " + lastUpdate);
-            	String[] input = new String[1];
-            	input[0] = lastUpdate.toString();
-            	WriteOutputs.main(input);
-            	
-            	LOGGER.info("Next run will be at " + nextUpdate);
-            } catch (Exception ex) {
-                LOGGER.error(ex.getMessage());
-            }
-        }, 0, 1, TimeUnit.DAYS);
+    static void writeOutputFiles() {
+        try {        	
+        	// date to query
+            LocalDate lastUpdate = sparqlClient.getLatestUpdate();
+            LOGGER.info("Last update is on " + lastUpdate);
+            
+            // write output files for visualisation
+        	LOGGER.info("Writing output files for " + lastUpdate);
+        	String[] input = new String[1];
+        	input[0] = lastUpdate.toString();
+        	WriteOutputs.main(input);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage());
+        }
     }
 }
