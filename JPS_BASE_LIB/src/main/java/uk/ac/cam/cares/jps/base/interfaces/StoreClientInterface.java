@@ -142,4 +142,11 @@ public interface StoreClientInterface {
 	String getPassword();
 
 	void setPassword(String password);
+
+	/**
+	 * Counts the total number of triples in the repository.
+	 * NOTE: this can be slow (of order of minutes) for large repositories.
+	 * @return
+	 */
+	Integer getTotalNumberOfTriples();
 }
