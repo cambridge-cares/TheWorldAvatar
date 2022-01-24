@@ -1,4 +1,4 @@
-pyasyncagent==0.0.4
+pyasyncagent==0.0.5
 git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils
 summit
 pandas
