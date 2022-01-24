@@ -76,6 +76,7 @@ class AsyncAgent(object):
         """
             This method is a wrapper of add_url_rule method of Flask object that adds customised URL Pattern to asynchronous agent.
             For more information, visit https://flask.palletsprojects.com/en/2.0.x/api/#flask.Flask.add_url_rule.
+            WARNING: Use of this is STRONGLY discouraged. The design intention of an asynchronous agent is to communicate via the KNOWLEDGE GRAPH, and NOT via HTTP requests.
 
             Arguments:
                 url_pattern - the endpoint url to associate with the rule and view function
