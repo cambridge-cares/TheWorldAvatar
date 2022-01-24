@@ -435,6 +435,8 @@ The release procedure is currently semi-automated and requires a few items:
 
 Please create and checkout to a new branch from the newest `develop` branch once these details are ready. The release process can then be started by using the commands below, depending on the operating system you're using. (REMEMBER TO CHANGE THE CORRECT VALUES IN THE COMMANDS BELOW!)
 
+WARNING: at the moment, releasing `py4jps` package from Linux OS seems having an issue that it does NOT package py4jps correctly, i.e. the jps-base-lib.jar and lib folder are not included in the distribution (see release 1.0.16). Please use Windows OS to release future versions before the issue at Linux side is fixed.
+
 `(Windows)`
 
 ```cmd
