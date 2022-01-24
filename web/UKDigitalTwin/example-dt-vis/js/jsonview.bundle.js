@@ -173,6 +173,8 @@ var JsonView = (function (exports) {
   function createSubnode(data, node) {
     if (_typeof(data) === 'object') {
       let display_order = "display_order";
+      let valueString = "value";
+      let unit = "unit";
       let keys = []
       // follow specified order if "display_order" field exists
       if (display_order in data) {
@@ -188,16 +190,39 @@ var JsonView = (function (exports) {
       if ("collapse" in data) collapseState = data["collapse"];
 
       for (var key of keys) {
-        var child = createNode({
-          value: data[key],
-          key: key,
-          depth: node.depth + 1,
-          type: getDataType(data[key]),
-          parent: node,
-          collapse: collapseState
-        });
-        node.children.push(child);
-        createSubnode(data[key], child);
+        if (Object.keys(data[key]).includes(valueString)) {
+          let displayString = [];
+          if(typeof data[key][valueString] === "number") {
+            displayString = data[key][valueString].toFixed(2); 
+          } else {
+            displayString = data[key][valueString];
+          }
+
+          if (unit in data[key]) {
+            displayString += " " + data[key][unit];
+          }
+
+          var child = createNode({
+            value: displayString,
+            key: key,
+            depth: node.depth + 1,
+            type: getDataType(data[key]),
+            parent: node
+          });
+          node.children.push(child);
+          createSubnode(displayString, child);
+        } else {
+          var child = createNode({
+            value: data[key],
+            key: key,
+            depth: node.depth + 1,
+            type: getDataType(data[key]),
+            parent: node,
+            collapse: collapseState
+          });
+          node.children.push(child);
+          createSubnode(data[key], child);
+        }
       }
     }
   }
