@@ -1,11 +1,17 @@
 from src.agent import *
 
+###############################################################
+### !!! Do NOT run this script before reading README.md !!! ###
+###############################################################
+
 def exampleEntryPoint():
     """
-        As the monitorDerivation() is set to be running periodically once the DoE agent is deployed, 
-        this page should serve as the entry point for creating a working example once the developer 
-        has uploaded the correct triples to the knowledge graph endpoints, 
-        i.e. it creates the derivation instance based on the example data and execute asynchronous 
+        !!! Do NOT run this script before reading README.md !!!
+        As the monitorDerivations() is set to be running periodically once the DoE agent is deployed,
+        this function serve as an example that creats a working case once the developer has confirmed
+        there are no valuable data in the knowledge graph endpoints specified in the conf,
+        i.e. this script deletes ALL existing triples and upload example triples to the endpoint, it
+        then creates the derivation instance based on the example data and execute asynchronous
         derivation update automatically.
         Response:
             the created OntoDerivation:Derivation instance
@@ -53,5 +59,6 @@ def exampleEntryPoint():
     return msg
 
 if __name__ == '__main__':
+    !!! Do NOT run this script before reading README.md !!! # comment out this line before running this script (make sure you have read README.md)
     msg = exampleEntryPoint()
     print(msg)
