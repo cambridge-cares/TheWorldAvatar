@@ -29,7 +29,7 @@ usage() {
 	echo "  -h              : Print this usage message."
     echo ""
 	echo "Example usage:"
-    echo "./release_py4jps_to_pypi.sh -v 1.0.16   - release version 1.0.16"
+    echo "./release_py4jps_to_pypi.sh -v 1.0.17   - release version 1.0.17"
 	echo "==============================================================================================================="
 	read -n 1 -s -r -p "Press any key to continue"
     exit
