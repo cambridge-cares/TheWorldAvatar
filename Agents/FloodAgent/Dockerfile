@@ -27,6 +27,7 @@ WORKDIR /app
 COPY --from=builder /root/FloodAgent/target/*.jar /app
 # Copy the downloaded dependencies from the builder
 COPY --from=builder /root/FloodAgent/target/lib /app/lib
+RUN apk update && apk add dos2unix bash
 
 #==================================================================================================
 
@@ -37,7 +38,7 @@ COPY --from=builder /root/FloodAgent/target/lib /app/lib
 FROM agent as default
 # Copy in start up script
 # Install web server (to host json files for download)
-RUN apk update && apk add apache2 dos2unix bash
+RUN apk add apache2
 COPY ./httpd.conf /etc/apache2/httpd.conf
 RUN mkdir -p /var/www/html/
 RUN chown -R apache:apache /var/www/
