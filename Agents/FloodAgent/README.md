@@ -14,7 +14,20 @@ credentials/
 
 repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in `FloodAgent/src/main/resources/credentials.properties`. A template `credentials.properties.template` is provided in the same folder. To access Blazegraph and Postgres on your local machine, but not within the same docker network, the host name to use is `host.docker.internal`. User and password for Blazegraph can be left empty if not required. 
+Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in with the following environment variables, the names of the variables should be self explanatory.
+Mandatory variables:
+- KG_HOST
+- KG_PATH
+- KG_PROTOCOL
+- POSTGRES_DBNAME
+- POSTGRES_USER
+- POSTGRES_PASSWORD
+
+Optional variables:
+- KG_USER
+- KG_PASSWORD
+- POSTGRES_HOST
+- POSTGRES_PORT
 
 In addition to the credentials for the databases, a directory to write the geojson and flood needs to be specified.
 
