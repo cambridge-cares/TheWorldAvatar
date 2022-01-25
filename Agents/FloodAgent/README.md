@@ -14,18 +14,20 @@ credentials/
 
 repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in with the following environment variables, the names of the variables should be self explanatory.
+Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in with the following environment variables, the names of the variables should be self explanatory. OUTPUT_DIR refers to the absolute path of the directory for this script to write the output files.
 Mandatory variables:
-- KG_HOST
-- KG_PATH
-- KG_PROTOCOL
-- POSTGRES_DBNAME
+- KG_HOST (e.g. kg.cmclinnovations.com)
+- KG_PATH (e.g. /blazegraph_geo/namespace/flood/sparql)
+- KG_PROTOCOL (e.g. http)
+- POSTGRES_DBNAME (name of the database, e.g. flood)
 - POSTGRES_USER
 - POSTGRES_PASSWORD
+- OUTPUT_DIR
 
 Optional variables:
 - KG_USER
 - KG_PASSWORD
+- KG_PORT
 - POSTGRES_HOST
 - POSTGRES_PORT
 
