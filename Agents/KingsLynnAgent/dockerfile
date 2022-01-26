@@ -2,9 +2,9 @@
 FROM python:3.8-slim-buster
 
 # Set the default environmental variables
+ENV KG_PATH="blazegraph_geo/namespace/kingslynnbuildings/sparql"
+ENV KG_PROTOCOL="https"
 ENV OUTPUT_DIR="../test_data_output"
-ENV BLAZEGRAPH_HOST="kg.cmclinnovations.com/blazegraph_geo"
-ENV NAMESPACE="kingslynnbuildings"
 
 # This line is for testing purpose will be removed in production version
 ENV NoOfQueryBuildings="None"

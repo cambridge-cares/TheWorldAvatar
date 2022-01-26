@@ -1,5 +1,5 @@
 # The purpose of this module is to provide settings and functions relevant to
-# several modules of the KingsLynnAgent for container workflow
+# several modules of the KingsLynnAgent
 # ===============================================================================
 import os
 import re
@@ -28,6 +28,17 @@ CRSs = {'epsg_27700': 'urn:ogc:def:crs:EPSG::27700',
         'crs_84': 'urn:ogc:def:crs:OGC::CRS84',
         'crs_1.3_84': 'urn:ogc:def:crs:OGC:1.3:CRS84'}
 
+def read_env_var(env_name):
+    # Extract environmental value
+    try:
+        env_value = os.environ[env_name]
+    except KeyError:
+        errorstr = 'Key ' + env_name + ' is missing in environmental variable'
+        raise KeyError(errorstr)
+    if env_value == '':
+        errorstr = 'No ' + env_name + ' value has been provided in environmental variable'
+        raise KeyError(errorstr)
+    return env_value
 
 def read_properties_file(filepath):
     """
@@ -39,49 +50,24 @@ def read_properties_file(filepath):
     # Define global scope for global variables
     global OUTPUT_DIR, QUERY_ENDPOINT, NOOFBUILDINGS
 
-    # Read properties file
-    props = ConfigObj(filepath)
-
     # Extract no. of building from environmental variables (# This is for testing purpose will be removed in production version)
-    try:
-        NOOFBUILDINGS = os.environ['NoOfQueryBuildings']
-    except KeyError:
-        raise KeyError('Key "NoOfQueryBuildings" is missing in environmental variable')
-    if NOOFBUILDINGS == '':
-        raise KeyError('No "NoOfQueryBuildings" value has been provided in environmental variable')
+    NOOFBUILDINGS = read_env_var('NoOfQueryBuildings')
 
     # Extract output directory for JSON file containing retrieved time series data from KG
-    try:
-        OUTPUT_DIR = os.environ['OUTPUT_DIR']
-        OUTPUT_DIR = os.path.abspath(os.path.join(filepath, '..', OUTPUT_DIR))
-    except KeyError:
-        raise KeyError('Key "OUTPUT_DIR" is missing in environmental variable')
-    if OUTPUT_DIR == '':
-        raise KeyError('No "OUTPUT_DIR" value has been provided in properties file')
+    OUTPUT_DIR = read_env_var('OUTPUT_DIR')
+    OUTPUT_DIR = os.path.abspath(os.path.join(filepath, '..', OUTPUT_DIR))
 
-    # Extract SPARQL BLAZEGRAPH HOST of KG
-    try:
-        BLAZEGRAPH_HOST = os.environ['BLAZEGRAPH_HOST']
-    except KeyError:
-        raise KeyError('Key "BLAZEGRAPH_HOST" is missing in environmental variable')
-    if BLAZEGRAPH_HOST == '':
-        raise KeyError('No "BLAZEGRAPH_HOST" value has been provided in environmental variable')
-
-    # Extract SPARQL NAMESPACE of KG
-    try:
-        NAMESPACE = os.environ['NAMESPACE']
-    except KeyError:
-        raise KeyError('Key "NAMESPACE" is missing in environmental variable')
-    if NAMESPACE == '':
-        raise KeyError('No "NAMESPACE" value has been provided in environmental variable')
-
-    # Construct the query end point
-    try:
-        QUERY_ENDPOINT = 'https://' + BLAZEGRAPH_HOST + '/namespace/' + NAMESPACE + '/sparql'
-    except KeyError:
-        raise KeyError('Error in constructing the query endpoint')
-    if QUERY_ENDPOINT == '':
-        raise KeyError('No query endpoint specified')
+    # Extract environmental variable for KG
+    KG_HOST = read_env_var('KG_HOST')
+    KG_PATH = read_env_var('KG_PATH')
+    KG_PROTOCOL = read_env_var('KG_PROTOCOL')
+    
+    # Check if the address contain port number:
+    if 'KG_PORT' in os.environ and os.environ['KG_PORT'] != '':
+        KG_PORT = os.environ['KG_PORT']
+        QUERY_ENDPOINT = KG_PROTOCOL + '://' + KG_HOST + ':' + KG_PORT +  '/' + KG_PATH
+    else:
+        QUERY_ENDPOINT = KG_PROTOCOL + '://' + KG_HOST + '/' + KG_PATH
 
 def create_sparql_prefix(abbreviation):
     """
