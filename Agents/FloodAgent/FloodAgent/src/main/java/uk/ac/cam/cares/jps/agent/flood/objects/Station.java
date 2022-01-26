@@ -1,7 +1,12 @@
 package uk.ac.cam.cares.jps.agent.flood.objects;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 public class Station {
     private String iri;
@@ -15,6 +20,7 @@ public class Station {
     private String town;
     private String dateOpened;
     private Map<String, String> displayProperties;
+    private TimeSeries<Instant> ts;
 
     public Station(String iri) {
     	this.iri = iri;
@@ -113,5 +119,13 @@ public class Station {
     
     public Map<String, String> getDisplayProperties() {
     	return this.displayProperties;
+    }
+    
+    public void setTimeseries(TimeSeries<Instant> ts) {
+    	this.ts = ts;
+    }
+    
+    public TimeSeries<Instant> getTimeSeries() {
+    	return this.ts;
     }
 }

@@ -79,11 +79,13 @@ public class WriteOutputs {
     	String southwest = System.getenv("SOUTH_WEST");
     	String northeast = System.getenv("NORTH_EAST");
     	
-    	List<Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
+    	Map<String, Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
     	
     	// remove old outputs if exist
     	removeOldOutput();
     	
+    	// add time series to station objects, will also remove stations without any data
+    	queryTimeSeries(stations, date);
     	// create directory
     	File directories = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory).toString());
     	directories.mkdirs();
@@ -105,6 +107,41 @@ public class WriteOutputs {
 			FileUtils.cleanDirectory(dataFolderPath.toFile());
 		} catch (IOException | IllegalArgumentException e) {
 			LOGGER.warn(e.getMessage());
+		}
+	}
+	
+	/**
+	 * set time series objects to each station object, if a station does not have any time series
+	 * the entry gets removed
+	 * @param stations
+	 * @param date
+	 */
+	static void queryTimeSeries(Map<String, Station> stations, LocalDate date) {
+		Map<String, List<String>> station_measures_map = sparqlClient.getMeasures(stations);
+		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
+				
+		for (String stationIri : station_measures_map.keySet()) {
+			try {
+				List<String> measures = station_measures_map.get(stationIri);
+				
+				// a bit of a fudge here, only taking 1 time series per station if there are multiples
+				// most of the time they're just data measured at different frequencies/units
+				TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measures.get(0)), lowerbound, upperbound);
+				
+				List<Instant> time = ts.getTimes();
+				
+				// ignore blank time series
+				if(time.size() > 0) {
+					stations.get(stationIri).setTimeseries(ts);
+				} else {
+					// remove stations without any data
+					stations.remove(stationIri);
+				}
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
+				LOGGER.error("Failed to query time series for " + stationIri);
+			}
 		}
 	}
 	
@@ -178,7 +215,7 @@ public class WriteOutputs {
 	 * location of file - Config.outputdir
 	 * name of file  - stations.geojson
 	 */
-	static void writeStationsToGeojson(List<Station> stations) {
+	static void writeStationsToGeojson(Map<String, Station> stations) {
 		File geojsonfile = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"flood-stations.geojson").toString());
 		
 		// create geojson file
@@ -186,7 +223,8 @@ public class WriteOutputs {
 		featureCollection.put("type", "FeatureCollection");
 		JSONArray features = new JSONArray();
 		
-		for (Station station : stations) {
+		for (String stationIri : stations.keySet()) {
+			Station station = stations.get(stationIri);
 			// each station will be a feature within FeatureCollection
 			JSONObject feature = new JSONObject();
 			
@@ -221,12 +259,13 @@ public class WriteOutputs {
 		writeToFile(geojsonfile, featureCollection.toString(4));
 	}
 	
-	static void writeStationsMeta(List<Station> stations) {
+	static void writeStationsMeta(Map<String, Station> stations) {
 		File metafile = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"stationsmeta.json").toString());
 		
 		JSONArray metaDataCollection = new JSONArray();
 		
-		for (Station station : stations) {
+		for (String stationIri : stations.keySet()) {
+			Station station = stations.get(stationIri);
 			// meta
 			JSONObject metadata = new JSONObject();
 			
@@ -256,35 +295,18 @@ public class WriteOutputs {
 	 * writes out data for a specific date
 	 * @param date
 	 */
-	static void writeTimeSeriesJson(List<Station> stations, LocalDate date) {
+	static void writeTimeSeriesJson(Map<String, Station> stations, LocalDate date) {
 		// write to file 
 		File file = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"flood-" + date + "-timeseries.json").toString());
-
-		List<String> measures = sparqlClient.getMeasures(stations);
-		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
-		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
 		
 		// collect time series into a list first
 		List<TimeSeries<Instant>> ts_list = new ArrayList<>();
-		
-		for (int i = 0; i < measures.size(); i++) {
-			try {
-				TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measures.get(i)), lowerbound, upperbound);
-				
-				List<Instant> time = ts.getTimes();
-				
-				// ignore blank time series
-				if(time.size() > 0) {
-					ts_list.add(ts);
-				}
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.error("Failed to query time series for " + measures.get(i));
-			}
+		for (String stationIri : stations.keySet()) {
+			Station station = stations.get(stationIri);			
+			ts_list.add(station.getTimeSeries());
 		}
 		
 		// prepare JSON output
-		//index 0: data name, list 1: unit, list 2: vis ID
 		List<String> measuresToPlot = new ArrayList<>();
 		for (TimeSeries<Instant> ts : ts_list) {
 			measuresToPlot.add(ts.getDataIRIs().get(0));
