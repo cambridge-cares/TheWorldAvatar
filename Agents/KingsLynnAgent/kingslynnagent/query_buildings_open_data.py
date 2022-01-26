@@ -16,15 +16,20 @@ from geojson_rewind import rewind
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 # get settings and functions from utilities module
-from utilities import utils
+from utilities import utils_argo
 from utilities import geojson_creator
 from utilities.SparqlErrors import *
 
-
+#print(os.environ['BUILDING_TEST'])
 ###   SPECIFY INPUTS   ###
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = None
+if utils_argo.NOOFBUILDINGS != 'None':
+    n = int(utils_argo.NOOFBUILDINGS)
+elif  utils_argo.NOOFBUILDINGS == 'None':
+    n = None
+
+print("Query no. of buildings : ", n)
 
 # Specify required output dimension (although DTVF is "only" capable of plotting extruded 2D data,
 # 3D data is required to identify the ground polygon of buildings to be visualised)
@@ -33,7 +38,7 @@ output_dimension = 3
 # Specify output CRS: Both GeoJSON and the TWA Mapbox plotting framework require "OGC::CRS84", see
 # GeoJSON: https://datatracker.ietf.org/doc/html/rfc7946#section-4
 # Mapbox: https://docs.mapbox.com/help/glossary/projection/
-target_crs = utils.CRSs['crs_84']
+target_crs = utils_argo.CRSs['crs_84']
 
 # Specify colors for building usage types (i.e. building usage themes) of interest
 building_types = {
@@ -45,14 +50,82 @@ building_types = {
 
 
 ###   FUNCTIONS   ###
+def build_output_dir():
+    # Main data output folder
+    main_folder = utils_argo.OUTPUT_DIR
+    building_folder = os.path.join(utils_argo.OUTPUT_DIR, 'buildings')
+
+    # Check if the data output folder exist or not
+    if not os.path.isdir(main_folder):
+        # Create the data output folder
+        os.makedirs(main_folder)
+
+        # create building output folder
+        if not os.path.isdir(building_folder):
+            os.makedirs(building_folder)
+
+        print("created folder : ", main_folder)
+
+    # Specify metadata properties to consider
+    metajson = {'global': {'defaultCenter': [0.395, 52.750],
+                                 'defaultZoom': 13,
+                                 'defaultBearing': 0,
+                                 'defaultPitch': 50},
+                      'local': {'label': 'Data set',
+                                 'groups': [{'name': 'OS Open Map Local',
+                                 'directory': 'buildings'}]}}
+
+    treejson = [{'groupName': 'Buildings',
+                'layers':[{'layerName':'Education',
+                     'defaultState': 'visible',
+                     'layerIDs': ['education']},
+                     {'layerName': 'Medical care',
+                     'defaultState': 'visible',
+                     'layerIDs': ['medical_care']},
+                     {'layerName': 'Emergency services',
+                     'defaultState': 'visible',
+                     'layerIDs': ['emergency_service']},
+                     {'layerName': 'Other buildings',
+                      'defaultState': 'visible',
+                      'layerIDs': ['other_buildings']}]}]
+
+    bmetajson = {'dataSets':[{'name': 'education',
+                            'dataType': 'geojson',
+                            'dataLocation': 'education.geojson',
+                            'locationType': 'extrusion',
+                            'metaFiles': ['education-meta.json']},
+                            {'name': 'medical_care',
+                            'dataType': 'geojson',
+                            'dataLocation': 'medical_care.geojson',
+                            'locationType': 'extrusion',
+                            'metaFiles': ['medical_care-meta.json']},
+                            {'name': 'emergency_service',
+                            'dataType': 'geojson',
+                            'dataLocation': 'emergency_service.geojson',
+                            'locationType': 'extrusion',
+                            'metaFiles': ['emergency_service-meta.json']},
+                            {'name': 'other_buildings',
+                            'dataType': 'geojson',
+                            'dataLocation': 'other_buildings.geojson',
+                            'locationType': 'extrusion',
+                            'metaFiles': ['other_buildings-meta.json']}]}
+
+    meta_file_name = os.path.join(utils_argo.OUTPUT_DIR, 'meta.json')
+    tree_file_name = os.path.join(utils_argo.OUTPUT_DIR, 'tree.json')
+    bmetajson_name = os.path.join(building_folder, 'meta.json')
+
+    with open(meta_file_name, 'w') as f:
+            json.dump(metajson, indent=4, fp=f)
+    with open(tree_file_name, 'w') as f:
+            json.dump(treejson, indent=4, fp=f)
+    with open(bmetajson_name, 'w') as f:
+            json.dump(bmetajson, indent=4, fp=f)
 
 def get_buildings_named_graph(query_endpoint):
     """
         Retrieves named graph which holds all building information according to CitiesKG (and OntoCityGml) convention
-
         Arguments:
             query_endpoint - SPARQl endpoint to execute query on.
-
         Returns:
             IRI of named building graph (without trailing '<' and '>')
     """
@@ -66,6 +139,7 @@ def get_buildings_named_graph(query_endpoint):
                ORDER BY ?g'''
 
     # Execute query
+    print('Endpoint is :',query_endpoint)
     graphs = execute_query(query, query_endpoint)
 
     # Extract named graph holding all building data (based on naming convention)
@@ -82,11 +156,9 @@ def get_buildings_named_graph(query_endpoint):
 def get_buildings_query(buildings_graph, number=None):
     """
         Create SPARQL query to retrieve buildings, associated surfaces, and respective geometries incl. data types
-
         Arguments:
             buildings_graph - IRI of named graph holding all building data (without trailing '<' and '>')
             number - Number of buildings to retrieve data for
-
         Returns:
             SPARQL query to pass to Blazegraph
     """
@@ -100,8 +172,8 @@ def get_buildings_query(buildings_graph, number=None):
     # Construct query
     # Consider only surface polygons with provided geometries/polygon data (some only refer to "told blank nodes")
     # Subquery to limit retrieved data to specified number of buildings
-    query = utils.create_sparql_prefix('ocgml') + \
-            utils.create_sparql_prefix('xsd') + \
+    query = utils_argo.create_sparql_prefix('ocgml') + \
+            utils_argo.create_sparql_prefix('xsd') + \
             '''SELECT DISTINCT ?bldg ?surf (DATATYPE(?geom) as ?datatype) ?geom \
                WHERE { ?surf ocgml:cityObjectId ?bldg ; \
        		                 ocgml:GeometryType ?geom . \
@@ -120,13 +192,12 @@ def get_buildings_query(buildings_graph, number=None):
 def get_crs_query():
     """
         Create SPARQL query to retrieve coordinate reference system of triple store
-
         Returns:
             SPARQL query to pass to Blazegraph
     """
 
     # Construct query
-    query = utils.create_sparql_prefix('ocgml') + \
+    query = utils_argo.create_sparql_prefix('ocgml') + \
             '''SELECT ?crs \
                WHERE { ?s ocgml:srsname ?crs . }'''
 
@@ -137,16 +208,14 @@ def get_all_uprns_and_building_uses(query_endpoint):
     """
         Retrieves all UPRNs and (optional) building use classifications attached (as generic citygml attributes) to
         a building (i.e. building iri) for all buildings in given namespace (i.e. query endpoint)
-
         Arguments:
             query_endpoint - SPARQl endpoint to execute query on.
-
         Returns:
             DataFrame containing uprns and usage information for all buildings
     """
 
     # Construct query
-    query = utils.create_sparql_prefix('ocgml') + \
+    query = utils_argo.create_sparql_prefix('ocgml') + \
             ''' SELECT ?buildingIRI ?uprns ?theme ?class ?name
                 WHERE { ?attribute ocgml:cityObjectId ?buildingIRI ; \
                                    ocgml:attrName "OS_UPRNs" ; \
@@ -211,16 +280,14 @@ def get_all_building_heights(query_endpoint):
     """
         Retrieves building height attached (as OntoCityGML attribute) to a building (i.e. building iri)
         for all buildings in given namespace (i.e. query endpoint)
-
         Arguments:
             query_endpoint - SPARQl endpoint to execute query on.
-
         Returns:
             DataFrame of buildingIRI and measured building height as float
     """
 
     # Construct query
-    query = utils.create_sparql_prefix('ocgml') + \
+    query = utils_argo.create_sparql_prefix('ocgml') + \
             ''' SELECT ?buildingIRI ?height
                 WHERE { ?buildingIRI ocgml:measuredHeight ?height . }
             '''
@@ -241,11 +308,9 @@ def get_all_building_heights(query_endpoint):
 def execute_query(query, query_endpoint):
     '''
         Executes provided SPARQL query and returns results in JSON format
-
         Arguments:
             query - SPARQL query to execute.
             query_endpoint - SPARQl endpoint to execute query on.
-
         Returns:
             SPARQL query results in JSON format.
     '''
@@ -267,14 +332,12 @@ def get_coordinates(polygon_data, polygon_datatype, transformation, dimensions=3
         to suit GeoJSON polygon requirements (and target CRS)
         - lon, lat are transformed to specified target CRS
         - elevation remains in original CRS
-
         Arguments:
             polygon_data - list of all polygon coordinates as retrieved from Blazegraph, i.e. with coordinates of
                            potential linear rings simply appended to coordinates of exterior rings
             polygon_datatype - data type of 'polygon_data' as retrieved from Blazegraph
             transformation - pyproj transformation object
             dimensions - number of dimension of output data as integer [2 or 3]
-
         Returns:
             List of polygon coordinates as required for GeoJSON objects (incl. interior rings)
             Minimum elevation (Z value) of polygon surface
@@ -342,12 +405,10 @@ def split_polygon_data(polygon_data, polygon_datatype):
         Transforms coordinate string describing the polygon (as retrieved from Blazegraph) into a list of linear rings
         - exterior ring as first list element
         - potential interior rings as further list elements
-
         Arguments:
             polygon_data - list of all polygon coordinates as retrieved from Blazegraph, i.e. with coordinates of
                            potential linear rings simply appended to coordinates of exterior rings
             polygon_datatype - data type of 'polygon_data' as retrieved from Blazegraph
-
         Returns:
             List of linear rings to describe polygon [[exterior ring], [interior ring1], [interior ring2], ... ]
             dimension of polygon coordinates data
@@ -406,14 +467,15 @@ if __name__ == '__main__':
 
     # Get start time
     start = dt.datetime.now()
-    # Set Mapbox API key
-    utils.set_mapbox_apikey()
+
+    # Build an output directory
+    build_output_dir()
 
     # Retrieve SPARQL results from Blazegraph
     try:
-        buildings_graph = get_buildings_named_graph(utils.QUERY_ENDPOINT)
-        kg_buildings = execute_query(get_buildings_query(buildings_graph, n), utils.QUERY_ENDPOINT)
-        kg_crs = execute_query(get_crs_query(), utils.QUERY_ENDPOINT)
+        buildings_graph = get_buildings_named_graph(utils_argo.QUERY_ENDPOINT)
+        kg_buildings = execute_query(get_buildings_query(buildings_graph, n), utils_argo.QUERY_ENDPOINT)
+        kg_crs = execute_query(get_crs_query(), utils_argo.QUERY_ENDPOINT)
     except Exception as e:
         raise QueryError('Error while executing SPARQL query on specified endpoint: ' + e.__class__.__name__).\
               with_traceback(e.__traceback__)
@@ -463,8 +525,8 @@ if __name__ == '__main__':
         metadata[k] = []
 
     # Obtain lists of building data (heights; UPRNs and building use)
-    building_data = get_all_uprns_and_building_uses(utils.QUERY_ENDPOINT)
-    building_heights= get_all_building_heights(utils.QUERY_ENDPOINT)
+    building_data = get_all_uprns_and_building_uses(utils_argo.QUERY_ENDPOINT)
+    building_heights= get_all_building_heights(utils_argo.QUERY_ENDPOINT)
 
     # Initialise unique feature/building IDs
     feature_id = 0
@@ -574,12 +636,20 @@ if __name__ == '__main__':
     # Write (Geo)JSON dictionaries nicely formatted to file
     for theme in output_2d:
         name = theme.replace(' ', '_').lower()
-        file_name = os.path.join(utils.OUTPUT_DIR, 'buildings', name + '.geojson')
+        file_name = os.path.join(utils_argo.OUTPUT_DIR, 'buildings', name + '.geojson')
         with open(file_name, 'w') as f:
             json.dump(output_2d[theme], indent=4, fp=f)
-        file_name = os.path.join(utils.OUTPUT_DIR, 'buildings', name + '-meta.json')
+        file_name = os.path.join(utils_argo.OUTPUT_DIR, 'buildings', name + '-meta.json')
         with open(file_name, 'w') as f:
             json.dump(metadata[theme], indent=4, fp=f)
+
+        # write a copy version in a specified ENV folder for ARGO output
+        #file_name = os.path.join(utils.ARGO_OUTPUT_DIR, 'buildings', name + '.geojson')
+        #with open(file_name, 'w') as f:
+        #    json.dump(output_2d[theme], indent=4, fp=f)
+        #file_name = os.path.join(utils.ARGO_OUTPUT_DIR, 'buildings', name + '-meta.json')
+        #with open(file_name, 'w') as f:
+        #    json.dump(metadata[theme], indent=4, fp=f)
 
     # Get query duration
     dur = dt.datetime.now() - start
