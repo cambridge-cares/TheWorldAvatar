@@ -49,6 +49,17 @@ public class WriteOutputs {
     	WriteOutputs.tsClient = tsClient;
     }
 	
+    // icons
+    static Map<String, String> icons = new HashMap<String, String>() {
+		{
+			put("Water Level", "ea-water-level");
+			put("Flow", "ea-flow");
+			put("Rainfall", "ea-rainfall");
+			put("Wind", "ea-wind");
+			put("Temperature", "ea-temperature");
+		}
+	};
+    
 	public static void main(String[] args) {
 		// input needs to be a valid date
         LocalDate date;
@@ -81,22 +92,25 @@ public class WriteOutputs {
     	
     	Map<String, Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
     	
-    	// remove old outputs if exist
-    	removeOldOutput();
-    	
     	// add time series to station objects, will also remove stations without any data
     	queryTimeSeries(stations, date);
+    	
+    	sparqlClient.setMeasureProperties(stations);
+    	
+    	// remove old outputs if exist
+    	removeOldOutput();
+
     	// create directory
     	File directories = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory).toString());
     	directories.mkdirs();
     	
     	// then write the files..
+    	writeTimeSeriesJson(stations, date); // this needs to be called first because it queries for information that determines the correct icon to use
     	writeOverallMetaFile();
     	writeLayerTree();
     	writeMainMeta(date);
     	writeStationsToGeojson(stations);
     	writeStationsMeta(stations);
-    	writeTimeSeriesJson(stations, date);
 	}
 	
 	static void removeOldOutput() {
@@ -125,17 +139,18 @@ public class WriteOutputs {
 			try {
 				List<String> measures = station_measures_map.get(stationIri);
 				
-				// a bit of a fudge here, only taking 1 time series per station if there are multiples
-				// most of the time they're just data measured at different frequencies/units
-				TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measures.get(0)), lowerbound, upperbound);
+				for (String measure : measures) {
+					TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure), lowerbound, upperbound);
+					List<Instant> time = ts.getTimes();
+					
+					// ignore blank time series
+					if(time.size() > 0) {
+						stations.get(stationIri).addTimeseries(ts);
+					}
+				}				
 				
-				List<Instant> time = ts.getTimes();
-				
-				// ignore blank time series
-				if(time.size() > 0) {
-					stations.get(stationIri).setTimeseries(ts);
-				} else {
-					// remove stations without any data
+				if (stations.get(stationIri).getTimeSeriesList().size() == 0) {
+					// do not plot this station if it does not have any data
 					stations.remove(stationIri);
 				}
 			} catch (Exception e) {
@@ -301,33 +316,25 @@ public class WriteOutputs {
 		
 		// collect time series into a list first
 		List<TimeSeries<Instant>> ts_list = new ArrayList<>();
-		for (String stationIri : stations.keySet()) {
-			Station station = stations.get(stationIri);			
-			ts_list.add(station.getTimeSeries());
-		}
-		
-		// prepare JSON output
-		List<String> measuresToPlot = new ArrayList<>();
-		for (TimeSeries<Instant> ts : ts_list) {
-			measuresToPlot.add(ts.getDataIRIs().get(0));
-		}
-		
-		// index 0: data name, 1: unit, 2: vis ID
-		List<Map<String,?>> measureProps = sparqlClient.getMeasurePropertiesForVis(measuresToPlot);
-		
 		List<Map<String,String>> table_header = new ArrayList<>();
 		List<Map<String,String>> units = new ArrayList<>();
 		List<Integer> visId = new ArrayList<>();
-		for (String measure : measuresToPlot) {
+		
+		for (String stationIri : stations.keySet()) {
+			Station station = stations.get(stationIri);			
+			ts_list.add(station.getCombinedTimeSeries());
+			
 			Map<String,String> measure_header_map = new HashMap<>();
-			measure_header_map.put(measure, (String) measureProps.get(0).get(measure));
-			table_header.add(measure_header_map);
-			
 			Map<String,String> measure_unit_map = new HashMap<>();
-			measure_unit_map.put(measure, (String) measureProps.get(1).get(measure));
-			units.add(measure_unit_map);
 			
-			visId.add((Integer) measureProps.get(2).get(measure));
+			for (String measureIri : station.getCombinedTimeSeries().getDataIRIs()) {
+				String header = station.getMeasureName(measureIri) + " (" + station.getMeasureSubTypeName(measureIri) + ")";
+				measure_header_map.put(measureIri, header);
+				measure_unit_map.put(measureIri, station.getMeasureUnit(measureIri));
+			}
+			table_header.add(measure_header_map);
+			units.add(measure_unit_map);
+			visId.add(station.getVisId());
 		}
 		
 		JSONArray ts_array = tsClient.convertToJSON(ts_list, 

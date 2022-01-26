@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.Instant;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +35,7 @@ import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ServicePattern;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ValuesPattern;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 /**
@@ -409,17 +411,8 @@ public class FloodSparql {
 				
 		return station_map;
 	}
-    
-    /**
-     * index 0: data name, 1: unit, 2: vis ID
-     * @param measures
-     */
-	List<Map<String,?>> getMeasurePropertiesForVis(List<String> measure_list) {
-    	List<Map<String,?>> map_list = new ArrayList<>();
-    	Map<String, String> measureName_Map = new HashMap<>();
-    	Map<String, String> unit_map = new HashMap<>();
-    	Map<String, Integer> visId_map = new HashMap<>();
-    	
+	
+	void setMeasureProperties(Map<String,Station> stations) {
 		SelectQuery query = Queries.SELECT();
 		
 		Variable measure = query.var();
@@ -427,49 +420,32 @@ public class FloodSparql {
     	// qual (param subtype) = Tidal Level
     	Variable param = query.var();
     	Variable qual = query.var();
-    	
     	Variable unit = query.var();
     	Variable station = query.var();
-    	Variable visID = query.var();
-		
-		ValuesPattern measurePattern = new ValuesPattern(measure,
-				measure_list.stream().map(m -> iri(m)).collect(Collectors.toList()));
-		
-		GraphPattern paramNamePattern = measure.has(parameterName,param)
-    			.andHas(qualifier,qual);
-		
-		GraphPattern unitPattern = measure.has(unitName, unit);
-		
-		GraphPattern visIDPattern = GraphPatterns.and(station.has(measures, measure).
-				andHas(hasVisID,visID));
-		
-		GraphPattern queryPattern = GraphPatterns.and(paramNamePattern, unitPattern, visIDPattern, measurePattern);
-		
-		query.select(measure,param,qual,unit,visID).where(queryPattern);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		for (int i = 0; i < queryResult.length(); i++) {
-			JSONObject result_jo = queryResult.getJSONObject(i);
-				
-			String s_measure = result_jo.getString(measure.getQueryString().substring(1));
-			String s_param = result_jo.getString(param.getQueryString().substring(1));
-        	String s_qual = result_jo.getString(qual.getQueryString().substring(1));
-    	    String measureName = s_param + " (" + s_qual + ")";
-    	    
-    	    String s_unit = result_jo.getString(unit.getQueryString().substring(1));
-    	    int id = result_jo.getInt(visID.getQueryString().substring(1));
-			
-	    	measureName_Map.put(s_measure, measureName);
-	    	unit_map.put(s_measure, s_unit);
-	    	visId_map.put(s_measure, id);
-		}
-		
-		map_list.add(measureName_Map);
-    	map_list.add(unit_map);
-    	map_list.add(visId_map);
-    	return map_list;
-    }
+    	
+    	List<String> station_list = new ArrayList<>(stations.keySet());
+    	
+    	ValuesPattern stationValuesPattern = new ValuesPattern(station, station_list.stream().map(m -> iri(m)).collect(Collectors.toList()));
+    	GraphPattern measurePropertiesPattern = measure.has(parameterName,param).andHas(qualifier,qual).andHas(unitName, unit);
+    	GraphPattern stationPattern = station.has(measures, measure);
+    	
+    	query.select(measure,param,qual,unit,station).where(stationValuesPattern, measurePropertiesPattern, stationPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	for (int i = 0; i < queryResult.length(); i++) {
+    		String stationIri = queryResult.getJSONObject(i).getString(station.getQueryString().substring(1));
+    		String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
+    		String measureName = queryResult.getJSONObject(i).getString(param.getQueryString().substring(1));
+    		String subTypeName = queryResult.getJSONObject(i).getString(qual.getQueryString().substring(1));
+    		String unitName = queryResult.getJSONObject(i).getString(unit.getQueryString().substring(1));
+    		
+    		Station stationObject = stations.get(stationIri);
+    		stationObject.setMeasureName(measureIri, measureName);
+    		stationObject.setMeasureSubTypeName(measureIri, subTypeName);
+    		stationObject.setMeasureUnit(measureIri, unitName);
+    	}
+	}
     
     boolean checkStationExists(String station) {
     	SelectQuery query = Queries.SELECT();

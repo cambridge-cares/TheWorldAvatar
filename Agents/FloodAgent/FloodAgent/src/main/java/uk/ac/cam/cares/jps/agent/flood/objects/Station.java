@@ -20,7 +20,10 @@ public class Station {
     private String town;
     private String dateOpened;
     private Map<String, String> displayProperties;
-    private TimeSeries<Instant> ts;
+    private List<TimeSeries<Instant>> ts_list;
+    private Map<String, String> measureNameMap; // measure IRI to parameter name
+    private Map<String, String> measureUnitMap; // measure IRI to unit
+    private Map<String, String> measureSubTypeMap; // measure IRI to sub type name
 
     public Station(String iri) {
     	this.iri = iri;
@@ -31,6 +34,10 @@ public class Station {
     	this.town = "";
     	this.dateOpened = "";
     	this.displayProperties = new HashMap<String, String>();
+    	this.ts_list = new ArrayList<>();
+    	this.measureNameMap = new HashMap<>();
+    	this.measureUnitMap = new HashMap<>();
+    	this.measureSubTypeMap = new HashMap<>();
     }
     
     public void setLabel(String label) {
@@ -121,11 +128,41 @@ public class Station {
     	return this.displayProperties;
     }
     
-    public void setTimeseries(TimeSeries<Instant> ts) {
-    	this.ts = ts;
+    public void addTimeseries(TimeSeries<Instant> ts) {
+    	this.ts_list.add(ts);
     }
     
-    public TimeSeries<Instant> getTimeSeries() {
-    	return this.ts;
+    public List<TimeSeries<Instant>> getTimeSeriesList() {
+    	return this.ts_list;
+    }
+    
+    // combine time series list into a single time series object
+    public TimeSeries<Instant> getCombinedTimeSeries() {
+    	// TO BE CORRECTED
+    	return this.ts_list.get(0);
+    }
+    
+    public void setMeasureName(String measureIri, String measureName) {
+    	this.measureNameMap.put(measureIri, measureName);
+    }
+    
+    public String getMeasureName(String measure) {
+    	return this.measureNameMap.get(measure);
+    }
+    
+    public void setMeasureSubTypeName(String measureIri, String subTypeName) {
+    	this.measureSubTypeMap.put(measureIri, subTypeName);
+    }
+    
+    public String getMeasureSubTypeName(String measure) {
+    	return this.measureSubTypeMap.get(measure);
+    }
+    
+    public void setMeasureUnit(String measureIri, String unit) {
+    	this.measureUnitMap.put(measureIri, unit);
+    }
+    
+    public String getMeasureUnit(String measure) {
+    	return this.measureUnitMap.get(measure);
     }
 }
