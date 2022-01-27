@@ -6,7 +6,7 @@ ENV KG_PROTOCOL="https"
 ENV OUTPUT_DIR="../test_data_output"
 
 # This line is for testing purpose will be removed in production version
-ENV MAX_NUM_BUILDING="None"
+ENV MAX_NUM_BUILDINGS="None"
 
 # Set the working directory
 WORKDIR /app
