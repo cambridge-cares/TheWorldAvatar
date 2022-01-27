@@ -42,7 +42,6 @@ public class StoreRouter{
 	public static final String SLASH="/";
 	public static final String HTTP_KB_PREFIX = HTTP.concat(KB).concat(SLASH);
 	public static final String EMPTY = "";
-	private static final String STOREROUTER_ENDPOINT = KeyValueManager.get(IKeys.URL_STOREROUTER_ENDPOINT);
 	public static final String RDFS_PREFIX = "rdfs";
 	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
 	public static final String RDF_PREFIX = "rdf";
@@ -63,6 +62,9 @@ public class StoreRouter{
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
 	
+	// ontokgrouter endpoint in jps.properties
+	private static String STOREROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);
+	
 	/**
 	 * List of file extensions for file based resources
 	 * ".owl",".rdf",".nt"
@@ -70,7 +72,7 @@ public class StoreRouter{
 	public static final List<String> fileExtensions = Arrays.asList(".owl",".rdf",".nt"); //File extensions
 	
 	static StoreRouter storeRouter = null;
-	
+		
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
 	 * provided as the input. For query and/or update operations, it
