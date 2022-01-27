@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.interfaces;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +40,7 @@ public interface JPSAgentInterface {
      * @param sparqlQuery
      * @return
      */
-    String query(String targetResourceID, String sparqlQuery);
+    JSONArray query(String targetResourceID, String sparqlQuery);
     
     /**
      * Shall implement logic to perform a sparql update on a resource in the KG.

@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+
 import uk.ac.cam.cares.jps.base.util.SysStreamHandler;
 
 public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
@@ -64,9 +66,9 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
      * 							e.g. to access the Ontokin triple store
      * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
      * @param sparqlQuery		SPARQL query string
-     * @return 	the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
+     * @return the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
      */
-    public String query(String targetResourceID, String sparqlQuery) {	
+    public JSONArray query(String targetResourceID, String sparqlQuery) {	
     	return AccessAgentCaller.query(targetResourceID, sparqlQuery);
     }
     

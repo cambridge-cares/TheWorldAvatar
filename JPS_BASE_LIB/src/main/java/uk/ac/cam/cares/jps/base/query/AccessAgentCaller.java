@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
@@ -73,7 +73,7 @@ public class AccessAgentCaller{
         JSONObject joparams = (JSONObject) a[1];
         return Http.execute(Http.get(requestUrl, accept, joparams));
     }
-
+	 
 	/**
 	 * Execute a {@link <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a>} on the target resource.
 	 * 
@@ -83,10 +83,10 @@ public class AccessAgentCaller{
 	 * @param sparqlQuery		SPARQL query string
      * @return the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
 	 */
-	public static String query(String targetResourceID, String sparqlQuery) {
+	public static JSONArray query(String targetResourceID, String sparqlQuery) {
 		//pass the target resource ID directly as the targetUrl
     	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
-		return query(null, targetResourceID, sparqlQuery);
+		return new JSONArray(new JSONObject(query(null, targetResourceID, sparqlQuery)).getString("result"));
 	}
 	
 	/**
