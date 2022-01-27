@@ -76,7 +76,7 @@ services:
   # CReDo visualisation
   credo-vis:
     image: docker.cmclinnovations.com/credo-vis:1.0.0-SNAPSHOT
-    container_name: "credo-vis{CONTAINER_NAME_SUFFIX}"
+    container_name: "credo-vis${CONTAINER_NAME_SUFFIX}"
     pull_policy: if_not_present
     restart: unless-stopped
     security_opt:
