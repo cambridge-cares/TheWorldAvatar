@@ -257,7 +257,7 @@ public class WriteOutputs {
 			
 			//properties (display name and styling)
 			JSONObject property = new JSONObject();
-			property.put("displayName", station.getLabel());
+			property.put("displayName", "Environment Agency: " + station.getLabel() + " (" + station.getIdentifier() + ")");
 			
 			// icon properties
 			property.put("icon-image", station.getIconImage());
