@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.aqmesh;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jooq.exception.DataAccessException;
 import uk.ac.cam.cares.jps.agent.utils.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -140,17 +141,27 @@ public class AQMeshInputAgent {
     }
 
     /**
-     * Checks whether a time series exists by checking whether any of the IRIs
-     * that should be attached to the time series has no attachment using the time series client.
+     * Checks whether a time series exists by checking whether any of the IRIs that should be attached to 
+     * the time series is not initialised in the central RDB lookup table using the time series client.
      * @param iris The IRIs that should be attached to the same time series provided as list of strings.
      * @return True if all IRIs have a time series attached, false otherwise.
      */
     private boolean timeSeriesExist(List<String> iris) {
         // If any of the IRIs does not have a time series the time series does not exist
         for(String iri: iris) {
-            if (!tsClient.checkDataHasTimeSeries(iri)) {
-                return false;
-            }
+        	try {
+	            if (!tsClient.checkDataHasTimeSeries(iri)) {
+	                return false;
+	            }
+	        // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
+        	} catch (DataAccessException e) {
+        		if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
+        			return false;
+        		}
+        		else {
+        			throw e;
+        		}        		
+        	}
         }
         return true;
     }

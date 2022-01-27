@@ -135,6 +135,7 @@ public final class ZipUtility {
 				bytesRead += read;
 			}
 			zos.closeEntry();
+			bis.close();
 		}
 	}
 
@@ -159,6 +160,7 @@ public final class ZipUtility {
 			bytesRead += read;
 		}
 		zos.closeEntry();
+		bis.close();
 	}
 
 }

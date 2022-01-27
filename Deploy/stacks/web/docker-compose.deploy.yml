@@ -19,12 +19,17 @@ services:
   flood-map:
     image: docker.cmclinnovations.com/flood-vis-${MODE}:1.0.0-SNAPSHOT
     container_name: "flood-map${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    pull_policy: if_not_present
     restart: unless-stopped
 
   # Land Use Crop Map
   land-use:
     image: docker.cmclinnovations.com/land-use-vis-${MODE}:1.0.0-SNAPSHOT
     container_name: "land-use${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -32,6 +37,8 @@ services:
   reverse-proxy:
     image: docker.cmclinnovations.com/reverse_proxy-${MODE}:1.0.0-SNAPSHOT
     container_name: "reverse_proxy${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: always
     volumes:
@@ -43,6 +50,8 @@ services:
   uk-gas-grid:
     image: docker.cmclinnovations.com/gas-grid-vis-${MODE}:1.0.0-SNAPSHOT
     container_name: "uk-gas-grid${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -50,6 +59,8 @@ services:
   uk-power-system:
     image: docker.cmclinnovations.com/power-system-vis-${MODE}:1.0.0-SNAPSHOT
     container_name: "uk-power-system${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -57,6 +68,8 @@ services:
   website:
     image: docker.cmclinnovations.com/website-${MODE}:1.0.0-SNAPSHOT
     container_name: "website${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 

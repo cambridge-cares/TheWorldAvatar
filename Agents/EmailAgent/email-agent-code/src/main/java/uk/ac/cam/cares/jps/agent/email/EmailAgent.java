@@ -33,7 +33,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
  * @author Michael Hillman
  */
 @Controller
-@WebServlet(urlPatterns = {"/email"})
+@WebServlet(urlPatterns = {"/send", "/status"})
 public class EmailAgent extends JPSAgent {
 
     /**
@@ -61,13 +61,14 @@ public class EmailAgent extends JPSAgent {
         LOGGER.error("This is a test ERROR message");
         LOGGER.fatal("This is a test FATAL message");
         System.out.println("This is a test SYSTEM.OUT message");
-        
+
         // Read the properties file
         try {
             EmailAgentConfiguration.readProperties();
             LOGGER.debug("EmailAgent has been initialised.");
 
         } catch (IOException ioException) {
+            LOGGER.error("Could not read the required properties file!");
             validState = false;
 
             // Cannot throw UnavailableException here unless we're using Java EE
@@ -93,23 +94,32 @@ public class EmailAgent extends JPSAgent {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
         LOGGER.info("Request received at: " + datetime);
+        LOGGER.info("Request contents are: " + requestParams);
+        
+        // Get the URL path
+        String url = request.getRequestURI();
+        url = url.substring(url.lastIndexOf("/"), url.length());
+        if (url.contains("?")) url = url.split("?")[0];
 
-        // Check if this is an email request or a ping to determine availability
-        if (!requestParams.isNull("ping")) {
-            return processPingRequest(request);
+        switch (url) {
+            case "/send":
+                // Check validity
+                boolean validInput = validateInput(requestParams);
+                boolean validSource = validateRequest(request);
+
+                if (validInput && validSource) {
+                    return processEmailRequest(requestParams, request);
+                } else {
+                    // Should already have triggered a BadRequestException, but just in case
+                    LOGGER.warn("Bad request detected, throwing BadRequestException.");
+                    throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
+                }
+
+            case "/status":
+                return getStatus(request);
         }
 
-        // Check validity
-        boolean validInput = validateInput(requestParams);
-        boolean validSource = validateRequest(request);
-
-        if (validInput && validSource) {
-            return processEmailRequest(requestParams, request);
-        } else {
-            // Should already haev triggered a BadRequestException, but just in case
-            LOGGER.warn("Bad request detected, throwing BadRequestException.");
-            throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
-        }
+        throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
     }
 
     /**
@@ -119,7 +129,7 @@ public class EmailAgent extends JPSAgent {
      *
      * @return result JSON
      */
-    private JSONObject processPingRequest(HttpServletRequest request) {
+    private JSONObject getStatus(HttpServletRequest request) {
         LOGGER.info("Determined as availability request, checking...");
 
         // Is it from a valid source
@@ -164,10 +174,21 @@ public class EmailAgent extends JPSAgent {
         LOGGER.info("Determined as email request, submitting...");
 
         // Attempt to send email
-        return EmailHandler.submitEmail(
+        if(!requestParams.isNull("body")) {
+            return EmailHandler.submitEmail(
                 requestParams.get("subject").toString(),
                 requestParams.get("body").toString()
-        );
+            );
+            
+        } else if(!requestParams.isNull("message")) {
+            return EmailHandler.submitEmail(
+                requestParams.get("subject").toString(),
+                requestParams.get("message").toString()
+            );
+            
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -187,12 +208,14 @@ public class EmailAgent extends JPSAgent {
 
         // Check that there's a subject
         if (requestParams.isNull("subject")) {
+            LOGGER.error("Could not find the 'subject' field.");
             throw new BadRequestException("Request does not have required 'subject' field.");
         }
 
         // Check that there's a body
-        if (requestParams.isNull("body")) {
-            throw new BadRequestException("Request does not have required 'body' field.");
+        if (requestParams.isNull("body") && requestParams.isNull("message")) {
+            LOGGER.error("Could not find the 'body' or 'message' field.");
+            throw new BadRequestException("Request does not have required 'body' or 'message' field.");
         }
 
         return true;

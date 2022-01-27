@@ -1,0 +1,1 @@
+store a file "credentials.properties" here containing the credentials of postgres and blazegraph. A template is given

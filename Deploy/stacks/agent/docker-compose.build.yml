@@ -11,7 +11,22 @@ version: "3.8"
 
 services:
 
+  # Status Agent
+  # No ${MODE} classifier as this image has no environment specific code
+  status-agent:
+    image: docker.cmclinnovations.com/status-agent:1.0.0-SNAPSHOT
+    build:
+      context: "../../../Agents/StatusAgent"
+      dockerfile: "./docker/Dockerfile"
+      labels:
+        description: "Simple servlet to run KG availability tests and display results."
+        authors: "mdhillman@cmclinnovations.com"
+        builder: "${BUILDER}"
+        hash: "${HASH}"
+
+      
   # Email Agent
+  # No ${MODE} classifier as this image has no environment specific code
   email-agent:
     image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
     build:
@@ -25,7 +40,7 @@ services:
 
   # Gas Grid Agent
   gas-grid-agent:
-    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/gas-grid-agent-$MODE:1.0.0-SNAPSHOT
     build:
       context: "../../../GasGrid"
       dockerfile: "docker/Dockerfile"
@@ -35,8 +50,22 @@ services:
         description: "Gas Grid Agent."
         hash: "${HASH}"
       target: "${MODE}"
+      
+  # Flood Agent
+  flood-agent:
+    image: docker.cmclinnovations.com/flood-agent-${MODE}:1.0.0-SNAPSHOT
+    build:
+      context: "../../../Agents/FloodAgent"
+      dockerfile: "Dockerfile"
+      labels:
+        authors: "support@cmclinnovations.com"
+        description: "Flood Agent that scrapes data, updates the KG, and write JSON files daily."
+        builder: "${BUILDER}"
+        hash: "${HASH}"
+      target: "default"
 
   # JPS Chatbot
+  # No ${MODE} classifier as this image has no environment specific code
   jps-chatbot:
     image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
     build:
@@ -48,6 +77,7 @@ services:
         hash: "${HASH}"
 
   # JPS LDF Server
+  # No ${MODE} classifier as this image has no environment specific code
   jps-ldf:
     image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
     build:
@@ -81,3 +111,27 @@ services:
   #       builder: "${BUILDER}"
   #       description: "Slurm compute node."
   #      hash: "${HASH}"
+
+  # STDC Thermo agent
+  # No ${MODE} classifier as this image has no environment specific code
+  stdc-agent:
+    image: docker.cmclinnovations.com/stdc_agent:1.0.0-SNAPSHOT
+    build:
+      context: "../../../Agents/STDCThermoAgent"
+      labels:
+        authors: "danieln@cmclinnovations.com, support@cmclinnovations.com"
+        builder: "${BUILDER}"
+        description: "Thermodynamic properties calculation agent"
+        hash: "${HASH}"
+
+  # Weather agent
+  # No ${MODE} classifier as this image has no environment specific code
+  weather-agent:
+    image: docker.cmclinnovations.com/weather-agent:1.0.0-SNAPSHOT
+    build:
+      context: "../../../Agents/WeatherAgent"
+      labels:
+        authors: "kflee@cmclinnovations.com, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Instantiate and query virtual weather stations using the openweathermap.org API."
+        hash: "${HASH}"

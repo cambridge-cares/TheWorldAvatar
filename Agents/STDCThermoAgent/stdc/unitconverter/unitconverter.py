@@ -16,6 +16,7 @@ def convertLengthUnitsToSI(aunit_in,exponent=1.0):
     # SI: m
     SI_unit = 'M'
     mult_factor = 1.0
+    aunit_in = aunit_in.upper()
     if aunit_in == 'M':
         mult_factor = 1.0
     elif aunit_in == 'KM':
@@ -41,6 +42,7 @@ def convertTimeUnitsToSI(aunit_in,exponent=1.0):
     # SI: s
     SI_unit = 'S'
     mult_factor = 1.0
+    aunit_in = aunit_in.upper()
     if aunit_in == 'S':
         mult_factor = 1.0
     elif aunit_in == 'H':
@@ -62,6 +64,7 @@ def convertMassUnitsToSI(aunit_in,exponent=1.0):
     # SI: kg
     SI_unit = 'KG'
     mult_factor = 1.0
+    aunit_in = aunit_in.upper()
     if aunit_in == 'KG':
         mult_factor = 1.0
     elif aunit_in == 'T':
@@ -85,6 +88,8 @@ def convertTemperatureUnitsToSI(aunit_in,exponent=1.0):
     # SI: K
     SI_unit = 'K'
     mult_factor = 1.0
+    add_factor = 0.0
+    aunit_in = aunit_in.upper()
     if aunit_in == 'K':
         mult_factor = 1.0
     elif aunit_in == 'C':
@@ -94,13 +99,14 @@ def convertTemperatureUnitsToSI(aunit_in,exponent=1.0):
         add_factor = 255.3722222
     elif checkUnitType(aunit_in,'TEMPERATURE^n'):
         unit_tokens ,unit_exps = extractUnits(aunit_in)
-        mult_factor = convertTemperatureUnitsToSI(unit_tokens[0],float(unit_exps[0]))
-    return mult_factor**exponent
+        mult_factor, add_factor = convertTemperatureUnitsToSI(unit_tokens[0],float(unit_exps[0]))
+    return mult_factor**exponent, add_factor
 
 def convertMoleUnitsToSI(aunit_in,exponent=1.0):
-    # SI: 1/s or Hz          
+    # SI: 1/s or Hz
     SI_unit = 'MOL' # or NA
     mult_factor = 1.0
+    aunit_in = aunit_in.upper()
     if aunit_in == 'MOL':
         mult_factor = 1.0
     elif aunit_in == '#':
@@ -113,9 +119,10 @@ def convertMoleUnitsToSI(aunit_in,exponent=1.0):
     return mult_factor**exponent
 
 def convertFrequencyUnitsToSI(aunit_in,exponent=1.0):
-    # SI: 1/s or Hz          
+    # SI: 1/s or Hz
     SI_unit = '1/S' # or Hz
     mult_factor = 1.0
+    aunit_in = aunit_in.upper()
     if aunit_in == '1/S' or aunit_in == 'HZ':
         mult_factor = 1.0
     elif aunit_in == 'KHZ':
@@ -125,7 +132,7 @@ def convertFrequencyUnitsToSI(aunit_in,exponent=1.0):
     elif aunit_in == 'GHZ':
         mult_factor = 1E9
     elif checkUnitType(aunit_in,'TEMPERATURE'):
-        mult_factor = convertTemperatureUnitsToSI(aunit_in)
+        mult_factor, add_factor = convertTemperatureUnitsToSI(aunit_in)
         mult_factor = mult_factor*p.kB/p.h
     elif checkUnitType(aunit_in,'TIME^-1'):
         mult_factor = convertTimeUnitsToSI(aunit_in)
@@ -135,9 +142,10 @@ def convertFrequencyUnitsToSI(aunit_in,exponent=1.0):
     return mult_factor**exponent
 
 def convertEnergyMoleculeUnitsToSI(aunit_in,exponent=1.0):
-    # SI: J        
+    # SI: J
     SI_unit = 'J'
     mult_factor = 1.0
+    aunit_in = aunit_in.upper()
     if aunit_in == 'J':
         mult_factor = 1.0
     elif aunit_in == 'KJ':
@@ -170,7 +178,7 @@ def convertEnergyMoleculeUnitsToSI(aunit_in,exponent=1.0):
         mult_factor = convertLengthUnitsToSI(unit_tokens[0],float(unit_exps[0]))
         mult_factor = mult_factor*p.c*p.h
     elif checkUnitType(aunit_in,'TEMPERATURE'):
-        mult_factor = convertTemperatureUnitsToSI(aunit_in)
+        mult_factor, add_factor = convertTemperatureUnitsToSI(aunit_in)
         mult_factor = p.kB*mult_factor
     return mult_factor**exponent
 
@@ -178,11 +186,12 @@ def convertEnergyMoleUnitsToSI(aunit_in,exponent=1.0):
     # SI: J/mol
     SI_unit = 'J/MOL'
     mult_factor = 1.0
+    aunit_in = aunit_in.upper()
     if aunit_in == 'J/MOL':
         mult_factor = 1.0
     elif checkUnitType(aunit_in,'ENERGY_PER_MOLECULE'):
         mult_factor1, _ = convertUnitsToSI('ENERGY_PER_MOLECULE',aunit_in)
-        mult_factor2, _ = convertUnitsToSI('MOLE','#','reverse')
+        mult_factor2, _ = convertUnitsToSI('MOLE','#',-1)
         mult_factor = mult_factor1*mult_factor2
     elif checkUnitType(aunit_in,'ENERGY_PER_MOLECULE,MOLE^-1'):
         unit_tokens ,unit_exps = extractUnits(aunit_in)
@@ -196,7 +205,7 @@ def convertEnergyMoleUnitsToSI(aunit_in,exponent=1.0):
         mult_factor = convertLengthUnitsToSI(aunit_in)
         mult_factor = mult_factor*p.h*p.c*p.NA
     elif checkUnitType(aunit_in,'TEMPERATURE'):
-        mult_factor = convertTemperatureUnitsToSI(aunit_in)
+        mult_factor, add_factor = convertTemperatureUnitsToSI(aunit_in)
         mult_factor = p.kB*mult_factor*p.NA
     return mult_factor**exponent
 
@@ -204,6 +213,7 @@ def convertInertiaUnitsToSI(aunit_in,exponent=1.0):
     # SI: kg*m^2
     SI_unit = 'KG*M^2'
     mult_factor = 1.0
+    aunit_in = aunit_in.upper()
     if aunit_in == 'KG*M^2':
         mult_factor = 1.0
     elif checkUnitType(aunit_in,'MASS,LENGTH^2'):
@@ -213,58 +223,59 @@ def convertInertiaUnitsToSI(aunit_in,exponent=1.0):
             mult_factor = mult_factor*mult_factor1
     return mult_factor**exponent
 
-def convertUnitsToSI(atype,aunit_in,mode=''):
+def convertUnitsToSI(atype,aunit_in,exponent=1.0):
     mult_factor = 1.0
     add_factor = 0.0
-    exponent = 1.0
-    if mode=='reverse':
-        exponent = -1.0
+    aunit_in = aunit_in.upper()
+    atype = atype.upper()
 
-    if atype.upper()=='LENGTH':
+
+    if atype=='LENGTH':
         # SI: m
         mult_factor = convertLengthUnitsToSI(aunit_in,exponent)
 
-    if atype.upper()=='TIME':
+    if atype=='TIME':
         # SI: s
         mult_factor = convertTimeUnitsToSI(aunit_in,exponent)
 
-    if atype.upper()=='MASS':
+    if atype=='MASS':
         # SI: kg
         mult_factor = convertMassUnitsToSI(aunit_in,exponent)
 
-    if atype.upper()=='FREQUENCIES':
+    if atype=='FREQUENCIES':
         mult_factor = convertFrequencyUnitsToSI(aunit_in,exponent)
 
-    if atype.upper()=='MOLE':
+    if atype=='MOLE':
         # SI: mol or NA
         mult_factor = convertMoleUnitsToSI(aunit_in,exponent)
 
-    if atype.upper()=='ENERGY_PER_MOLECULE':
+    if atype=='ENERGY_PER_MOLECULE':
         # SI: J
         mult_factor = convertEnergyMoleculeUnitsToSI(aunit_in,exponent)
 
-    if atype.upper()=='ENERGY_PER_MOLE':
+    if atype=='ENERGY_PER_MOLE':
         # SI: J/mol
         mult_factor = convertEnergyMoleUnitsToSI(aunit_in,exponent)
 
-    if atype.upper()=='INERTIA':
+    if atype=='INERTIA':
         # SI: kg*m^2
         mult_factor = convertInertiaUnitsToSI(aunit_in,exponent)
 
-    if atype.upper()=='TEMPERATURE':
+    if atype=='TEMPERATURE':
         # SI: K
-        mult_factor = convertTemperatureUnitsToSI(aunit_in,exponent)
+        mult_factor, add_factor = convertTemperatureUnitsToSI(aunit_in,exponent)
 
     return mult_factor**exponent,add_factor
 
 def getUnitType(aunit_in):
+    aunit_in = aunit_in.upper()
     rtype = 'NONE'
     if compareList(aunit_in,LENGTH_UNITS):
         rtype = 'LENGTH'
     if compareList(aunit_in,TIME_UNITS):
-        rtype = 'TIME'        
+        rtype = 'TIME'
     if compareList(aunit_in,MASS_UNITS):
-        rtype = 'MASS'        
+        rtype = 'MASS'
     if compareList(aunit_in,TEMPERATURE_UNITS):
         rtype = 'TEMPERATURE'
     if compareList(aunit_in,MOLE_UNITS):
@@ -297,7 +308,7 @@ def checkUnitType(aunit_in,aunit_check):
     else:
         unit_checktokens = []
         unit_checktokens.append(aunit_check)
-    
+
     # construct final aunit_in strings
     # different ways of writing the same unit information in case of ^1 power
     unit_in1 = []  # UNIT1^1, UNIT2^2 e.g. MASS^1, LENGTH^2
@@ -317,7 +328,7 @@ def checkUnitType(aunit_in,aunit_check):
     unit_in1 = [unit_in1[x] for x in unit_in1_ind]   # LENGTH^2, MASS^1
     unit_in2 =  [unit_in2[x] for x in unit_in2_ind]  # LENGTH^2, MASS
     unit_in3 =  [unit_in3[x] for x in unit_in3_ind]  # LENGTH^n, MASS^n
-    
+
     # compare aunit_in strings with aunit_check
     if len(unit_checktokens)!=len(unit_in1):
         flag = False
@@ -346,19 +357,19 @@ def extractUnits(aunit_in):
     temp_unit = aunit_in
     # if there was at least one match
     if match:
-        # loop through matches removing '/' characters that may appear at the end of string 
+        # loop through matches removing '/' characters that may appear at the end of string
         for m in match:
             # to make sure we catched the correct string
             if m[0]=='^':
                 if m[-1] == '/':
                     m = m[:-1]
                 #also do not keep '^' character
-                m = m[1:]            
+                m = m[1:]
                 exp_value.append(m)
                 # remove found numbers from aunit_in and store it in temp unit
                 temp_unit = re.sub(m, '', aunit_in)
     # --------------------------------
-    
+
     # split temp_unit at '/' but keep this delimiter e.g. str= 'a/b' => ['a','/','b']
     temp_unit = re.split('(\/)',temp_unit)
     # --------------------------------

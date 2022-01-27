@@ -4,7 +4,6 @@ FROM python:3.7.11-slim-buster
 
 # Meta data
 LABEL authors = "danieln@cmclinnovations.com, support@cmclinnovations.com"
-LABEL version = "1.0.0-SNAPSHOT"
 LABEL description = "Thermodynamic properties calculation agent"
 
 # Install Java
@@ -42,9 +41,5 @@ EXPOSE 5000
 # entry point setup
 #------------------------------------
 # Set the entrypoint
-RUN chmod 0744 /app/app_entry_point.sh
 ENTRYPOINT /app/app_entry_point.sh
-
-# Finish
-RUN echo -e "Image installation completed."
 #==================================================================================================

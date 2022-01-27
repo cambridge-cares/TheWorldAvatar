@@ -1,8 +1,4 @@
-from flask import Flask, request, jsonify
-from stdc.kgoperations.getkgdata import get_ontocompchem_data, \
-                                        get_ontospecies_data
-from stdc.app import runThermoCalculator
-
+from flask import Flask
 
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""

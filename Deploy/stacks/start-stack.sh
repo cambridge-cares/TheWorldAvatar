@@ -90,7 +90,7 @@ project_name=$(get_project_name $stack $mode $use_test_config)
 compose_opts="$yml_fname_args --env-file $env_filename -p $project_name"
 
 # Examine secret files defined in the config files and set missing values where necessary
-set_missing_secrets $yml_fnames
+set_missing_secrets "$yml_fnames" "$mode"
 
 # For images that exist locally, but need to be updated from the registry, need to run docker pull explicitly
 if [ ! -z "$services_to_force_pull" ]; then

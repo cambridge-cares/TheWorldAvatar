@@ -26,12 +26,14 @@
 *.jar
 *.war
 *.class
+log4j2.xml
 
 # Maven:
 target/
 
 # Python:
 __pycache__/
+site-packages/
 *.py[cod]
 *$py.class
 *.pkl
