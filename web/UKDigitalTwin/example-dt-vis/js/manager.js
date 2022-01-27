@@ -712,7 +712,7 @@ class DigitalTwinManager {
 	 * 
 	 * @param {Boolean} visibility desired state 
 	 */
-	hideAllControls(visibility) {
+	toggleAllControls(visibility) {
 		var sidePanel = document.getElementById("sidePanel");
 		var controlsContainer = document.getElementById("controlsContainer");
 

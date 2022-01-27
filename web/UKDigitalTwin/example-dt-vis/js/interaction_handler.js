@@ -108,6 +108,7 @@ class InteractionHandler {
                 if(featureLayer.includes("_clickable")) return false;
                 if(featureLayer.includes("_arrows")) return false;
                 if(featureLayer.includes("-highlight")) return false;
+                if(featureLayer.includes("-focus")) return false;
 
                 let layer = self._map.getLayer(featureLayer);
                 if(layer["type"] !== "circle" && layer["type"] !== "symbol") return false;
@@ -327,17 +328,27 @@ class InteractionHandler {
 
         for(var i = 0; i < features.length; i++) {
             let displayName = features[i]["properties"]["displayName"];
-            // if(added.includes(displayName)) continue;
-            // added.push(displayName);
+            if(added.includes(displayName)) continue;
+            added.push(displayName);
 
             if(displayName == null) {
                 displayName = "Cluster of " + features[i]["properties"]["point_count_abbreviated"] + " features from '";
                 displayName += features[i]["layer"]["id"].replace("_cluster", "") + "' layer."
             }
 
+            // The DT.selectColorer is an optional function (set externally) that 
+            // when passed a feature will return a CSS color string to use for any
+            // select options representing that feature.
+            let color = "black";
+            if(DT.selectColorer != null) {
+                color = DT.selectColorer(features[i]);
+            }
+
+            // Append option to select control
             html += `
-                <option value="` + i + `">` + displayName + `</option>
+                <option style="color: ` + color + `;" value="` + i + `">` + displayName + `</option>
             `;
+           
         };
         html += `</select></div>`;
 

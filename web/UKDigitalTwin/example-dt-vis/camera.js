@@ -29,7 +29,7 @@ const ROTATE_CONTROLS = `
     <input type="number" id="pitchInput" class="short" placeholder="Pitch" min="0" max="60">
     <input type="number" id="zoomInput" class="short" placeholder="Zoom" step="0.5" min="1" max="20">
     <input type="number" id="delayInput" class="short" placeholder="Delay" step="100" min="0">
-    <input type="number" id="durationInput" class="short" placeholder="Duration" min="100" max="999999">
+    <input type="number" id="durationInput" class="short" placeholder="Duration" step="1000" min="100" max="999999">
     <input type="number" id="speedInput" class="short" placeholder="Speed" step="0.1" min="0.1">
     <div id="deleteRow" onclick="deleteRow(this)">
         <img src="./img/close.png"/>
@@ -117,7 +117,7 @@ function startingListeners() {
                 break;
 
                 case "overlayCheck":
-                    manager.hideAllControls(input.checked);
+                    manager.toggleAllControls(input.checked);
                 break;
                 case "fullscreenCheck":
                     if(input.checked) {
@@ -178,7 +178,7 @@ function deleteRow(source) {
 }
 
 function cancelAnimation() {
-    manager.hideAllControls(true);
+    manager.toggleAllControls(true);
     if(document.getElementById("fullscreenCheck").checked) {
         document.exitFullscreen();
     }
@@ -285,6 +285,7 @@ function processNextAnimation() {
         animationMap.off('moveend', processNextAnimation);
         if(animationMap.getLayer("greenscreen") != null) animationMap.removeLayer("greenscreen");
 
+        manager.toggleAllControls(true);
         document.body.removeChild(document.getElementById("overlay"));
     }
 }
