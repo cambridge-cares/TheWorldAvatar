@@ -48,17 +48,6 @@ public class WriteOutputs {
     public static void setTsClient(TimeSeriesClient<Instant> tsClient) {
     	WriteOutputs.tsClient = tsClient;
     }
-	
-    // icons
-    static Map<String, String> icons = new HashMap<String, String>() {
-		{
-			put("Water Level", "ea-water-level");
-			put("Flow", "ea-flow");
-			put("Rainfall", "ea-rainfall");
-			put("Wind", "ea-wind");
-			put("Temperature", "ea-temperature");
-		}
-	};
     
 	public static void main(String[] args) {
 		// input needs to be a valid date
@@ -213,9 +202,27 @@ public class WriteOutputs {
 		JSONObject dataSet = new JSONObject();
 		dataSet.put("name", "stations");
 		dataSet.put("dataLocation", "flood-stations.geojson");
-		dataSet.put("locationType", "point");
+		dataSet.put("locationType", "symbol");
 		dataSet.put("metaFiles", new JSONArray().put("stationsmeta.json"));
 		dataSet.put("timeseriesFiles", new JSONArray().put("flood-" + date + "-timeseries.json"));
+		
+		// clustering properties
+		dataSet.put("cluster", true);
+		dataSet.put("clusterRadius", 30);
+
+		// preparing cluster properties
+		JSONObject clusterProperties = new JSONObject();
+		
+		JSONArray icon_image = new JSONArray();
+		icon_image.put("string").put("ea-empty");
+		
+		JSONArray text_colour = new JSONArray();
+		text_colour.put("string").put("#68bf56");
+		
+		clusterProperties.put("icon-image", icon_image);
+		clusterProperties.put("text-color", text_colour);
+		
+		dataSet.put("clusterProperties", clusterProperties);
 		
 		dataSets.put(dataSet);
 		
@@ -251,10 +258,9 @@ public class WriteOutputs {
 			//properties (display name and styling)
 			JSONObject property = new JSONObject();
 			property.put("displayName", station.getLabel());
-			property.put("circle-color", "rgb(204,41,41)");
-			property.put("circle-stroke-width", 1);
-			property.put("circle-stroke-color", "#000000"); // black
-			property.put("circle-opacity", 0.75);
+			
+			// icon properties
+			property.put("icon-image", station.getIconImage());
 			feature.put("properties", property);
 			
 			// geometry

@@ -36,6 +36,18 @@ public class Station {
     private Map<String, String> measureUnitMap; // measure IRI to unit
     private Map<String, String> measureSubTypeMap; // measure IRI to sub type name
 
+    // icons to use
+    static Map<String, String> icons = new HashMap<String, String>() {
+		private static final long serialVersionUID = 1L;
+		{
+			put("Water Level", "ea-water-level");
+			put("Flow", "ea-flow");
+			put("Rainfall", "ea-rainfall");
+			put("Wind", "ea-wind");
+			put("Temperature", "ea-temperature");
+		}
+	};
+    
     public Station(String iri) {
     	this.iri = iri;
     	this.identifier = "";
@@ -241,5 +253,14 @@ public class Station {
     
     public String getMeasureUnit(String measure) {
     	return this.measureUnitMap.get(measure);
+    }
+    
+    public String getIconImage() {
+    	List<String> measures = new ArrayList<>(measureNameMap.keySet());
+    	if (icons.containsKey(this.measureNameMap.get(measures.get(0)))) {
+    		return icons.get(this.measureNameMap.get(measures.get(0)));
+    	} else {
+    		return "ea-water-level";
+    	}
     }
 }
