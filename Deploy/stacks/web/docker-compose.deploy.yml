@@ -72,10 +72,24 @@ services:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
-
+    
+  # CReDo visualisation
+  credo-vis:
+    image: docker.cmclinnovations.com/credo-vis:1.0.0-SNAPSHOT
+    container_name: "credo-vis"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - vis_data:/var/www/html/data
+  
 
 # The default network name is set using a docker-compose environment variable.
 # Please don't modify the contents of the 'networks' node below.
 networks:
   default:
     name: ${NETWORK_NAME}
+    
+volumes:
+  vis_data: null
