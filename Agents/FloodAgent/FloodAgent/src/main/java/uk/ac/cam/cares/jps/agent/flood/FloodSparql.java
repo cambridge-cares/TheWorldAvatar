@@ -343,6 +343,7 @@ public class FloodSparql {
 		
 		SelectQuery query = Queries.SELECT();
 		
+		// station properties
 		Variable lat = query.var();
 		Variable lon = query.var();
 		Variable station = query.var();
@@ -354,14 +355,24 @@ public class FloodSparql {
 		Variable dateOpened = query.var();
 		Variable label = query.var();
 		
+		// measure properties
+		Variable measure = query.var();
+		// e.g. table name: Water Level (Tidal Level), param = Water Level,
+    	// qual (param subtype) = Tidal Level
+    	Variable param = query.var();
+    	Variable qual = query.var();
+    	Variable unit = query.var();
+		
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
-				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id));
+				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id).andHas(measures, measure));
 		
 		GraphPattern stationProperties = GraphPatterns.and(station.has(iri(RDFS.LABEL), label).optional(),
 				station.has(river_prop, river).optional(),
 				station.has(catchment_prop, catchment).optional(),
 				station.has(town_prop, town).optional(),
 				station.has(dateOpen_prop, dateOpened).optional());
+		
+		GraphPattern measurePropertiesPattern = measure.has(parameterName,param).andHas(qualifier,qual).andHas(unitName, unit);
 		
 		// restrict query location
 		if (southwest != null && northeast != null) {
@@ -372,79 +383,63 @@ public class FloodSparql {
 					.andHas(p_geo.iri("spatialRectangleNorthEast"), northeast));
 
 	    	GraphPattern geoPattern = new ServicePattern(p_geo.iri("search").getQueryString()).service(coordinatesPattern);
-	    	query.where(queryPattern,geoPattern,stationProperties).prefix(p_geo,p_station);
+	    	query.where(queryPattern,geoPattern,stationProperties,measurePropertiesPattern).prefix(p_geo,p_station);
 		} else {
-			query.where(queryPattern,stationProperties).prefix(p_station);
+			query.where(queryPattern,stationProperties,measurePropertiesPattern).prefix(p_station);
 		}
 		
-		query.select(station,lat,lon,ref,id,river,catchment,town,dateOpened,label);
+		query.select(station,lat,lon,ref,id,river,catchment,town,dateOpened,label,measure,param,qual,unit);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
 		Map<String, Station> station_map = new HashMap<>(); // iri to station object map
 		for (int i = 0; i < queryResult.length(); i++) {
 			String stationIri = queryResult.getJSONObject(i).getString(station.getQueryString().substring(1));
-			Station stationObject = new Station(stationIri);
-			station_map.put(stationIri, stationObject);
-			stationObject.setIdentifier(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
-			stationObject.setLat(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
-			stationObject.setLon(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
-			stationObject.setVisId(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
-			
-			// optional properties
-			if (queryResult.getJSONObject(i).has(river.getQueryString().substring(1))) {
-				stationObject.setRiver(queryResult.getJSONObject(i).getString(river.getQueryString().substring(1)));
-			}
-			if (queryResult.getJSONObject(i).has(catchment.getQueryString().substring(1))) {
-				stationObject.setCatchment(queryResult.getJSONObject(i).getString(catchment.getQueryString().substring(1)));
-			}
-			if (queryResult.getJSONObject(i).has(town.getQueryString().substring(1))) {
-				stationObject.setTown(queryResult.getJSONObject(i).getString(town.getQueryString().substring(1)));
-			}
-			if (queryResult.getJSONObject(i).has(dateOpened.getQueryString().substring(1))) {
-				stationObject.setDateOpened(queryResult.getJSONObject(i).getString(dateOpened.getQueryString().substring(1)));
-			}
-			if (queryResult.getJSONObject(i).has(label.getQueryString().substring(1))) {
-				stationObject.setLabel(queryResult.getJSONObject(i).getString(label.getQueryString().substring(1)));
-			}
-		}
-				
-		return station_map;
-	}
-	
-	void setMeasureProperties(Map<String,Station> stations) {
-		SelectQuery query = Queries.SELECT();
-		
-		Variable measure = query.var();
-		// e.g. table name: Water Level (Tidal Level), param = Water Level,
-    	// qual (param subtype) = Tidal Level
-    	Variable param = query.var();
-    	Variable qual = query.var();
-    	Variable unit = query.var();
-    	Variable station = query.var();
-    	
-    	List<String> station_list = new ArrayList<>(stations.keySet());
-    	
-    	ValuesPattern stationValuesPattern = new ValuesPattern(station, station_list.stream().map(m -> iri(m)).collect(Collectors.toList()));
-    	GraphPattern measurePropertiesPattern = measure.has(parameterName,param).andHas(qualifier,qual).andHas(unitName, unit);
-    	GraphPattern stationPattern = station.has(measures, measure);
-    	
-    	query.select(measure,param,qual,unit,station).where(stationValuesPattern, measurePropertiesPattern, stationPattern);
-    	
-    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-    	
-    	for (int i = 0; i < queryResult.length(); i++) {
-    		String stationIri = queryResult.getJSONObject(i).getString(station.getQueryString().substring(1));
-    		String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
+			String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
     		String measureName = queryResult.getJSONObject(i).getString(param.getQueryString().substring(1));
     		String subTypeName = queryResult.getJSONObject(i).getString(qual.getQueryString().substring(1));
     		String unitName = queryResult.getJSONObject(i).getString(unit.getQueryString().substring(1));
     		
-    		Station stationObject = stations.get(stationIri);
-    		stationObject.setMeasureName(measureIri, measureName);
+    		Station stationObject;
+    		if (station_map.containsKey(stationIri)) {
+    			stationObject = station_map.get(stationIri);
+    		} else {
+    			stationObject = new Station(stationIri);
+    			station_map.put(stationIri, stationObject);
+    			
+    			// station properties are unique, only need to set once
+    			stationObject.setIdentifier(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
+    			stationObject.setLat(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
+    			stationObject.setLon(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
+    			stationObject.setVisId(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
+    			
+    			// optional station properties
+    			if (queryResult.getJSONObject(i).has(river.getQueryString().substring(1))) {
+    				stationObject.setRiver(queryResult.getJSONObject(i).getString(river.getQueryString().substring(1)));
+    			}
+    			if (queryResult.getJSONObject(i).has(catchment.getQueryString().substring(1))) {
+    				stationObject.setCatchment(queryResult.getJSONObject(i).getString(catchment.getQueryString().substring(1)));
+    			}
+    			if (queryResult.getJSONObject(i).has(town.getQueryString().substring(1))) {
+    				stationObject.setTown(queryResult.getJSONObject(i).getString(town.getQueryString().substring(1)));
+    			}
+    			if (queryResult.getJSONObject(i).has(dateOpened.getQueryString().substring(1))) {
+    				stationObject.setDateOpened(queryResult.getJSONObject(i).getString(dateOpened.getQueryString().substring(1)));
+    			}
+    			if (queryResult.getJSONObject(i).has(label.getQueryString().substring(1))) {
+    				stationObject.setLabel(queryResult.getJSONObject(i).getString(label.getQueryString().substring(1)));
+    			}
+    		}
+			
+			// measure properties
+			// stations may measure more than 1 properties
+			stationObject.addMeasure(measureIri);
+			stationObject.setMeasureName(measureIri, measureName);
     		stationObject.setMeasureSubTypeName(measureIri, subTypeName);
     		stationObject.setMeasureUnit(measureIri, unitName);
-    	}
+		}
+				
+		return station_map;
 	}
     
     boolean checkStationExists(String station) {
