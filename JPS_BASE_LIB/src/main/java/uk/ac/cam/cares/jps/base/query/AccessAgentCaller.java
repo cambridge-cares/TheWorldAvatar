@@ -83,10 +83,21 @@ public class AccessAgentCaller{
 	 * @param sparqlQuery		SPARQL query string
      * @return the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
 	 */
-	public static JSONArray query(String targetResourceID, String sparqlQuery) {
+	public static JSONArray queryStore(String targetResourceID, String sparqlQuery) {
 		//pass the target resource ID directly as the targetUrl
     	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
+		//Unpack results into JSONArray
 		return new JSONArray(new JSONObject(query(null, targetResourceID, sparqlQuery)).getString("result"));
+	}
+	
+	/**
+	 * @Deprecated Use queryStore instead: results are unpacked into a JSONArray. 
+	 */
+	@Deprecated
+	public static String query(String targetResourceID, String sparqlQuery) {
+		//pass the target resource ID directly as the targetUrl
+    	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
+		return query(null, targetResourceID, sparqlQuery);
 	}
 	
 	/**
@@ -125,6 +136,23 @@ public class AccessAgentCaller{
      * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
      * @param sparqlUpdate		SPARQL update string
      */
+	//Duplication of update below for sake of naming consistency with queryStore
+	public static void updateStore(String targetResourceID, String sparqlUpdate) {
+		//pass the target resource ID directly as the targetUrl
+    	//both datasetUrl and targetUrl are not used by the AccessAgent for updates
+		update(null, targetResourceID, sparqlUpdate);
+    	return;
+	}
+	
+	/**
+	 * @deprecated Use updateStore instead. Deprecated to maintain naming consistency with queryStore.
+     * Execute a {@link <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a>} on the target resource. 
+     * @param targetResourceID	the target namespace or IRI
+     * 							e.g. to access the Ontokin triple store
+     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param sparqlUpdate		SPARQL update string
+     */
+	@Deprecated
 	public static void update(String targetResourceID, String sparqlUpdate) {
 		//pass the target resource ID directly as the targetUrl
     	//both datasetUrl and targetUrl are not used by the AccessAgent for updates

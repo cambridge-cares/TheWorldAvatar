@@ -68,7 +68,15 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
      * @param sparqlQuery		SPARQL query string
      * @return the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
      */
-    public JSONArray query(String targetResourceID, String sparqlQuery) {	
+    public JSONArray queryStore(String targetResourceID, String sparqlQuery) {	
+    	return AccessAgentCaller.queryStore(targetResourceID, sparqlQuery);
+    }
+    
+    /**
+     * @deprecated Use queryStore instead: results are unpacked into a JSONArray.
+     */
+    @Deprecated
+    public String query(String targetResourceID, String sparqlQuery) {	
     	return AccessAgentCaller.query(targetResourceID, sparqlQuery);
     }
     
@@ -80,6 +88,14 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
      * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
      * @param sparqlUpdate		SPARQL update string
      */
+    public void updateStore(String targetResourceID, String sparqlUpdate) {
+    	AccessAgentCaller.updateStore(targetResourceID, sparqlUpdate);
+    }
+    
+    /**
+     * @deprecated Use updateStore instead. Deprecated to maintain naming consistency with queryStore. 
+     */
+    @Deprecated
     public void update(String targetResourceID, String sparqlUpdate) {
     	AccessAgentCaller.update(targetResourceID, sparqlUpdate);
     }
