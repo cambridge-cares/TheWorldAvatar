@@ -95,8 +95,6 @@ public class WriteOutputs {
     	// add time series to station objects, will also remove stations without any data
     	queryTimeSeries(stations, date);
     	
-    	sparqlClient.setMeasureProperties(stations);
-    	
     	// remove old outputs if exist
     	removeOldOutput();
 
@@ -105,12 +103,12 @@ public class WriteOutputs {
     	directories.mkdirs();
     	
     	// then write the files..
-    	writeTimeSeriesJson(stations, date); // this needs to be called first because it queries for information that determines the correct icon to use
     	writeOverallMetaFile();
     	writeLayerTree();
     	writeMainMeta(date);
     	writeStationsToGeojson(stations);
     	writeStationsMeta(stations);
+    	writeTimeSeriesJson(stations, date);
 	}
 	
 	static void removeOldOutput() {
@@ -131,13 +129,14 @@ public class WriteOutputs {
 	 * @param date
 	 */
 	static void queryTimeSeries(Map<String, Station> stations, LocalDate date) {
-		Map<String, List<String>> station_measures_map = sparqlClient.getMeasures(stations);
 		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
 		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
+		List<String> stationsList = new ArrayList<>(stations.keySet());
 				
-		for (String stationIri : station_measures_map.keySet()) {
+		for (String stationIri : stationsList) {
 			try {
-				List<String> measures = station_measures_map.get(stationIri);
+				Station station = stations.get(stationIri);
+				List<String> measures = station.getMeasures();
 				
 				for (String measure : measures) {
 					TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure), lowerbound, upperbound);
@@ -145,11 +144,11 @@ public class WriteOutputs {
 					
 					// ignore blank time series
 					if(time.size() > 0) {
-						stations.get(stationIri).addTimeseries(ts);
+						station.addTimeseries(ts);
 					}
 				}				
 				
-				if (stations.get(stationIri).getTimeSeriesList().size() == 0) {
+				if (station.getTimeSeriesList().size() == 0) {
 					// do not plot this station if it does not have any data
 					stations.remove(stationIri);
 				}
@@ -321,13 +320,14 @@ public class WriteOutputs {
 		List<Integer> visId = new ArrayList<>();
 		
 		for (String stationIri : stations.keySet()) {
-			Station station = stations.get(stationIri);			
-			ts_list.add(station.getCombinedTimeSeries());
+			Station station = stations.get(stationIri);
+			TimeSeries<Instant> combined_ts = station.getCombinedTimeSeries(tsClient);
+			ts_list.add(combined_ts);
 			
 			Map<String,String> measure_header_map = new HashMap<>();
 			Map<String,String> measure_unit_map = new HashMap<>();
 			
-			for (String measureIri : station.getCombinedTimeSeries().getDataIRIs()) {
+			for (String measureIri : combined_ts.getDataIRIs()) {
 				String header = station.getMeasureName(measureIri) + " (" + station.getMeasureSubTypeName(measureIri) + ")";
 				measure_header_map.put(measureIri, header);
 				measure_unit_map.put(measureIri, station.getMeasureUnit(measureIri));
