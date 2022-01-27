@@ -51,7 +51,10 @@ def read_properties_file(filepath):
     global OUTPUT_DIR, QUERY_ENDPOINT, NOOFBUILDINGS
 
     # Extract no. of building from environmental variables (# This is for testing purpose will be removed in production version)
-    NOOFBUILDINGS = read_env_var('MAX_NUM_BUILDING')
+    if 'MAX_NUM_BUILDINGS' in os.environ:
+        NOOFBUILDINGS = read_env_var('MAX_NUM_BUILDINGS')
+    else:
+        NOOFBUILDINGS = 'None'
 
     # Extract output directory for JSON file containing retrieved time series data from KG
     OUTPUT_DIR = read_env_var('OUTPUT_DIR')
