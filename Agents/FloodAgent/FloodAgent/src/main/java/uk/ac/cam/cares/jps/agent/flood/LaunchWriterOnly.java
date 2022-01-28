@@ -23,6 +23,7 @@ public class LaunchWriterOnly {
         if (!sparqlClient.areStationsInitialised()) {
         	// arguments are not needed for the below function
         	LOGGER.error("Stations are not initialised, cannot write output files");
+        	System.exit(1);
         } else {
         	writeOutputFiles();
         }
@@ -41,6 +42,7 @@ public class LaunchWriterOnly {
         	WriteOutputs.main(input);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
+            System.exit(1);
         }
     }
 }
