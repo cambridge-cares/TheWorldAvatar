@@ -183,7 +183,7 @@ public class WriteOutputs {
 		
 		// layer tree
 		JSONObject layer = new JSONObject();
-		layer.put("layerName", "River stations");
+		layer.put("layerName", "Environment Agency");
 		layer.put("defaultState", "visible");
 		layer.put("layerIDs", new JSONArray().put("stations"));
 		layers.put(layer);
@@ -258,7 +258,7 @@ public class WriteOutputs {
 			//properties (display name and styling)
 			JSONObject property = new JSONObject();
 			property.put("displayName", "Environment Agency: " + station.getLabel() + " (" + station.getIdentifier() + ")");
-			
+			property.put("description", station.getDescription());
 			// icon properties
 			property.put("icon-image", station.getIconImage());
 			feature.put("properties", property);

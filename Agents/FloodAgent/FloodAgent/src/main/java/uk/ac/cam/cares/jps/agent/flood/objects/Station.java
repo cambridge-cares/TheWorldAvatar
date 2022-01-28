@@ -255,6 +255,7 @@ public class Station {
     	return this.measureUnitMap.get(measure);
     }
     
+    // some stations measure more than 1 property, at the moment icon is only determined from one of them
     public String getIconImage() {
     	List<String> measures = new ArrayList<>(measureNameMap.keySet());
     	if (icons.containsKey(this.measureNameMap.get(measures.get(0)))) {
@@ -262,5 +263,15 @@ public class Station {
     	} else {
     		return "ea-water-level";
     	}
+    }
+    
+    /**
+     * this is the text that appears below the display name
+     * @return
+     */
+    public String getDescription() {
+    	String description = "The Environmental Agency stations primarily measure river properties such as water level and flowrate. "
+    			+ "Some stations measure rainfall, wind and temperature.";	
+    	return description;
     }
 }
