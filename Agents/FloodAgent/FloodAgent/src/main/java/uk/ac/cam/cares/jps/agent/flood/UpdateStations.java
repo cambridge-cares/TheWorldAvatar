@@ -77,8 +77,9 @@ public class UpdateStations {
     	// be set with mocks using their respective setters
     	if (api == null) {
     		UpdateStations.api = new APIConnector("http://environment.data.gov.uk/flood-monitoring/data/readings");
-    		UpdateStations.api.setParameter("date", date.toString());
     	}
+    	UpdateStations.api.setParameter("date", date.toString());
+    	
     	if (sparqlClient == null) {
     		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
     		UpdateStations.sparqlClient = new FloodSparql(storeClient);

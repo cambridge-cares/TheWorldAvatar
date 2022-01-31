@@ -1,10 +1,5 @@
 #!/bin/bash
 # D. Nurkowski (danieln@cmclinnovations.com)
-echo "-----------------------------------------------"
-echo "--   python entrdfizer installation script  --"
-echo "-----------------------------------------------"
-echo ""
-#
 
 AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -13,6 +8,7 @@ VENV_NAME='pyuploader_venv'
 VENV_DIR=$SPATH
 DEV_INSTALL=''
 PROJ_NAME='pyuploader'
+DONT_PROMPT='n'
 
 function usage {
     echo "==============================================================================================================="
@@ -23,6 +19,7 @@ function usage {
     echo " Usage:"
     echo "  -v [-n VENV_NAME -d VENV_DIR -i -e]"
     echo "  -i [-n VENV_NAME -d VENV_DIR -e]"
+    echo "  -s"
     echo "  -h"
     echo ""
     echo "Options"
@@ -37,6 +34,7 @@ function usage {
     echo "                    the package to."
     echo "                    If used with the -i flag - directory of the environment to install the package to."
 	echo "  -e              : Enables developer mode installation."
+    echo "  -s              : Silent installation, wont prompt for a user input."
 	echo "  -h              : Print this usage message."
     echo ""
 	echo "Example usage:"
@@ -70,6 +68,12 @@ function create_env {
 			echo ""
 			echo "    INFO: Virtual environment created."
 			echo "-----------------------------------------"
+            if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
+                PYTHON_EXEC=$VENV_DIR/$VENV_NAME/bin/python
+            else
+                PYTHON_EXEC=$VENV_DIR/$VENV_NAME/Scripts/python
+            fi
+
 		else
 			echo ""
 			echo "    ERROR: Failed to create virtual environment."
@@ -80,28 +84,16 @@ function create_env {
 		echo ""
 }
 
-function get_pip_path {
-    if [[ $CREATE_VENV == 'y' ]]
-	then
-	    if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
-            PIPPATH=$VENV_DIR"/"$VENV_NAME/bin/pip3
-		else
-		    PIPPATH=$VENV_DIR"/"$VENV_NAME/Scripts/pip3
-		fi
-	else
-        PIPPATH=pip3
-	fi
-}
 
 function install_project {
 	echo "Installing the project"
     echo "-----------------------------------------------"
     echo
-    get_pip_path
-    $PIPPATH --disable-pip-version-check install $DEV_INSTALL $SPATH
+    $PYTHON_EXEC -m pip install --upgrade pip
+    $PYTHON_EXEC -m pip install --no-cache-dir --upgrade $DEV_INSTALL $SPATH
     if [[ "${DEV_INSTALL}" == "-e" ]];
     then
-        $PIPPATH --disable-pip-version-check install -r $SPATH"/"dev_requirements.txt
+        $PYTHON_EXEC -m pip install --no-cache-dir --upgrade -r $SPATH"/"dev_requirements.txt
     fi
     if [ $? -eq 0 ]; then
     	echo ""
@@ -134,6 +126,7 @@ case $key in
 	-d) VENV_DIR=$2; shift 2;;
     -i) INSTALL_PROJ='y'; shift;;
 	-e) DEV_INSTALL='-e'; shift;;
+    -s) DONT_PROMPT='-y'; shift;;
     *)
 	# otherwise print the usage
     usage
@@ -152,4 +145,7 @@ then
 fi
 
 echo
-read -n 1 -s -r -p "Press any key to continue"
+if [[ "${DONT_PROMPT}" != "-y" ]];
+then
+    read -n 1 -s -r -p "Press any key to continue"
+fi

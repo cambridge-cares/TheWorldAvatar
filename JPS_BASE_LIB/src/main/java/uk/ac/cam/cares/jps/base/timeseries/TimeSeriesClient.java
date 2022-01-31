@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.json.JSONArray;
@@ -168,7 +169,7 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
    		try {
-   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbClient.getRdbURL(), null);
+   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbClient.getRdbURL(), timeUnit);
 		}
 		catch (Exception e_RdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
@@ -200,6 +201,7 @@ public class TimeSeriesClient<T> {
      */
     public void addTimeSeriesData(TimeSeries<T> ts) {
     	// Add time series data to respective database table
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
     	rdbClient.addTimeSeriesData(ts);
     }
     
@@ -211,6 +213,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
 		// Delete RDB time series table rows between lower and upper Bound
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
 	}
     
@@ -327,6 +330,14 @@ public class TimeSeriesClient<T> {
 		}
     }
     
+    public TimeSeries<T> getLatestData(String dataIRI) {
+    	return rdbClient.getLatestData(dataIRI);
+    }
+    
+    public TimeSeries<T> getOldestData(String dataIRI) {
+    	return rdbClient.getOldestData(dataIRI);
+    }
+    
     /** 
      * Retrieve time series data within given bounds (time bounds are inclusive and optional)
      * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
@@ -338,6 +349,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound) {
     	// Retrieve time series data from respective database table
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
     	return rdbClient.getTimeSeriesWithinBounds(dataIRIs, lowerBound, upperBound);
     }
 	
@@ -359,6 +371,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public double getAverage(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getAverage(dataIRI);
 	}
 	
@@ -369,6 +382,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public double getMaxValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxValue(dataIRI);
 	}
 	
@@ -379,6 +393,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public double getMinValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinValue(dataIRI);
 	}
 	
@@ -389,6 +404,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public T getMaxTime(String dataIRI) {
 		// Retrieve latest time entry from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxTime(dataIRI);
 	}
 	
@@ -399,6 +415,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public T getMinTime(String dataIRI) {
 		// Retrieve earliest time entry from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinTime(dataIRI);
 	}
 	
@@ -503,7 +520,7 @@ public class TimeSeriesClient<T> {
 	 * @return
 	 */
 	public JSONArray convertToJSON(List<TimeSeries<T>> ts_list, List<Integer> id,
-			List<List<String>> units, List<List<String>> table_header) {
+			List<Map<String,String>> units_map, List<Map<String, String>> table_header_map) {
 		JSONArray ts_array = new JSONArray();
 		
 		for (int i = 0; i < ts_list.size(); i++) {
@@ -516,14 +533,31 @@ public class TimeSeriesClient<T> {
 			List<String> dataIRIs = ts.getDataIRIs();
 			ts_jo.put("id", id.get(i));
 			
+			// classes
+			if (ts.getTimes().size() > 0) {
+				if (ts.getTimes().get(0) instanceof Number) {
+					ts_jo.put("timeClass", Number.class.getSimpleName());
+				} else {
+					ts_jo.put("timeClass", ts.getTimes().get(0).getClass().getSimpleName());
+				}
+			}
+			
 			// for table headers
-			if (table_header != null) {
-				ts_jo.put("data", table_header.get(i));
+			if (table_header_map != null) {
+				List<String> table_header = new ArrayList<>();
+				for (String dataIRI : dataIRIs) {
+					table_header.add(table_header_map.get(i).get(dataIRI));
+				}
+				ts_jo.put("data", table_header);
 			} else {
-				ts_jo.put("data", ts.getDataIRIs());
+				ts_jo.put("data", dataIRIs);
 			}
 	    	
-	    	ts_jo.put("units", units.get(i));
+			List<String> units = new ArrayList<>();
+			for (String dataIRI : dataIRIs) {
+				units.add(units_map.get(i).get(dataIRI));
+			}
+	    	ts_jo.put("units", units);
 	    	
 	    	// time column
 	    	ts_jo.put("time", ts.getTimes());
@@ -531,12 +565,21 @@ public class TimeSeriesClient<T> {
 	    	// values columns
 	    	// values columns, one array for each data
 	    	JSONArray values = new JSONArray();
-	    	
+	    	JSONArray valuesClass = new JSONArray();
 	    	for (int j = 0; j < dataIRIs.size(); j++) {
-	    		values.put(ts.getValuesAsDouble(dataIRIs.get(j)));
+	    		List<?> valueslist = ts.getValues(dataIRIs.get(j));
+	    		values.put(valueslist);
+	    		if (valueslist.size() > 0) {
+	    			if (valueslist.get(0) instanceof Number) {
+	    				valuesClass.put(Number.class.getSimpleName());
+	    			} else {
+	    				valuesClass.put(valueslist.get(0).getClass().getSimpleName());
+	    			}
+	    		}
 	    	}
 	    	
 	    	ts_jo.put("values", values);
+	    	ts_jo.put("valuesClass", valuesClass);
 			
 			ts_array.put(ts_jo);
 		}

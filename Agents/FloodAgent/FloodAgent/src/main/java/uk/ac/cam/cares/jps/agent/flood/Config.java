@@ -22,6 +22,8 @@ public class Config{
 	
 	public static String outputdir;
 	
+	public static String apiKey;
+	
 	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 	
 	public static void initProperties() {
@@ -39,6 +41,7 @@ public class Config{
 	    		Config.kguser = Config.props.getProperty("kg.user");
 	    		Config.kgpassword = Config.props.getProperty("kg.password");
 	    		Config.outputdir = Config.props.getProperty("outputdir");
+	    		Config.apiKey = Config.props.getProperty("apiKey");
 			} catch (IOException e1) {
 				LOGGER.error(e1.getMessage());
 				throw new JPSRuntimeException(e1);

@@ -1,10 +1,5 @@
 #!/bin/bash
 # D. Nurkowski (danieln@cmclinnovations.com)
-echo "-----------------------------------------------"
-echo "--   python entrdfizer installation script  --"
-echo "-----------------------------------------------"
-echo ""
-#
 
 AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
