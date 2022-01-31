@@ -56,13 +56,5 @@ public class TestShipAgent extends TestCase {
 //		assertEquals(25, building.length());
 	}
 	
-	public void testRemoveSubtree() {
-	    String iriOfChimney = "http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Material2_WasteStreamOfChimney-1";
-	    String filePath = AgentLocator.getPathToWorkingDir(new TestShipAgent()) + "/Chimney-1.owl";
-	    OntModel jenaOwlModel = ModelFactory.createOntologyModel();	
-		jenaOwlModel.read(filePath);
-		
-	    JenaModelWrapper c= new JenaModelWrapper(jenaOwlModel, null);
-	    assertEquals(52, c.removeSubtree(iriOfChimney, Prefixes.OCPMATE, "intrinsicCharacteristics"));
-	}
+
 }
