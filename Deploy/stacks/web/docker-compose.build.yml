@@ -80,6 +80,7 @@ services:
     image: docker.cmclinnovations.com/website-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "./website"
+      dockerfile: "./docker/Dockerfile"
       labels:
         authors: "support@cmclinnovations"
         builder: "${BUILDER}"

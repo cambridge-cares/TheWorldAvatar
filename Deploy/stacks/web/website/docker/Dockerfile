@@ -1,4 +1,36 @@
+#########################
+#
+# This docker file creates an Image with an environment
+# for running the KG website.
+# 
+# The "docker build" command used to build this file
+# into a Image should be run from the website directory.
+# See the README for more details.
+#
+#########################
+
+##### Build configuration #####
+# First (build) stage downloads the animated Marie video
+
+FROM maven:3.6-openjdk-11-slim as build
+
+# Copy all files into root's home directory
+ADD . /root
+
+# Populate settings templates with credentials, repo name
+WORKDIR /root/.m2
+
+RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
+RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
+
+# Build the project
+WORKDIR /root/docker
+RUN mvn package
+
+
 ##### Base configuration #####
+# Second (base) stage installs required tools
+
 FROM php:7.4-apache as base
 
 # Enable Apache Rewrite + Expires Module
@@ -63,12 +95,15 @@ RUN chown -R www-data:www-data /var/log/apache2/
 RUN chmod -R 775 /var/log/apache2/
 
 # Copy in custom configuration file(s)
-COPY rotate-logs.conf /etc/apache2/conf-available/rotate-logs.conf
+COPY docker/rotate-logs.conf /etc/apache2/conf-available/rotate-logs.conf
 RUN ln -s /etc/apache2/conf-available/rotate-logs.conf /etc/apache2/conf-enabled/rotate-logs.conf
 RUN chown -R www-data:www-data /etc/apache2/conf-available/rotate-logs.conf
 RUN chown -R www-data:www-data /etc/apache2/conf-enabled/rotate-logs.conf
 RUN chmod -R 775 /etc/apache2/conf-available/rotate-logs.conf
 RUN chmod -R 775 /etc/apache2/conf-enabled/rotate-logs.conf
+
+# Copy in the downloaded Marie video
+COPY --from=build /root/docker/output/animated-marie.mp4 ./user/videos/animated-marie.mp4
 
 # Expose port 80
 EXPOSE 80
