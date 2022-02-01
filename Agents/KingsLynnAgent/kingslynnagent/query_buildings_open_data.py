@@ -600,7 +600,7 @@ if __name__ == '__main__':
         # Specify building/feature properties to consider (beyond coordinates)
         geojson_props = {
             # Adjust building's display name depending on whether usage information is available or not
-            'displayName': bldg_class if bldg_class else 'Building {}'.format(feature_id),
+            'displayName': 'Building: {} ({})'.format(bldg_class,bldg_name) if bldg_class else 'Building: {}'.format(feature_id),
             # Adjust display color depending on building use classification
             'fill-extrusion-color': building_types[bldg_theme],
             'fill-extrusion-opacity': 0.66,
