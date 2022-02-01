@@ -3,7 +3,7 @@ version: "3.8"
 
 services:
   building-data-getter:
-    image: ghcr.io/cambridge-cares/building-data-getter:1.0.1
+    image: ghcr.io/cambridge-cares/building-data-getter:1.0.2
     build:
       context: .
       labels:
