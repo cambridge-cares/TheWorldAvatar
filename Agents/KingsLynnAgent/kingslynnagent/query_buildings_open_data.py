@@ -610,15 +610,15 @@ if __name__ == '__main__':
             'fill-extrusion-height': round(height, 3)
         }
 
-        # Specify metadata properties to consider
+        # Specify metadata properties to consider 
         metadata_props = {'id': feature_id,
                           'Building theme': bldg_theme,
                           'Building classification': bldg_class,
                           'Building name': bldg_name,
                           'Building IRI': str(b),
-                          'Ground elevation (m)': str(round(base_elevation, 2)),
-                          'Building height (m)': str(round(height, 2)),
-                          'UPRNs': uprns
+                          'Ground elevation': {"unit": "m", "value": str(round(base_elevation, 2))},
+                          'Building height': {"unit": "m", "value": str(round(height, 2))},
+                          'display_order': ['Building name','Building theme','Ground elevation','Building height']
                           }
 
         # Append building and metadata to (Geo)JSON FeatureCollections
