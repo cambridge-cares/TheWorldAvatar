@@ -136,7 +136,7 @@ def convert_csv_to_triple_dfs(csvName):
         for Period in range(1,49):
             #If powerplant
             if data['Type (powerplant(station) or generator(unit))'][i] == "powerplant":
-                powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('powerplanteic')] = data['Registered Resource EIC code'][i]
+                powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('powerplanteic')] = data['outputpowerplant =IF(ISNA(VLOOKUP(C2,CP$2:CR$1184,3,FALSE)),"",VLOOKUP(C2,CP$2:CR$1184,3,FALSE))'][i]
                 powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('time')] = format_time(Year, Month, Day, Period) #str(Period)
                 powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
                 p_count += 1
