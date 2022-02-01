@@ -13,7 +13,7 @@ import os
 from pyasyncagent.kg_operations import PySparqlClient
 from pyasyncagent.data_model import *
 
-from src.data_model import *
+from doeagent.data_model import *
 
 class DoESparqlClient(PySparqlClient):
 

@@ -1,4 +1,4 @@
-from src.agent import *
+from doeagent.agent import *
 
 ###############################################################
 ### !!! Do NOT run this script before reading README.md !!! ###

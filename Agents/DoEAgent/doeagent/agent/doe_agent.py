@@ -6,9 +6,9 @@ import os
 
 from pyasyncagent import AsyncAgent
 
-from src.kg_operations import *
-from src.doe_algo import *
-from src.conf import *
+from doeagent.kg_operations import *
+from doeagent.doe_algo import *
+from doeagent.conf import *
 
 class DoEAgent(AsyncAgent):
     def setupJob(self, agentInputs) -> List[str]:

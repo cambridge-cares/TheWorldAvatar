@@ -6,7 +6,7 @@ from summit.strategies import TSEMO as TSEMO_summit
 from functools import reduce
 import pandas as pd
 
-from src.data_model import *
+from doeagent.data_model import *
 
 def proposeNewExperiment(doe: DesignOfExperiment) -> NewExperiment:
     """

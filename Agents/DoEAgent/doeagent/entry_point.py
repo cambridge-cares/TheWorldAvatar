@@ -1,4 +1,4 @@
-from src.agent import *
+from doeagent.agent import *
 
 import logging
 

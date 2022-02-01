@@ -3,8 +3,8 @@ import logging
 import pytest
 import time
 
-from src.agent import *
-from src.conf import *
+from doeagent.agent import *
+from doeagent.conf import *
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
