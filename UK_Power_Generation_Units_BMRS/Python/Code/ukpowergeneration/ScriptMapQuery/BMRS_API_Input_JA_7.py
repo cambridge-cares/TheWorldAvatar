@@ -136,13 +136,13 @@ def convert_csv_to_triple_dfs(csvName):
         for Period in range(1,49):
             #If powerplant
             if data['Type (powerplant(station) or generator(unit))'][i] == "powerplant":
-                powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('powerplanteic')] = data['outputpowerplant =IF(ISNA(VLOOKUP(C2,CP$2:CR$1184,3,FALSE)),"",VLOOKUP(C2,CP$2:CR$1184,3,FALSE))'][i]
+                powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('powerplanteic')] = "PowerPlant_" + str(data['outputpowerplant =IF(ISNA(VLOOKUP(C2,CP$2:CR$1184,3,FALSE)),"",VLOOKUP(C2,CP$2:CR$1184,3,FALSE))'][i])
                 powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('time')] = format_time(Year, Month, Day, Period) #str(Period)
                 powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
                 p_count += 1
             #If generator
             if data['Type (powerplant(station) or generator(unit))'][i] == "generator":
-                generator_data.iloc[g_count, generator_data.columns.get_loc('generatoreic')] = data['Registered Resource EIC code'][i]
+                generator_data.iloc[g_count, generator_data.columns.get_loc('generatoreic')] = "PowerGenerator_" + str(data['Registered Resource EIC code'][i])
                 generator_data.iloc[g_count, generator_data.columns.get_loc('time')] = format_time(Year, Month, Day, Period) #str(Period)
                 generator_data.iloc[g_count, generator_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
                 g_count += 1

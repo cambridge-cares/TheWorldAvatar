@@ -54,14 +54,15 @@ def instantiate_generator(query_endpoint, update_endpoint, generator_name):
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
     
     # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-    query = kg.create_sparql_prefix('ontoenergysystem') + \
-            kg.create_sparql_prefix('rdf') + \
-            kg.create_sparql_prefix('rdfs') + \
-            kg.create_sparql_prefix('xsd') + \
-            '''INSERT DATA { <%s> rdf:type ontoenergysystem:PowerGenerator . \
-                             <%s> rdfs:label "%s"^^xsd:string . }''' % \
-            (generatorIRI, generatorIRI, generator_name)
-    KGClient.executeUpdate(query)
+    if generatorIRI != "" and generator_name != "":
+        query = kg.create_sparql_prefix('ontoenergysystem') + \
+                kg.create_sparql_prefix('rdf') + \
+                kg.create_sparql_prefix('rdfs') + \
+                kg.create_sparql_prefix('xsd') + \
+                '''INSERT DATA { <%s> rdf:type ontoenergysystem:PowerGenerator . \
+                                <%s> rdfs:label "%s"^^xsd:string . }''' % \
+                (generatorIRI, generatorIRI, generator_name)
+        KGClient.executeUpdate(query)
 
 
 def instantiate_powerplant(query_endpoint, update_endpoint, powerplant_name):
@@ -86,17 +87,18 @@ def instantiate_powerplant(query_endpoint, update_endpoint, powerplant_name):
 
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
-    
+
     # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-    query = kg.create_sparql_prefix('ontoenergysystem') + \
-            kg.create_sparql_prefix('rdf') + \
-            kg.create_sparql_prefix('rdfs') + \
-            kg.create_sparql_prefix('xsd') + \
-            kg.create_sparql_prefix('ontoeip') + \
-            '''INSERT DATA { <%s> rdf:type ontoeip:PowerPlant . \
-                             <%s> rdfs:label "%s"^^xsd:string . }''' % \
-            (powerplantIRI, powerplantIRI, powerplant_name)
-    KGClient.executeUpdate(query)
+    if powerplantIRI != "" and powerplant_name != "":
+        query = kg.create_sparql_prefix('ontoenergysystem') + \
+                kg.create_sparql_prefix('rdf') + \
+                kg.create_sparql_prefix('rdfs') + \
+                kg.create_sparql_prefix('xsd') + \
+                kg.create_sparql_prefix('ontoeip') + \
+                '''INSERT DATA { <%s> rdf:type ontoeip:PowerPlant . \
+                                <%s> rdfs:label "%s"^^xsd:string . }''' % \
+                (powerplantIRI, powerplantIRI, powerplant_name)
+        KGClient.executeUpdate(query)
 
 
 def instantiate_timeseries(query_endpoint, update_endpoint, generatorIRI, generator_name=''):
@@ -205,7 +207,7 @@ def get_power_data_from_api():
     #powerplant_df, generator_df = bmrs.Auto_Call(Key)
     #Read the Input-Template.csv file from a URL. 
     #eg. 'https://www.dropbox.com/s/mmmcto232y4q3or/Input-Template.csv?dl=1' for 'Dropbox (Cambridge CARES)\CoMo shared\ja685\BMRS\Script-BMRS-API/Input-Template.csv'
-    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/y303wmc2rzdyehz/Input-Template.csv?dl=1')
+    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template.csv?dl=1')
     print("PowerPlants Dataframe: ")
     print(powerplant_df)
     print("Generators Dataframe: ")
@@ -331,7 +333,7 @@ def update_triple_store():
     new_powerplants = False
     for gt in powerplants_with_data:
         if gt not in powerplants_instantiated.keys():
-            instantiate_powerplant(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt.title())
+            instantiate_powerplant(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
             new_powerplants = True
 
     # Retrieve update of instantiated powerplants in KG (in case any new powerplants were added)
@@ -367,7 +369,7 @@ def update_triple_store():
     new_generators = False
     for gt in generators_with_data:
         if gt not in generators_instantiated.keys():
-            instantiate_generator(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt.title())
+            instantiate_generator(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
             new_generators = True
 
     # Retrieve update of instantiated generators in KG (in case any new generators were added)
