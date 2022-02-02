@@ -587,10 +587,10 @@ if __name__ == '__main__':
         # Retrieve UPRNs and building usage classification attached to current building
         # (set to None for buildings without any data attached)
         if building_data[building_data['building'] == b].empty:
-            uprns = None
-            bldg_theme = None
-            bldg_class = None
-            bldg_name = None
+            uprns = "None"
+            bldg_theme = "None"
+            bldg_class = "None"
+            bldg_name = "None"
         else:
             uprns = building_data[building_data['building'] == b].iloc[0]['uprns']
             bldg_theme = building_data[building_data['building'] == b].iloc[0]['theme']
