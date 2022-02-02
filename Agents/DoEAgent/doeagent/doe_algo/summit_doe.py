@@ -8,7 +8,10 @@ import pandas as pd
 
 from doeagent.data_model import *
 
-def proposeNewExperiment(doe: DesignOfExperiment) -> NewExperiment:
+import logging
+logger = logging.getLogger('summit_doe')
+
+def proposeNewExperiment(doe: DesignOfExperiment) -> List[ReactionExperiment]:
     """
         This method is a wrapper around the TSEMO algorithm as provided by python package `summit`. It suggests the new experiment given information about DesignOfExperiment.
         
@@ -58,11 +61,11 @@ def proposeNewExperiment(doe: DesignOfExperiment) -> NewExperiment:
     # Suggest the next experiment, the output "next_exp" is a DataSet contains the suggested values for the optimisation variables in the next runs
     next_exp = strategy.suggest_experiments(doe.utilisesHistoricalData.numOfNewExp, prev_res=previous_results)
 
-    # Extract the suggestion from Summit DataSet and populate that to dataclass ontodoe.NewExperiment
-    new_exp = formNewExperiment(doe, next_exp)
-    return new_exp
+    # Extract the suggestion from Summit DataSet and populate that to dataclass ontorxn.ReactionExperiment/ReactionVariation
+    new_rxn_exp = formNewExperiment(doe, next_exp)
+    return new_rxn_exp
 
-def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> NewExperiment:
+def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> List[ReactionExperiment]:
     """
         This method converts the Summit suggested experiment from DataSet format to an instance of dataclass ontodoe.NewExperiment.
     """
@@ -75,7 +78,9 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
     first_rxn_exp = doe.utilisesHistoricalData.refersTo[0]
 
     # Iterate over the new suggested experiments to create each of them
-    # TODO test if this works on multiple (> 1) experiment
+    # NOTE below design works for multiple (>1) experiments
+    # NOTE however, for the time being, the DoE Agent will be used to generate 1 experiment to fit the derivation framework
+    # NOTE i.e. len(new_exp_ds) == 1
     for i in range(len(new_exp_ds)):
         # Prepare a list of ReactionCondition
         list_con = []
@@ -97,6 +102,13 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
                 # TODO in that case, line 103 "hasNumericalValue=first_rxn_exp_con.hasValue.hasNumericalValue if len(var_loc) < 1 else new_exp_ds[var_loc[0]][i]"
                 # TODO should be updated to "hasNumericalValue=new_exp_ds[var_loc[0]][i]" as "len(var_loc) > 0" is guaranteed (as we 'continue' if true)
                 pass
+
+            logger.debug("-------------------------------------------------------------------------------------")
+            logger.debug("New suggested experiment summit DataSet:")
+            logger.debug(new_exp_ds)
+            if len(var_loc) > 0:
+                logger.debug(new_exp_ds[var_loc[0]][i])
+            logger.debug("-------------------------------------------------------------------------------------")
 
             # Create instance for OM_Measure
             om_measure = OM_Measure(
@@ -153,14 +165,8 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
 
         # Add created instance to list of ReactionVariation
         list_rxnvar.append(rxnvar)
-
-    # Create instance of NewExperiment that refersTo the list of created new ReactionVariation
-    new_exp = NewExperiment(
-        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-        namespace_for_init=getNameSpace(doe.instance_iri),
-        refersTo=list_rxnvar
-    )
-    return new_exp
+    
+    return list_rxnvar
 
 def constructPreviousResultsTable(doe: DesignOfExperiment) -> DataSet_summit:
     """

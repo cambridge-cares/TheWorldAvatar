@@ -17,40 +17,43 @@ from doeagent.data_model import *
 
 class DoESparqlClient(PySparqlClient):
 
-    def updateNewExperimentInKG(self, doe: DesignOfExperiment, newExp: NewExperiment):
+    def updateNewExperimentInKG(self, doe: DesignOfExperiment, newExp: List[ReactionExperiment]):
         """
             This method is used to populate the suggested new experiments back to the knowledge graph.
-            It firstly first serialise and upload NewExperiment instance (including ReactionVariation) to the knowledge graph.
-            It then replace the link between the OntoDoE:DesignOfExperiment instance and the old OntoDoE:NewExperiment instance with the new created OntoDoE:NewExperiment instance.
+            It firstly first serialise and upload ReactionVariation/ReactionExperiment instance to the knowledge graph.
+            It then replace the link between the OntoDoE:DesignOfExperiment instance and the old OntoRxn:ReactionExperiment/ReactionVariation instance with the new created OntoRxn:ReactionExperiment/ReactionVariation instance.
 
             Arguments:
                 doe - instance of dataclass OntoDoE.DesignOfExperiment
-                newExp - instance of dataclass OntoDoE.NewExperiment
+                newExp - a list of instance of dataclass OntoRxn.ReactionExperiment
         """
-        # (1) first serialise and upload NewExperiment instance (including ReactionVariation) to KG
+        # (1) first serialise and upload ReactionVariation/ReactionExperiment instance to KG
         # Generate a file path that is used to store the created OntoRxn:ReactionVariation instance
-        filePath = f'{str(uuid.uuid4())}.xml'
-        # Serialise the created OntoDoE:NewExperiment instance (including OntoRxn:ReactionVariation) as a XML file
+        filePath = f'{str(uuid.uuid4())}.ttl'
+        # Serialise the created OntoRxn:ReactionVariation/ReactionExperiment instance as a XML file
         # All information should already be prepared and added to the instance
-        # Method createInstanceForKG will write all information to rdflib Graph on-the-fly
+        # Method create_instance_for_kg will write all information to rdflib Graph on-the-fly
         g = Graph()
-        g = newExp.createInstanceForKG(g)
-        g.serialize(filePath, format='xml')
-        # Upload the created OntoDoE:NewExperiment instance to knowledge graph
+        # NOTE although here we loop through the list of OntoRxn:ReactionVariation/ReactionExperiment
+        # NOTE in theory, the len(newExp) should be 1 (as we decided to make DoE Agent only suggest 1 experiment per derivation)
+        # NOTE the loop is added for the future development
+        for exp in newExp:
+            g = exp.create_instance_for_kg(g)
+        g.serialize(filePath, format='ttl')
+        # Upload the created OntoRxn:ReactionVariation/ReactionExperiment instance to knowledge graph
         self.uploadOntology(filePath)
-        # Delete generated XML file
+        # Delete generated Turtle file
         os.remove(filePath)
 
         # (2) replace connection between OntoDoE:DesignOfExperiment with OntoDoE:NewExperiment
         # Construct SPARQL Update string
         # delete existing <DoE> <proposesNewExperiment> <newExp_old>
         # add <DoE> <proposesNewExperiment> <newExp>
-        update = """DELETE {<%s> <%s> ?newexp .} \
-                    INSERT {<%s> <%s> <%s> .} \
-                    WHERE {<%s> <%s> ?newexp .}""" % (
-                        doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT,
-                        doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT, newExp.instance_iri,
-                        doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT)
+        # NOTE here the for loop is added due to the same reason - for the future development
+        update = """DELETE {<%s> <%s> ?newexp .}""" % (doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT)
+        for exp in newExp:
+            update += """INSERT {<%s> <%s> <%s> .} """ % (doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT, exp.instance_iri)
+        update += """WHERE {<%s> <%s> ?newexp .}""" % (doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT)
 
         # Perform SPARQL Update
         self.performUpdate(update)
@@ -406,7 +409,7 @@ class DoESparqlClient(PySparqlClient):
 
         if (len(response) > 1):
             raise Exception(
-                "DesignOfExperiment instance <%s> should only propose ONE instance of NewExperiment, it is currently proposing: <%s>" % (
+                "DesignOfExperiment instance <%s> should only propose ONE instance of ReactionExperiment, it is currently proposing: <%s>" % (
                     doe_iri, ">, <".join([res['newexp'] for res in response])
                 )
             )

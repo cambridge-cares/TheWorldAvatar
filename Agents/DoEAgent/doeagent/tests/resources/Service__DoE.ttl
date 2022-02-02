@@ -1,5 +1,6 @@
 @prefix ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#> .
 @prefix ontodoe:             <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
+@prefix ontorxn:             <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#> .
 @prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
 @prefix :                    <http://www.theworldavatar.com/resource/agents/Service__DoE#> .
@@ -26,7 +27,7 @@
 
 :MessageContent_output
     rdf:type ontoagent:MessageContent;
-    ontoagent:hasMandatoryPart :MessagePart_newexp;
+    ontoagent:hasMandatoryPart :MessagePart_rxnexp;
 .
 
 :MessagePart_stra
@@ -57,9 +58,9 @@
     ontoagent:hasName "historicalData"^^xsd:string;
 .
 
-:MessagePart_newexp
+:MessagePart_rxnexp
     rdf:type ontoagent:MessagePart;
-    ontoagent:isArray "false"^^xsd:boolean;
-    ontoagent:hasType ontodoe:NewExperiment;
-    ontoagent:hasName "newExperiment"^^xsd:string;
+    ontoagent:isArray "false"^^xsd:boolean; # this is set as false to declare only one instance of OntoRxn:ReactionExperiment will be generated for each derivation
+    ontoagent:hasType ontorxn:ReactionExperiment;
+    ontoagent:hasName "reactionExperiment"^^xsd:string;
 .

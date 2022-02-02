@@ -30,7 +30,7 @@ class OM_Measure:
             else:
                 raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
-    def createInstanceForKG(self, g: Graph) -> Graph:
+    def create_instance_for_kg(self, g: Graph) -> Graph:
         # IRI-ise the IRI of OM:Measure instance to be used by rdflib package
         measure_iri = URIRef(self.instance_iri)
 
@@ -78,7 +78,7 @@ class ReactionCondition:
                     'ReactionScale <%s> is not indicateUsageOf any InputChemical.' % (self.instance_iri)
                 )
     
-    def createInstanceForKG(self, g: Graph) -> Graph:
+    def create_instance_for_kg(self, g: Graph) -> Graph:
         # IRI-ise the IRI of ReactionCondition instance to be used by rdflib package
         con_iri = URIRef(self.instance_iri)
 
@@ -90,7 +90,7 @@ class ReactionCondition:
         g.add((con_iri, URIRef(OM_HASVALUE), URIRef(self.hasValue.instance_iri)))
 
         # Add triples for units of measure
-        g = self.hasValue.createInstanceForKG(g)
+        g = self.hasValue.create_instance_for_kg(g)
 
         # Only add positionalID if it exists
         if self.positionalID is not None:
@@ -140,7 +140,7 @@ class PerformanceIndicator:
             else:
                 raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
-    def createInstanceForKG(self, g: Graph) -> Graph:
+    def create_instance_for_kg(self, g: Graph) -> Graph:
         # IRI-ise the IRI of PerformanceIndicator instance to be used by rdflib package
         perf_iri = URIRef(self.instance_iri)
 
@@ -154,7 +154,7 @@ class PerformanceIndicator:
             g.add((perf_iri, URIRef(OM_HASVALUE), URIRef(self.hasValue.instance_iri)))
 
             # Add triples for units of measure
-            g = self.hasValue.createInstanceForKG(g)
+            g = self.hasValue.create_instance_for_kg(g)
 
         # Only add positionalID if it exists
         if self.positionalID is not None:
@@ -195,7 +195,7 @@ class ReactionExperiment:
     hasInputChemical: Optional[List[InputChemical]] = None
     hasOutputChemical: Optional[List[OutputChemical]] = None
 
-    def createInstanceForKG(self, g: Graph) -> Graph:
+    def create_instance_for_kg(self, g: Graph) -> Graph:
         # check if information is complete
         if self.hasReactionCondition is None:
             raise Exception(
@@ -224,7 +224,7 @@ class ReactionExperiment:
             g.add((URIRef(con.instance_iri), URIRef(OM_HASPHENOMENON), rxnvar_iri))
 
             # Add all other triples of the ReactionCondition instance
-            g = con.createInstanceForKG(g)
+            g = con.create_instance_for_kg(g)
         
         for perf in self.hasPerformanceIndicator:
             # Attach the PerformanceIndicator instance to the OntoRxn:ReactionVariation instance
@@ -237,7 +237,7 @@ class ReactionExperiment:
             g.add((URIRef(perf.instance_iri), URIRef(OM_HASPHENOMENON), rxnvar_iri))
 
             # Add all other triples of the PerformanceIndicator instance
-            g = perf.createInstanceForKG(g)
+            g = perf.create_instance_for_kg(g)
         
         # TODO add support for creating InputChemical and OutputChemical
 
@@ -256,7 +256,7 @@ class ReactionVariation(ReactionExperiment):
             else:
                 raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
-    def createInstanceForKG(self, g: Graph) -> Graph:
+    def create_instance_for_kg(self, g: Graph) -> Graph:
         # check if information is complete
         if self.isVariationOf is None:
             raise Exception(
@@ -294,7 +294,7 @@ class ReactionVariation(ReactionExperiment):
             g.add((URIRef(con.instance_iri), URIRef(OM_HASPHENOMENON), rxnvar_iri))
 
             # Add all other triples of the ReactionCondition instance
-            g = con.createInstanceForKG(g)
+            g = con.create_instance_for_kg(g)
         
         for perf in self.hasPerformanceIndicator:
             # Attach the PerformanceIndicator instance to the OntoRxn:ReactionVariation instance
@@ -307,7 +307,7 @@ class ReactionVariation(ReactionExperiment):
             g.add((URIRef(perf.instance_iri), URIRef(OM_HASPHENOMENON), rxnvar_iri))
 
             # Add all other triples of the PerformanceIndicator instance
-            g = perf.createInstanceForKG(g)
+            g = perf.create_instance_for_kg(g)
         
         # TODO add support for creating InputChemical and OutputChemical
 

@@ -41,14 +41,17 @@ class DoEAgent(AsyncAgent):
         self.logger.info(json.dumps(asdict(doe_instance)))
 
         # Call function to suggest the new experiment and return an instance of dataclass OntoDoE.NewExperiment
-        doe_instance_new_exp = suggest(doe_instance)
+        new_rxn_exp = suggest(doe_instance)
 
-        # Upload the created OntoDoE:NewExperiment (including OntoRxn:ReactionVariation) triples to KG
-        # Also update the triple between OntoDoE:DesignOfExperiment and OntoDoE:NewExperiment
-        self.sparql_client.updateNewExperimentInKG(doe_instance, doe_instance_new_exp)
+        # Upload the created OntoRxn:ReactionVariation triples to KG
+        # Also update the triple between OntoDoE:DesignOfExperiment and OntoRxn:ReactionVariation
+        self.sparql_client.updateNewExperimentInKG(doe_instance, new_rxn_exp)
 
-        self.logger.info(f"The proposed new experiment is recorded in <{doe_instance_new_exp.instance_iri}>.")
-        return [doe_instance_new_exp.instance_iri]
+        # NOTE here a list is created by looping through the list of new_rxn_exp, but in fact its length should be 1 in current design
+        # NOTE the loop is added for future development
+        list_new_rxn_exp_iri = [exp.instance_iri for exp in new_rxn_exp]
+        self.logger.info(f"The proposed new experiment is: {' '.join(list_new_rxn_exp_iri)}.")
+        return list_new_rxn_exp_iri
 
     def collectInputsInformation(self, agent_inputs) -> DesignOfExperiment:
         """
@@ -111,13 +114,13 @@ class DoEAgent(AsyncAgent):
             hasDomain=domain_instance,
             hasSystemResponse=system_response_instance,
             utilisesHistoricalData=historical_data_instance,
-            proposesNewExperiment=None) # TODO maybe also initialise NewExperiment?
+            proposesNewExperiment=None) # TODO initialisation of ReactionExperiment is omitted here
 
         # Get the OntoDoE:DesignOfExperiment instances given the inputs, i.e. all the inputs should belong to the same OntoDoE:DesignOfExperiment instance
         doe_instance = self.sparql_client.getDoEInstanceIRI(doe_instance)
         return doe_instance
 
-def suggest(doe_instance: DesignOfExperiment) -> NewExperiment:
+def suggest(doe_instance: DesignOfExperiment) -> List[ReactionExperiment]:
     """
         This method suggests the new experiment given information provided for design of experiment exercise.
 

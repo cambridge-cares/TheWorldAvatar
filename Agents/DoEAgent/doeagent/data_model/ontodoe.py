@@ -69,39 +69,10 @@ class HistoricalData:
     numOfNewExp: int = 1
 
 @dataclass
-class NewExperiment:
-    instance_iri: str
-    refersTo: List[ReactionExperiment]
-    namespace_for_init: Optional[str] = None
-
-    def __post_init__(self):
-        if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            if self.namespace_for_init is not None:
-                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, ONTODOE_NEWEXPERIMENT)
-            else:
-                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
-
-    def createInstanceForKG(self, g: Graph) -> Graph:
-        # add triple <newExp> <rdf:type> <OntoDoE:NewExperiment>
-        g.add((URIRef(self.instance_iri), RDF.type, URIRef(ONTODOE_NEWEXPERIMENT)))
-        
-        # iterate over the new experiment
-        for rxn in self.refersTo:
-            # add triple <newExp> <refersTo> <rxnVar/rxnExp>
-            g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(rxn.instance_iri)))
-            # add triples of <rxnVar/rxnExp>
-            g = rxn.createInstanceForKG(g)
-        
-        return g
-
-@dataclass
 class DesignOfExperiment:
     instance_iri: Optional[str]
     usesStrategy: Strategy
     hasDomain: Domain
     hasSystemResponse: List[SystemResponse]
     utilisesHistoricalData: HistoricalData
-    proposesNewExperiment: Optional[NewExperiment]
-
-    # TODO the update of new created OntoDoE:NewExperiment instance is done in kg_utils.py
-    # TODO maybe put that as part of DesignOfExperiment/NewExperiment dataclasses?
+    proposesNewExperiment: Optional[ReactionExperiment]
