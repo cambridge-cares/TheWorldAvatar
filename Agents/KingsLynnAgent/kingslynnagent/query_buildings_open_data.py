@@ -321,7 +321,11 @@ def execute_query(query, query_endpoint):
 
     # Set query and execute
     sparql.setQuery(query)
-    results = sparql.query().convert()
+    try:
+        results = sparql.query().convert()
+    except:
+        print("Connection fails: try to reconnect")
+        results = sparql.query().convert()
 
     return results
 
