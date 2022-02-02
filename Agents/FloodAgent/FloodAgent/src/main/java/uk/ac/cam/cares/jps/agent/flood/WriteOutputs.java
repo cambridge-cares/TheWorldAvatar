@@ -35,7 +35,6 @@ public class WriteOutputs {
     private static TimeSeriesClient<Instant> tsClient = null;
     
     // output files
-    private static String dataFolder = "data";
     private static String mainDirectory = "main";
     
     // err msg
@@ -88,7 +87,7 @@ public class WriteOutputs {
     	removeOldOutput();
 
     	// create directory
-    	File directories = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory).toString());
+    	File directories = new File(Paths.get(Config.outputdir, mainDirectory).toString());
     	directories.mkdirs();
     	
     	// then write the files..
@@ -104,7 +103,7 @@ public class WriteOutputs {
 		LOGGER.info("Trying to delete old data files");
 		Path dataFolderPath = null;
 		try {
-			dataFolderPath = Paths.get(Config.outputdir, dataFolder);
+			dataFolderPath = Paths.get(Config.outputdir);
 			FileUtils.cleanDirectory(dataFolderPath.toFile());
 		} catch (IOException | IllegalArgumentException e) {
 			LOGGER.warn(e.getMessage());
@@ -151,7 +150,7 @@ public class WriteOutputs {
 	static void writeOverallMetaFile() {
 		double[] mapcentre = {0.3976, 52.7543};
 	    
-        File file = new File(Paths.get(Config.outputdir, dataFolder, "meta.json").toString());
+        File file = new File(Paths.get(Config.outputdir, "meta.json").toString());
 		
 		JSONObject json = new JSONObject();
 		JSONObject global = new JSONObject();
@@ -177,7 +176,7 @@ public class WriteOutputs {
 	}
 	
 	static void writeLayerTree() {
-		File file = new File(Paths.get(Config.outputdir, dataFolder, "tree.json").toString());
+		File file = new File(Paths.get(Config.outputdir, "tree.json").toString());
 		
 		JSONArray layers = new JSONArray();
 		
@@ -193,7 +192,7 @@ public class WriteOutputs {
 	}
 	
 	static void writeMainMeta(LocalDate date) {
-		File file = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory, "meta.json").toString());
+		File file = new File(Paths.get(Config.outputdir, mainDirectory, "meta.json").toString());
 		
 		JSONObject json = new JSONObject();
 		
@@ -237,7 +236,7 @@ public class WriteOutputs {
 	 * name of file  - stations.geojson
 	 */
 	static void writeStationsToGeojson(Map<String, Station> stations) {
-		File geojsonfile = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"flood-stations.geojson").toString());
+		File geojsonfile = new File(Paths.get(Config.outputdir, mainDirectory,"flood-stations.geojson").toString());
 		
 		// create geojson file
 		JSONObject featureCollection = new JSONObject();
@@ -280,7 +279,7 @@ public class WriteOutputs {
 	}
 	
 	static void writeStationsMeta(Map<String, Station> stations) {
-		File metafile = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"stationsmeta.json").toString());
+		File metafile = new File(Paths.get(Config.outputdir, mainDirectory,"stationsmeta.json").toString());
 		
 		JSONArray metaDataCollection = new JSONArray();
 		
@@ -317,7 +316,7 @@ public class WriteOutputs {
 	 */
 	static void writeTimeSeriesJson(Map<String, Station> stations, LocalDate date) {
 		// write to file 
-		File file = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"flood-" + date + "-timeseries.json").toString());
+		File file = new File(Paths.get(Config.outputdir, mainDirectory,"flood-" + date + "-timeseries.json").toString());
 		
 		// collect time series into a list first
 		List<TimeSeries<Instant>> ts_list = new ArrayList<>();
