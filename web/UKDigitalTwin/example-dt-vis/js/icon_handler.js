@@ -53,10 +53,15 @@ class IconHandler {
             var imageName = key.replace(/^.*[\\\/]/, '');
             imageName = imageName.replace(/\.[^/.]+$/, "");
             
-            if(key.includes("-sdf")) {
-                this._map.addImage(imageName, value, { 'sdf': true });
-            } else {
-                this._map.addImage(imageName, value);
+            try {
+                if(key.includes("-sdf")) {
+                    this._map.addImage(imageName, value, { 'sdf': true });
+                } else {
+                    this._map.addImage(imageName, value);
+                }
+            } catch(error){
+                console.log(imageName);
+                console.trace();
             }
         }
     }

@@ -75,6 +75,8 @@ class InteractionHandler {
      * @param {string[]} layer [layer name, layer type]
      */
     registerInteractions(layer) {
+        if(this._map.getLayer(layer) == null) return;
+        
         let layerName = layer[0];
         let layerType = layer[1];
         let sourceName = this._map.getLayer(layerName).source;
@@ -105,14 +107,20 @@ class InteractionHandler {
             let self = this;
             let siteFeatures = features.filter(feature => {
                 let featureLayer = feature["layer"]["id"];
+                
+                // Filter out layers of specific types
                 if(featureLayer.includes("_clickable")) return false;
                 if(featureLayer.includes("_arrows")) return false;
                 if(featureLayer.includes("-highlight")) return false;
                 if(featureLayer.includes("-focus")) return false;
 
+                // Filter out invisible layers
+                if(self._map.getLayoutProperty(featureLayer, "visibility") === "none") {
+                    return false;
+                }
+
                 let layer = self._map.getLayer(featureLayer);
                 if(layer["type"] !== "circle" && layer["type"] !== "symbol") return false;
-
                 if(layer["metadata"] && layer["metadata"]["provider"] === "cmcl") return true;
                 return false;
             });
@@ -296,6 +304,7 @@ class InteractionHandler {
 
             } else if(features != null) {
                 features.forEach(leaf => {
+                    console.log(leaf);
                     leaf["layer"] = [];
                     leaf["source"] = sourceName;
                     leaf["layer"]["id"] = feature["layer"]["id"].replace("_cluster", "");

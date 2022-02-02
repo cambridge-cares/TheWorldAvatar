@@ -309,8 +309,24 @@ class ControlHandler {
 			this._map.setStyle("mapbox://styles/mapbox/satellite-streets-v11?optimize=true");
 		} 
 
+		// Hide building outlines
+		hideBuildings();
+
 		// Store the current terrain as a global variable
 		DT.terrain = mode;
+	}
+
+	/**
+	 * Hide building outlines provided by MapBox as these may conflict with custom
+	 * building data.
+	 */
+	hideBuildings() {
+		if(this._map == null) return;
+
+		let ids = ["building", "building-outline", "building-underground"];
+		ids.forEach(id => {
+			if(this._map.getLayer(id) != null) this._map.setLayoutProperty(id, "visibility", "none");
+		});
 	}
 
 	/**

@@ -48,17 +48,26 @@
 </head>
 
 <body>
+	<!-- Overlay to show loading icon -->
+	<div id='loadingOverlay'>
+		<div id="loadingInner">
+			<img src="img/loading.gif" width="200px" height="200px"/>
+			<h3>Loading data, please wait...</h3>
+		</div>
+	</div>
+		
 	<!-- Element the MapBox map will be added to -->
 	<div id='map'></div>
+	
+	<!-- Element for depth of field overlay -->
 	<div id="tiltShift"></div>
 	
-	<!-- Popup element for developer only animation controls -->
-	<div id="animationDialog" style="display: none;">
-		<p>I am a dialog!</p>
-	</div>
-
 	<!-- Element the map controls will be added to (normally on the left) -->
 	<div id="controlsContainer"></div>
+	
+	<!-- Popup element for developer only animation controls -->
+	<div id="animationDialog" style="display: none;"></div>
+
 
 	<!-- Non-module JS block, variables in here are global -->
 	<script>
@@ -93,16 +102,35 @@
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
+		
+		// Display the loading overlay
+		function showLoadingOverlay() {
+			let loadingOverlay = document.getElementById("loadingOverlay");
+
+			if(document.getElementById("sidePanel").classList.contains("expanded")) {
+				loadingOverlay.style.right = "500px";
+			} else {
+				loadingOverlay.style.right = "28px";
+			}
+			loadingOverlay.style.display = "flex";
+		}
+
+
+		// Get the base URL of the visualisation
+		function getURL() {
+			let winURL = window.location;
+			let baseURL = winURL.origin + window.location.pathname;
+			if(baseURL.includes(".html")) {
+				baseURL = baseURL.substring(0, baseURL.lastIndexOf('/'));
+			}
+			return baseURL;
+		}
 
 		// Will run once metadata is loaded asynchronously
 		function startUp() {
 			// Create the MapBox map
 			var map = manager.createMap("map");
 			var iconHandler = new IconHandler(map);
-
-			// TEST
-			setupDetection(map);
-			// TEST
 
 			// Provide some default content for the side panel
 			let title = `<h1>Example Visualisation</h1>`;
@@ -137,12 +165,15 @@
 
 			map.on('style.load', function() {
 				console.log("INFO: A new style has been loaded.");
+				
+				// Show loading icon
+				showLoadingOverlay();
+					
 				var imagePromises = [];
-
 				if(!loadedOnce) {
 					// Load and cache icon images used by this visualisation
-					let winURL = window.location;
-					let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+					let baseURL = getURL();
+					
 					EXAMPLE_ICONS.forEach(relativeURL => {
 						let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
 						imagePromises.push(iconHandler.loadIcon(imageURL));
@@ -150,7 +181,14 @@
 
 					// This callback will be fired when a final group is selected in the dropdowns
 					let selectCallback = function(selectedGroups) {
-						manager.plotGroup(selectedGroups, false);
+					
+						// Show loading icon
+						showLoadingOverlay();
+							
+						manager.plotGroup(selectedGroups, false, function() {
+							// Hide the loading overlay
+							document.getElementById("loadingOverlay").style.display = "none";
+						});
 					};
 
 					// Build and show the layer tree based on the metadata
@@ -187,6 +225,9 @@
 							manager.addSkyAndTerrain();
 							manager.set3DTerrain();
 							manager.setPlacenames();
+							
+							// Hide the loading overlay
+							document.getElementById("loadingOverlay").style.display = "none";
 						});
 					}
 				});
