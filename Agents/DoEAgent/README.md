@@ -26,7 +26,7 @@ Requirements:
     RUN jpsrm install JpsBaseLib ./jpstemp/
     ``` 
     At the moment, above lines are commented out in the Dockerfile. One may bring them back if a specific version of `jps-base-lib` is required and provided.
-* Configurations for the agent are provided in `TheWorldAvatar/Agents/DoEAgent/src/conf/doeagent_properties.json` file. The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT`, with the credentials specified using `KG_USERNAME` and `KG_PASSWORD`. (REMEMBER NEVER COMMIT THESE INFORMATION TO GIT! A BETTER WAY OF ENCODING CREDENTIALS WILL BE PROVIDED ASAP.) The OntoAgent:Service IRI of the agent is specified using `ONTOAGENT_SERVICE`. The periodically time interval to monitor asynchronous derivation is specified by `PERIODIC_TIMESCALE`. One may also provide `DERIVATION_INSTANCE_BASE_URL` to be used by DerivationClient when creating derivations related instances. Developers needs to ensure that this file is correctly updated before building the Docker Image.
+* Configurations for the agent are provided in `TheWorldAvatar/Agents/DoEAgent/doeagent/conf/doeagent_properties.json` file. The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT`, with the credentials specified using `KG_USERNAME` and `KG_PASSWORD`. (REMEMBER NEVER COMMIT THESE INFORMATION TO GIT! A BETTER WAY OF ENCODING CREDENTIALS WILL BE PROVIDED ASAP.) The OntoAgent:Service IRI of the agent is specified using `ONTOAGENT_SERVICE`. The periodically time interval to monitor asynchronous derivation is specified by `PERIODIC_TIMESCALE`. One may also provide `DERIVATION_INSTANCE_BASE_URL` to be used by DerivationClient when creating derivations related instances. Developers needs to ensure that this file is correctly updated before building the Docker Image.
 
 Once the requirements have been addressed, the Image can be build using the following commands:
 ```cmd
@@ -58,13 +58,13 @@ and the response is the IRI of an instance of `OntoDoE:NewExperiment` indicating
 ### Asynchronous derivation operation
 In the latest iteration, DoE Agent only works with the derivation framework in asychronous mode. Once the DoE Agent is deployed, it periodically (every 120 seconds, defined by `PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE` in `TheWorldAvatar/Agents/DoEAgent/src/conf/doeagent_properties.json`) and acts based on the status associated with that derivation.
 
-A simple script `TheWorldAvatar/Agents/DoEAgent/dev_docker.py` is provided as an example to demonstrate the operations. It operates the same triple store specified in the `TheWorldAvatar/Agents/DoEAgent/src/conf/doeagent_properties.json`. Therefore, it can be used to test if the DoE Agent deployed is functional as expected. **ALERT: developer should ONLY execute this script when the agent is operating on a triple store that has NO VALUABLE DATA in it - ALL TRIPLES will be DELETED once the script is executed.**
+A simple script `TheWorldAvatar/Agents/DoEAgent/dev_docker.py` is provided as an example to demonstrate the operations. It operates the same triple store specified in the `TheWorldAvatar/Agents/DoEAgent/doeagent/conf/doeagent_properties.json`. Therefore, it can be used to test if the DoE Agent deployed is functional as expected. **ALERT: developer should ONLY execute this script when the agent is operating on a triple store that has NO VALUABLE DATA in it - ALL TRIPLES will be DELETED once the script is executed.**
 
 Once the script is executed, it first DELETES ALL TRIPLES in the specified SPARQL endpoint, it then SPARQL update all triples stated in below three files to the same endpoint:
 ```
-TheWorldAvatar/Agents/DoEAgent/src/test/resources/doe.ttl
-TheWorldAvatar/Agents/DoEAgent/src/test/resources/rxn_data.ttl
-TheWorldAvatar/Agents/DoEAgent/src/test/resources/Service__DoE.ttl
+TheWorldAvatar/Agents/DoEAgent/doeagent/tests/resources/doe.ttl
+TheWorldAvatar/Agents/DoEAgent/doeagent/tests/resources/rxn_data.ttl
+TheWorldAvatar/Agents/DoEAgent/doeagent/tests/resources/Service__DoE.ttl
 ```
 
 The script then writes below derivation related triples:
@@ -102,30 +102,27 @@ python dev_docker.py
 
 If everything is working as expected, an output on console should be expected similar to the one below (this might take a few minutes) (**Please make a note of the IRI in the response as `<createdDerivationInstance>`, you will need this for querying later**):
 ```
-2022-01-24 12:41:35,081 (STDOUT) Initialised successfully, created derivation instance: http://kg.cmclinnovations.com:81/testontorxn/derivedAsyn_5c513164-b820-422b-a6d3-5facc4108ac7
+2022-02-02 23:54:51,603 (STDOUT) Initialised successfully, created derivation instance: http://kg.cmclinnovations.com:81/testontorxn/derivedAsyn_1059583f-063e-4175-8822-9a150e4723eb
 ```
 As the derivation is initialised with a timestamp of 0 and the inputs are marked with a timestamp of current time, the derivation is outdated and will be marked as `PendingUpdate`. The update will be taken care of by DoE Agent and the IRI of the suggested instance of `OntoDoE:NewExperiment` will be generated and uploaded into the knowledge graph. This can be verified by querying {`?new_exp` `OntoDerivation:belongsTo` `<createdDerivationInstance>`}:
 ```
 PREFIX OntoDerivation:     <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
 PREFIX OntoDoE:            <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
 
-SELECT ?ontodoe_new_exp ?ontorxn_new_exp
+SELECT ?ontorxn_rxn_exp
 WHERE {
-  ?ontodoe_new_exp OntoDerivation:belongsTo <http://kg.cmclinnovations.com:81/testontorxn/derivedAsyn_5c513164-b820-422b-a6d3-5facc4108ac7> .
-  OPTIONAL {?ontodoe_new_exp OntoDoE:refersTo ?ontorxn_new_exp}
+  ?ontorxn_rxn_exp OntoDerivation:belongsTo <http://kg.cmclinnovations.com:81/testontorxn/derivedAsyn_1059583f-063e-4175-8822-9a150e4723eb> .
 }
 ```
-If the update was successful (this might take a few minutes), the results of above query will be changed from:
-  | ontodoe_new_exp | ontorxn_new_exp |
-  | --------------- | --------------- |
-  | `<https://www.example.com/triplestore/ontodoe/DoE_1/NewExperiment_1>` | |
+If the update was successful (this might take a few minutes as the `PERIODIC_TIMESCALE` was set as 120 seconds, you may want to change that to a smaller value for testing purpose), the results of above query will be changed from:
+  | ontorxn_rxn_exp |
+  | --------------- |
+  | `<https://www.example.com/triplestore/ontodoe/DoE_1/ReactionExperiment_new>` |
 
 to something similar to below in a few minutes:
 
-  | ontodoe_new_exp | ontorxn_new_exp |
-  | --------------- | --------------- |
-  | `<https://www.example.com/triplestore/ontodoe/DoE_1/NewExperiment_f8b195c9-d030-4468-a221-be3b75127c0d>` | `<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_0bcdabd7-223c-414c-964d-41d96d01146d>` |
-  | `<https://www.example.com/triplestore/ontodoe/DoE_1/NewExperiment_f8b195c9-d030-4468-a221-be3b75127c0d>` | `<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_93e0c2cd-4739-4a03-bfd2-23987a31a5d2>` |
-  | `<https://www.example.com/triplestore/ontodoe/DoE_1/NewExperiment_f8b195c9-d030-4468-a221-be3b75127c0d>` | `<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_ca1c2a65-6521-47ac-ae1d-4ffb3c394cb1>` |
+  | ontorxn_rxn_exp |
+  | --------------- |
+  | `<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_76a2b409-f15d-4f3e-900f-8038a32b63aa>` |
 
-where the IRIs in `ontorxn_new_exp` column indicate the new suggested instances of `OntoRxn:ReactionVariation`.
+where the IRIs in `ontorxn_rxn_exp` column indicate the new suggested instances of `OntoRxn:ReactionVariation`.

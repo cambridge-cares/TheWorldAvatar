@@ -17,7 +17,7 @@ def exampleEntryPoint():
             the created OntoDerivation:Derivation instance
     """
 
-    config = DoEAgentConfig(str(Path(__file__).absolute().parent) + '/src/conf/doeagent_properties.json')
+    config = DoEAgentConfig(str(Path(__file__).absolute().parent) + '/doeagent/conf/doeagent_properties.json')
 
     clearAll = """DELETE {?s ?p ?o} \
             WHERE {?s ?p ?o}
@@ -25,14 +25,14 @@ def exampleEntryPoint():
     example_sparql_client = DoESparqlClient(config.SPARQL_QUERY_ENDPOINT, config.SPARQL_UPDATE_ENDPOINT)
     example_sparql_client.performUpdate(clearAll)
 
-    folderpath = str(Path(__file__).absolute().parent) + '/src/test/resources/'
+    folderpath = str(Path(__file__).absolute().parent) + '/doeagent/tests/resources/'
     example_sparql_client.uploadOntology(folderpath+'doe.ttl')
     example_sparql_client.uploadOntology(folderpath+'Service__DoE.ttl')
     example_sparql_client.uploadOntology(folderpath+'rxn_data.ttl')
 
     # Hardcode the IRI to be used for the example
     # Developers should upload the files containing these triples to the endpoints following the instructions in the README.md
-    derivation_output = ['https://www.example.com/triplestore/ontodoe/DoE_1/NewExperiment_1']
+    derivation_output = ['https://www.example.com/triplestore/ontodoe/DoE_1/ReactionExperiment_new']
     derivation_inputs = ['https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1',
                         'https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1',
                         'https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_1',
