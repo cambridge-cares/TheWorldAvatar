@@ -194,20 +194,22 @@ def add_time_series(instance_IRI, timestamps, values, units):
     ###
 
     dataIRIs = []
-    activepowergenerated_IRI = kg.PREFIXES['ontoenergysystem'] + 'ActivePowerGenerated_' + str(uuid.uuid4())
+    activepowergenerated_IRI = kg.PREFIXES['ontoenergysystem_kb'] + 'ActivePowerGenerated_' + str(uuid.uuid4())
     dataIRIs.append(activepowergenerated_IRI)
 
     #Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
     ###
     query = kg.create_sparql_prefix('ontopowsys') + \
             kg.create_sparql_prefix('ontoenergysystem') + \
+            kg.create_sparql_prefix('om') + \
+            kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
             <%s> ontopowsys:hasActivePowerGenerated <%s> ; \
             <%s> rdf:type ontopowsys:ActivePowerGenerated ; \
-            <%s> om:hasUnit "%s" . }''' % (instance_IRI, activepowergenerated_IRI, activepowergenerated_IRI, activepowergenerated_IRI, units)
+            <%s> om:hasUnit <%s> . }''' % (instance_IRI, activepowergenerated_IRI, activepowergenerated_IRI, activepowergenerated_IRI, units)
     ###
 
-    print('query:', query)
+    print('insert query:', query)
 
     KGClient.executeUpdate(query)
     print("Triples independent of Java TimeSeriesClient successfully instantiated.")
@@ -413,42 +415,11 @@ def update_triple_store():
     # Get the power data from National Grid csv as DataFrame
     #####Note that there are two now#####
     #power_data = get_power_data_from_api()
+    #THIS IS THE BIG, IMPORTANT QUERY CALL. 
     powerplant_power_data, generator_power_data = get_power_data_from_api()
-
-    ##########
-    #Note: The below code may be moved or made a funciton later, but for now is here for testing. 
-    daily_loop = check_df(powerplant_power_data, 48)
-    placement = 0
-    while(daily_loop):
-        dfSlice, placement, daily_loop = take_day(powerplant_power_data, placement, 48)
-        """
-        print("placement")
-        print(placement)
-        print("daily_loop")
-        print(daily_loop)
-        print("SLICE")
-        print(dfSlice)
-        """
-        #Add daily slice (dfSlice) here. 
+    #BMRS uses MW
+    units = "http://www.ontology-of-units-of-measure.org/resource/om-2/megawatt"
     
-    daily_loop = check_df(generator_power_data, 48)
-    placement = 0
-    while(daily_loop):
-        dfSlice, placement, daily_loop = take_day(generator_power_data, placement, 48)
-        """
-        print("placement")
-        print(placement)
-        print("daily_loop")
-        print(daily_loop)
-        print("SLICE")
-        print(dfSlice)
-        if placement == 192:
-            for w in dfSlice['time']:
-                print(w)
-        """
-        #Add daily slice (dfSlice) here. 
-    ##########
-
     #Now do the same for powerplants as will be done for generators. 
     # Retrieve all powerplants with available power data (powerplant names are capitalised)
     powerplants_with_data = powerplant_power_data['powerplanteic'].unique()
@@ -470,6 +441,7 @@ def update_triple_store():
         powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
         powerplants_instantiated = {k.upper(): v for k, v in powerplants.items()}
 
+    """
     # Assimilate power data for instantiated gas powerplants
     for gt in powerplants_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
@@ -484,7 +456,24 @@ def update_triple_store():
 
         # Add time series data using Java TimeSeriesClient
         add_time_series_data(powerplants_instantiated[gt], new_data, gt)
-
+    """
+    #Loop for powerplants (which we have data)
+    daily_loop = check_df(powerplant_power_data, 48)
+    placement = 0
+    while(daily_loop):
+        dfSlice, placement, daily_loop = take_day(powerplant_power_data, placement, 48)
+        """
+        print("placement")
+        print(placement)
+        print("daily_loop")
+        print(daily_loop)
+        print("SLICE")
+        print(dfSlice)
+        print(kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['powerplanteic'].iloc[0])
+        """
+        #Add daily slice (dfSlice) here. 
+        add_time_series((kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['powerplanteic'].iloc[0]), dfSlice['time'], dfSlice['power'], units)
+    print("CHECK PLACE")
     #Now do the same for generators. 
     # Retrieve all generators with available power data (generator names are capitalised)
     generators_with_data = generator_power_data['generatoreic'].unique()
@@ -506,6 +495,7 @@ def update_triple_store():
         generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
         generators_instantiated = {k.upper(): v for k, v in generators.items()}
 
+    """
     # Assimilate power data for instantiated gas generators
     for gt in generators_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
@@ -520,6 +510,27 @@ def update_triple_store():
 
         # Add time series data using Java TimeSeriesClient
         add_time_series_data(generators_instantiated[gt], new_data, gt)
+    """
+    #Loop for generators (for which we have data)
+    daily_loop = check_df(generator_power_data, 48)
+    placement = 0
+    while(daily_loop):
+        dfSlice, placement, daily_loop = take_day(generator_power_data, placement, 48)
+        """
+        print("placement")
+        print(placement)
+        print("daily_loop")
+        print(daily_loop)
+        print("SLICE")
+        print(dfSlice)
+        if placement == 192:
+            for w in dfSlice['time']:
+                print(w)
+            print("MAINTEST")
+            print(dfSlice['generatoreic'].iloc[0])
+        """
+        #Add daily slice (dfSlice) here. 
+        #add_time_series(instance_IRI, timestamps, values, units)
 
 
 def continuous_update():
