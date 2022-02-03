@@ -302,7 +302,8 @@ def get_instantiated_powerplants(endpoint):
                                    rdfs:label ?' + var2 + '. }'
 
     response = KGClient.execute(query)
-
+    print("QUERY:")
+    print(query)
     # Convert JSONArray String back to list
     response = json.loads(response)
 
@@ -310,7 +311,8 @@ def get_instantiated_powerplants(endpoint):
     res = dict()
     for r in response:
         res[r[var2]] = r[var1]
-
+    print("RES:")
+    print(res)
     return res
 
 

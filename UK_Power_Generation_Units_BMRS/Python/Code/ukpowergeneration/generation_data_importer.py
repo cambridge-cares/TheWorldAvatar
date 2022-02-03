@@ -95,7 +95,7 @@ def instantiate_powerplant(query_endpoint, update_endpoint, powerplant_name):
                 kg.create_sparql_prefix('rdfs') + \
                 kg.create_sparql_prefix('xsd') + \
                 kg.create_sparql_prefix('ontoeip') + \
-                '''INSERT DATA { <%s> rdf:type ontoeip:PowerPlant . \
+                '''INSERT DATA { <%s> rdf:type ontoenergysystem:PowerPlant . \
                                 <%s> rdfs:label "%s"^^xsd:string . }''' % \
                 (powerplantIRI, powerplantIRI, powerplant_name)
         KGClient.executeUpdate(query)
@@ -175,6 +175,70 @@ def instantiate_timeseries(query_endpoint, update_endpoint, generatorIRI, genera
 
     print("Time series triples via Java TimeSeriesClient successfully instantiated.")
 
+
+def add_time_series(instance_IRI, timestamps, values, units): 
+    """
+        Directly adds time series information. 
+
+        For a single generator/powerplant, for a day (so expecting 48 time periods). 
+    """
+    ###
+    # 1) Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT)
+
+    # Retrieve Java classes for time entries (Instant) and data (ALL Double)
+    # (required for time series client instantiation)
+    Instant = jpsBaseLibView.java.time.Instant
+    instant_class = Instant.now().getClass()
+    double_class = jpsBaseLibView.java.lang.Double.TYPE
+    ###
+
+    dataIRIs = []
+    activepowergenerated_IRI = kg.PREFIXES['ontoenergysystem'] + 'ActivePowerGenerated_' + str(uuid.uuid4())
+    dataIRIs.append(activepowergenerated_IRI)
+
+    #Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
+    ###
+    query = kg.create_sparql_prefix('ontopowsys') + \
+            kg.create_sparql_prefix('ontoenergysystem') + \
+            '''INSERT DATA { \
+            <%s> ontopowsys:hasActivePowerGenerated <%s> ; \
+            <%s> rdf:type ontopowsys:ActivePowerGenerated ; \
+            <%s> om:hasUnit "%s" . }''' % (instance_IRI, activepowergenerated_IRI, activepowergenerated_IRI, activepowergenerated_IRI, units)
+    ###
+
+    print('query:', query)
+
+    KGClient.executeUpdate(query)
+    print("Triples independent of Java TimeSeriesClient successfully instantiated.")
+
+    # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+    # Initialise time series in both KG and RDB using TimeSeriesClass
+    TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
+    TSClient.initTimeSeries(dataIRIs, [double_class]*len(dataIRIs), kg.FORMAT)
+
+    print("Time series triples via Java TimeSeriesClient successfully instantiated.")
+
+    # 3) Add actual time series data
+    # Create Java TimeSeries object with data to attach
+    times = timestamps
+    variables = dataIRIs
+    
+    print('---times starts---')
+    print(times)
+    print('---times ends---')
+    print('---variables starts---')
+    print(variables)
+    print('---variables ends---')
+    print('---values starts---')
+    print(values)
+    print('---values ends---')		
+    timeseries = jpsBaseLibView.TimeSeries(times, variables, values)
+    # Add data
+    TSClient.addTimeSeriesData(timeseries)
+
+    print("Time series data successfully added.\n")
+            
 
 def get_power_data_from_api():
     """
