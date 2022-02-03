@@ -367,6 +367,37 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
     print("Time series data added successfully for: " + asset_name + ").\n")
 
 
+def check_df(df, periods):
+    #Checks if there exists data in a dataframe. 
+    #Does so at row = 0 and row = (periods - 1)
+    #if both contain a (time) value, then returns True, otherwise, returns False. 
+    if((df['time'][0] != "") and (df['time'][periods - 1] != "")):
+        more = True
+    elif((df['time'][0] != "") or (df['time'][periods - 1] != "")):
+        print("Error: Dataframe contains an incomplete day as the number of rows is not a multiple of the number of periods in a day. Not including data from here-on out. ")
+        more = False
+    else:
+        more = False
+    return more
+
+
+def take_day(df, starting, periods):
+    #Takes a dataframe of multiple instances of multiple instances (eg. multiple generators), and returns a one's dataframe. 
+    #df is the underlying dataframe, starting is the row it begins at, and periods is the number of periods in a day (eg. 48 for 30 minute incriments). 
+    ending = starting + periods
+    dfSlice = df.iloc[starting:ending]
+    if((df['time'][ending] != "") and (df['time'][ending + periods - 1] != "")):
+        more = True
+    elif((df['time'][ending] != "") or (df['time'][ending + periods - 1] != "")):
+        print("Error: Dataframe contains an incomplete day as the number of rows is not a multiple of the number of periods in a day. Not including data from here-on out. ")
+        more = False
+    else:
+        more = False
+    
+    #Returns the dfslice (slice of the original dataframe (eg. a single generator for a day)), ending (the index which could be used to restart this process (eg. if it is 48 instances, and starting was 0, then this would be 49)), and more (are there more generators/powerplants after this which could be extracted if the process was restarted at 'ending'). 
+    return dfSlice, ending, more
+
+
 def update_triple_store():
     """
         Main function to assimilate power time series data into KG, incl. instantiation
@@ -383,6 +414,40 @@ def update_triple_store():
     #####Note that there are two now#####
     #power_data = get_power_data_from_api()
     powerplant_power_data, generator_power_data = get_power_data_from_api()
+
+    ##########
+    #Note: The below code may be moved or made a funciton later, but for now is here for testing. 
+    daily_loop = check_df(powerplant_power_data, 48)
+    placement = 0
+    while(daily_loop):
+        dfSlice, placement, daily_loop = take_day(powerplant_power_data, placement, 48)
+        """
+        print("placement")
+        print(placement)
+        print("daily_loop")
+        print(daily_loop)
+        print("SLICE")
+        print(dfSlice)
+        """
+        #Add daily slice (dfSlice) here. 
+    
+    daily_loop = check_df(generator_power_data, 48)
+    placement = 0
+    while(daily_loop):
+        dfSlice, placement, daily_loop = take_day(generator_power_data, placement, 48)
+        """
+        print("placement")
+        print(placement)
+        print("daily_loop")
+        print(daily_loop)
+        print("SLICE")
+        print(dfSlice)
+        if placement == 192:
+            for w in dfSlice['time']:
+                print(w)
+        """
+        #Add daily slice (dfSlice) here. 
+    ##########
 
     #Now do the same for powerplants as will be done for generators. 
     # Retrieve all powerplants with available power data (powerplant names are capitalised)
