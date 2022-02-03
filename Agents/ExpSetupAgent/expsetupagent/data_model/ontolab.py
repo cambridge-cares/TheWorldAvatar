@@ -7,7 +7,7 @@ from pyasyncagent.data_model.utils import *
 
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 
-from src.data_model.ontodoe import *
+from doeagent.data_model.ontodoe import *
 
 @dataclass
 class ParameterSetting:

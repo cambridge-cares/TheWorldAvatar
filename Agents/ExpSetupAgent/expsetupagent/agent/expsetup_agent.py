@@ -9,7 +9,7 @@ from pyasyncagent import AsyncAgent
 from expsetupagent.kg_operations import *
 from expsetupagent.conf import *
 
-from src.agent import *
+from doeagent.agent import *
 
 class ExpSetupAgent(AsyncAgent):
     def setupJob(self, agentInputs) -> list:

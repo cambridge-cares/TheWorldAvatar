@@ -17,7 +17,7 @@ from pyasyncagent.data_model import *
 from expsetupagent.data_model import *
 from expsetupagent.kg_operations import *
 
-from src.data_model import *
+from doeagent.data_model import *
 
 
 import logging
