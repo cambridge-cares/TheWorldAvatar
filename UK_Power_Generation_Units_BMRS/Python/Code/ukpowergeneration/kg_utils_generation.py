@@ -302,8 +302,6 @@ def get_instantiated_powerplants(endpoint):
                                    rdfs:label ?' + var2 + '. }'
 
     response = KGClient.execute(query)
-    print("QUERY:")
-    print(query)
     # Convert JSONArray String back to list
     response = json.loads(response)
 
@@ -311,8 +309,6 @@ def get_instantiated_powerplants(endpoint):
     res = dict()
     for r in response:
         res[r[var2]] = r[var1]
-    print("RES:")
-    print(res)
     return res
 
 
@@ -410,7 +406,7 @@ def get_instantiated_measurements(endpoint):
     return res
 
 
-def get_measurementIRI(endpoint, generatorIRI):
+def get_measurementIRI(endpoint, instance_IRI):
     """
         Retrieves gas flow MeasurementIRI for generator, which is actually connected to time series.
 
@@ -429,6 +425,7 @@ def get_measurementIRI(endpoint, generatorIRI):
     KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+
     query = create_sparql_prefix('comp') + \
             create_sparql_prefix('om') + \
             create_sparql_prefix('rdf') + \
@@ -437,7 +434,7 @@ def get_measurementIRI(endpoint, generatorIRI):
             WHERE { <%s> comp:hasTaken ?gas . \
                     ?gas rdf:type comp:IntakenGas; \
                          ^om:hasPhenomenon/om:hasValue ?%s. \
-                    ?%s ts:hasTimeSeries ?ts }''' % (var, generatorIRI, var, var)
+                    ?%s ts:hasTimeSeries ?ts }''' % (var, instance_IRI, var, var)
 
     response = KGClient.execute(query)
 

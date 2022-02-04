@@ -204,28 +204,69 @@ def add_time_series(instance_IRI, timestamps, values, units):
             kg.create_sparql_prefix('om') + \
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
-            <%s> ontopowsys:hasActivePowerGenerated <%s> ; \
-            <%s> rdf:type ontopowsys:ActivePowerGenerated ; \
+            <%s> ontopowsys:hasActivePowerGenerated <%s> . \
+            <%s> rdf:type ontopowsys:ActivePowerGenerated . \
             <%s> om:hasUnit <%s> . }''' % (instance_IRI, activepowergenerated_IRI, activepowergenerated_IRI, activepowergenerated_IRI, units)
     ###
 
-    print('insert query:', query)
+    #print('insert query:', query)
 
     KGClient.executeUpdate(query)
-    print("Triples independent of Java TimeSeriesClient successfully instantiated.")
+    #print("Triples independent of Java TimeSeriesClient successfully instantiated.")
 
-    # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
-    # Initialise time series in both KG and RDB using TimeSeriesClass
-    TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
-    TSClient.initTimeSeries(dataIRIs, [double_class]*len(dataIRIs), kg.FORMAT)
-
-    print("Time series triples via Java TimeSeriesClient successfully instantiated.")
-
-    # 3) Add actual time series data
+    # 2) Add actual time series data
     # Create Java TimeSeries object with data to attach
     times = timestamps
-    variables = dataIRIs
+    variables = dataIRIs #Could just be a single variable in the current application. 
     
+    #######
+    #Currently have the information in a different format (eg. dataframes, string), need to have it in the below format. 
+    #Array(list) of Timestamps
+    #times = ['2021-12-09T00:00:00Z', '2021-12-09T00:30:00Z', '2021-12-09T01:00:00Z', '2021-12-09T01:30:00Z', '2021-12-09T02:00:00Z', '2021-12-09T02:30:00Z', '2021-12-09T03:00:00Z', '2021-12-09T03:30:00Z', '2021-12-09T04:00:00Z', '2021-12-09T04:30:00Z', '2021-12-09T05:00:00Z', '2021-12-09T05:30:00Z', '2021-12-09T06:00:00Z', '2021-12-09T06:30:00Z', '2021-12-09T07:00:00Z', '2021-12-09T07:30:00Z', '2021-12-09T08:00:00Z', '2021-12-09T08:30:00Z', '2021-12-09T09:00:00Z', '2021-12-09T09:30:00Z', '2021-12-09T10:00:00Z', '2021-12-09T10:30:00Z', '2021-12-09T11:00:00Z', '2021-12-09T11:30:00Z', '2021-12-09T12:00:00Z', '2021-12-09T12:30:00Z', '2021-12-09T13:00:00Z', '2021-12-09T13:30:00Z', '2021-12-09T14:00:00Z', '2021-12-09T14:30:00Z', '2021-12-09T15:00:00Z', '2021-12-09T15:30:00Z', '2021-12-09T16:00:00Z', '2021-12-09T16:30:00Z', '2021-12-09T17:00:00Z', '2021-12-09T17:30:00Z', '2021-12-09T18:00:00Z', '2021-12-09T18:30:00Z', '2021-12-09T19:00:00Z', '2021-12-09T19:30:00Z', '2021-12-09T20:00:00Z', '2021-12-09T20:30:00Z', '2021-12-09T21:00:00Z', '2021-12-09T21:30:00Z', '2021-12-09T22:00:00Z', '2021-12-09T22:30:00Z', '2021-12-09T23:00:00Z', '2021-12-09T23:30:00Z']
+    #Single element array(list) with string
+    #variables = ['http://www.theworldavatar.com/kb/ontoenergysystem/ActivePowerGenerated_ad7e55af-0c71-4adf-9d7f-39ba9ce18ffd']
+    #Array(list) containing a single, other array(list) of power values
+    #values = [[848.186, 983.106, 992.36, 994.12, 885.554, 993.444, 976.76, 978.47, 953.792, 870.35, 990.672, 1049.056, 1370.106, 1706.562, 1938.362, 1973.972, 1977.078, 1976.586, 1975.902, 1976.792, 1976.412, 1975.942, 1976.336, 1976.588, 1884.476, 1846.298, 1805.98, 1863.346, 1881.686, 1926.882, 1967.512, 1969.906, 1971.362, 1970.718, 1971.742, 1968.02, 1965.662, 1968.954, 1962.82, 1960.606, 1877.356, 1670.484, 1080.696, 656.936, 179.12, 0, 0, 0]]
+    #dataIRIs = variables
+    
+    #Reformat times. 
+    times = times.values.reshape(-1,).tolist()
+
+    #Reformat variables (or just a single variable), could already be in this form. 
+    if type(variables) == str:
+        a = variables #a is just a temporary variable for this. 
+        variables = []
+        variables.append(a)
+    
+    #Reformat values. 
+    values = values.values.reshape(-1,).tolist() #tolist is noted in some older posts online to convert to float, but it does not seem to here, so conversion from float64 (numpy) to float. 
+    a = [] #a is just a temporary variable for this. 
+    for value in values:
+        a.append(float(value))
+    values = []
+    values.append(a)
+    """
+    print("COMPARE:")
+    print("Code Version:")
+    print(values)
+    values1 = [[848.186, 983.106, 992.36, 994.12, 885.554, 993.444, 976.76, 978.47, 953.792, 870.35, 990.672, 1049.056, 1370.106, 1706.562, 1938.362, 1973.972, 1977.078, 1976.586, 1975.902, 1976.792, 1976.412, 1975.942, 1976.336, 1976.588, 1884.476, 1846.298, 1805.98, 1863.346, 1881.686, 1926.882, 1967.512, 1969.906, 1971.362, 1970.718, 1971.742, 1968.02, 1965.662, 1968.954, 1962.82, 1960.606, 1877.356, 1670.484, 1080.696, 656.936, 179.12, 0, 0, 0]]
+    print("Hard Coded Version:")
+    print(values1)
+    print("Compare Overall:")
+    print(values == values1)
+    print(values[0] == values1[0])
+    print(type(values) == type(values1))
+    print(type(values[0]) == type(values1[0]))
+    print("Compare Parts:")
+    print(type(values[0][0]))
+    print(type(values1[0][0]))
+    for i in range(0,47):
+        print(type(values1[0][i]))
+        print(type(values[0][i]))
+        print(type(values[0][i]) == type(values1[0][i]))
+    """
+    #######
+    """
     print('---times starts---')
     print(times)
     print('---times ends---')
@@ -234,13 +275,21 @@ def add_time_series(instance_IRI, timestamps, values, units):
     print('---variables ends---')
     print('---values starts---')
     print(values)
-    print('---values ends---')		
+    print('---values ends---')
+    """
+    # 3) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+    # Initialise time series in both KG and RDB using TimeSeriesClass
+    TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
+    TSClient.initTimeSeries(dataIRIs, [double_class]*len(dataIRIs), kg.FORMAT)
+
+    #print("Time series triples via Java TimeSeriesClient successfully instantiated.")
     timeseries = jpsBaseLibView.TimeSeries(times, variables, values)
+
     # Add data
     TSClient.addTimeSeriesData(timeseries)
 
-    print("Time series data successfully added.\n")
-            
+    #print("Time series data successfully added.\n")
+
 
 def get_power_data_from_api():
     """
@@ -473,7 +522,6 @@ def update_triple_store():
         """
         #Add daily slice (dfSlice) here. 
         add_time_series((kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['powerplanteic'].iloc[0]), dfSlice['time'], dfSlice['power'], units)
-    print("CHECK PLACE")
     #Now do the same for generators. 
     # Retrieve all generators with available power data (generator names are capitalised)
     generators_with_data = generator_power_data['generatoreic'].unique()
@@ -530,7 +578,9 @@ def update_triple_store():
             print(dfSlice['generatoreic'].iloc[0])
         """
         #Add daily slice (dfSlice) here. 
-        #add_time_series(instance_IRI, timestamps, values, units)
+        add_time_series((kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['generatoreic'].iloc[0]), dfSlice['time'], dfSlice['power'], units)
+    
+    print("Time series data successfully added.\n")
 
 
 def continuous_update():

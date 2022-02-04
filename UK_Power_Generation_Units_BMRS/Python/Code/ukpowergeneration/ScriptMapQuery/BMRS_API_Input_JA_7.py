@@ -89,10 +89,20 @@ def day_over_a_week_ago():
     return str(weekAgo.year), str(weekAgo.month), str(weekAgo.day)
 
 
+def str0_2(value):
+    #Converts the day or month int to a string of length 2. Thus, 12 -> "12", and 1 -> "01", the leading 0 is important.
+    #This function thus performs a similar role as str(), but also can add the 0 at the start, and is applied to length 2 instances.
+    #Must use for day or month, but use for period is optional, as length 1 and 2 is accepted by the API format the period, but not the month or day. 
+    value = str(value)
+    if len(value) == 1:
+        value = "0"+value
+    return value
+
+
 def format_time(Year, Month, Day, Period):
     #Formats the time
     #EG. "2021-11-26T09:30:00Z"
-    return str(Year) + '-' + str(Month) + '-' + str(Day) + "T" + period_to_time(Period) + ":00Z"
+    return str(Year) + '-' + str0_2(Month) + '-' + str0_2(Day) + "T" + period_to_time(Period) + ":00Z"
 
 
 def convert_csv_to_triple_dfs(csvName):
@@ -285,15 +295,6 @@ def run_query(Key, Year, Month, Day, Period):
     #print(xmlString)
     
     return IDOutput
-
-def str0_2(value):
-    #Converts the day or month int to a string of length 2. Thus, 12 -> "12", and 1 -> "01", the leading 0 is important.
-    #This function thus performs a similar role as str(), but also can add the 0 at the start, and is applied to length 2 instances.
-    #Must use for day or month, but use for period is optional, as length 1 and 2 is accepted by the API format the period, but not the month or day. 
-    value = str(value)
-    if len(value) == 1:
-        value = "0"+value
-    return value
 
 def empty_query_response(liveGeneratorData):
     #See if there are a few outputs recieved. If not, this should not replace the old data.
