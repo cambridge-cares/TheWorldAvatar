@@ -287,8 +287,7 @@ def add_time_series(instance_IRI, timestamps, values, units):
 
     # Add data
     TSClient.addTimeSeriesData(timeseries)
-
-    #print("Time series data successfully added.\n")
+    #print("Time series data successfully added.\n") #Note that this would run for each upload, so if you are uploading multiple times it is reccomended to have the comment in location after this function is called (however many times). 
 
 
 def get_power_data_from_api():
