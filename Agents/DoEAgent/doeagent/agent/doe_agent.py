@@ -38,7 +38,7 @@ class DoEAgent(AsyncAgent):
         # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance
         doe_instance = self.collectInputsInformation(input_json)
         self.logger.info("Collected inputs from the knowledge graph: ")
-        self.logger.info(json.dumps(asdict(doe_instance)))
+        self.logger.info(json.dumps(doe_instance.dict()))
 
         # Call function to suggest the new experiment and return an instance of dataclass OntoDoE.NewExperiment
         new_rxn_exp = suggest(doe_instance)

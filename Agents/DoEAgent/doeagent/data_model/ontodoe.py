@@ -1,15 +1,14 @@
-from pydantic.dataclasses import dataclass
+import pydantic
 from typing import List
 
 from doeagent.data_model.ontorxn import *
 from pyasyncagent.data_model.iris import *
 from pyasyncagent.data_model.utils import *
 
-@dataclass
-class Strategy:
-    instance_iri: str
 
-@dataclass
+class Strategy(BaseOntology):
+    pass
+
 class TSEMO(Strategy):
     # this refers to the realisation of TSEMO algorithm in Summit python package
     # below are default value in Summit python package
@@ -19,17 +18,13 @@ class TSEMO(Strategy):
     nGenerations: int = 100
     populationSize: int = 100
 
-@dataclass
 class LHS(Strategy):
     seed: int
     # TODO add support for object property <hasCriterion> <OntoDoE:Criterion>
 
-@dataclass
-class DesignVariable:
-    instance_iri: str
+class DesignVariable(BaseOntology):
     name: str
 
-@dataclass
 class ContinuousVariable(DesignVariable):
     upperLimit: float
     lowerLimit: float
@@ -37,40 +32,34 @@ class ContinuousVariable(DesignVariable):
     # instead of the actual class, str is used to host the concept IRI of om:Quantity for simplicity
     refersTo: str
 
-    def __post_init_post_parse__(self):
+    @pydantic.root_validator
+    @classmethod
+    def upper_and_lower_limit(cls, values):
         # validate the upper and lower limit
-        if self.upperLimit <= self.lowerLimit:
+        if values.get('upperLimit') <= values.get('lowerLimit'):
             raise Exception(
                 'ContinuousVariable <%s> has an UpperLimit %s that is smaller then its LowerLimit %s.' 
-                % (self.instance_iri, self.upperLimit, self.lowerLimit))
+                % (values.get('instance_iri'), values.get('upperLimit'), values.get('lowerLimit')))
+        return values
 
-@dataclass
 class CategoricalVariable(DesignVariable):
     pass
 
-@dataclass
-class Domain:
-    instance_iri: str
+class Domain(BaseOntology):
     hasDesignVariable: List[DesignVariable]
 
-@dataclass
-class SystemResponse:
-    instance_iri: str
+class SystemResponse(BaseOntology):
     name: str
     maximise: bool
     positionalID: Optional[int]
     # instead of the actual class, str is used to host the concept IRI of om:Quantity for simplicity
     refersTo: str
 
-@dataclass
-class HistoricalData:
-    instance_iri: str
+class HistoricalData(BaseOntology):
     refersTo: List[ReactionExperiment]
     numOfNewExp: int = 1
 
-@dataclass
-class DesignOfExperiment:
-    instance_iri: Optional[str]
+class DesignOfExperiment(BaseOntology):
     usesStrategy: Strategy
     hasDomain: Domain
     hasSystemResponse: List[SystemResponse]

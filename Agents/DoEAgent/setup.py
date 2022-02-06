@@ -6,7 +6,7 @@ setup(
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
-    python_requires='>=3.5',
+    python_requires='>=3.7',
     description="doeagent is capable of conducting design of experiment exercise as part of The World Avatar project.",
     # url="https://github.com/cambridge-cares/TheWorldAvatar/tree/133-dev-design-of-experiment/Agents/DoEAgent",
     # long_description=open('README.md').read(),

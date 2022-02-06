@@ -396,7 +396,7 @@ class DoESparqlClient(PySparqlClient):
         response = self.performQuery(query)
         if (len(response) > 1):
             raise Exception("Instance <%s> should only have one set of settings." % (tsemo_iri))
-        tsemo_instance = TSEMO(tsemo_iri,**response[0])
+        tsemo_instance = TSEMO(instance_iri=tsemo_iri,**response[0])
         return tsemo_instance
 
     def getNewExperimentFromDoE(self, doe_iri: str) -> str:

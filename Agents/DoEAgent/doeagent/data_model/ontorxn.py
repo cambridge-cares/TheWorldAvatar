@@ -1,34 +1,43 @@
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF
 
-from pydantic.dataclasses import dataclass
-from typing import Optional, List
+import pydantic
+from typing import Any, Optional, List, Dict
 
 from pyasyncagent.data_model.iris import *
 from pyasyncagent.data_model.utils import *
 
-@dataclass
-class InputChemical:
+class InstanceIRIInitialisationError(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+
+class BaseOntology(pydantic.BaseModel):
+    instance_iri: str = None
+    clz: str = None
+    namespace_for_init: str = None
+
+    def __init__(__pydantic_self__, **data: Any) -> None:
+        if data['instance_iri'] == INSTANCE_IRI_TO_BE_INITIALISED:
+            if data['namespace_for_init'] is None:
+                raise InstanceIRIInitialisationError(f"A namespace should be provided for initialising a/an {data['clz'] if 'clz' in data else __pydantic_self__.__class__.__fields__['clz'].default} instance.")
+            else:
+                if 'clz' not in data:
+                    data['instance_iri'] = initialiseInstanceIRI(data['namespace_for_init'], __pydantic_self__.__class__.__fields__['clz'].default)
+                else:
+                    data['instance_iri'] = initialiseInstanceIRI(data['namespace_for_init'], data['clz'])
+        super().__init__(**data)
+
+class InputChemical(BaseOntology):
     pass
 
-@dataclass
-class OutputChemical:
+class OutputChemical(BaseOntology):
     pass
 
-@dataclass
-class OM_Measure:
-    instance_iri: str
+class OM_Measure(BaseOntology):
+    clz: str = OM_MEASURE
     # instead of the actual class, str is used to host the concept IRI of om:Unit for simplicity
     hasUnit: str
     hasNumericalValue: float
-    namespace_for_init: Optional[str] = None
-
-    def __post_init__(self):
-        if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            if self.namespace_for_init is not None:
-                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, OM_MEASURE)
-            else:
-                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # IRI-ise the IRI of OM:Measure instance to be used by rdflib package
@@ -44,10 +53,8 @@ class OM_Measure:
         
         return g
 
-@dataclass
-class ReactionCondition:
-    instance_iri: str
-    clz: str
+
+class ReactionCondition(BaseOntology):
     objPropWithExp: List[str]
     hasValue: OM_Measure
     positionalID: Optional[int] = None
@@ -57,26 +64,21 @@ class ReactionCondition:
     # instead of the actual class, str is used to host the instance IRI of OntoRxn:InputChemical for simplicity
     # ReactionScale indicateUsageOf InputChemical
     indicateUsageOf: Optional[str] = None
-    namespace_for_init: Optional[str] = None
 
-    def __post_init__(self):
-        if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            if self.namespace_for_init is not None:
-                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, self.clz)
-            else:
-                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
-
-    def __post_init_post_parse__(self):
-        if self.clz == 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio':
-            if self.indicatesMultiplicityOf == None:
+    @pydantic.root_validator
+    @classmethod
+    def input_chemical_validation(cls, values):
+        if values.get('clz') == ONTORXN_STOICHIOMETRYRATIO:
+            if values.get('indicatesMultiplicityOf') == None:
                 raise Exception(
-                    'StoichiometryRatio <%s> is not indicatesMultiplicityOf any InputChemical.' % (self.instance_iri)
+                    'StoichiometryRatio <%s> is not indicatesMultiplicityOf any InputChemical.' % (values.get('instance_iri'))
                 )
-        elif self.clz == 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionScale':
-            if self.indicateUsageOf == None:
+        elif values.get('clz') == ONTORXN_REACTIONSCALE:
+            if values.get('indicateUsageOf') == None:
                 raise Exception(
-                    'ReactionScale <%s> is not indicateUsageOf any InputChemical.' % (self.instance_iri)
+                    'ReactionScale <%s> is not indicateUsageOf any InputChemical.' % (values.get('instance_iri'))
                 )
+        return values
     
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # IRI-ise the IRI of ReactionCondition instance to be used by rdflib package
@@ -124,21 +126,11 @@ class ReactionCondition:
 # class ReactionScale(ReactionCondition):
 #     indicateUsageOf: str # indicateUsageOf: InputChemical
 
-@dataclass
-class PerformanceIndicator:
-    instance_iri: str
-    clz: str
+
+class PerformanceIndicator(BaseOntology):
     objPropWithExp: List[str]
     hasValue: Optional[OM_Measure]
     positionalID: Optional[int] = None
-    namespace_for_init: Optional[str] = None
-
-    def __post_init__(self):
-        if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            if self.namespace_for_init is not None:
-                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, self.clz)
-            else:
-                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # IRI-ise the IRI of PerformanceIndicator instance to be used by rdflib package
@@ -187,13 +179,13 @@ class PerformanceIndicator:
 # class RunMaterialCost(PerformanceIndicator):
 #     pass
 
-@dataclass
-class ReactionExperiment:
-    instance_iri: str
+
+class ReactionExperiment(BaseOntology):
     hasReactionCondition: Optional[List[ReactionCondition]] = None
     hasPerformanceIndicator: Optional[List[PerformanceIndicator]] = None
     hasInputChemical: Optional[List[InputChemical]] = None
     hasOutputChemical: Optional[List[OutputChemical]] = None
+    clz: str = ONTORXN_REACTIONEXPERIMENT
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # check if information is complete
@@ -244,17 +236,10 @@ class ReactionExperiment:
         return g
 
 
-@dataclass
+
 class ReactionVariation(ReactionExperiment):
     isVariationOf: Optional[ReactionExperiment] = None
-    namespace_for_init: Optional[str] = None
-
-    def __post_init__(self):
-        if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            if self.namespace_for_init is not None:
-                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, ONTORXN_REACTIONVARIATION)
-            else:
-                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
+    clz: str = ONTORXN_REACTIONVARIATION
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # check if information is complete
