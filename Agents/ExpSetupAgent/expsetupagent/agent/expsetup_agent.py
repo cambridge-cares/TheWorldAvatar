@@ -20,19 +20,22 @@ class ExpSetupAgent(AsyncAgent):
         """
 
         # Create sparql_client
-        self.sparql_client = ExpSetupSparqlClient(
+        self.sparql_client = ChemistryAndRobotsSparqlClient(
             self.kgUrl, self.kgUrl
         )
         # Check if the input is in correct format, and return OntoRxn.ReactionExperiment/ReactionVariation instance
         rxn_exp_instance = self.collectInputsInformation(agentInputs)
         self.logger.info("Collected inputs from the knowledge graph: ")
-        self.logger.info(json.dumps(asdict(rxn_exp_instance)))
+        self.logger.info(json.dumps(rxn_exp_instance.dict()))
+
+        # Get the digital twin of the most suitable hardware
+        # preferred_digital_twin = self.sparql_client.get_dt_of_preferred_hardware(rxn_exp_instance)
 
         # Call function to create a list of OntoLab.EquipmentSettings instances from OntoRxn:ReactionExperiment/ReactionVariation
-        list_equip_settings = self.sparql_client.createEquipmentSettingsFromReactionExperiment(rxn_exp_instance)
+        list_equip_settings = self.sparql_client.create_equip_settings_from_rxn_exp(rxn_exp_instance)
 
         # Upload the created OntoLab:EquipmentSettings triples to KG
-        self.sparql_client.writeEquipmentSettingsToKG(list_equip_settings)
+        self.sparql_client.write_equip_settings_to_kg(list_equip_settings)
 
         list_equip_settings_iri = [es.instance_iri for es in list_equip_settings]
         self.logger.info(f"The proposed new equipment settings are recorded in: <{'>, <'.join(list_equip_settings_iri)}>.")
