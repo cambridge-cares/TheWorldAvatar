@@ -5,6 +5,7 @@
 
 # Get settings and functions from the kg utils module
 import kg_utils
+from datetime import datetime as dt
 import json
 # Get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module to access
 # the TimeSeriesClient in the JPB_BASE_LIB
@@ -19,6 +20,63 @@ geojson_attributes = { 'displayName': '',
                   'circle-stroke-opacity': 0.75,
                   'circle-opacity': 0.75
                   }
+
+def get_all_time_series(terminal, KGClient, TSClient, now, duration, start_1, start_2, start_7):
+    '''
+        Returns all time series data of the terminals
+    '''
+
+    # Define query
+    query = kg_utils.create_sparql_prefix('om') + \
+            kg_utils.create_sparql_prefix('rdfs') + \
+            kg_utils.create_sparql_prefix('comp') + \
+            '''SELECT ?terminal ?dataIRI ?unit \
+               WHERE { ?terminal comp:hasTaken ?gas_amount ; \
+                                 rdfs:label ?name . \
+                       ?gas_quantity om:hasPhenomenon ?gas_amount . \
+                       ?gas_quantity om:hasValue ?dataIRI . \
+                       ?dataIRI om:hasUnit ?unit }'''
+                                
+    # Execute query
+    response = KGClient.execute(query)
+
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Initialise lists
+    dataIRIs = []
+    utilities = []
+    units = []
+    measurement_iri = None
+    # Append lists with all query results
+    for r in response:
+        if r['terminal'].lower() == terminal.lower():
+            dataIRIs.append(r['dataIRI'])
+            utilities.append("Instantaneous Flow")
+            units.append((r['unit']))
+            measurement_iri = r['dataIRI']
+            break
+    # Initialise timestamps for gas flow time series retrieval durations (time series entries stored as UTC times!)
+    # Java Instant instances are associated with UTC (i.e. hold a value of date-time with a UTC time-line)
+    print("INFO: Submitting TimeSeriesClient SPARQL queries at",
+          dt.utcfromtimestamp(now.getEpochSecond()).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    # Get results for last "duration" hours (e.g. 24h)
+    timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_1, now)
+    if not timeseries.getTimes():
+        # Try last "2 x duration" hours if nothing available for last "duration" hours (e.g. 48h)
+        print("WARNING: No results in last %i h, trying last %i h ..." % (duration, 2 * duration))
+        timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_2, now)
+        if not timeseries.getTimes():
+           # Last resort, try last "7 x duration" hours (e.g. last week)
+           print("WARNING: No results in last %i h, trying last %i h ..." % (2 * duration, 7 * duration))
+           timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_7, now)
+
+    # Retrieve time series data for retrieved set of dataIRIs
+    timeseries = TSClient.getTimeSeries(dataIRIs)
+
+    # Return time series and associated lists of variables and units
+    return timeseries, utilities, units
+
 
 def put_metadata_in_json(feature_id, lon, lat):
     """
@@ -146,6 +204,16 @@ def generate_all_visualisation_data():
     instant_class = Instant.now().getClass()
     # Initialise TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg_utils.PROPERTIES_FILE)
+    # Initialise timestamps for gas flow time series retrieval durations (time series entries stored as UTC times!)
+    # Java Instant instances are associated with UTC (i.e. hold a value of date-time with a UTC time-line)
+    now = Instant.now()
+    duration = 24
+    print("INFO: Submitting TimeSeriesClient SPARQL queries at",
+          dt.utcfromtimestamp(now.getEpochSecond()).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    start_1 = now.minusSeconds(int(1 * duration * 60 * 60))
+    start_2 = now.minusSeconds(int(2 * duration * 60 * 60))
+    start_7 = now.minusSeconds(int(7 * duration * 60 * 60))
+
     # Initialise a dictionary for geoJSON outputs
     geojson = geojson_initialise_dict()
     # Initialise an array for metadata outputs
@@ -179,6 +247,17 @@ def generate_all_visualisation_data():
             print('The following terminal is not represented in the knowledge graph with coordinates:', iri)
         else:
             metadata.append(put_metadata_in_json(feature_id, lon, lat))
+        # Retrieve time series data
+        timeseries, utilities, units = get_all_time_series(iri, KGClient, TSClient, now, duration, start_1, start_2, start_7)
+        ts_data['ts'].append(timeseries)
+        ts_data['id'].append(feature_id)
+        ts_data['units'].append(units)
+        ts_data['headers'].append(utilities)
+
+    # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
+    ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
+    # Make JSON file readable in Python
+    ts_json = json.loads(ts_json.toString())
 
 
 if __name__ == '__main__':
