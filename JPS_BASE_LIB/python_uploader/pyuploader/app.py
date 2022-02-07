@@ -1,6 +1,6 @@
 from pyuploader.uploaders.uploader_factory import get_uploader
 import logging
-from typing import Union, Dict
+from typing import Optional, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -15,12 +15,12 @@ def upload(
     uploader_type: str,
     file_or_dir: str,
     file_ext: str,
-    url: Union[str, None]=None,
-    auth_file: Union[str, None]=None,
+    url: Optional[str]=None,
+    auth_file: Optional[str]=None,
     no_auth: bool= False,
-    subdirs: Union[str, None]=None,
-    log_file_dir: Union[str, None]= None,
-    log_file_name: Union[str, None]= None,
+    subdirs: Optional[str]=None,
+    log_file_dir: Optional[str]= None,
+    log_file_name: Optional[str]= None,
     no_file_logging: bool = False,
     dry_run: bool=False) -> Dict[str,str]:
 

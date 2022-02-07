@@ -5,6 +5,8 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.jooq.tools.jdbc.MockConnection;
 import org.jooq.tools.jdbc.MockDataProvider;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,9 +22,13 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -608,6 +614,44 @@ public class TimeSeriesClientTest {
         }
     }
 
+    @Test
+    public void testConvertToJSON() {
+    	List<Instant> instantList = new ArrayList<>();
+    	List<List<?>> dataToAdd = new ArrayList<>();
+    	List<Double> data1 = new ArrayList<>();
+    	List<String> data2 = new ArrayList<>();
+    	List<Integer> data3 = new ArrayList<>();
+    	dataIRIs = new ArrayList<>();
+    	dataIRIs.add("http://data1"); dataIRIs.add("http://data2"); dataIRIs.add("http://data3"); 
+		for (int i = 0; i < 10; i++) {
+			instantList.add(Instant.now().plusSeconds(i));
+			data1.add(Double.valueOf(i));
+			data2.add(String.valueOf(i));
+			data3.add(Integer.valueOf(i));
+		}		
+		dataToAdd.add(data1); dataToAdd.add(data2); dataToAdd.add(data3);
+    	TimeSeries<Instant> ts_instant = new TimeSeries<Instant>(instantList, dataIRIs, dataToAdd);
+    	
+    	List<Map<String,String>> units = new ArrayList<>();
+    	Map<String,String> unit = new HashMap<>();
+    	unit.put("http://data1", "unit1");
+    	unit.put("http://data2", "unit2");
+    	unit.put("http://data3", "unit3");
+    	units.add(unit);
+    	
+    	JSONArray ts_jarray = testClient.convertToJSON(Arrays.asList(ts_instant), Arrays.asList(1,2), units, null);
+    	
+    	JSONObject ts_jo = ts_jarray.getJSONObject(0);
+    	List<String> keys = ts_jo.keySet().stream().collect(Collectors.toList());
+    	Assert.assertTrue(keys.contains("data"));
+    	Assert.assertTrue(keys.contains("values"));
+    	Assert.assertTrue(keys.contains("timeClass"));
+    	Assert.assertTrue(keys.contains("valuesClass"));
+    	Assert.assertTrue(keys.contains("id"));
+    	Assert.assertTrue(keys.contains("units"));
+    	Assert.assertTrue(keys.contains("time"));
+    }
+    
     private void setRDFMock() throws NoSuchFieldException, IllegalAccessException {
         // Set private fields accessible to insert the mock
         Field rdfClientField = TimeSeriesClient.class.getDeclaredField("rdfClient");

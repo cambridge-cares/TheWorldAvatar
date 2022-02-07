@@ -1,32 +1,25 @@
 package uk.ac.cam.cares.jps.agent.spin;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.json.JSONObject;
-import org.topbraid.spin.constraints.ConstraintViolation;
-import org.topbraid.spin.constraints.SPINConstraints;
 import org.topbraid.spin.inference.SPINInferences;
-import org.topbraid.spin.system.SPINLabels;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import com.opencsv.CSVReader;
 import uk.ac.cam.cares.jps.agent.matlab.JPSMatlabAgent;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 
 @WebServlet("/SpinElectrical")
 public class SpinElectrical extends JPSAgent {
@@ -43,8 +36,30 @@ public class SpinElectrical extends JPSAgent {
     String frequencyFilePath = null;
     String agentiri = JPSMatlabAgent.MATLAB_AGENT_URL;
     List<String> lst = null;
-    SpinElectrical iri = new SpinElectrical();
-    frequencyFilePath = iri.queryRDF4J(agentiri, lst);
+    Class c = SpinChemical.class;
+    try {
+		Object obj = c.newInstance();
+		Method m = null;
+		try {
+			m = c.getDeclaredMethod("queryRDF4J", new Class[]{String.class,List.class});
+		} catch (NoSuchMethodException e1) {
+			throw new JPSRuntimeException(e1.getMessage());
+		} catch (SecurityException e1) {
+			throw new JPSRuntimeException(e1.getMessage());
+		}
+		m.setAccessible(true);
+		try {
+			m.invoke(obj, agentiri, lst);
+		} catch (IllegalArgumentException e) {
+			throw new JPSRuntimeException(e.getMessage());
+		} catch (InvocationTargetException e) {
+			throw new JPSRuntimeException(e.getMessage());
+		}
+	} catch (InstantiationException e2) {
+		throw new JPSRuntimeException(e2.getMessage());
+	} catch (IllegalAccessException e2) {
+		throw new JPSRuntimeException(e2.getMessage());
+	}  
     CSVReader reader = null;
     String str = requestParams.getString("inputfile");
     try {
@@ -92,43 +107,64 @@ public class SpinElectrical extends JPSAgent {
     Model inferrenceTriples = new SpinElectrical().inferredTriples(ontModel);
 
     /** Lists inferred triples. */
-    new SpinElectrical().getInferredTriples(inferrenceTriples);
+    Object obj1 = null;
+	try {
+		obj1 = c.newInstance();
+	} catch (InstantiationException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} catch (IllegalAccessException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	}
+	Method m1 = null;
+	try {
+		m1 = c.getDeclaredMethod("getInferredTriples", new Class[] {Model.class});
+	} catch (NoSuchMethodException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} catch (SecurityException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} 
+	m1.setAccessible(true);  
+	try {
+		m1.invoke(obj1,inferrenceTriples);
+	} catch (IllegalAccessException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} catch (IllegalArgumentException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} catch (InvocationTargetException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} 
 
     /** Lists all constraint violations. */
-    new SpinElectrical().getAllConstraintViolations(ontModel);
+    Object obj2 = null;
+	try {
+		obj2 = c.newInstance();
+	} catch (InstantiationException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} catch (IllegalAccessException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	}
+	Method m2 = null;
+	try {
+		m2 = c.getDeclaredMethod("getAllConstraintViolations", new Class[] {OntModel.class});
+	} catch (NoSuchMethodException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} catch (SecurityException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} 
+	m2.setAccessible(true);  
+	try {
+		m2.invoke(obj2,ontModel);
+	} catch (IllegalAccessException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} catch (IllegalArgumentException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	} catch (InvocationTargetException e) {
+		throw new JPSRuntimeException(e.getMessage());
+	}
     return jo;
   }
 
-  /** Query RDF4J for electrical system output IRI. */
-  public String queryRDF4J(String agentiri, List<String> lst) {
-    String csvFilePath = null;
-    String resultFromRDF4J =
-        MetaDataQuery.queryResources(null, null, null, agentiri, null, null, null, lst);
-    String[] keys = JenaResultSetFormatter.getKeys(resultFromRDF4J);
-    List<String[]> listmap =
-        JenaResultSetFormatter.convertToListofStringArrays(resultFromRDF4J, keys);
-    for (String[] str : listmap) {
-      for (String s : str) {
-        if (isFile(s)) {
-          csvFilePath = s;
-          break;
-        }
-      }
-      break;
-    }
-    return (csvFilePath);
-  }
-
-  /** Validate file path. */
-  private boolean isFile(String path) {
-    if (path == null) {
-      return true;
-    }
-    return new File(path).isFile();
-  }
-
   public Model getBaseModel(String ontologyURL) {
-
     /** Load ontology file to Jena model. */
     Model baseModel = ModelFactory.createDefaultModel();
     baseModel.read(ontologyURL);
@@ -146,51 +182,5 @@ public class SpinElectrical extends JPSAgent {
     /** Run SPIN inference engine to infer new triples */
     SPINInferences.run(ontologyModel, inferredTriples, null, null, false, null);
     return inferredTriples;
-  }
-
-  /** @param inferrenceTriples model that represents inferred triples. */
-  public void getInferredTriples(Model inferrenceTriples) {
-
-    System.out.println("Inferred triples size: " + inferrenceTriples.size());
-    System.out.println("Prints inferred triples: ");
-    StmtIterator stmtIterator = inferrenceTriples.listStatements();
-    int i = 1;
-    while (stmtIterator.hasNext()) {
-
-      Statement statement = stmtIterator.next();
-
-      System.out.println(
-          i
-              + ". ( "
-              + statement.getSubject().getLocalName()
-              + " , "
-              + statement.getPredicate().getLocalName()
-              + " , "
-              + statement.getObject().toString()
-              + " )");
-      i++;
-    }
-  }
-
-  /**
-   * Lists all constraint violations
-   *
-   * @param ontModel the ontology model
-   */
-  public void getAllConstraintViolations(OntModel ontModel) {
-
-    /** Run all constraints */
-    List<ConstraintViolation> cvs = SPINConstraints.check(ontModel, null);
-    System.out.println("Constraint violations:");
-    for (ConstraintViolation cv : cvs) {
-      System.out.println(
-          " - at " + SPINLabels.get().getLabel(cv.getRoot()) + ": " + cv.getMessage());
-    }
-
-    /** Run constraints on a single instance only */
-    Resource person = cvs.get(0).getRoot();
-    List<ConstraintViolation> localCVS = SPINConstraints.check(person, null);
-    System.out.println(
-        "Constraint violations for " + SPINLabels.get().getLabel(person) + ": " + localCVS.size());
   }
 }

@@ -2,12 +2,12 @@ from pyuploader.uploaders.uploader import Uploader
 import pyuploader.uploaders.file_uploader as fs_uploader
 import pyuploader.uploaders.triple_store_uploader as ts_uploader
 import pyuploader.errorhandling.appexceptions as appexcept
-from typing import Union
+from typing import Optional
 
 def get_uploader(
     uploader_type: str,
-    default_url: Union[str,None] = None,
-    default_auth_file: Union[str,None] = None,
+    default_url: Optional[str] = None,
+    default_auth_file: Optional[str] = None,
     default_no_auth: bool = False) -> Uploader:
 
     if uploader_type == 'fs_uploader':

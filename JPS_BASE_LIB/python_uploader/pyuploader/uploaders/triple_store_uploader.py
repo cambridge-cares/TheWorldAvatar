@@ -1,6 +1,6 @@
 from pyuploader.common.gateways import jpsBaseLibGW
 from pyuploader.uploaders.uploader import Uploader
-from typing import Tuple, Union
+from typing import Tuple, Optional
 
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()
 jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
@@ -11,8 +11,8 @@ TS_AUTH_ENV_VAR_VALUE = 'TRIPLE_STORE_SECRETS'
 def get_triple_store_uploader(
         uploader_name: str = 'triple store',
         supported_file_ext: str='owl',
-        default_url: Union[str,None] = None,
-        default_auth_file: Union[str, None] = None,
+        default_url: Optional[str] = None,
+        default_auth_file: Optional[str] = None,
         default_no_auth: bool = False
         ) -> Uploader:
 

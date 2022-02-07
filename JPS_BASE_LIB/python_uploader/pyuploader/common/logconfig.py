@@ -1,9 +1,9 @@
 import logging
 import os
-from typing import Union
+from typing import Optional
 
 def config_logging(
-    log_file_dir: Union[str,None],
+    log_file_dir: Optional[str],
     log_file_name: str,
     no_file_logging: bool) -> None:
 

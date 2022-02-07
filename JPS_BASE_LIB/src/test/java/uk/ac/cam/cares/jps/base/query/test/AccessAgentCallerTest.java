@@ -22,21 +22,20 @@ public class AccessAgentCallerTest {
 			
 		String expectedPath = JPSConstants.ACCESS_AGENT_PATH;
 		String expectedRequestUrl = "http://"+JPSConstants.ACCESS_AGENT_HOST+expectedPath;
-		String expectedRequestUrlConverted = ResourcePathConverter.convert(expectedRequestUrl);
 		
 		String datasetUrl = null; 
-		String targetUrl = "http://www.theworldavatar.com/kb/ontokin/ABF.owl";
+		String targetUrl = "http://www.theworldavatar.com:83/kb/ontokin/ABF.owl";
 		
 		Object[] result = AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
 		assertNotNull(result);
 
 		String requestUrl = (String) result[0];
-		assertEquals(expectedRequestUrlConverted,requestUrl);
+		assertEquals(expectedRequestUrl,requestUrl);
 		URI uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
 		assertEquals(expectedPath,uri.getPath());
 		
 		JSONObject joparams = (JSONObject) result[1];
-		assertEquals("http://www.theworldavatar.com/kb/ontokin/ABF.owl",joparams.getString(JPSConstants.TARGETIRI));
+		assertEquals("http://www.theworldavatar.com:83/kb/ontokin/ABF.owl",joparams.getString(JPSConstants.TARGETIRI));
 		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
 		
 		//////////////////////
@@ -47,7 +46,7 @@ public class AccessAgentCallerTest {
 		assertNotNull(result);
 		
 		requestUrl = (String) result[0];
-		assertEquals(expectedRequestUrlConverted,requestUrl);
+		assertEquals(expectedRequestUrl,requestUrl);
 		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
 		assertEquals(expectedPath,uri.getPath());
 		
@@ -68,17 +67,16 @@ public class AccessAgentCallerTest {
 		
 		String expectedPath = JPSConstants.ACCESS_AGENT_PATH;
 		String expectedRequestUrl =  "http://"+JPSConstants.ACCESS_AGENT_HOST+expectedPath;
-		String expectedRequestUrlConverted = ResourcePathConverter.convert(expectedRequestUrl);
 		
 		//////////////////////
 		//dataset, no target/graph
-		datasetUrl = "http://www.theworldavatar.com/kb/ontokin"; 
+		datasetUrl = "http://www.theworldavatar.com:83/kb/ontokin"; 
 		targetUrl = null;
 		result = AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
 		assertNotNull(result);
 
 		requestUrl = (String) result[0];
-		assertEquals(expectedRequestUrlConverted,requestUrl);
+		assertEquals(expectedRequestUrl,requestUrl);
 		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
 		assertEquals(expectedPath,uri.getPath());
 		
@@ -88,13 +86,13 @@ public class AccessAgentCallerTest {
 				
 		//////////////////////
 		//dataset with graph
-		datasetUrl = "http://www.theworldavatar.com/kb/ontokin"; 
-		targetUrl = "http://www.theworldavatar.com/kb/ontokin/ABF.owl";
+		datasetUrl = "http://www.theworldavatar.com:83/kb/ontokin"; 
+		targetUrl = "http://www.theworldavatar.com:83/kb/ontokin/ABF.owl";
 		result = AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
 		assertNotNull(result);
 		
 		requestUrl = (String) result[0];
-		assertEquals(expectedRequestUrlConverted,requestUrl);
+		assertEquals(expectedRequestUrl,requestUrl);
 		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
 		assertEquals(expectedPath,uri.getPath());
 		
@@ -110,7 +108,7 @@ public class AccessAgentCallerTest {
 		assertNotNull(result);
 		
 		requestUrl = (String) result[0];
-		assertEquals(expectedRequestUrlConverted,requestUrl);
+		assertEquals(expectedRequestUrl,requestUrl);
 		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
 		assertEquals(expectedPath,uri.getPath());
 		
@@ -223,14 +221,14 @@ public class AccessAgentCallerTest {
 		
 		String url;
 		String result;
-		String expected = "http://www.theworldavatar.com"+JPSConstants.ACCESS_AGENT_PATH;
+		String expected = "http://"+JPSConstants.ACCESS_AGENT_HOST+JPSConstants.ACCESS_AGENT_PATH;
 		String expectedLocal = "http://localhost:8080"+JPSConstants.ACCESS_AGENT_PATH;
 		
-		url = "http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl%23Service";
+		url = "http://www.theworldavatar.com:83/kb/agents/Service__OpenWeatherMap.owl%23Service";
 		result = AccessAgentCaller.getBaseWorldUrl(url);
 		assertEquals(expected,result);
 	
-		url = "http://www.theworldavatar.com/kb/ontokin";
+		url = "http://www.theworldavatar.com:83/kb/ontokin";
 		result = AccessAgentCaller.getBaseWorldUrl(url);
 		assertEquals(expected,result);
 		

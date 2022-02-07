@@ -23,22 +23,10 @@ public class UpdateDerivations extends JPSAgent{
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 		DerivationClient devClient = new DerivationClient(storeClient);
-		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		
-		if (InstancesDatabase.DerivedDifference == null) {
-			String calcDiff = sparqlClient.getDifference();
-			InstancesDatabase.DerivedDifference = devClient.getDerivationOf(calcDiff);
-		}
+		devClient.updateDerivations();
 		
-		if (InstancesDatabase.DerivedAverage == null) {
-			String average = sparqlClient.getAverageIRI();
-			InstancesDatabase.DerivedAverage = devClient.getDerivationOf(average);
-		}
-		
-		devClient.updateDerivation(InstancesDatabase.DerivedDifference);
-		devClient.updateDerivation(InstancesDatabase.DerivedAverage);
-		
-		String res_msg = "Updated derivation of difference <" + InstancesDatabase.DerivedDifference + "> and derivation of average <" + InstancesDatabase.DerivedAverage + ">";
+		String res_msg = "Updated derivations";
 		LOGGER.info(res_msg);
 		
 		JSONObject response = new JSONObject();

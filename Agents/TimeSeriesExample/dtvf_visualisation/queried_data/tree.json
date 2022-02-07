@@ -1,0 +1,12 @@
+[
+    {
+        "layerName": "Colleges",
+        "defaultState": "visible",
+        "layerIDs": ["colleges-1", "colleges-2"]
+    },
+    {
+        "layerName": "Departments",
+        "defaultState": "visible",
+        "layerIDs": ["departments-1"]
+    }
+]
