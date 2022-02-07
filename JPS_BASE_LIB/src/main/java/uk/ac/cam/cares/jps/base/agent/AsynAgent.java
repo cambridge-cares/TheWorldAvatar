@@ -69,24 +69,35 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
     	// TODO this SPARQL query does NOT consider synchronous derivations that isDerivedUsing given agentIRI
     	// TODO think about the situation where one agent monitors both synchronous and asynchronous derivations
     	Map<String, StatusType> derivationsAndStatusType = devClient.getDerivationsAndStatusType(agentIRI);
-    	
+		if (derivationsAndStatusType.isEmpty()) {
+			LOGGER.info("Currently, no derivation <isDerivedUsing> <" + agentIRI + ">.");
+		} else {
+			LOGGER.info("A list of derivations that <isDerivedUsing> <"+ agentIRI +"> are retrieved: " + derivationsAndStatusType.toString() + ".");
+		}
+
     	// iterate over each derivation that the agent is monitoring and make decisions based on its status
     	derivationsAndStatusType.forEach((derivation, statusType) -> {
+			LOGGER.info("Derivation <" + derivation +"> has status type: " + statusType +".");
     		switch (statusType) {
 			case PENDINGUPDATE:
-				devClient.checkAtPendingUpdate(derivation);
+				List<String> immediateUpstreamDerivationToUpdate = devClient.checkAtPendingUpdate(derivation);
+				LOGGER.info("Derivation <" + derivation + "> has a list of immediate upstream derivations to be updated: " + immediateUpstreamDerivationToUpdate.toString());
 				break;
 			case REQUESTED:
-				JSONObject agentInputs = devClient.retrieveAgentInputs(derivation, agentIRI);
-				devClient.markAsInProgress(derivation);
+				JSONObject agentInputs = devClient.retrieveAgentInputIRIs(derivation, agentIRI);
+				LOGGER.info("Agent <" + agentIRI + "> retrieved inputs of derivation <" + derivation + ">: " + agentInputs.toString() + ".");
+				LOGGER.info("Derivation <" + derivation + "> is now in progress.");
 				List<String> newDerivedIRI = setupJob(agentInputs);
+				LOGGER.info("Derivation <" + derivation + "> has new generated derived IRI: " + newDerivedIRI.toString() + ".");
 				devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+				LOGGER.info("Derivation <" + derivation + "> is now finished, to be cleaned up.");
 				break;
 			case INPROGRESS:
 				// at the moment the design is the agent just pass when it's detected as "InProgress"
 				break;
 			case FINISHED:
 				devClient.cleanUpFinishedDerivationUpdate(derivation);
+				LOGGER.info("Derivation <" + derivation + "> is now cleand up.");
 				break;
 			case NOSTATUS:
 				break;

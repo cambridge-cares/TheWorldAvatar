@@ -5,9 +5,10 @@
 	<artifactId>ontomatch</artifactId>
 	<version>1.0.0</version>
 	
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<build>
+	
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
 		<resources>
@@ -18,9 +19,14 @@
 				</excludes>
 			</resource>
 		</resources>
+	    <pluginManagement>
 
 		<plugins>
 
+<plugin>
+  <artifactId>maven-war-plugin</artifactId>
+  <version>3.0.0</version>
+</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
@@ -38,13 +44,87 @@
 					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
-
+            
 		</plugins>
+
+    </pluginManagement>
+    <plugins>
+    <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>run</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <exec executable="cmd"
+                                       spawn="true">
+                                    <arg value="/C"/>
+                                    <arg value="python\createVenv.bat"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+                    <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>appassembler-maven-plugin</artifactId>
+            <version>2.1.0</version>
+            <configuration>
+                <assembleDirectory>target</assembleDirectory>
+                <useWildcardClassPath>true</useWildcardClassPath>
+             <repositoryLayout>flat</repositoryLayout>
+                <programs>
+                    <program>
+                        <mainClass>launch.Main</mainClass>
+                        <name>webapp</name>
+                    </program>
+                </programs>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>assemble</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
 	</build>
-
-
+    <repositories>
+        <repository>
+            <id>java-generator-functions</id>
+            <url>http://dl.bintray.com/filipmalczak/maven</url>
+        </repository>
+    </repositories>
+  <properties>
+    <tomcat.version>8.5.54</tomcat.version>
+  </properties>
 	<dependencies>
-		
+	<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-common -->
+<dependency>
+    <groupId>org.glassfish.jersey.core</groupId>
+    <artifactId>jersey-common</artifactId>
+    <version>2.32</version>
+</dependency>
+		<dependency>
+			<groupId>uk.ac.cam.cares.jps</groupId>
+			<artifactId>jps-base-lib</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+	
+		        <dependency>
+            <groupId>io.herrmann</groupId>
+            <artifactId>java-generator-functions</artifactId>
+            <version>1.0</version>
+        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -56,19 +136,18 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.11.0</version>
+			<version>2.17.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>2.11.0</version>
+			<version>2.17.1</version>
 		</dependency>
 
 		<dependency>
@@ -88,6 +167,30 @@
 			<artifactId>gson</artifactId>
 			<version>2.6.2</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+<dependency>
+    <groupId>javax.ws.rs</groupId>
+    <artifactId>javax.ws.rs-api</artifactId>
+    <version>2.0-m10</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-expression -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-expression</artifactId>
+    <version>3.2.9.RELEASE</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
+<dependency>
+    <groupId>commons-validator</groupId>
+    <artifactId>commons-validator</artifactId>
+    <version>1.4.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-querybuilder -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-querybuilder</artifactId>
+    <version>3.7.0</version>
+</dependency>
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -106,11 +209,192 @@
 			<artifactId>jena-shaded-guava</artifactId>
 			<version>3.7.0</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.orbisgis</groupId>
 			<artifactId>cts</artifactId>
 			<version>1.5.1</version>
 		</dependency>
+<dependency>
+    <groupId>commons-codec</groupId>
+    <artifactId>commons-codec</artifactId>
+    <version>1.10</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.3.1</version>
+</dependency>
 
+<dependency>
+    <groupId>com.rabbitmq</groupId>
+    <artifactId>amqp-client</artifactId>
+    <version>4.0.2</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
+<dependency>
+    <groupId>commons-logging</groupId>
+    <artifactId>commons-logging</artifactId>
+    <version>1.2</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>fluent-hc</artifactId>
+    <version>4.5.5</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.6.2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient-win -->
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient-win</artifactId>
+    <version>4.5.5</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-base -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-base</artifactId>
+    <version>3.7.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-cmds -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-cmds</artifactId>
+    <version>3.7.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-dboe-base -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-dboe-base</artifactId>
+    <version>3.7.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-dboe-index -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-dboe-index</artifactId>
+    <version>3.7.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-dboe-transaction -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-dboe-transaction</artifactId>
+    <version>3.7.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-iri -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-iri</artifactId>
+    <version>3.7.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-iri -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-rdfconnection</artifactId>
+    <version>3.7.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-tdb</artifactId>
+    <version>3.7.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.6</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.thrift/libthrift -->
+<dependency>
+    <groupId>org.apache.thrift</groupId>
+    <artifactId>libthrift</artifactId>
+    <version>0.10.0</version>
+    <type>pom</type>
+</dependency>
+<!-- https://mvnrepository.com/artifact/xerces/xercesImpl -->
+<dependency>
+    <groupId>xerces</groupId>
+    <artifactId>xercesImpl</artifactId>
+    <version>2.11.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-all</artifactId>
+    <version>1.10.19</version>
+    <scope>test</scope>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-beans -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-beans</artifactId>
+    <version>3.2.9.RELEASE</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>3.2.9.RELEASE</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-core</artifactId>
+    <version>3.2.9.RELEASE</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpcore</artifactId>
+    <version>4.4.9</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpmime</artifactId>
+    <version>4.5.5</version>
+</dependency>
+
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-dboe-trans-data</artifactId>
+			<version>3.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-core</artifactId>
+			<version>3.7.0</version>
+		</dependency>
+		 <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-jasper</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jasper</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jasper-el</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jsp-api</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+		
 	</dependencies>
 </project>
