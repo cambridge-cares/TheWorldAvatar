@@ -10,6 +10,36 @@ import json
 # the TimeSeriesClient in the JPB_BASE_LIB
 from jpsSingletons import jpsBaseLibView
 
+def get_all_terminal_geodata(KGClient):
+    '''
+        Returns coordinates ([lon, lat]) and name (label) for all terminals
+    '''
+
+# SPARQL query string
+    query = kg_utils.create_sparql_prefix('rdf') + \
+            kg_utils.create_sparql_prefix('rdfs') + \
+            kg_utils.create_sparql_prefix('loc') + \
+            kg_utils.create_sparql_prefix('comp') + \
+            '''SELECT ?location ?name
+                WHERE
+                {
+                    ?term rdf:type comp:GasTerminal ;
+                        rdfs:label ?name ;
+                        loc:lat-lon ?location.
+                }'''
+    # Execute query
+    response = KGClient.execute(query)
+
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+    terminal_coorindates = dict()
+    for r in response:
+        coordinates = r['location'].split('#')
+        coordinates = [float(i) for i in coordinates]
+        coordinates = coordinates[::-1]
+        terminal_coorindates[r['name'].lower()] = coordinates
+    return terminal_coorindates
+
 def get_all_terminals(KGClient):
     '''
         Returns all terminals instantiated in KG as list
@@ -71,6 +101,8 @@ def generate_all_visualisation_data():
 
     # Get all terminals of interest
     terminals = get_all_terminals(KGClient)
+    # Retrieve all geocoordinates of terminals for GeoJSON output
+    terminal_coordinates = get_all_terminal_geodata(KGClient)
 
 if __name__ == '__main__':
     """
