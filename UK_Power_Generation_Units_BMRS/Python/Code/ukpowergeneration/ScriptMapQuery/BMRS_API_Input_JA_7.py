@@ -112,8 +112,12 @@ def convert_csv_to_triple_dfs(csvName):
     #This is only for Search == 2 scenarios. 
     
     #CSV Locations
-    plantfilelocation = 'https://www.dropbox.com/s/arwtg13rjj8ajoi/powerplanttriple.csv?dl=1'
-    genfilelocation = 'https://www.dropbox.com/s/a24f76icghonsf9/generatortriple.csv?dl=1'
+    #Simplified Data Link
+    #plantfilelocation = 'https://www.dropbox.com/s/arwtg13rjj8ajoi/powerplanttriple%20-%20Simple.csv?dl=1'
+    #genfilelocation = 'https://www.dropbox.com/s/a24f76icghonsf9/generatortriple%20-%20Simple.csv?dl=1'
+    #Standardised Day Link
+    plantfilelocation = 'https://www.dropbox.com/s/iwx5ukrzy4agxdx/powerplanttriple%20-%20All.csv?dl=1'
+    genfilelocation = 'https://www.dropbox.com/s/aj9zlr91yuzqctp/generatortriple%20-%20All.csv?dl=1'
 
     #Read csv
     data = pd.read_csv(csvName) #Dataframe including DUKES stations. 
@@ -470,8 +474,8 @@ def Auto_Call(Key):
     #This means that rather than choosing a specific time, it picks 8 days ago and sweeps for all 48 periods (half hours) of the day. 
     #Thus, the Year, Month, Day, and Period inputs don't matter. With Search == 2.
     #CSV names are also set here and for the triple conversions. 
-    live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2020', '20', '02', '02', 2)
-    dfa, dfb = convert_csv_to_triple_dfs('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1')
+    live_power('https://www.dropbox.com/s/9bdt4y1406yqfgj/Input-Template-Auto.csv?dl=1', Key, '2020', '20', '02', '02', 2)
+    dfa, dfb = convert_csv_to_triple_dfs('https://www.dropbox.com/s/9bdt4y1406yqfgj/Input-Template-Auto.csv?dl=1')
     return dfa, dfb
 
 
