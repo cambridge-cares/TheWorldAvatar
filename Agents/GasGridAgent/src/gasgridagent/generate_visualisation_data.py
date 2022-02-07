@@ -10,6 +10,29 @@ import json
 # the TimeSeriesClient in the JPB_BASE_LIB
 from jpsSingletons import jpsBaseLibView
 
+# Specify plotting properties for GeoJSON features
+geojson_attributes = { 'displayName': '',
+                  'description': '',
+                  'circle-color': '#FF0000',
+                  'circle-stroke-width': 1,
+                  'circle-stroke-color': '#000000',
+                  'circle-stroke-opacity': 0.75,
+                  'circle-opacity': 0.75
+                  }
+
+def format_in_geojson(feature_id, properties, coordinates):
+    """
+       It structures geodata of terminals into geoJSON format.
+    """
+    feature = {'type': 'Feature',
+               'id': int(feature_id),
+               'properties': properties.copy(),
+               'geometry': {'type': 'Point',
+                            'coordinates': coordinates
+                            }
+               }
+    return feature
+
 def get_all_terminal_geodata(KGClient):
     '''
         Returns coordinates ([lon, lat]) and name (label) for all terminals
@@ -103,6 +126,18 @@ def generate_all_visualisation_data():
     terminals = get_all_terminals(KGClient)
     # Retrieve all geocoordinates of terminals for GeoJSON output
     terminal_coordinates = get_all_terminal_geodata(KGClient)
+
+    # Iterate over all terminals
+    for terminal, iri in terminals.items():
+        feature_id += 1
+        # Update GeoJSON properties
+        geojson_attributes['description'] = str(terminal)
+        geojson_attributes['displayName'] = terminal
+        # Append results to overall GeoJSON FeatureCollection
+        if terminal.lower() in terminal_coordinates:
+            print('terminal_coordinates[terminal.lower()]:', terminal_coordinates[terminal.lower()])
+            geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, terminal_coordinates[terminal.lower()]))
+
 
 if __name__ == '__main__':
     """
