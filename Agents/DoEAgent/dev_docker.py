@@ -22,7 +22,7 @@ def exampleEntryPoint():
     clearAll = """DELETE {?s ?p ?o} \
             WHERE {?s ?p ?o}
             """
-    example_sparql_client = DoESparqlClient(config.SPARQL_QUERY_ENDPOINT, config.SPARQL_UPDATE_ENDPOINT)
+    example_sparql_client = ChemistryAndRobotsSparqlClient(config.SPARQL_QUERY_ENDPOINT, config.SPARQL_UPDATE_ENDPOINT)
     example_sparql_client.performUpdate(clearAll)
 
     folderpath = str(Path(__file__).absolute().parent) + '/doeagent/tests/resources/'

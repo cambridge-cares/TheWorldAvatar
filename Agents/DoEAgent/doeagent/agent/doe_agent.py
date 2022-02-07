@@ -32,7 +32,7 @@ class DoEAgent(AsyncAgent):
         input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
 
         # Create sparql_client
-        self.sparql_client = DoESparqlClient(
+        self.sparql_client = ChemistryAndRobotsSparqlClient(
             self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword
         )
         # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance
