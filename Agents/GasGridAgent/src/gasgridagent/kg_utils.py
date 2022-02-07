@@ -3,6 +3,7 @@
 # ======================================================================================
 
 import os
+import re
 import json
 import psycopg2
 import requests
@@ -31,6 +32,7 @@ PREFIXES = {
     'om':    'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
+    'loc': 'http://www.bigdata.com/rdf/geospatial/literals/v1#',
     'ts':    'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
     'xsd':   'http://www.w3.org/2001/XMLSchema#',
 }

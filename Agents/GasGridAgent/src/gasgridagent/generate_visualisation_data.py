@@ -7,6 +7,8 @@
 import kg_utils
 from datetime import datetime as dt
 import json
+import os
+import os.path
 # Get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module to access
 # the TimeSeriesClient in the JPB_BASE_LIB
 from jpsSingletons import jpsBaseLibView
@@ -258,6 +260,16 @@ def generate_all_visualisation_data():
     ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
     # Make JSON file readable in Python
     ts_json = json.loads(ts_json.toString())
+    # Write GeoJSON dictionary formatted to file
+    file_name = os.path.join(kg_utils.OUTPUT_DIR, 'data/set-1/scenario-0', 'terminals.geojson')
+    with open(file_name, 'w') as f:
+        json.dump(geojson, indent=4, fp=f)
+    file_name = os.path.join(kg_utils.OUTPUT_DIR, 'data/set-1/scenario-0', 'terminals-meta.json')
+    with open(file_name, 'w') as f:
+        json.dump(metadata, indent=4, fp=f)
+    file_name = os.path.join(kg_utils.OUTPUT_DIR, 'data/set-1/scenario-0', 'terminals-timeseries.json')
+    with open(file_name, 'w') as f:
+        json.dump(ts_json, indent=4, fp=f)
 
 
 if __name__ == '__main__':
