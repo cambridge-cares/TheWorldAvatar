@@ -10,6 +10,7 @@
     Authors: trs53<@>cam.ac.uk, mh807<@>cam.ac.uk
 """
 
+from numpy import power
 from tqdm import tqdm
 import time
 import pytz
@@ -327,10 +328,10 @@ def get_power_data_from_api():
     powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
     #Note, will want to call the overall funtion, rather than convert_csv_to_triple_dfs longer term. 
 
-    print("PowerPlants Dataframe: ")
-    print(powerplant_df)
-    print("Generators Dataframe: ")
-    print(generator_df)
+    #print("PowerPlants Dataframe: ")
+    #print(powerplant_df)
+    #print("Generators Dataframe: ")
+    #print(generator_df)
     #####BACK LATER#####
     print("Finished preparing dataframes.")
 
@@ -470,6 +471,12 @@ def update_triple_store():
     #power_data = get_power_data_from_api()
     #THIS IS THE BIG, IMPORTANT QUERY CALL. 
     powerplant_power_data, generator_power_data = get_power_data_from_api()
+    print("LENGTHS")
+    print(len(powerplant_power_data))
+    print(len(generator_power_data))
+    print(powerplant_power_data)
+    print(generator_power_data)
+
     #BMRS uses MW
     units = "http://www.ontology-of-units-of-measure.org/resource/om-2/megawatt"
     
