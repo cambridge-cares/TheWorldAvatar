@@ -1,0 +1,42 @@
+@prefix ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#> .
+@prefix ontorxn:             <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#> .
+@prefix ontolab:             <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#> .
+@prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
+@prefix :                    <http://www.theworldavatar.com/resource/agents/Service__ExpSetup#> .
+
+:Service
+    rdf:type ontoagent:Service;
+    ontoagent:hasOperation :Operation;
+.
+
+:Operation
+    rdf:type ontoagent:Operation;
+    ontoagent:hasInput :MessageContent_input;
+    ontoagent:hasOutput :MessageContent_output;
+    ontoagent:hasHttpUrl "http://localhost:7000/expsetup/placeholder"^^xsd:string;
+.
+
+:MessageContent_input
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_rxnexp;
+.
+
+:MessageContent_output
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_equipmentsettings;
+.
+
+:MessagePart_rxnexp
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType ontorxn:ReactionExperiment;
+    ontoagent:hasName "reactionExperiment"^^xsd:string;
+.
+
+:MessagePart_equipmentsettings
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "true"^^xsd:boolean;
+    ontoagent:hasType ontolab:EquipmentSettings;
+    ontoagent:hasName "equipmentSettings"^^xsd:string;
+.
