@@ -20,6 +20,42 @@ geojson_attributes = { 'displayName': '',
                   'circle-opacity': 0.75
                   }
 
+def put_metadata_in_json(feature_id, lon, lat):
+    """
+       Structures metadata in JSON format
+    """
+    metadata = { 'id': feature_id,
+                 'Longitude': lon,
+                 'Latitude': lat
+                 }
+    return metadata
+
+
+def get_metadata(terminal_iri, KGClient):
+    '''
+        Returns meta data for the requested terminal identified by its IRI.
+    '''
+    # Defines query to retrieve latitude and longitude of terminals
+    query = kg_utils.create_sparql_prefix('loc') + \
+            kg_utils.create_sparql_prefix('rdf') + \
+            kg_utils.create_sparql_prefix('comp') + \
+            '''SELECT ?iri ?loc \
+               WHERE { ?iri rdf:type comp:GasTerminal ;
+                             loc:lat-lon ?loc .}'''
+    # Executes query
+    response = KGClient.execute(query)
+    # Converts JSONArray String back to list
+    response = json.loads(response)
+    lon = None
+    lat = None
+    for r in response:
+        if r['iri'].lower() == terminal_iri.lower():
+            coordinates = r['loc'].split('#')
+            lon = coordinates[1]
+            lat = coordinates[0]
+    return lon, lat
+
+
 def format_in_geojson(feature_id, properties, coordinates):
     """
        It structures geodata of terminals into geoJSON format.
@@ -137,6 +173,12 @@ def generate_all_visualisation_data():
         if terminal.lower() in terminal_coordinates:
             print('terminal_coordinates[terminal.lower()]:', terminal_coordinates[terminal.lower()])
             geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, terminal_coordinates[terminal.lower()]))
+        # Retrieve terminal metadata
+        lon, lat = get_metadata(iri, KGClient)
+        if lon == None and lat == None:
+            print('The following terminal is not represented in the knowledge graph with coordinates:', iri)
+        else:
+            metadata.append(put_metadata_in_json(feature_id, lon, lat))
 
 
 if __name__ == '__main__':
