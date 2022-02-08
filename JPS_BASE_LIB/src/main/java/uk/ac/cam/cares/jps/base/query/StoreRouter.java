@@ -62,7 +62,7 @@ public class StoreRouter{
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
 	
-	// ontokgrouter endpoint in jps.properties
+	// get default ontokgrouter endpoint from jps.properties
 	private static String STOREROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);
 	
 	/**
@@ -73,6 +73,17 @@ public class StoreRouter{
 	
 	static StoreRouter storeRouter = null;
 		
+	/**
+	 * Set STOREROUTER_ENDPOINT
+	 * @param endpoint
+	 */
+	public static void setRouterEndpoint(String endpoint) {
+		if (storeRouter == null) {
+			storeRouter = new StoreRouter();
+		}
+		STOREROUTER_ENDPOINT = endpoint;
+	}
+	
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
 	 * provided as the input. For query and/or update operations, it
