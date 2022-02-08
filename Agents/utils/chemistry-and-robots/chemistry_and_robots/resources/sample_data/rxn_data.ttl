@@ -847,51 +847,78 @@ ChemRxn:ChemRxn_1
 
 ChemRxn:Species_1
     rdf:type OntoKin:Reactant;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>
     OntoSpecies:pubChemCID "240"^^xsd:string;
+    rdfs:label "C7H6O"^^xsd:string;
     skos:altLabel "benzaldehyde"^^xsd:string;
-    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_1;
 .
 
 ChemRxn:Species_2
     rdf:type OntoKin:Reactant;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>
     OntoSpecies:pubChemCID "180"^^xsd:string;
+    rdfs:label "C3H6O"^^xsd:string;
     skos:altLabel "acetone"^^xsd:string;
-    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_2;
 .
 
 ChemRxn:Species_3
     rdf:type OntoRxn:TargetProduct;
+    OntoSpecies:hasUniqueSpecies ChemRxn:Species_placeholder_pubchemcid_637759;
+.
+
+ChemRxn:Species_placeholder_pubchemcid_637759
     OntoSpecies:pubChemCID "637759"^^xsd:string;
+    rdfs:label "C10H10O"^^xsd:string;
     skos:altLabel "benzalacetone"^^xsd:string;
-    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_3;
 .
 
 ChemRxn:Species_4
     rdf:type OntoRxn:Impurity;
+    OntoSpecies:hasUniqueSpecies ChemRxn:Species_placeholder_pubchemcid_640180;
+.
+
+ChemRxn:Species_placeholder_pubchemcid_640180
     OntoSpecies:pubChemCID "640180"^^xsd:string;
+    rdfs:label "C17H14O"^^xsd:string;
     skos:altLabel "dibenzylideneacetone"^^xsd:string;
-    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_4;
 .
 
 ChemRxn:Species_5
     rdf:type OntoRxn:Catalyst;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>
     OntoSpecies:pubChemCID "14798"^^xsd:string;
+    rdfs:label "HNaO"^^xsd:string;
     skos:altLabel "NaOH"^^xsd:string;
-    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_5;
 .
 
 ChemRxn:Species_6
     rdf:type OntoRxn:Solvent;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>
     OntoSpecies:pubChemCID "6342"^^xsd:string;
+    rdfs:label "CH3CN"^^xsd:string;
     skos:altLabel "acetonitrile"^^xsd:string;
-    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_6;
 .
 
 ChemRxn:Species_7
     rdf:type OntoRxn:Solvent;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+.
+
+<http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>
     OntoSpecies:pubChemCID "702"^^xsd:string;
+    rdfs:label "C2H6O"^^xsd:string;
     skos:altLabel "ethanol"^^xsd:string;
-    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_7;
 .
 
 ##############################
@@ -899,49 +926,49 @@ ChemRxn:Species_7
 ##############################
 SinglePhase:PhaseComponent_1
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_1;
+    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_1_Property_1;
 .
 
 SinglePhase:PhaseComponent_2
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_2;
+    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_2_Property_1;
 .
 
 SinglePhase:PhaseComponent_3
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_3;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_placeholder_pubchemcid_637759;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_Property_1;
 .
 
 SinglePhase:PhaseComponent_4
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_4;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_placeholder_pubchemcid_640180;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_Property_1;
 .
 
 SinglePhase:PhaseComponent_5
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_5;
+    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_5_Property_1;
 .
 
 SinglePhase:PhaseComponent_6
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_6;
+    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_1;
 .
 
 SinglePhase:PhaseComponent_6_2
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_6;
+    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_2;
 .
 
 SinglePhase:PhaseComponent_7
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_7;
+    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_7_Property_1;
 .
 
