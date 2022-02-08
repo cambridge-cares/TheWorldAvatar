@@ -62,7 +62,7 @@ def instantiate_generator(query_endpoint, update_endpoint, generator_name):
                 kg.create_sparql_prefix('xsd') + \
                 '''INSERT DATA { <%s> rdf:type ontoenergysystem:PowerGenerator . \
                                 <%s> rdfs:label "%s"^^xsd:string . }''' % \
-                (generatorIRI, generatorIRI, generator_name)
+                (generatorIRI, generatorIRI, generator_name.replace("PowerGenerator_",""))
         KGClient.executeUpdate(query)
 
 
@@ -98,7 +98,7 @@ def instantiate_powerplant(query_endpoint, update_endpoint, powerplant_name):
                 kg.create_sparql_prefix('ontoeip') + \
                 '''INSERT DATA { <%s> rdf:type ontoenergysystem:PowerPlant . \
                                 <%s> rdfs:label "%s"^^xsd:string . }''' % \
-                (powerplantIRI, powerplantIRI, powerplant_name)
+                (powerplantIRI, powerplantIRI, powerplant_name.replace("PowerPlant_",""))
         KGClient.executeUpdate(query)
 
 
@@ -322,10 +322,12 @@ def get_power_data_from_api():
     #powerplant_df, generator_df = bmrs.Auto_Call(Key)
     #Read the Input-Template.csv file from a URL. 
     #eg. 'https://www.dropbox.com/s/mmmcto232y4q3or/Input-Template.csv?dl=1' for 'Dropbox (Cambridge CARES)\CoMo shared\ja685\BMRS\Script-BMRS-API/Input-Template.csv'
+    
     #Simplified Data Link
-    #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
+    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
     #Standardised Day Link
-    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
+    #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
+    
     #Note, will want to call the overall funtion, rather than convert_csv_to_triple_dfs longer term. 
 
     #print("PowerPlants Dataframe: ")
