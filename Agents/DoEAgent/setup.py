@@ -14,6 +14,7 @@ setup(
     packages=find_packages(exclude=('tests')),
     install_requires=['pyasyncagent==0.0.5', 'summit', 'pandas', 'pydantic'
     # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'
+    # 'chemistry_and_robots @ git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots'
     ],
     extras_require={
         "dev": [
