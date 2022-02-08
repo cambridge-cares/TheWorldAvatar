@@ -146,6 +146,7 @@ public class AccessAgentTest{
 		assertEquals("OH",jo.get("o").toString());
 	}
 	
+	@Test
 	public void testGetWithSparqlUpdate() throws ParseException {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -210,6 +211,7 @@ public class AccessAgentTest{
 		assertEquals(content, strResult);		
 	}
 	
+	@Test
 	public void testPutWithSparqlUpdate() throws ParseException {
 				
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -226,6 +228,7 @@ public class AccessAgentTest{
         Assertions.assertThrows( JPSRuntimeException.class, ()->{agent.put(jo);});
 	}
 	
+	@Test
 	public void testPutWithSparqlQuery() {
 				
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -262,6 +265,7 @@ public class AccessAgentTest{
 		assertEquals("TEST",result.get("o").toString());      
 	}
 	
+	@Test
 	public void testPostWithSparqlQuery() {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -276,6 +280,7 @@ public class AccessAgentTest{
         Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.post(jo);});								
 	}
 	
+	@Test
 	public void testPostWithoutSparqlUpdate() {
 				
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
