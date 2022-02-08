@@ -235,7 +235,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontokin/ontokin.owl#ElementNumber"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A number that indicates the amount of an element in a species.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
@@ -489,6 +489,12 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A combined representation of a number indicating the amount of an element in a species and the element.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -517,20 +523,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontokin/ontokin.owl#ElementNumber -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/ontokin.owl#ElementNumber">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf"/>
-                <owl:allValuesFrom rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
     
 
 
@@ -567,7 +559,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontokin/ontokin.owl#ElementNumber"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A chemical compound formula expressing the number of atoms of each element present in a compound, without indicating how they are linked.</rdfs:comment>
