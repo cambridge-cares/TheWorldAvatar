@@ -7,6 +7,7 @@ import os
 from pyasyncagent import AsyncAgent
 
 from doeagent.kg_operations import *
+from doeagent.data_model import *
 from doeagent.doe_algo import *
 from doeagent.conf import *
 

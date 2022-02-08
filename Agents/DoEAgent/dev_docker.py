@@ -1,5 +1,10 @@
 from doeagent.agent import *
 
+from rdflib import Graph
+import pkgutil
+import uuid
+import os
+
 ###############################################################
 ### !!! Do NOT run this script before reading README.md !!! ###
 ###############################################################
@@ -25,10 +30,14 @@ def exampleEntryPoint():
     example_sparql_client = ChemistryAndRobotsSparqlClient(config.SPARQL_QUERY_ENDPOINT, config.SPARQL_UPDATE_ENDPOINT)
     example_sparql_client.performUpdate(clearAll)
 
-    folderpath = str(Path(__file__).absolute().parent) + '/doeagent/tests/resources/'
-    example_sparql_client.uploadOntology(folderpath+'doe.ttl')
-    example_sparql_client.uploadOntology(folderpath+'Service__DoE.ttl')
-    example_sparql_client.uploadOntology(folderpath+'rxn_data.ttl')
+    # Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
+    for f in ['ontoagent/Service__DoE.ttl', 'sample_data/doe.ttl', 'sample_data/rxn_data.ttl']:
+        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
+        g = Graph().parse(data=data)
+        filePath = f'{str(uuid.uuid4())}.ttl'
+        g.serialize(filePath, format='ttl')
+        example_sparql_client.uploadOntology(filePath)
+        os.remove(filePath)
 
     # Hardcode the IRI to be used for the example
     # Developers should upload the files containing these triples to the endpoints following the instructions in the README.md

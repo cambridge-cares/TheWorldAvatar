@@ -1,7 +1,11 @@
 from testcontainers.core.container import DockerContainer
+from rdflib import Graph
 import logging
+import pkgutil
 import pytest
 import time
+import uuid
+import os
 
 from doeagent.agent import *
 from doeagent.conf import *
@@ -61,11 +65,14 @@ def test_example_doe(initialise_agent):
     # Start the scheduler to monitor derivations
     doe_agent.start_monitoring_derivations()
 
-    # Upload all example triples provided in the resources folder to triple store
-    folderpath = str(Path(__file__).absolute().parent) + '/resources/'
-    sparql_client.uploadOntology(folderpath+'doe.ttl')
-    sparql_client.uploadOntology(folderpath+'Service__DoE.ttl')
-    sparql_client.uploadOntology(folderpath+'rxn_data.ttl')
+    # Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
+    for f in ['ontoagent/Service__DoE.ttl', 'sample_data/doe.ttl', 'sample_data/rxn_data.ttl']:
+        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
+        g = Graph().parse(data=data)
+        filePath = f'{str(uuid.uuid4())}.ttl'
+        g.serialize(filePath, format='ttl')
+        sparql_client.uploadOntology(filePath)
+        os.remove(filePath)
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
     derivation_iri = doe_agent.derivationClient.createAsynDerivation(derivation_output, doe_agent.agentIRI, derivation_inputs)
