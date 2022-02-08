@@ -83,7 +83,7 @@ public class AccessAgent extends JPSAgent{
 				JSONresult = get(requestParams);
 			    break;
 			case HttpPost.METHOD_NAME:
-				post(requestParams);
+				JSONresult = post(requestParams);
 				break;
 			case HttpPut.METHOD_NAME:
 				put(requestParams);
@@ -116,6 +116,7 @@ public class AccessAgent extends JPSAgent{
 			
 			JSONObject JSONresult = new JSONObject();
 			String result = null;
+			//Note: Using HTTP GET for queries is now deprecated. HTTP POST is used instead. 
 			if (sparqlquery != null) { 
 				//query
 				result = kbClient.execute(sparqlquery);
@@ -166,16 +167,16 @@ public class AccessAgent extends JPSAgent{
 	/**
 	 * Perform HTTP POST. This will perform a SPARQL update on the store. 
 	 * @param requestParams
+	 * @return 
 	 */
-	public void post(JSONObject requestParams) {	
+	public JSONObject post(JSONObject requestParams) {	
 		
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
 		String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
-		
-		if(sparqlquery != null) {
-			throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_QUERY + " is not allowed");
-		}
+			
+		JSONObject JSONresult = new JSONObject();
+		String result = null;
 		
 		try {
 			logInputParams(requestParams, sparqlupdate, false);
@@ -184,9 +185,16 @@ public class AccessAgent extends JPSAgent{
 			
 			if (sparqlupdate!=null) {
 				kbClient.executeUpdate(sparqlupdate);
+			}else if(sparqlquery!=null){
+				//query
+				result = kbClient.execute(sparqlquery);
+				JSONresult.put("result",result);
 			}else {
-				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is missing");
+				throw new JPSRuntimeException("SPARQL query or update is missing");
 			}
+			
+			return JSONresult;
+			
 		} catch (RuntimeException e) {
 			logInputParams(requestParams, sparqlupdate, true);
 			throw new JPSRuntimeException(e);
