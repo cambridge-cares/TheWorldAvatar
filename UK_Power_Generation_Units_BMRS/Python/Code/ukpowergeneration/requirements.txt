@@ -5,5 +5,6 @@ pytz
 tqdm
 numpy
 psycopg2
+wget
 requests
 httplib2
