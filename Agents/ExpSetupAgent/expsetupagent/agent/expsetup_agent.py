@@ -7,9 +7,8 @@ import os
 from pyasyncagent import AsyncAgent
 
 from expsetupagent.kg_operations import *
+from expsetupagent.data_model import *
 from expsetupagent.conf import *
-
-from doeagent.agent import *
 
 class ExpSetupAgent(AsyncAgent):
     def setupJob(self, agentInputs) -> list:
@@ -54,8 +53,7 @@ class ExpSetupAgent(AsyncAgent):
         if ONTORXN_REACTIONEXPERIMENT in agent_inputs:
             try:
                 # Get the information from OntoRxn:ReactionExperiment instance
-                doe_sparql_client = DoESparqlClient(self.kgUrl, self.kgUrl)
-                list_rxn_exp_instance = doe_sparql_client.getReactionExperiment(agent_inputs[ONTORXN_REACTIONEXPERIMENT])
+                list_rxn_exp_instance = self.sparql_client.getReactionExperiment(agent_inputs[ONTORXN_REACTIONEXPERIMENT])
                 if len(list_rxn_exp_instance) > 1:
                     raise Exception(
                         "Only one instance of OntoRxn:ReactionExperiment should be used for generating OntoLab:EquipmentSettings per ExpSetup Derivation, collected: <%s>" % (">, <".join([rxnexp.instance_iri for rxnexp in list_rxn_exp_instance]))
