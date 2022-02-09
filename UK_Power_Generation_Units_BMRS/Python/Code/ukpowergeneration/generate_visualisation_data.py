@@ -13,6 +13,9 @@ import os.path
 # the TimeSeriesClient in the JPB_BASE_LIB
 from jpsSingletons import jpsBaseLibView
 
+#Units Dictionary to extract units symbol from used units. 
+unit_dict = {'megawatt': 'MW'}
+
 # Specify plotting properties for GeoJSON features
 geojson_attributes = { 'displayName': '',
                   'description': '',
@@ -22,6 +25,42 @@ geojson_attributes = { 'displayName': '',
                   'circle-stroke-opacity': 0.75,
                   'circle-opacity': 0.75
                   }
+
+
+def get_instance_time_series_data(instanceIRI, TSClient, KGClient):
+    '''
+        Returns data for daily time series associated with given instance. 
+    '''
+
+    # Define query
+    query = kg.create_sparql_prefix('om') + \
+            kg.create_sparql_prefix('ontopowsys') + \
+            kg.create_sparql_prefix('rdfs') + \
+            '''SELECT ?dataIRI ?measurements ?unit \
+               WHERE { <%s> ontopowsys:hasActivePowerGenerated ?dataIRI ; \
+                            rdfs:label ?measurements .
+                                ?dataIRI om:hasUnit ?unit }''' % instanceIRI
+    # Execute query
+    response = KGClient.execute(query)
+
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Initialise lists
+    dataIRIs = []
+    utilities = []
+    units = []
+    # Append lists with all query results
+    for r in response:
+        dataIRIs.append(r['dataIRI'])
+        utilities.append(r['measurements'])
+        units.append(unit_dict[r['unit'].split("/")[-1]])
+
+    # Retrieve time series data for retrieved set of dataIRIs
+    timeseries = TSClient.getTimeSeries(dataIRIs)
+    # Return time series and associated lists of variables and units
+    return timeseries, utilities, units
+
 
 def get_all_time_series(powerplant, KGClient, TSClient, now, duration, start_1, start_2, start_7):
     '''
@@ -349,26 +388,28 @@ def generate_all_visualisation_data():
         else:
             metadata.append(put_metadata_in_json(feature_id, lon, lat))
         # Retrieve time series data
-        # timeseries, utilities, units = get_all_time_series(iri, KGClient, TSClient, now, duration, start_1, start_2, start_7)
-        # ts_data['ts'].append(timeseries)
-        # ts_data['id'].append(feature_id)
-        # ts_data['units'].append(units)
-        # ts_data['headers'].append(utilities)
-    # 
-    # # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
-    # ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
-    # # Make JSON file readable in Python
-    # ts_json = json.loads(ts_json.toString())
+        #timeseries, utilities, units = get_all_time_series(iri, KGClient, TSClient, now, duration, start_1, start_2, start_7)
+        timeseries, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
+        ts_data['ts'].append(timeseries)
+        ts_data['id'].append(feature_id)
+        ts_data['units'].append(units)
+        ts_data['headers'].append(utilities)
+    
+    # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
+    ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
+    # Make JSON file readable in Python
+    ts_json = json.loads(ts_json.toString())
+    #print("ts_json: ", ts_json)
     # Write GeoJSON dictionary formatted to file
-    file_name = os.path.join(kg.OUTPUT_DIR, 'data/powerplants', 'powerplants.geojson')
+    file_name = os.path.join(kg.OUTPUT_DIR, 'powerplants', 'powerplants.geojson')
     with open(file_name, 'w') as f:
         json.dump(geojson, indent=4, fp=f)
-    file_name = os.path.join(kg.OUTPUT_DIR, 'data/powerplants', 'powerplants-meta.json')
+    file_name = os.path.join(kg.OUTPUT_DIR, 'powerplants', 'powerplants-meta.json')
     with open(file_name, 'w') as f:
         json.dump(metadata, indent=4, fp=f)
-    # file_name = os.path.join(kg.OUTPUT_DIR, 'data/set-1/scenario-0', 'powerplants-timeseries.json')
-    # with open(file_name, 'w') as f:
-    #     json.dump(ts_json, indent=4, fp=f)
+    file_name = os.path.join(kg.OUTPUT_DIR, 'powerplants', 'powerplants-timeseries.json')
+    with open(file_name, 'w') as f:
+        json.dump(ts_json, indent=4, fp=f)
 
 
 if __name__ == '__main__':

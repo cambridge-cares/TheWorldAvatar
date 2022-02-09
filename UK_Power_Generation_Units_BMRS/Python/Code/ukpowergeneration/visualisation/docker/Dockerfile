@@ -1,9 +1,9 @@
 #########################
 #
-# This docker file builds an image for the Gas Grid Agent visualistion.
+# This docker file builds an image for the UK Power Grid Agent visualistion.
 #
 # NOTE: The "docker build" command used to build this file into an Image should
-# be run from the "GasGridAgent" folder, not from within this "docker" directory.
+# be run from the "ukpowergeneration" folder, not from within this "docker" directory.
 # See the README for more details.
 # 
 # Stages:
@@ -20,7 +20,7 @@ FROM  alpine:3.14.0 as dev
 # Meta data
 LABEL authors = "support@cmclinnovations.com"
 LABEL version = "1.0.0-SNAPSHOT"
-LABEL description = "Gas Grid Agent"
+LABEL description = "UK Power Grid Agent"
 
 # Install utilities
 RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix

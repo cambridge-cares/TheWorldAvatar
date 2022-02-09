@@ -3,17 +3,17 @@ version: "3.8"
 # All Services
 services:
 
-  # Gas Grid Agent Visualisation
-  gas-grid-agent:
-    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
-    container_name: gas-grid-agent
+  # UK Power Grid Agent Visualisation
+  power-grid-visualisation:
+    image: docker.cmclinnovations.com/power-grid-visualisation:1.0.0-SNAPSHOT
+    container_name: power-grid-visualisation
     build:
       context: "../"
       dockerfile: "./docker/Dockerfile"
       target: "dev"
       labels:
         authors: "support@cmclinnovations"
-        description: "Gas Grid Agent."
+        description: "UK Power Grid Agent."
     # Mounts local directory to a destination directory on docker.
     volumes:
     - ../:/var/www/html
