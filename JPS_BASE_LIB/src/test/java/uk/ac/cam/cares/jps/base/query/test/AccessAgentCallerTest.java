@@ -42,8 +42,6 @@ public class AccessAgentCallerTest {
 		
 		//////////////////////
 		//targetUrl is a namespace
-		
-		/*//This makes a http request to JPS_BASE
 		targetUrl = "teststore";
 		
 		result =  AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
@@ -57,7 +55,6 @@ public class AccessAgentCallerTest {
 		joparams = (JSONObject) result[1];
 		assertEquals(targetUrl,joparams.getString(JPSConstants.TARGETIRI));
 		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
-		*/
 	}
 
 	@Test
@@ -107,8 +104,6 @@ public class AccessAgentCallerTest {
 		
 		//////////////////////
 		//dataset is a namespace, no target/graph
-		
-		/*//This makes a http request to JPS_BASE
 		datasetUrl = "teststore"; 
 		targetUrl = null;
 		result = AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
@@ -122,7 +117,6 @@ public class AccessAgentCallerTest {
 		joparams = (JSONObject) result[1];
 		assertEquals(datasetUrl,joparams.getString(JPSConstants.TARGETIRI));
 		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
-		*/
 	}
 	
 	@Test
@@ -244,10 +238,8 @@ public class AccessAgentCallerTest {
 		result = AccessAgentCaller.getBaseWorldUrl(url);
 		assertEquals(expectedLocal,result);
 		
-		/*//This makes a http request to JPS_BASE 
 		url = "ontokin";
 		result = AccessAgentCaller.getBaseWorldUrl(url);
 		assertEquals(expected,result);
-		*/
 	}
 }

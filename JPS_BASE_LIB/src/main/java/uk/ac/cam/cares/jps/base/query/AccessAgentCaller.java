@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
@@ -315,7 +315,7 @@ public class AccessAgentCaller{
 			//If no authority is given then get the host 
 			if(authority == null) {
 				//TODO this should be done by an "Agent Locator"
-				authority = KeyValueManager.get(IKeys.URL_ACCESSAGENT_HOST);
+				authority = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
 			}
 			
 			requestUrl = new URI(scheme,authority,JPSConstants.ACCESS_AGENT_PATH,null,null);
