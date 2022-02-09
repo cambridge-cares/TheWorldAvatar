@@ -8,11 +8,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.semarglproject.vocab.RDF;
+
+
 import uk.ac.cam.cares.jps.base.query.sparql.JenaModelWrapper;
-import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
 import java.lang.reflect.*;
@@ -22,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
 
 
 public class JenaModelWrapperTest {
@@ -44,7 +41,7 @@ public class JenaModelWrapperTest {
         String actual=JenaModelWrapper.concat(Prefixes.OWL,"testName");
         Assert.assertEquals(expected,actual);
     }
-    @Test
+    @Test//This unit test is for the public static newIri() method in the JenaModelWrapper class
     public void testNewIri1() {
         String str="test";
         String iri=JenaModelWrapper.newIri(str);
@@ -52,13 +49,12 @@ public class JenaModelWrapperTest {
         Assert.assertEquals(str,arr[0]);
         try{
             UUID uuid = UUID.fromString(arr[1]);
-            //do something
         } catch (IllegalArgumentException exception){
             //handle the case where string is not valid UUID
             System.out.println("The UUID provided is invalid");
         }
     }
-    @Test
+    @Test//This unit test is for the private newIri() method in the JenaModelWrapper class
     public void testNewIri2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         //distinguish between two cases one where this.iri is not null and when it is not.
 
@@ -68,11 +64,12 @@ public class JenaModelWrapperTest {
         Method newIri=jmw.getClass().getDeclaredMethod("newIri");
         newIri.setAccessible(true);
         String actual_iri=(String) newIri.invoke(jmw);
+
+        //Check if the returned object consists of the iri and a valid UUID separated by a hash mark.
         String[] arr=actual_iri.split("#");
         Assert.assertEquals(this.iri,arr[0]);
         try{
             UUID uuid = UUID.fromString(arr[1]);
-            //do something
         } catch (IllegalArgumentException exception){
             //handle the case where string is not valid UUID
             System.out.println("The UUID provided is invalid");
@@ -90,12 +87,12 @@ public class JenaModelWrapperTest {
         field1.set(jmw, startSubject);
 
         String iri_1=(String) newIri.invoke(jmw);
-        String[] arr_1=iri_1.split("#");
 
+        //Check if the returned object consists of the iri and a valid UUID separated by a hash mark.
+        String[] arr_1=iri_1.split("#");
         Assert.assertEquals(startSubject,arr_1[0]);
         try{
             UUID uuid = UUID.fromString(arr_1[1]);
-            //do something
         } catch (IllegalArgumentException exception){
             //handle the case where string is not valid UUID
             System.out.println("The UUID provided is invalid");
@@ -165,13 +162,12 @@ public class JenaModelWrapperTest {
 
         RDFNode actual_1=(RDFNode) co.invoke(jmw,null,p1,position1,path1);
 
-        //Check if the returned object consists of the iri and a valid UUID separated by a hashmark.
+        //Check if the returned object consists of the iri and a valid UUID separated by a hash mark.
         String str=actual_1.toString();
         String[] arr=str.split("#");
         Assert.assertEquals(arr[0],this.iri);
         try{
             UUID uuid = UUID.fromString(arr[1]);
-            //do something
         } catch (IllegalArgumentException exception){
             //handle the case where string is not valid UUID
             System.out.println("The UUID provided is invalid");
@@ -188,13 +184,12 @@ public class JenaModelWrapperTest {
         int position2=0;
         RDFNode actual_2=(RDFNode) co.invoke(jmw,null,p1,position2,path);
 
-        //Check if the returned object consists of the iri and a valid UUID separated by a hashmark.
+        //Check if the returned object consists of the iri and a valid UUID separated by a hash mark.
         String str_2=actual_2.toString();
         String[] arr_1=str_2.split("#");
         Assert.assertEquals(arr_1[0],this.iri);
         try{
             UUID uuid_1 = UUID.fromString(arr_1[1]);
-            //do something
         } catch (IllegalArgumentException exception){
             //handle the case where string is not valid UUID
             System.out.println("The UUID provided is invalid");
@@ -210,13 +205,12 @@ public class JenaModelWrapperTest {
         numericalValue.addRange(cccc);
         RDFNode actual_3=(RDFNode) co.invoke(jmw,null,numericalValue,position,path);
 
-        //Check if the returned object consists of the iri and a valid UUID separated by a hashmark.
+        //Check if the returned object consists of the iri and a valid UUID separated by a hash mark.
         String str_3=actual_3.toString();
         String[] arr_2=str_3.split("#");
         Assert.assertEquals(arr_2[0],this.iri);
         try{
             UUID uuid_2 = UUID.fromString(arr_2[1]);
-            //do something
         } catch (IllegalArgumentException exception){
             //handle the case where string is not valid UUID
             System.out.println("The UUID provided is invalid");

@@ -1,5 +1,4 @@
 package uk.ac.cam.cares.jps.base.annotate.test;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -24,7 +23,7 @@ public class MetaDataQueryTest {
 
     @Test
     public void testGetSparqlQueryResources(){
-        //Two cases are distinguished. One with arguments and one with null arguments
+        //Two cases are distinguished. One with non null arguments and one with null arguments
 
         String expected_nullArg="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
                 +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
@@ -73,7 +72,7 @@ public class MetaDataQueryTest {
 
     @Test
     public void testGetSparqlQueryResourcesOldRepository(){
-        //Two cases are distinguished. One with arguments and one with null arguments
+        //Two cases are distinguished. One with non null arguments and one with null arguments
 
         String expected_nullArg="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
                 +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
@@ -127,7 +126,7 @@ public class MetaDataQueryTest {
 
     }
 
-    @Test
+    @Test//This unit test is for the query method that accepts one argument only
         public void testQuery1(){
             String sparql="test";
             String expected="queryResultString";
@@ -138,7 +137,7 @@ public class MetaDataQueryTest {
             }
         }
 
-    @Test
+    @Test//This unit test is for the query method that accepts two arguments only
         public  void testQuery2(){
         //Two cases are distinguished. One with an empty metadataseturl and one which is not
 
@@ -174,7 +173,7 @@ public class MetaDataQueryTest {
         }
     }
 
-    @Test
+    @Test//This unit test is for the queryResources method that accepts eight arguments
         public void testQueryResources1(){
 
         String sparql="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
@@ -208,7 +207,7 @@ public class MetaDataQueryTest {
         }
     }
 
-    @Test
+    @Test//This unit test is for the queryResources method that accepts only three arguments
     public void testQueryResources2(){
 
         String sparql="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
