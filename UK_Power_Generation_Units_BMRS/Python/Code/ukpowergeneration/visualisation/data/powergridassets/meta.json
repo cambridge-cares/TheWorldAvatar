@@ -1,0 +1,20 @@
+{
+    "dataSets": [
+        {
+            "name": "PowerPlants",
+            "dataType": "geojson",
+            "dataLocation": "powerplants.geojson",
+            "locationType": "point",
+            "metaFiles": ["powerplants-meta.json"],
+			"timeseriesFiles": ["powerplants-timeseries.json"]
+        },
+        {
+            "name": "Generators",
+            "dataType": "geojson",
+            "dataLocation": "generators.geojson",
+            "locationType": "point",
+            "metaFiles": ["generators-meta.json"],
+			"timeseriesFiles": ["generators-timeseries.json"]
+        }
+    ]
+}
