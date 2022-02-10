@@ -45,7 +45,7 @@ class Agent():
         graph.parse(addr, format=frmt)
         enriched = False
         new_addr = addr
-        if add_knowledge:
+        if add_knowledge and add_knowledge != 'False':
             logging.info('adding knowledge for %s', addr)
             enriched = self.add_knowledge_fct(graph, add_knowledge, addr)
             if enriched:
@@ -54,6 +54,8 @@ class Agent():
                 else:
                     new_addr = addr + '_enriched'
             logging.info('added knowledge, enriched=%s, new_addr=%s', enriched, new_addr)
+        else:
+            logging.info('no knowledge was added, enriched=%s, new_addr=%s', enriched, new_addr)
         return enriched, new_addr, graph
 
     def add_knowledge_fct(self, graph, agent_name, addr):

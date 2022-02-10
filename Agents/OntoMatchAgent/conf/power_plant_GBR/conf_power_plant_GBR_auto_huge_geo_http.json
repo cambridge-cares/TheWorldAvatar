@@ -7,7 +7,8 @@
 	"tgt": "./data/power_plant_GBR/gppd_GBR.ttl"
 },
 "pre_processing":{
-	"add_knowledge": null
+	"http": true,
+	"add_knowledge": false
 },
 "blocking":{
 	"name": "TokenBasedPairIterator",

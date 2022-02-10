@@ -8,7 +8,7 @@
 },
 "pre_processing":{
 	"http": true,
-	"add_knowledge": null
+	"add_knowledge": false
 },
 "blocking":{
 	"name": "TokenBasedPairIterator",
