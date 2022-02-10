@@ -1,6 +1,6 @@
 [
     {
-        "groupName": "UK Power System",
+        "groupName": "PowerGridAssets",
         "layers": [
             {
                 "layerName": "Power Plants",
@@ -8,9 +8,9 @@
                 "layerIDs": ["PowerPlants"]
             },
             {
-                "layerName": "Power Generators",
+                "layerName": "Generators",
                 "defaultState": "visible",
-                "layerIDs": ["PowerGenerators"]
+                "layerIDs": ["Generators"]
             }
         ]
     }

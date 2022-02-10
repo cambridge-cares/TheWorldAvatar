@@ -6,11 +6,11 @@
         "defaultPitch": 40
     },
     "local": {
-        "label": "Data set",
+        "label": "UK Power System Data",
         "groups": [
             {
-                "name": "Power Data",
-                "directory": "powerplants"
+                "name": "UK Power System",
+                "directory": "powergridassets"
             }
         ]
     }
