@@ -52,3 +52,18 @@ class LabEquipment(Saref_Device):
     willBeSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO add this to TBox
     wasSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO add this to TBox
     # TODO add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
+
+class Vial(BaseOntology):
+    isFilledWith: ChemicalSolution
+    pass
+
+class PreparationMethod(BaseOntology):
+    pass
+
+class OntoCAPE_MaterialAmount(BaseOntology):
+    pass
+
+class ChemicalSolution(OntoCAPE_MaterialAmount):
+    refersToMaterial: OntoCAPE_Material
+    isPreparedBy: PreparationMethod
+    fills: Vial

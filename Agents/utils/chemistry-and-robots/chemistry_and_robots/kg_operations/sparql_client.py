@@ -1,6 +1,7 @@
 # The purpose of this module is to provide utility functions
 # to interact with the knowledge graph
 #============================================================
+from builtins import Exception
 from urllib import response
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
@@ -240,6 +241,124 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             )
         return list_exp
 
+    def get_ontocape_single_phase(self, ontocape_material_iri: str):# -> OntoCAPE_SinglePhase:
+        ontocape_material_iri = trimIRI(ontocape_material_iri)
+
+        query = PREFIX_RDF + \
+                """
+                SELECT ?single_phase ?state_of_aggregation ?composition ?phase_component ?chemical_species ?phase_component_concentration ?concentration_type ?value ?unit ?num_val
+                WHERE {
+                    <%s> <%s> ?single_phase .
+                    ?single_phase <%s> ?state_of_aggregation; <%s> ?composition; <%s> ?phase_component .
+                    ?composition <%s> ?phase_component_concentration .
+                    ?phase_component <%s> ?chemical_species .
+                    ?phase_component <%s> ?phase_component_concentration .
+                    ?phase_component_concentration rdf:type ?concentration_type; <%s> ?value .
+                    ?value <%s> ?unit; <%s> ?num_val.
+                }
+                """ % (
+                    ontocape_material_iri, ONTOCAPE_THERMODYNAMICBEHAVIOR,
+                    ONTOCAPE_HASSTATEOFAGGREGATION, ONTOCAPE_HAS_COMPOSITION, ONTOCAPE_ISCOMPOSEDOFSUBSYSTEM,
+                    ONTOCAPE_COMPRISESDIRECTLY, ONTOCAPE_REPRESENTSOCCURENCEOF, ONTOCAPE_HASPROPERTY,
+                    ONTOCAPE_HASVALUE, ONTOCAPE_HASUNITOFMEASURE, ONTOCAPE_NUMERICALVALUE
+                )
+
+        response = self.performQuery(query)
+
+        # TODO firstly, validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase and one instance of composition, otherwise raise an Exception
+        # TODO at the same time, assign composition_iri and single_phase_iri
+
+        # TODO secondly, get a list of OntoCAPE_PhaseComponent to be added to the OntoCAPE_SinglePhase instance
+        list_phase_component = []
+        list_phase_component_concentration = []
+        for res in response:
+            if 'concentration_type' in res:
+                if res['concentration_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
+                    concentration = OntoCAPE_Molarity(instance_iri=res['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=res['value'],numerivalValue=res['num_val'],hasUnitOfMeasure=res['unit']))
+                else:
+                    # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+                    pass
+                list_phase_component_concentration.append(concentration)
+            else:
+                raise Exception("Concentration is not defined for")
+
+            phase_component = OntoCAPE_PhaseComponent(instance_iri=res['phase_component'],representsOccurenceOf=res['chemical_species'],hasProperty=concentration)
+            list_phase_component.append(phase_component)
+
+        composition = OntoCAPE_Composition(instance_iri=composition_iri,comprisesDirectly=list_phase_component_concentration)
+        single_phase = OntoCAPE_SinglePhase(instance_iri=single_phase_iri,has_composition=composition,isComposedOfSubsystem=list_phase_component,representsThermodynamicBehaviorOf=ontocape_material_iri)
+        # [
+            # {
+            #     "chemical_species":"http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b",
+            #     "unit":"http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre",
+            #     "phase_component_concentration":"https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_1_Property_1",
+            #     "composition":"https://www.example.com/triplestore/ontorxn/SinglePhase/Composition_1",
+            #     "single_phase":"https://www.example.com/triplestore/ontorxn/SinglePhase/Phase_1",
+            #     "num_val":"0.5",
+            #     "state_of_aggregation":"http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#liquid",
+            #     "phase_component":"https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_1",
+            #     "value":"https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_1_Property_1_ScalarValue_1"
+            # },
+            # {
+            #     "chemical_species":"http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb",
+            #     "unit":"http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre",
+            #     "phase_component_concentration":"https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_6_Property_1",
+            #     "composition":"https://www.example.com/triplestore/ontorxn/SinglePhase/Composition_1",
+            #     "single_phase":"https://www.example.com/triplestore/ontorxn/SinglePhase/Phase_1",
+            #     "num_val":"18.1",
+            #     "state_of_aggregation":"http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#liquid",
+            #     "phase_component":"https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_6",
+            #     "value":"https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_6_Property_1_ScalarValue_1"
+            # }
+            # ]
+        return response
+
+    def get_input_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[InputChemical]:
+        rxnexp_iri = trimIRI(rxnexp_iri)
+
+        query = """
+                """
+
+        # input_chemical = InputChemical(
+        #     instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+        #     namespace_for_init=getNameSpace(rxnexp_iri),
+        #     thermodynamicBehaviour=OntoCAPE_SinglePhase(
+        #         instance_iri=,
+        #         namespace_for_init=,
+        #         hasStateOfAggregation=OntoCAPE_liquid,
+        #         representsThermodynamicBehaviorOf=input_chemical,
+        #         isComposedOfSubsystem=,
+        #         has_composition=,
+        #     ),
+        # )
+
+    #         hasStateOfAggregation: OntoCAPE_StateOfAggregation
+    # representsThermodynamicBehaviorOf: OntoCAPE_Material
+    # isComposedOfSubsystem: List[OntoCAPE_PhaseComponent]
+    # has_composition: OntoCAPE_Composition
+        # prefix ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+        # prefix ontodoe: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+        # prefix ontospecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        # prefix ontocapeupp: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+        # prefix ontocapepha: <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
+        # prefix ontocaperxn: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+        # prefix ontocapemat: <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
+        # prefix ontorxn: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#>
+        # select ?exp ?input_chemical ?species ?val ?unit
+        # where {
+        #   ?exp rdf:type ontorxn:ReactionExperiment .
+        #   ?exp ontorxn:hasInputChemical ?input_chemical .
+        #   ?input_chemical ontocapemat:thermodynamicBehavior ?single_phase .
+        #   ?single_phase ontocapeupp:isComposedOfSubsystem ?phase_component .
+        #   ?single_phase ontocapepha:has_composition/ontocapeupp:comprisesDirectly ?phase_component_property .
+        #   ?phase_component ontocapeupp:hasProperty ?phase_component_property .
+        #   ?phase_component_property ontocapeupp:hasValue ?value .
+        #   ?value ontocapeupp:hasUnitOfMeasure ?unit;
+        #          ontocapeupp:numericalValue ?val.
+        #   ?phase_component ontocapepha:representsOccurranceOf ?species .
+        # }
+        pass
+
     def getExpReactionCondition(self, rxnexp_iri: str) -> List[ReactionCondition]:
         """
             This method retrieves a list of ReactionCondition pointed by the given instance of OntoRxn:ReactionExperiment/ReactionVariation.
@@ -475,7 +594,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     # \item queries knowledge graph to locate the suitable digital twin:
     # does it has the suitable chemicals?
     # does the hardware's operation range covers the reaction condition?
-    # how many pending configurations does it have? -> locate the most suitable hardware
+    # how many pending configurations does it have? -> locate the most suitable hardware (can be expanded to check how long is each configuration, what's the temperature etc.)
+    # here we probably don't consider its status yet, just assume the equipment is there and will work - we rely on Execution Agent to keep track of the status
     def get_dt_of_preferred_hardware(self, list_equip_settings: ReactionExperiment):
         # query if there's suitable hardware
         # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals?

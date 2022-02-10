@@ -1,19 +1,78 @@
+# import this postponed evaluation of annotations to enable circular and forward reference in ontology classes
+# it should be used together with pydantic.BaseModel.update_forward_refs() method at the end of your data model script
+# e.g. YourOntologyClass.update_forward_refs()
+# for more details on python implementation, please see https://www.python.org/dev/peps/pep-0563/
+# for more details on how this works with pydantic.BaseModel, please see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
+# NOTE that this feature requires a python version >=3.7, which has already been defined in the setup.py
+from __future__ import annotations
+
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF
 
 import pydantic
-from typing import Any, Optional, List, Dict
+from typing import Any, Optional, List, Dict, Union
 
 from pyasyncagent.data_model.iris import *
 from pyasyncagent.data_model.utils import *
 
 from chemistry_and_robots.data_model.base_ontology import BaseOntology
 
-class InputChemical(BaseOntology):
-    pass
+# TODO add below IRIs to pyasyncagent.data_model.iris
+ONTOCAPE_SCALARVALUE = ONTOCAPE_SYSTEM + 'ScalarValue'
+ONTOCAPE_HASVALUE = ONTOCAPE_SYSTEM + 'hasValue'
+ONTOCAPE_LIQUID = ONTOCAPE_PHASESYSTEM + 'liquid'
+ONTOCAPE_HASUNITOFMEASURE = ONTOCAPE_SYSTEM + 'hasUnitOfMeasure'
+ONTOCAPE_NUMERICALVALUE = ONTOCAPE_SYSTEM + 'numericalValue'
 
-class OutputChemical(BaseOntology):
-    pass
+# NOTE only classes/relationships that are actively used in OntoRxn are presented here for ALL OntoCAPE related concepts in this script
+class OntoCAPE_ScalarValue(BaseOntology):
+    clz: str = ONTOCAPE_SCALARVALUE
+    # NOTE here instead of the actual class, str is used in hasUnitOfMeasure to host the concept IRI of om:Unit for simplicity
+    # this is in line with the practice of class OM_Measure(BaseOntology)
+    hasUnitOfMeasure: str
+    numericalValue: float
+
+class OntoCAPE_PhaseComponentConcentration(BaseOntology):
+    clz: str = ONTOCAPE_PHASECOMPONENTCONCENTRATION
+    hasValue: OntoCAPE_ScalarValue
+
+class OntoCAPE_VolumeBasedConcentration(OntoCAPE_PhaseComponentConcentration):
+    clz: str = ONTOCAPE_VOLUMEBASEDCONCENTRATION
+
+class OntoCAPE_Molarity(OntoCAPE_VolumeBasedConcentration):
+    clz: str = ONTOCAPE_MOLARITY
+
+class OntoCAPE_Composition(BaseOntology):
+    clz: str = ONTOCAPE_COMPOSITION
+    comprisesDirectly: OntoCAPE_PhaseComponentConcentration
+
+class OntoCAPE_PhaseComponent(BaseOntology):
+    clz: str = ONTOCAPE_PHASECOMPONENT
+    hasProperty: OntoCAPE_PhaseComponentConcentration
+    representsOccurranceOf: str # NOTE here it should be pointing to OntoCAPE_ChemicalSpecie, but we simplified to use str for its IRI
+
+class OntoCAPE_StateOfAggregation(BaseOntology):
+    clz: str = ONTOCAPE_STATEOFAGGREGATION
+
+OntoCAPE_liquid = OntoCAPE_StateOfAggregation(instance_iri=ONTOCAPE_LIQUID)
+
+class OntoCAPE_SinglePhase(BaseOntology):
+    clz: str = ONTOCAPE_SINGLEPHASE
+    hasStateOfAggregation: OntoCAPE_StateOfAggregation
+    isComposedOfSubsystem: List[OntoCAPE_PhaseComponent]
+    has_composition: OntoCAPE_Composition
+    representsThermodynamicBehaviorOf: Union[str, OntoCAPE_Material] # NOTE here str is provided as an optional as it seems impossible to circular reference at instance level
+    # TODO assess if has_physical_context is needed
+
+class OntoCAPE_Material(BaseOntology):
+    thermodynamicBehaviour: OntoCAPE_SinglePhase
+    clz: str = ONTOCAPE_MATERIAL
+
+class InputChemical(OntoCAPE_Material):
+    clz: str = ONTORXN_INPUTCHEMICAL
+
+class OutputChemical(OntoCAPE_Material):
+    clz: str = ONTORXN_OUTPUTCHEMICAL
 
 class OM_Measure(BaseOntology):
     clz: str = OM_MEASURE
@@ -274,3 +333,9 @@ class ReactionVariation(ReactionExperiment):
         # TODO add support for creating InputChemical and OutputChemical
 
         return g
+
+
+#########################################
+## Put all update_forward_refs() below ##
+#########################################
+OntoCAPE_SinglePhase.update_forward_refs()
