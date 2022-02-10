@@ -835,7 +835,7 @@ ChemRxn:ChemRxn_1
     OntoRxn:isRealisedAs exp3:RxnExp_1;
     OntoRxn:isRealisedAs exp4:RxnExp_1;
     OntoRxn:isRealisedAs exp5:RxnExp_1;
-    OntoKin:hasEquiation "C6H5CHO + CH3COCH3 = C10H10O"^^xsd:string;
+    OntoKin:hasEquation "C6H5CHO + CH3COCH3 = C10H10O"^^xsd:string;
     OntoCAPERxn:hasReactant ChemRxn:Species_1;
     OntoCAPERxn:hasReactant ChemRxn:Species_2;
     OntoCAPERxn:hasProduct ChemRxn:Species_3;
@@ -850,6 +850,10 @@ ChemRxn:Species_1
     OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
 .
 
+# NOTE we hardcode the OntoSpecies instance IRIs here to simplify the implementation for the purpose of testing
+# NOTE for the production operations, one need to provide access to a real triple store of OntoSpecies
+# NOTE where the instance IRI of a real OntoSpecies:Species will be obtained/identified based on specific identifiers
+# NOTE i.e. OntoSpecies:inChI, OntoSpecies:pubChemCID, etc.
 <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>
     OntoSpecies:pubChemCID "240"^^xsd:string;
     rdfs:label "C7H6O"^^xsd:string;
@@ -926,49 +930,49 @@ ChemRxn:Species_7
 ##############################
 SinglePhase:PhaseComponent_1
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_1_Property_1;
 .
 
 SinglePhase:PhaseComponent_2
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_2_Property_1;
 .
 
 SinglePhase:PhaseComponent_3
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_placeholder_pubchemcid_637759;
+    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_637759;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_Property_1;
 .
 
 SinglePhase:PhaseComponent_4
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_placeholder_pubchemcid_640180;
+    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_640180;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_Property_1;
 .
 
 SinglePhase:PhaseComponent_5
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_5_Property_1;
 .
 
 SinglePhase:PhaseComponent_6
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_1;
 .
 
 SinglePhase:PhaseComponent_6_2
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_2;
 .
 
 SinglePhase:PhaseComponent_7
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurranceOf <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_7_Property_1;
 .
 
