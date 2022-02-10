@@ -473,12 +473,7 @@ def update_triple_store():
     #power_data = get_power_data_from_api()
     #THIS IS THE BIG, IMPORTANT QUERY CALL. 
     powerplant_power_data, generator_power_data = get_power_data_from_api()
-    print("LENGTHS")
-    print(len(powerplant_power_data))
-    print(len(generator_power_data))
-    print(powerplant_power_data)
-    print(generator_power_data)
-
+    
     #BMRS uses MW
     units = "http://www.ontology-of-units-of-measure.org/resource/om-2/megawatt"
     

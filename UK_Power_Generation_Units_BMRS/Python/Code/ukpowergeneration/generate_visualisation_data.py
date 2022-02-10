@@ -130,7 +130,7 @@ def put_metadata_in_json(feature_id, lon, lat):
     return metadata
 
 
-def get_metadata(powerplant_iri, KGClient):
+def get_powerplant_metadata(powerplant_iri, KGClient):
     '''
         Returns meta data for the requested powerplant identified by its IRI.
     '''
@@ -154,6 +154,30 @@ def get_metadata(powerplant_iri, KGClient):
             lat = coordinates[0]
     return lon, lat
 
+def get_generator_metadata(powerplant_iri, KGClient):
+    '''
+        Returns meta data for the requested powerplant identified by its IRI.
+    '''
+
+    # Defines query to retrieve latitude and longitude of powerplants
+    query = kg.create_sparql_prefix('rdf') + \
+            kg.create_sparql_prefix('ontoenergysystem') + \
+            '''SELECT ?iri ?loc \
+               WHERE { ?iri rdf:type ontoenergysystem:PowerGenerator ;
+                            ontoenergysystem:hasPowerPlant ?pp.
+                        ?pp ontoenergysystem:hasWGS84LatitudeLongitude ?loc .}'''
+    # Executes query
+    response = KGClient.execute(query)
+    # Converts JSONArray String back to list
+    response = json.loads(response)
+    lon = None
+    lat = None
+    for r in response:
+        if r['iri'].lower() == powerplant_iri.lower():
+            coordinates = r['loc'].split('#')
+            lon = coordinates[1]
+            lat = coordinates[0]
+    return lon, lat
 
 def format_in_geojson(feature_id, properties, coordinates):
     """
@@ -255,9 +279,8 @@ def check_GPS_dict(ret):
     if (float(ret[i][1]) < -90.0) or (float(ret[i][1]) > 90.0):
       print("Warning: " + i + " contains latitude that is out of the valid -90 to 90 range, 0.0000000 substituted")
       ret[i][1] = "0.0000000"
-  ret[i][0] = float(ret[i][0])
-  ret[i][1] = float(ret[i][1])
-  print("GPS check completed. If there was a 'Warning' in the output above then the 'automatic replacement / substitution' mentioned does not effect the knowledge graph, just the created JSON file. ")
+    ret[i][0] = float(ret[i][0])
+    ret[i][1] = float(ret[i][1])
   return ret
 
 
@@ -273,7 +296,7 @@ def get_all_powerplant_geodata(KGClient):
             '''SELECT ?location ?name
                 WHERE
                 {
-                    ?term rdf:type ontoenergysystem:PowerPlant ;
+                    ?pp rdf:type ontoenergysystem:PowerPlant ;
                         rdfs:label ?name ;
                         ontoenergysystem:hasWGS84LatitudeLongitude ?location.
                 }'''
@@ -285,6 +308,7 @@ def get_all_powerplant_geodata(KGClient):
     response = json.loads(response)
     #print("Location Response: ", response)
     powerplant_coorindates = dict()
+    print("Power Plant GPS read begins. ")
     for r in response:
         coordinates = r['location'].split('#')
         coordinates = [float(i) for i in coordinates]
@@ -292,7 +316,71 @@ def get_all_powerplant_geodata(KGClient):
         powerplant_coorindates[r['name'].lower()] = coordinates
     #Check GPS / GPS Check (check_GPS) here. 
     powerplant_coorindates = check_GPS_dict(powerplant_coorindates)
+    print("Power Plant GPS read complete. ")
     return powerplant_coorindates
+
+def get_all_generator_geodata(KGClient):
+    '''
+        Returns coordinates ([lon, lat]) and name (label) for all generators
+    '''
+
+# SPARQL query string
+    query = kg.create_sparql_prefix('rdf') + \
+            kg.create_sparql_prefix('rdfs') + \
+            kg.create_sparql_prefix('ontoenergysystem') + \
+            '''SELECT ?location ?name
+                WHERE
+                {
+                    ?gen rdf:type ontoenergysystem:PowerGenerator ;
+                        rdfs:label ?name ;
+                        ontoenergysystem:hasPowerPlant ?pp.
+                    ?pp rdf:type ontoenergysystem:PowerPlant ;
+                        ontoenergysystem:hasWGS84LatitudeLongitude ?location.
+                }'''
+    
+    # Execute query
+    response = KGClient.execute(query)
+
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+    #print("Location Response: ", response)
+    generator_coorindates = dict()
+    print("Generator GPS read begins. ")
+    for r in response:
+        coordinates = r['location'].split('#')
+        coordinates = [float(i) for i in coordinates]
+        coordinates = coordinates[::-1]
+        generator_coorindates[r['name'].lower()] = coordinates
+    #Check GPS / GPS Check (check_GPS) here. 
+    generator_coorindates = check_GPS_dict(generator_coorindates)
+    print("Generator GPS read complete. ")
+    return generator_coorindates
+
+def get_all_generators(KGClient):
+    '''
+        Returns all generators instantiated in KG as list
+    '''
+    # Initialise SPARQL query variables for generator IRIs and names
+    var1, var2 = 'iri', 'name'
+
+    # Define query
+    query = kg.create_sparql_prefix('ontoenergysystem') + \
+            kg.create_sparql_prefix('rdf') + \
+            kg.create_sparql_prefix('rdfs') + \
+            'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
+            'WHERE { ?' + var1 + ' rdf:type ontoenergysystem:PowerGenerator; \
+                                   rdfs:label ?' + var2 + '. }'
+    # Execute query
+    response = KGClient.execute(query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+    #print("RESPONSE: ", response)
+    # A key-value paired list where key is the name and
+    # value is the IRI of generator
+    generators = dict()
+    for r in response:
+        generators[r[var2]] = r[var1]
+    return generators
 
 def get_all_powerplants(KGClient):
     '''
@@ -329,7 +417,7 @@ def geojson_initialise_dict():
 
 def generate_all_visualisation_data():
     """
-       Generates all data for Gas Grid visualisation.
+       Generates all data for UK Power Grid visualisation.
     """
     # Set Mapbox API key in DTVF 'index.html' file
     kg.set_mapbox_apikey()
@@ -354,6 +442,20 @@ def generate_all_visualisation_data():
     start_7 = now.minusSeconds(int(7 * duration * 60 * 60))
     """
 
+    # Get all powerplants of interest
+    powerplants = get_all_powerplants(KGClient)
+    generators = get_all_generators(KGClient)
+    # Retrieve all geocoordinates of powerplants for GeoJSON output
+    powerplant_coordinates = get_all_powerplant_geodata(KGClient)
+    # Get generator coordinates from their powerplants 
+    generator_coordinates = get_all_generator_geodata(KGClient)
+    generate_powerplant_visualisation_data(powerplants, powerplant_coordinates, KGClient, TSClient)
+    generate_generator_visualisation_data(generators, generator_coordinates, KGClient, TSClient)
+    
+def generate_powerplant_visualisation_data(powerplants, powerplant_coordinates, KGClient, TSClient):
+    """
+       Generates all data for UK Power Grid visualisation's powerplants.
+    """
     # Initialise a dictionary for geoJSON outputs
     geojson = geojson_initialise_dict()
     # Initialise an array for metadata outputs
@@ -364,13 +466,8 @@ def generate_all_visualisation_data():
                 'units': [],
                 'headers': []
                 }
-    feature_id = 0
-
-    # Get all powerplants of interest
-    powerplants = get_all_powerplants(KGClient)
-    # Retrieve all geocoordinates of powerplants for GeoJSON output
-    powerplant_coordinates = get_all_powerplant_geodata(KGClient)
     
+    feature_id = 0
     # Iterate over all powerplants
     for powerplant, iri in powerplants.items():
         feature_id += 1
@@ -382,7 +479,7 @@ def generate_all_visualisation_data():
             #print('powerplant_coordinates[powerplant.lower()]:', powerplant_coordinates[powerplant.lower()])
             geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, powerplant_coordinates[powerplant.lower()]))
         # Retrieve powerplant metadata
-        lon, lat = get_metadata(iri, KGClient)
+        lon, lat = get_powerplant_metadata(iri, KGClient)
         if lon == None and lat == None:
             print('The following powerplant is not represented in the knowledge graph with coordinates:', iri)
         else:
@@ -401,13 +498,67 @@ def generate_all_visualisation_data():
     ts_json = json.loads(ts_json.toString())
     #print("ts_json: ", ts_json)
     # Write GeoJSON dictionary formatted to file
-    file_name = os.path.join(kg.OUTPUT_DIR, 'powerplants', 'powerplants.geojson')
+    file_name = os.path.join(kg.OUTPUT_DIR, 'powergridassets', 'powerplants.geojson')
     with open(file_name, 'w') as f:
         json.dump(geojson, indent=4, fp=f)
-    file_name = os.path.join(kg.OUTPUT_DIR, 'powerplants', 'powerplants-meta.json')
+    file_name = os.path.join(kg.OUTPUT_DIR, 'powergridassets', 'powerplants-meta.json')
     with open(file_name, 'w') as f:
         json.dump(metadata, indent=4, fp=f)
-    file_name = os.path.join(kg.OUTPUT_DIR, 'powerplants', 'powerplants-timeseries.json')
+    file_name = os.path.join(kg.OUTPUT_DIR, 'powergridassets', 'powerplants-timeseries.json')
+    with open(file_name, 'w') as f:
+        json.dump(ts_json, indent=4, fp=f)
+
+def generate_generator_visualisation_data(generators, generator_coordinates, KGClient, TSClient):
+    """
+       Generates all data for UK Power Grid visualisation's generators.
+    """
+    # Initialise a dictionary for geoJSON outputs
+    geojson = geojson_initialise_dict()
+    # Initialise an array for metadata outputs
+    metadata = []
+    # Initialise an array with four elements for timeseries outputs
+    ts_data = { 'ts': [],
+                'id': [],
+                'units': [],
+                'headers': []
+                }
+    
+    feature_id = 0
+    # Iterate over all generators
+    for generator, iri in generators.items():
+        feature_id += 1
+        # Update GeoJSON properties
+        geojson_attributes['description'] = str(generator)
+        geojson_attributes['displayName'] = generator
+        # Append results to overall GeoJSON FeatureCollection
+        if generator.lower() in generator_coordinates:
+            geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, generator_coordinates[generator.lower()]))
+        # Retrieve generator metadata
+        lon, lat = get_generator_metadata(iri, KGClient)
+        if lon == None and lat == None:
+            print('The following generator is not represented in the knowledge graph with coordinates:', iri)
+        else:
+            metadata.append(put_metadata_in_json(feature_id, lon, lat))
+        # Retrieve time series data
+        timeseries, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
+        ts_data['ts'].append(timeseries)
+        ts_data['id'].append(feature_id)
+        ts_data['units'].append(units)
+        ts_data['headers'].append(utilities)
+    
+    # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
+    ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
+    # Make JSON file readable in Python
+    ts_json = json.loads(ts_json.toString())
+    #print("ts_json: ", ts_json)
+    # Write GeoJSON dictionary formatted to file
+    file_name = os.path.join(kg.OUTPUT_DIR, 'powergridassets', 'generators.geojson')
+    with open(file_name, 'w') as f:
+        json.dump(geojson, indent=4, fp=f)
+    file_name = os.path.join(kg.OUTPUT_DIR, 'powergridassets', 'generators-meta.json')
+    with open(file_name, 'w') as f:
+        json.dump(metadata, indent=4, fp=f)
+    file_name = os.path.join(kg.OUTPUT_DIR, 'powergridassets', 'generators-timeseries.json')
     with open(file_name, 'w') as f:
         json.dump(ts_json, indent=4, fp=f)
 
