@@ -16,6 +16,13 @@ def test_create_base_ontology(initialise_variables):
     assert test_instance.clz == clz
     assert test_instance.namespace_for_init == namespace_for_init
 
+def test_instance_iri_missing_exception(initialise_variables):
+    instance_iri, clz, namespace_for_init = initialise_variables
+
+    with pytest.raises(InstanceIRIInitialisationError) as e_info:
+        test_instance = BaseOntology()
+    assert str(e_info.value).startswith(InstanceIRIInitialisationError.instance_iri_missing)
+
 def test_both_missing_missing_exception(initialise_variables):
     instance_iri, clz, namespace_for_init = initialise_variables
 
