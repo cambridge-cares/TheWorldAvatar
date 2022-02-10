@@ -324,9 +324,9 @@ def get_power_data_from_api():
     #eg. 'https://www.dropbox.com/s/mmmcto232y4q3or/Input-Template.csv?dl=1' for 'Dropbox (Cambridge CARES)\CoMo shared\ja685\BMRS\Script-BMRS-API/Input-Template.csv'
     
     #Simplified Data Link
-    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
+    #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
     #Standardised Day Link
-    #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
+    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
     
     #Note, will want to call the overall funtion, rather than convert_csv_to_triple_dfs longer term. 
 
@@ -473,7 +473,7 @@ def update_triple_store():
     #power_data = get_power_data_from_api()
     #THIS IS THE BIG, IMPORTANT QUERY CALL. 
     powerplant_power_data, generator_power_data = get_power_data_from_api()
-    
+
     #BMRS uses MW
     units = "http://www.ontology-of-units-of-measure.org/resource/om-2/megawatt"
     

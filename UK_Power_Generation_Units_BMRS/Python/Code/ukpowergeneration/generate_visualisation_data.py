@@ -52,12 +52,24 @@ def get_instance_time_series_data(instanceIRI, TSClient, KGClient):
     units = []
     # Append lists with all query results
     for r in response:
-        dataIRIs.append(r['dataIRI'])
-        utilities.append(r['measurements'])
-        units.append(unit_dict[r['unit'].split("/")[-1]])
-
+        # In case there are duplicates, we only want one item... 
+        # ...(below should all be array of one element)
+        if len(dataIRIs) == 0:
+            dataIRIs.append(r['dataIRI'])
+            utilities.append(r['measurements'])
+            units.append(unit_dict[r['unit'].split("/")[-1]])
+    
     # Retrieve time series data for retrieved set of dataIRIs
-    timeseries = TSClient.getTimeSeries(dataIRIs)
+    try:
+        if len(dataIRIs) > 0:
+            #print("DATAIRI: ", dataIRIs)
+            timeseries = TSClient.getTimeSeries(dataIRIs)
+        else: 
+            print("dataIRIs is not available for: ", instanceIRI)
+            timeseries = None
+    except ValueError:
+        print("Time series is not available for: ", instanceIRI)
+        timeseries = None
     # Return time series and associated lists of variables and units
     return timeseries, utilities, units
 
@@ -487,10 +499,11 @@ def generate_powerplant_visualisation_data(powerplants, powerplant_coordinates, 
         # Retrieve time series data
         #timeseries, utilities, units = get_all_time_series(iri, KGClient, TSClient, now, duration, start_1, start_2, start_7)
         timeseries, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
-        ts_data['ts'].append(timeseries)
-        ts_data['id'].append(feature_id)
-        ts_data['units'].append(units)
-        ts_data['headers'].append(utilities)
+        if timeseries != None: 
+            ts_data['ts'].append(timeseries)
+            ts_data['id'].append(feature_id)
+            ts_data['units'].append(units)
+            ts_data['headers'].append(utilities)
     
     # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
     ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
@@ -541,10 +554,11 @@ def generate_generator_visualisation_data(generators, generator_coordinates, KGC
             metadata.append(put_metadata_in_json(feature_id, lon, lat))
         # Retrieve time series data
         timeseries, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
-        ts_data['ts'].append(timeseries)
-        ts_data['id'].append(feature_id)
-        ts_data['units'].append(units)
-        ts_data['headers'].append(utilities)
+        if timeseries != None: 
+            ts_data['ts'].append(timeseries)
+            ts_data['id'].append(feature_id)
+            ts_data['units'].append(units)
+            ts_data['headers'].append(utilities)
     
     # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
     ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
