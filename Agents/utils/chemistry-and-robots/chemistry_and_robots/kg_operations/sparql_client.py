@@ -19,6 +19,7 @@ from chemistry_and_robots.data_model import *
 
 import logging
 logger = logging.getLogger('chemistry_and_robots_sparql_client')
+logging.getLogger('py4j').setLevel(logging.INFO)
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def updateNewExperimentInKG(self, doe: DesignOfExperiment, newExp: List[ReactionExperiment]):
@@ -241,14 +242,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             )
         return list_exp
 
-    def get_ontocape_single_phase_from_i_o_chemical_solution(self, ontocape_material_iri: str):# -> OntoCAPE_SinglePhase:
-        ontocape_material_iri = trimIRI(ontocape_material_iri)
+    def get_input_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[InputChemical]:
+        rxnexp_iri = trimIRI(rxnexp_iri)
 
         query = PREFIX_RDF + \
                 """
-                SELECT ?single_phase ?state_of_aggregation ?composition ?phase_component ?chemical_species ?phase_component_concentration ?concentration_type ?value ?unit ?num_val
+                SELECT ?input_chemical ?single_phase ?state_of_aggregation ?composition ?phase_component ?chemical_species ?phase_component_concentration ?concentration_type ?value ?unit ?num_val
                 WHERE {
-                    <%s> <%s> ?single_phase .
+                    <%s> <%s> ?input_chemical .
+                    ?input_chemical <%s> ?single_phase .
                     ?single_phase rdf:type <%s> .
                     ?single_phase <%s> ?state_of_aggregation; <%s> ?composition; <%s> ?phase_component .
                     ?composition <%s> ?phase_component_concentration .
@@ -258,7 +260,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?value <%s> ?unit; <%s> ?num_val.
                 }
                 """ % (
-                    ontocape_material_iri, ONTOCAPE_THERMODYNAMICBEHAVIOR, ONTOCAPE_SINGLEPHASE,
+                    rxnexp_iri, ONTORXN_HASINPUTCHEMICAL, ONTOCAPE_THERMODYNAMICBEHAVIOR, ONTOCAPE_SINGLEPHASE,
                     ONTOCAPE_HASSTATEOFAGGREGATION, ONTOCAPE_HAS_COMPOSITION, ONTOCAPE_ISCOMPOSEDOFSUBSYSTEM,
                     ONTOCAPE_COMPRISESDIRECTLY, ONTOCAPE_REPRESENTSOCCURENCEOF, ONTOCAPE_HASPROPERTY,
                     ONTOCAPE_HASVALUE, ONTOCAPE_HASUNITOFMEASURE, ONTOCAPE_NUMERICALVALUE
@@ -266,111 +268,80 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         response = self.performQuery(query)
 
-        # validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase, one instance of OntoCAPE_StateOfAggregation and one instance of OntoCAPE_Composition, otherwise raise an Exception
-        unique_single_phase_iri = self.get_unique_values_in_list_of_dict(response, 'single_phase')
-        if len(unique_single_phase_iri) > 1:
-            raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoLab:ChemicalSolution %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
-        elif len(unique_single_phase_iri) < 1:
-            raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoLab:ChemicalSolution: %s" % (ontocape_material_iri))
-        else:
-            unique_single_phase_iri = unique_single_phase_iri[0]
+        lst_input_chemical = []
 
-        unique_state_of_aggregation_iri = self.get_unique_values_in_list_of_dict(response, 'state_of_aggregation')
-        if len(unique_state_of_aggregation_iri) > 1:
-            raise Exception("Multiple hasStateOfAggregation OntoCAPE:StateOfAggregation identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_state_of_aggregation_iri), unique_single_phase_iri))
-        elif len(unique_state_of_aggregation_iri) < 1:
-            raise Exception("No instance of hasStateOfAggregation OntoCAPE:StateOfAggregation was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
-        else:
-            if unique_state_of_aggregation_iri[0] == ONTOCAPE_LIQUID:
-                state_of_aggregation = OntoCAPE_liquid
+        # generate different list for each OntoRxn:InputChemical
+        unique_input_chemical_iri = self.get_unique_values_in_list_of_dict(response, 'input_chemical')
+        list_list_input_chemical = []
+        for iri in unique_input_chemical_iri:
+            list_list_input_chemical.append([res for res in response if iri == res['input_chemical']])
+
+        for lic in list_list_input_chemical:
+            ontocape_material_iri = self.get_unique_values_in_list_of_dict(lic, 'input_chemical')[0] # here we are sure this is the unique value of InputChemical
+
+            # validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase, one instance of OntoCAPE_StateOfAggregation and one instance of OntoCAPE_Composition, otherwise raise an Exception
+            unique_single_phase_iri = self.get_unique_values_in_list_of_dict(lic, 'single_phase')
+            if len(unique_single_phase_iri) > 1:
+                raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoLab:ChemicalSolution %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
+            elif len(unique_single_phase_iri) < 1:
+                raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoLab:ChemicalSolution: %s" % (ontocape_material_iri))
             else:
-                # TODO add support for other phase (solid, gas)
-                pass
+                unique_single_phase_iri = unique_single_phase_iri[0]
 
-        unique_composition_iri = self.get_unique_values_in_list_of_dict(response, 'composition')
-        if len(unique_composition_iri) > 1:
-            raise Exception("Multiple has_composition OntoCAPE:Composition identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_composition_iri), unique_single_phase_iri))
-        elif len(unique_composition_iri) < 1:
-            raise Exception("No instance of has_composition OntoCAPE:Composition was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
-        else:
-            unique_composition_iri = unique_composition_iri[0]
-
-        # secondly, get a list of OntoCAPE_PhaseComponent to be added to the OntoCAPE_SinglePhase instance
-        list_phase_component = []
-        list_phase_component_concentration = []
-        for res in response:
-            if 'concentration_type' in res:
-                if res['concentration_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
-                    concentration = OntoCAPE_Molarity(instance_iri=res['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=res['value'],numericalValue=res['num_val'],hasUnitOfMeasure=res['unit']))
+            unique_state_of_aggregation_iri = self.get_unique_values_in_list_of_dict(lic, 'state_of_aggregation')
+            if len(unique_state_of_aggregation_iri) > 1:
+                raise Exception("Multiple hasStateOfAggregation OntoCAPE:StateOfAggregation identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_state_of_aggregation_iri), unique_single_phase_iri))
+            elif len(unique_state_of_aggregation_iri) < 1:
+                raise Exception("No instance of hasStateOfAggregation OntoCAPE:StateOfAggregation was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
+            else:
+                if unique_state_of_aggregation_iri[0] == ONTOCAPE_LIQUID:
+                    state_of_aggregation = OntoCAPE_liquid
                 else:
-                    # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+                    # TODO add support for other phase (solid, gas)
                     pass
-                list_phase_component_concentration.append(concentration)
+
+            unique_composition_iri = self.get_unique_values_in_list_of_dict(lic, 'composition')
+            if len(unique_composition_iri) > 1:
+                raise Exception("Multiple has_composition OntoCAPE:Composition identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_composition_iri), unique_single_phase_iri))
+            elif len(unique_composition_iri) < 1:
+                raise Exception("No instance of has_composition OntoCAPE:Composition was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
             else:
-                raise Exception("Concentration is not defined for")
+                unique_composition_iri = unique_composition_iri[0]
 
-            phase_component = OntoCAPE_PhaseComponent(instance_iri=res['phase_component'],representsOccurenceOf=res['chemical_species'],hasProperty=concentration)
-            list_phase_component.append(phase_component)
+            # secondly, get a list of OntoCAPE_PhaseComponent to be added to the OntoCAPE_SinglePhase instance
+            list_phase_component = []
+            list_phase_component_concentration = []
+            for r in lic:
+                if 'concentration_type' in r:
+                    if r['concentration_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
+                        concentration = OntoCAPE_Molarity(instance_iri=r['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
+                    else:
+                        # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+                        pass
+                    list_phase_component_concentration.append(concentration)
+                else:
+                    raise Exception("Concentration is not defined for")
 
-        composition = OntoCAPE_Composition(
-            instance_iri=unique_composition_iri,
-            comprisesDirectly=list_phase_component_concentration
-        )
-        single_phase = OntoCAPE_SinglePhase(
-            instance_iri=unique_single_phase_iri,
-            hasStateOfAggregation=state_of_aggregation,
-            isComposedOfSubsystem=list_phase_component,
-            has_composition=composition,
-            representsThermodynamicBehaviorOf=ontocape_material_iri
-        )
+                phase_component = OntoCAPE_PhaseComponent(instance_iri=r['phase_component'],representsOccurenceOf=r['chemical_species'],hasProperty=concentration)
+                list_phase_component.append(phase_component)
 
-        return single_phase
+            composition = OntoCAPE_Composition(
+                instance_iri=unique_composition_iri,
+                comprisesDirectly=list_phase_component_concentration
+            )
+            single_phase = OntoCAPE_SinglePhase(
+                instance_iri=unique_single_phase_iri,
+                hasStateOfAggregation=state_of_aggregation,
+                isComposedOfSubsystem=list_phase_component,
+                has_composition=composition,
+                representsThermodynamicBehaviorOf=ontocape_material_iri
+            )
 
-    def get_input_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[InputChemical]:
-        rxnexp_iri = trimIRI(rxnexp_iri)
+            input_chemical = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
 
-        query = """
-                """
+            lst_input_chemical.append(input_chemical)
 
-        # input_chemical = InputChemical(
-        #     instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-        #     namespace_for_init=getNameSpace(rxnexp_iri),
-        #     thermodynamicBehaviour=OntoCAPE_SinglePhase(
-        #         instance_iri=,
-        #         namespace_for_init=,
-        #         hasStateOfAggregation=OntoCAPE_liquid,
-        #         representsThermodynamicBehaviorOf=input_chemical,
-        #         isComposedOfSubsystem=,
-        #         has_composition=,
-        #     ),
-        # )
-
-    #         hasStateOfAggregation: OntoCAPE_StateOfAggregation
-    # representsThermodynamicBehaviorOf: OntoCAPE_Material
-    # isComposedOfSubsystem: List[OntoCAPE_PhaseComponent]
-    # has_composition: OntoCAPE_Composition
-        # prefix ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
-        # prefix ontodoe: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
-        # prefix ontospecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-        # prefix ontocapeupp: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-        # prefix ontocapepha: <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
-        # prefix ontocaperxn: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-        # prefix ontocapemat: <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
-        # prefix ontorxn: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#>
-        # select ?exp ?input_chemical ?species ?val ?unit
-        # where {
-        #   ?exp rdf:type ontorxn:ReactionExperiment .
-        #   ?exp ontorxn:hasInputChemical ?input_chemical .
-        #   ?input_chemical ontocapemat:thermodynamicBehavior ?single_phase .
-        #   ?single_phase ontocapeupp:isComposedOfSubsystem ?phase_component .
-        #   ?single_phase ontocapepha:has_composition/ontocapeupp:comprisesDirectly ?phase_component_property .
-        #   ?phase_component ontocapeupp:hasProperty ?phase_component_property .
-        #   ?phase_component_property ontocapeupp:hasValue ?value .
-        #   ?value ontocapeupp:hasUnitOfMeasure ?unit;
-        #          ontocapeupp:numericalValue ?val.
-        #   ?phase_component ontocapepha:representsOccurranceOf ?species .
-        # }
-        pass
+        return lst_input_chemical
 
     def getExpReactionCondition(self, rxnexp_iri: str) -> List[ReactionCondition]:
         """
