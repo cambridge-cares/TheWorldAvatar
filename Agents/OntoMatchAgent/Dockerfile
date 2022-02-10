@@ -1,6 +1,6 @@
 # set base image
 # Base image is a lightweight version of Python
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 
 # Install required software
 RUN apt update && apt install -y git
@@ -23,5 +23,4 @@ RUN pip install -r requirements.txt
 # copy the content of the local src directory to the working directory
 COPY ./ .
 
-#ENTRYPOINT ["python",  "./flaskapp/wsgi.py"]
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+ENTRYPOINT ["python",  "./flaskapp/wsgi.py"]
