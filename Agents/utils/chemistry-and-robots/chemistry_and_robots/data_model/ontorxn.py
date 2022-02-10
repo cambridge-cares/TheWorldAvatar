@@ -44,12 +44,12 @@ class OntoCAPE_Molarity(OntoCAPE_VolumeBasedConcentration):
 
 class OntoCAPE_Composition(BaseOntology):
     clz: str = ONTOCAPE_COMPOSITION
-    comprisesDirectly: OntoCAPE_PhaseComponentConcentration
+    comprisesDirectly: List[OntoCAPE_PhaseComponentConcentration]
 
 class OntoCAPE_PhaseComponent(BaseOntology):
     clz: str = ONTOCAPE_PHASECOMPONENT
     hasProperty: OntoCAPE_PhaseComponentConcentration
-    representsOccurranceOf: str # NOTE here it should be pointing to OntoCAPE_ChemicalSpecie, but we simplified to use str for its IRI
+    representsOccurenceOf: str # NOTE here it should be pointing to OntoCAPE_ChemicalSpecie, but we simplified to use str for its IRI
 
 class OntoCAPE_StateOfAggregation(BaseOntology):
     clz: str = ONTOCAPE_STATEOFAGGREGATION
