@@ -179,14 +179,19 @@ public class AccessAgent extends JPSAgent{
 		String result = null;
 		
 		try {
-			logInputParams(requestParams, sparqlupdate, false);
 			
-			StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
-			
+			logInputParams(requestParams, sparqlquery+sparqlupdate, false);
+
 			if (sparqlupdate!=null) {
+				StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
+				LOGGER.info("Store client instantiated for query endpoint: "+kbClient.getUpdateEndpoint());
+				LOGGER.info("Performing SPARQL update.");
 				kbClient.executeUpdate(sparqlupdate);
 			}else if(sparqlquery!=null){
 				//query
+				StoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
+				LOGGER.info("Store client instantiated for query endpoint: "+kbClient.getQueryEndpoint());
+				LOGGER.info("Performing SPARQL query.");
 				result = kbClient.execute(sparqlquery);
 				JSONresult.put("result",result);
 			}else {
