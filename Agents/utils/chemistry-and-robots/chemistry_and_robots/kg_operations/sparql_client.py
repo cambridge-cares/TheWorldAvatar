@@ -244,13 +244,18 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_input_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[InputChemical]:
         rxnexp_iri = trimIRI(rxnexp_iri)
+        return self.get_ontocape_material(rxnexp_iri, ONTORXN_HASINPUTCHEMICAL)
+
+    def get_ontocape_material(self, subject_iri, predicate_iri) -> List[OntoCAPE_Material]:
+        subject_iri = trimIRI(subject_iri)
+        predicate_iri = trimIRI(predicate_iri)
 
         query = PREFIX_RDF + \
                 """
-                SELECT ?input_chemical ?single_phase ?state_of_aggregation ?composition ?phase_component ?chemical_species ?phase_component_concentration ?concentration_type ?value ?unit ?num_val
+                SELECT ?ontocape_material ?single_phase ?state_of_aggregation ?composition ?phase_component ?chemical_species ?phase_component_concentration ?concentration_type ?value ?unit ?num_val
                 WHERE {
-                    <%s> <%s> ?input_chemical .
-                    ?input_chemical <%s> ?single_phase .
+                    <%s> <%s> ?ontocape_material .
+                    ?ontocape_material <%s> ?single_phase .
                     ?single_phase rdf:type <%s> .
                     ?single_phase <%s> ?state_of_aggregation; <%s> ?composition; <%s> ?phase_component .
                     ?composition <%s> ?phase_component_concentration .
@@ -260,7 +265,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?value <%s> ?unit; <%s> ?num_val.
                 }
                 """ % (
-                    rxnexp_iri, ONTORXN_HASINPUTCHEMICAL, ONTOCAPE_THERMODYNAMICBEHAVIOR, ONTOCAPE_SINGLEPHASE,
+                    subject_iri, predicate_iri, ONTOCAPE_THERMODYNAMICBEHAVIOR, ONTOCAPE_SINGLEPHASE,
                     ONTOCAPE_HASSTATEOFAGGREGATION, ONTOCAPE_HAS_COMPOSITION, ONTOCAPE_ISCOMPOSEDOFSUBSYSTEM,
                     ONTOCAPE_COMPRISESDIRECTLY, ONTOCAPE_REPRESENTSOCCURENCEOF, ONTOCAPE_HASPROPERTY,
                     ONTOCAPE_HASVALUE, ONTOCAPE_HASUNITOFMEASURE, ONTOCAPE_NUMERICALVALUE
@@ -268,27 +273,27 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         response = self.performQuery(query)
 
-        lst_input_chemical = []
+        lst_ontocape_material = []
 
-        # generate different list for each OntoRxn:InputChemical
-        unique_input_chemical_iri = self.get_unique_values_in_list_of_dict(response, 'input_chemical')
-        list_list_input_chemical = []
-        for iri in unique_input_chemical_iri:
-            list_list_input_chemical.append([res for res in response if iri == res['input_chemical']])
+        # generate different list for each OntoCAPE:Material
+        unique_ontocape_material_iri = self.get_unique_values_in_list_of_dict(response, 'ontocape_material')
+        list_list_ontocape_material = []
+        for iri in unique_ontocape_material_iri:
+            list_list_ontocape_material.append([res for res in response if iri == res['ontocape_material']])
 
-        for lic in list_list_input_chemical:
-            ontocape_material_iri = self.get_unique_values_in_list_of_dict(lic, 'input_chemical')[0] # here we are sure this is the unique value of InputChemical
+        for list_om in list_list_ontocape_material:
+            ontocape_material_iri = self.get_unique_values_in_list_of_dict(list_om, 'ontocape_material')[0] # here we are sure this is the unique value of OntoCAPE:Material
 
             # validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase, one instance of OntoCAPE_StateOfAggregation and one instance of OntoCAPE_Composition, otherwise raise an Exception
-            unique_single_phase_iri = self.get_unique_values_in_list_of_dict(lic, 'single_phase')
+            unique_single_phase_iri = self.get_unique_values_in_list_of_dict(list_om, 'single_phase')
             if len(unique_single_phase_iri) > 1:
-                raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoLab:ChemicalSolution %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
+                raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoCAPE:Material %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
             elif len(unique_single_phase_iri) < 1:
-                raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoLab:ChemicalSolution: %s" % (ontocape_material_iri))
+                raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoCAPE:Material: %s" % (ontocape_material_iri))
             else:
                 unique_single_phase_iri = unique_single_phase_iri[0]
 
-            unique_state_of_aggregation_iri = self.get_unique_values_in_list_of_dict(lic, 'state_of_aggregation')
+            unique_state_of_aggregation_iri = self.get_unique_values_in_list_of_dict(list_om, 'state_of_aggregation')
             if len(unique_state_of_aggregation_iri) > 1:
                 raise Exception("Multiple hasStateOfAggregation OntoCAPE:StateOfAggregation identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_state_of_aggregation_iri), unique_single_phase_iri))
             elif len(unique_state_of_aggregation_iri) < 1:
@@ -300,7 +305,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     # TODO add support for other phase (solid, gas)
                     pass
 
-            unique_composition_iri = self.get_unique_values_in_list_of_dict(lic, 'composition')
+            unique_composition_iri = self.get_unique_values_in_list_of_dict(list_om, 'composition')
             if len(unique_composition_iri) > 1:
                 raise Exception("Multiple has_composition OntoCAPE:Composition identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_composition_iri), unique_single_phase_iri))
             elif len(unique_composition_iri) < 1:
@@ -311,7 +316,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             # secondly, get a list of OntoCAPE_PhaseComponent to be added to the OntoCAPE_SinglePhase instance
             list_phase_component = []
             list_phase_component_concentration = []
-            for r in lic:
+            for r in list_om:
                 if 'concentration_type' in r:
                     if r['concentration_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
                         concentration = OntoCAPE_Molarity(instance_iri=r['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
@@ -339,9 +344,96 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
             input_chemical = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
 
-            lst_input_chemical.append(input_chemical)
+            lst_ontocape_material.append(input_chemical)
 
-        return lst_input_chemical
+        return lst_ontocape_material
+
+    def get_all_autosampler_with_fill(self) -> List[AutoSampler]:
+        query = PREFIX_RDF + \
+                """
+                SELECT ?autosampler ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
+                ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution
+                WHERE {
+                    ?autosampler rdf:type <%s>.
+                    ?autosampler <%s> ?site.
+                    ?site <%s> ?vial; <%s> ?loc.
+                    OPTIONAL {
+                        ?vial <%s> ?fill_level.
+                        ?fill_level <%s> ?fill_level_om_value.
+                        ?fill_level_om_value <%s> ?fill_level_unit; <%s> ?fill_level_num_val.
+                    }
+                    OPTIONAL {
+                        ?vial <%s> ?max_level.
+                        ?max_level <%s> ?max_level_om_value.
+                        ?max_level_om_value <%s> ?max_level_unit; <%s> ?max_level_num_val.
+                    }
+                    ?vial <%s> ?chemical_solution.
+                }
+                """ % (
+                    ONTOVAPOURTEC_AUTOSAMPLER, ONTOVAPOURTEC_HASSITE, ONTOVAPOURTEC_HOLDS, ONTOVAPOURTEC_LOCATIONID,
+                    ONTOVAPOURTEC_HASFILLLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                    ONTOVAPOURTEC_HASMAXLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                    ONTOVAPOURTEC_ISFILLEDWITH
+                )
+
+        response = self.performQuery(query)
+
+        unique_autosampler_list = self.get_unique_values_in_list_of_dict(response, 'autosampler')
+        logger.debug("The list of all available OntoVapourtec:AutoSampler in the knowledge graph (%s): %s" % (self.kg_client.getQueryEndpoint(), str(unique_autosampler_list)))
+        list_autosampler = []
+        for specific_autosampler in unique_autosampler_list:
+            info_of_specific_autosampler = self.get_sublist_in_list_of_dict_matching_key_value(response, 'autosampler', specific_autosampler)
+            logger.debug("The sublist of all information related to the specific instance of OntoVapourtec:AutoSampler <%s> in the knowledge graph (%s): %s" %
+                (specific_autosampler, self.kg_client.getQueryEndpoint(), str(info_of_specific_autosampler)))
+
+            unique_site_list = self.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'site')
+            list_autosampler_site = []
+            for specific_site in unique_site_list:
+                info_of_specific_site = self.get_sublist_in_list_of_dict_matching_key_value(info_of_specific_autosampler, 'site', specific_site)[0] # TODO here we assume only one, but to be varified by checking length
+                # TODO add exceptions for lenth of the results, e.g. if len(info_of_specific_site) > 1:
+                # TODO add logger info/debug
+                referred_instance_of_ontocape_material = self.get_ontocape_material(info_of_specific_site['chemical_solution'], ONTOCAPE_REFERSTOMATERIAL)[0] # TODO here we assume only one, but to be varified by checking length
+                # TODO add exceptions for lenth of the results, e.g. if len(referred_instance_of_ontocape_material) > 1:
+                vial = Vial(
+                    instance_iri=info_of_specific_site['vial'],
+                    isFilledWith=ChemicalSolution(
+                        instance_iri=info_of_specific_site['chemical_solution'],
+                        refersToMaterial=referred_instance_of_ontocape_material,
+                        fills=info_of_specific_site['vial'],
+                        isPreparedBy=None # TODO add support for isPreparedBy
+                    ),
+                    hasFillLevel=OM_Volume(
+                        instance_iri=info_of_specific_site['fill_level'],
+                        hasValue=OM_Measure(
+                            instance_iri=info_of_specific_site['fill_level_om_value'],
+                            hasUnit=info_of_specific_site['fill_level_unit'],
+                            hasNumericalValue=info_of_specific_site['fill_level_num_val']
+                        )
+                    ),
+                    hasMaxLevel=OM_Volume(
+                        instance_iri=info_of_specific_site['max_level'],
+                        hasValue=OM_Measure(
+                            instance_iri=info_of_specific_site['max_level_om_value'],
+                            hasUnit=info_of_specific_site['max_level_unit'],
+                            hasNumericalValue=info_of_specific_site['max_level_num_val']
+                        )
+                    ),
+                    isHeldIn=specific_site
+                )
+                autosampler_site = AutoSamplerSite(
+                    instance_iri=specific_site,
+                    holds=vial,
+                    locationID=info_of_specific_site['loc']
+                )
+                list_autosampler_site.append(autosampler_site)
+
+            autosampler = AutoSampler(
+                instance_iri=specific_autosampler,
+                hasSite=list_autosampler_site
+            )
+            list_autosampler.append(autosampler)
+
+        return list_autosampler
 
     def getExpReactionCondition(self, rxnexp_iri: str) -> List[ReactionCondition]:
         """
@@ -590,6 +682,18 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def enqueue_settings_to_pending(self, list_equip_settings: List[EquipmentSettings], list_equip_digital_twin: List[LabEquipment]):
         # add settings to pending list
         pass
+
+    def get_sublist_in_list_of_dict_matching_key_value(self, list_of_dict: List[Dict], key: str, value: Any) -> list:
+        if len(list_of_dict) > 0:
+            try:
+                sublist = [d for d in list_of_dict if d[key] == value]
+            except KeyError:
+                logger.error("Key '%s' is not found in the given list of dict: %s" % (key, str(list_of_dict)))
+            else:
+                return sublist
+        else:
+            logger.error("An empty list is passed in while requesting return sublist given key '%s'." % (key))
+            return []
 
     def get_unique_values_in_list_of_dict(self, list_of_dict: List[dict], key: str) -> list:
         return list(set(self.get_value_from_list_of_dict(list_of_dict, key)))

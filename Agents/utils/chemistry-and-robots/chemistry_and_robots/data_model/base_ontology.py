@@ -1,5 +1,7 @@
 import pydantic
 from typing import Any
+from rdflib import Graph, Literal, URIRef
+from rdflib.namespace import RDF
 
 from pyasyncagent.data_model.iris import *
 from pyasyncagent.data_model.utils import *
@@ -41,3 +43,27 @@ class BaseOntology(pydantic.BaseModel):
                 data['instance_iri'] = initialiseInstanceIRI(data['namespace_for_init'], _clz)
 
         super().__init__(**data)
+
+class OM_Measure(BaseOntology):
+    clz: str = OM_MEASURE
+    # instead of the actual class, str is used to host the concept IRI of om:Unit for simplicity
+    hasUnit: str
+    hasNumericalValue: float
+
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        # IRI-ise the IRI of OM:Measure instance to be used by rdflib package
+        measure_iri = URIRef(self.instance_iri)
+
+        # Add below triples following units of measure practices:
+        # <measureIRI> <rdf:type> <om:Measure> .
+        # <measureIRI> <om:hasUnit> <unit> .
+        # <measureIRI> <om:hasNumericalValue> <val> .
+        g.add((measure_iri, RDF.type, URIRef(OM_MEASURE)))
+        g.add((measure_iri, URIRef(OM_HASUNIT), URIRef(self.hasUnit)))
+        g.add((measure_iri, URIRef(OM_HASNUMERICALVALUE), Literal(self.hasNumericalValue)))
+
+        return g
+
+class OM_Volume(BaseOntology):
+    clz: str = OM_VOLUME
+    hasValue: OM_Measure

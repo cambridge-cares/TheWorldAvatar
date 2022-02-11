@@ -53,10 +53,6 @@ class LabEquipment(Saref_Device):
     wasSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO add this to TBox
     # TODO add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
 
-class Vial(BaseOntology):
-    isFilledWith: ChemicalSolution
-    pass
-
 class PreparationMethod(BaseOntology):
     pass
 
@@ -65,5 +61,11 @@ class OntoCAPE_MaterialAmount(BaseOntology):
 
 class ChemicalSolution(OntoCAPE_MaterialAmount):
     refersToMaterial: OntoCAPE_Material
-    isPreparedBy: PreparationMethod
-    fills: Vial
+    # NOTE "files" should point to the actual instance of ontovapourtec.Vial, but here we simplify it with only pointing to the iri
+    # NOTE this is due to practical reason as we need to import ontovapourtec.Vial here, but it will cause circular import issue
+    # NOTE str will be used for simplicity until a good way to resolve circular import can be find
+    # NOTE update_forward_ref() with 'Vial' annotation won't help as we will need to put ChemicalSolution.update_forward_ref() in ontovapourtec
+    # NOTE which won't work as developer will need to also import ontovapourtec to make ChemicalSolution fully resolvable
+    # NOTE which defeats the whole point of making them separate
+    fills: str
+    isPreparedBy: Optional[PreparationMethod] = None

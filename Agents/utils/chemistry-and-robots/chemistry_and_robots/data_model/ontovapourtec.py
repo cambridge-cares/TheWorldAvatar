@@ -4,8 +4,12 @@ from typing import List
 from pyasyncagent.data_model.iris import *
 from pyasyncagent.data_model.utils import *
 
-from chemistry_and_robots.data_model.base_ontology import BaseOntology
+from chemistry_and_robots.data_model.base_ontology import *
 from chemistry_and_robots.data_model.ontolab import *
+
+# TODO add below IRIs to pyasyncagent.data_model.iris
+# TODO NOTE ONTOVAPOURTEC_HASWARNINGLEVEL is probably not needed?
+ONTOVAPOURTEC_LOCATIONID = ONTOVAPOURTEC + 'locationID'
 
 class SampleLoopVolumeSetting(VolumeSetting):
     pass
@@ -68,3 +72,20 @@ class PumpSettings(EquipmentSettings):
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         pass
+
+class Vial(BaseOntology):
+    clz: str = ONTOVAPOURTEC_VIAL
+    isFilledWith: ChemicalSolution
+    hasFillLevel: OM_Volume
+    # hasWarningLevel: OM_Volume # NOTE hasWarningLevel is temporarily commented out before a decision is made whether keep it
+    hasMaxLevel: OM_Volume
+    isHeldIn: str # NOTE here we simplify the implementation to use str instead of the actual AutoSamplerSite
+
+class AutoSamplerSite(BaseOntology):
+    clz: str = ONTOVAPOURTEC_AUTOSAMPLERSITE
+    holds: Vial
+    locationID: int
+
+class AutoSampler(BaseOntology):
+    clz: str = ONTOVAPOURTEC_AUTOSAMPLER
+    hasSite: List[AutoSamplerSite]
