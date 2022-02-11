@@ -363,7 +363,11 @@
 	 * @param {Element} control event source 
 	 */
 	 onLayerGroupChange(control) {
-		this._controlHandler.onLayerGroupChange(control);
+		try {
+			this._controlHandler.onLayerGroupChange(control);
+		} catch(error) {
+			console.log(error, error.stack);
+		}
 	}
 
 	/**
@@ -372,7 +376,11 @@
 	 * @param {Element} control event source 
 	 */
 	onLayerChange(control) {
-		this._controlHandler.onLayerChange(control);
+		try {
+			this._controlHandler.onLayerChange(control);
+		} catch(error) {
+			console.log(error, error.stack);
+		}
 	}
 
 	/**
@@ -530,7 +538,8 @@
 	 * @param {*} selectValue 
 	 */
 	onGroupSelectChange(selectID, selectValue) {
-		if(selectID == "root-dir-select") {
+
+		if(selectID === "root-dir-select") {
 			// Change of root directory
 			let that = this;
 

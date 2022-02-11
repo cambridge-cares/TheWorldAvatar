@@ -256,6 +256,9 @@ class ControlHandler {
 			let selectString = this.buildDropdown(metaGroup["groups"], value);
 			document.getElementById("select-" + groupID).innerHTML = selectString;
 
+			var newSelect = document.getElementById("select-" + groupID).querySelector("select");
+			newSelect.dispatchEvent(new Event('change', {bubbles: true}));
+
 		} else if(metaGroup["dataSets"]) {
 			// Lowest level group, can show data now
 			console.log("INFO: The following leaf group has been selected, '" + groupNames + "'.");
@@ -302,18 +305,22 @@ class ControlHandler {
 		} else if(mode === "outdoors") {
 			this._map.setStyle("mapbox://styles/mapbox/outdoors-v11?optimize=true");
 		} else if(mode === "blueprint") {
-			this._map.setStyle("mapbox://styles/cmclinnovations/ckweqsj667xkx15qnilos1kzj");
+			this._map.setStyle("mapbox://styles/cmclinnovations-credo/ckzfn4jg3007x14l9zomsv7sd");
 		} else if(mode === "satellite") {
 			this._map.setStyle("mapbox://styles/mapbox/satellite-v9?optimize=true");
 		} else if(mode === "satellite-streets") {
 			this._map.setStyle("mapbox://styles/mapbox/satellite-streets-v11?optimize=true");
 		} 
 
-		// Hide building outlines
-		hideBuildings();
-
-		// Store the current terrain as a global variable
+        // Store the current terrain as a global variable
 		DT.terrain = mode;
+
+		// Hide building outlines
+        try {
+		    hideBuildings();
+        } catch(error) {
+            console.log(error);
+        }
 	}
 
 	/**
@@ -512,6 +519,7 @@ class ControlHandler {
 	 * Builds the HTML required to show the Layer Tree.
 	 */
 	#renderTree() {
+        DT.treeDictionary = {};
 		this._treeHTML = `<ul id="layerTree">`;
 		
 		for(var i = 0; i < this._treeSpecification.length; i++) {
@@ -558,6 +566,8 @@ class ControlHandler {
 			this._treeHTML += `<li>`
 			this._treeHTML += "<input class='layerInput' type='" + controlType + "' onclick='manager.onLayerChange(this);' id='" + layerName + "' name='" + currentGroup + "'";
 
+            DT.treeDictionary[layerName] = treeEntry["layerIDs"];
+            
 			// Determin if the layer should be hidden or not
 			let shouldHide = true;
 

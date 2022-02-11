@@ -75,8 +75,6 @@ class InteractionHandler {
      * @param {string[]} layer [layer name, layer type]
      */
     registerInteractions(layer) {
-        if(this._map.getLayer(layer) == null) return;
-        
         let layerName = layer[0];
         let layerType = layer[1];
         let sourceName = this._map.getLayer(layerName).source;
@@ -342,7 +340,17 @@ class InteractionHandler {
 
             if(displayName == null) {
                 displayName = "Cluster of " + features[i]["properties"]["point_count_abbreviated"] + " features from '";
-                displayName += features[i]["layer"]["id"].replace("_cluster", "") + "' layer."
+
+                let layerID = features[i]["layer"]["id"].replace("_cluster", "");
+                let layerName = null;
+                for (const [key, value] of Object.entries(DT.treeDictionary)) {
+                    if(value.includes(layerID)) {
+                        layerName = key;
+                    }
+                }
+                
+                if(layerName == null) layerName = layerID;
+                displayName += layerName + "' layer."
             }
 
             // The DT.selectColorer is an optional function (set externally) that 
