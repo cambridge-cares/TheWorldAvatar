@@ -45,8 +45,8 @@ class Saref_Device(BaseOntology):
 
 class LabEquipment(Saref_Device):
     manufacturer: str # it should be pointing to an instance of https://dbpedia.org/ontology/Organisation, but we simplified here
-    isContainedIn: Laboratory
-    hasPowerSupply: PowerSupply
+    isContainedIn: Union[str, Laboratory] # NOTE here str is provided as an optional as it seems impossible to circular reference at instance level
+    hasPowerSupply: Union[str, PowerSupply] # NOTE TODO here str is provided as an optional to simplify the implementation
     consistsOf: Optional[List[LabEquipment]] = None
     isSpecifiedBy: Optional[EquipmentSettings] = None
     willBeSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO add this to TBox

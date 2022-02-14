@@ -1,5 +1,5 @@
 import pydantic
-from typing import List
+from typing import List, Union
 
 from pyasyncagent.data_model.iris import *
 from pyasyncagent.data_model.utils import *
@@ -7,9 +7,11 @@ from pyasyncagent.data_model.utils import *
 from chemistry_and_robots.data_model.base_ontology import *
 from chemistry_and_robots.data_model.ontolab import *
 
-# TODO add below IRIs to pyasyncagent.data_model.iris
+# TODO add below IRIs to pyasyncagent.data_model.iris, also TBox CSV/OWL if applicable
 # TODO NOTE ONTOVAPOURTEC_HASWARNINGLEVEL is probably not needed?
 ONTOVAPOURTEC_LOCATIONID = ONTOVAPOURTEC + 'locationID'
+ONTOVAPOURTEC_HASREACTORTEMPERATUREUPPERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureUpperLimit'
+ONTOVAPOURTEC_HASREACTORTEMPERATURELOWERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureLowerLimit'
 
 class SampleLoopVolumeSetting(VolumeSetting):
     pass
@@ -86,6 +88,34 @@ class AutoSamplerSite(BaseOntology):
     holds: Vial
     locationID: int
 
-class AutoSampler(BaseOntology):
+class AutoSampler(LabEquipment):
     clz: str = ONTOVAPOURTEC_AUTOSAMPLER
     hasSite: List[AutoSamplerSite]
+
+class VapourtecR4Reactor(LabEquipment):
+    clz: str = ONTOVAPOURTEC_VAPOURTECR4REACTOR
+    locationID: int
+    hasReactorMaterial: Union[str, OntoCAPE_MaterialAmount] # NOTE TODO here str is provided as an optional to simplify the implementation
+    hasInternalDiameter: OM_Diameter
+    hasReactorLength: OM_Length
+    hasReactorVolume: OM_Volume
+    hasReactorTemperatureLowerLimit: OM_CelsiusTemperature
+    hasReactorTemperatureUpperLimit: OM_CelsiusTemperature
+
+    @pydantic.root_validator
+    @classmethod
+    def reactor_temperature_operation_limit(cls, values):
+        if values.get('hasReactorTemperatureLowerLimit').hasValue.hasNumericalValue > values.get('hasReactorTemperatureUpperLimit').hasValue.hasNumericalValue:
+            raise Exception(
+                'VapourtecR4Reactor <%s> has a ReactorTemperatureLowerLimit (%s) that is higher than the ReactorTemperatureUpperLimit (%s).' % (
+                    values.get('instance_iri'), values.get('hasReactorTemperatureLowerLimit').hasValue.hasNumericalValue, values.get('hasReactorTemperatureUpperLimit').hasValue.hasNumericalValue
+                )
+            )
+        return values
+
+class VapourtecR2Pump(LabEquipment):
+    clz: str = ONTOVAPOURTEC_VAPOURTECR2PUMP
+    locationID: int
+
+class VapourtecRS400(LabEquipment):
+    pass

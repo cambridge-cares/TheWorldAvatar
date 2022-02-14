@@ -2,6 +2,7 @@
 # to interact with the knowledge graph
 #============================================================
 from builtins import Exception
+from re import M
 from urllib import response
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
@@ -351,10 +352,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_all_autosampler_with_fill(self) -> List[AutoSampler]:
         query = PREFIX_RDF + \
                 """
-                SELECT ?autosampler ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
+                SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
+                ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
                 ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution
                 WHERE {
-                    ?autosampler rdf:type <%s>.
+                    ?autosampler rdf:type <%s>; <%s> ?autosampler_manufacturer; <%s> ?laboratory; <%s> ?autosampler_power_supply.
                     ?autosampler <%s> ?site.
                     ?site <%s> ?vial; <%s> ?loc.
                     OPTIONAL {
@@ -370,7 +372,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?vial <%s> ?chemical_solution.
                 }
                 """ % (
-                    ONTOVAPOURTEC_AUTOSAMPLER, ONTOVAPOURTEC_HASSITE, ONTOVAPOURTEC_HOLDS, ONTOVAPOURTEC_LOCATIONID,
+                    ONTOVAPOURTEC_AUTOSAMPLER, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
+                    ONTOVAPOURTEC_HASSITE, ONTOVAPOURTEC_HOLDS, ONTOVAPOURTEC_LOCATIONID,
                     ONTOVAPOURTEC_HASFILLLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
                     ONTOVAPOURTEC_HASMAXLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
                     ONTOVAPOURTEC_ISFILLEDWITH
@@ -383,6 +386,31 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         list_autosampler = []
         for specific_autosampler in unique_autosampler_list:
             info_of_specific_autosampler = self.get_sublist_in_list_of_dict_matching_key_value(response, 'autosampler', specific_autosampler)
+
+            unique_specific_autosampler_manufacturer_iri = self.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'autosampler_manufacturer')
+            if len(unique_specific_autosampler_manufacturer_iri) > 1:
+                raise Exception("Multiple dbpedia:manufacturer identified (<%s>) in one instance of OntoVapourtec:AutoSampler %s is currently NOT supported." % ('>, <'.join(unique_specific_autosampler_manufacturer_iri), specific_autosampler))
+            elif len(unique_specific_autosampler_manufacturer_iri) < 1:
+                raise Exception("No instance of dbpedia:manufacturer was identified given instance of OntoVapourtec:AutoSampler: %s" % (specific_autosampler))
+            else:
+                unique_specific_autosampler_manufacturer_iri = unique_specific_autosampler_manufacturer_iri[0]
+
+            unique_specific_autosampler_laboratory_iri = self.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'laboratory')
+            if len(unique_specific_autosampler_laboratory_iri) > 1:
+                raise Exception("Multiple OntoLab:isContainedIn OntoLab:Laboratory identified (<%s>) for one instance of OntoVapourtec:AutoSampler %s." % ('>, <'.join(unique_specific_autosampler_laboratory_iri), specific_autosampler))
+            elif len(unique_specific_autosampler_laboratory_iri) < 1:
+                raise Exception("No instance of OntoLab:isContainedIn OntoLab:Laboratory was identified given instance of OntoVapourtec:AutoSampler: %s" % (specific_autosampler))
+            else:
+                unique_specific_autosampler_laboratory_iri = unique_specific_autosampler_laboratory_iri[0]
+
+            unique_specific_autosampler_power_supply_iri = self.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'autosampler_power_supply')
+            if len(unique_specific_autosampler_power_supply_iri) > 1:
+                raise Exception("Multiple OntoLab:hasPowerSupply OntoLab:PowerSupply identified (<%s>) for one instance of OntoVapourtec:AutoSampler %s is currently NOT supported." % ('>, <'.join(unique_specific_autosampler_power_supply_iri), specific_autosampler))
+            elif len(unique_specific_autosampler_power_supply_iri) < 1:
+                raise Exception("No instance of OntoLab:hasPowerSupply OntoLab:PowerSupply was identified given instance of OntoVapourtec:AutoSampler: %s" % (specific_autosampler))
+            else:
+                unique_specific_autosampler_power_supply_iri = unique_specific_autosampler_power_supply_iri[0]
+
             logger.debug("The sublist of all information related to the specific instance of OntoVapourtec:AutoSampler <%s> in the knowledge graph (%s): %s" %
                 (specific_autosampler, self.kg_client.getQueryEndpoint(), str(info_of_specific_autosampler)))
 
@@ -429,6 +457,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
             autosampler = AutoSampler(
                 instance_iri=specific_autosampler,
+                manufacturer=unique_specific_autosampler_manufacturer_iri,
+                isContainedIn=unique_specific_autosampler_laboratory_iri,
+                hasPowerSupply=unique_specific_autosampler_power_supply_iri,
                 hasSite=list_autosampler_site
             )
             list_autosampler.append(autosampler)
@@ -672,16 +703,184 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     # does the hardware's operation range covers the reaction condition?
     # how many pending configurations does it have? -> locate the most suitable hardware (can be expanded to check how long is each configuration, what's the temperature etc.)
     # here we probably don't consider its status yet, just assume the equipment is there and will work - we rely on Execution Agent to keep track of the status
-    def get_dt_of_preferred_hardware(self, rxnexp: ReactionExperiment):
+    def get_dt_of_preferred_hardware(self, rxnexp: ReactionExperiment) -> VapourtecR4Reactor:
         # query if there's suitable hardware
         # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals?
         list_autosampler = self.get_all_autosampler_with_fill()
         list_input_chemical = self.get_input_chemical_of_rxn_exp(rxnexp.instance_iri)
+        dict_digital_twin = {}
         for autosampler in list_autosampler:
             list_chemical_solution_mat = [site.holds.isFilledWith.refersToMaterial for site in autosampler.hasSite]
             if all(item in list_chemical_solution_mat for item in list_input_chemical):
                 # second step: query if the operation range covers the reaction condition
-                pass
+                # NOTE here we only consider the reaction temperature at the moment, support for checking more reaction conditions (e.g. reactor material, autosampler liquid level, etc.) can be added later on
+                # get the reactor first, then get the temperature conditon (cached value), compare the value if in the range, if yes then carry out the next step (how many prior experiment), otherwise skip
+                vapourtec_rs400 = self.get_vapourtec_rs400_given_autosampler(autosampler.instance_iri)
+                list_reactor = [lab_equip for lab_equip in vapourtec_rs400.consistsOf if isinstance(lab_equip, VapourtecR4Reactor)]
+
+                temp_condition = [cond.hasValue.hasNumericalValue for cond in rxnexp.hasReactionCondition if cond.clz == ONTORXN_REACTIONTEMPERATURE]
+                if len(temp_condition) > 1:
+                    raise Exception()
+                elif len(temp_condition) < 1:
+                    raise Exception()
+                else:
+                    temp_condition = temp_condition[0]
+
+                applicable_reactor = []
+                applicable_reactor.append(reactor for reactor in list_reactor if reactor.hasReactorTemperatureLowerLimit.hasValue.hasNumericalValue <= temp_condition <= reactor.hasReactorTemperatureUpperLimit.hasValue.hasNumericalValue)
+
+                # TODO this function should return a simple dict that documents the estimated time to be available (based on the residence time) {'labequip_1': 1, 'labequip_2': 2}
+                # dict_digital_twin[digital_twin] = estimated_time
+        # return min(dict_digital_twin, key=dict_digital_twin.get)
+        return None
+
+    def get_vapourtec_rs400_given_autosampler(self, autosampler: AutoSampler) -> VapourtecRS400:
+        query = PREFIX_RDF + \
+                """
+                SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply
+                WHERE { ?rs400 <%s> <%s>; rdf:type <%s>; <%s> ?rs400_manufacturer; <%s> ?laboratory; <%s> ?rs400_power_supply. }
+                """ % (
+                    SAREF_CONSISTSOF, autosampler.instance_iri,
+                    ONTOVAPOURTEC_VAPOURTECRS400, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY
+                )
+
+        response = self.performQuery(query)
+
+        if len(response) > 1:
+            raise Exception("One AutoSampler (%s) should only be attached to one VapourtecRS400 module. Identified multiple: %s" % (autosampler.instance_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("The given AutoSampler (%s) is not associated with any instances of VapourtecRS400 module." % (autosampler.instance_iri))
+
+        res = response[0]
+        list_vapourtec_reactor_and_pump = []
+        list_vapourtec_reactor_and_pump.append(autosampler)
+        list_vapourtec_reactor_and_pump += self.get_r4_reactor_given_vapourtec_rs400(res['rs400'])
+        list_vapourtec_reactor_and_pump += self.get_r2_pump_given_vapourtec_rs400(res['rs400'])
+
+        vapourtec_rs400 = VapourtecRS400(
+            instance_iri=res['rs400'],
+            manufacturer=res['rs400_manufacturer'],
+            isContainedIn=res['laboratory'],
+            hasPowerSupply=res['rs400_power_supply'],
+            consistsOf=list_vapourtec_reactor_and_pump
+        )
+
+        return vapourtec_rs400
+
+    def get_r4_reactor_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> List[VapourtecR4Reactor]:
+        vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
+        print(vapourtec_rs400_iri)
+        query = PREFIX_RDF + \
+                """
+                SELECT ?r4_reactor ?r4_reactor_manufacturer ?laboratory ?r4_reactor_power_supply ?loc ?r4_reactor_material
+                ?r4_reactor_internal_diameter ?r4_reactor_internal_diameter_measure ?r4_reactor_internal_diameter_unit ?r4_reactor_internal_diameter_val
+                ?r4_reactor_length ?r4_reactor_length_measure ?r4_reactor_length_unit ?r4_reactor_length_val
+                ?r4_reactor_volume ?r4_reactor_volume_measure ?r4_reactor_volume_unit ?r4_reactor_volume_val
+                ?r4_reactor_temp_lower ?r4_reactor_temp_lower_measure ?r4_reactor_temp_lower_unit ?r4_reactor_temp_lower_val
+                ?r4_reactor_temp_upper ?r4_reactor_temp_upper_measure ?r4_reactor_temp_upper_unit ?r4_reactor_temp_upper_val
+                WHERE {
+                    <%s> <%s> ?r4_reactor .
+                    ?r4_reactor rdf:type <%s>; <%s> ?r4_reactor_manufacturer; <%s> ?laboratory; <%s> ?r4_reactor_power_supply; <%s> ?loc;
+                    <%s> ?r4_reactor_material; <%s> ?r4_reactor_internal_diameter; <%s> ?r4_reactor_length;
+                    <%s> ?r4_reactor_volume; <%s> ?r4_reactor_temp_lower; <%s> ?r4_reactor_temp_upper.
+                    ?r4_reactor_internal_diameter <%s> ?r4_reactor_internal_diameter_measure. ?r4_reactor_internal_diameter_measure <%s> ?r4_reactor_internal_diameter_unit; <%s> ?r4_reactor_internal_diameter_val.
+                    ?r4_reactor_length <%s> ?r4_reactor_length_measure. ?r4_reactor_length_measure <%s> ?r4_reactor_length_unit; <%s> ?r4_reactor_length_val.
+                    ?r4_reactor_volume <%s> ?r4_reactor_volume_measure. ?r4_reactor_volume_measure <%s> ?r4_reactor_volume_unit; <%s> ?r4_reactor_volume_val.
+                    ?r4_reactor_temp_lower <%s> ?r4_reactor_temp_lower_measure. ?r4_reactor_temp_lower_measure <%s> ?r4_reactor_temp_lower_unit; <%s> ?r4_reactor_temp_lower_val.
+                    ?r4_reactor_temp_upper <%s> ?r4_reactor_temp_upper_measure. ?r4_reactor_temp_upper_measure <%s> ?r4_reactor_temp_upper_unit; <%s> ?r4_reactor_temp_upper_val.
+                }
+                """ % (
+                    vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOVAPOURTEC_VAPOURTECR4REACTOR, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, ONTOVAPOURTEC_LOCATIONID,
+                    ONTOVAPOURTEC_HASREACTORMATERIAL, ONTOVAPOURTEC_HASINTERNALDIAMETER, ONTOVAPOURTEC_HASREACTORLENGTH,
+                    ONTOVAPOURTEC_HASREACTORVOLUME, ONTOVAPOURTEC_HASREACTORTEMPERATURELOWERLIMIT, ONTOVAPOURTEC_HASREACTORTEMPERATUREUPPERLIMIT,
+                    OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                    OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                    OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                    OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                    OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE
+                )
+
+        response = self.performQuery(query)
+        unique_r4_reactor_list = self.get_unique_values_in_list_of_dict(response, 'r4_reactor')
+        logger.debug("The list of all OntoVapourtec:VapourtecR4Reactor associated with the given instance of OntoVapourtec:VapourtecRS400 <%s>: %s" % (
+            vapourtec_rs400_iri, str(unique_r4_reactor_list)
+        ))
+        list_r4_reactor = []
+        for specific_r4_reactor in unique_r4_reactor_list:
+            info_of_specific_r4_reactor = self.get_sublist_in_list_of_dict_matching_key_value(response, 'r4_reactor', specific_r4_reactor)
+            if len(info_of_specific_r4_reactor) > 1:
+                raise Exception("Multiple records of OntoVapourtec:VapourtecR4Reactor <%s> are identified: %s" % (specific_r4_reactor, str(info_of_specific_r4_reactor)))
+            elif len(info_of_specific_r4_reactor) < 1:
+                raise Exception("No record of OntoVapourtec:VapourtecR4Reactor <%s> are identified." % (specific_r4_reactor))
+            else:
+                info_ = info_of_specific_r4_reactor[0]
+
+            r4_reactor = VapourtecR4Reactor(
+                instance_iri=info_['r4_reactor'],
+                manufacturer=info_['r4_reactor_manufacturer'],
+                isContainedIn=info_['laboratory'],
+                hasPowerSupply=info_['r4_reactor_power_supply'],
+                locationID=info_['loc'],
+                hasReactorMaterial=info_['r4_reactor_material'],
+                hasInternalDiameter=OM_Diameter(
+                    instance_iri=info_['r4_reactor_internal_diameter'],
+                    hasValue=OM_Measure(instance_iri=info_['r4_reactor_internal_diameter_measure'],hasUnit=info_['r4_reactor_internal_diameter_unit'],hasNumericalValue=info_['r4_reactor_internal_diameter_val'])
+                ),
+                hasReactorLength=OM_Length(
+                    instance_iri=info_['r4_reactor_length'],
+                    hasValue=OM_Measure(instance_iri=info_['r4_reactor_length_measure'],hasUnit=info_['r4_reactor_length_unit'],hasNumericalValue=info_['r4_reactor_length_val'])
+                ),
+                hasReactorVolume=OM_Volume(
+                    instance_iri=info_['r4_reactor_volume'],
+                    hasValue=OM_Measure(instance_iri=info_['r4_reactor_volume_measure'],hasUnit=info_['r4_reactor_volume_unit'],hasNumericalValue=info_['r4_reactor_volume_val'])
+                ),
+                hasReactorTemperatureLowerLimit=OM_CelsiusTemperature(
+                    instance_iri=info_['r4_reactor_temp_lower'],
+                    hasValue=OM_Measure(instance_iri=info_['r4_reactor_temp_lower_measure'],hasUnit=info_['r4_reactor_temp_lower_unit'],hasNumericalValue=info_['r4_reactor_temp_lower_val'])
+                ),
+                hasReactorTemperatureUpperLimit=OM_CelsiusTemperature(
+                    instance_iri=info_['r4_reactor_temp_upper'],
+                    hasValue=OM_Measure(instance_iri=info_['r4_reactor_temp_upper_measure'],hasUnit=info_['r4_reactor_temp_upper_unit'],hasNumericalValue=info_['r4_reactor_temp_upper_val'])
+                )
+            )
+            list_r4_reactor.append(r4_reactor)
+
+        return list_r4_reactor
+
+    def get_r2_pump_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> List[VapourtecR2Pump]:
+        vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
+        query = PREFIX_RDF + \
+                """
+                SELECT ?r2_pump ?r2_pump_manufacturer ?laboratory ?r2_pump_power_supply ?loc
+                WHERE { <%s> <%s> ?r2_pump . ?r2_pump rdf:type <%s>; <%s> ?r2_pump_manufacturer; <%s> ?laboratory; <%s> ?r2_pump_power_supply; <%s> ?loc. }
+                """ % (vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOVAPOURTEC_VAPOURTECR2PUMP, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, ONTOVAPOURTEC_LOCATIONID)
+
+        response = self.performQuery(query)
+        unique_r2_pump_list = self.get_unique_values_in_list_of_dict(response, 'r2_pump')
+        logger.debug("The list of all OntoVapourtec:VapourtecR2Pump associated with the given instance of OntoVapourtec:VapourtecRS400 <%s>: %s" % (
+            vapourtec_rs400_iri, str(unique_r2_pump_list)
+        ))
+        list_r2_pump = []
+        for specific_r2_pump in unique_r2_pump_list:
+            info_of_specific_r2_pump = self.get_sublist_in_list_of_dict_matching_key_value(response, 'r2_pump', specific_r2_pump)
+
+            if len(info_of_specific_r2_pump) > 1:
+                raise Exception("Multiple records of OntoVapourtec:VapourtecR4Reactor <%s> are identified: %s" % (specific_r2_pump, str(info_of_specific_r2_pump)))
+            elif len(info_of_specific_r2_pump) < 1:
+                raise Exception("No record of OntoVapourtec:VapourtecR4Reactor <%s> are identified." % (specific_r2_pump))
+            else:
+                info_ = info_of_specific_r2_pump[0]
+
+            r2_pump = VapourtecR2Pump(
+                instance_iri=info_['r2_pump'],
+                manufacturer=info_['r2_pump_manufacturer'],
+                isContainedIn=info_['laboratory'],
+                hasPowerSupply=info_['r2_pump_power_supply'],
+                locationID=info_['loc']
+            )
+            list_r2_pump.append(r2_pump)
+
+        return list_r2_pump
 
     # \item append the OntoLab:EquipmentSettings to the digital twin, label it with triples <OntoLab:LabEquipment OntoLab:hasPendingEquipSettings OntoLab:EquipmentSettings>
     def enqueue_settings_to_pending(self, list_equip_settings: List[EquipmentSettings], list_equip_digital_twin: List[LabEquipment]):

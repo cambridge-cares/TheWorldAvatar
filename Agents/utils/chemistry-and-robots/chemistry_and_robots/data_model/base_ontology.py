@@ -6,6 +6,9 @@ from rdflib.namespace import RDF
 from pyasyncagent.data_model.iris import *
 from pyasyncagent.data_model.utils import *
 
+# TODO add below IRIs to pyasyncagent.data_model.iris, also TBox CSV/OWL if applicable
+OM_CELSIUSTEMPERATURE = UNITS_OF_MEASURE + 'CelsiusTemperature'
+
 class InstanceIRIInitialisationError(Exception):
     instance_iri_missing = """IRI of instance_iri is missing, please put it as pyasyncagent.data_model.utils.INSTANCE_IRI_TO_BE_INITIALISED \
     and provide namespace_for_init if you would like the instance_iri to be generated, \
@@ -79,4 +82,16 @@ class OM_Measure(BaseOntology):
 
 class OM_Volume(BaseOntology):
     clz: str = OM_VOLUME
+    hasValue: OM_Measure
+
+class OM_Diameter(BaseOntology):
+    clz: str = OM_DIAMETER
+    hasValue: OM_Measure
+
+class OM_Length(BaseOntology):
+    clz: str = OM_LENGTH
+    hasValue: OM_Measure
+
+class OM_CelsiusTemperature(BaseOntology):
+    clz: str = OM_CELSIUSTEMPERATURE
     hasValue: OM_Measure
