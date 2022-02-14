@@ -17,6 +17,18 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
+/**
+ * The AccessAgentCaller class is used to send HTTP requests to the AccessAgent 
+ * to query and update rdf data in triple stores using the methods 
+ * {@link uk.ac.cam.cares.jps.base.query.AccessAgentCaller#queryStore queryStore} 
+ * and {@link uk.ac.cam.cares.jps.base.query.AccessAgentCaller#updateStore updateStore}, 
+ * respectively.
+ * <br>
+ * These methods can also be accessed in the {@link uk.ac.cam.cares.jps.base.agent.JPSAgent} class.
+ * 
+ * @author csl37
+ *
+ */
 public class AccessAgentCaller{
 		
 	/**
