@@ -1,5 +1,5 @@
 import pydantic
-from typing import Any
+from typing import Any, Dict
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF
 
@@ -43,6 +43,19 @@ class BaseOntology(pydantic.BaseModel):
                 data['instance_iri'] = initialiseInstanceIRI(data['namespace_for_init'], _clz)
 
         super().__init__(**data)
+
+    def _exclude_keys_for_compare_(self, *keys_to_exclude) -> Dict[str, Any]:
+        list_keys_to_exclude = list(keys_to_exclude) if not isinstance(keys_to_exclude, list) else keys_to_exclude
+        list_keys_to_exclude.append('instance_iri')
+        list_keys_to_exclude.append('namespace_for_init')
+        return self.dict(exclude=set(tuple(list_keys_to_exclude)))
+
+    def __hash__(self):
+        return hash((type(self),) + tuple(self._exclude_keys_for_compare_()))
+
+    def __eq__(self, other: Any) -> bool:
+        return self.__hash__() == other.__hash__()
+
 
 class OM_Measure(BaseOntology):
     clz: str = OM_MEASURE

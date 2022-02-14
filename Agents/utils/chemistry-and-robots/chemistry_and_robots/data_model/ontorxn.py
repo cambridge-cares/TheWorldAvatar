@@ -64,6 +64,9 @@ class OntoCAPE_SinglePhase(BaseOntology):
     representsThermodynamicBehaviorOf: Union[str, OntoCAPE_Material] # NOTE here str is provided as an optional as it seems impossible to circular reference at instance level
     # TODO assess if has_physical_context is needed
 
+    def _exclude_keys_for_compare_(self, *keys_to_exclude) -> Dict[str, Any]:
+        return super()._exclude_keys_for_compare_('representsThermodynamicBehaviorOf', *keys_to_exclude)
+
 class OntoCAPE_Material(BaseOntology):
     thermodynamicBehaviour: OntoCAPE_SinglePhase
     clz: str = ONTOCAPE_MATERIAL

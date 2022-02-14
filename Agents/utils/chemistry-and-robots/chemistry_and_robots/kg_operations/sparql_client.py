@@ -672,11 +672,16 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     # does the hardware's operation range covers the reaction condition?
     # how many pending configurations does it have? -> locate the most suitable hardware (can be expanded to check how long is each configuration, what's the temperature etc.)
     # here we probably don't consider its status yet, just assume the equipment is there and will work - we rely on Execution Agent to keep track of the status
-    def get_dt_of_preferred_hardware(self, list_equip_settings: ReactionExperiment):
+    def get_dt_of_preferred_hardware(self, rxnexp: ReactionExperiment):
         # query if there's suitable hardware
         # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals?
-        
-        pass
+        list_autosampler = self.get_all_autosampler_with_fill()
+        list_input_chemical = self.get_input_chemical_of_rxn_exp(rxnexp.instance_iri)
+        for autosampler in list_autosampler:
+            list_chemical_solution_mat = [site.holds.isFilledWith.refersToMaterial for site in autosampler.hasSite]
+            if all(item in list_chemical_solution_mat for item in list_input_chemical):
+                # second step: query if the operation range covers the reaction condition
+                pass
 
     # \item append the OntoLab:EquipmentSettings to the digital twin, label it with triples <OntoLab:LabEquipment OntoLab:hasPendingEquipSettings OntoLab:EquipmentSettings>
     def enqueue_settings_to_pending(self, list_equip_settings: List[EquipmentSettings], list_equip_digital_twin: List[LabEquipment]):
