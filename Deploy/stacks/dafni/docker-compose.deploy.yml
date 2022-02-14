@@ -1,0 +1,295 @@
+# This configuration file should include all docker-compose options required to *deploy containers*
+# for services in the 'dafni' stack
+#
+# Options used to generate an image from source, such as the 'build' node and 'labels' node should
+# be set in docker-compose.build.yml.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the 
+# service name, the 'image' tag (retaining 'docker.cmclinnovations.com') and the 'container_name'
+# node (retaining '${CONTAINER_NAME_SUFFIX}').
+# =================================================================================================
+
+version: "3.8"
+
+
+services:
+
+  adminer:
+    image: adminer
+    container_name: "adminer${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - ${ADMINER_PORT}:8080
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+
+  blazegraph-geo:
+    image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
+    container_name: "blazegraph_geo${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - ${BLAZEGRAPH_PORT}:8080
+    pull_policy: if_not_present
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - blazegraph_geo_data:/data
+
+  csvkit:
+    image: docker.cmclinnovations.com/csvkit:1.0.0-SNAPSHOT
+    container_name: "csvkit${CONTAINER_NAME_SUFFIX}"
+    environment:
+      g_CSV_ENABLED: 1
+      CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
+      DATA_DIR: ${SHARED_DATA_DIR}
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_PASSWORD_FILE: /tmp/postgres_password
+    env_file:
+      - postgres/postgres.env
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
+      - ./pgsql-uploader/upload_to_pgsql.sh:/upload_to_pgsql.sh
+      - ./postgres/secrets/postgres_password:/tmp/postgres_password:ro
+
+  flood-vis:
+    image: docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-dev
+    container_name: "flood-map${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - ${FLOODVIS_PORT}:80
+    pull_policy: if_not_present
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+
+  geoserver:
+    image: docker.cmclinnovations.com/geoserver:${GEOSERVER_VERSION}
+    container_name: "geoserver${CONTAINER_NAME_SUFFIX}"
+    environment:
+      ADMIN_PASSWORD_FILE: "/run/secrets/geoserver_admin_password"
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      PLUGIN_DYNAMIC_URLS: "http://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/extensions/geoserver-${GEOSERVER_VERSION}-vectortiles-plugin.zip"
+    env_file:
+      - .env
+      - geoserver/geoserver.env
+    ports:
+     - ${GEOSERVER_PORT}:8080
+    pull_policy: if_not_present
+    restart: unless-stopped
+    secrets:
+      - geoserver_admin_password
+    security_opt:
+      - label=disable
+    volumes:
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
+      - geoserver_data:${GEOSERVER_DATA_DIR}
+      - geoserver_grib_cache:${GRIB_CACHE_DIR}
+      - geoserver_gwc:${GEOWEBCACHE_CACHE_DIR}
+      - geoserver_gwc_config:${GEOWEBCACHE_CONFIG_DIR}
+      - geoserver_logs:${GEOSERVER_LOG_DIR}
+      - geoserver_netcfd:${NETCDF_DATA_DIR}
+      - ./geoserver/webapps/geoserver/WEB-INF/web.xml:/usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml
+
+  libreoffice:
+    image: linuxserver/libreoffice:latest
+    container_name: "libre-office${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - ${LIB_OFF_PORT}:3000
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - lib_off_home:/config
+
+  ontop-pgsql:
+    image: docker.cmclinnovations.com/ontop_endpoint:${ONTOP_VERSION}
+    container_name: "ontop${CONTAINER_NAME_SUFFIX}"
+    depends_on:
+      - postgis
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      ONTOP_CORS_ALLOWED_ORIGINS: '*'
+      ONTOP_DEV_MODE: '${ONTOP_DEV_MODE}'
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    env_file:
+      - ontop/ontop.env
+      - postgres/postgres.env
+    ports:
+      - ${ONTOP_PORT}:8080
+    pull_policy: if_not_present
+    restart: unless-stopped
+    secrets:
+      - postgres_password
+    security_opt:
+      - label=disable
+    volumes:
+      - ./ontop/obda:/opt/ontop/input
+      - ./ontop/wait-for-it:/opt/wait-for-it
+
+  pgsql-uploader:
+    image: mdillon/postgis:11-alpine
+    container_name: "pgsql-uploader${CONTAINER_NAME_SUFFIX}"
+    environment:
+      g_SHP_ENABLED: 1
+      g_TIF_ENABLED: 1
+      CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
+      DATA_DIR: ${SHARED_DATA_DIR}
+      
+      POSTGRES_PASSWORD_FILE: /tmp/postgres_password
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    env_file:
+      - postgres/postgres.env
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
+      - ./pgsql-uploader/upload_to_pgsql.sh:/upload_to_pgsql.sh
+      - ./postgres/secrets/postgres_password:/tmp/postgres_password:ro
+
+  postgis:
+    image: postgis/postgis:14-3.1-alpine
+    container_name: "postgis${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+      POSTGRES_PASSWORD_FILE: /tmp/postgres_password
+    env_file:
+      - postgres/postgres.env
+    ports:
+      - ${POSTGRES_PORT}:5432
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
+      - postgis_data:/var/lib/postgresql/data
+      - ./postgres/secrets/postgres_password:/tmp/postgres_password
+
+  python:
+    image: docker.cmclinnovations.com/python_with_ssh:${PYTHON_VERSION}
+    container_name: "python${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - ${PYTHON_SSH_PORT}:22
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - ${PYTHON_SCRIPTS_DIR_HOST}:${PYTHON_SCRIPTS_DIR}
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
+
+  qgis:
+    image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
+    container_name: "qgis${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - ${QGIS_SSH_PORT}:22
+    pull_policy: if_not_present
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
+
+  # Copies the RDF4J repository config files into the "rdf4j_data" volume
+  rdf4j_config_file_copier:
+    image: busybox
+    container_name: "rdf4j_config_file_copier${CONTAINER_NAME_SUFFIX}"
+    entrypoint: ["/entrypoint.sh"]
+    environment:
+      BLAZEGRAPH_HOST: ${BLAZEGRAPH_HOST}
+      BLAZEGRAPH_PORT: ${BLAZEGRAPH_PORT}
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      ONTOP_HOST: ${ONTOP_HOST}
+      ONTOP_PORT: ${ONTOP_PORT}
+    pull_policy: if_not_present
+    restart: "no"
+    security_opt:
+      - label=disable
+    volumes:
+      - ./rdf4j_config_file_copier/entrypoint.sh:/entrypoint.sh
+      - ./rdf4j/server:/in/server
+      - rdf4j_data:/out
+
+  # RDF4J
+  rdf4j:
+    image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
+    container_name: "rdf4j${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
+      RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
+    ports:
+      - ${RDF4J_PORT}:8080
+    pull_policy: if_not_present
+    restart: unless-stopped
+    # Add secrets to set BASIC authentication passwords for both the workbench and server
+    secrets:
+      - rdf4j_admin_password
+      - rdf4j_user_password
+    security_opt:
+      - label=disable
+    volumes:
+      - rdf4j_data:/var/rdf4j
+      - ./rdf4j/logs:/usr/local/tomcat/logs
+  
+  webvowl:
+    image: ukparliament/webvowl
+    container_name: "webvowl${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - ${WEBVOWL_PORT}:8080
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+
+# The default network name is set using a docker-compose environment variable.
+# Please don't modify the contents of the 'networks' node below.
+networks:
+  default:
+    name: ${NETWORK_NAME}
+
+
+secrets:
+  geoserver_admin_password:
+    # N.B. If you change the contents of this file, it will only propogate to
+    # the server if you delete <geoserver_data volume>/datadir/security before (re)deploying!
+    file: geoserver/secrets/admin_password
+  postgres_password:
+    file: postgres/secrets/postgres_password
+  rdf4j_admin_password:
+    file: rdf4j/secrets/rdf4j_admin_password
+  rdf4j_user_password:
+    file: rdf4j/secrets/rdf4j_user_password
+
+volumes:
+  blazegraph_geo_data:
+  geoserver_data:
+  geoserver_grib_cache:
+  geoserver_gwc:
+  geoserver_gwc_config:
+  geoserver_logs:
+  geoserver_netcfd:
+  lib_off_home:
+  postgis_data:
+  rdf4j_data:

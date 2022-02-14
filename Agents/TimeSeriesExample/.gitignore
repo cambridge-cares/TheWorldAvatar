@@ -1,0 +1,19 @@
+*.jar
+*.war
+
+*.pyc
+__pycache__/
+.mypy_cache/
+build/
+dist/
+*~*
+.idea/
+*venv/
+
+.vscode/
+
+# Miscellaneous files/folders:
+*.geojson
+*.json
+!tree.json
+!meta.json

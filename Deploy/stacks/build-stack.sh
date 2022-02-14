@@ -1,13 +1,11 @@
 #!/bin/sh
 
-# Wrapper script for docker-compose that builds the requested stack in one of three
-# modes (dev/test/prod).
+# Wrapper script for docker-compose that builds the requested stack in either 'dev' or 'prod' mode.
 #
 # Each stack directory contains a base configuration file and, optionally, mode-specific configuration files.
 # That is:
 #   docker-compose.build.yml
 #   docker-compose.build.dev.yml (optional)
-#   docker-compose.build.test.yml (optional)
 #   docker-compose.build.prod.yml (optional)
 
 
@@ -19,7 +17,7 @@ if [ "$#" -lt 2 ]; then
   echo "  $0 [stack_name] [mode] <--push> <additional_args>"
   echo ""
   echo "      stack_name : the stack to build (agent/db/web)"
-  echo "            mode : configuration mode name (dev/test/prod)"
+  echo "            mode : configuration mode name (dev/prod)"
   echo "          --push : including this flag will push images to the registry once built"
   echo " additional_args : remaining arguments are passed on to 'docker-compose build'"
   echo ""

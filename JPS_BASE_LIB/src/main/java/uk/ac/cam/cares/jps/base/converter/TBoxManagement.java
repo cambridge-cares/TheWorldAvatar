@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -102,6 +103,26 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	}
 
 	/**
+	 * Adds a label as rdfs:label to the OWL class.
+	 * 
+	 * @param className
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToOWLClass(String className, String label) throws JPSRuntimeException{
+		if(label!=null && !label.isEmpty()){
+			// Reads the class from the ontology model. If not available, 
+			// it creates the class.
+			OWLClass clas = createClass(className);
+			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			manager.applyChange(new AddAxiom(ontology,
+					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), labelAnnotation)));
+		}
+	}
+
+	
+	/**
 	 * Adds the definition as a comment to the OWL class.
 	 * 
 	 * @param className
@@ -119,6 +140,26 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), definitionLiteral)));
 		}
 	}
+
+	/**
+	 * Adds a label to the current object property.
+	 * 
+	 * @param property
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToObjectProperty(String property, String label) throws JPSRuntimeException{
+		if(label!=null && !label.isEmpty()){
+			// Reads the object property from the ontology model. If not available, 
+			// it creates the property.
+			OWLObjectProperty objectProperty = createObjectProperty(property);
+			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			manager.applyChange(new AddAxiom(ontology,
+					dataFactory.getOWLAnnotationAssertionAxiom(objectProperty.getIRI(), labelAnnotation)));
+		}
+	}
+
 	
 	/**
 	 * Adds the definition of the current object property.
@@ -136,6 +177,25 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, dataFactory.getOWLLiteral(definition));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(objectProperty.getIRI(), definitionLiteral)));
+		}
+	}
+	
+	/**
+	 * Adds a label to the current data property.
+	 * 
+	 * @param property
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToDataProperty(String property, String label) throws JPSRuntimeException{
+		if(label!=null && !label.isEmpty()){
+			// Reads the data property from the ontology model. If not available, 
+			// it creates the property.
+			OWLDataProperty dataProperty = createDataProperty(property);
+			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			manager.applyChange(new AddAxiom(ontology,
+					dataFactory.getOWLAnnotationAssertionAxiom(dataProperty.getIRI(), labelAnnotation)));
 		}
 	}
 	
@@ -360,13 +420,26 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * are provided, it creates them as well.
 	 * 
 	 * @param propertyName
+	 * @param type
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
+			
+			for (String singleType : type.split(",")) {
+				switch (singleType.toLowerCase().trim()) {
+				case "functional property":
+					manager.applyChange(
+							new AddAxiom(ontology, dataFactory.getOWLFunctionalDataPropertyAxiom(dataProperty)));
+					break;
+				}
+			}
+			
 			addDomain(dataProperty, domain);
 			addRange(dataProperty, range);
 			OWLDataProperty parentProperty = null;
@@ -387,14 +460,51 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * range are provided, it creates them as well.
 	 * 
 	 * @param propertyName
+	 * @param type
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
+	public void createOWLObjectProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 		OWLObjectProperty objectProperty = createObjectProperty(propertyName);
+
+		for (String singleType : type.split(",")) {
+			switch (singleType.toLowerCase().trim()) {
+			case "reflexive property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLReflexiveObjectPropertyAxiom(objectProperty)));
+				break;
+			case "transitive property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLTransitiveObjectPropertyAxiom(objectProperty)));
+				break;
+			case "symmetric property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLSymmetricObjectPropertyAxiom(objectProperty)));
+				break;
+			case "asymmetric property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLAsymmetricObjectPropertyAxiom(objectProperty)));
+				break;
+			case "irreflexive property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLIrreflexiveObjectPropertyAxiom(objectProperty)));
+				break;
+			case "functional property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLFunctionalObjectPropertyAxiom(objectProperty)));
+				break;
+			case "inverse functional property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLInverseFunctionalObjectPropertyAxiom(objectProperty)));
+				break;
+			}
+		}
+
 		addDomain(objectProperty, domain, quantifier);
 		addRange(objectProperty, range, quantifier);
 		OWLObjectProperty parentProperty = null;
@@ -685,21 +795,83 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * @param range
 	 * @return
 	 */
-	private OWL2Datatype getRange(String range){
-		if(range.equalsIgnoreCase("string")){
+	private OWL2Datatype getRange(String range) {
+		switch (range.toLowerCase()) {
+		case "string":
 			return OWL2Datatype.XSD_STRING;
-		} else if(range.equalsIgnoreCase("integer") || range.equalsIgnoreCase("int")){
+		case "integer":
 			return OWL2Datatype.XSD_INTEGER;
-		} else if(range.equalsIgnoreCase("float")){
+		case "int":
+			return OWL2Datatype.XSD_INT;
+		case "float":
 			return OWL2Datatype.XSD_FLOAT;
-		} else if(range.equalsIgnoreCase("double")){
+		case "double":
 			return OWL2Datatype.XSD_DOUBLE;
-		} else if(range.equalsIgnoreCase("datetime")){
+		case "date time":
 			return OWL2Datatype.XSD_DATE_TIME;
-		} else if(range.equalsIgnoreCase("timestamp")){
+		case "date time stamp":
 			return OWL2Datatype.XSD_DATE_TIME_STAMP;
+		case "boolean":
+			return OWL2Datatype.XSD_BOOLEAN;
+		case "long":
+			return OWL2Datatype.XSD_LONG;
+		case "decimal":
+			return OWL2Datatype.XSD_DECIMAL;
+		case "negative integer":
+			return OWL2Datatype.XSD_NEGATIVE_INTEGER;
+		case "non negative integer":
+			return OWL2Datatype.XSD_NON_NEGATIVE_INTEGER;
+		case "non positive integer":
+			return OWL2Datatype.XSD_NON_POSITIVE_INTEGER;
+		case "rational":
+			return OWL2Datatype.OWL_RATIONAL;
+		case "real":
+			return OWL2Datatype.OWL_REAL;
+		case "literal":
+			return OWL2Datatype.RDFS_LITERAL;
+		case "lang string":
+			return OWL2Datatype.RDF_LANG_STRING;
+		case "plain literal":
+			return OWL2Datatype.RDF_PLAIN_LITERAL;
+		case "xml literal":
+			return OWL2Datatype.RDF_XML_LITERAL;
+		case "any uri":
+			return OWL2Datatype.XSD_ANY_URI;
+		case "base 64 binary":
+			return OWL2Datatype.XSD_BASE_64_BINARY;
+		case "byte":
+			return OWL2Datatype.XSD_BYTE;
+		case "hex binary":
+			return OWL2Datatype.XSD_HEX_BINARY;
+		case "language":
+			return OWL2Datatype.XSD_LANGUAGE;
+		case "name":
+			return OWL2Datatype.XSD_NAME;
+		case "ncname":
+			return OWL2Datatype.XSD_NCNAME;
+		case "nmtoken":
+			return OWL2Datatype.XSD_NMTOKEN;
+		case "normalized string":
+			return OWL2Datatype.XSD_NORMALIZED_STRING;
+		case "positive integer":
+			return OWL2Datatype.XSD_POSITIVE_INTEGER;
+		case "short":
+			return OWL2Datatype.XSD_SHORT;
+		case "token":
+			return OWL2Datatype.XSD_TOKEN;
+		case "unsigned byte":
+			return OWL2Datatype.XSD_UNSIGNED_BYTE;
+		case "unsigned int":
+			return OWL2Datatype.XSD_UNSIGNED_INT;
+		case "unsigned long":
+			return OWL2Datatype.XSD_UNSIGNED_LONG;
+		case "unsigned short":
+			return OWL2Datatype.XSD_UNSIGNED_SHORT;
+		default:
+			logger.warn("The following data type is not valid:" + range
+					+ ". Now the converter will proceed with the string data type.");
+			return OWL2Datatype.XSD_STRING;
 		}
-		return OWL2Datatype.XSD_STRING;
 	}
 	
 	/**

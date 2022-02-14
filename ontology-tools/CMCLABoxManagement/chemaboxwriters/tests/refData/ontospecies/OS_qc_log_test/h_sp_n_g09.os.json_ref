@@ -1,0 +1,31 @@
+{
+    "InChi": "InChI=1S/H",
+    "Smiles": "[H]",
+    "Empirical formula": "H1",
+    "Atom types": [
+        "H"
+    ],
+    "Geometry": [
+        [
+            -1.38032,
+            -0.85577,
+            0.0
+        ]
+    ],
+    "Spin multiplicity": 2,
+    "MolecularWeight": 1.00783,
+    "Formal charge": 0,
+    "GeometryString": "H -1.38032 -0.85577 0.0",
+    "BondString": "",
+    "PubchemAlternativeLabel": "1111-11-1",
+    "CAS": "1111-11-1",
+    "PubchemCID": 1111,
+    "AtomsList": [
+        "H"
+    ],
+    "AtomsCounts": [
+        1
+    ],
+    "EntryUUID": "testID-111-111-111",
+    "EntryIRI": "http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111"
+}
