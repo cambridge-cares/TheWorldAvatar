@@ -3,11 +3,6 @@
 @prefix ns3: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://www.example.com/triplestore/ontodoe/DoE_1/NewExperiment_ced03a1f-a80e-42c7-8931-9b464a838be0> a ns3:NewExperiment ;
-    ns3:refersTo <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_342e55c0-23f7-4a08-8443-e958e3b0e2c9>,
-        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d2f7b1f4-76e2-4401-bb68-29ade1a792ec>,
-        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d46acf42-ec48-454b-b138-1f548ce1f4ad> .
-
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_03eb388e-7906-4564-aaaf-acfa3491ce58> a ns2:Measure ;
     ns2:hasNumericalValue 6e+00 ;
     ns2:hasUnit ns2:bar .
