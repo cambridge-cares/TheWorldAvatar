@@ -276,6 +276,7 @@ class PanelHandler {
 				// Expand
 				sidePanel.classList.replace("collapsed", "expanded")
 				document.getElementById("map").style.width = "calc(100% - 500px)";
+				document.getElementById("loadingOverlay").style.right = "500px";
 
 				document.getElementById("legendContainer").style.visibility = "visible";
 				rightButton.style.visibility = "visible";
@@ -286,6 +287,7 @@ class PanelHandler {
 				// Collapse
 				sidePanel.classList.replace("expanded", "collapsed")
 				document.getElementById("map").style.width = "calc(100% - 28px)";
+				document.getElementById("loadingOverlay").style.right = "28px";
 
 				document.getElementById("legendContainer").style.visibility = "hidden";
 				rightButton.style.visibility = "hidden";

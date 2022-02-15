@@ -1,7 +1,7 @@
 /**
  * Central controller for a single DigitalTwin visualisation.
  */
-class DigitalTwinManager {
+ class DigitalTwinManager {
 
 	// MapBox map 
 	_map;
@@ -247,7 +247,7 @@ class DigitalTwinManager {
 			pitch: this._registry.globalMeta["defaultPitch"],
 			bearing: this._registry.globalMeta["defaultBearing"]
 		});
-		
+    
 		// Now that we have a map, do some initialisation of handlers
 		this._sourceHandler = new SourceHandler(this._map, this._registry);
 		this._layerHandler = new LayerHandler(this._map);
@@ -308,6 +308,9 @@ class DigitalTwinManager {
 			treeCallback
 		);
 		
+		// Hide the building outlines provided by mapbox
+		this._controlHandler.hideBuildings();
+		
 		let rootDir = this._rootDirectories[this._currentRootDirName];
 		if(rootDir == null) {
 			console.log("ERROR: Cannot locate root directory for key '" + rootDir + "'!");
@@ -339,7 +342,11 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	 onLayerGroupChange(control) {
-		this._controlHandler.onLayerGroupChange(control);
+		try {
+			this._controlHandler.onLayerGroupChange(control);
+		} catch(error) {
+			console.log(error, error.stack);
+		}
 	}
 
 	/**
@@ -348,7 +355,11 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	onLayerChange(control) {
-		this._controlHandler.onLayerChange(control);
+		try {
+			this._controlHandler.onLayerChange(control);
+		} catch(error) {
+			console.log(error, error.stack);
+		}
 	}
 
 	/**
@@ -506,7 +517,8 @@ class DigitalTwinManager {
 	 * @param {*} selectValue 
 	 */
 	onGroupSelectChange(selectID, selectValue) {
-		if(selectID == "root-dir-select") {
+
+		if(selectID === "root-dir-select") {
 			// Change of root directory
 			let that = this;
 
@@ -615,7 +627,8 @@ class DigitalTwinManager {
 
 		let ids = ["road-number-shield", "road-label", "road-intersection", "waterway-label", "natural-line-label",
 		"natural-point-label", "water-line-label", "water-point-label", "poi-label", "airport-label", "settlement-subdivision-label",
-		"settlement-minor-label", "settlement-major-label", "settlement-label", "state-label", "country-label"]
+		"settlement-minor-label", "settlement-major-label", "settlement-label", "state-label", "country-label", "road-oneway-arrow-blue", 
+		"road-oneway-arrow-white", "transit-label"]
 
 		ids.forEach(id => {
 			if(this._map.getLayer(id) != null) {
@@ -624,7 +637,7 @@ class DigitalTwinManager {
 					"visibility",
 					(enabled ? "visible" : "none")
 				);
-			}
+			} 
 		});
 		DT.placenames = enabled;
 	}
@@ -711,8 +724,6 @@ class DigitalTwinManager {
 			document.getElementById("map").style.width = "100%";
 		}
 		this._map.resize();
-
-		console.log("Visbilities updated?");
 	}
 
 }

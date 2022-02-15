@@ -69,9 +69,10 @@ class LayerHandler {
             this.#orderLayers(["line"], "_arrows");
             this.#orderLayers(["circle", "point", "symbol"]);
 
-        } catch (error) {
+        } catch(error) {
             console.log(error);
             console.log("ERROR: Could not create layer '" + dataSet["name"] + "', it will be skipped...");
+            console.trace();
         }
     }
 
@@ -324,11 +325,10 @@ class LayerHandler {
                 ]
             }
         };
-        if (dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
-        if (dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         // Add the layer then cache its properties
         this._map.addLayer(options);
+        this._map.setLayerZoomRange(layerName, 11, 24);
         this._layerProperties[layerName] = options;
 
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");

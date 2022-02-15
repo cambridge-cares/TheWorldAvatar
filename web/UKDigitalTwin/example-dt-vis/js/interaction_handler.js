@@ -213,6 +213,7 @@ class InteractionHandler {
 
             } else if (features != null) {
                 features.forEach(leaf => {
+                    console.log(leaf);
                     leaf["layer"] = [];
                     leaf["source"] = sourceName;
                     leaf["layer"]["id"] = feature["layer"]["id"].replace("_cluster", "");
@@ -250,9 +251,19 @@ class InteractionHandler {
                 displayName = features[i]["properties"]["displayName"];
             }
 
+            // The DT.selectColorer is an optional function (set externally) that 
+            // when passed a feature will return a CSS color string to use for any
+            // select options representing that feature.
+            let color = "black";
+            if(DT.selectColorer != null) {
+                color = DT.selectColorer(features[i]);
+            }
+
+            // Append option to select control
             html += `
-                <option value="` + i + `">` + displayName + `</option>
+                <option style="color: ` + color + `;" value="` + i + `">` + displayName + `</option>
             `;
+           
         };
         html += `</select></div>`;
 
