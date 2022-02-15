@@ -23,6 +23,8 @@ ONTOCAPE_HASVALUE = ONTOCAPE_SYSTEM + 'hasValue'
 ONTOCAPE_LIQUID = ONTOCAPE_PHASESYSTEM + 'liquid'
 ONTOCAPE_HASUNITOFMEASURE = ONTOCAPE_SYSTEM + 'hasUnitOfMeasure'
 ONTOCAPE_NUMERICALVALUE = ONTOCAPE_SYSTEM + 'numericalValue'
+ONTORXN_ISASSIGNEDTO = ONTORXN + 'isAssignedTo'
+# TODO delete ONTORXN_CONDUCTEDIN from pyasyncagent.data_model.iris and OntoRxn TBox
 
 # NOTE only classes/relationships that are actively used in OntoRxn are presented here for ALL OntoCAPE related concepts in this script
 class OntoCAPE_ScalarValue(BaseOntology):
@@ -206,6 +208,7 @@ class ReactionExperiment(BaseOntology):
     hasPerformanceIndicator: Optional[List[PerformanceIndicator]] = None
     hasInputChemical: Optional[List[InputChemical]] = None
     hasOutputChemical: Optional[List[OutputChemical]] = None
+    isAssignedTo: str # NOTE here it should be pointing to OntoVapourtec:VapourtecR4Reactor, but we put str to simplify the implementation
     clz: str = ONTORXN_REACTIONEXPERIMENT
 
     def create_instance_for_kg(self, g: Graph) -> Graph:

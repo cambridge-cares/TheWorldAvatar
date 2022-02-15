@@ -49,8 +49,8 @@ class LabEquipment(Saref_Device):
     hasPowerSupply: Union[str, PowerSupply] # NOTE TODO here str is provided as an optional to simplify the implementation
     consistsOf: Optional[List[LabEquipment]] = None
     isSpecifiedBy: Optional[EquipmentSettings] = None
-    willBeSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO add this to TBox
-    wasSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO add this to TBox
+    # willBeSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO remove this if never be used
+    # wasSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO remove this is never be used
     # TODO add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
 
 class PreparationMethod(BaseOntology):

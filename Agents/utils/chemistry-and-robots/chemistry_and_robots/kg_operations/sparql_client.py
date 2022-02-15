@@ -1,9 +1,6 @@
 # The purpose of this module is to provide utility functions
 # to interact with the knowledge graph
 #============================================================
-from builtins import Exception
-from re import M
-from urllib import response
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
 import pandas as pd
@@ -703,12 +700,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     # does the hardware's operation range covers the reaction condition?
     # how many pending configurations does it have? -> locate the most suitable hardware (can be expanded to check how long is each configuration, what's the temperature etc.)
     # here we probably don't consider its status yet, just assume the equipment is there and will work - we rely on Execution Agent to keep track of the status
-    def get_dt_of_preferred_hardware(self, rxnexp: ReactionExperiment) -> VapourtecR4Reactor:
+    def get_preferred_r4_reactor(self, rxnexp: ReactionExperiment) -> str:
         # query if there's suitable hardware
         # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals?
         list_autosampler = self.get_all_autosampler_with_fill()
         list_input_chemical = self.get_input_chemical_of_rxn_exp(rxnexp.instance_iri)
-        dict_digital_twin = {}
+        applicable_reactor = {}
         for autosampler in list_autosampler:
             list_chemical_solution_mat = [site.holds.isFilledWith.refersToMaterial for site in autosampler.hasSite]
             if all(item in list_chemical_solution_mat for item in list_input_chemical):
@@ -726,13 +723,17 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 else:
                     temp_condition = temp_condition[0]
 
-                applicable_reactor = []
-                applicable_reactor.append(reactor for reactor in list_reactor if reactor.hasReactorTemperatureLowerLimit.hasValue.hasNumericalValue <= temp_condition <= reactor.hasReactorTemperatureUpperLimit.hasValue.hasNumericalValue)
+                for reactor in list_reactor:
+                    if reactor.hasReactorTemperatureLowerLimit.hasValue.hasNumericalValue <= temp_condition <= reactor.hasReactorTemperatureUpperLimit.hasValue.hasNumericalValue:
+                        # currently the simplified version: check how many reaction is pending in front
+                        num_pending_rxn = len(self.get_rxn_exp_pending_for_r4_reactor(reactor.instance_iri))
+                        applicable_reactor[reactor.instance_iri] = num_pending_rxn
+                        # TODO currently this function creats a dict that records the number of pending reactions for each VapourtecR4Reactor
+                        # TODO future work should support recording of estimated time for the VapourtecR4Reactor to be available
+                        # TODO maybe calculate based on residence time and other information {'labequip_1': 1, 'labequip_2': 2}
 
-                # TODO this function should return a simple dict that documents the estimated time to be available (based on the residence time) {'labequip_1': 1, 'labequip_2': 2}
-                # dict_digital_twin[digital_twin] = estimated_time
-        # return min(dict_digital_twin, key=dict_digital_twin.get)
-        return None
+        # return the iri of the preferred r4 reactor
+        return min(applicable_reactor, key=applicable_reactor.get)
 
     def get_vapourtec_rs400_given_autosampler(self, autosampler: AutoSampler) -> VapourtecRS400:
         query = PREFIX_RDF + \
@@ -746,12 +747,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         response = self.performQuery(query)
 
+        # NOTE here we are assuming one VapourtecRS400 module has only ONE manufacturer, locates in only ONE laboratory, also has only ONE type of power supply
+        # NOTE this might not hold universally, but we will simplify for the moment
         if len(response) > 1:
             raise Exception("One AutoSampler (%s) should only be attached to one VapourtecRS400 module. Identified multiple: %s" % (autosampler.instance_iri, str(response)))
         elif len(response) < 1:
             raise Exception("The given AutoSampler (%s) is not associated with any instances of VapourtecRS400 module." % (autosampler.instance_iri))
+        else:
+            res = response[0]
 
-        res = response[0]
         list_vapourtec_reactor_and_pump = []
         list_vapourtec_reactor_and_pump.append(autosampler)
         list_vapourtec_reactor_and_pump += self.get_r4_reactor_given_vapourtec_rs400(res['rs400'])
@@ -767,9 +771,34 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return vapourtec_rs400
 
+    def get_rxn_exp_conducted_in_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
+        r4_reactor_iri = trimIRI(r4_reactor_iri)
+        query = """
+                SELECT ?rxnexp WHERE {<%s> <%s> ?rxnexp.}
+                """ % (r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
+        response = self.performQuery(query)
+        list_rxn = [res['rxnexp'] for res in response]
+        return list_rxn
+
+    def get_rxn_exp_assigned_to_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
+        r4_reactor_iri = trimIRI(r4_reactor_iri)
+        query = """
+                SELECT ?rxnexp WHERE {?rxnexp <%s> <%s>.}
+                """ % (ONTORXN_ISASSIGNEDTO, r4_reactor_iri)
+        response = self.performQuery(query)
+        list_rxn = [res['rxnexp'] for res in response]
+        return list_rxn
+
+    def get_rxn_exp_pending_for_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
+        r4_reactor_iri = trimIRI(r4_reactor_iri)
+        query = """SELECT ?rxnexp WHERE { ?rxnexp <%s> <%s>. FILTER NOT EXISTS { <%s> <%s> ?rxnexp. } }""" % (
+            ONTORXN_ISASSIGNEDTO, r4_reactor_iri, r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
+        response = self.performQuery(query)
+        list_rxn = [res['rxnexp'] for res in response]
+        return list_rxn
+
     def get_r4_reactor_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> List[VapourtecR4Reactor]:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
-        print(vapourtec_rs400_iri)
         query = PREFIX_RDF + \
                 """
                 SELECT ?r4_reactor ?r4_reactor_manufacturer ?laboratory ?r4_reactor_power_supply ?loc ?r4_reactor_material
@@ -841,7 +870,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 hasReactorTemperatureUpperLimit=OM_CelsiusTemperature(
                     instance_iri=info_['r4_reactor_temp_upper'],
                     hasValue=OM_Measure(instance_iri=info_['r4_reactor_temp_upper_measure'],hasUnit=info_['r4_reactor_temp_upper_unit'],hasNumericalValue=info_['r4_reactor_temp_upper_val'])
-                )
+                ),
+                conducted=self.get_rxn_exp_conducted_in_r4_reactor(info_['r4_reactor'])
             )
             list_r4_reactor.append(r4_reactor)
 
@@ -882,10 +912,19 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return list_r2_pump
 
-    # \item append the OntoLab:EquipmentSettings to the digital twin, label it with triples <OntoLab:LabEquipment OntoLab:hasPendingEquipSettings OntoLab:EquipmentSettings>
-    def enqueue_settings_to_pending(self, list_equip_settings: List[EquipmentSettings], list_equip_digital_twin: List[LabEquipment]):
-        # add settings to pending list
-        pass
+    def assign_rxn_exp_to_r4_reactor(self, rxn_exp_iri: str, r4_reactor_iri: str):
+        rxn_exp_iri = trimIRI(rxn_exp_iri)
+        r4_reactor_iri = trimIRI(r4_reactor_iri)
+        update = """INSERT DATA {<%s> <%s> <%s>}""" % (rxn_exp_iri, ONTORXN_ISASSIGNEDTO, r4_reactor_iri)
+        self.performUpdate(update)
+        logger.info("ReactionExperiment <%s> is now assigned to VapourtecR4Reactor <%s>." % (rxn_exp_iri, r4_reactor_iri))
+
+    def remove_rxn_exp_from_r4_reactor(self, rxn_exp_iri: str, r4_reactor_iri: str):
+        rxn_exp_iri = trimIRI(rxn_exp_iri)
+        r4_reactor_iri = trimIRI(r4_reactor_iri)
+        update = """DELETE DATA {<%s> <%s> <%s>}""" % (rxn_exp_iri, ONTORXN_ISASSIGNEDTO, r4_reactor_iri)
+        self.performUpdate(update)
+        logger.info("ReactionExperiment <%s> is no longer assigned to VapourtecR4Reactor <%s>." % (rxn_exp_iri, r4_reactor_iri))
 
     def get_sublist_in_list_of_dict_matching_key_value(self, list_of_dict: List[Dict], key: str, value: Any) -> list:
         if len(list_of_dict) > 0:

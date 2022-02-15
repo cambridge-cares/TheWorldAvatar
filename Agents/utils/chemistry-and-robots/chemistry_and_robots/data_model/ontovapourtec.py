@@ -12,6 +12,7 @@ from chemistry_and_robots.data_model.ontolab import *
 ONTOVAPOURTEC_LOCATIONID = ONTOVAPOURTEC + 'locationID'
 ONTOVAPOURTEC_HASREACTORTEMPERATUREUPPERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureUpperLimit'
 ONTOVAPOURTEC_HASREACTORTEMPERATURELOWERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureLowerLimit'
+ONTOVAPOURTEC_CONDUCTED = ONTOVAPOURTEC + 'conducted'
 
 class SampleLoopVolumeSetting(VolumeSetting):
     pass
@@ -101,6 +102,7 @@ class VapourtecR4Reactor(LabEquipment):
     hasReactorVolume: OM_Volume
     hasReactorTemperatureLowerLimit: OM_CelsiusTemperature
     hasReactorTemperatureUpperLimit: OM_CelsiusTemperature
+    conducted: List[Union[str, ReactionExperiment]] = None # TODO here we provided str as an optional to simplify the implementation
 
     @pydantic.root_validator
     @classmethod
@@ -118,4 +120,4 @@ class VapourtecR2Pump(LabEquipment):
     locationID: int
 
 class VapourtecRS400(LabEquipment):
-    pass
+    clz: str = ONTOVAPOURTEC_VAPOURTECRS400
