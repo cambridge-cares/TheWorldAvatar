@@ -93,13 +93,12 @@
 			"Churchill": "./data/set-0",
 			"Mixed": "./data/set-1",
 			"Zoom Limited": "./data/set-2",
-			"Clustered": "./data/set-3",
-			"Buildings": "./data/set-4"
+			"Clustered": "./data/set-3"
 		};
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Buildings", function() {
+		manager.readMetadata("Clustered", function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
@@ -131,7 +130,10 @@
 		function startUp() {
 			// Create the MapBox map
 			mapboxgl.accessToken = mapboxAPI;
-			let map = new mapboxgl.Map(defaultOptions);
+			let map = new mapboxgl.Map({
+				container: "map",
+				style: "mapbox://styles/mapbox/light-v10?optimize=true",
+			});
 			manager.initialiseMap(map);
 			var iconHandler = new IconHandler(map);
 

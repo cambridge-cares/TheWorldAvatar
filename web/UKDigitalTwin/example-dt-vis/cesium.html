@@ -18,7 +18,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
 
     <!-- CesiumJS -->
-    <script src="https://cesium.com/downloads/cesiumjs/releases/1.88/Build/Cesium/Cesium.js"></script>
+    <!-- <script src="https://cesium.com/downloads/cesiumjs/releases/1.88/Build/Cesium/Cesium.js"></script> -->
+    <script src="./Cesium/Cesium.js"></script>
     <link href="https://cesium.com/downloads/cesiumjs/releases/1.88/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
 
 	<!--
@@ -53,6 +54,14 @@
 </head>
 
 <body>
+	<!-- Overlay to show loading icon -->
+	<div id='loadingOverlay'>
+		<div id="loadingInner">
+			<img src="img/loading.gif" width="200px" height="200px"/>
+			<h3>Loading data, please wait...</h3>
+		</div>
+	</div>
+	
 	<!-- Element the MapBox map will be added to -->
 	<div id='map'></div>
 	
@@ -84,7 +93,6 @@
 			"Mixed": "./data/set-1",
 			"Zoom Limited": "./data/set-2",
 			"Clustered": "./data/set-3"
-			//"Raster Tile Data": "./data/set-4"
 		};
 		manager.registerDirectories(rootDirectories);
 
@@ -93,6 +101,29 @@
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
+		
+		// Display the loading overlay
+		function showLoadingOverlay() {
+			let loadingOverlay = document.getElementById("loadingOverlay");
+
+			if(document.getElementById("sidePanel").classList.contains("expanded")) {
+				loadingOverlay.style.right = "500px";
+			} else {
+				loadingOverlay.style.right = "28px";
+			}
+			loadingOverlay.style.display = "flex";
+		}
+
+
+		// Get the base URL of the visualisation
+		function getURL() {
+			let winURL = window.location;
+			let baseURL = winURL.origin + window.location.pathname;
+			if(baseURL.includes(".html")) {
+				baseURL = baseURL.substring(0, baseURL.lastIndexOf('/'));
+			}
+			return baseURL;
+		}
 
 		// Will run once metadata is loaded asynchronously
 		function startUp() {
@@ -133,12 +164,15 @@
 
 			map.on('style.load', function() {
 				console.log("INFO: A new style has been loaded.");
+				
+				// Show loading icon
+				showLoadingOverlay();
+					
 				var imagePromises = [];
-
 				if(!loadedOnce) {
 					// Load and cache icon images used by this visualisation
-					let winURL = window.location;
-					let baseURL = winURL.protocol + "//" + winURL.host;
+					let baseURL = getURL();
+					
 					EXAMPLE_ICONS.forEach(relativeURL => {
 						let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
 						imagePromises.push(iconHandler.loadIcon(imageURL));
@@ -146,15 +180,26 @@
 
 					// This callback will be fired when a final group is selected in the dropdowns
 					let selectCallback = function(selectedGroups) {
-						manager.plotGroup(selectedGroups, false);
+					
+						// Show loading icon
+						showLoadingOverlay();
+							
+						manager.plotGroup(selectedGroups, false, function() {
+							// Hide the loading overlay
+							document.getElementById("loadingOverlay").style.display = "none";
+						});
 					};
 
 					// Build and show the layer tree based on the metadata
 					manager.showControls(null, selectCallback);
 
-					// Only enable this during testing, remove the line for production visualisations
+					// Set up a callback that hides all connections whenever the user
+					// returns to the default side panel.
+					manager.setDefaultPanelCallback();
+
+					// Show mouse position
 					manager.showDeveloperControls();
-					
+
 					loadedOnce = true;
 				}
 				
@@ -179,6 +224,9 @@
 							manager.addSkyAndTerrain();
 							manager.set3DTerrain();
 							manager.setPlacenames();
+							
+							// Hide the loading overlay
+							document.getElementById("loadingOverlay").style.display = "none";
 						});
 					}
 				});

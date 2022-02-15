@@ -129,19 +129,28 @@ class CesiumWrapper {
                 if (entity.polygon) {
                     // This is to support Mapbox property names; Cesium ion also natively supports color specification by "fill" and "stroke".
                     let props = entity.properties;
-                    let fillColorHex = props["fill-extrusion-color"] ?? props["fill-color"] ?? props["circle-color"] ?? "#666666";
-                    let fillColor = Cesium.Color.fromCssColorString(fillColorHex.valueOf());
-                    let fillColorProperty = new Cesium.CallbackProperty((time, result) => {
-                        if (entity.state?.hover) {
-                            return Cesium.Color.lerp(fillColor, Cesium.Color.WHITE, 0.5, result);
-                        } else {
-                            return result = fillColor;
-                        }
-                    }, false);
-                    let outlineColorHex = props["fill-outline-color"] ?? props["circle-stroke-color"] ?? "#000000";
-                    let outlineColor = Cesium.Color.fromCssColorString(outlineColorHex.valueOf());
-                    entity.polygon.material = new Cesium.ColorMaterialProperty(fillColorProperty);
-                    entity.polygon.outlineColor = outlineColor;
+                    if (props["image"]) {
+                        entity.polygon.material = new Cesium.ImageMaterialProperty(
+                            {
+                                image: props["image"],
+                            }
+                        )
+                        entity.polygon.stRotation = 81.0;
+                    } else {
+                        let fillColorHex = props["fill-extrusion-color"] ?? props["fill-color"] ?? props["circle-color"] ?? "#666666";
+                        let fillColor = Cesium.Color.fromCssColorString(fillColorHex.valueOf());
+                        let fillColorProperty = new Cesium.CallbackProperty((time, result) => {
+                            if (entity.state?.hover) {
+                                return Cesium.Color.lerp(fillColor, Cesium.Color.WHITE, 0.5, result);
+                            } else {
+                                return result = fillColor;
+                            }
+                        }, false);
+                        let outlineColorHex = props["fill-outline-color"] ?? props["circle-stroke-color"] ?? "#000000";
+                        let outlineColor = Cesium.Color.fromCssColorString(outlineColorHex.valueOf());
+                        entity.polygon.material = new Cesium.ColorMaterialProperty(fillColorProperty);
+                        entity.polygon.outlineColor = outlineColor;
+                    }
                 } else if (entity.billboard) {
                     if (entity.properties["icon-image"]) {
                         entity.billboard.image = new Cesium.CallbackProperty(
@@ -212,6 +221,10 @@ class CesiumWrapper {
 
     setPaintProperty(layerID, name, value) {
         // TODO: implement
+    }
+
+    setLayerZoomRange(layerName, start, end) {
+        // TODO: impleent
     }
 
     getCanvas() {
