@@ -67,6 +67,11 @@ def build_output_dir():
 
         print("created folder : ", main_folder)
 
+    # Check if the process is needed to be terminated
+    if utils_argo.SKIP_WORKFLOW:
+        print('The building container is terminated.')
+        os._exit(1)
+
     # Specify metadata properties to consider
     metajson = {'global': {'defaultCenter': [0.395, 52.750],
                                  'defaultZoom': 13,
@@ -475,11 +480,6 @@ if __name__ == '__main__':
     
     # Build an output directory
     build_output_dir()
-    
-    # Check if the process is needed to be terminated
-    if utils_argo.SKIP_WORKFLOW:
-        print('The building container is terminated.')
-        os._exit(1)
 
     # Retrieve SPARQL results from Blazegraph
     try:
