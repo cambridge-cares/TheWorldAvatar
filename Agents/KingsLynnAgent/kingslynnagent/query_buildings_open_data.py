@@ -472,14 +472,14 @@ if __name__ == '__main__':
 
     # Get start time
     start = dt.datetime.now()
-
+    
+    # Build an output directory
+    build_output_dir()
+    
     # Check if the process is needed to be terminated
     if utils_argo.SKIP_WORKFLOW:
         print('The building container is terminated.')
         os._exit(1)
-
-    # Build an output directory
-    build_output_dir()
 
     # Retrieve SPARQL results from Blazegraph
     try:
