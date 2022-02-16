@@ -230,18 +230,43 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         list_exp = []
         for exp_iri in rxnexp_iris:
-            list_exp.append(
-                ReactionExperiment(
-                    instance_iri=exp_iri,
-                    hasReactionCondition=self.getExpReactionCondition(exp_iri),
-                    hasPerformanceIndicator=self.getExpPerformanceIndicator(exp_iri),
-                    # TODO add support for parsing InputChemical and OutputChemical
-                    hasInputChemical=self.get_input_chemical_of_rxn_exp(exp_iri),
-                    hasOutputChemical=self.get_output_chemical_of_rxn_exp(exp_iri),
-                    isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri)
+            rdf_type_rxn = self.get_rdf_type_of_rxn_exp(exp_iri)
+            if rdf_type_rxn == ONTORXN_REACTIONEXPERIMENT:
+                list_exp.append(
+                    ReactionExperiment(
+                        instance_iri=exp_iri,
+                        hasReactionCondition=self.getExpReactionCondition(exp_iri),
+                        hasPerformanceIndicator=self.getExpPerformanceIndicator(exp_iri),
+                        # TODO add support for parsing InputChemical and OutputChemical
+                        hasInputChemical=self.get_input_chemical_of_rxn_exp(exp_iri),
+                        hasOutputChemical=self.get_output_chemical_of_rxn_exp(exp_iri),
+                        isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri)
+                    )
                 )
-            )
+            elif rdf_type_rxn == ONTORXN_REACTIONVARIATION:
+                list_exp.append(
+                    ReactionVariation(
+                        instance_iri=exp_iri,
+                        hasReactionCondition=self.getExpReactionCondition(exp_iri),
+                        hasPerformanceIndicator=self.getExpPerformanceIndicator(exp_iri),
+                        # TODO add support for parsing InputChemical and OutputChemical
+                        hasInputChemical=self.get_input_chemical_of_rxn_exp(exp_iri),
+                        hasOutputChemical=self.get_output_chemical_of_rxn_exp(exp_iri),
+                        isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri)
+                    )
+                )
         return list_exp
+
+    def get_rdf_type_of_rxn_exp(self, rxnexp_iri: str) -> str:
+        rxnexp_iri = trimIRI(rxnexp_iri)
+        query = PREFIX_RDF + """SELECT ?type WHERE { <%s> rdf:type ?type. filter(?type in (<%s>, <%s>)) }""" % (rxnexp_iri, ONTORXN_REACTIONEXPERIMENT, ONTORXN_REACTIONVARIATION)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple rdf:type identified for reaction experiment <%s>: %s" % (rxnexp_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("Reaction experiment <%s> is missing rdf:type as either OntoRxn:ReactionExperiment or OntoRxn:ReactionVariation." % (rxnexp_iri))
+        else:
+            return response[0]['type']
 
     def get_input_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[InputChemical]:
         rxnexp_iri = trimIRI(rxnexp_iri)
@@ -255,12 +280,19 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         subject_iri = trimIRI(subject_iri)
         predicate_iri = trimIRI(predicate_iri)
 
+        if predicate_iri == ONTORXN_HASINPUTCHEMICAL:
+            ocm_query_key = 'input_chemical'
+        elif predicate_iri == ONTORXN_HASOUTPUTCHEMICAL:
+            ocm_query_key = 'output_chemical'
+        else:
+            ocm_query_key = 'ontocape_material'
+
         query = PREFIX_RDF + \
                 """
-                SELECT ?ontocape_material ?single_phase ?state_of_aggregation ?composition ?phase_component ?chemical_species ?phase_component_concentration ?concentration_type ?value ?unit ?num_val
+                SELECT ?%s ?single_phase ?state_of_aggregation ?composition ?phase_component ?chemical_species ?phase_component_concentration ?concentration_type ?value ?unit ?num_val
                 WHERE {
-                    <%s> <%s> ?ontocape_material .
-                    ?ontocape_material <%s> ?single_phase .
+                    <%s> <%s> ?%s .
+                    ?%s <%s> ?single_phase .
                     ?single_phase rdf:type <%s> .
                     ?single_phase <%s> ?state_of_aggregation; <%s> ?composition; <%s> ?phase_component .
                     ?composition <%s> ?phase_component_concentration .
@@ -270,7 +302,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?value <%s> ?unit; <%s> ?num_val.
                 }
                 """ % (
-                    subject_iri, predicate_iri, ONTOCAPE_THERMODYNAMICBEHAVIOR, ONTOCAPE_SINGLEPHASE,
+                    ocm_query_key, subject_iri, predicate_iri, ocm_query_key, ocm_query_key,
+                    ONTOCAPE_THERMODYNAMICBEHAVIOR, ONTOCAPE_SINGLEPHASE,
                     ONTOCAPE_HASSTATEOFAGGREGATION, ONTOCAPE_HAS_COMPOSITION, ONTOCAPE_ISCOMPOSEDOFSUBSYSTEM,
                     ONTOCAPE_COMPRISESDIRECTLY, ONTOCAPE_REPRESENTSOCCURENCEOF, ONTOCAPE_HASPROPERTY,
                     ONTOCAPE_HASVALUE, ONTOCAPE_HASUNITOFMEASURE, ONTOCAPE_NUMERICALVALUE
@@ -278,118 +311,162 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         response = self.performQuery(query)
 
-        lst_ontocape_material = []
+        # NOTE here we make that if nothing found, return None
+        if len(response) == 0:
+            logger.warning("Nothing found when quering: %s" % (query))
+            return None
+        else:
+            lst_ontocape_material = []
 
-        # generate different list for each OntoCAPE:Material
-        unique_ontocape_material_iri = self.get_unique_values_in_list_of_dict(response, 'ontocape_material')
-        list_list_ontocape_material = []
-        for iri in unique_ontocape_material_iri:
-            list_list_ontocape_material.append([res for res in response if iri == res['ontocape_material']])
+            # generate different list for each OntoCAPE:Material
+            unique_ontocape_material_iri = self.get_unique_values_in_list_of_dict(response, ocm_query_key)
+            list_list_ontocape_material = []
+            for iri in unique_ontocape_material_iri:
+                list_list_ontocape_material.append([res for res in response if iri == res[ocm_query_key]])
 
-        for list_om in list_list_ontocape_material:
-            ontocape_material_iri = self.get_unique_values_in_list_of_dict(list_om, 'ontocape_material')[0] # here we are sure this is the unique value of OntoCAPE:Material
+            for list_om in list_list_ontocape_material:
+                ontocape_material_iri = self.get_unique_values_in_list_of_dict(list_om, ocm_query_key)[0] # here we are sure this is the unique value of OntoCAPE:Material
 
-            # validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase, one instance of OntoCAPE_StateOfAggregation and one instance of OntoCAPE_Composition, otherwise raise an Exception
-            unique_single_phase_iri = self.get_unique_values_in_list_of_dict(list_om, 'single_phase')
-            if len(unique_single_phase_iri) > 1:
-                raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoCAPE:Material %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
-            elif len(unique_single_phase_iri) < 1:
-                raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoCAPE:Material: %s" % (ontocape_material_iri))
-            else:
-                unique_single_phase_iri = unique_single_phase_iri[0]
-
-            unique_state_of_aggregation_iri = self.get_unique_values_in_list_of_dict(list_om, 'state_of_aggregation')
-            if len(unique_state_of_aggregation_iri) > 1:
-                raise Exception("Multiple hasStateOfAggregation OntoCAPE:StateOfAggregation identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_state_of_aggregation_iri), unique_single_phase_iri))
-            elif len(unique_state_of_aggregation_iri) < 1:
-                raise Exception("No instance of hasStateOfAggregation OntoCAPE:StateOfAggregation was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
-            else:
-                if unique_state_of_aggregation_iri[0] == ONTOCAPE_LIQUID:
-                    state_of_aggregation = OntoCAPE_liquid
+                # validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase, one instance of OntoCAPE_StateOfAggregation and one instance of OntoCAPE_Composition, otherwise raise an Exception
+                unique_single_phase_iri = self.get_unique_values_in_list_of_dict(list_om, 'single_phase')
+                if len(unique_single_phase_iri) > 1:
+                    raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoCAPE:Material %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
+                elif len(unique_single_phase_iri) < 1:
+                    raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoCAPE:Material: %s" % (ontocape_material_iri))
                 else:
-                    # TODO add support for other phase (solid, gas)
-                    pass
+                    unique_single_phase_iri = unique_single_phase_iri[0]
 
-            unique_composition_iri = self.get_unique_values_in_list_of_dict(list_om, 'composition')
-            if len(unique_composition_iri) > 1:
-                raise Exception("Multiple has_composition OntoCAPE:Composition identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_composition_iri), unique_single_phase_iri))
-            elif len(unique_composition_iri) < 1:
-                raise Exception("No instance of has_composition OntoCAPE:Composition was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
-            else:
-                unique_composition_iri = unique_composition_iri[0]
-
-            # secondly, get a list of OntoCAPE_PhaseComponent to be added to the OntoCAPE_SinglePhase instance
-            list_phase_component = []
-            list_phase_component_concentration = []
-            for r in list_om:
-                if 'concentration_type' in r:
-                    if r['concentration_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
-                        concentration = OntoCAPE_Molarity(instance_iri=r['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
+                unique_state_of_aggregation_iri = self.get_unique_values_in_list_of_dict(list_om, 'state_of_aggregation')
+                if len(unique_state_of_aggregation_iri) > 1:
+                    raise Exception("Multiple hasStateOfAggregation OntoCAPE:StateOfAggregation identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_state_of_aggregation_iri), unique_single_phase_iri))
+                elif len(unique_state_of_aggregation_iri) < 1:
+                    raise Exception("No instance of hasStateOfAggregation OntoCAPE:StateOfAggregation was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
+                else:
+                    if unique_state_of_aggregation_iri[0] == ONTOCAPE_LIQUID:
+                        state_of_aggregation = OntoCAPE_liquid
                     else:
-                        # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+                        # TODO add support for other phase (solid, gas)
                         pass
-                    list_phase_component_concentration.append(concentration)
+
+                unique_composition_iri = self.get_unique_values_in_list_of_dict(list_om, 'composition')
+                if len(unique_composition_iri) > 1:
+                    raise Exception("Multiple has_composition OntoCAPE:Composition identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_composition_iri), unique_single_phase_iri))
+                elif len(unique_composition_iri) < 1:
+                    raise Exception("No instance of has_composition OntoCAPE:Composition was identified given instance of OntoCAPE:SinglePhase: %s" % (unique_single_phase_iri))
                 else:
-                    raise Exception("Concentration is not defined for")
+                    unique_composition_iri = unique_composition_iri[0]
 
-                phase_component = OntoCAPE_PhaseComponent(instance_iri=r['phase_component'],representsOccurenceOf=r['chemical_species'],hasProperty=concentration)
-                list_phase_component.append(phase_component)
+                # secondly, get a list of OntoCAPE_PhaseComponent to be added to the OntoCAPE_SinglePhase instance
+                list_phase_component = []
+                list_phase_component_concentration = []
+                for r in list_om:
+                    if 'concentration_type' in r:
+                        if r['concentration_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
+                            concentration = OntoCAPE_Molarity(instance_iri=r['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
+                        else:
+                            # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+                            pass
+                        list_phase_component_concentration.append(concentration)
+                    else:
+                        raise Exception("Concentration is not defined for")
 
-            composition = OntoCAPE_Composition(
-                instance_iri=unique_composition_iri,
-                comprisesDirectly=list_phase_component_concentration
-            )
-            single_phase = OntoCAPE_SinglePhase(
-                instance_iri=unique_single_phase_iri,
-                hasStateOfAggregation=state_of_aggregation,
-                isComposedOfSubsystem=list_phase_component,
-                has_composition=composition,
-                representsThermodynamicBehaviorOf=ontocape_material_iri
-            )
+                    phase_component = OntoCAPE_PhaseComponent(instance_iri=r['phase_component'],representsOccurenceOf=r['chemical_species'],hasProperty=concentration)
+                    list_phase_component.append(phase_component)
 
-            input_chemical = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
-
-            lst_ontocape_material.append(input_chemical)
-
-        return lst_ontocape_material
-
-    def get_all_autosampler_with_fill(self) -> List[AutoSampler]:
-        query = PREFIX_RDF + \
-                """
-                SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
-                ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
-                ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution
-                WHERE {
-                    ?autosampler rdf:type <%s>; <%s> ?autosampler_manufacturer; <%s> ?laboratory; <%s> ?autosampler_power_supply.
-                    ?autosampler <%s> ?site.
-                    ?site <%s> ?vial; <%s> ?loc.
-                    OPTIONAL {
-                        ?vial <%s> ?fill_level.
-                        ?fill_level <%s> ?fill_level_om_value.
-                        ?fill_level_om_value <%s> ?fill_level_unit; <%s> ?fill_level_num_val.
-                    }
-                    OPTIONAL {
-                        ?vial <%s> ?max_level.
-                        ?max_level <%s> ?max_level_om_value.
-                        ?max_level_om_value <%s> ?max_level_unit; <%s> ?max_level_num_val.
-                    }
-                    ?vial <%s> ?chemical_solution.
-                }
-                """ % (
-                    ONTOVAPOURTEC_AUTOSAMPLER, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
-                    ONTOVAPOURTEC_HASSITE, ONTOVAPOURTEC_HOLDS, ONTOVAPOURTEC_LOCATIONID,
-                    ONTOVAPOURTEC_HASFILLLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
-                    ONTOVAPOURTEC_HASMAXLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
-                    ONTOVAPOURTEC_ISFILLEDWITH
+                composition = OntoCAPE_Composition(
+                    instance_iri=unique_composition_iri,
+                    comprisesDirectly=list_phase_component_concentration
+                )
+                single_phase = OntoCAPE_SinglePhase(
+                    instance_iri=unique_single_phase_iri,
+                    hasStateOfAggregation=state_of_aggregation,
+                    isComposedOfSubsystem=list_phase_component,
+                    has_composition=composition,
+                    representsThermodynamicBehaviorOf=ontocape_material_iri
                 )
 
-        response = self.performQuery(query)
+                if predicate_iri == ONTORXN_HASINPUTCHEMICAL:
+                    ocm_instance = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
+                elif predicate_iri == ONTORXN_HASOUTPUTCHEMICAL:
+                    ocm_instance = OutputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
+                else:
+                    ocm_instance = OntoCAPE_Material(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
 
-        unique_autosampler_list = self.get_unique_values_in_list_of_dict(response, 'autosampler')
-        logger.debug("The list of all available OntoVapourtec:AutoSampler in the knowledge graph (%s): %s" % (self.kg_client.getQueryEndpoint(), str(unique_autosampler_list)))
+                lst_ontocape_material.append(ocm_instance)
+
+            return lst_ontocape_material
+
+    def get_all_autosampler_with_fill(self, given_autosampler_iri: str = None) -> List[AutoSampler]:
+        if given_autosampler_iri == None:
+            query = PREFIX_RDF + \
+                    """
+                    SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
+                    ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
+                    ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution
+                    WHERE {
+                        ?autosampler rdf:type <%s>; <%s> ?autosampler_manufacturer; <%s> ?laboratory; <%s> ?autosampler_power_supply.
+                        ?autosampler <%s> ?site.
+                        ?site <%s> ?vial; <%s> ?loc.
+                        OPTIONAL {
+                            ?vial <%s> ?fill_level.
+                            ?fill_level <%s> ?fill_level_om_value.
+                            ?fill_level_om_value <%s> ?fill_level_unit; <%s> ?fill_level_num_val.
+                        }
+                        OPTIONAL {
+                            ?vial <%s> ?max_level.
+                            ?max_level <%s> ?max_level_om_value.
+                            ?max_level_om_value <%s> ?max_level_unit; <%s> ?max_level_num_val.
+                        }
+                        ?vial <%s> ?chemical_solution.
+                    }
+                    """ % (
+                        ONTOVAPOURTEC_AUTOSAMPLER, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
+                        ONTOVAPOURTEC_HASSITE, ONTOVAPOURTEC_HOLDS, ONTOVAPOURTEC_LOCATIONID,
+                        ONTOVAPOURTEC_HASFILLLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                        ONTOVAPOURTEC_HASMAXLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                        ONTOVAPOURTEC_ISFILLEDWITH
+                    )
+
+            response = self.performQuery(query)
+
+            unique_autosampler_list = self.get_unique_values_in_list_of_dict(response, 'autosampler')
+            logger.debug("The list of all available OntoVapourtec:AutoSampler in the knowledge graph (%s): %s" % (self.kg_client.getQueryEndpoint(), str(unique_autosampler_list)))
+        else:
+            given_autosampler_iri = trimIRI(given_autosampler_iri)
+            query = PREFIX_RDF + \
+                    """
+                    SELECT ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
+                    ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
+                    ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution
+                    WHERE {
+                        <%s> <%s> ?autosampler_manufacturer; <%s> ?laboratory; <%s> ?autosampler_power_supply.
+                        <%s> <%s> ?site.
+                        ?site <%s> ?vial; <%s> ?loc.
+                        OPTIONAL {
+                            ?vial <%s> ?fill_level.
+                            ?fill_level <%s> ?fill_level_om_value.
+                            ?fill_level_om_value <%s> ?fill_level_unit; <%s> ?fill_level_num_val.
+                        }
+                        OPTIONAL {
+                            ?vial <%s> ?max_level.
+                            ?max_level <%s> ?max_level_om_value.
+                            ?max_level_om_value <%s> ?max_level_unit; <%s> ?max_level_num_val.
+                        }
+                        ?vial <%s> ?chemical_solution.
+                    }
+                    """ % (
+                        given_autosampler_iri, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
+                        given_autosampler_iri, ONTOVAPOURTEC_HASSITE, ONTOVAPOURTEC_HOLDS, ONTOVAPOURTEC_LOCATIONID,
+                        ONTOVAPOURTEC_HASFILLLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                        ONTOVAPOURTEC_HASMAXLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
+                        ONTOVAPOURTEC_ISFILLEDWITH
+                    )
+            response = self.performQuery(query)
+            unique_autosampler_list = [given_autosampler_iri]
+
         list_autosampler = []
         for specific_autosampler in unique_autosampler_list:
-            info_of_specific_autosampler = self.get_sublist_in_list_of_dict_matching_key_value(response, 'autosampler', specific_autosampler)
+            info_of_specific_autosampler = self.get_sublist_in_list_of_dict_matching_key_value(response, 'autosampler', specific_autosampler) if given_autosampler_iri is None else response
 
             unique_specific_autosampler_manufacturer_iri = self.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'autosampler_manufacturer')
             if len(unique_specific_autosampler_manufacturer_iri) > 1:
@@ -709,17 +786,18 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     # here we probably don't consider its status yet, just assume the equipment is there and will work - we rely on Execution Agent to keep track of the status
     def get_preferred_r4_reactor(self, rxnexp: ReactionExperiment) -> str:
         # query if there's suitable hardware
-        # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals?
+        # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals that has the same thermodynamicBehaviour as the InputChemical of a reaction experiment
         list_autosampler = self.get_all_autosampler_with_fill()
         list_input_chemical = self.get_input_chemical_of_rxn_exp(rxnexp.instance_iri)
+        list_input_chemical_single_phase = [input_chem.thermodynamicBehaviour for input_chem in list_input_chemical]
         applicable_reactor = {}
         for autosampler in list_autosampler:
-            list_chemical_solution_mat = [site.holds.isFilledWith.refersToMaterial for site in autosampler.hasSite]
-            if all(item in list_chemical_solution_mat for item in list_input_chemical):
+            list_chemical_solution_mat_single_phase = [site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour for site in autosampler.hasSite]
+            if all(item in list_chemical_solution_mat_single_phase for item in list_input_chemical_single_phase):
                 # second step: query if the operation range covers the reaction condition
                 # NOTE here we only consider the reaction temperature at the moment, support for checking more reaction conditions (e.g. reactor material, autosampler liquid level, etc.) can be added later on
                 # get the reactor first, then get the temperature conditon (cached value), compare the value if in the range, if yes then carry out the next step (how many prior experiment), otherwise skip
-                vapourtec_rs400 = self.get_vapourtec_rs400_given_autosampler(autosampler.instance_iri)
+                vapourtec_rs400 = self.get_vapourtec_rs400_given_autosampler(autosampler)
                 list_reactor = [lab_equip for lab_equip in vapourtec_rs400.consistsOf if isinstance(lab_equip, VapourtecR4Reactor)]
 
                 temp_condition = [cond.hasValue.hasNumericalValue for cond in rxnexp.hasReactionCondition if cond.clz == ONTORXN_REACTIONTEMPERATURE]
@@ -741,6 +819,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         # return the iri of the preferred r4 reactor
         return min(applicable_reactor, key=applicable_reactor.get)
+
+    def get_autosampler(self, autosampler_iri: str) -> AutoSampler:
+        autosampler = self.get_all_autosampler_with_fill(given_autosampler_iri=autosampler_iri)
+        if len(autosampler) == 1:
+            return autosampler[0]
+        else:
+            raise Exception("AutoSampler <%s> is not uniquely identified in the knowledge graph, retrieved results: %s" % (autosampler_iri, str(autosampler)))
 
     def get_vapourtec_rs400_given_autosampler(self, autosampler: AutoSampler) -> VapourtecRS400:
         query = PREFIX_RDF + \

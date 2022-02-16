@@ -32,9 +32,9 @@ class TargetIRIs(Enum):
     EXAMPLE_RXN_EXP_3_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_3/RxnExp_1'
     EXAMPLE_RXN_EXP_4_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_4/RxnExp_1'
     EXAMPLE_RXN_EXP_5_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/RxnExp_1'
-    NEW_RXN_EXP_1_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_342e55c0-23f7-4a08-8443-e958e3b0e2c9'
-    NEW_RXN_EXP_2_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d2f7b1f4-76e2-4401-bb68-29ade1a792ec'
-    NEW_RXN_EXP_3_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d46acf42-ec48-454b-b138-1f548ce1f4ad'
+    NEW_RXN_EXP_1_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1'
+    NEW_RXN_EXP_2_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a'
+    NEW_RXN_EXP_3_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c'
     LIST_RXN_EXP_1_INPUT_CHEMICAL_IRI = ['https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1',
     'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2',
     'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3']
@@ -173,21 +173,28 @@ def test_get_input_chemical_of_rxn_exp(initialise_triples, rxnexp_iri, input_che
     assert len(set(list_input_chemical).difference(set(input_chemical_iri))) == 0
 
 # TODO
-# @pytest.mark.parametrize(
-#     "new_rxn_exp_iri,list_r4_reactor_iri",
-#     [
-#         (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value),
-#         (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value),
-#         (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value),
-#     ],
-# )
-# def test_get_preferred_r4_reactor(initialise_triples, new_rxn_exp_iri, list_r4_reactor_iri):
-#     sparql_client = initialise_triples
-#     response = sparql_client.getReactionExperiment(new_rxn_exp_iri)
-#     assert len(response) == 1
-#     assert response[0].instance_iri == new_rxn_exp_iri
-#     preferred_r4_reactor = sparql_client.get_preferred_r4_reactor(response[0])
-#     assert preferred_r4_reactor in list_r4_reactor_iri
+def test_get_vapourtec_rs400_given_autosampler(initialise_triples):
+    sparql_client = initialise_triples
+    autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
+    assert autosampler.instance_iri == TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value
+    response = sparql_client.get_vapourtec_rs400_given_autosampler(autosampler)
+    assert  response.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
+
+@pytest.mark.parametrize(
+    "new_rxn_exp_iri,list_r4_reactor_iri",
+    [
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value),
+    ],
+)
+def test_get_preferred_r4_reactor(initialise_triples, new_rxn_exp_iri, list_r4_reactor_iri):
+    sparql_client = initialise_triples
+    response = sparql_client.getReactionExperiment(new_rxn_exp_iri)
+    assert len(response) == 1
+    assert response[0].instance_iri == new_rxn_exp_iri
+    preferred_r4_reactor = sparql_client.get_preferred_r4_reactor(response[0])
+    assert preferred_r4_reactor in list_r4_reactor_iri
 
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,r4_reactor_iri",
@@ -212,11 +219,6 @@ def test_assign_and_remove_rxn_exp_to_r4_reactor(initialise_triples, new_rxn_exp
     sparql_client.remove_rxn_exp_from_r4_reactor(new_rxn_exp_iri, r4_reactor_iri)
     response3 = sparql_client.get_rxn_exp_assigned_to_r4_reactor(r4_reactor_iri)
     assert new_rxn_exp_iri not in response3
-
-# TODO
-# def test_get_vapourtec_rs400_given_autosampler(initialise_triples):
-#     sparql_client = initialise_triples
-#     response = sparql_client.get_vapourtec_rs400_given_autosampler()
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer
