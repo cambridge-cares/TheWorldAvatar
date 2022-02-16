@@ -61,7 +61,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Perform SPARQL Update
         self.performUpdate(update)
 
-    def getDoEInstanceIRI(self, doe_instance: DesignOfExperiment) -> DesignOfExperiment:
+    def getDoEInstanceIRI(self, strategy_instance: Strategy, domain_instance: Domain, system_response_instance: List[SystemResponse], historical_data_instance: HistoricalData) -> str:
         """
             This method retrieves the instance of OntoDoE:DesignOfExperiment given instance of OntoDoE:Strategy, OntoDoE:Domain, OntoDoE:SystemResponse, and OntoDoE:HistoricalData.
 
@@ -73,11 +73,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         query = """SELECT ?doe_instance \
                 WHERE { \
                 ?doe_instance <%s> <%s> ; \
-                    <%s> <%s> ; """ % (ONTODOE_USESSTRATEGY, doe_instance.usesStrategy.instance_iri, ONTODOE_HASDOMAIN, doe_instance.hasDomain.instance_iri)
+                    <%s> <%s> ; """ % (ONTODOE_USESSTRATEGY, strategy_instance.instance_iri, ONTODOE_HASDOMAIN, domain_instance.instance_iri)
 
-        for sysres in doe_instance.hasSystemResponse:
+        for sysres in system_response_instance:
             query = query + """<%s> <%s> ; """ % (ONTODOE_HASSYSTEMRESPONSE, sysres.instance_iri)
-        query = query + """<%s> <%s> . }""" % (ONTODOE_UTILISESHISTORICALDATA, doe_instance.utilisesHistoricalData.instance_iri)
+        query = query + """<%s> <%s> . }""" % (ONTODOE_UTILISESHISTORICALDATA, historical_data_instance.instance_iri)
         # Perform query
         response = self.performQuery(query)
         if (len(response) == 0 ):
@@ -85,16 +85,16 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 OntoDoE:Strategy <%s>; \
                 OntoDoE:Domain <%s>; \
                 OntoDoE:SystemResponse <%s>; \
-                OntoDoE:HistoricalData <%s>.""" % (doe_instance.usesStrategy.instance_iri, doe_instance.hasDomain.instance_iri, ">, <".join([sysres.instance_iri for sysres in doe_instance.hasSystemResponse]), doe_instance.utilisesHistoricalData.instance_iri))
+                OntoDoE:HistoricalData <%s>.""" % (strategy_instance.instance_iri, domain_instance.instance_iri, ">, <".join([sysres.instance_iri for sysres in system_response_instance]), historical_data_instance.instance_iri))
         elif (len(response) > 1):
             raise Exception("""Unable to uniquely identify the OntoDoE:DesignOfExperiment instance given input: \
                 OntoDoE:Strategy <%s>; \
                 OntoDoE:Domain <%s>; \
                 OntoDoE:SystemResponse <%s>; \
                 OntoDoE:HistoricalData <%s>. \
-                The list of identified OntoDoE:DesignOfExperiment instances are: <%s>.""" % (doe_instance.usesStrategy.instance_iri, doe_instance.hasDomain.instance_iri, ">, <".join([sysres.instance_iri for sysres in doe_instance.hasSystemResponse]), doe_instance.utilisesHistoricalData.instance_iri, ">, <".join([list(r.values())[0] for r in response])))
-        doe_instance.__dict__.update(instance_iri=response[0]['doe_instance'])
-        return doe_instance
+                The list of identified OntoDoE:DesignOfExperiment instances are: <%s>.""" % (strategy_instance.instance_iri, domain_instance.instance_iri, ">, <".join([sysres.instance_iri for sysres in system_response_instance]), historical_data_instance.instance_iri, ">, <".join([list(r.values())[0] for r in response])))
+        else:
+            return response[0]['doe_instance']
 
     def getDoEDomain(self, domain_iri: str) -> Domain:
         """
@@ -234,8 +234,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 ReactionExperiment(
                     instance_iri=exp_iri,
                     hasReactionCondition=self.getExpReactionCondition(exp_iri),
-                    hasPerformanceIndicator=self.getExpPerformanceIndicator(exp_iri)
+                    hasPerformanceIndicator=self.getExpPerformanceIndicator(exp_iri),
                     # TODO add support for parsing InputChemical and OutputChemical
+                    hasInputChemical=self.get_input_chemical_of_rxn_exp(exp_iri),
+                    hasOutputChemical=self.get_output_chemical_of_rxn_exp(exp_iri),
+                    isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri)
                 )
             )
         return list_exp
@@ -243,6 +246,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_input_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[InputChemical]:
         rxnexp_iri = trimIRI(rxnexp_iri)
         return self.get_ontocape_material(rxnexp_iri, ONTORXN_HASINPUTCHEMICAL)
+
+    def get_output_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[OutputChemical]:
+        rxnexp_iri = trimIRI(rxnexp_iri)
+        return self.get_ontocape_material(rxnexp_iri, ONTORXN_HASOUTPUTCHEMICAL)
 
     def get_ontocape_material(self, subject_iri, predicate_iri) -> List[OntoCAPE_Material]:
         subject_iri = trimIRI(subject_iri)
@@ -796,6 +803,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         response = self.performQuery(query)
         list_rxn = [res['rxnexp'] for res in response]
         return list_rxn
+
+    def get_r4_reactor_rxn_exp_assigned_to(self, rxn_exp_iri: str) -> str:
+        rxn_exp_iri = trimIRI(rxn_exp_iri)
+        query = """SELECT ?r4_reactor WHERE { <%s> <%s> ?r4_reactor. }""" % (rxn_exp_iri, ONTORXN_ISASSIGNEDTO)
+        response = self.performQuery(query)
+        r4_reactor_iri = [res['r4_reactor'] for res in response]
+        if len(r4_reactor_iri) > 1:
+            raise Exception("ReactionExperiment <%s> is assigned to multiple VapourtecR4Reactor: <%s>" % (rxn_exp_iri, '>, <'.join(r4_reactor_iri)))
+        return r4_reactor_iri[0] if len(r4_reactor_iri) == 1 else None
 
     def get_r4_reactor_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> List[VapourtecR4Reactor]:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)

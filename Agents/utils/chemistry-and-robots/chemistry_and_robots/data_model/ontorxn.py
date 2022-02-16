@@ -208,8 +208,18 @@ class ReactionExperiment(BaseOntology):
     hasPerformanceIndicator: Optional[List[PerformanceIndicator]] = None
     hasInputChemical: Optional[List[InputChemical]] = None
     hasOutputChemical: Optional[List[OutputChemical]] = None
-    isAssignedTo: str # NOTE here it should be pointing to OntoVapourtec:VapourtecR4Reactor, but we put str to simplify the implementation
+    isAssignedTo: Optional[str] # NOTE here it should be pointing to OntoVapourtec:VapourtecR4Reactor, but we put str to simplify the implementation
     clz: str = ONTORXN_REACTIONEXPERIMENT
+
+    @pydantic.root_validator
+    @classmethod
+    def if_exp_assigned(cls, values):
+        if values.get('instance_iri') != INSTANCE_IRI_TO_BE_INITIALISED:
+            if values.get('isAssignedTo') == None and values.get('hasOutputChemical') != None:
+                raise Exception(
+                    'The reaction experiment <%s> should already be assigned and conducted as it hasOutputChemical: %s' % (values.get('instance_iri'), str(values.get('hasOutputChemical')))
+                )
+        return values
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # check if information is complete
@@ -317,6 +327,8 @@ class ReactionVariation(ReactionExperiment):
             g = perf.create_instance_for_kg(g)
         
         # TODO add support for creating InputChemical and OutputChemical
+        for input_chemical in self.hasInputChemical:
+            g.add((rxnvar_iri, URIRef(ONTORXN_HASINPUTCHEMICAL), URIRef(input_chemical.instance_iri)))
 
         return g
 

@@ -1006,7 +1006,7 @@ SinglePhase:PhaseComponent_3_Property_1
 SinglePhase:PhaseComponent_3_Property_1_ScalarValue_1
     rdf:type OntoCAPEUpp:ScalarValue;
     OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-    OntoCAPEUpp:numericalValue ""^^xsd:double;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
 .
 
 SinglePhase:PhaseComponent_4_Property_1
@@ -1017,7 +1017,7 @@ SinglePhase:PhaseComponent_4_Property_1
 SinglePhase:PhaseComponent_4_Property_1_ScalarValue_1
     rdf:type OntoCAPEUpp:ScalarValue;
     OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-    OntoCAPEUpp:numericalValue ""^^xsd:double;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
 .
 
 SinglePhase:PhaseComponent_5_Property_1
