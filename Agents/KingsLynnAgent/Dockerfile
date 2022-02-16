@@ -4,6 +4,7 @@ FROM python:3.8-slim-buster
 # Set the default environmental variables
 ENV KG_PROTOCOL="https"
 ENV OUTPUT_DIR="../test_data_output"
+ENV SKIP_BUILDING="false"
 
 # This line is for testing purpose will be removed in production version
 ENV MAX_NUM_BUILDINGS="None"
