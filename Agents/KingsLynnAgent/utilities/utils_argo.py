@@ -12,7 +12,7 @@ from pathlib import Path
 PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent.parent, 'resources', 'properties.properties'))
 
 # Initialise global variables to be read from properties file
-global OUTPUT_DIR, QUERY_ENDPOINT, NOOFBUILDINGS
+global OUTPUT_DIR, QUERY_ENDPOINT, NOOFBUILDINGS, SKIP_WORKFLOW
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {'ocgml': 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#',
@@ -48,7 +48,7 @@ def read_properties_file(filepath):
     """
 
     # Define global scope for global variables
-    global OUTPUT_DIR, QUERY_ENDPOINT, NOOFBUILDINGS
+    global OUTPUT_DIR, QUERY_ENDPOINT, NOOFBUILDINGS, SKIP_WORKFLOW
 
     # Extract no. of building from environmental variables (# This is for testing purpose will be removed in production version)
     if 'MAX_NUM_BUILDINGS' in os.environ:
@@ -64,13 +64,16 @@ def read_properties_file(filepath):
     KG_HOST = read_env_var('KG_HOST')
     KG_PATH = read_env_var('KG_PATH')
     KG_PROTOCOL = read_env_var('KG_PROTOCOL')
-    
+
     # Check if the address contain port number:
     if 'KG_PORT' in os.environ and os.environ['KG_PORT'] != '':
         KG_PORT = os.environ['KG_PORT']
         QUERY_ENDPOINT = KG_PROTOCOL + '://' + KG_HOST + ':' + KG_PORT +  '/' + KG_PATH
     else:
         QUERY_ENDPOINT = KG_PROTOCOL + '://' + KG_HOST + '/' + KG_PATH
+
+    # Check if it is needed to skip the process in the ARGO workflow
+    SKIP_WORKFLOW = read_env_var('SKIP_BUILDING')
 
 def create_sparql_prefix(abbreviation):
     """
