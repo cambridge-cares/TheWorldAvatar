@@ -109,16 +109,17 @@ class DoEAgent(AsyncAgent):
             self.logger.error('OntoDoE:HistoricalData instance might be missing. Received inputs: ' + agent_inputs + exception_string)
             raise Exception('OntoDoE:HistoricalData instance might be missing. Received inputs: ' + agent_inputs + exception_string)
 
+        # Get the OntoDoE:DesignOfExperiment instances given the inputs, i.e. all the inputs should belong to the same OntoDoE:DesignOfExperiment instance
+        doe_instance_iri = self.sparql_client.getDoEInstanceIRI(strategy_instance, domain_instance, system_response_instance, historical_data_instance)
+
         doe_instance = DesignOfExperiment(
-            instance_iri=None,
+            instance_iri=doe_instance_iri,
             usesStrategy=strategy_instance,
             hasDomain=domain_instance,
             hasSystemResponse=system_response_instance,
             utilisesHistoricalData=historical_data_instance,
             proposesNewExperiment=None) # TODO initialisation of ReactionExperiment is omitted here
 
-        # Get the OntoDoE:DesignOfExperiment instances given the inputs, i.e. all the inputs should belong to the same OntoDoE:DesignOfExperiment instance
-        doe_instance = self.sparql_client.getDoEInstanceIRI(doe_instance)
         return doe_instance
 
 def suggest(doe_instance: DesignOfExperiment) -> List[ReactionExperiment]:

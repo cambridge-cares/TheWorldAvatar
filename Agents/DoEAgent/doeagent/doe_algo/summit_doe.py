@@ -159,7 +159,9 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
             hasReactionCondition=list_con,
             hasPerformanceIndicator=list_perf,
             hasInputChemical=first_rxn_exp.hasInputChemical, # TODO revisit this design when testing
-            hasOutputChemical=first_rxn_exp.hasOutputChemical, # TODO revisit this design when testing
+            # NOTE here the OutputChemical is set to be None as the OutputChemical will need to be generated after the physical experimentation
+            # TODO revisit this design when testing
+            hasOutputChemical=None,
             isVariationOf=first_rxn_exp
         )
 

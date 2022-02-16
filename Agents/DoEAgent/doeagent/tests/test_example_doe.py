@@ -66,7 +66,7 @@ def test_example_doe(initialise_agent):
     doe_agent.start_monitoring_derivations()
 
     # Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
-    for f in ['ontoagent/Service__DoE.ttl', 'sample_data/doe.ttl', 'sample_data/rxn_data.ttl']:
+    for f in ['ontoagent/Service__DoE.ttl', 'sample_data/doe.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_lab.ttl']:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
         filePath = f'{str(uuid.uuid4())}.ttl'
