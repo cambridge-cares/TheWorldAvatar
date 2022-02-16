@@ -30,6 +30,7 @@ Optional variables:
 - KG_PORT
 - POSTGRES_HOST
 - POSTGRES_PORT
+- SKIP_RIVER (if set to true, this code will be skipped)
 
 In addition to the credentials for the databases, a directory to write the geojson and flood needs to be specified.
 
