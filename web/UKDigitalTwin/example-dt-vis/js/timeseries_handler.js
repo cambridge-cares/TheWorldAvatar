@@ -182,8 +182,13 @@ class TimeseriesHandler {
         var dependents = [];
 
         for(var i = 0 ; i < independents.length; i++) {
+            if(data["timeClass"] === "OffsetTime") {
+                independents[i] = moment(independents[i].replace("Z", ""), "HH:mm");
+            }
+            let independent =  independents[i];
+
             dependents.push({
-                x: independents[i],
+                x: independent,
                 y: (!isNaN(data["values"][i])) ? data["values"][i] : Number(data["values"][i])
             });
         }
@@ -195,7 +200,11 @@ class TimeseriesHandler {
 
         // Create the new chart element
         var ctx = document.getElementById("chart-canvas").getContext("2d");
-        var xAxisType = ("Instant" === data["timeClass"]) ? "time" : "linear";
+        var xAxisType = "linear";
+        if(data["timeClass"] === "Instant" || data["timeClass"] === "OffsetTime") {
+            xAxisType = "time";
+            console.log("X AXIS IS TIME");
+        } 
         var yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
 
         // Create the chart object
