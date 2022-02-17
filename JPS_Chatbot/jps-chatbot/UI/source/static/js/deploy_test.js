@@ -22,18 +22,16 @@
 // Variables accessed throughout the script
 $('document').ready(function(){
     // =================== search button and enter in input field =======
-    // $('#ask-button').click(function (e){
-    //     askQuestion(e);
-    // });
-    //
-    // $('#input-field').keypress(function(e){
-    //     if(e.which === 13){//Enter key pressed
-    //         askQuestion(e);
-    //     }
-    // });
-    google.charts.load('current', {packages: ['corechart', 'line']});
+    $('#ask-button').click(function (e){
+        askQuestion(e);
+    });
 
-    // first set the chart div id to be null. When a new chart is made, a new id is given
+    $('#input-field').keypress(function(e){
+        if(e.which === 13){//Enter key pressed
+            askQuestion(e);
+        }
+    });
+    google.charts.load('current', {packages: ['corechart', 'line']});
 });
 
 
@@ -126,29 +124,64 @@ function resetResults() {
 
 	let chatbotResults = document.getElementById("chatbot-results");
 	chatbotResults.innerHTML = html;
-    $("#data_chart").remove();
+	$("#data_chart").remove();
 }
 
 
 /*
  Send the current question to the chatbot.
  */
- function askQuestion() {
+function askQuestion() {
+	if(asking > 0) {
+		// No concurrent questions
+		return;
+	}
 
-	// Make the request for the world avatar
-	// makeRequest(question, "worldavatar", "json", processChatbotResults, promises);
+	resetResults();
     $("#data_chart").remove();
-    let result = results.pop();
-    // Identify chart data first, if it is chart data, make the chart first then make the usual table
-    let jsonData = convertToJSONResults(result)
 
-    if ('attribute' in jsonData || 'multiple_results' in jsonData) {
-        process_matrix_data(jsonData);
-    }
-    else{
-        processChatbotResults(result);
-    }
- 	// Show the results row
+	let spinner = imageDir + "spinner.svg";
+
+	// Make the ask button into a loading spinner
+	let askButton = document.getElementById("ask-button");
+	let imgTags = askButton.getElementsByTagName("img");
+	imgTags.item(0).src = spinner;
+
+	// Get the question currently within the input-field
+	let inputField = document.getElementById('input-field');
+	let question = inputField.value;
+
+	if (question == "") {
+		// Show an error
+		$('#input-field').val("Please enter a question before submitting.");
+		$('#input-field').css("color", "red");
+		imgTags.item(0).src = imageDir + "search.svg";
+		return;
+	}
+
+
+	// Build the URL for the question
+	question = question.replace('	', ' ');
+	question = question.replace(/[/+]/g, 'add_sign');
+
+	var promises = [];
+
+	asking = 1;
+	// Make the request for the world avatar
+	makeRequest(question, "worldavatar", "json", handleResults, promises);
+
+	// Reset the search button when all requests are complete
+	$.when.apply($, promises).then(function() {
+		// Revert button to search icon
+		let askButton = document.getElementById("ask-button");
+		let imgTags = askButton.getElementsByTagName("img");
+		imgTags.item(0).src = imageDir + "search.svg";
+		$('#input-field').css("color", "inherit");
+	}, function() {
+		// Error occurred, dealt with elsewhere
+	});
+
+	// Show the results row
 	resultsRow.style.display = "block";
 }
 
@@ -173,39 +206,37 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 		error: function (xhr, ajaxOptions, thrownError) {
 			console.log(xhr.status);
 			console.log(thrownError);
-
-			successFunction(null);
+			// for test, use results
+			successFunction(results.pop())
+			// successFunction(null);
 			asking--;
 		}
 	}));
 }
 
 /*
- Convert raw results returned from the back end to JSON Array or JSON Object
+ Process the results from a WorldAvatar request
 */
-function convertToJSONResults(rawResults) {
-    	// Parse the results
-	var chatbotResults = null;
 
-	if (rawResults == null || rawResults == "") {
-		chatbotResults = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide and answer.</span>";
-        return null;
-	} else {
-		// Get the data into JSON form (if not already);
-		let jsonData = null;
+// convertToJSONResults
+//
 
-		try {
-			jsonData = JSON.parse(rawResults);
-		} catch (err1) {
-			try {
-				jsonData = JSON.parse(JSON.stringify(rawResults));
-			} catch (err2) {
-				jsonData = rawResults;
-			}
-		}
-        return jsonData;
+/* This is the function that handles all results, including
 
-	}
+*/
+
+function handleResults(rawResult){
+	// 1. convert any results to JSON object/ JSON array
+	// 2. identify chart data from non-chart data
+	// 3. call processChatbotResults or process matrix data accordingly
+	var jsonData = null;
+	jsonData = convertToJSONResults(rawResult);
+	if ('attribute' in jsonData || 'multiple_results' in jsonData) {
+        process_matrix_data(jsonData);
+    }
+    else{
+        processChatbotResults(rawResult);
+    }
 }
 
 
@@ -395,31 +426,23 @@ function isImageURL(url) {
 	return false;
 }
 // to process matrix data returned from the agent extension ...
-// This is currently a hot-patch solution
-
-
 function process_matrix_data(matrix){
     let elements = [];
     if ("multiple_results" in matrix){
         elements = matrix['multiple_results'];
         prepare_chart_data(elements);
         makeTable(elements);
-        console.log('This is a multiple result')
     }
     else{
         if(typeof matrix['value'] === "string"){
             // single value, table only
             elements = [matrix]
-            console.log('This is a single value')
-            // xz378: it seems that the make table function is not working (2022.2.16)
-            // xz378: Hot patch solution for this problem
             makeTable(elements)
         }else{
             // serial value, use chart to visualise
             elements = [matrix];
-            console.log('This is a serial value, should use chart to visualise')
             prepare_chart_data(elements);
-           makeTable(elements)
+            makeTable(elements)
         }
     }
 }
@@ -485,14 +508,14 @@ const hash = function(str, seed = 0) {
 
 function drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed_data_title, fixed_data, fixed_data_unit) {
       // create a new id for this element
-      //let element_id = '#' + hash(rows.toString()).toString();
-    let element_id = 'data_chart'
-    // console.log('element id', element_id);
+    	let element_id = 'data_chart'
 
         $('<div>', {
             id: element_id,
             class: 'chart',
         }).appendTo('#chart_div');
+		// append the data chart result to chart_div block, which uses the name #data_chart
+
 
 
       $(element_id).ready(function() {
@@ -517,8 +540,6 @@ function drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed
 
     }
 
-// The makeTable function processes the matrix data set and converts it to the format required by the orignal
-// visualization function of Marie, which is a table
 
 function makeTable(matrix_set){
     // let test_valueSet = [{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'}]
@@ -556,8 +577,39 @@ function makeTable(matrix_set){
     });
         processChatbotResults(array);
     });
-
 }
+
+/*
+ Convert raw results returned from the back end to JSON Array or JSON Object
+*/
+function convertToJSONResults(rawResults) {
+    	// Parse the results
+	var chatbotResults = null;
+
+	if (rawResults == null || rawResults == "") {
+		chatbotResults = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide and answer.</span>";
+        return null;
+	} else {
+		// Get the data into JSON form (if not already);
+		let jsonData = null;
+
+		try {
+			jsonData = JSON.parse(rawResults);
+		} catch (err1) {
+			try {
+				jsonData = JSON.parse(JSON.stringify(rawResults));
+			} catch (err2) {
+				jsonData = rawResults;
+			}
+		}
+        return jsonData;
+
+	}
+}
+
+
+// ================================== Below is the test results for chart data ============================
+
 
 a1 =  {
     "value": [
@@ -735,4 +787,9 @@ a3 = {
     },
     "attribute": "heat capacity at constant pressure"
 };
-let results = [a1,a2,a3];
+
+a4 = {"head": {"vars": ["v", "v2"]}, "results": {"bindings": [{"v": {"xml:lang": "en", "type": "literal", "value": "1-bromobutan-2-one"}, "v2": {"xml:lang": "en", "type": "literal", "value": "chemical compound"}}]}}
+
+
+
+let results = [a1,a2,a3,a4];
