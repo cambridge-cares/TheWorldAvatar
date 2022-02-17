@@ -4,6 +4,7 @@
 ##########################################
 
 # Get settings and functions from the kg utils module
+from time import time
 import kg_utils_generation as kg
 from datetime import datetime as dt
 import json
@@ -36,11 +37,14 @@ def get_instance_time_series_data(instanceIRI, TSClient, KGClient):
     query = kg.create_sparql_prefix('om') + \
             kg.create_sparql_prefix('ontopowsys') + \
             kg.create_sparql_prefix('rdfs') + \
-            '''SELECT ?dataIRI ?measurements ?unit \
+            kg.create_sparql_prefix('ts') + \
+            '''SELECT ?dataIRI ?measurements ?unit ?timeSeriesIRI \
                WHERE { <%s> ontopowsys:hasActivePowerGenerated ?dataIRI ; \
                             rdfs:label ?measurements .
-                                ?dataIRI om:hasUnit ?unit }''' % instanceIRI
+                                ?dataIRI om:hasUnit ?unit;
+                                ts:hasTimeSeries ?timeSeriesIRI}''' % instanceIRI
     # Execute query
+    #print("QUERY: ", query)
     response = KGClient.execute(query)
 
     # Convert JSONArray String back to list

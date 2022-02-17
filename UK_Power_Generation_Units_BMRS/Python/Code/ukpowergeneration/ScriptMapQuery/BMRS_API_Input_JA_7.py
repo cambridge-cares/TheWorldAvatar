@@ -113,6 +113,7 @@ def convert_csv_to_triple_dfs(csvName):
     #This is only for Search == 2 scenarios. 
     
     #CSV Locations
+    #\Dropbox (Cambridge CARES)\CoMo shared\wx243\UK_Digital_Twin\OWL File\PowerPlant
     #Simplified Data Link
     #plantfilelocation = 'https://www.dropbox.com/s/arwtg13rjj8ajoi/powerplanttriple%20-%20Simple.csv?dl=1'
     #genfilelocation = 'https://www.dropbox.com/s/a24f76icghonsf9/generatortriple%20-%20Simple.csv?dl=1'
@@ -471,13 +472,13 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
     return 1
 
 
-def Auto_Call(Key):
+def Auto_Call(Key, AutoFile):
     #Automatically calls the primary function with Search setting == 2.
     #This means that rather than choosing a specific time, it picks 8 days ago and sweeps for all 48 periods (half hours) of the day. 
     #Thus, the Year, Month, Day, and Period inputs don't matter. With Search == 2.
     #CSV names are also set here and for the triple conversions. 
-    live_power('https://www.dropbox.com/s/9bdt4y1406yqfgj/Input-Template-Auto.csv?dl=1', Key, '2020', '20', '02', '02', 2) #Note, the prior date does not matter, it will be replaced by the day, a week ago so long as the last input is 2. 
-    dfa, dfb = convert_csv_to_triple_dfs('https://www.dropbox.com/s/9bdt4y1406yqfgj/Input-Template-Auto.csv?dl=1')
+    live_power(AutoFile, Key, '2020', '20', '02', '02', 2) #Note, the prior date does not matter, it will be replaced by the day, a week ago so long as the last input is 2. 
+    dfa, dfb = convert_csv_to_triple_dfs(AutoFile)
     return dfa, dfb
 
 
@@ -485,5 +486,5 @@ def Auto_Call(Key):
 if __name__ == "__main__":
     Key = ''
     #live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2021', '11', '14', '24', 2)
-    Auto_Call(Key)
+    Auto_Call(Key, 'https://www.dropbox.com/s/9bdt4y1406yqfgj/Input-Template-Auto.csv?dl=1')
 
