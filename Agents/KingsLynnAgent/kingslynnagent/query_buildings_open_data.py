@@ -70,7 +70,7 @@ def build_output_dir():
     # Check if the process is needed to be terminated
     if utils_argo.SKIP_WORKFLOW:
         print('The building container is terminated.')
-        os._exit(1)
+        os._exit(0)
 
     # Specify metadata properties to consider
     metajson = {'global': {'defaultCenter': [0.395, 52.750],
