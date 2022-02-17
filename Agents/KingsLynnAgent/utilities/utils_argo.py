@@ -40,6 +40,12 @@ def read_env_var(env_name):
         raise KeyError(errorstr)
     return env_value
 
+def str2bool(v):
+    """ 
+        Convert string into boolean
+    """
+    return v.lower() in ("true", "yes", "t", "1")
+
 def read_properties_file(filepath):
     """
         Reads SPARQL endpoints and output directory from properties file (as global variables).
@@ -73,7 +79,8 @@ def read_properties_file(filepath):
         QUERY_ENDPOINT = KG_PROTOCOL + '://' + KG_HOST + '/' + KG_PATH
 
     # Check if it is needed to skip the process in the ARGO workflow
-    SKIP_WORKFLOW = read_env_var('SKIP_BUILDING')
+    SKIP_BUILDING = read_env_var('SKIP_BUILDING')
+    SKIP_WORKFLOW = str2bool(SKIP_BUILDING)
 
 def create_sparql_prefix(abbreviation):
     """
