@@ -30,6 +30,7 @@ Optional variables:
 - KG_PORT
 - POSTGRES_HOST
 - POSTGRES_PORT
+- SKIP_RIVER (if set to true, this code will be skipped)
 
 In addition to the credentials for the databases, a directory to write the geojson and flood needs to be specified.
 
@@ -63,6 +64,17 @@ To run
 ```
 docker run -d [TAGNAME]
 ```
+
+To push this image to the repository:
+```
+docker login ghcr.io -u <github_username>
+```
+enter your personal access token when prompted for the password, then
+```
+docker compose -f docker compose -f docker-compose-write-only.yml build
+docker compose -f docker compose -f docker-compose-write-only.yml push
+```
+
 ### Logs
 Logs are saved at `root/.jps/` by default, you can copy the logs into your local environment by using the following command
 ```
