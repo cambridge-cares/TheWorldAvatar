@@ -318,7 +318,11 @@ def get_power_data_from_api():
     #Search = 2 #This script have multiple run options, for a day we want '2'. 
 
     #####BACK LATER#####
-    Key = '' #####NEED THIS#####
+    #Local Key#
+    with open("LocalOnlyBMRSKey.txt", "r") as keyFile:
+        Key = keyFile.readline()
+    #Or just paste it below directly#
+    #Key = '' #####NEED THIS#####
     AutoFile = 'Input-Template-Auto.csv'
     powerplant_df, generator_df = bmrs.Auto_Call(Key, AutoFile)
     #Read the Input-Template.csv file from a URL. 
