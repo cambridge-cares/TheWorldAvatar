@@ -81,13 +81,13 @@ def start():
 
     if args["--dry-run"].upper() == "TRUE":
         dry_run = True
-    elif args["--dry-run"].upper() == "FALSE": 
+    elif args["--dry-run"].upper() == "FALSE":
         dry_run = False
     else:
         raise docopt.DocoptExit('Error: incorrect --dry-run option. Please choose between True and False.') #type: ignore
 
     write_abox(
-        pipeline_type = 'om',
+        pipeline_type = 'os',
         fileOrDir=args['<fileOrDir>'],
         inpFileType=args['--inp-file-type'],
         outDir=args['--out-dir'],
