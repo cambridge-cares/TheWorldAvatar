@@ -83,50 +83,44 @@ def write_prelim(spamwriter,out_id,spec_pref,label):
     spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label,'String'])
 
 def write_identifier_geom(spamwriter,out_id,data):
-    if PUBCHEM_ALT_LABEL in data:
-        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',data[PUBCHEM_ALT_LABEL],'String'])
-    if CAS_NUMBER in data:
-        spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data[CAS_NUMBER],'String'])
+    pubchem_alt_label_value = data.get(PUBCHEM_ALT_LABEL)
+    if pubchem_alt_label_value is not None:
+        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',pubchem_alt_label_value,'String'])
+    cas_number_value = data.get(CAS_NUMBER)
+    if cas_number_value is not None:
+        spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',cas_number_value,'String'])
     spamwriter.writerow([onto_spec + '#SMILES','Data Property',out_id,'',data[SMILES],'String'])
     spamwriter.writerow([onto_spec + '#inChI','Data Property',out_id,'',data[INCHI],'String'])
-    if PUBCHEM_CID in data:
-        spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', data[PUBCHEM_CID],'String'])
+    pubchem_cid_value = data.get(PUBCHEM_CID)
+    if pubchem_cid_value is not None:
+        spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', pubchem_cid_value,'String'])
     spamwriter.writerow([onto_spec + '#hasAtomicBond','Data Property',out_id,'',data[BOND_STRING],'String'])
     spamwriter.writerow([onto_spec + '#hasGeometry','Data Property',out_id,'',data[GEOM_STRING],'String'])
     spamwriter.writerow([onto_spec + '#spinMultiplicity','Data Property',out_id,'',data[SPIN_MULT],'String'])
 
 def write_atom_info(spamwriter,gen_id,out_id,data):
-    count = 1
-    cur_at = data[ATOM_TYPES][0]
-    prev_at = []
-
     coords = ['X','Y','Z'] #The three cartesian corrdinates.
-    for k in range(len(data[ATOM_TYPES])):
-        if data[ATOM_TYPES][k] != cur_at: #If we encounter a new atom, we are going to reset the counter
-            if prev_at:
-                if data[ATOM_TYPES][k] not in prev_at:
-                    count = 1 #If we have never seen this atom, we are going set the counter to 1.
-                else:
-                    count = prev_at.count(data[ATOM_TYPES][k]) #Otherwise, we see how many times this atom has occured previously and set the counter to that.
+    atom_counters = {atom_type: 1 for atom_type in set(data[ATOM_TYPES])}
+    for k, atom_type in enumerate(data[ATOM_TYPES]):
+
+        atom_nr = atom_counters[atom_type]
         #Now the atoms are written here
-        spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',gain_pref + 'Atom','','',''])
-        spamwriter.writerow([out_id,'Instance','Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),gain_pref + 'hasAtom',
+        spamwriter.writerow(['Atom_' + gen_id + '_' + atom_type + '_' + str(atom_nr), 'Instance',gain_pref + 'Atom','','',''])
+        spamwriter.writerow([out_id,'Instance','Atom_' + gen_id + '_' + atom_type + '_' + str(atom_nr),gain_pref + 'hasAtom',
                                 '',''])
-        spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',
-                                table_pref + '#' + data[ATOM_TYPES][k],gain_pref + 'isElement','',''])
+        spamwriter.writerow(['Atom_' + gen_id + '_' + atom_type + '_' + str(atom_nr), 'Instance',
+                                table_pref + '#' + atom_type, gain_pref + 'isElement','',''])
         for i in range(3): #Write the atom coordinates.
-            spamwriter.writerow(['AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),
+            spamwriter.writerow(['AtomCoordinate' + coords[i] + '_' + gen_id + '_' + atom_type + '_' + str(atom_nr),
                                     'Instance',gain_pref + 'FloatValue','','',''])
-            spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',
-                                'AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count)
+            spamwriter.writerow(['Atom_' + gen_id + '_' + atom_type + '_' + str(atom_nr), 'Instance',
+                                'AtomCoordinate' + coords[i] + '_' + gen_id + '_' + atom_type + '_' + str(atom_nr)
                                 ,gain_pref + 'hasAtomCoordinate' + coords[i],'',''])
-            spamwriter.writerow([gain_pref + 'hasValue','Data Property','AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count)
+            spamwriter.writerow([gain_pref + 'hasValue','Data Property','AtomCoordinate' + coords[i] + '_' + gen_id + '_' + atom_type + '_' + str(atom_nr)
                                     ,'',data["Geometry"][k][i],'String'])
-            spamwriter.writerow(['AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),
+            spamwriter.writerow(['AtomCoordinate' + coords[i] + '_' + gen_id + '_' + atom_type + '_' + str(atom_nr),
                                     'Instance',unit_pref + 'unit#Angstrom',gain_pref + 'hasUnit','',''])
-        prev_at.append(data[ATOM_TYPES][k]) #update previous atoms
-        cur_at = data[ATOM_TYPES][k] #update current atom
-        count += 1
+        atom_counters[atom_type]+=1
 
 def write_charge_info(spamwriter,gen_id,out_id,data):
     if FORMAL_CHARGE in data:
