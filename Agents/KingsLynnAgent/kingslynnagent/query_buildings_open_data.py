@@ -56,6 +56,18 @@ def build_output_dir():
     main_folder = utils_argo.OUTPUT_DIR
     building_folder = os.path.join(utils_argo.OUTPUT_DIR, 'buildings')
 
+    # Check if the process is needed to be terminated
+    if utils_argo.SKIP_WORKFLOW:
+        # Check if the data output folder exist or not
+        if not os.path.isdir(main_folder):
+            # Create the data output folder at exit
+            os.makedirs(main_folder)
+            print("created folder : ", main_folder)
+
+        # Exit the program
+        print('SKIP_BUILDING: ' + str(utils_argo.SKIP_WORKFLOW) +'\nbuilding-data-getter is terminated.')
+        os._exit(0)
+
     # Check if the data output folder exist or not
     if not os.path.isdir(main_folder):
         # Create the data output folder
@@ -66,11 +78,6 @@ def build_output_dir():
             os.makedirs(building_folder)
 
         print("created folder : ", main_folder)
-
-    # Check if the process is needed to be terminated
-    if utils_argo.SKIP_WORKFLOW:
-        print('The building container is terminated.')
-        os._exit(0)
 
     # Specify metadata properties to consider
     metajson = {'global': {'defaultCenter': [0.395, 52.750],
