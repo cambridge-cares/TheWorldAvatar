@@ -60,7 +60,7 @@ public class InitialiseInstances extends JPSAgent{
     	// attach timestamp to input
     	devClient.addTimeInstance(input);
     	// the timestamp added using addTimeInstance is 0, this will ensure that the input is current
-    	devClient.updateTimestamp(input);
+    	devClient.updateTimestamps(Arrays.asList(input));
     	createInputTimeSeries(input, tsClient);
     	LOGGER.info("Created input <" + input + ">");
     	InstancesDatabase.Input = input;

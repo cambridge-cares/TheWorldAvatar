@@ -130,7 +130,7 @@ def get_el_wt_by_symbol(el):
     else:
         el = el.upper()
     try:
-        rDat = EL_DATA[el.upper()][EL_WT_COL]
+        rDat = EL_DATA[el][EL_WT_COL]
     except:
         rDat= -1.0
     return rDat

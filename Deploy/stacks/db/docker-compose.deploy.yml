@@ -21,6 +21,7 @@ services:
     container_name: "blazegraph${CONTAINER_NAME_SUFFIX}"
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
     # Add a secret to set the password for BASIC authentication
@@ -33,6 +34,8 @@ services:
   blazegraph-geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
     container_name: "blazegraph_geo${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
     volumes:
@@ -44,6 +47,7 @@ services:
     container_name: "postgres${CONTAINER_NAME_SUFFIX}"
     pull_policy: if_not_present
     environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
@@ -58,6 +62,7 @@ services:
     image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
     container_name: "rdf4j${CONTAINER_NAME_SUFFIX}"
     environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
     pull_policy: if_not_present

@@ -21,12 +21,15 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatternNotTriples;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,6 +51,13 @@ public class DerivationSparql{
 	private String derivationInstanceBaseURL; // an example of this can be "https://www.example.com/triplestore/repository/"
 	
 	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
+	
+	// status concepts
+	private static String PENDINGUPDATE = "PendingUpdate";
+	private static String REQUESTED = "Requested";
+	private static String INPROGRESS = "InProgress";
+	private static String FINISHED = "Finished";
+	
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
 	private static Prefix p_derived = SparqlBuilder.prefix("derived",iri(derivednamespace));
@@ -61,9 +71,10 @@ public class DerivationSparql{
     private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
     private static Iri DerivationAsyn = p_derived.iri("DerivationAsyn");
     private static Iri Status = p_derived.iri("Status");
-    private static Iri Requested = p_derived.iri("Requested");
-    private static Iri InProgress = p_derived.iri("InProgress");
-    private static Iri Finished = p_derived.iri("Finished");
+    private static Iri PendingUpdate = p_derived.iri(PENDINGUPDATE);
+    private static Iri Requested = p_derived.iri(REQUESTED);
+    private static Iri InProgress = p_derived.iri(INPROGRESS);
+    private static Iri Finished = p_derived.iri(FINISHED);
     private static Iri InstantClass = p_time.iri("Instant");
 	
 	// object properties
@@ -77,17 +88,29 @@ public class DerivationSparql{
 	private static Iri isDerivedUsing = p_derived.iri("isDerivedUsing");
 	private static Iri belongsTo = p_derived.iri("belongsTo");
 	private static Iri hasStatus = p_derived.iri("hasStatus");
+	private static Iri hasNewDerivedIRI = p_derived.iri("hasNewDerivedIRI");
 	private static Iri hasTime = p_time.iri("hasTime");
 	private static Iri numericPosition = p_time.iri("numericPosition");
 	private static Iri hasTRS = p_time.iri("hasTRS");
 	private static Iri inTimePosition = p_time.iri("inTimePosition");
 	
 	// data properties
-	private static Iri hasNewDerivedIRI = p_derived.iri("hasNewDerivedIRI");
+	private static Iri retrievedInputsAt = p_derived.iri("retrievedInputsAt");
 	
 	// the derived quantity client relies on matching rdf:type to figure out which old instances to delete
 	// if your instances have more than 1 rdf:type, you must add them to this list so that the client can figure out which to use
 	private static List<Iri> classesToIgnore = Arrays.asList(iri(OWL.THING),iri(OWL.NAMEDINDIVIDUAL));
+	
+	// 
+	private static final Map<String, StatusType> statusToType;
+	static {
+		Map<String, StatusType> statusMap = new HashMap<>();
+		statusMap.put(derivednamespace.concat(PENDINGUPDATE), StatusType.PENDINGUPDATE);
+		statusMap.put(derivednamespace.concat(REQUESTED), StatusType.REQUESTED);
+		statusMap.put(derivednamespace.concat(INPROGRESS), StatusType.INPROGRESS);
+		statusMap.put(derivednamespace.concat(FINISHED), StatusType.FINISHED);
+		statusToType = statusMap;
+	}
 	
 	private static final Logger LOGGER = LogManager.getLogger(DerivationSparql.class);
 	
@@ -412,9 +435,6 @@ public class DerivationSparql{
 
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivationInstanceBaseURL + "derivedAsyn_" + UUID.randomUUID().toString();
-		while (checkInstanceExists(derivedQuantity)) {
-			derivedQuantity = derivationInstanceBaseURL + "derivedAsyn_" + UUID.randomUUID().toString();
-		}
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -470,75 +490,22 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method checks if the status of the derivation is marked as "Requested".
-	 * @param storeClient
+	 * This method marks the status of the derivation as "PendingUpdate".
 	 * @param derivation
-	 * @return
 	 */
-	boolean isRequested(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
+	void markAsPendingUpdate(String derivation) {
+		deleteStatus(derivation);
+		ModifyQuery modify = Queries.MODIFY();
 		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(Requested);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
+		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
 		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
+		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(PendingUpdate);
 		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * This method checks if the status of the derivation is marked as "InProgress".
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	boolean isInProgress(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
+		modify.prefix(p_derived).insert(insert_tp);
+		modify.prefix(p_derived).insert(insert_tp_rdf_type);
 		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(InProgress);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
-	 * This method checks if the status of the derivation is marked as "Finished".
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	boolean isFinished(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
-		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(Finished);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
@@ -547,12 +514,11 @@ public class DerivationSparql{
 	 * @param derivation
 	 */
 	void markAsRequested(String derivation) {
+		deleteStatus(derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		while (checkInstanceExists(statusIRI)) {
-			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		}
+		
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Requested);
 		
@@ -563,49 +529,88 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method marks the status of the derivation as "InProgress".
+	 * This method marks the status of the derivation as "InProgress", 
+	 * also records the timestamp at the point the derivation status is marked as InProgress:
+	 * <derivation> <retrievedInputsAt> timestamp.
 	 * @param storeClient
 	 * @param derivation
 	 */
-	void markAsInProgress(String derivation) {
+	void updateStatusBeforeSetupJob(String derivation) {
 		deleteStatus(derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		while (checkInstanceExists(statusIRI)) {
-			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		}
+		
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(InProgress);
 		
 		modify.prefix(p_derived).insert(insert_tp);
 		modify.prefix(p_derived).insert(insert_tp_rdf_type);
 		
+		// record timestamp at the point the derivation status is marked as InProgress
+		// <derivation> <retrievedInputsAt> timestamp.
+		long retrievedInputsAtTimestamp = Instant.now().getEpochSecond();
+		TriplePattern insert_tp_retrieved_inputs_at = iri(derivation).has(retrievedInputsAt, retrievedInputsAtTimestamp);
+		modify.prefix(p_derived).insert(insert_tp_retrieved_inputs_at);
+		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
-	 * This method marks the status of the derivation as "Finished".
-	 * @param storeClient
+	 * This method updates the status and job completion.
 	 * @param derivation
-	 * @return
+	 * @param newDerivedIRI
 	 */
-	String markAsFinished(String derivation) {
+	void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
 		deleteStatus(derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		while (checkInstanceExists(statusIRI)) {
-			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		}
+		
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Finished);
 		
 		modify.prefix(p_derived).insert(insert_tp);
 		modify.prefix(p_derived).insert(insert_tp_rdf_type);
 		
+		for (String newIRI : newDerivedIRI) {
+			modify.insert(iri(statusIRI).has(hasNewDerivedIRI, iri(newIRI)));
+		}
+		
 		storeClient.executeUpdate(modify.getQueryString());
-		return statusIRI;
+	}
+	
+	/**
+	 * This method retrieves the rdf:type of the status of the given derivation instance.
+	 * @param derivation
+	 * @return
+	 */
+	StatusType getStatusType(String derivation) {
+		String statusQueryKey = "status";
+		String statusTypeQueryKey = "statusType";
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
+
+		SelectQuery query = Queries.SELECT();
+		
+		// ignore certain rdf:type
+		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityFilters[j] = Expressions.notEquals(statusType, classesToIgnore.get(j));
+		}
+		
+		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
+		GraphPattern queryPattern2 = status.isA(statusType).filter(Expressions.and(entityFilters));
+		
+		query.prefix(p_derived).where(queryPattern,queryPattern2).select(status,statusType);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.isEmpty()) {
+			return StatusType.NOSTATUS;
+		} else {
+			return statusToType.get(queryResult.getJSONObject(0).getString(statusTypeQueryKey));
+		}
 	}
 	
 	/**
@@ -630,48 +635,22 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method retrieves the status of a derivation.
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	String getStatus(String derivation) {
-		if (hasStatus(derivation)) {
-			String statusQueryKey = "status";
-			Variable status = SparqlBuilder.var(statusQueryKey);
-			SelectQuery query = Queries.SELECT();
-			
-			GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-			query.prefix(p_derived).where(queryPattern).select(status);
-			
-			JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-			
-			return queryResult.getJSONObject(0).getString(statusQueryKey);
-		} else {
-			throw new JPSRuntimeException("Unable to retrieve the status of derivation <" + derivation + ">.");
-		}
-	}
-	
-	/**
 	 * This method retrieves the new derived IRI of a derivation after the job completed.
 	 * @param storeClient
 	 * @param derivation
 	 * @return
 	 */
 	List<String> getNewDerivedIRI(String derivation) {
-		if (isFinished(derivation)) {
-			String statusQueryKey = "status";
+		if (getStatusType(derivation) == StatusType.FINISHED) {
 			String derivedQueryKey = "newDerivedIRI";
 			
 			SelectQuery query = Queries.SELECT();
 			
-			Variable status = SparqlBuilder.var(statusQueryKey);
 			Variable newDerivedIRI = SparqlBuilder.var(derivedQueryKey);
 			
-			GraphPattern statusPattern = iri(derivation).has(hasStatus, status);
-			GraphPattern derivedPattern = status.has(hasNewDerivedIRI, newDerivedIRI);
+			GraphPattern derivedPattern = iri(derivation).has(PropertyPaths.path(hasStatus,hasNewDerivedIRI), newDerivedIRI);
 			
-			query.prefix(p_derived).where(statusPattern, derivedPattern).select(newDerivedIRI);
+			query.prefix(p_derived).where(derivedPattern).select(newDerivedIRI);
 			JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 			
 			List<String> newDerived = new ArrayList<>();
@@ -692,6 +671,7 @@ public class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
+	@Deprecated
 	private boolean checkInstanceExists(String instance) {
     	SelectQuery query = Queries.SELECT();
     	
@@ -789,11 +769,12 @@ public class DerivationSparql{
 	
 	/** 
 	 * query the list of inputs for the given derived quantity
+	 * TODO SPARQL query string duplication with method getDerivations()
+	 * TODO To be break down into smaller chunks
 	 * @param kbClient
 	 * @param derivedQuantity
 	 * @return
 	 */
-	@Deprecated
 	List<String> getInputs(String derivedQuantity) {
 		String queryKey = "input";
 		Variable input = SparqlBuilder.var(queryKey);
@@ -882,13 +863,132 @@ public class DerivationSparql{
 	}
 	
 	/**
+	 * This method retrieves a mapped list of derivations that <isDerivedUsing> a given <agentIRI> and their statusType.
+	 * @param agentIRI
+	 * @return
+	 */
+	Map<String, StatusType> getDerivationsAndStatusType(String agentIRI) {
+		String queryKey = "derivation";
+		String statusQueryKey = "status";
+		String statusTypeQueryKey = "statusType";
+		
+		Variable derivation = SparqlBuilder.var(queryKey);
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
+		
+		// ignore certain rdf:type
+		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityFilters[j] = Expressions.notEquals(statusType, classesToIgnore.get(j));
+		}
+		
+		GraphPattern queryPattern = derivation.has(isDerivedUsing, iri(agentIRI)).andIsA(DerivationAsyn);
+		GraphPatternNotTriples optionalPattern = GraphPatterns.optional(GraphPatterns.and(derivation.has(hasStatus, status), status.isA(statusType).filter(Expressions.and(entityFilters))));
+		
+		SelectQuery query = Queries.SELECT();
+		
+		query.prefix(p_derived, p_agent).select(derivation,statusType).where(queryPattern,optionalPattern);
+		storeClient.setQuery(query.getQueryString());
+		JSONArray queryResult = storeClient.executeQuery();
+		
+		Map<String, StatusType> derivationsAndStatusType = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			if (queryResult.getJSONObject(i).has(statusTypeQueryKey)) {
+				derivationsAndStatusType.put(queryResult.getJSONObject(i).getString(queryKey), statusToType.get(queryResult.getJSONObject(i).getString(statusTypeQueryKey)));
+			} else {
+				derivationsAndStatusType.put(queryResult.getJSONObject(i).getString(queryKey), StatusType.NOSTATUS);				
+			}
+		}
+		
+		return derivationsAndStatusType;
+	}
+	
+	/**
+	 * This method retrieves a list of upstream derivations that directly linked with the given derivation in the chain and need an update.
+	 * @param derivation
+	 * @return
+	 */
+	List<String> getUpstreamDerivationsNeedUpdate(String derivation) {
+		String upsDevQueryKey = "upstreamDerivation";
+		String upsDevTimeQueryKey = "upstreamDerivationTimestamp";
+		String statusQueryKey = "status";
+		String statusTypeQueryKey = "statusType";
+		String pureInputTimeQueryKey = "pureInputTimestamp";
+		String inputsBelongingToDevTimeQueryKey = "inputsBelongingToDerivationTimestamp";
+		
+		SelectQuery query = Queries.SELECT().distinct();
+		
+		Variable upstreamDerivation = SparqlBuilder.var(upsDevQueryKey);
+		Variable upstreamDerivationTimestamp = SparqlBuilder.var(upsDevTimeQueryKey);
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
+		Variable pureInputTimestamp = SparqlBuilder.var(pureInputTimeQueryKey);
+		Variable inputsBelongingToDerivationTimestamp = SparqlBuilder.var(inputsBelongingToDevTimeQueryKey);
+		
+		// ignore certain rdf:type
+		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityFilters[j] = Expressions.notEquals(statusType, classesToIgnore.get(j));
+		}
+		
+		// check if the upstreamDerivation (outdated timestamp compared to pure input || outdated timestamp compared to its own upstream derivations || has status)
+		Expression<?> upstreamDerivationFilter = Expressions.or(Expressions.lt(upstreamDerivationTimestamp, pureInputTimestamp), // ?upstreamDerivationTimestamp < ?pureInputTimestamp
+				Expressions.lt(upstreamDerivationTimestamp, inputsBelongingToDerivationTimestamp), // ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp
+				Expressions.equals(statusType, PendingUpdate), // ?statusType IN (derived:PendingUpdate, derived:Requested, derived:InProgress, derived:Finished)
+				Expressions.equals(statusType, Requested),
+				Expressions.equals(statusType, InProgress),
+				Expressions.equals(statusType, Finished));
+		
+		GraphPattern upstreamDerivationPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom,belongsTo), upstreamDerivation);
+		GraphPattern upDevTimePattern = upstreamDerivation.has(PropertyPaths.path(hasTime,inTimePosition,numericPosition), upstreamDerivationTimestamp);
+		GraphPattern upDevStatusTypePattern = GraphPatterns.optional(GraphPatterns.and(upstreamDerivation.has(hasStatus, status), status.isA(statusType).filter(Expressions.and(entityFilters))));
+		GraphPattern upDevPureInputTimePattern = upstreamDerivation.has(PropertyPaths.path(isDerivedFrom,hasTime,inTimePosition,numericPosition), pureInputTimestamp).optional();
+		GraphPattern inputsBelongsToDevTimePattern = upstreamDerivation.has(PropertyPaths.path(isDerivedFrom,belongsTo,hasTime,inTimePosition,numericPosition), inputsBelongingToDerivationTimestamp).optional();
+		
+		// Complete query string:
+		// PREFIX derived: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+		// PREFIX time: <http://www.w3.org/2006/time#>
+		// SELECT DISTINCT ?upstreamDerivation
+		// WHERE {
+		//   <derivation> derived:isDerivedFrom/derived:belongsTo ?upstreamDerivation.
+		//   ?upstreamDerivation time:hasTime/time:inTimePosition/time:numericPosition ?upstreamDerivationTimestamp.
+		//   OPTIONAL{?upstreamDerivation derived:hasStatus ?status .
+		//              {?status a ?statusType .
+		//               FILTER((?statusType != <http://www.w3.org/2002/07/owl#Thing> && ?statusType != <http://www.w3.org/2002/07/owl#NamedIndividual>))
+		//              }
+		//           }
+		//   OPTIONAL{?upstreamDerivation derived:isDerivedFrom/time:hasTime/time:inTimePosition/time:numericPosition ?pureInputTimestamp}
+		//   OPTIONAL{?upstreamDerivation derived:isDerivedFrom/derived:belongsTo/time:hasTime/time:inTimePosition/time:numericPosition ?inputsBelongingToDerivationTimestamp}
+		//   FILTER((?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType = derived:PendingUpdate || ?statusType = derived:Requested || ?statusType = derived:InProgress || ?statusType = derived:Finished))
+		// }
+		
+		// it should be noted that the final FILTER has a simplified version but was not implemented as IN operator was not found in SparqlBuilder (to the best of the author's knowledge):
+		// FILTER(?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType IN (derived:PendingUpdate, derived:Requested, derived:InProgress, derived:Finished))
+		
+		query.prefix(p_derived,p_time).select(upstreamDerivation)
+		.where(GraphPatterns.and(upstreamDerivationPattern,upDevTimePattern,upDevStatusTypePattern,upDevPureInputTimePattern,inputsBelongsToDevTimePattern).filter(upstreamDerivationFilter));
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		List<String> listOfUpstreamDerivation = new ArrayList<>();
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			String derivedIRI = queryResult.getJSONObject(i).getString(upsDevQueryKey);
+			listOfUpstreamDerivation.add(derivedIRI);
+		}
+		
+		return listOfUpstreamDerivation;
+	}
+	
+	/**
 	 * This is used at the stage to detect circular dependency
 	 * if the input is part of a derived quantity, this will add the derived instance
 	 * if the input is not a derived instance, it will add the input itself
+	 * TODO SPARQL query string duplication with method getDerivations()
+	 * TODO To be break down into smaller chunks
 	 * @param kbClient
 	 * @param derivedQuantity
 	 */
-	@Deprecated
 	List<String> getInputsAndDerived(String derived) {
 		String inputQueryKey = "input";
 		String derivedQueryKey = "derived";
@@ -923,28 +1023,6 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * returns the derived quantity instance, <instance> <derived:belongsTo> ?x
-	 * @param kbClient
-	 * @param instance
-	 * @return
-	 */
-	String getDerivedIRI(String instance) {
-		SelectQuery query = Queries.SELECT();
-		String queryKey = "derived";
-		Variable derived = SparqlBuilder.var(queryKey);
-		GraphPattern queryPattern = iri(instance).has(belongsTo, derived);
-		query.prefix(p_derived).select(derived).where(queryPattern);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.length() != 1) {
-			throw new JPSRuntimeException(instance + " linked with " + String.valueOf(queryResult.length()) + " derived instances");
-		}
-		
-		return queryResult.getJSONObject(0).getString(queryKey);
-	}
-	
-	/**
 	 * returns entities belonging to this derived instance, ?x <derived:belongsTo> <derivedIRI>
 	 * @param kbClient
 	 * @param derivedIRI
@@ -963,6 +1041,56 @@ public class DerivationSparql{
 		List<String> entities = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			entities.add(queryResult.getJSONObject(i).getString(queryKey));
+		}
+		
+		return entities;
+	}
+	
+	/**
+	 * This method returns entities belonging to this derived instance
+	 * ?x <derived:belongsTo> <derivation>.
+	 * ?x <rdf:type> ?rdfType.
+	 * ?downstreamDerivation <derived:isDerivedFrom> ?x.
+	 * TODO SPARQL query string duplication with method getDerivations()
+	 * TODO To be break down into smaller chunks
+	 * @param kbClient
+	 * @param derivedIRI
+	 * @return
+	 */
+	List<Entity> getDerivedEntitiesAndDownstreamDerivation(String derivation) {
+		SelectQuery query = Queries.SELECT();
+		String entityQueryKey = "entity";
+		String rdfTypeQueryKey = "class";
+		String downstreamDevQueryKey = "downstreamDerivation";
+		String downsDevRdfTypeQueryKey = "downsDevClass";
+		
+		Variable entity = SparqlBuilder.var(entityQueryKey);
+		Variable rdfType = SparqlBuilder.var(rdfTypeQueryKey);
+		Variable downstreamDerivation = SparqlBuilder.var(downstreamDevQueryKey);
+		Variable downsDevRdfType= SparqlBuilder.var(downsDevRdfTypeQueryKey);
+		
+		// ignore certain rdf:type
+		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityFilters[j] = Expressions.notEquals(rdfType, classesToIgnore.get(j));
+		}
+		Expression<?>[] downsDevFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			downsDevFilters[j] = Expressions.notEquals(downsDevRdfType, classesToIgnore.get(j));
+		}
+		
+		GraphPattern queryPattern = entity.has(belongsTo, iri(derivation)).andIsA(rdfType).filter(Expressions.and(entityFilters));
+		GraphPattern downstreamDevPattern = downstreamDerivation.has(isDerivedFrom, entity).andIsA(downsDevRdfType).filter(Expressions.and(downsDevFilters));
+		query.prefix(p_derived).select(entity,rdfType,downstreamDerivation,downsDevRdfType).where(queryPattern,downstreamDevPattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		List<Entity> entities = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			Entity e = new Entity(queryResult.getJSONObject(i).getString(entityQueryKey));
+			e.setRdfType(queryResult.getJSONObject(i).getString(rdfTypeQueryKey));
+			e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(downstreamDevQueryKey), queryResult.getJSONObject(i).getString(downsDevRdfTypeQueryKey)));
+			entities.add(e);
 		}
 		
 		return entities;
@@ -1056,17 +1184,30 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param instance
 	 */
-	void deleteStatus(String instance) {
-		String status = getStatus(instance);
-		deleteInstances(Arrays.asList(status));
+	void deleteStatus(String derivation) {
+		SelectQuery query = Queries.SELECT();
+		Variable status = query.var();
+		Variable type = query.var();
+		Variable newDerivedIRI = query.var();
+		
+		TriplePattern tp1 = iri(derivation).has(hasStatus, status);
+		TriplePattern tp2 = status.isA(type);
+		TriplePattern tp3 = status.has(hasNewDerivedIRI, newDerivedIRI);
+		GraphPattern gp = status.has(hasNewDerivedIRI, newDerivedIRI).optional();
+		
+		ModifyQuery modify = Queries.MODIFY();
+		modify.delete(tp1,tp2,tp3).where(tp1,tp2,gp).prefix(p_derived);
+		
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
 	 * This methods retrieves the timestamp of a derivation instance. 
+	 * TODO SPARQL query string duplication with method getDerivations()
+	 * TODO To be break down into smaller chunks
 	 * @param kbClient
 	 * @param instance
 	 */
-	@Deprecated
 	long getTimestamp(String instance) {
 		String queryKey = "timestamp";
 		SelectQuery query = Queries.SELECT();
@@ -1297,16 +1438,10 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 	
-	void addNewDerivedIRIToFinishedStatus(String finishedStatus, List<String> newDerivedIRI) {
-		ModifyQuery modify = Queries.MODIFY();
-		
-		for (String newIRI : newDerivedIRI) {
-			modify.insert(iri(finishedStatus).has(hasNewDerivedIRI, iri(newIRI)));
-		}
-		
-		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
-	}
-	
+	/**
+	 * this is used to obtain all the derivations in the kg
+	 * @return
+	 */
 	List<Derivation> getDerivations() {
 		SelectQuery query = Queries.SELECT();
 		
@@ -1320,6 +1455,18 @@ public class DerivationSparql{
 		Variable inputTimestamp = query.var();
 		Variable derivationType = query.var();
 		
+		// ignore certain rdf:type (e.g. OWL.namedInvididual)
+		Expression<?>[] entityTypeFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityTypeFilters[j] = Expressions.notEquals(entityType, classesToIgnore.get(j));
+		}
+		
+		// ignore certain rdf:type (e.g. OWL.namedInvididual)
+		Expression<?>[] inputTypeFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			inputTypeFilters[j] = Expressions.notEquals(inputType, classesToIgnore.get(j));
+		}
+		
 		GraphPattern derivationPattern = derivation.has(isDerivedFrom, input)
 				.andHas(PropertyPaths.path(isDerivedUsing,hasOperation,hasHttpUrl), agentURL)
 				.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
@@ -1327,8 +1474,8 @@ public class DerivationSparql{
 		GraphPattern entityPattern = entity.has(belongsTo, derivation);
 		GraphPattern inputTimestampPattern = input.has(
 				PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp).optional();
-		GraphPattern inputTypePattern = input.isA(inputType).optional();
-		GraphPattern entityTypePattern = entity.isA(entityType).optional();
+		GraphPattern inputTypePattern = input.isA(inputType).optional().filter(Expressions.and(inputTypeFilters));
+		GraphPattern entityTypePattern = entity.isA(entityType).optional().filter(Expressions.and(entityTypeFilters));
 		
 		query.select(derivation,input,entity,agentURL,derivationTimestamp,inputTimestamp,derivationType,inputType,entityType)
 		.where(derivationPattern,entityPattern,inputTimestampPattern,inputTypePattern,entityTypePattern)
@@ -1438,7 +1585,7 @@ public class DerivationSparql{
 		TriplePattern delete_tp2 = subject.has(predicate2, entity);	
 		
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(delete_tp1,delete_tp2).where(entity.has(belongsTo, iri(derivation)), delete_tp1, delete_tp2).prefix(p_derived);
+		modify.delete(delete_tp1,delete_tp2).where(entity.has(belongsTo, iri(derivation)), delete_tp1, subject.has(predicate2, entity).optional()).prefix(p_derived);
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
@@ -1510,6 +1657,123 @@ public class DerivationSparql{
 		modify.delete(tp1,tp2,tp3).where(tp1,tp2,tp3).prefix(p_time);
 		
 		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	/**
+	 * Updates timestamps of the given instances in two stages
+	 * Query 1: get the corresponding time IRI
+	 * query 2: delete/insert appropriate triples
+	 * @param derivationTimestamp_map
+	 */
+	void updateTimestamps(Map<String,Long> instanceTimestamp_map) {
+		List<String> instances = new ArrayList<>(instanceTimestamp_map.keySet());
+		
+		// query 1: get corresponding time IRI for each instance if it exists
+		SelectQuery query = Queries.SELECT();
+		Variable inst = query.var();
+		ValuesPattern instValuesPattern = new ValuesPattern(inst, instances.stream().map(i -> iri(i)).collect(Collectors.toList()));
+				
+		Variable time_unix = query.var();
+		
+		GraphPattern gp1 = inst.has(PropertyPaths.path(hasTime, inTimePosition), time_unix);
+		
+		query.select(inst,time_unix).where(gp1,instValuesPattern).prefix(p_time);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		Map<String, String> instance_timeiri_map = new HashMap<>();
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			instance_timeiri_map.put(
+					queryResult.getJSONObject(i).getString(inst.getQueryString().substring(1)),
+					queryResult.getJSONObject(i).getString(time_unix.getQueryString().substring(1)));
+		}
+		
+		// some instances provided by the user may not exist, update list here
+		instances = new ArrayList<>(instance_timeiri_map.keySet());
+		
+		// query 2: update query, delete and insert appropriate triples
+		ModifyQuery modify = Queries.MODIFY();
+		
+		Variable timestamp = query.var();
+		
+		TriplePattern[] insert_tp = new TriplePattern[instances.size()];
+		List<Iri> timeIRIList = new ArrayList<>();
+		
+		for (int i = 0; i < instances.size(); i++) {
+			String instance  = instances.get(i);
+			Iri timeIRI = iri(instance_timeiri_map.get(instance));
+			insert_tp[i] = timeIRI.has(numericPosition, instanceTimestamp_map.get(instance));
+			timeIRIList.add(timeIRI);
+		}
+		
+		TriplePattern delete_tp = time_unix.has(numericPosition, timestamp);
+		ValuesPattern timeValuesPattern = new ValuesPattern(time_unix, timeIRIList);
+		
+		modify.delete(delete_tp).where(timeValuesPattern,delete_tp).insert(insert_tp).prefix(p_time);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	Map<String,String> getDerivationsOf(List<String> entities) {
+		SelectQuery query = Queries.SELECT();
+		Variable entity = query.var();
+		Variable derivation = query.var();
+		
+		GraphPattern queryPattern = entity.has(belongsTo, derivation);
+		ValuesPattern valuesPattern = new ValuesPattern(entity, 
+				entities.stream().map(e -> iri(e)).collect(Collectors.toList()));
+		
+		query.select(entity, derivation).where(queryPattern, valuesPattern).prefix(p_derived);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		Map<String,String> entityDerivationMap = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			entityDerivationMap.put(
+					queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1)), 
+					queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)));
+		}
+		
+		return entityDerivationMap;
+	}
+	
+	/**
+	 * This method retrieves the input read timestamp associated with the asynchronous derivation, also deletes the record after value retrieved.
+	 * @param derivation
+	 * @return
+	 */
+	Map<String, Long> retrieveInputReadTimestamp(String derivation) {
+		Map<String, Long> derivationTime_map = new HashMap<>();
+		
+		String queryKey = "timestamp";
+		SelectQuery query = Queries.SELECT();
+		Variable time = SparqlBuilder.var(queryKey);
+		
+		GraphPattern queryPattern = iri(derivation).has(retrievedInputsAt, time);
+		
+		query.prefix(p_derived).select(time).where(queryPattern);
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.length() > 1) {
+			throw new JPSRuntimeException("DerivedQuantitySparql: More than 1 time instance recorded for reading derivation inputs of <" + derivation + ">");
+		}
+		
+		try {
+			long inputReadTimestamp = queryResult.getJSONObject(0).getLong(queryKey);
+			derivationTime_map.put(derivation, inputReadTimestamp);
+			
+			// delete triple {<derivation> <retrievedInputsAt> timestamp}
+			ModifyQuery modify = Queries.MODIFY();
+			TriplePattern delete_timeRecord = iri(derivation).has(retrievedInputsAt, inputReadTimestamp);
+			modify.prefix(p_derived).delete(delete_timeRecord);
+			storeClient.executeUpdate(modify.getQueryString());
+			
+			return derivationTime_map;
+		}
+		catch (JSONException e) {
+			throw new JPSRuntimeException("No timestamp recorded for reading derivation inputs of <" + derivation + ">. The derivation is probably not setup correctly.");
+		}
 	}
 	
 	/**

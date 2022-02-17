@@ -7,9 +7,9 @@ Created on Thu Mar  4 16:10:02 2021
 
 import json
 import csv
-
+from chemaboxwriters.kgoperations.querytemplates import get_assembly_iri
 from io import StringIO
-import chemaboxwriters.common.commonvars as commonv
+import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
 
 onto_spec = PREFIXES["onto_spec"]
@@ -17,19 +17,38 @@ onto_mops = PREFIXES["onto_mops"]
 mops_pref = PREFIXES["mops_pref"]
 rdf_pref = PREFIXES["rdf_pref"]
 uom_pref = PREFIXES["uom_pref"]
-unres_pref = PREFIXES["unres_pref"]                                              
+unres_pref = PREFIXES["unres_pref"]
 
-def om_csvwriter(data):
-    data = json.loads(data)
-    gen_id = data[commonv.ENTRY_UUID]
+
+def om_csvwriter(file_path):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
+    gen_id = data[globals.ENTRY_UUID]
 
     csvfile = StringIO(newline='')
 
     spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    mops_id = data[commonv.ENTRY_IRI]
+    mops_id = data[globals.ENTRY_IRI]
 
+
+    search1 = get_assembly_iri(data["Mops_Chemical_Building_Units"][0]["GenericUnitModularity"],
+                               data["Mops_Chemical_Building_Units"][0]["GenericUnitPlanarity"],
+                               data["Mops_Chemical_Building_Units"][0]["GenericUnitNumber"],
+                               data["Mops_Symmetry_Point_Group"])
+
+    search2 = get_assembly_iri(data["Mops_Chemical_Building_Units"][1]["GenericUnitModularity"],
+                            data["Mops_Chemical_Building_Units"][1]["GenericUnitPlanarity"],
+                            data["Mops_Chemical_Building_Units"][1]["GenericUnitNumber"],
+                            data["Mops_Symmetry_Point_Group"])
+
+    assemblymodel = None
+
+    if search1 and search2:
+        assemblymodel = list(set(search1).intersection(search2))[0]
 
     spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -112,18 +131,34 @@ def om_csvwriter(data):
     uom_pref + 'hasUnit','',''])
 
     #Write the Assembly Model initialization and shape/symmetry related instances.
-    spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', onto_mops + '#AssemblyModel',
-    '','','']) #Initialize the Assembly Model object for the MOPs.
-    spamwriter.writerow([mops_pref + mops_id, 'Instance', mops_pref + 'AssemblyModel_' + gen_id,
-    onto_mops + '#hasAssemblyModel','','']) #Connect the MOPs instance to the Assembly Model instance.
-    spamwriter.writerow([onto_mops + '#hasSymmetryPointGroup', 'Data Property', mops_pref + 'AssemblyModel_' + gen_id,'',
-    data["Mops_Symmetry_Point_Group"],'String']) #Write the Symmetry point group for the MOPs.
-    spamwriter.writerow([mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id, 'Instance', onto_mops + '#' + data["Mops_Polyhedral_Shape"],
-    '','','']) #Initialize an instance of Polyhedral Shape that is the given shape from the JSON file.
-    spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,
-    onto_mops + '#hasPolyhedralShape','','']) #Connect the Assembly model to polyhedral shape.
-    spamwriter.writerow([onto_mops + '#hasSymbol','Data Property',mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,''
-    ,data["Mops_Polyhedral_Shape_Symbol"],'String'])
+
+    if assemblymodel is None:
+        spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', onto_mops + '#AssemblyModel',
+        '','','']) #Initialize the Assembly Model object for the MOPs.
+        spamwriter.writerow([mops_pref + mops_id, 'Instance', mops_pref + 'AssemblyModel_' + gen_id,
+        onto_mops + '#hasAssemblyModel','','']) #Connect the MOPs instance to the Assembly Model instance.
+        spamwriter.writerow([onto_mops + '#hasSymmetryPointGroup', 'Data Property', mops_pref + 'AssemblyModel_' + gen_id,'',
+        data["Mops_Symmetry_Point_Group"],'String']) #Write the Symmetry point group for the MOPs.
+        spamwriter.writerow([mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id, 'Instance', onto_mops + '#' + data["Mops_Polyhedral_Shape"],
+        '','','']) #Initialize an instance of Polyhedral Shape that is the given shape from the JSON file.
+        spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,
+        onto_mops + '#hasPolyhedralShape','','']) #Connect the Assembly model to polyhedral shape.
+        spamwriter.writerow([onto_mops + '#hasSymbol','Data Property',mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,''
+        ,data["Mops_Polyhedral_Shape_Symbol"],'String'])
+    else:
+        assemblymodel_uuid = assemblymodel.split('_')[-1]
+        spamwriter.writerow([mops_pref + 'AssemblyModel_' + assemblymodel_uuid, 'Instance', onto_mops + '#AssemblyModel',
+        '','','']) #Initialize the Assembly Model object for the MOPs.
+        spamwriter.writerow([mops_pref + mops_id, 'Instance', mops_pref + 'AssemblyModel_' + assemblymodel_uuid,
+        onto_mops + '#hasAssemblyModel','','']) #Connect the MOPs instance to the Assembly Model instance.
+        spamwriter.writerow([onto_mops + '#hasSymmetryPointGroup', 'Data Property', mops_pref + 'AssemblyModel_' + assemblymodel_uuid,'',
+        data["Mops_Symmetry_Point_Group"],'String']) #Write the Symmetry point group for the MOPs.
+        spamwriter.writerow([mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id, 'Instance', onto_mops + '#' + data["Mops_Polyhedral_Shape"],
+        '','','']) #Initialize an instance of Polyhedral Shape that is the given shape from the JSON file.
+        spamwriter.writerow([mops_pref + 'AssemblyModel_' + assemblymodel_uuid, 'Instance', mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,
+        onto_mops + '#hasPolyhedralShape','','']) #Connect the Assembly model to polyhedral shape.
+        spamwriter.writerow([onto_mops + '#hasSymbol','Data Property',mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,''
+        ,data["Mops_Polyhedral_Shape_Symbol"],'String'])
 
     #Write the information about the Chemical and Generic Building units.
     for i in range(len(data["Mops_Chemical_Building_Units"])): #We will loop through all the building units in the JSON.
@@ -177,25 +212,49 @@ def om_csvwriter(data):
         spamwriter.writerow([rdf_pref + '#label','Data Property',mops_pref + 'Substituent_Spacer_'  + gen_id + '_' + str(i),
         '',data["Mops_Chemical_Building_Units"][i]["SpacerSubstituentLabel"],'String']) #Attach label to Spacer Substituent.
 
-        spamwriter.writerow([mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i), 'Instance', onto_mops + '#GenericBuildingUnit',
-        '','','']) #Instantiate the corresponding Generic Building Unit.
-        spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),
-        onto_mops + '#hasGenericBuildingUnit','','']) #Connect the GBU instance to the Assembly Model instance.
-        spamwriter.writerow([onto_mops + '#hasPlanarity','Data Property',mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),
-        '',data["Mops_Chemical_Building_Units"][i]["GenericUnitPlanarity"],'String']) #Planarity of GBU.
-        spamwriter.writerow([onto_mops + '#hasModularity','Data Property',mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),
-        '',data["Mops_Chemical_Building_Units"][i]["GenericUnitModularity"],'String']) #Modularity of GBU.
-        spamwriter.writerow([mops_pref + 'GenericBuildingUnitNumber_' + gen_id + '_' + str(i), 'Instance', onto_mops + '#GenericBuildingUnitNumber',
-        '','','']) #Instantiate the corresponding Generic Building Unit Number.
-        spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + 'GenericBuildingUnitNumber_' + gen_id + '_' + str(i),
-        onto_mops + '#hasGenericBuildingUnitNumber','','']) #Connect the GBU Number instance to the Assembly Model instance.
-        spamwriter.writerow([mops_pref + 'GenericBuildingUnitNumber_' + gen_id + '_' + str(i), 'Instance',
-        mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),onto_mops + '#isNumberOf','','']) #Connect the GBU Number to its GBU.
-        spamwriter.writerow([onto_spec + '#value','Data Property',mops_pref + 'GenericBuildingUnitNumber_' + gen_id + '_' + str(i)
-        ,'',data["Mops_Chemical_Building_Units"][i]["GenericUnitNumber"],'String']) #Give the GBU Number its value.
+        if assemblymodel is None:
+            spamwriter.writerow([mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i), 'Instance', onto_mops + '#GenericBuildingUnit',
+            '','','']) #Instantiate the corresponding Generic Building Unit.
+            spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),
+            onto_mops + '#hasGenericBuildingUnit','','']) #Connect the GBU instance to the Assembly Model instance.
+            spamwriter.writerow([onto_mops + '#hasPlanarity','Data Property',mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),
+            '',data["Mops_Chemical_Building_Units"][i]["GenericUnitPlanarity"],'String']) #Planarity of GBU.
+            spamwriter.writerow([onto_mops + '#hasModularity','Data Property',mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),
+            '',data["Mops_Chemical_Building_Units"][i]["GenericUnitModularity"],'String']) #Modularity of GBU.
+            spamwriter.writerow([mops_pref + 'GenericBuildingUnitNumber_' + gen_id + '_' + str(i), 'Instance', onto_mops + '#GenericBuildingUnitNumber',
+            '','','']) #Instantiate the corresponding Generic Building Unit Number.
+            spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + 'GenericBuildingUnitNumber_' + gen_id + '_' + str(i),
+            onto_mops + '#hasGenericBuildingUnitNumber','','']) #Connect the GBU Number instance to the Assembly Model instance.
+            spamwriter.writerow([mops_pref + 'GenericBuildingUnitNumber_' + gen_id + '_' + str(i), 'Instance',
+            mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),onto_mops + '#isNumberOf','','']) #Connect the GBU Number to its GBU.
+            spamwriter.writerow([onto_spec + '#value','Data Property',mops_pref + 'GenericBuildingUnitNumber_' + gen_id + '_' + str(i)
+            ,'',data["Mops_Chemical_Building_Units"][i]["GenericUnitNumber"],'String']) #Give the GBU Number its value.
 
-        spamwriter.writerow([mops_pref + 'ChemicalBuildingUnit_' + gen_id + '_' + str(i), 'Instance',
-        mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),onto_mops + '#isFunctioningAs','','']) #Connect the CBU to its corresonding GBU
+            spamwriter.writerow([mops_pref + 'ChemicalBuildingUnit_' + gen_id + '_' + str(i), 'Instance',
+            mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),onto_mops + '#isFunctioningAs','','']) #Connect the CBU to its corresonding GBU
+        else:
+            assemblymodel_uuid = assemblymodel.split('_')[-1]
+            spamwriter.writerow([mops_pref + 'GenericBuildingUnit_' + assemblymodel_uuid + '_' + str(i), 'Instance', onto_mops + '#GenericBuildingUnit',
+            '','','']) #Instantiate the corresponding Generic Building Unit.
+            spamwriter.writerow([mops_pref + 'AssemblyModel_' + assemblymodel_uuid, 'Instance', mops_pref + 'GenericBuildingUnit_' + assemblymodel_uuid + '_' + str(i),
+            onto_mops + '#hasGenericBuildingUnit','','']) #Connect the GBU instance to the Assembly Model instance.
+            spamwriter.writerow([onto_mops + '#hasPlanarity','Data Property',mops_pref + 'GenericBuildingUnit_' + assemblymodel_uuid + '_' + str(i),
+            '',data["Mops_Chemical_Building_Units"][i]["GenericUnitPlanarity"],'String']) #Planarity of GBU.
+            spamwriter.writerow([onto_mops + '#hasModularity','Data Property',mops_pref + 'GenericBuildingUnit_' + assemblymodel_uuid + '_' + str(i),
+            '',data["Mops_Chemical_Building_Units"][i]["GenericUnitModularity"],'String']) #Modularity of GBU.
+            spamwriter.writerow([mops_pref + 'GenericBuildingUnitNumber_' + assemblymodel_uuid + '_' + str(i), 'Instance', onto_mops + '#GenericBuildingUnitNumber',
+            '','','']) #Instantiate the corresponding Generic Building Unit Number.
+            spamwriter.writerow([mops_pref + 'AssemblyModel_' + assemblymodel_uuid, 'Instance', mops_pref + 'GenericBuildingUnitNumber_' + assemblymodel_uuid + '_' + str(i),
+            onto_mops + '#hasGenericBuildingUnitNumber','','']) #Connect the GBU Number instance to the Assembly Model instance.
+            spamwriter.writerow([mops_pref + 'GenericBuildingUnitNumber_' + assemblymodel_uuid + '_' + str(i), 'Instance',
+            mops_pref + 'GenericBuildingUnit_' + assemblymodel_uuid + '_' + str(i),onto_mops + '#isNumberOf','','']) #Connect the GBU Number to its GBU.
+            spamwriter.writerow([onto_spec + '#value','Data Property',mops_pref + 'GenericBuildingUnitNumber_' + assemblymodel_uuid + '_' + str(i)
+            ,'',data["Mops_Chemical_Building_Units"][i]["GenericUnitNumber"],'String']) #Give the GBU Number its value.
+
+            spamwriter.writerow([mops_pref + 'ChemicalBuildingUnit_' + gen_id + '_' + str(i), 'Instance',
+            mops_pref + 'GenericBuildingUnit_' + assemblymodel_uuid + '_' + str(i),onto_mops + '#isFunctioningAs','','']) #Connect the CBU to its corresonding GBU
+
+
 
 
     csvcontent = csvfile.getvalue()
