@@ -96,7 +96,7 @@ class File_Triple_Uploaders:
                 logging.info(f"File: {f}, already uploaded to the triple store in this pipeline session. Skipping..")
             else:
                 logging.info(f"Uploading file: {f}")
-                file_ext = f.split('.')[-1]                
+                file_ext = f.split('.')[-1]
                 output = self.ts_uploader.upload(
                     file_or_dir = f,
                     file_ext = file_ext,
@@ -190,7 +190,7 @@ class StageHandler:
         if handlerKwargs is not None: _handlerKwargs = handlerKwargs
         if uploaders is not None and not disable_uploads:
             uploaders_kwargs['fs_upload_subdirs'] = _handlerKwargs.get('fs_upload_subdirs', self.fs_upload_subdirs)
-            uploaders_kwargs['ts_upload_nmsp'] = _handlerKwargs.get('ts_upload_nmsp', self.ts_upload_nmsp)         
+            uploaders_kwargs['ts_upload_nmsp'] = _handlerKwargs.get('ts_upload_nmsp', self.ts_upload_nmsp)
 
             if self.upload_inputs_to_fs:
                 uploaders.fs_upload(
@@ -292,7 +292,7 @@ class StageHandler:
         if upload_outputs_to_fs is not None: self.upload_outputs_to_fs = upload_outputs_to_fs
         if upload_outputs_to_ts is not None: self.upload_outputs_to_ts = upload_outputs_to_ts
         if pass_uploaders_ref_as_arg is not None: self.pass_uploaders_ref_as_arg = pass_uploaders_ref_as_arg
-        
+
     def set_fs_upload_subdirs(
             self,
             fs_upload_subdirs: str,
@@ -339,9 +339,9 @@ class StageHandler:
         logger.info(f"Handler uploads inputs to triple store: {self.upload_inputs_to_ts}")
         logger.info(f"Handler uploads outputs to file server: {self.upload_outputs_to_fs}")
         logger.info(f"Handler uploads outputs to triple store: {self.upload_outputs_to_ts}")
-        
+
         fs_upload_subdirs = self.fs_upload_subdirs
-        
+
 
         if handlerKwargs is not None:
             this_handler_kwargs = handlerKwargs.pop(self.name, None)
@@ -379,7 +379,7 @@ class Pipeline:
             self.uploaders = uploaders
         else:
             self.uploaders = get_file_triple_uploaders(name)
-            
+
         self.fs_upload_subdirs = fs_upload_subdirs
         self.ts_upload_nmsp = ts_upload_nmsp
 
@@ -453,7 +453,7 @@ class Pipeline:
             raise UnsupportedStage(f"Error: Stage: '{requestedStage}' is not supported.")
 
         logger.info(f"Input stage set to: {inputType}.")
-        unroll_input = True
+        unroll_input = False
 
         if self.collate_inputs_at_stages is not None:
             if inputType in self.collate_inputs_at_stages:
@@ -517,7 +517,7 @@ class Pipeline:
                                                 inputType = inputType,
                                                 outDir = outDir,
                                                 handlerKwargs=_handlerKwargs,
-                                                uploaders = _uploaders,                                                
+                                                uploaders = _uploaders,
                                                 dry_run = dry_run,
                                                 disable_uploads = disable_uploads,
                                                 pipeline = self)
@@ -595,7 +595,7 @@ class Pipeline:
                 raise IncorrectHandlerParameter(f"Incorrect --ts-upload-nmsp option: {nmsp}. Please check the syntax.")
 
             if '.' not in nmsp and ':' not in nmsp:
-                for _, handler in self.handlers.items():                    
+                for _, handler in self.handlers.items():
                     if handler.name not in handlerKwargs: handlerKwargs[handler.name] = {}
                     if isinstance(handler, Pipeline):
                         handler.set_ts_upload_nmsp(nmsp, handlerKwargs = handlerKwargs[handler.name], inner_call=True)
