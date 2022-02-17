@@ -40,7 +40,11 @@ var scriptDir = scriptURL.substring(0, scriptURL.lastIndexOf("/") + 1);
 var imageDir = "/user/images/";
 
 // Location of the chatbot itself
-var botURL = "/marie/request/";
+// var botURL = "/marie/request/";
+var botURL = "http://127.0.0.1:5000/";
+
+
+
 
 // Hide the results row by default
 var resultsRow = document.getElementById("results-row");
@@ -191,6 +195,7 @@ function askQuestion() {
 */
 function makeRequest(question, type, resultType, successFunction, promises) {
 	let url = botURL + "chemistry_chatbot/query?type=" + type;
+    console.log('url is ', url)
 	let data = { "question": question };
 
 	// Make the call
@@ -200,6 +205,7 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 		dataType: resultType,
 		timeout: (1000 * 60),
 		success: function (data) {
+
 			successFunction(data);
 			asking--;
 		},
@@ -207,8 +213,8 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 			console.log(xhr.status);
 			console.log(thrownError);
 			// for test, use results
-			successFunction(results.pop())
-			// successFunction(null);
+			// successFunction(results.pop())
+			successFunction(null);
 			asking--;
 		}
 	}));
@@ -235,7 +241,7 @@ function handleResults(rawResult){
         process_matrix_data(jsonData);
     }
     else{
-        processChatbotResults(rawResult);
+        processChatbotResults(jsonData);
     }
 }
 
@@ -246,9 +252,18 @@ function handleResults(rawResult){
 function processChatbotResults(jsonData) {
 
     let chatbotResults = null;
+
+
     if (Array.isArray(jsonData)) {
+        console.log('The object is identified as an Array', jsonData);
+		try {
             // JSON array
             chatbotResults = parseJSONArray(jsonData);
+		} catch (error) {
+			chatbotResults = parseJSONObject(jsonData);
+		}
+
+
         } else {
             // JSON object
             chatbotResults = parseJSONObject(jsonData);
@@ -270,7 +285,18 @@ function parseJSONObject(jsonResults) {
 
 	if (headObject == null) {
 		// May not be a JSON object?
-		return parseJSONArray(jsonResults);
+        try {
+            return parseJSONArray(jsonResults);
+        }
+        catch (err){
+            // this  could be a result from the pce agent, we need to handle it differently ..
+            // make it an JSON array then pass it to parseJSONArray
+            if ('result' in jsonResults){
+                let jsonData = [jsonResults['result']];
+                return parseJSONArray(jsonData);
+            }
+            console.log('Ill-formatted data')
+        }
 	}
 
 	let headVars = headObject["vars"];
@@ -311,6 +337,7 @@ function parseJSONArray(jsonResults) {
 	valueSet["Result"] = [];
 
 	let index = 1;
+    console.log('The type of json results', typeof(jsonResults));
 	jsonResults.forEach((item) => {
 		// Store result index
 		valueSet["Result"].push(index);
@@ -542,6 +569,8 @@ function drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed
 
 
 function makeTable(matrix_set){
+
+    console.log('Making a table from matrix set')
     // let test_valueSet = [{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'}]
     matrix_set.forEach(function (matrix) {
         let x_data = matrix['value'];
@@ -595,10 +624,17 @@ function convertToJSONResults(rawResults) {
 
 		try {
 			jsonData = JSON.parse(rawResults);
+            console.log('result is parsed into JSON from String', jsonData)
+            console.log('Type of the object is ', typeof(jsonData))
 		} catch (err1) {
+            console.log('err1')
+
 			try {
 				jsonData = JSON.parse(JSON.stringify(rawResults));
+                return jsonData;
+
 			} catch (err2) {
+                console.log('err2')
 				jsonData = rawResults;
 			}
 		}
@@ -790,6 +826,36 @@ a3 = {
 
 a4 = {"head": {"vars": ["v", "v2"]}, "results": {"bindings": [{"v": {"xml:lang": "en", "type": "literal", "value": "1-bromobutan-2-one"}, "v2": {"xml:lang": "en", "type": "literal", "value": "chemical compound"}}]}}
 
+a5 = '[{"unit_short": "cm-1", "name": "H2O2", "frequency": "-580.2629 938.5689 1338.4109 1454.4567 3751.1335 3794.3697"}]';
 
+a6 = {
+    "result": {
+        "predictPowerConversionEfficiencyModel": "svr",
+        "requestedSolarCellDonor": [
+            ""
+        ],
+        "solarCellAcceptor": "fullerene-based",
+        "solarCellArchitecture": "bulk heterojunction",
+        "solarCellPowerConversionEfficiency": [
+            2.512718780000318
+        ],
+        "solarCellType": "organic"
+    }
+};
 
-let results = [a1,a2,a3,a4];
+a7 = '{\n' +
+    '    "result": {\n' +
+    '        "predictPowerConversionEfficiencyModel": "svr",\n' +
+    '        "requestedSolarCellDonor": [\n' +
+    '            ""\n' +
+    '        ],\n' +
+    '        "solarCellAcceptor": "fullerene-based",\n' +
+    '        "solarCellArchitecture": "bulk heterojunction",\n' +
+    '        "solarCellPowerConversionEfficiency": [\n' +
+    '            2.512718780000318\n' +
+    '        ],\n' +
+    '        "solarCellType": "organic"\n' +
+    '    }\n' +
+    '}'
+// let results = [a1,a2,a3,a4, a5, a6, a7];
+let results = [a7]
