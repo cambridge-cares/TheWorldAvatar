@@ -1,38 +1,34 @@
-from chemaboxwriters.common.base import get_pipeline, Pipeline
+from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
 import chemaboxwriters.common.handlers as handlers
 import chemaboxwriters.common.globals as globals
-from chemaboxwriters.ontospecies.jsonwriter import os_jsonwriter
-from chemaboxwriters.ontospecies.csvwriter import os_csvwriter
+from chemaboxwriters.ontospecies.handlers import (
+    OS_JSON_TO_OS_CSV_Handler,
+    QC_JSON_TO_OS_JSON_Handler,
+)
 from typing import Optional
+from enum import Enum
 import logging
+
 
 logger = logging.getLogger(__name__)
 
-def assemble_os_pipeline(
-        name: Optional[str] = None,
-        outStage: Optional[str] = None
-    )->Pipeline:
+OS_PIPELINE = "ONTOSPECIES"
 
-    if name is None: name = 'ontospecies'
-    logger.info(f"Assembling {name} pipeline.")
 
-    pipeline = get_pipeline(
-                    name = name,
-                    outStage = outStage,
-                    fs_upload_subdirs='ontospecies',
-                    ts_upload_nmsp='namespace/ontospecies/sparql')
+def assemble_os_pipeline(out_stage: Optional[Enum] = None) -> Pipeline:
 
-    pipeline.add_handler(handler = handlers.get_qc_log_to_qc_json_handler()) \
-            .add_handler(handler = handlers.get_json_to_json_handler(
-                                                inStageTag = globals.QUANTUM_CALC_TAG,
-                                                outStageTag = globals.ONTO_SPECIES_TAG,
-                                                handlerFunc=os_jsonwriter)) \
-            .add_handler(handler = handlers.get_json_to_csv_handler(
-                                                inStageTag = globals.ONTO_SPECIES_TAG,
-                                                outStageTag = globals.ONTO_SPECIES_TAG,
-                                                handlerFunc=os_csvwriter)) \
-            .add_handler(handler = handlers.get_csv_to_owl_handler(
-                                                inStageTag = globals.ONTO_SPECIES_TAG,
-                                                outStageTag = globals.ONTO_SPECIES_TAG),
-                        upload_outputs_to_ts = True)
+    logger.info(f"Assembling {OS_PIPELINE} pipeline.")
+
+    pipeline = get_pipeline(name=OS_PIPELINE, out_stage=out_stage)
+
+    pipeline.add_handler(handler=handlers.QC_LOG_TO_QC_JSON_Handler())
+    pipeline.add_handler(QC_JSON_TO_OS_JSON_Handler())
+    pipeline.add_handler(OS_JSON_TO_OS_CSV_Handler())
+    pipeline.add_handler(
+        handler=handlers.CSV_TO_OWL_Handler(
+            name="OS_CSV_TO_OS_OWL",
+            in_stages=[globals.aboxStages.OS_CSV],
+            out_stage=globals.aboxStages.OS_OWL,
+        )
+    )
     return pipeline
