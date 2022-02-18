@@ -1,44 +1,39 @@
-from chemaboxwriters.common.base import get_pipeline, Pipeline
+from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.ontocompchem.pipeline import assemble_oc_pipeline
-import chemaboxwriters.common.handlers as handlers
-from chemaboxwriters.ontopesscan.jsonwriter import ops_jsonwriter
-from chemaboxwriters.ontopesscan.csvwriter import ops_csvwriter
+from chemaboxwriters.ontopesscan.handlers import (
+    OC_JSON_TO_OPS_JSON_Handler,
+    OPS_JSON_TO_OPS_CSV_Handler,
+)
 from typing import Optional
+from enum import Enum
+from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
+import chemaboxwriters.common.handlers as handlers
+
+
 import logging
 
 logger = logging.getLogger(__name__)
 
-def assemble_ops_pipeline(
-        name: Optional[str] = None,
-        outStage: Optional[str] = None
-    )->Pipeline:
+OPS_PIPELINE = "ONTOPESSCAN"
 
-    if name is None: name = 'ontopesscan'
-    logger.info(f"Assembling the {name} pipeline.")
 
-    pipeline = get_pipeline(
-                    name = name,
-                    outStage = outStage,
-                    collate_inputs_at_stages = [f"{globals.ONTO_COMP_CHEM_TAG}_JSON"],
-                    fs_upload_subdirs='ontopesscan',
-                    ts_upload_nmsp='namespace/ontopesscan/sparql')
+def assemble_ops_pipeline(out_stage: Optional[Enum] = None) -> Pipeline:
 
-    pipeline.add_handler(handler = assemble_oc_pipeline(
-                                        name='OC_PIPELINE',
-                                        outStage=f"{globals.ONTO_COMP_CHEM_TAG}_JSON"
-                                    )) \
-            .add_handler(handler = handlers.get_json_to_json_handler(
-                                                inStageTag = globals.ONTO_COMP_CHEM_TAG,
-                                                outStageTag = globals.ONTO_PESSCAN_TAG,
-                                                handlerFunc=ops_jsonwriter,
-                                                unroll_input = False)) \
-            .add_handler(handler = handlers.get_json_to_csv_handler(
-                                                inStageTag = globals.ONTO_PESSCAN_TAG,
-                                                outStageTag = globals.ONTO_PESSCAN_TAG,
-                                                handlerFunc=ops_csvwriter)) \
-            .add_handler(handler = handlers.get_csv_to_owl_handler(
-                                                inStageTag = globals.ONTO_PESSCAN_TAG,
-                                                outStageTag = globals.ONTO_PESSCAN_TAG),
-                        upload_outputs_to_ts = True)
+    logger.info(f"Assembling {OPS_PIPELINE} pipeline.")
+
+    pipeline = get_pipeline(name=OPS_PIPELINE)
+
+    pipeline.add_handler(
+        handler=assemble_oc_pipeline(out_stage=globals.aboxStages.OC_JSON)
+    )
+    pipeline.add_handler(handler=OC_JSON_TO_OPS_JSON_Handler())
+    pipeline.add_handler(handler=OPS_JSON_TO_OPS_CSV_Handler())
+    pipeline.add_handler(
+        handler=handlers.CSV_TO_OWL_Handler(
+            name="OPS_CSV_TO_OPS_OWL",
+            in_stages=[globals.aboxStages.OPS_CSV],
+            out_stage=globals.aboxStages.OPS_OWL,
+        )
+    )
     return pipeline
