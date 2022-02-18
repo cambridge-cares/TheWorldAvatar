@@ -1,11 +1,22 @@
 class UnsupportedStage(Exception):
-    """Raise for not supported abox processing stages. """
+    """Raise for not supported abox processing stages."""
+
     pass
+
 
 class UnsupportedPipeline(Exception):
-    """Raise for not supported abox processing pipelines. """
+    """Raise for not supported abox processing pipelines."""
+
     pass
 
+
 class IncorrectHandlerParameter(Exception):
-    """Raise for incorrect handler params. """
+    """Raise for incorrect handler params."""
+
+    pass
+
+
+class IncorrectFileOrDirPath(Exception):
+    """Raise for incorrect file or dir paths."""
+
     pass
