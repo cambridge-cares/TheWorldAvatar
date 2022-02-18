@@ -1,24 +1,47 @@
 /**
  * Registers and handles interactions with the MapBox map (e.g. mouse overs, 
  * location clicks, keyboard events).
+ * 
+ * TODO: This class could do with some more refactoring, perhaps splitting
+ * into multiple classes.
  */
 class InteractionHandler {
 
+    // Mapbox map
     _map;
 
-    _registry;
-
-    _panelHandler;
-
+    // MapBox popup
     _popup;
 
-    _previousTab = "meta-tree-button";
+    // Data registry
+    _registry;
 
+    // Side panel handler
+    _panelHandler;
+
+    // Time series handle
     _timeseriesHandler;
 
+    // Layer Handler
+    _layerHander;
+
+    // Name of previously opened tab
+    _previousTab = "meta-tree-button";
+
+    // ID of hovered feature
     _hoveredStateId = null;
 
+    // Time of last click
     _lastClick;
+
+    // Callback after feature selection
+    _selectionCallbacks = {};
+    
+    // Cached meta data
+    _cachedMetadata = {};
+
+    // Cached timeseries
+    _cachedTimeseries = {};
 
     /**
      * Initialise a new interaction handler.
@@ -26,15 +49,25 @@ class InteractionHandler {
      * @param {*} map 
      * @param {*} dataRegistry 
      */
-    constructor(map, dataRegistry, panelHandler, timeseriesHandler) {
+    constructor(map, dataRegistry, panelHandler, timeseriesHandler, layerHandler) {
         this._map = map;
         this._registry = dataRegistry;
         this._panelHandler = panelHandler;
         this._timeseriesHandler = timeseriesHandler;
-
+        this._layerHander = layerHandler;
         this._popup = DT.popup;
     }
 
+    /**
+     * Add a callback what will fire after a feature within the 
+     * input MapBox layer has been selected.
+     * 
+     * @param {String} layerName MapBox layerID
+     * @param {Function} callback function to execute 
+     */
+    addSelectionCallback(layerName, callback) {
+        this._selectionCallbacks[layerName] = callback;
+    }
 
     /**
      * Register default mouse interactions with the input layer.
@@ -42,7 +75,6 @@ class InteractionHandler {
      * @param {string[]} layer [layer name, layer type]
      */
     registerInteractions(layer) {
-
         let layerName = layer[0];
         let layerType = layer[1];
         let sourceName = this._map.getLayer(layerName).source;
@@ -51,6 +83,11 @@ class InteractionHandler {
 
         // Mouse click
         this._map.on("click", layerName, (event) => {
+            if(!DT.clickEvents) return;
+            if(layerName.endsWith("_arrows")) {
+                return;
+            }
+
              // Fudge to ensure that only one click per 500ms
             let thisClick = Date.now();
             if(this._lastClick != null) {
@@ -60,9 +97,50 @@ class InteractionHandler {
             }
             this._lastClick = thisClick;
 
-            // Trigger on top most feature
-            let feature = event.features[event.features.length - 1];
-            this.mouseClick(feature);
+            // Get all visible features under the mouse click
+            let features = this._map.queryRenderedFeatures(event.point);
+            let feature = features[0];
+
+            // Filter to determine how many non-default, circle/symbol features are present
+            let self = this;
+            let siteFeatures = features.filter(feature => {
+                let featureLayer = feature["layer"]["id"];
+                
+                // Filter out layers of specific types
+                if(featureLayer.includes("_clickable")) return false;
+                if(featureLayer.includes("_arrows")) return false;
+                if(featureLayer.includes("-highlight")) return false;
+                if(featureLayer.includes("-focus")) return false;
+
+                // Filter out invisible layers
+                if(self._map.getLayoutProperty(featureLayer, "visibility") === "none") {
+                    return false;
+                }
+
+                let layer = self._map.getLayer(featureLayer);
+                if(layer["type"] !== "circle" && layer["type"] !== "symbol") return false;
+                if(layer["metadata"] && layer["metadata"]["provider"] === "cmcl") return true;
+                return false;
+            });
+
+            if(siteFeatures.length == 1 && layerName.endsWith("_cluster")) {
+                // If a cluster feature, let the user pick the leaf feature
+                this.#handleClusterClick(siteFeatures[0], function(newFeature) {
+                    self.mouseClick(layerName.replace("_cluster", ""), newFeature);
+                });
+            } else {
+                // If more than one, let the use pick
+                if(siteFeatures.length > 1) {
+                    feature = this.#handleMultipleFeatures(siteFeatures, function(newFeature) {
+                        // Trigger on chosen feature
+                        if(newFeature != null) {    
+                            self.mouseClick(newFeature["layer"]["id"], newFeature);
+                        }
+                    });
+                } else {
+                    self.mouseClick(layerName, feature);
+                }
+            }
         });
 
         // Interactions per layer type
@@ -73,11 +151,15 @@ class InteractionHandler {
             case "symbol":
                 // Mouse enter
                 this._map.on("mouseenter", layerName, (event) => {
+                    if(layerName.endsWith("_arrows")) {
+                        return;
+                    }
+
                     let feature = this._map.queryRenderedFeatures(event.point)[0];
                     if(feature == null || feature.geometry == null) return;
 
                     // Change cursor
-                    this._map.getCanvas().style.cursor = 'pointer';
+                    if(DT.clickEvents) this._map.getCanvas().style.cursor = 'pointer';
 
                     // Get correct co-ords
                     var coordinates = feature.geometry.coordinates.slice();
@@ -85,17 +167,24 @@ class InteractionHandler {
                         coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
                     }
 
-                    // Get appropriate description for layer
-                    if(!feature.properties["displayName"] && !feature.properties["name"]) {
-                        return;
-                    }
-                    var name = feature.properties["displayName"];
-                    if(name == null) name = feature.properties["name"];
+                    let html = "";
+                    if(layerName.endsWith("_cluster")) {
+                        html = "<h3>Multiple features</h3>";
 
-                    // Build HTML for popup
-                    var html = "<h3>" + name + "</h3>";
-                    if(feature.properties["description"]) {
-                        html += feature.properties["description"] + "</br></br>"
+                        let count = feature["properties"]["point_count_abbreviated"];
+                        html += `There are `+ count + ` features at this location. `;
+                        html += "Click to show a list of these features."
+                    } else {
+                        // Get appropriate description for feature
+                        var name = feature.properties["displayName"];
+                        if(name == null) name = feature.properties["name"];
+                        if(name == null) return;
+
+                        // Build HTML for popup
+                        html = "<h3>" + name + "</h3>";
+                        if(feature.properties["description"]) {
+                            html += feature.properties["description"] + "</br></br>"
+                        }
                     }
 
                     if(coordinates.length == 2 && this.#isNumber(coordinates[0])) {
@@ -104,9 +193,9 @@ class InteractionHandler {
 
                     } else if(coordinates.length >= 2) {
                         // Not a point, determine center then show popup
-                        let centroid = turf.centroid(feature);
-                        let popupLoc = centroid["geometry"]["coordinates"];
-                        this._popup.setLngLat(popupLoc).setHTML(html).addTo(this._map);
+                        // let centroid = turf.centroid(feature);
+                        // let popupLoc = centroid["geometry"]["coordinates"];
+                        this._popup.setLngLat(event.lngLat).setHTML(html).addTo(this._map);
                     }
                 });
 
@@ -125,11 +214,19 @@ class InteractionHandler {
                     // Mouse enter
                     this._map.on("mouseenter", layerName, (event) => {
                         // Change cursor
+                        if(!DT.clickEvents) return;
+                        if(layerName.endsWith("_arrows")) {
+                            return;
+                        }
                         this._map.getCanvas().style.cursor = 'pointer';
                     });
 
                     // When the user moves their mouse over the fill area
                     this._map.on('mousemove', layerName, (e) => {
+                        if(layerName.endsWith("_arrows")) {
+                            return;
+                        }
+
                         var thisFeature = this._map.queryRenderedFeatures(e.point)[0];
 
                         if(lastFeature == null || thisFeature.id != lastFeature.id) {
@@ -188,11 +285,120 @@ class InteractionHandler {
     }
 
     /**
-     * 
-     * @param {*} layerName 
-     * @param {*} feature 
+     * Given a cluster feature, this method extracts its leaf features and passes
+     * their details onto the handleMultipleFeatures() method.
+     *  
+     * @param {JSONObject} feature 
+     * @param {Function} callback 
      */
-    mouseClick(feature) {
+    #handleClusterClick(feature, callback) {
+        let sourceName = feature["layer"]["source"];
+        let source = this._map.getSource(sourceName);
+
+        source.getClusterLeaves(feature.id, 999, 0, (error, features) => {
+            if(error) {
+                console.log("ERROR: Could not determine leaf features within cluster.");
+                console.log(error);
+
+            } else if(features != null) {
+                features.forEach(leaf => {
+                    console.log(leaf);
+                    leaf["layer"] = [];
+                    leaf["source"] = sourceName;
+                    leaf["layer"]["id"] = feature["layer"]["id"].replace("_cluster", "");
+                });
+                this.#handleMultipleFeatures(features, callback);
+            }
+        });
+    }
+
+    /**
+     * Given an array of possible GeoJSON features, create controls to allow the user
+     * to selet an individual feature, then return it.
+     * 
+     * @param {JSONObject[]} features array of possible features. 
+     * 
+     * @returns selected GeoJSON feature
+     */
+    #handleMultipleFeatures(features, callback) {
+        let html = `
+            <div style="padding: 15px">
+                <p>Multiple features are located at these coordinates, please choose which
+                feature you'd like to select using the drop-down boxes below.</p>
+                <br/><br/>
+                <label for="select-feature">Feature:</label>
+                <select name="features" id="select-feature" style>
+                <option value="" disabled selected>Select a feature...</option>
+        `;
+
+        let added = [];
+
+        for(var i = 0; i < features.length; i++) {
+            let displayName = features[i]["properties"]["displayName"];
+            if(added.includes(displayName)) continue;
+            added.push(displayName);
+
+            if(displayName == null) {
+                displayName = "Cluster of " + features[i]["properties"]["point_count_abbreviated"] + " features from '";
+
+                let layerID = features[i]["layer"]["id"].replace("_cluster", "");
+                let layerName = null;
+                for (const [key, value] of Object.entries(DT.treeDictionary)) {
+                    if(value.includes(layerID)) {
+                        layerName = key;
+                    }
+                }
+                
+                if(layerName == null) layerName = layerID;
+                displayName += layerName + "' layer."
+            }
+
+            // The DT.selectColorer is an optional function (set externally) that 
+            // when passed a feature will return a CSS color string to use for any
+            // select options representing that feature.
+            let color = "black";
+            if(DT.selectColorer != null) {
+                color = DT.selectColorer(features[i]);
+            }
+
+            // Append option to select control
+            html += `
+                <option style="color: ` + color + `;" value="` + i + `">` + displayName + `</option>
+            `;
+           
+        };
+        html += `</select></div>`;
+
+        this._panelHandler.setTitle("<h3>Multiple Features</h3>");
+        this._panelHandler.setContent(html);
+        this._panelHandler.toggleLegend(false);
+        document.getElementById("footerContainer").style.display = "block";
+
+        let selectElement = document.getElementById("select-feature");
+        selectElement.addEventListener("click", function() {
+            if(callback != null) {
+                callback(features[selectElement.value]);
+            }
+        });
+    }
+
+    /**
+     * Fired when a feature is selected.
+     * 
+     * @param {String} layerName name of layer containing feature
+     * @param {JSONObject} feature selected feature
+     */
+    mouseClick(layerName, feature) {
+        if(feature == null) return;
+
+        let self = this;
+        if(layerName.endsWith("_cluster")) {
+            // If a cluster feature, let the user pick the leaf feature
+            this.#handleClusterClick(feature, function(newFeature) {
+                self.mouseClick(layerName.replace("_cluster", ""), newFeature);
+            });
+        } 
+        
         // Clear existing side panel content
         this._panelHandler.setContent("");
 
@@ -226,10 +432,10 @@ class InteractionHandler {
         }
        
         // Handle the metadata
-        this.#handleMetadata(feature);
+        this.#handleMetadata(feature, layerName);
 
         // Handle the timeseries data
-        this.#handleTimeseries(feature);
+        this.#handleTimeseries(feature, layerName);
 
         // Ensure the previously opened tab is open
         document.getElementById(this._previousTab).click();
@@ -239,16 +445,19 @@ class InteractionHandler {
         if(sidePanel.classList.contains("collapsed")) {
             this._panelHandler.toggleExpansion();
         }
-
         document.getElementById("footerContainer").style.display = "block";
         document.getElementById("contentContainer").style.flexGrow = 1;
-        
-     
-        // TEST
-        showConnectionsForFeature(this._map, this._registry, feature);
 
-        // Remember the currently selected feature
         DT.currentFeature = feature;
+
+        // Fire optional selection callback
+        let callback = this._selectionCallbacks[layerName];
+        if(callback != null) {
+            callback(feature);
+        } else {
+            callback = this._selectionCallbacks["*"];
+            if(callback != null) callback(feature);
+        }
     }
 
     /**
@@ -256,9 +465,16 @@ class InteractionHandler {
      * 
      * @param {JSONObject} feature selected GeoJSON feature.
      */
-    #handleMetadata(feature) {
+    #handleMetadata(feature, layerName) {
         // Build containers for metadata trees
         this.#buildMetadataContainers();
+
+        // Loading text
+        document.getElementById("meta-tree").innerHTML = `
+            <div id="no-meta-container">
+                <p>Loading metadata, please wait...</p>
+            </div>
+        `;
 
         var beforeContainer = document.getElementById("content-before");
         if(feature.properties["description"]) {
@@ -269,17 +485,19 @@ class InteractionHandler {
         }
 
         // Get the metadata
-        var metaPromises = this.#findMeta(feature);
+        var metaPromises = this.#findMeta(feature, layerName);
 
         // Build tree once all metadata is added
         Promise.all(metaPromises).then((values) => {
             // Combine all meta entries into single tree
             var combinedMeta = [];
-            values.forEach(jsonEntry => {
-                Object.keys(jsonEntry).forEach(function(key) {
-                    if(key !== "id") combinedMeta[key] = jsonEntry[key];
+            if(values != null) {
+                values.forEach(jsonEntry => {
+                    Object.keys(jsonEntry).forEach(function(key) {
+                        if(key !== "id") combinedMeta[key] = jsonEntry[key];
+                    });
                 });
-            });
+            }
 
             // Show the metadata
             if(Object.keys(combinedMeta).length == 0) {
@@ -293,6 +511,7 @@ class InteractionHandler {
                 document.getElementById("meta-tree").innerHTML = "";
                 var metaTree = JsonView.renderJSON(combinedMeta, document.getElementById("meta-tree"));
                 JsonView.expandChildren(metaTree);
+                JsonView.selectiveCollapse(metaTree); // selectively collapse nodes with the collapse field set to true
             }
         });
     }
@@ -302,8 +521,8 @@ class InteractionHandler {
      * 
      * @param {JSONObject} feature selected GeoJSON feature.
      */
-    #handleTimeseries(feature) {
-        var timePromises = this.#findTimeSeries(feature);
+    #handleTimeseries(feature, layerName) {
+        var timePromises = this.#findTimeSeries(feature, layerName);
 
         var self = this;
         Promise.all(timePromises).then((values) => {
@@ -324,6 +543,10 @@ class InteractionHandler {
         });
     }
 
+    /**
+     * Builds the HTML container used to house the metadata tree and 
+     * timeseries controls.
+     */
     #buildMetadataContainers() {
         var html = `
             <div id="content-before"></div>
@@ -337,6 +560,12 @@ class InteractionHandler {
         this._panelHandler.setContent(html);
     }
 
+    /**
+     * Programatically select the metadata or timeseries tabs.
+     * 
+     * @param {String} tabButtonName 
+     * @param {String} tabName 
+     */
     openTreeTab(tabButtonName, tabName) {
         // Declare all variables
         var i, tabcontent, tablinks;
@@ -356,7 +585,6 @@ class InteractionHandler {
         // Show the current tab, and add an "active" class to the button that opened the tab
         document.getElementById(tabName).style.display = "block";
         document.getElementById(tabButtonName).className += " active";
-
         this._previousTab = tabButtonName;
     }
 
@@ -364,37 +592,51 @@ class InteractionHandler {
      * Finds the metadata for the input map feature.
      * 
      * @param {JSONObject} feature selected map feature 
+     * @param {String} layerName name of layer containing feature
      */
-    #findMeta(feature) {
+    #findMeta(feature, layerName) {
         var metaGroup = this._registry.getGroup(DT.currentGroup);
         if(metaGroup == null) return;
 
+        let self = this;
         var allPromises = [];
-        
+
+        // Once read, return the nodes with the matching feature id
+        let postRead = function(json) {
+            for(var i = 0; i < json.length; i++) {
+                if(json[i]["id"] == feature.id) {
+                    return json[i];
+                }
+            }
+        }
+
         metaGroup["dataSets"].forEach(dataSet => {
             // Check if the layer name is the same
-            let layerName = feature.layer["id"].replace("_clickable", "");
+            layerName = layerName.replace("_clickable", "");
 
             if(dataSet["name"] === layerName) {
                 let metaFiles = dataSet["metaFiles"];
-
-                    if(metaFiles != null) {
+                if(metaFiles != null) {
 
                     // Load each listed meta file
                     for(var j = 0; j < metaFiles.length; j++) {
                         let metaDir  = metaGroup["thisDirectory"];
                         let metaFile = metaDir + "/" + metaFiles[j];
-                        console.log("INFO: Reading metadata JSON at " + metaFile);
 
-                        // Load file asynchronously
-                        var promise = $.getJSON(metaFile).then(json => {
-                            // Once read, only return the node with the matching feature id
-                            for(var i = 0; i < json.length; i++) {
-                                if(json[i]["id"] == feature.id) {
-                                    return json[i];
-                                }
-                            }
-                        });
+                        var promise;
+                        if(self._cachedMetadata[metaFile]) {
+                            // Use cached version
+                            let json = self._cachedMetadata[metaFile];
+                            promise = new Promise((resolve, reject) => {
+                                resolve(postRead(json));
+                            });
+                        } else {
+                            // Load file asynchronously
+                            promise = $.getJSON(metaFile).then(json => {
+                                self._cachedMetadata[metaFile] = json;
+                                return postRead(json);
+                            });
+                        }
 
                         // Pool promises
                         allPromises.push(promise);
@@ -407,21 +649,33 @@ class InteractionHandler {
     }
     
     /**
+     * Finds the timeseries data for the input map feature.
      * 
-     * @param {*} layerName 
-     * @param {*} feature 
-     * @param {*} callback 
+     * @param {JSONObject} feature selected map feature 
+     * @param {String} layerName name of layer containing feature
      */
-      #findTimeSeries(feature) {
+    #findTimeSeries(feature, layerName) {
         // For each currently selected leaf group
         let metaGroup = this._registry.getGroup(DT.currentGroup);
         if(metaGroup == null) return;
     
+        let self = this;
         var allPromises = [];
+
+        // Once read, return the nodes with the matching feature id
+        let postRead = function(json) {
+            var timeSeriesNodes = [];
+            for(var i = 0; i < json.length; i++) {
+                if(json[i]["id"] == feature.id) {
+                    timeSeriesNodes.push(json[i]);
+                }
+            }
+            return timeSeriesNodes;
+        }
 
         metaGroup["dataSets"].forEach(dataSet => {
             // Check if the layer name is the same
-            if(dataSet["name"] === feature.layer["id"]) {
+            if(dataSet["name"] === layerName) {
                 let timeFiles = dataSet["timeseriesFiles"];
 
                 if(timeFiles != null) {
@@ -430,21 +684,22 @@ class InteractionHandler {
                     for(var j = 0; j < timeFiles.length; j++) {
                         let metaDir = metaGroup["thisDirectory"];
                         let timeFile = metaDir + "/" + timeFiles[j];
-                        console.log("INFO: Reading Additional timeseries JSON at " + timeFile);
 
-                        // Load file asynchronously
-                        var promise = $.getJSON(timeFile).then(json => {
-                            var timeSeriesNodes = [];
+                        var promise;
+                        if(self._cachedTimeseries[timeFile]) {
+                            // Use cached version
+                            let json = self._cachedTimeseries[timeFile];
+                            promise = new Promise((resolve, reject) => {
+                                resolve(postRead(json));
+                            });
+                        } else {
+                            // Load file asynchronously
+                            promise = $.getJSON(timeFile).then(json => {
+                                self._cachedTimeseries[timeFile] = json;
+                                return postRead(json);
+                            });
+                        }
 
-                            // Once read, only return the node with the matching feature id
-                            for(var i = 0; i < json.length; i++) {
-                                if(json[i]["id"] == feature.id) {
-                                    timeSeriesNodes.push(json[i]);
-                                }
-                            }
-                            return timeSeriesNodes;
-                        });
-                    
                         // Pool promises
                         allPromises.push(promise);
                     }
@@ -455,6 +710,7 @@ class InteractionHandler {
     }
 
     /**
+     * Returns true if the input variable is a number.
      * 
      * @param {*} n 
      * @returns 
@@ -462,7 +718,6 @@ class InteractionHandler {
     #isNumber(n) { 
         return !isNaN(parseFloat(n)) && !isNaN(n - 0);
     }
-
 
 }
 // End of class.

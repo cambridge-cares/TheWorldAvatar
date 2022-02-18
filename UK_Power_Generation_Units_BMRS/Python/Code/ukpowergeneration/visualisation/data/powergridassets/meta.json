@@ -1,18 +1,31 @@
 {
     "dataSets": [
         {
-            "name": "PowerPlants",
+            "name": "powerplants",
             "dataType": "geojson",
             "dataLocation": "powerplants.geojson",
-            "locationType": "point",
+            "locationType": "symbol",
+            "cluster": true,
+            "clusterRadius": 30,
+            "clusterProperties": {
+                "icon-image": ["string", "alpha-empty"],
+                "text-color": ["string", "#0050bf"]
+            },            
             "metaFiles": ["powerplants-meta.json"],
 			"timeseriesFiles": ["powerplants-timeseries.json"]
         },
         {
-            "name": "Generators",
+            "name": "generators",
             "dataType": "geojson",
             "dataLocation": "generators.geojson",
-            "locationType": "point",
+            "locationType": "symbol",
+            "cluster": true,
+            "clusterRadius": 30,
+            "clusterProperties": {
+                "icon-image": ["string", "beta-empty"],
+                "text-color": ["string", "#bc0000"],
+                "floodCount": ["+", ["get", "floodCount", ["properties"]]]
+            },            
             "metaFiles": ["generators-meta.json"],
 			"timeseriesFiles": ["generators-timeseries.json"]
         }

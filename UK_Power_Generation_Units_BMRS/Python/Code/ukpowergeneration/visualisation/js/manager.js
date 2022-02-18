@@ -1,7 +1,7 @@
 /**
  * Central controller for a single DigitalTwin visualisation.
  */
-class DigitalTwinManager {
+ class DigitalTwinManager {
 
 	// MapBox map 
 	_map;
@@ -33,7 +33,7 @@ class DigitalTwinManager {
 	// Current root directory name.
 	_currentRootDirName;
 
-	//
+	// Callback to execute after metadata is read.
 	_metaCallback;
 
 	/**
@@ -47,11 +47,53 @@ class DigitalTwinManager {
 		window.DT = {};
 		DT.terrain = "light";
 		DT.currentGroup = [];
+		DT.clickEvents = true;
+		DT.placenames = true;
 		DT.popup = new mapboxgl.Popup({
 			closeButton: false,
 			closeOnClick: false
 		});
 	}
+
+	/**
+	 * Returns the current map element.
+	 * 
+	 * @returns Map element
+	 */
+	getMap() {
+		return this._map;
+	}
+
+	/**
+	 * Returns the current LayerHandler instance.
+	 * 
+	 * @returns LayerHandler instance.
+	 */
+	getLayerHandler() {
+		return this._layerHandler;
+	}
+
+	/**
+	 * Returns the current Registry instance.
+	 * 
+	 * @returns Registry instance.
+	 */
+	getRegistry() {
+		return this._registry;
+	}
+
+	/**
+     * Add a callback what will fire after a feature within the 
+     * input MapBox layer has been selected.
+     * 
+     * @param {String} layerName MapBox layerID
+     * @param {Function} callback function to execute 
+     */
+	addSelectionCallback(layerName, callback) {
+		if(this._interactionHandler != null) {
+       		this._interactionHandler.addSelectionCallback(layerName, callback);
+		}
+    }
 
     /**
      * Register multpiple possible root directories.
@@ -97,7 +139,8 @@ class DigitalTwinManager {
 	 * as the default state of the map.
 	 */
 	plotFirstGroup(updateSelects = true) {
-		return this.plotGroup(this._registry.getFirstGroup(), updateSelects);
+		let firstGroup = this._registry.getFirstGroup();
+		return this.plotGroup(firstGroup, updateSelects);
 	}
 
 	/**
@@ -107,8 +150,12 @@ class DigitalTwinManager {
 	 * 
 	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
 	 * @param {Boolean} updateSelects force dropdowns to match the group selection
+	 * @param {Function} callback optional callback to run once group is plotted
 	 */
-	plotGroup(group, updateSelects = true) {
+	plotGroup(group, updateSelects = true, callback = null) {
+		DT.currentFeature = null;
+		this.goToDefaultPanel();
+
 		// Remove previously added layers
 		this._layerHandler.removeLayers();
 
@@ -138,17 +185,30 @@ class DigitalTwinManager {
 			for(var i = 0; i < groupData.length; i++) {
 				this._layerHandler.addLayer(groupData[i]);
 				
-				// Register interactions slightly differently for line layers
-				if(groupData[i]["locationType"] === "line") {
-					this._interactionHandler.registerInteractions([
-						groupData[i]["name"] + "_clickable", 
-						groupData[i]["locationType"]
-					]);
-				} else {
-					this._interactionHandler.registerInteractions([
-						groupData[i]["name"],
-						groupData[i]["locationType"]
-					]);
+				// Register mouse interactions if enabled
+				let clickable = groupData[i]["clickable"];
+				if(clickable == null || clickable == true) {
+
+					if(groupData[i]["cluster"] == true) {
+						// If clustering was enabled, register logic for the cluster layer.
+						this._interactionHandler.registerInteractions([
+							groupData[i]["name"] + "_cluster", 
+							groupData[i]["locationType"]
+						]);
+					}
+
+					if(groupData[i]["locationType"] === "line") {
+						// Register interactions slightly differently for line layers
+						this._interactionHandler.registerInteractions([
+							groupData[i]["name"] + "_clickable", 
+							groupData[i]["locationType"]
+						]);
+					} else {
+						this._interactionHandler.registerInteractions([
+							groupData[i]["name"],
+							groupData[i]["locationType"]
+						]);
+					}
 				}
 			}
 
@@ -164,37 +224,9 @@ class DigitalTwinManager {
 			if(updateSelects) {
 				this.#forceSelects(group, 0);
 			}
+
+			if(callback != null) callback();
 		});
-	}
-
-	/**
-	 * Recursively force the selection dropdowns to match the input
-	 * group. Useful to ensure they represent the correct data after
-	 * calling plotGroup manually.
-	 * 
-	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
-	 * @param {Integer} depth depth in recursive stack
-	 */
-	#forceSelects(group, depth) {
-		let selectionsContainer = document.getElementById("selectionsContainer");
-		let selects = selectionsContainer.querySelectorAll("select");
-
-		for(var i = depth; i < selects.length; i++) {
-			if(selects[i].id === "root-dir-select") continue;
-
-			let selectOptions = selects.item(i).options;
-			for(var j = 0; j < selectOptions.length; j++) {
-
-				if(selectOptions[j].value.endsWith(group[depth])) {
-
-					selects[i].value = selectOptions[j].value;
-					if(depth != (group.length - 1)) {
-						selects[i].onchange();
-						this.#forceSelects(group, depth + 1);
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -208,13 +240,6 @@ class DigitalTwinManager {
 			);
 			console.log("INFO: Added special Sky layer.");
 		}
-
-		// if(this._registry != null && this._sourceHandler != null) {
-		// 	if(eval(this._registry.globalMeta["add3DTerrain"])) {
-		// 		this._sourceHandler.add3DTerrain();
-		// 		console.log("INFO: Added special 3D terrain layer.");
-		// 	}
-		// }
 	}
 
 	/**
@@ -243,7 +268,7 @@ class DigitalTwinManager {
 		// Create the map instance
 		mapboxgl.accessToken = mapboxAPI;
 		this._map = new mapboxgl.Map(defaultOptions);
-		
+
 		// Now that we have a map, do some initialisation of handlers
 		this._sourceHandler = new SourceHandler(this._map, this._registry);
 		this._layerHandler = new LayerHandler(this._map);
@@ -254,7 +279,8 @@ class DigitalTwinManager {
 			this._map, 
 			this._registry, 
 			this._panelHandler,
-			this._timeseriesHandler
+			this._timeseriesHandler,
+			this._layerHandler
 		);
 		
 		console.log("INFO: Map object has been initialised.");
@@ -280,10 +306,11 @@ class DigitalTwinManager {
 			let rootDir = this._rootDirectories[this._currentRootDirName];
 			this._panelHandler.showLinkedFiles(this._registry.globalMeta, rootDir);
 		}
-
-	
 	}
 
+	/**
+	 * Stores the current state of the side panel as it's default state.
+	 */
 	storePanelDefault() {
 		this._panelHandler.storeDefault();
 	}
@@ -291,9 +318,8 @@ class DigitalTwinManager {
 	/**
 	 * Build the controls for the Camera, Terrain, and Layer Tree.
 	 * 
-	 * @param {string} treeFile Location of JSON defining layer tree structure.
 	 * @param {function} treeCallback Optional callback to fire when tree selections change.
-	 * @param {function} treeCallback Optional callback to fire when dropdown selections change.
+	 * @param {function} selectCallback Optional callback to fire when dropdown selections change.
 	 */
 	 showControls(treeCallback = null, selectCallback = null) {
 		// Initialise map controls
@@ -302,6 +328,9 @@ class DigitalTwinManager {
 			this._registry,
 			treeCallback
 		);
+		
+		// Hide the building outlines provided by mapbox
+		this._controlHandler.hideBuildings();
 		
 		let rootDir = this._rootDirectories[this._currentRootDirName];
 		if(rootDir == null) {
@@ -314,7 +343,7 @@ class DigitalTwinManager {
 	}
 
 	/**
-	 * Shows debugging info, should only be used for developers during testing.
+	 * Shows debugging info like mouse position.
 	 */
 	showDeveloperControls() {
 		if(this._controlHandler != null) this._controlHandler.showDeveloperControls();
@@ -334,7 +363,11 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	 onLayerGroupChange(control) {
-		this._controlHandler.onLayerGroupChange(control);
+		try {
+			this._controlHandler.onLayerGroupChange(control);
+		} catch(error) {
+			console.log(error, error.stack);
+		}
 	}
 
 	/**
@@ -343,7 +376,11 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	onLayerChange(control) {
-		this._controlHandler.onLayerChange(control);
+		try {
+			this._controlHandler.onLayerChange(control);
+		} catch(error) {
+			console.log(error, error.stack);
+		}
 	}
 
 	/**
@@ -379,10 +416,15 @@ class DigitalTwinManager {
 		this._panelHandler.toggleMode();
 	}
 
+	/**
+	 * Adds a callback to fire once the user returns to the default side panel.
+	 * 
+	 * @param {Function} callback 
+	 */
 	setDefaultPanelCallback(callback) {
 		this._defaultPanelCallback = callback;
-
 	}
+
 	/**
 	 * Returns to the default state of the side panel
 	 */
@@ -451,7 +493,7 @@ class DigitalTwinManager {
 	 * Given a link to a JSON file, this method opens
 	 * and renders the file in a new tab.
 	 */
-	 openJSONLink(url) {
+	openJSONLink(url) {
 		let directories = null;
 		let fileName = url;
 		if(url.includes("/")) {
@@ -496,7 +538,9 @@ class DigitalTwinManager {
 	 * @param {*} selectValue 
 	 */
 	onGroupSelectChange(selectID, selectValue) {
-		if(selectID == "root-dir-select") {
+
+		if(selectID === "root-dir-select") {
+			// Change of root directory
 			let that = this;
 
 			this.readMetadata(selectValue, function() {
@@ -591,6 +635,35 @@ class DigitalTwinManager {
 	}
 
 	/**
+	 * Shows/hides place name labels supplied by MapBox.
+	 * 
+	 * @param {Boolean} enabled 
+	 */
+	setPlacenames(enabled) {
+		if(enabled == null && DT.placenames != null) {
+			enabled = DT.placenames;
+		} else if(enabled == null) {
+			return;
+		}
+
+		let ids = ["road-number-shield", "road-label", "road-intersection", "waterway-label", "natural-line-label",
+		"natural-point-label", "water-line-label", "water-point-label", "poi-label", "airport-label", "settlement-subdivision-label",
+		"settlement-minor-label", "settlement-major-label", "settlement-label", "state-label", "country-label", "road-oneway-arrow-blue", 
+		"road-oneway-arrow-white", "transit-label"]
+
+		ids.forEach(id => {
+			if(this._map.getLayer(id) != null) {
+				this._map.setLayoutProperty(
+					id,
+					"visibility",
+					(enabled ? "visible" : "none")
+				);
+			} 
+		});
+		DT.placenames = enabled;
+	}
+
+	/**
 	 * Updates the tiltshift effect based on the current zoom and pitch.
 	 */
 	#updateTiltShift() {
@@ -614,6 +687,64 @@ class DigitalTwinManager {
 			tiltShiftComponent.style.webkitMaskImage = "linear-gradient(" + topStart + ", " + topEnd + ", " + bottomStart +  ", " + bottomEnd + ")";
 			tiltShiftComponent.style.maskImage = "linear-gradient(" + topStart + ", " + topEnd + ", " + bottomStart +  ", " + bottomEnd + ")";
 		}
+	}
+	
+	/**
+	 * Recursively force the selection dropdowns to match the input
+	 * group. Useful to ensure they represent the correct data after
+	 * calling plotGroup manually.
+	 * 
+	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
+	 * @param {Integer} depth depth in recursive stack
+	 */
+	 #forceSelects(group, depth) {
+		let groupName = group.join("/");
+		let selectionsContainer = document.getElementById("selectionsContainer");
+		let selects = selectionsContainer.querySelectorAll("select");
+
+		for(var i = depth; i < selects.length; i++) {
+			if(selects[i].id === "root-dir-select") continue;
+			let selectOptions = selects.item(i).options;
+
+			for(var j = 0; j < selectOptions.length; j++) {
+
+				let match = selectOptions[j].value === groupName || groupName.startsWith(selectOptions[j].value + "/");
+				if(match) {
+					selects[i].value = selectOptions[j].value;
+					if(depth != (group.length - 1)) {
+						selects[i].onchange();
+						this.#forceSelects(group, depth + 1);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Hide/show all controls and overlays.
+	 * 
+	 * @param {Boolean} visibility desired state 
+	 */
+	hideAllControls(visibility) {
+		var sidePanel = document.getElementById("sidePanel");
+		var controlsContainer = document.getElementById("controlsContainer");
+
+		sidePanel.style.display = (visibility) ? "block" : "none";
+		controlsContainer.style.display = (visibility) ? "block" : "none";
+		
+		if(visibility) {
+			if(sidePanel.classList.contains("collapsed")) {
+				document.getElementById("map").style.width = "calc(100% - 28px)";
+			} else {
+				document.getElementById("map").style.width = "calc(100% - 500px)";
+			}
+		} else {
+			if(sidePanel.classList.contains("large")) {
+				this._panelHandler.toggleMode();
+			}
+			document.getElementById("map").style.width = "100%";
+		}
+		this._map.resize();
 	}
 
 }

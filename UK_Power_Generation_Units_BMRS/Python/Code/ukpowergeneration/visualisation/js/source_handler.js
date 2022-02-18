@@ -3,19 +3,13 @@
  */
 class SourceHandler {
 
-    /**
-     * MapBox map.
-     */
+    // MapBox map.
     _map;
 
-    /**
-     * List of source IDs currently on map.
-     */
+    // List of source IDs currently on map.
     _currentSources = [];
 
-    /**
-     * DataRegistry object.
-     */
+    // DataRegistry object.
     _registry;
 
     /**
@@ -59,25 +53,29 @@ class SourceHandler {
      * @param {JSONObject} dataSet data set definition
      */
     addSource(rootDir, dataSet) {
-        let name = dataSet["name"];
-        let type = dataSet["dataType"];
-        let location = dataSet["dataLocation"];
+        try {
+            let name = dataSet["name"];
+            let type = dataSet["dataType"];
+            let location = dataSet["dataLocation"];
 
-        // If the data location is NOT a URL, it will be a relative file path.
-        // If that's the case, make it absolute
-        if(!this.#isURL(location)) {
-            location = (rootDir.endsWith("/")) ? (rootDir + location) : (rootDir + "/" + location);
-        }
+            // If the data location is NOT a URL, it will be a relative file path.
+            // If that's the case, make it absolute
+            if(!this.#isURL(location)) {
+                location = (rootDir.endsWith("/")) ? (rootDir + location) : (rootDir + "/" + location);
+            }
 
-        // Add source depending on type
-        switch(type) {
-            default:
-            case "geojson":
-                return this.#addGeoJSONSource(dataSet, name, location);
-            case "raster":
-                return this.#addRasterSource(dataSet, name, location);
-            case "vector":
-                return this.#addVectorSource(dataSet, name, location);
+            // Add source depending on type
+            switch(type) {
+                default:
+                case "geojson":
+                    return this.#addGeoJSONSource(dataSet, name, location);
+                case "raster":
+                    return this.#addRasterSource(dataSet, name, location);
+                case "vector":
+                    return this.#addVectorSource(dataSet, name, location);
+            }
+        } catch(error) {
+            console.log("ERROR: Could not load source '" + name + "', it will be skipped.");
         }
     }
 
@@ -130,7 +128,8 @@ class SourceHandler {
             let options = {
                 "type": "geojson",
                 "data": json,
-                "generateId": false
+                "generateId": false,
+                "attribution": "CMCL Innovations"
             };
 
             // Add clustering settings if present in dataSet definition
@@ -159,7 +158,8 @@ class SourceHandler {
         // Determine source options
         let options = {
             "type": "raster",
-            "tiles": [location]
+            "tiles": [location],
+            "attribution": "CMCL Innovations"
         };
 
         // Add additional raster settings if present in dataSet definition
@@ -188,7 +188,8 @@ class SourceHandler {
         // Determine source options
         let options = {
             "type": "vector",
-            "data": location
+            "data": location,
+            "attribution": "CMCL Innovations"
         };
 
         // Add additional vector settings if present in dataSet definition

@@ -33,7 +33,7 @@ class PanelHandler {
 	// Store previous legendContainer visibility
 	_previousLegendVisibility;
 
-	//
+	// Default state of the side panel
 	_defaultHTML;
 
 	/**
@@ -46,7 +46,7 @@ class PanelHandler {
 	}
 
 	/**
-	 * 
+	 * Create the side panel.
 	 */
 	#createSidePanel() {
 		let sidePanel = document.getElementById("sidePanel");
@@ -148,7 +148,7 @@ class PanelHandler {
 	 * 
 	 * @param {Stirng} title desired title HTML
 	 */
-	 setTitle(title) {
+	setTitle(title) {
 		document.getElementById("sidePanel").style.visibility = "visible";
 		document.getElementById("titleContainer").innerHTML = title;
 	}
@@ -181,43 +181,6 @@ class PanelHandler {
 	}
 
 	/**
-	 * Builds a legend component using the getLegendContent of each
-	 * loaded DigitalTwinModule.
-	 */
-	buildLegend() {
-		var modules = DT.modules;
-
-		var outerHTML = `
-			<div id="legend" class="w3-sidebar w3-bar-block w3-light-grey w3-card">
-				<div class="w3-bar-item legend-title"><b>Legends:</b></div>
-		`;
-
-		var innerHTML = ``;
-
-		modules.forEach(module => {
-			let moduleName = module.name;
-			let sanitisedName = moduleName.toLowerCase().replace(" ", "_");
-
-			outerHTML += `
-				<button id="` + sanitisedName + `" class="w3-bar-item w3-button tablink" onclick="manager.openLegend(event, this.id)">` + moduleName + `</button>
-			`;
-
-			innerHTML += `
-				<div id="` + sanitisedName + `" class="w3-container legend-right" style="display: none;">`
-					+ module.getLegendContent() +
-				`</div>
-			`;
-		});
-
-		outerHTML += `</div>`;
-		this.setLegend(outerHTML + innerHTML); 
-
-		// Simulate a click on the first entry
-		var firstEntry = document.getElementsByClassName("tablink w3-button")[0];
-		firstEntry.click();
-	}
-
-	/**
 	 * Set the footer content.
 	 * 
 	 * @param {String} footerHTML HTML to add. 
@@ -236,18 +199,19 @@ class PanelHandler {
 	}
 
 	/**
-	 * 
+	 * Store the current state of the side panel as it's default
 	 */
 	storeDefault() {
 		this._defaultHTML = document.getElementById("sidePanelInner").innerHTML;
 	}
 
 	/**
-	 * 
+	 * Return the contents to their default state.
 	 */
 	returnToDefault() {
-		document.getElementById("sidePanelInner").innerHTML = this._defaultHTML;
-
+		if(this._defaultHTML != null) {
+			document.getElementById("sidePanelInner").innerHTML = this._defaultHTML;
+		}
 		// Clear currently selected feature
 		DT.currentFeature = null;
 	}
@@ -303,6 +267,7 @@ class PanelHandler {
 	 */
 	toggleExpansion() {
 		var sidePanel = document.getElementById("sidePanel");
+		var sidePanelInner = document.getElementById("sidePanelInner");
 		var rightButton = document.getElementById("expandButton");
 
 		if(sidePanel.classList.contains("small")) {
@@ -311,17 +276,23 @@ class PanelHandler {
 				// Expand
 				sidePanel.classList.replace("collapsed", "expanded")
 				document.getElementById("map").style.width = "calc(100% - 500px)";
+				document.getElementById("loadingOverlay").style.right = "500px";
 
 				document.getElementById("legendContainer").style.visibility = "visible";
 				rightButton.style.visibility = "visible";
+
+				sidePanelInner.style.visibility = "visible";
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
 				sidePanel.classList.replace("expanded", "collapsed")
 				document.getElementById("map").style.width = "calc(100% - 28px)";
+				document.getElementById("loadingOverlay").style.right = "28px";
 
 				document.getElementById("legendContainer").style.visibility = "hidden";
 				rightButton.style.visibility = "hidden";
+
+				sidePanelInner.style.visibility = "hidden";
 			}
 
 		} 
@@ -352,4 +323,6 @@ class PanelHandler {
 		if(legendContent != null) legendContent.style.display = "block";
 		event.currentTarget.className += " w3-blue";
 	}
+
 }
+// End of class.

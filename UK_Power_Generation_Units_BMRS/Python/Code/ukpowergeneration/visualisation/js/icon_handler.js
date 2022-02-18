@@ -7,10 +7,11 @@ class IconHandler {
     // Mapbox map
     _map;
 
-    //
+    // Cached images
     _loadedImages = [];
 
     /**
+     * Initialise new IconHandler.
      * 
      * @param {*} map 
      */
@@ -19,16 +20,15 @@ class IconHandler {
     }
 
     /**
+     * Load and cache the input image.
      * 
-     * @param {*} imageURL 
-     * @param {*} callback 
+     * @param {String} imageURL relative image URL  
      */
     loadIcon(imageURL) {
         var imageName = imageURL.replace(/^.*[\\\/]/, '');
         imageName = imageName.replace(/\.[^/.]+$/, "");
 
         return new Promise((resolve, reject) => {
-
             this._map.loadImage(
                 imageURL,
                 (error, image) => {
@@ -37,7 +37,6 @@ class IconHandler {
                         reject(error);
                     } else {
                         this._loadedImages[imageName] = image;
-                        console.log("INFO: Image '" + imageName + "' has been loaded.");
                         resolve();
                     }
                 }
@@ -47,16 +46,25 @@ class IconHandler {
     }
 
     /**
-     * 
+     * Load cached icons onto the map.
      */
     addAllIcons() {    
         for(const [key, value] of Object.entries(this._loadedImages)) {
             var imageName = key.replace(/^.*[\\\/]/, '');
             imageName = imageName.replace(/\.[^/.]+$/, "");
-
-            this._map.addImage(imageName, value);
-            console.log("INFO: Image '" + imageName + "' has been added.");
+            
+            try {
+                if(key.includes("-sdf")) {
+                    this._map.addImage(imageName, value, { 'sdf': true });
+                } else {
+                    this._map.addImage(imageName, value);
+                }
+            } catch(error){
+                console.log(imageName);
+                console.trace();
+            }
         }
     }
+
 }
 // End of class.

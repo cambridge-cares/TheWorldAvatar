@@ -326,7 +326,6 @@ def get_power_data_from_api():
     AutoFile = 'Input-Template-Auto.csv'
     powerplant_df, generator_df = bmrs.Auto_Call(Key, AutoFile)
     #Read the Input-Template.csv file from a URL. 
-    #eg. 'https://www.dropbox.com/s/mmmcto232y4q3or/Input-Template.csv?dl=1' for 'Dropbox (Cambridge CARES)\CoMo shared\ja685\BMRS\Script-BMRS-API/Input-Template.csv'
     #Simplified Data Link
     #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
     #Standardised Day Link

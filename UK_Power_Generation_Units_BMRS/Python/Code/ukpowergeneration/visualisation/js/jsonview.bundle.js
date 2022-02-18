@@ -1,4 +1,10 @@
-var JsonView = (function (exports) {
+/**
+ * This script handles creating a tree element from an arbitrary JSON object.
+ * 
+ * https://github.com/pgrabovets/json-view
+ */
+
+ var JsonView = (function (exports) {
   'use strict';
 
   function _typeof(obj) {
@@ -159,22 +165,64 @@ var JsonView = (function (exports) {
       type: opt.type || null,
       children: opt.children || [],
       el: opt.el || null,
-      depth: opt.depth || 0
+      depth: opt.depth || 0,
+      collapse: opt.collapse || false // collapse in first view
     };
   }
 
   function createSubnode(data, node) {
     if (_typeof(data) === 'object') {
-      for (var key in data) {
-        var child = createNode({
-          value: data[key],
-          key: key,
-          depth: node.depth + 1,
-          type: getDataType(data[key]),
-          parent: node
-        });
-        node.children.push(child);
-        createSubnode(data[key], child);
+      let display_order = "display_order";
+      let valueString = "value";
+      let unit = "unit";
+      let keys = []
+      // follow specified order if "display_order" field exists
+      if (display_order in data) {
+        keys = data[display_order]
+      } else {
+        // default non ordered version, strip off collapse option if present
+        Object.keys(data).forEach(key => {
+          if (key !== "collapse") keys.push(key);
+        })
+      }
+
+      let collapseState = false;
+      if ("collapse" in data) collapseState = data["collapse"];
+
+      for (var key of keys) {
+        if (Object.keys(data[key]).includes(valueString)) {
+          let displayString = [];
+          if(typeof data[key][valueString] === "number") {
+            displayString = data[key][valueString].toFixed(2); 
+          } else {
+            displayString = data[key][valueString];
+          }
+
+          if (unit in data[key]) {
+            displayString += " " + data[key][unit];
+          }
+
+          var child = createNode({
+            value: displayString,
+            key: key,
+            depth: node.depth + 1,
+            type: getDataType(data[key]),
+            parent: node
+          });
+          node.children.push(child);
+          createSubnode(displayString, child);
+        } else {
+          var child = createNode({
+            value: data[key],
+            key: key,
+            depth: node.depth + 1,
+            type: getDataType(data[key]),
+            parent: node,
+            collapse: collapseState
+          });
+          node.children.push(child);
+          createSubnode(data[key], child);
+        }
       }
     }
   }
@@ -224,12 +272,25 @@ var JsonView = (function (exports) {
     });
   }
 
+  // selectively expand nodes with the collapse field set to false
+  // need to run expandChildren prior to this call in order for this to work properly
+  function selectiveCollapse(node) {
+    if ((node.children.length > 0) && !node.collapse) {
+      node.children.forEach(child => {
+        selectiveCollapse(child);
+      })
+    } else {
+      collapseChildren(node);
+    }
+  }
+
   exports.collapseChildren = collapseChildren;
   exports.createTree = createTree;
   exports.expandChildren = expandChildren;
   exports.render = render;
   exports.renderJSON = renderJSON;
   exports.traverseTree = traverseTree;
+  exports.selectiveCollapse = selectiveCollapse;
 
   return exports;
 

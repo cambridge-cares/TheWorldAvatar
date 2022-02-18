@@ -49,7 +49,18 @@ class ControlHandler {
 				<input type="radio" name="terrain" id="satellite-streets" onclick="manager.changeTerrain('satellite-streets')">
 				<label for="satellite-streets">Satellite (Labelled)</label>
 			</div>
-			<div id="layerContainer">TREE-GOES-HERE</div>
+			<div id="layerContainer">
+				<div id="controlTitle">
+					<p>Layers:</p>
+					<div class="tooltip">
+						<label class="switch"><input type="checkbox" onclick="manager.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
+						<span class="tooltiptext">Show/Hide place names</span>
+					</div>
+				</div>
+				<div id="layerTreeContainer">
+					TREE-GOES-HERE
+				</div>
+			</div>
 			<div id="selectionsContainer"></div>
 			<div id="developerContainer"></div>
 		</div>
@@ -58,7 +69,7 @@ class ControlHandler {
 	// MapBox map
 	_map;
 
-	//
+	// Data registry instance
 	_datRegistry;
 	
 	// JSON metadata defining tree structure
@@ -113,55 +124,53 @@ class ControlHandler {
 		// Build the initial dropdown selections
 		let selectString = this.buildDropdown(this._registry.meta);
 		document.getElementById("selectionsContainer").innerHTML += selectString;
+
+		// Show/hide selections box is empty
+		selectionsContainer.style.display = (selectionsContainer.childElementCount > 0) ? "block" : "none";
 	}
 
 	/**
-	 * Shows debugging info, should only be used for developers during testing.
+	 * Shows debugging info, like mouse position.
 	 */
 	showDeveloperControls() {
 		let developerInfo = document.getElementById("developerContainer");
-		developerInfo.style.display = "block";
+		developerInfo.style.display = "none !important";
 
 		let self = this;
-		this._map.on("move", function() {
-			self.#updateDeveloperControls();
+		this._map.on("mousemove", function(event) {
+			self.#updateDeveloperControls(event);
 		});
-		this._map.on("zoom", function() {
-			self.#updateDeveloperControls();
-		});
-		this._map.on("rotate", function() {
-			self.#updateDeveloperControls();
-		});
-		this._map.on("pitch", function() {
-			self.#updateDeveloperControls();
-		});
-
-		this.#updateDeveloperControls();
 	}
 
 	/**
 	 * Update developer info panel.
 	 */
-	#updateDeveloperControls() {
+	#updateDeveloperControls(event) {
 		let developerInfo = document.getElementById("developerContainer");
+		developerInfo.style.display = "block";
 
-		let lng = this._map.getCenter().lng.toFixed(5)
-		let lat = this._map.getCenter().lat.toFixed(5)
-
+		let lng = event.lngLat.lng.toFixed(5);
+		let lat = event.lngLat.lat.toFixed(5);
 		developerInfo.innerHTML = `
-			<b>Developer Info:</b><br/>
-			Longitude: ` + lng + `<br/>
-			Latitude : ` + lat + `<br/>
-			Zoom: ` + this._map.getZoom().toFixed(2) + `<br/>
-			Pitch: ` + this._map.getPitch().toFixed(2) + `<br/>
-			Bearing: ` + this._map.getBearing().toFixed(2) + `
+			<table width="100%">
+				<tr>
+					<td width="35%">Longitude:</td>
+					<td width="65%">` + lng + `</td>
+				</tr>
+				<tr>
+					<td width="35%">Latitude:</td>
+					<td width="65%">` + lat + `</td>
+				</tr>
+			</table>
 		`;
 	}
 
 
 	/**
+	 * Builds a drop-down control to allow users to change between the
+	 * registered root data directoties.
 	 * 
-	 * @param {*} rootDirectories 
+	 * @param {{String, String}} rootDirectories map of name to directory location.
 	 */
 	#buildRootDropdown(rootDirectories, selectedName) {
 		var htmlString = `
@@ -190,10 +199,13 @@ class ControlHandler {
 	}
 
 	/**
+	 * Builds a drop-down control to allow the user to change the data group
+	 * represented by the input meta object.
 	 * 
-	 * @param {*} currentMeta 
-	 * @param {*} parentDivID 
-	 * @returns 
+	 * @param {JSONObject} currentMeta meta object containing data groups
+	 * @param {String} parentDivID id of parent div
+	 * 
+	 * @returns HTML string for drop-down
 	 */
 	buildDropdown(currentMeta, parentDivID) {
 		var htmlString = "";
@@ -206,16 +218,18 @@ class ControlHandler {
 				<div id="selectContainer">
 				<label for="` + label + `">` + label + `:</label>
 				<select id="` + label + `" onchange="manager.onGroupSelectChange(this.id, this.value)">
-				<option value="" disabled selected hidden>Select an option...</option>
 			`;
 
 			for(var i = 0; i < groups.length; i++) {
 				let groupName = groups[i]["name"];
 				let groupDir = groups[i]["directory"];
 				let value = (parentDivID == null) ? groupDir : parentDivID + "/" + groupDir;
-				htmlString += `
-					<option value="` + value + `">` + groupName + `</option>
-				`;
+
+				if(i == 0) {
+					htmlString += `<option value="` + value + `" selected>` + groupName + `</option>`;
+				} else {
+					htmlString += `<option value="` + value + `">` + groupName + `</option>`;
+				}
 			}
 
 			htmlString += `
@@ -224,14 +238,14 @@ class ControlHandler {
 				</div>
 			`;
 		}
-
 		return htmlString;
 	}
 
 	/**
+	 * Fires when a the data group selection changes.
 	 * 
-	 * @param {*} groupID 
-	 * @param {*} value 
+	 * @param {String} groupID id of group
+	 * @param {String} value full id of group
 	 */
 	onGroupSelectChange(groupID, value) {
 		let groupNames = value.split("/");
@@ -241,6 +255,9 @@ class ControlHandler {
 			// This group has subgroups, need to build more dropdowns
 			let selectString = this.buildDropdown(metaGroup["groups"], value);
 			document.getElementById("select-" + groupID).innerHTML = selectString;
+
+			var newSelect = document.getElementById("select-" + groupID).querySelector("select");
+			newSelect.dispatchEvent(new Event('change', {bubbles: true}));
 
 		} else if(metaGroup["dataSets"]) {
 			// Lowest level group, can show data now
@@ -256,7 +273,7 @@ class ControlHandler {
 	 */
 	rebuildTree() {
 		this.#renderTree();
-		document.getElementById("layerContainer").innerHTML = this._treeHTML;
+		document.getElementById("layerTreeContainer").innerHTML = this._treeHTML;
 
 		// Update tree selection states
 		for(var i = 0; i < this._treeSpecification.length; i++) {
@@ -273,7 +290,6 @@ class ControlHandler {
 				inputBox.checked = false;
 			}
 		}
-
 	}
 
 	/**
@@ -289,15 +305,35 @@ class ControlHandler {
 		} else if(mode === "outdoors") {
 			this._map.setStyle("mapbox://styles/mapbox/outdoors-v11?optimize=true");
 		} else if(mode === "blueprint") {
-			this._map.setStyle("mapbox://styles/cmclinnovations/ckweqsj667xkx15qnilos1kzj");
+			this._map.setStyle("mapbox://styles/cmclinnovations-credo/ckzfn4jg3007x14l9zomsv7sd");
 		} else if(mode === "satellite") {
 			this._map.setStyle("mapbox://styles/mapbox/satellite-v9?optimize=true");
 		} else if(mode === "satellite-streets") {
 			this._map.setStyle("mapbox://styles/mapbox/satellite-streets-v11?optimize=true");
 		} 
 
-		// Store the current terrain as a global variable
+        // Store the current terrain as a global variable
 		DT.terrain = mode;
+
+		// Hide building outlines
+        try {
+		    hideBuildings();
+        } catch(error) {
+            console.log(error);
+        }
+	}
+
+	/**
+	 * Hide building outlines provided by MapBox as these may conflict with custom
+	 * building data.
+	 */
+	hideBuildings() {
+		if(this._map == null) return;
+
+		let ids = ["building", "building-outline", "building-underground"];
+		ids.forEach(id => {
+			if(this._map.getLayer(id) != null) this._map.setLayoutProperty(id, "visibility", "none");
+		});
 	}
 
 	/**
@@ -362,7 +398,7 @@ class ControlHandler {
 	 * 
 	 * @param {Element} checkbox event source 
 	 */
-	 onLayerChange(control) {
+	onLayerChange(control) {
 		let layerName = control.id;
 		let newState = control.checked;
 
@@ -430,6 +466,8 @@ class ControlHandler {
 	 * @param {boolean} visible desired visibility.
 	 */
 	#toggleLayer(layerID, visible) {
+		if(this._map.getLayer(layerID) == null) return;
+		
 		try {
 			this._map.setLayoutProperty(
 				layerID,
@@ -454,6 +492,24 @@ class ControlHandler {
 					(visible ? "visible" : "none")
 				);
 			}
+
+			// Is there a corresponding _arrows layer?
+			if(this._map.getLayer(layerID + "_arrows") != null) {
+				this._map.setLayoutProperty(
+					layerID + "_arrows",
+					"visibility",
+					(visible ? "visible" : "none")
+				);
+			}
+
+				// Is there a corresponding -highlight layer?
+				if(this._map.getLayer(layerID + "-highlight") != null) {
+					this._map.setLayoutProperty(
+						layerID + "-highlight",
+						"visibility",
+						(visible ? "visible" : "none")
+					);
+				}
 		} catch(err) {
 			console.log("WARN: Could not toggle '" + layerID + "', it may have no initial 'visibility' layout property?");
 		}
@@ -463,8 +519,8 @@ class ControlHandler {
 	 * Builds the HTML required to show the Layer Tree.
 	 */
 	#renderTree() {
-		this._treeHTML = `<p>Layers:</p>`;
-		this._treeHTML += `<ul id="layerTree">`;
+        DT.treeDictionary = {};
+		this._treeHTML = `<ul id="layerTree">`;
 		
 		for(var i = 0; i < this._treeSpecification.length; i++) {
 			this.#renderIterate(this._treeSpecification[i]);
@@ -500,28 +556,44 @@ class ControlHandler {
 
 
 		} else if(treeEntry["layerName"]){
-			var layerName = treeEntry["layerName"];
-
 			if(!this.#anyLayersVisible(treeEntry["layerIDs"])) {
 				// No layers for this entry have been added to the map
 				return;
 			}
 
+			// HTML start
+			var layerName = treeEntry["layerName"];
 			this._treeHTML += `<li>`
 			this._treeHTML += "<input class='layerInput' type='" + controlType + "' onclick='manager.onLayerChange(this);' id='" + layerName + "' name='" + currentGroup + "'";
 
-			if(treeEntry["defaultState"] === "visible") {
-				treeEntry["currentState"] = "visible";
-				this._treeHTML += ` checked>`;
-			} else {
-				treeEntry["currentState"] = "hidden";
+            DT.treeDictionary[layerName] = treeEntry["layerIDs"];
+            
+			// Determin if the layer should be hidden or not
+			let shouldHide = true;
+
+			if(treeEntry["currentState"]) {
+				if(treeEntry["currentState"] === "visible") {
+					shouldHide = false;
+				}
+			} else if(treeEntry["defaultState"]) {
+				if(treeEntry["defaultState"] === "visible") {
+					shouldHide = false;
+				}
+			} 
+
+			// Show/hide the layer and update the checkbxo accordingly
+			if(shouldHide) {
 				this._treeHTML += `>`;
-				
-				// Now actually hide the layer
+				treeEntry["currentState"] = "hidden";
 				treeEntry["layerIDs"].forEach(layerID => {
 					this.#toggleLayer(layerID, false);
 				});
+			} else {
+				this._treeHTML += ` checked>`;
+				treeEntry["currentState"] = "visible";
 			}
+
+			// HTML end
 			this._treeHTML += "<label for='" + layerName + "'>" + layerName + "</label>";
 			this._treeHTML += `</li>`		
 		}
@@ -625,7 +697,7 @@ class ControlHandler {
 	 * @param {String} layerName target layer name
 	 * @param {Boolean} newState desired selection state
 	 */
-	 #updateLayerSelection(parentEntry, treeEntry, layerName, newState) {
+	#updateLayerSelection(parentEntry, treeEntry, layerName, newState) {
 		if(treeEntry["layerName"] === layerName) {
 
 			if(parentEntry != null && newState && parentEntry["controlType"] === "radio") {

@@ -1,16 +1,16 @@
 [
     {
-        "groupName": "Power Grid Assets",
-        "layers": [
+        "groupName": "UK Power System",
+        "layers": [               
             {
                 "layerName": "Power Plants",
                 "defaultState": "visible",
-                "layerIDs": ["PowerPlants"]
+                "layerIDs": ["powerplants"]
             },
             {
                 "layerName": "Generators",
                 "defaultState": "visible",
-                "layerIDs": ["Generators"]
+                "layerIDs": ["generators"]
             }
         ]
     }
