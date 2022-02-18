@@ -1,37 +1,21 @@
-from chemaboxwriters.common.utilsfunc import getRefName, stage_name_to_enum
-from chemaboxwriters.app_exceptions.app_exceptions import (
-    UnsupportedStage,
-    IncorrectHandlerParameter,
-)
-from pyuploader import get_uploader
+from chemaboxwriters.app_exceptions.app_exceptions import UnsupportedStage
 from enum import Enum
-from typing import List, Dict, Tuple, Protocol
+from abc import ABC, abstractmethod
+from typing import List, Tuple
+from dataclasses import dataclass, field
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class IHandle_Function(Protocol):
-    @staticmethod
-    def __call__(inputs: List[str], *args, **kwargs) -> Dict[str, List[str]]:
-        ...
+@dataclass
+class IHandler(ABC):
+    name: str
+    in_stages: List[Enum]
+    out_stage: Enum
+    written_files: List[str] = field(init=False, default_factory=list)
 
-
-class Handler:
-    def __init__(
-        self,
-        name: str,
-        handle_function: IHandle_Function,
-        in_stages: List[Enum],
-        out_stage: Enum,
-    ) -> None:
-
-        self.name = name
-        self.handle_function = handle_function
-        self.in_stages = in_stages
-        self.out_stage = out_stage
-
-    def run(
+    def execute(
         self,
         inputs: List[str],
         input_type: Enum,
@@ -41,22 +25,29 @@ class Handler:
     ) -> Tuple[List[str], Enum]:
 
         if input_type not in self.in_stages:
-            requestedStage = input_type.name.lower()
+            requested_stage = input_type.name.lower()
             raise UnsupportedStage(
-                f"Error: Stage: '{requestedStage}' is not supported."
+                f"Error: Stage: '{requested_stage}' is not supported."
             )
 
-        outputs = self.handle_function(
+        outputs = self.handle_input(
             inputs=inputs,
-            out_file_ext=self.out_stage.name,
             out_dir=out_dir,
+            input_type=input_type,
+            dry_run=dry_run,
             **handler_kwargs,
         )
-
-        self._save_outputs(outputs=outputs, out_dir=out_dir)
+        self.written_files.extend(outputs)
 
         return outputs, self.out_stage
 
-    def _save_outputs(self, outputs: List[str], out_dir: str) -> List[str]:
-
-
+    @abstractmethod
+    def handle_input(
+        self,
+        inputs: List[str],
+        out_dir: str,
+        dry_run: bool,
+        input_type: Enum,
+        **handler_kwargs,
+    ) -> List[str]:
+        pass
