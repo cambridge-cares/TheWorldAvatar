@@ -30,10 +30,14 @@ http://<IP address of ESP node>/switch/generic_output
 ```
 
 If the switch is off, the response will be:
-![Shows OFF state response.](docs/img/off_state.png "OFF state response")
+```
+{"id":"switch-generic_output","state":"OFF","value":false}
+```
 
 If the switch is on, the response will be:
-![Shows ON state response.](docs/img/on_state.png "ON state response")
+```
+{"id":"switch-generic_output","state":"ON","value":true}
+```
 
 ### Toggle switch
 The switch can be toggled by sending a POST request to the following endpoint:
