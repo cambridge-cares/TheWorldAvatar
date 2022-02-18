@@ -15,8 +15,10 @@ import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+
 
 
 public class MetaDataQueryTest {
@@ -130,8 +132,9 @@ public class MetaDataQueryTest {
         public void testQuery1(){
             String sparql="test";
             String expected="queryResultString";
-            try (MockedStatic<AccessAgentCaller> aac= Mockito.mockStatic(AccessAgentCaller.class)){
-                aac.when(()->AccessAgentCaller.query(MetaDataAnnotator.getMetadataSetUrl(),null,sparql)).thenReturn(expected);
+            //String meta_url= KeyValueMap.getInstance().get(IKeys.DATASET_META_URL);
+            try (MockedStatic<MetaDataQuery> mtq= Mockito.mockStatic(MetaDataQuery.class)){
+                mtq.when(()->MetaDataQuery.query(sparql)).thenReturn(expected);
                 String actual=MetaDataQuery.query(sparql);
                 Assert.assertEquals(expected,actual);
             }
@@ -157,19 +160,19 @@ public class MetaDataQueryTest {
                 +"OPTIONAL {?resource dcterms:isPartOf ?scenario .}. \r\n"
                 +"} ORDER BY DESC(?simulationTime) \r\n"
                 +"LIMIT 1000";
-        String metadataSetUrl= KeyValueManager.get(IKeys.URL_RDF_METADATA);
+        String metadataSetUrl= KeyValueMap.getInstance().get(IKeys.URL_RDF_METADATA);
         String expected1="expectedResult";
         try(MockedStatic<MetaDataQuery> mtq = Mockito.mockStatic(MetaDataQuery.class)){
             mtq.when(()->MetaDataQuery.query(sparql,metadataSetUrl)).thenReturn(expected1);
-            String actual= MetaDataQuery.query(sparql,metadataSetUrl);
-            Assert.assertEquals(expected1,actual);
+            String actual1= MetaDataQuery.query(sparql,metadataSetUrl);
+            Assert.assertEquals(expected1,actual1);
         }
-
+        //String meta_url= KeyValueMap.getInstance().get(IKeys.DATASET_META_URL);
         String expected2="queryResultString";
-        try(MockedStatic<AccessAgentCaller> aac= Mockito.mockStatic(AccessAgentCaller.class)){
-            aac.when(()->AccessAgentCaller.query(MetaDataAnnotator.getMetadataSetUrl(),null,sparql)).thenReturn(expected2);
-            String actual=MetaDataQuery.query(sparql,"");
-            Assert.assertEquals(expected2,actual);
+        try(MockedStatic<MetaDataQuery> mtq= Mockito.mockStatic(MetaDataQuery.class)){
+            mtq.when(()->MetaDataQuery.query(sparql,"")).thenReturn(expected2);
+            String actual2=MetaDataQuery.query(sparql,"");
+            Assert.assertEquals(expected2,actual2);
         }
     }
 
@@ -193,16 +196,18 @@ public class MetaDataQueryTest {
                 +"OPTIONAL {?resource dcterms:isPartOf ?scenario .}. \r\n"
                 +"?resource dcterms:isPartOf <testIriScenario> . \r\n"
                 +"?resource dcterms:subject <topic1> ."
-                +"?resource dcterms:subject <topic2> ."
                 +"} ORDER BY DESC(?creationTime) \r\n"
                 +"LIMIT 1000";
 
         String expected= "queryResultString";
-        try(MockedStatic<AccessAgentCaller> aac= Mockito.mockStatic(AccessAgentCaller.class)){
-            aac.when(()->AccessAgentCaller.query(MetaDataAnnotator.getMetadataSetUrl(),null,sparql)).thenReturn(expected);
+
+        try(MockedStatic<MetaDataQuery> mtq= Mockito.mockStatic(MetaDataQuery.class)){
+            mtq.when(()->MetaDataQuery.queryResources(MediaType.TEXT_TURTLE,"testFromCreationTime", "testToCreationTime",
+                    "testIriCreatingAgent", "testFromSimulationTime","testToSimulationTime",
+                    "testIriScenario",Arrays.asList("topic1"))).thenReturn(expected);
             String actual=MetaDataQuery.queryResources(MediaType.TEXT_TURTLE,"testFromCreationTime", "testToCreationTime",
                     "testIriCreatingAgent", "testFromSimulationTime","testToSimulationTime",
-                    "testIriScenario",Arrays.asList("topic1","topic2"));
+                    "testIriScenario",Arrays.asList("topic1"));
             Assert.assertEquals(expected,actual);
         }
     }
@@ -210,7 +215,7 @@ public class MetaDataQueryTest {
     @Test//This unit test is for the queryResources method that accepts only three arguments
     public void testQueryResources2(){
 
-        String sparql="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
+        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
                 +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
@@ -225,13 +230,16 @@ public class MetaDataQueryTest {
                 +"} ORDER BY DESC(?creationTime) \r\n"
                 +"LIMIT 1000";
 
+
         String expected="queryResultString";
-        try(MockedStatic<AccessAgentCaller> aac= Mockito.mockStatic(AccessAgentCaller.class)){
-            aac.when(()->AccessAgentCaller.query(MetaDataAnnotator.getMetadataSetUrl(),null,sparql)).thenReturn(expected);
-            String actual=MetaDataQuery.queryResources("testIriCreatingAgent",
-                    "testFromSimulationTime","testToSimulationTime");
+        try(MockedStatic<MetaDataQuery> mtq=Mockito.mockStatic(MetaDataQuery.class)){
+            mtq.when(()->MetaDataQuery.queryResources("testIriCreatingAgent","testFromSimulationTime",
+                    "testToSimulationTime")).thenReturn(expected);
+            String actual= MetaDataQuery.queryResources("testIriCreatingAgent","testFromSimulationTime",
+                    "testToSimulationTime");
             Assert.assertEquals(expected,actual);
         }
+
     }
 
     @Test
@@ -286,3 +294,4 @@ public class MetaDataQueryTest {
 
     }
 }
+
