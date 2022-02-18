@@ -126,31 +126,23 @@ class CesiumWrapper {
             dataSource.name = name;
             this._viewer.dataSources.add(dataSource);
             for (let entity of dataSource.entities.values) {
-                if (entity.polygon) {
-                    // This is to support Mapbox property names; Cesium ion also natively supports color specification by "fill" and "stroke".
-                    let props = entity.properties;
-                    if (props["image"]) {
-                        entity.polygon.material = new Cesium.ImageMaterialProperty(
-                            {
-                                image: props["image"],
-                            }
-                        )
-                        entity.polygon.stRotation = 81.0;
-                    } else {
-                        let fillColorHex = props["fill-extrusion-color"] ?? props["fill-color"] ?? props["circle-color"] ?? "#666666";
-                        let fillColor = Cesium.Color.fromCssColorString(fillColorHex.valueOf());
-                        let fillColorProperty = new Cesium.CallbackProperty((time, result) => {
-                            if (entity.state?.hover) {
-                                return Cesium.Color.lerp(fillColor, Cesium.Color.WHITE, 0.5, result);
-                            } else {
-                                return result = fillColor;
-                            }
-                        }, false);
-                        let outlineColorHex = props["fill-outline-color"] ?? props["circle-stroke-color"] ?? "#000000";
-                        let outlineColor = Cesium.Color.fromCssColorString(outlineColorHex.valueOf());
-                        entity.polygon.material = new Cesium.ColorMaterialProperty(fillColorProperty);
-                        entity.polygon.outlineColor = outlineColor;
-                    }
+                if (entity.polygon && !entity.properties.image) {
+                    // Both Mapbox ("fill-extrusion-color", "fill-color", "circle-color", "fill-outline-color", "circle-stroke-color")
+                    // and Cesium ion property names ("fill", "stroke") are captured.
+                    const props = entity.properties;
+                    const fillColorHex = props["fill-extrusion-color"] ?? props["fill-color"] ?? props["circle-color"] ?? props["fill"] ?? "#666666";
+                    const fillColor = Cesium.Color.fromCssColorString(fillColorHex.valueOf());
+                    const fillColorProperty = new Cesium.CallbackProperty((time, result) => {
+                        if (entity.state?.hover) {
+                            return Cesium.Color.lerp(fillColor, Cesium.Color.WHITE, 0.5, result);
+                        } else {
+                            return result = fillColor;
+                        }
+                    }, false);
+                    const outlineColorHex = props["fill-outline-color"] ?? props["circle-stroke-color"] ?? props["stroke"] ?? "#000000";
+                    const outlineColor = Cesium.Color.fromCssColorString(outlineColorHex.valueOf());
+                    entity.polygon.material = new Cesium.ColorMaterialProperty(fillColorProperty);
+                    entity.polygon.outlineColor = outlineColor;
                 } else if (entity.billboard) {
                     if (entity.properties["icon-image"]) {
                         entity.billboard.image = new Cesium.CallbackProperty(

@@ -1,7 +1,7 @@
 {
     "global": {
-        "defaultCenter": [0.119115, 52.205363],
-        "defaultZoom": 13,
+        "defaultCenter": [0.0989, 52.215],
+        "defaultZoom": 500,
         "defaultBearing": -30,
         "defaultPitch": 40
     },
