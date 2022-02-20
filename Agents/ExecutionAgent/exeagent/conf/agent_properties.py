@@ -2,7 +2,7 @@ import json
 
 ###--- Properties for Python script ---###
 # This python module reads properties from agent_properties.json
-class ExpAgentConfig(object):
+class ExeAgentConfig(object):
     def __init__(self, conf_file):
         """
             This method sets the value of the configuration for ExpSetup agent.

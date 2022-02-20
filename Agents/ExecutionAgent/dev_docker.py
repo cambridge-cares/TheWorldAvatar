@@ -1,4 +1,4 @@
-from expsetupagent.agent import *
+from exeagent.agent import *
 
 from rdflib import Graph
 import pkgutil
@@ -18,7 +18,7 @@ def exampleEntryPoint():
             the created OntoDerivation:Derivation instance
     """
 
-    config = ExpAgentConfig(str(Path(__file__).absolute().parent) + '/expsetupagent/conf/agent_properties.json')
+    config = ExeAgentConfig(str(Path(__file__).absolute().parent) + '/expsetupagent/conf/agent_properties.json')
 
     clearAll = """DELETE {?s ?p ?o} \
             WHERE {?s ?p ?o}
@@ -41,7 +41,7 @@ def exampleEntryPoint():
     # 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d46acf42-ec48-454b-b138-1f548ce1f4ad'
     # 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d2f7b1f4-76e2-4401-bb68-29ade1a792ec'
 
-    agent_app = ExpSetupAgent(config.ONTOAGENT_SERVICE, config.PERIODIC_TIMESCALE, config.DERIVATION_INSTANCE_BASE_URL, config.SPARQL_QUERY_ENDPOINT, logger_name='prod')
+    agent_app = ExecutionAgent(config.ONTOAGENT_SERVICE, config.PERIODIC_TIMESCALE, config.DERIVATION_INSTANCE_BASE_URL, config.SPARQL_QUERY_ENDPOINT, logger_name='prod')
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
     derivationIRI = agent_app.derivationClient.createAsynDerivation(derivation_output, agent_app.agentIRI, derivation_inputs)

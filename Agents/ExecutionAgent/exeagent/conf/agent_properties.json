@@ -6,10 +6,10 @@
         "KG_PASSWORD": null
     },
     "ONTOAGENT": {
-        "ONTOAGENT_SERVICE": "http://www.theworldavatar.com/resource/agents/Service__ExpSetup#Service"
+        "ONTOAGENT_SERVICE": "http://www.theworldavatar.com/resource/agents/Service__Execution#Service"
     },
     "DERIVATION_CLIENT": {
-        "PERIODIC_TIMESCALE": 5,
+        "PERIODIC_TIMESCALE": 120,
         "DERIVATION_INSTANCE_BASE_URL": "http://localhost:8080/ontolab/"
     }
 }

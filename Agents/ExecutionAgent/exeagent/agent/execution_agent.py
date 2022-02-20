@@ -6,11 +6,11 @@ import os
 
 from pyasyncagent import AsyncAgent
 
-from expsetupagent.kg_operations import *
-from expsetupagent.data_model import *
-from expsetupagent.conf import *
+from exeagent.kg_operations import *
+from exeagent.data_model import *
+from exeagent.conf import *
 
-class ExpSetupAgent(AsyncAgent):
+class ExecutionAgent(AsyncAgent):
     def setupJob(self, agentInputs) -> list:
         """
             This function sets up the job given the agent inputs retrieved from ExpSetup Derivation.
@@ -59,20 +59,20 @@ class ExpSetupAgent(AsyncAgent):
                         "Only one instance of OntoRxn:ReactionExperiment should be used for generating OntoLab:EquipmentSettings per ExpSetup Derivation, collected: <%s>" % (">, <".join([rxnexp.instance_iri for rxnexp in list_rxn_exp_instance]))
                     )
             except ValueError:
-                self.logger.error("Unable to interpret strategy ('%s') as an IRI." % agent_inputs[ONTORXN_REACTIONEXPERIMENT])
-                raise Exception("Unable to interpret strategy ('%s') as an IRI." % agent_inputs[ONTORXN_REACTIONEXPERIMENT])
+                self.logger.error("Unable to interpret reaction experiment ('%s') as an IRI." % agent_inputs[ONTORXN_REACTIONEXPERIMENT])
+                raise Exception("Unable to interpret reaction experiment ('%s') as an IRI." % agent_inputs[ONTORXN_REACTIONEXPERIMENT])
         else:
             self.logger.error('OntoRxn:ReactionExperiment instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
             raise Exception('OntoRxn:ReactionExperiment instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
 
         return list_rxn_exp_instance[0]
 
-# Show an instructional message at the DoEAgent servlet root
+# Show an instructional message at the ExecutionAgent servlet root
 def default():
     """
         Instructional message at the app root.
     """
-    msg  = "This is an asynchronous agent that capable of setting up experiment to lab equipment digital twin.<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/138-dev-exp-setup-agent/Agents/ExpSetupAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/ExpSetupAgent#readme, before merging back to develop branch
+    msg  = "This is an asynchronous agent that capable of executing experiment in lab equipment.<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/ExecutionAgent#readme<BR>"
+    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/ExecutionAgent#readme, before merging back to develop branch
     return msg
