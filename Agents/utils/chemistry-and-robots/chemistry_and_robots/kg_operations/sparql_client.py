@@ -779,18 +779,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             logger.error(var[0])
             return var[0]
 
-    # \item queries knowledge graph to locate the suitable digital twin:
-    # does it has the suitable chemicals?
-    # does the hardware's operation range covers the reaction condition?
-    # how many pending configurations does it have? -> locate the most suitable hardware (can be expanded to check how long is each configuration, what's the temperature etc.)
-    # here we probably don't consider its status yet, just assume the equipment is there and will work - we rely on Execution Agent to keep track of the status
     def get_preferred_r4_reactor(self, rxnexp: ReactionExperiment) -> str:
-        # query if there's suitable hardware
+        """ This function queries the digital twin of the most suitable hardware for the given reaction experiment."""
         # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals that has the same thermodynamicBehaviour as the InputChemical of a reaction experiment
         list_autosampler = self.get_all_autosampler_with_fill()
         list_input_chemical = self.get_input_chemical_of_rxn_exp(rxnexp.instance_iri)
         list_input_chemical_single_phase = [input_chem.thermodynamicBehaviour for input_chem in list_input_chemical]
-        applicable_reactor = {}
         for autosampler in list_autosampler:
             list_chemical_solution_mat_single_phase = [site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour for site in autosampler.hasSite]
             if all(item in list_chemical_solution_mat_single_phase for item in list_input_chemical_single_phase):
@@ -802,23 +796,22 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
                 temp_condition = [cond.hasValue.hasNumericalValue for cond in rxnexp.hasReactionCondition if cond.clz == ONTORXN_REACTIONTEMPERATURE]
                 if len(temp_condition) > 1:
-                    raise Exception()
+                    raise Exception("Multiple reaction temperature conditions are found in the given reaction experiment: %s" % rxnexp)
                 elif len(temp_condition) < 1:
-                    raise Exception()
+                    raise Exception("No reaction temperature conditions are found in the given reaction experiment: %s" % rxnexp)
                 else:
                     temp_condition = temp_condition[0]
 
                 for reactor in list_reactor:
+                    # TODO NOTE here the temperature comparison need to be modified to support different temperature units
                     if reactor.hasReactorTemperatureLowerLimit.hasValue.hasNumericalValue <= temp_condition <= reactor.hasReactorTemperatureUpperLimit.hasValue.hasNumericalValue:
-                        # currently the simplified version: check how many reaction is pending in front
-                        num_pending_rxn = len(self.get_rxn_exp_pending_for_r4_reactor(reactor.instance_iri))
-                        applicable_reactor[reactor.instance_iri] = num_pending_rxn
-                        # TODO currently this function creats a dict that records the number of pending reactions for each VapourtecR4Reactor
-                        # TODO future work should support recording of estimated time for the VapourtecR4Reactor to be available
+                        # return the first reactor that is idle
+                        # TODO future work should support recording of estimated time for the VapourtecR4Reactor to be available (just in case None of the reactor is available)
                         # TODO maybe calculate based on residence time and other information {'labequip_1': 1, 'labequip_2': 2}
+                        if vapourtec_rs400.hasState == ONTOVAPOURTEC_IDLE:
+                            return reactor.instance_iri
 
-        # return the iri of the preferred r4 reactor
-        return min(applicable_reactor, key=applicable_reactor.get)
+        return None
 
     def get_autosampler(self, autosampler_iri: str) -> AutoSampler:
         autosampler = self.get_all_autosampler_with_fill(given_autosampler_iri=autosampler_iri)
@@ -830,11 +823,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_vapourtec_rs400_given_autosampler(self, autosampler: AutoSampler) -> VapourtecRS400:
         query = PREFIX_RDF + \
                 """
-                SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply
-                WHERE { ?rs400 <%s> <%s>; rdf:type <%s>; <%s> ?rs400_manufacturer; <%s> ?laboratory; <%s> ?rs400_power_supply. }
+                SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state
+                WHERE { ?rs400 <%s> <%s>; rdf:type <%s>; <%s> ?rs400_manufacturer; <%s> ?laboratory; <%s> ?rs400_power_supply; <%s> ?state. }
                 """ % (
                     SAREF_CONSISTSOF, autosampler.instance_iri,
-                    ONTOVAPOURTEC_VAPOURTECRS400, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY
+                    ONTOVAPOURTEC_VAPOURTECRS400, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, SAREF_HASSTATE
                 )
 
         response = self.performQuery(query)
@@ -858,19 +851,21 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             manufacturer=res['rs400_manufacturer'],
             isContainedIn=res['laboratory'],
             hasPowerSupply=res['rs400_power_supply'],
-            consistsOf=list_vapourtec_reactor_and_pump
+            consistsOf=list_vapourtec_reactor_and_pump,
+            hasState=res['state']
         )
 
         return vapourtec_rs400
 
-    def get_rxn_exp_conducted_in_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
-        r4_reactor_iri = trimIRI(r4_reactor_iri)
-        query = """
-                SELECT ?rxnexp WHERE {<%s> <%s> ?rxnexp.}
-                """ % (r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
-        response = self.performQuery(query)
-        list_rxn = [res['rxnexp'] for res in response]
-        return list_rxn
+    # TODO commented out for now, decide whether to keep it before merging back to develop
+    # def get_rxn_exp_conducted_in_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
+    #     r4_reactor_iri = trimIRI(r4_reactor_iri)
+    #     query = """
+    #             SELECT ?rxnexp WHERE {<%s> <%s> ?rxnexp.}
+    #             """ % (r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
+    #     response = self.performQuery(query)
+    #     list_rxn = [res['rxnexp'] for res in response]
+    #     return list_rxn
 
     def get_rxn_exp_assigned_to_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
         r4_reactor_iri = trimIRI(r4_reactor_iri)
@@ -881,13 +876,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         list_rxn = [res['rxnexp'] for res in response]
         return list_rxn
 
-    def get_rxn_exp_pending_for_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
-        r4_reactor_iri = trimIRI(r4_reactor_iri)
-        query = """SELECT ?rxnexp WHERE { ?rxnexp <%s> <%s>. FILTER NOT EXISTS { <%s> <%s> ?rxnexp. } }""" % (
-            ONTORXN_ISASSIGNEDTO, r4_reactor_iri, r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
-        response = self.performQuery(query)
-        list_rxn = [res['rxnexp'] for res in response]
-        return list_rxn
+    # TODO commented out for now, decide whether to keep it before merging back to develop
+    # def get_rxn_exp_pending_for_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
+    #     r4_reactor_iri = trimIRI(r4_reactor_iri)
+    #     query = """SELECT ?rxnexp WHERE { ?rxnexp <%s> <%s>. FILTER NOT EXISTS { <%s> <%s> ?rxnexp. } }""" % (
+    #         ONTORXN_ISASSIGNEDTO, r4_reactor_iri, r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
+    #     response = self.performQuery(query)
+    #     list_rxn = [res['rxnexp'] for res in response]
+    #     return list_rxn
 
     def get_r4_reactor_rxn_exp_assigned_to(self, rxn_exp_iri: str) -> str:
         rxn_exp_iri = trimIRI(rxn_exp_iri)
@@ -972,7 +968,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     instance_iri=info_['r4_reactor_temp_upper'],
                     hasValue=OM_Measure(instance_iri=info_['r4_reactor_temp_upper_measure'],hasUnit=info_['r4_reactor_temp_upper_unit'],hasNumericalValue=info_['r4_reactor_temp_upper_val'])
                 ),
-                conducted=self.get_rxn_exp_conducted_in_r4_reactor(info_['r4_reactor'])
+                # conducted=self.get_rxn_exp_conducted_in_r4_reactor(info_['r4_reactor']) # TODO commented out for now, decide whether to keep it before merging back to develop
             )
             list_r4_reactor.append(r4_reactor)
 
@@ -1026,6 +1022,27 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         update = """DELETE DATA {<%s> <%s> <%s>}""" % (rxn_exp_iri, ONTORXN_ISASSIGNEDTO, r4_reactor_iri)
         self.performUpdate(update)
         logger.info("ReactionExperiment <%s> is no longer assigned to VapourtecR4Reactor <%s>." % (rxn_exp_iri, r4_reactor_iri))
+
+    def get_prior_rxn_exp_in_queue(self, rxn_exp_iri: str) -> Dict[str, int]:
+        rxn_exp_iri = trimIRI(rxn_exp_iri)
+        query = PREFIX_RDF + """
+                SELECT ?rxn ?timestamp
+                WHERE {
+                    <%s> <%s> ?dd. ?dd <%s> <%s>; <%s>/<%s>/<%s> ?specific_timestamp.
+                    VALUES ?type {<%s> <%s>}.
+                    ?rxn rdf:type ?type; <%s> ?doe_derivation.
+                    ?doe_derivation <%s> <%s>; <%s>/<%s>/<%s> ?timestamp.
+                    ?rxn ^<%s> ?exe_derivation.
+                    ?exe_derivation <%s> <%s>.
+                    ?exe_derivation <%s>/rdf:type ?status_type.
+                    filter(?timestamp < ?specific_timestamp)
+                }
+                """ % (rxn_exp_iri, ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDUSING, DOEAGENT_SERVICE, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION,
+                ONTORXN_REACTIONEXPERIMENT, ONTORXN_REACTIONVARIATION, ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDUSING, DOEAGENT_SERVICE,
+                TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION, ONTORXN_ISASSIGNEDTO, ONTODERIVATION_ISDERIVEDUSING, EXEAGENT_SERVICE, ONTODERIVATION_HASSTATUS)
+        response = self.performQuery(query)
+        rxn_exp_queue = {res['rxn']:res['timestamp'] for res in response}
+        return rxn_exp_queue
 
     def get_sublist_in_list_of_dict_matching_key_value(self, list_of_dict: List[Dict], key: str, value: Any) -> list:
         if len(list_of_dict) > 0:

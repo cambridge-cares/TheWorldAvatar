@@ -8,6 +8,11 @@ from pyasyncagent.data_model.utils import *
 
 # TODO add below IRIs to pyasyncagent.data_model.iris, also TBox CSV/OWL if applicable
 OM_CELSIUSTEMPERATURE = UNITS_OF_MEASURE + 'CelsiusTemperature'
+ONTODERIVATION_BELONGSTO = ONTODERIVATION + 'belongsTo'
+ONTODERIVATION_ISDERIVEDUSING = ONTODERIVATION + 'isDerivedUsing'
+ONTODERIVATION_HASSTATUS = ONTODERIVATION + 'hasStatus'
+DOEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__DoE#Service'
+EXEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service'
 
 class InstanceIRIInitialisationError(Exception):
     instance_iri_missing = """IRI of instance_iri is missing, please put it as pyasyncagent.data_model.utils.INSTANCE_IRI_TO_BE_INITIALISED \

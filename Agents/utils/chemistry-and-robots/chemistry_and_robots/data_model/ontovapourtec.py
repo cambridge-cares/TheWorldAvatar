@@ -12,7 +12,7 @@ from chemistry_and_robots.data_model.ontolab import *
 ONTOVAPOURTEC_LOCATIONID = ONTOVAPOURTEC + 'locationID'
 ONTOVAPOURTEC_HASREACTORTEMPERATUREUPPERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureUpperLimit'
 ONTOVAPOURTEC_HASREACTORTEMPERATURELOWERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureLowerLimit'
-ONTOVAPOURTEC_CONDUCTED = ONTOVAPOURTEC + 'conducted'
+# ONTOVAPOURTEC_CONDUCTED = ONTOVAPOURTEC + 'conducted'
 
 class SampleLoopVolumeSetting(VolumeSetting):
     pass
@@ -64,6 +64,12 @@ class ReactorSettings(EquipmentSettings):
         ))
         g = self.hasResidenceTimeSetting.create_instance_for_kg(g)
 
+        # TODO re-think below triples
+        # # <reactionExperiment> <OntoRxn:hasEquipmentSettings> <reactorSetting>
+        # g.add((URIRef(self.wasGeneratedFor if isinstance(self.wasGeneratedFor, str) else self.wasGeneratedFor.instance_iri), URIRef(ONTORXN_HASEQUIPMENTSETTINGS), URIRef(self.instance_iri)))
+        # # <reactorSetting> <OntoLab:wasGeneratedFor> <reactionExperiment>
+        # g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_WASGENERATEDFOR), URIRef(self.wasGeneratedFor if isinstance(self.wasGeneratedFor, str) else self.wasGeneratedFor.instance_iri)))
+
         return g
 
 class PumpSettings(EquipmentSettings):
@@ -102,7 +108,7 @@ class VapourtecR4Reactor(LabEquipment):
     hasReactorVolume: OM_Volume
     hasReactorTemperatureLowerLimit: OM_CelsiusTemperature
     hasReactorTemperatureUpperLimit: OM_CelsiusTemperature
-    conducted: List[Union[str, ReactionExperiment]] = None # TODO here we provided str as an optional to simplify the implementation
+    # conducted: List[Union[str, ReactionExperiment]] = None # TODO here we provided str as an optional to simplify the implementation
 
     @pydantic.root_validator
     @classmethod
@@ -121,3 +127,4 @@ class VapourtecR2Pump(LabEquipment):
 
 class VapourtecRS400(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECRS400
+    hasState: str = ONTOVAPOURTEC_NULL

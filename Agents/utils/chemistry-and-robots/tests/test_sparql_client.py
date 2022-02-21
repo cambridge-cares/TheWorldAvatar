@@ -52,11 +52,25 @@ class TargetIRIs(Enum):
     'https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/InputChemical_3']
     LIST_EXAMPLE_RXN_EXP = [EXAMPLE_RXN_EXP_1_IRI, EXAMPLE_RXN_EXP_2_IRI, EXAMPLE_RXN_EXP_3_IRI, EXAMPLE_RXN_EXP_4_IRI, EXAMPLE_RXN_EXP_5_IRI]
     LIST_RXN_EXP_ASSIGNEDTO_VAPR4_DUMMY = [EXAMPLE_RXN_EXP_1_IRI, EXAMPLE_RXN_EXP_2_IRI]
-    LIST_VAPR4_DUMMY_CONDUCTED_RXN_EXP = [EXAMPLE_RXN_EXP_1_IRI, EXAMPLE_RXN_EXP_2_IRI]
+    # LIST_VAPR4_DUMMY_CONDUCTED_RXN_EXP = [EXAMPLE_RXN_EXP_1_IRI, EXAMPLE_RXN_EXP_2_IRI]
     LIST_RXN_EXP_ASSIGNEDTO_VAPR4_ANOTHER_DUMMY = [EXAMPLE_RXN_EXP_3_IRI, EXAMPLE_RXN_EXP_4_IRI, EXAMPLE_RXN_EXP_5_IRI]
-    LIST_VAPR4_ANOTHER_DUMMY_CONDUCTED_RXN_EXP = [EXAMPLE_RXN_EXP_3_IRI, EXAMPLE_RXN_EXP_4_IRI, EXAMPLE_RXN_EXP_5_IRI]
+    # LIST_VAPR4_ANOTHER_DUMMY_CONDUCTED_RXN_EXP = [EXAMPLE_RXN_EXP_3_IRI, EXAMPLE_RXN_EXP_4_IRI, EXAMPLE_RXN_EXP_5_IRI]
     LIST_DUMMY_R2PUMPS = [VAPOURTECR2PUMP_1_DUMMY_IRI, VAPOURTECR2PUMP_2_DUMMY_IRI, VAPOURTECR2PUMP_3_DUMMY_IRI, VAPOURTECR2PUMP_4_DUMMY_IRI]
     LIST_DUMMY_R4REACTORS = [VAPOURTECR4REACTOR_DUMMY_IRI, VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI]
+    RXN_EXP_QUEUE_1 = 'http://example.com/blazegraph/namespace/test_temp/exp_1'
+    RXN_EXP_QUEUE_2 = 'http://example.com/blazegraph/namespace/test_temp/exp_2'
+    RXN_EXP_QUEUE_3 = 'http://example.com/blazegraph/namespace/test_temp/exp_3'
+    RXN_EXP_QUEUE_4 = 'http://example.com/blazegraph/namespace/test_temp/exp_4'
+    RXN_EXP_QUEUE_5 = 'http://example.com/blazegraph/namespace/test_temp/exp_5'
+    RXN_EXP_QUEUE_6 = 'http://example.com/blazegraph/namespace/test_temp/exp_6'
+    RXN_EXP_QUEUE_7 = 'http://example.com/blazegraph/namespace/test_temp/exp_7'
+    RXN_EXP_1_PRIOR = []
+    RXN_EXP_2_PRIOR = [RXN_EXP_QUEUE_1]
+    RXN_EXP_3_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2]
+    RXN_EXP_4_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2, RXN_EXP_QUEUE_3]
+    RXN_EXP_5_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2, RXN_EXP_QUEUE_3, RXN_EXP_QUEUE_4]
+    RXN_EXP_6_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2, RXN_EXP_QUEUE_3, RXN_EXP_QUEUE_4]
+    RXN_EXP_7_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2, RXN_EXP_QUEUE_3, RXN_EXP_QUEUE_4]
 
 # The (scope="module") is added to make the initialisation only run once for the whole python module so it saves time
 @pytest.fixture(scope="module")
@@ -116,18 +130,19 @@ def test_get_r2_pump_given_vapourtec_rs400(initialise_triples):
     list_pumps_iri = [res.instance_iri for res in response]
     assert len(set(list_pumps_iri).difference(set(TargetIRIs.LIST_DUMMY_R2PUMPS.value))) == 0
 
-@pytest.mark.parametrize(
-    "r4_reactor_iri,rxn_exp_conducted",
-    [
-        (TargetIRIs.VAPOURTECR4REACTOR_DUMMY_IRI.value, TargetIRIs.LIST_VAPR4_DUMMY_CONDUCTED_RXN_EXP.value),
-        (TargetIRIs.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI.value, TargetIRIs.LIST_RXN_EXP_ASSIGNEDTO_VAPR4_ANOTHER_DUMMY.value),
-    ],
-)
-def test_get_rxn_exp_conducted_in_r4_reactor(initialise_triples, r4_reactor_iri, rxn_exp_conducted):
-    sparql_client = initialise_triples
-    response = sparql_client.get_rxn_exp_conducted_in_r4_reactor(r4_reactor_iri)
-    assert len(response) == len(rxn_exp_conducted)
-    assert len(set(response).difference(set(rxn_exp_conducted))) == 0
+# TODO commented out for now, decide whether to keep it before merging back to develop based on the function in sparql_client.py
+# @pytest.mark.parametrize(
+#     "r4_reactor_iri,rxn_exp_conducted",
+#     [
+#         (TargetIRIs.VAPOURTECR4REACTOR_DUMMY_IRI.value, TargetIRIs.LIST_VAPR4_DUMMY_CONDUCTED_RXN_EXP.value),
+#         (TargetIRIs.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI.value, TargetIRIs.LIST_RXN_EXP_ASSIGNEDTO_VAPR4_ANOTHER_DUMMY.value),
+#     ],
+# )
+# def test_get_rxn_exp_conducted_in_r4_reactor(initialise_triples, r4_reactor_iri, rxn_exp_conducted):
+#     sparql_client = initialise_triples
+#     response = sparql_client.get_rxn_exp_conducted_in_r4_reactor(r4_reactor_iri)
+#     assert len(response) == len(rxn_exp_conducted)
+#     assert len(set(response).difference(set(rxn_exp_conducted))) == 0
 
 @pytest.mark.parametrize(
     "r4_reactor_iri,rxn_exp_assigned",
@@ -142,18 +157,19 @@ def test_get_rxn_exp_assigned_to_r4_reactor(initialise_triples, r4_reactor_iri, 
     assert len(response) == len(rxn_exp_assigned)
     assert len(set(response).difference(set(rxn_exp_assigned))) == 0
 
-@pytest.mark.parametrize(
-    "r4_reactor_iri,rxn_exp_pending",
-    [
-        (TargetIRIs.VAPOURTECR4REACTOR_DUMMY_IRI.value, []),
-        (TargetIRIs.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI.value, []),
-    ],
-)
-def test_get_rxn_exp_pending_for_r4_reactor(initialise_triples, r4_reactor_iri, rxn_exp_pending):
-    sparql_client = initialise_triples
-    response = sparql_client.get_rxn_exp_pending_for_r4_reactor(r4_reactor_iri)
-    assert len(response) == len(rxn_exp_pending)
-    assert len(set(response).difference(set(rxn_exp_pending))) == 0
+# TODO commented out for now, decide whether to keep it before merging back to develop based on the function in sparql_client.py
+# @pytest.mark.parametrize(
+#     "r4_reactor_iri,rxn_exp_pending",
+#     [
+#         (TargetIRIs.VAPOURTECR4REACTOR_DUMMY_IRI.value, []),
+#         (TargetIRIs.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI.value, []),
+#     ],
+# )
+# def test_get_rxn_exp_pending_for_r4_reactor(initialise_triples, r4_reactor_iri, rxn_exp_pending):
+#     sparql_client = initialise_triples
+#     response = sparql_client.get_rxn_exp_pending_for_r4_reactor(r4_reactor_iri)
+#     assert len(response) == len(rxn_exp_pending)
+#     assert len(set(response).difference(set(rxn_exp_pending))) == 0
 
 @pytest.mark.parametrize(
     "rxnexp_iri,input_chemical_iri",
@@ -172,7 +188,6 @@ def test_get_input_chemical_of_rxn_exp(initialise_triples, rxnexp_iri, input_che
     assert len(list_input_chemical) == len(input_chemical_iri)
     assert len(set(list_input_chemical).difference(set(input_chemical_iri))) == 0
 
-# TODO
 def test_get_vapourtec_rs400_given_autosampler(initialise_triples):
     sparql_client = initialise_triples
     autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
@@ -219,6 +234,23 @@ def test_assign_and_remove_rxn_exp_to_r4_reactor(initialise_triples, new_rxn_exp
     sparql_client.remove_rxn_exp_from_r4_reactor(new_rxn_exp_iri, r4_reactor_iri)
     response3 = sparql_client.get_rxn_exp_assigned_to_r4_reactor(r4_reactor_iri)
     assert new_rxn_exp_iri not in response3
+
+@pytest.mark.parametrize(
+    "rxn_exp_iri,prior_rxn_exp",
+    [
+        (TargetIRIs.RXN_EXP_QUEUE_1.value, TargetIRIs.RXN_EXP_1_PRIOR.value),
+        (TargetIRIs.RXN_EXP_QUEUE_2.value, TargetIRIs.RXN_EXP_2_PRIOR.value),
+        (TargetIRIs.RXN_EXP_QUEUE_3.value, TargetIRIs.RXN_EXP_3_PRIOR.value),
+        (TargetIRIs.RXN_EXP_QUEUE_4.value, TargetIRIs.RXN_EXP_4_PRIOR.value),
+        (TargetIRIs.RXN_EXP_QUEUE_5.value, TargetIRIs.RXN_EXP_5_PRIOR.value),
+        (TargetIRIs.RXN_EXP_QUEUE_6.value, TargetIRIs.RXN_EXP_6_PRIOR.value),
+        (TargetIRIs.RXN_EXP_QUEUE_7.value, TargetIRIs.RXN_EXP_7_PRIOR.value),
+    ],
+)
+def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_exp):
+    sparql_client = initialise_triples
+    rxn_exp_queue = sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_iri)
+    assert all(item in prior_rxn_exp for item in [*rxn_exp_queue])
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer

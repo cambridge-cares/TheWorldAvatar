@@ -34,11 +34,12 @@ exp3:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 exp4:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
-:VapourtecR4_Dummy ontovapourtec:conducted exp1:RxnExp_1.
-:VapourtecR4_Dummy ontovapourtec:conducted exp2:RxnExp_1.
-:VapourtecR4_Another_Dummy ontovapourtec:conducted exp3:RxnExp_1.
-:VapourtecR4_Another_Dummy ontovapourtec:conducted exp4:RxnExp_1.
-:VapourtecR4_Another_Dummy ontovapourtec:conducted exp5:RxnExp_1.
+# TODO re-think if below triples should exist or not
+#:VapourtecR4_Dummy ontovapourtec:conducted exp1:RxnExp_1.
+#:VapourtecR4_Dummy ontovapourtec:conducted exp2:RxnExp_1.
+#:VapourtecR4_Another_Dummy ontovapourtec:conducted exp3:RxnExp_1.
+#:VapourtecR4_Another_Dummy ontovapourtec:conducted exp4:RxnExp_1.
+#:VapourtecR4_Another_Dummy ontovapourtec:conducted exp5:RxnExp_1.
 
 ########################
 ## Laboratory - Dummy ##
@@ -107,7 +108,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     #saref:accomplishes # TODO
     #saref:isAccomplishedBy # TODO
     #saref:hasFunction # TODO
-    #saref:hasState # TODO
+    saref:hasState ontovapourtec:Idle;
 .
 
 :VapRS400_Price
