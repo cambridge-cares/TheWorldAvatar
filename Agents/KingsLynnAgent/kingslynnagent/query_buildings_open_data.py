@@ -79,6 +79,13 @@ def build_output_dir():
 
         print("created folder : ", main_folder)
 
+    else:
+        # check building output folder if the output has been created
+        if not os.path.isdir(building_folder):
+            os.makedirs(building_folder)
+
+        print("created folder : ", main_folder)
+        
     # Specify metadata properties to consider
     metajson = {'global': {'defaultCenter': [0.395, 52.750],
                                  'defaultZoom': 13,
