@@ -1044,6 +1044,21 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         rxn_exp_queue = {res['rxn']:res['timestamp'] for res in response}
         return rxn_exp_queue
 
+    def get_hplc_local_report_folder_path(self, hplc_iri: str):
+        hplc_iri = trimIRI(hplc_iri)
+        query = """SELECT ?report_dir ?report_extension WHERE { <%s> <%s> ?report_dir; <%s> ?report_extension. }""" % (hplc_iri, ONTOHPLC_LOCALREPORTDIRECTORY, ONTOHPLC_REPORTEXTENSION)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple report folders found for given instance of HPLC <%s>: %s" % (hplc_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No report folders found for given instance of HPLC <%s>." % (hplc_iri))
+        else:
+            return response[0]['report_dir'], response[0]['report_extension']
+
+    def write_hplc_report_path_to_kg(self, hplc_report: HPLCReport):
+        update = """INSERT DATA {<%s> <%s> <%s>}""" % (hplc_report.instance_iri, ONTOHPLC_HASREPORTPATH, hplc_report.hasReportPath)
+        self.performUpdate(update)
+
     def get_sublist_in_list_of_dict_matching_key_value(self, list_of_dict: List[Dict], key: str, value: Any) -> list:
         if len(list_of_dict) > 0:
             try:

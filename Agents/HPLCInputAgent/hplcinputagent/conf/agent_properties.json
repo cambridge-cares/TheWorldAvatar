@@ -1,0 +1,23 @@
+{
+    "KNOWLEDGE_GRAPH": {
+        "SPARQL_QUERY_ENDPOINT": "http://kg.cmclinnovations.com:81/blazegraph/namespace/testontolab/sparql",
+        "SPARQL_UPDATE_ENDPOINT": "http://kg.cmclinnovations.com:81/blazegraph/namespace/testontolab/sparql",
+        "KG_USERNAME": null,
+        "KG_PASSWORD": null,
+        "FILE_SERVER_URL": "http://localhost:xxxx/FileServer/",
+        "FILE_SERVER_UPLOAD": "http://localhost:xxxx/FileServer/upload",
+        "FILE_SERVER_DOWNLOAD": "http://localhost:xxxx/FileServer/download/",
+        "FILE_SERVER_DELETE": "http://localhost:xxxx/FileServer/delete/"
+    },
+    "ONTOAGENT": {
+        "ONTOAGENT_SERVICE": "http://www.theworldavatar.com/resource/agents/Service__HPLCInput#Service"
+    },
+    "DERIVATION_CLIENT": {
+        "PERIODIC_TIMESCALE": 120,
+        "DERIVATION_INSTANCE_BASE_URL": "http://localhost:8080/ontolab/"
+    },
+    "HPLC_REPORT_MONITOR": {
+        "PERIODIC_TIMESCALE": 60,
+        "HPLC_DIGITAL_TWIN": "http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLC_Dummy"
+    }
+}

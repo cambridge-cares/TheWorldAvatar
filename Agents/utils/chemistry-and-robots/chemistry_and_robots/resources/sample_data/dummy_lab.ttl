@@ -73,7 +73,11 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 ##################
 ## HPLC - Dummy ##
 ##################
-# :HPLC_Dummy # TODO
+:HPLC_Dummy # TODO
+    a ontohplc:HPLC;
+    ontohplc:localReportDirectory "C:\\CHEM32"^^xsd:string;
+    ontohplc:reportExtension "xls"^^xsd:string;
+.
 
 #################
 ## BPR - Dummy ##
