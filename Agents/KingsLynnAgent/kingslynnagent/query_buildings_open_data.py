@@ -8,6 +8,7 @@ import json
 import os
 import pyproj
 import re
+import shutil
 
 import datetime as dt
 import numpy as np
@@ -80,12 +81,19 @@ def build_output_dir():
         print("created folder : ", main_folder)
 
     else:
-        # check building output folder if the output has been created
+        # The folder exists
+        print("Main output folder is presented: ", main_folder)
+        try:
+            shutil.rmtree(main_folder)
+        except OSError as e:
+            print("Error removing {}".format(main_folder))
+        # Create the data output folder
+        os.makedirs(main_folder)
+        print("Recreated folder : ", main_folder)
+        # check building output folder alone
         if not os.path.isdir(building_folder):
             os.makedirs(building_folder)
 
-        print("created folder : ", main_folder)
-        
     # Specify metadata properties to consider
     metajson = {'global': {'defaultCenter': [0.395, 52.750],
                                  'defaultZoom': 13,
