@@ -64,12 +64,14 @@ class OMOPS_Pipeline(Pipeline):
         return xyz_file_paths
 
 
-def assemble_omops_pipeline(silent: bool = False) -> OMOPS_Pipeline:
+def assemble_omops_pipeline(
+    config_file: Optional[str] = None, silent: bool = False
+) -> OMOPS_Pipeline:
 
     if not silent:
         logger.info(f"Assembling {OMOPS_PIPELINE} pipeline.")
 
-    pipeline = OMOPS_Pipeline(name=OMOPS_PIPELINE)
+    pipeline = OMOPS_Pipeline(name=OMOPS_PIPELINE, config_file=config_file)
 
     # pipeline.add_handler(handler=OMINP_XYZ_Handler(), silent=silent)
     pipeline.register_handler(handler=OMINP_JSON_TO_OM_JSON_Handler(), silent=silent)

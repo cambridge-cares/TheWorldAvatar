@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 class Uploaders:
     def __init__(
         self,
+        config_file: Optional[str] = None,
         file_server_uploader: Optional[Uploader] = None,
         triple_store_uploader: Optional[Uploader] = None,
     ):
@@ -30,11 +31,12 @@ class Uploaders:
         )
         self.file_server_uploads = {}
         self.triple_store_uploads = {}
-        self.upload_config = self.get_upload_config()
+        self.upload_config = self.get_upload_config(config_file=config_file)
 
-    def get_upload_config(self) -> Dict:
+    def get_upload_config(self, config_file: Optional[str] = None) -> Dict:
         upload_configs = {}
-        config_file = os.environ[globals.CONFIG_FILE_ENV_VAR]
+        if config_file is None:
+            config_file = os.environ[globals.CONFIG_FILE_ENV_VAR]
         with open(config_file, "r") as stream:
             upload_configs = yaml.safe_load(stream)
 

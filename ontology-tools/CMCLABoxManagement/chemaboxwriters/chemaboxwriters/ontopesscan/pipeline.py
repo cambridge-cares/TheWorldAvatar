@@ -5,9 +5,8 @@ from chemaboxwriters.ontopesscan.handlers import (
     OC_JSON_TO_OPS_JSON_Handler,
     OPS_JSON_TO_OPS_CSV_Handler,
 )
-from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
 import chemaboxwriters.common.handlers as handlers
-
+from typing import Optional
 
 import logging
 
@@ -16,12 +15,14 @@ logger = logging.getLogger(__name__)
 OPS_PIPELINE = "ontopesscan"
 
 
-def assemble_ops_pipeline(silent: bool = False) -> Pipeline:
+def assemble_ops_pipeline(
+    config_file: Optional[str] = None, silent: bool = False
+) -> Pipeline:
 
     if not silent:
         logger.info(f"Assembling {OPS_PIPELINE} pipeline.")
 
-    pipeline = get_pipeline(name=OPS_PIPELINE)
+    pipeline = get_pipeline(name=OPS_PIPELINE, config_file=config_file)
     oc_pipeline = assemble_oc_pipeline(silent=True)
 
     # add all oc pipeline handlers

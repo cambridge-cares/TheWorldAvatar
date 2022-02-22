@@ -5,6 +5,7 @@ from chemaboxwriters.ontocompchem.handlers import (
     OC_JSON_TO_OC_CSV_Handler,
     QC_JSON_TO_OC_JSON_Handler,
 )
+from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
@@ -12,12 +13,14 @@ logger = logging.getLogger(__name__)
 OC_PIPELINE = "ontocompchem"
 
 
-def assemble_oc_pipeline(silent: bool = False) -> Pipeline:
+def assemble_oc_pipeline(
+    config_file: Optional[str] = None, silent: bool = False
+) -> Pipeline:
 
     if not silent:
         logger.info(f"Assembling the {OC_PIPELINE} pipeline.")
 
-    pipeline = get_pipeline(name=OC_PIPELINE)
+    pipeline = get_pipeline(name=OC_PIPELINE, config_file=config_file)
 
     pipeline.register_handler(
         handler=handlers.QC_LOG_TO_QC_JSON_Handler(), silent=silent

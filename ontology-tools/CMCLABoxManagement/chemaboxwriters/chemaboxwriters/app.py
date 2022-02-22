@@ -18,6 +18,7 @@ def write_abox(
     file_or_dir: str,
     input_file_type: str,
     file_ext: Optional[str] = None,
+    config_file: Optional[str] = None,
     out_dir: Optional[str] = None,
     handler_kwargs: Optional[Dict[str, Any]] = None,
     log_file_dir: Optional[str] = None,
@@ -36,6 +37,7 @@ def write_abox(
             file_or_dir=file_or_dir,
             input_file_type=input_file_type,
             file_ext=file_ext,
+            config_file=config_file,
             out_dir=out_dir,
             handler_kwargs=handler_kwargs,
             log_file_dir=log_file_dir,
@@ -59,6 +61,7 @@ def _write_abox(
     file_or_dir: str,
     input_file_type: str,
     file_ext: Optional[str] = None,
+    config_file: Optional[str] = None,
     out_dir: Optional[str] = None,
     handler_kwargs: Optional[Dict[str, Any]] = None,
     log_file_dir: Optional[str] = None,
@@ -82,7 +85,7 @@ def _write_abox(
         no_file_logging=no_file_logging,
     )
 
-    pipeline = assemble_pipeline(pipeline_type=pipeline_type)
+    pipeline = assemble_pipeline(pipeline_type=pipeline_type, config_file=config_file)
 
     # if info:
     #    pipeline.info(handlerKwargs=handlerKwargs)
@@ -126,16 +129,18 @@ def _write_abox(
     return pipeline
 
 
-def assemble_pipeline(pipeline_type: str) -> Pipeline:
+def assemble_pipeline(
+    pipeline_type: str, config_file: Optional[str] = None
+) -> Pipeline:
 
     if pipeline_type.lower() == OC_PIPELINE:
-        return assemble_oc_pipeline()
+        return assemble_oc_pipeline(config_file=config_file)
     if pipeline_type.lower() == OS_PIPELINE:
-        return assemble_os_pipeline()
+        return assemble_os_pipeline(config_file=config_file)
     if pipeline_type.lower() == OPS_PIPELINE:
-        return assemble_ops_pipeline()
+        return assemble_ops_pipeline(config_file=config_file)
     if pipeline_type.lower() == OMOPS_PIPELINE:
-        return assemble_omops_pipeline()
+        return assemble_omops_pipeline(config_file=config_file)
 
     SUPPORTED_PIPELINES = [OC_PIPELINE, OS_PIPELINE, OPS_PIPELINE, OMOPS_PIPELINE]
 

@@ -7,6 +7,7 @@ Usage:
     ocompchem <fileOrDir>   [--inp-file-type=<type>]
                             [--out-dir=<dir>]
                             [--file-ext=<ext>]
+                            [--config-file=<file>]
                             [--log-file-name=<name>]
                             [--log-file-dir=<dir>]
                             [--no-file-logging]
@@ -30,6 +31,11 @@ Options:
                                 - for all other stages
                                   the extension equals to the
                                   input file type
+--config-file=<file>           Path to the config file specifying upload
+                               options. If not provided, the code will
+                               try to read the config file path from
+                               the ABOXWRITERS_CONFIG_FILE environment
+                               variable.
 --out-dir=<dir>                Output directory to write the
                                abox files to. If not provided
                                defaults to the directory of the
@@ -64,6 +70,7 @@ def start():
         file_or_dir=args["<fileOrDir>"],
         input_file_type=args["--inp-file-type"],
         file_ext=args["--file-ext"],
+        config_file=args["--config-file"],
         out_dir=args["--out-dir"],
         log_file_dir=args["--log-file-dir"],
         log_file_name=args["--log-file-name"],

@@ -5,6 +5,7 @@ from chemaboxwriters.ontospecies.handlers import (
     OS_JSON_TO_OS_CSV_Handler,
     QC_JSON_TO_OS_JSON_Handler,
 )
+from typing import Optional
 import logging
 
 
@@ -13,12 +14,14 @@ logger = logging.getLogger(__name__)
 OS_PIPELINE = "ontospecies"
 
 
-def assemble_os_pipeline(silent: bool = False) -> Pipeline:
+def assemble_os_pipeline(
+    config_file: Optional[str] = None, silent: bool = False
+) -> Pipeline:
 
     if not silent:
         logger.info(f"Assembling {OS_PIPELINE} pipeline.")
 
-    pipeline = get_pipeline(name=OS_PIPELINE)
+    pipeline = get_pipeline(name=OS_PIPELINE, config_file=config_file)
 
     pipeline.register_handler(
         handler=handlers.QC_LOG_TO_QC_JSON_Handler(), silent=silent

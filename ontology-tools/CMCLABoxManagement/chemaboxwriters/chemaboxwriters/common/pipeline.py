@@ -21,6 +21,7 @@ class Pipeline:
     def __init__(
         self,
         name: str,
+        config_file: Optional[str] = None,
         handlers: Optional[List[IHandler]] = None,
         file_server_uploader: Optional[Uploader] = None,
         triple_store_uploader: Optional[Uploader] = None,
@@ -28,6 +29,7 @@ class Pipeline:
         self.name = name
         self._handlers: List[IHandler] = handlers if handlers is not None else []
         self._uploaders = Uploaders(
+            config_file=config_file,
             file_server_uploader=file_server_uploader,
             triple_store_uploader=triple_store_uploader,
         )
@@ -136,6 +138,7 @@ class Pipeline:
 
 def get_pipeline(
     name: str = "",
+    config_file: Optional[str] = None,
     handlers: Optional[List[IHandler]] = None,
     file_server_uploader: Optional[Uploader] = None,
     triple_store_uploader: Optional[Uploader] = None,
@@ -143,6 +146,7 @@ def get_pipeline(
 
     pipeline = Pipeline(
         name=name,
+        config_file=config_file,
         handlers=handlers,
         file_server_uploader=file_server_uploader,
         triple_store_uploader=triple_store_uploader,
