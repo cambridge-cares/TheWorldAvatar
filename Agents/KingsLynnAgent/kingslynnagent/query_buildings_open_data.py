@@ -8,7 +8,6 @@ import json
 import os
 import pyproj
 import re
-import shutil
 
 import datetime as dt
 import numpy as np
