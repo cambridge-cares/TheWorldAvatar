@@ -20,3 +20,9 @@ class IncorrectFileOrDirPath(Exception):
     """Raise for incorrect file or dir paths."""
 
     pass
+
+
+class MissingUploadConfigs(Exception):
+    """Raise for missing upload configs."""
+
+    pass

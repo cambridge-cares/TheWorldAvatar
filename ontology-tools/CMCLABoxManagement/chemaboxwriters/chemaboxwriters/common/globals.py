@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Set
 
 # json keys
 ENTRY_IRI = "EntryIRI"
@@ -30,7 +29,7 @@ _aboxStagesMap = {
     ONTO_SPECIES_TAG: ["JSON", "CSV", "OWL"],
     ONTO_PESSCAN_TAG: ["JSON", "CSV", "OWL"],
     ONTO_MOPS_TAG: ["JSON", "CSV", "OWL"],
-    ONTO_MOPS_INP_TAG: ["JSON"],
+    ONTO_MOPS_INP_TAG: ["JSON", "XYZ"],
 }
 
 _aboxStages = []
@@ -40,3 +39,28 @@ for tag, stages in _aboxStagesMap.items():
 _aboxStages.append(f"NOT_DEFINED")
 
 aboxStages = Enum("aboxStages", _aboxStages)
+
+
+CONFIG_FILE_ENV_VAR = "ABOXWRITERS_CONFIG_FILE"
+TRIPLE_STORE_SPARQL_ENDPOINT_KEY = "triple_store_sparql_endpoint"
+TRIPLE_STORE_SECRETS_FILE_KEY = "triple_store_secrets_file"
+FILE_SERVER_UPLOAD_ENDPOINT_KEY = "file_server_upload_endpoint"
+FILE_SERVER_SECRETS_FILE_KEY = "file_server_secrets_file"
+FILE_SERVER_SUBDIR_KEY = "file_server_subdir"
+UPLOAD_TO_FILE_SERVER = "upload_to_file_server"
+UPLOAD_TO_TRIPLE_STORE = "upload_to_triple_store"
+
+FILE_SERVER_KEYS = [
+    FILE_SERVER_UPLOAD_ENDPOINT_KEY,
+    FILE_SERVER_SECRETS_FILE_KEY,
+    FILE_SERVER_SUBDIR_KEY,
+]
+
+TRIPLE_STORE_KEYS = [TRIPLE_STORE_SPARQL_ENDPOINT_KEY, TRIPLE_STORE_SECRETS_FILE_KEY]
+
+CONFIG_FILE_KEYS = [
+    UPLOAD_TO_FILE_SERVER,
+    UPLOAD_TO_TRIPLE_STORE,
+]
+CONFIG_FILE_KEYS.extend(FILE_SERVER_KEYS)
+CONFIG_FILE_KEYS.extend(TRIPLE_STORE_KEYS)
