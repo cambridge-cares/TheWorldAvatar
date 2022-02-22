@@ -81,18 +81,27 @@ def build_output_dir():
         print("created folder : ", main_folder)
 
     else:
-        # The folder exists
-        print("Main output folder is presented: ", main_folder)
+        # The folder is represent
+        print("Main output folder exists")
         try:
-            shutil.rmtree(main_folder)
+            for item in os.listdir(main_folder):
+                if item.endswith(".json"):
+                    print("Removing: {}".format(os.path.join(main_folder, item)))
+                    os.remove(os.path.join(main_folder, item))
         except OSError as e:
-            print("Error removing {}".format(main_folder))
-        # Create the data output folder
-        os.makedirs(main_folder)
-        print("Recreated folder : ", main_folder)
+            print("Error removing json files in {}".format(main_folder))
+
         # check building output folder alone
         if not os.path.isdir(building_folder):
             os.makedirs(building_folder)
+        else:
+            try:
+                for item in os.listdir(building_folder):
+                    if item.endswith(".json") or item.endswith(".geojson"):
+                        print("Removing: {}".format(os.path.join(building_folder, item)))
+                        os.remove(os.path.join(building_folder, item))
+            except OSError as e:
+                print("Error removing json files in {}".format(building_folder))
 
     # Specify metadata properties to consider
     metajson = {'global': {'defaultCenter': [0.395, 52.750],
