@@ -46,6 +46,12 @@ def str2bool(v):
     """
     return v.lower() in ("true", "yes", "t", "1")
 
+def check_no_of_buildings(v):
+    """ 
+        Convert selected type of string information for the number of buildings into boolean
+    """
+    return v.lower() in ("","none","None","All","all")
+
 def read_properties_file(filepath):
     """
         Reads SPARQL endpoints and output directory from properties file (as global variables).
@@ -56,11 +62,14 @@ def read_properties_file(filepath):
     # Define global scope for global variables
     global OUTPUT_DIR, QUERY_ENDPOINT, NOOFBUILDINGS, SKIP_WORKFLOW
 
-    # Extract no. of building from environmental variables (# This is for testing purpose will be removed in production version)
+    # Extract no. of building from environmental variables
     if 'MAX_NUM_BUILDINGS' in os.environ:
         NOOFBUILDINGS = read_env_var('MAX_NUM_BUILDINGS')
+        if check_no_of_buildings(NOOFBUILDINGS):
+            NOOFBUILDINGS = "None"
     else:
-        NOOFBUILDINGS = 'None'
+        # No environmental variable is specified, return "None"
+        NOOFBUILDINGS = "None"
 
     # Extract output directory for JSON file containing retrieved time series data from KG
     OUTPUT_DIR = read_env_var('OUTPUT_DIR')
