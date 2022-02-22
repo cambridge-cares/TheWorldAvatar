@@ -136,10 +136,13 @@ def build_output_dir():
 
     with open(meta_file_name, 'w') as f:
             json.dump(metajson, indent=4, fp=f)
+            print("Created meta files:\n" + meta_file_name)
     with open(tree_file_name, 'w') as f:
             json.dump(treejson, indent=4, fp=f)
+            print(tree_file_name)
     with open(bmetajson_name, 'w') as f:
             json.dump(bmetajson, indent=4, fp=f)
+            print(bmetajson_name)
 
 def get_buildings_named_graph(query_endpoint):
     """
@@ -496,6 +499,7 @@ if __name__ == '__main__':
     build_output_dir()
 
     # Retrieve SPARQL results from Blazegraph
+    print("Retrieve SPARQL results from Blazegraph")
     try:
         buildings_graph = get_buildings_named_graph(utils_argo.QUERY_ENDPOINT)
         kg_buildings = execute_query(get_buildings_query(buildings_graph, n), utils_argo.QUERY_ENDPOINT)
@@ -549,6 +553,7 @@ if __name__ == '__main__':
         metadata[k] = []
 
     # Obtain lists of building data (heights; UPRNs and building use)
+    print("Obtain lists of building data (heights; UPRNs and building use)")
     building_data = get_all_uprns_and_building_uses(utils_argo.QUERY_ENDPOINT)
     building_heights= get_all_building_heights(utils_argo.QUERY_ENDPOINT)
 
@@ -556,6 +561,7 @@ if __name__ == '__main__':
     feature_id = 0
 
     # Iterate through all buildings (each building represents one geospatial feature)
+    print("Iterate through all buildings (each building represents one geospatial feature)")
     for b in results['building'].unique():
         # Update feature_id
         feature_id += 1
