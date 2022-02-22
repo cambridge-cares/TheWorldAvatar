@@ -1,4 +1,3 @@
-from chemaboxwriters.app_exceptions.app_exceptions import UnsupportedStage
 from enum import Enum
 from abc import ABC, abstractmethod
 from typing import List, Tuple
@@ -10,12 +9,16 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class IHandler(ABC):
+    """
+    The Handler interface provides methods to handle file inputs.
+    """
+
     name: str
     in_stages: List[Enum]
     out_stage: Enum
     written_files: List[str] = field(init=False, default_factory=list)
 
-    def execute(
+    def notify(
         self,
         inputs: List[str],
         input_type: Enum,
@@ -24,13 +27,7 @@ class IHandler(ABC):
         **handler_kwargs,
     ) -> Tuple[List[str], Enum]:
 
-        if input_type not in self.in_stages:
-            requested_stage = input_type.name.lower()
-            raise UnsupportedStage(
-                f"Error: Stage: '{requested_stage}' is not supported."
-            )
-
-        outputs = self.handle_input(
+        outputs = self._handle_input(
             inputs=inputs,
             out_dir=out_dir,
             input_type=input_type,
@@ -42,7 +39,7 @@ class IHandler(ABC):
         return outputs, self.out_stage
 
     @abstractmethod
-    def handle_input(
+    def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,

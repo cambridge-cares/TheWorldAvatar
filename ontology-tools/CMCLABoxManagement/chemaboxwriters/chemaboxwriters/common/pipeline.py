@@ -1,49 +1,62 @@
-from chemaboxwriters.app_exceptions.app_exceptions import UnsupportedStage
-from typing import Dict, List, Tuple, Optional, Any, Union
-import logging
+import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
+from typing import Dict, List, Optional, Any
 from chemaboxwriters.common.handler import IHandler
 from enum import Enum
 import chemaboxwriters.common.globals as globals
-
+from collections import defaultdict
+from chemaboxwriters.common.uploaders import Uploaders
+from pyuploader.uploaders.uploader import Uploader
+import logging
 
 logger = logging.getLogger(__name__)
 
 
-class Pipeline(IHandler):
+class Pipeline:
     """
-    The Pipeline interface declares a method for building the chain of handlers.
-    It also declares a method for executing a request.
+    The Pipeline interface provides methods to register handlers that can
+    process different file inputs. The pipeline acts here as an Observable
+    whereas handlers are Observers.
     """
 
-    def __init__(self, name: str, out_stage: Optional[Enum] = None):
+    def __init__(
+        self,
+        name: str,
+        handlers: Optional[List[IHandler]] = None,
+        file_server_uploader: Optional[Uploader] = None,
+        triple_store_uploader: Optional[Uploader] = None,
+    ):
         self.name = name
-        self.handlers: Dict[str, IHandler] = {}
-        self._out_stage = out_stage
+        self._handlers: List[IHandler] = handlers if handlers is not None else []
+        self._uploaders = Uploaders(
+            file_server_uploader=file_server_uploader,
+            triple_store_uploader=triple_store_uploader,
+        )
 
-    def add_handler(self, handler: IHandler, handlerName: Optional[str] = None) -> Any:
+    def register_handler(
+        self,
+        handler: IHandler,
+        silent: bool = False,
+    ) -> Any:
 
-        if handlerName is None:
-            handlerName = handler.name
-
-        logger.info(f"Adding {handlerName} handler.")
-        self.handlers[handlerName] = handler
-
+        if not silent:
+            logger.info(f"Adding {handler.name} handler.")
+        self._handlers.append(handler)
         return self
 
     @property
     def in_stages(self) -> List[Enum]:
         in_stages = []
-        for handler in self.handlers.values():
+        for handler in self._handlers:
             in_stages.extend([x for x in handler.in_stages if x not in in_stages])
         return in_stages
 
     @property
-    def out_stage(self) -> Enum:
-        if self._out_stage is not None:
-            return self._out_stage
-        if self.handlers:
-            return list(self.handlers.values())[-1].out_stage
-        return globals.aboxStages.NOT_DEFINED
+    def written_files(self) -> List[str]:
+        _written_files = []
+        for handler in self._handlers:
+            if handler.written_files:
+                _written_files.extend(handler.written_files)
+        return _written_files
 
     def run(
         self,
@@ -52,69 +65,17 @@ class Pipeline(IHandler):
         out_dir: str,
         dry_run: bool = True,
         handler_kwargs: Optional[Dict[str, Any]] = None,
-    ) -> Tuple[List[str], Enum]:
+    ):
 
         logger.info(f"Running the {self.name} pipeline.")
 
         if input_type not in self.in_stages:
             requestedStage = input_type.name.lower()
-            raise UnsupportedStage(
+            raise app_exceptions.UnsupportedStage(
                 f"Error: Stage: '{requestedStage}' is not supported."
             )
 
-        outputs = inputs
-        output_type = input_type
-
-        if handler_kwargs is None:
-            handler_kwargs = {}
-
-        for handler_name, handler in self.handlers.items():
-
-            if input_type in handler.in_stages:
-                logger.info(
-                    f"Executing the {handler_name} handler on the following inputs {inputs}."
-                )
-
-                if self.out_stage == input_type:
-                    outputs = inputs
-                    output_type = input_type
-
-                _handler_kwargs = handler_kwargs.get(handler_name, {})
-                outputs_, output_type_ = handler.execute(
-                    inputs=inputs,
-                    input_type=input_type,
-                    out_dir=out_dir,
-                    dry_run=dry_run,
-                    **_handler_kwargs,
-                )
-
-                if self.out_stage == output_type_:
-                    outputs = outputs_
-                    output_type = output_type_
-
-                inputs = outputs_
-                input_type = output_type_
-
-        return outputs, output_type
-
-    @property
-    def written_files(self) -> List[str]:
-        _written_files = []
-        for handler in self.handlers.values():
-            if handler.written_files:
-                _written_files.extend(handler.written_files)
-        return _written_files
-
-    def handle_input(
-        self,
-        inputs: List[str],
-        out_dir: str,
-        dry_run: bool,
-        input_type: Enum,
-        **handler_kwargs,
-    ) -> List[str]:
-
-        outputs, _ = self.run(
+        return self._notify_handlers(
             inputs=inputs,
             input_type=input_type,
             out_dir=out_dir,
@@ -122,10 +83,68 @@ class Pipeline(IHandler):
             handler_kwargs=handler_kwargs,
         )
 
-        return outputs
+    def _notify_handlers(
+        self,
+        inputs: List[str],
+        input_type: Enum,
+        out_dir: str,
+        dry_run: bool,
+        handler_kwargs: Optional[Dict[str, Any]] = None,
+    ):
+
+        if handler_kwargs is None:
+            handler_kwargs = {}
+        inputs_left_to_process = defaultdict(list)
+        inputs_left_to_process[input_type] = inputs
+
+        while inputs_left_to_process:
+            if set(inputs_left_to_process.keys()).isdisjoint(set(self.in_stages)):
+                break
+            input_type = list(inputs_left_to_process.keys())[0]
+            inputs = inputs_left_to_process.pop(input_type)
+
+            self.do_uploads(inputs=inputs, input_type=input_type, dry_run=dry_run)
+
+            for handler in self._handlers:
+                if input_type in handler.in_stages:
+                    this_handler_kwargs = handler_kwargs.get(handler.name, {})
+                    this_handler_kwargs[
+                        "triple_store_uploads"
+                    ] = self._uploaders.triple_store_uploads
+                    this_handler_kwargs[
+                        "file_server_uploads"
+                    ] = self._uploaders.file_server_uploads
+
+                    outputs, output_type = handler.notify(
+                        inputs=inputs,
+                        out_dir=out_dir,
+                        dry_run=dry_run,
+                        input_type=input_type,
+                        **this_handler_kwargs,
+                    )
+                    if output_type is not globals.aboxStages.NOT_DEFINED:
+                        inputs_left_to_process[output_type].extend(outputs)
+                        self._uploaders.do_uploads(
+                            inputs=outputs, input_type=output_type, dry_run=dry_run
+                        )
+
+    def do_uploads(self, inputs: List[str], input_type: Enum, dry_run: bool) -> None:
+        self._uploaders.do_uploads(
+            inputs=inputs, input_type=input_type, dry_run=dry_run
+        )
 
 
-def get_pipeline(name: str = "", out_stage: Optional[Enum] = None) -> Pipeline:
+def get_pipeline(
+    name: str = "",
+    handlers: Optional[List[IHandler]] = None,
+    file_server_uploader: Optional[Uploader] = None,
+    triple_store_uploader: Optional[Uploader] = None,
+) -> Pipeline:
 
-    pipeline = Pipeline(name=name, out_stage=out_stage)
+    pipeline = Pipeline(
+        name=name,
+        handlers=handlers,
+        file_server_uploader=file_server_uploader,
+        triple_store_uploader=triple_store_uploader,
+    )
     return pipeline

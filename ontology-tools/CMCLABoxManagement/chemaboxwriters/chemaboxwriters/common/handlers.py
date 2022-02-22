@@ -16,11 +16,11 @@ class QC_LOG_TO_QC_JSON_Handler(IHandler):
     Outputs: List of parsed json file paths
     """
 
-    name: str = field(default="QC_LOG_QC_JSON")
+    name: str = field(default="QC_LOG_TO_QC_JSON")
     in_stages: List[Enum] = field(default_factory=lambda: [aboxStages.QC_LOG])
     out_stage: Enum = field(default=aboxStages.QC_JSON)
 
-    def handle_input(
+    def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,
@@ -68,7 +68,7 @@ class CSV_TO_OWL_Handler(IHandler):
 
     name: str = field(default="CSV_TO_OWL")
 
-    def handle_input(
+    def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,
