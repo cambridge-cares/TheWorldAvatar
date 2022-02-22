@@ -228,9 +228,7 @@ def test_opsscan_abox_writer(
             }
         }
 
-    handler_kwargs[OC_PIPELINE] = {
-        "QC_JSON_TO_OC_JSON": {"random_id": "OCtestID-111-111-111"}
-    }
+    handler_kwargs["QC_JSON_TO_OC_JSON"] = {"random_id": "OCtestID-111-111-111"}
 
     pipeline = _write_abox(
         pipeline_type=OPS_PIPELINE,
