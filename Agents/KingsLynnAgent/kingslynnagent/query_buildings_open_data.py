@@ -615,13 +615,17 @@ if __name__ == '__main__':
         if building_data[building_data['building'] == b].empty:
             uprns = "None"
             bldg_theme = "None"
-            bldg_class = "None"
-            bldg_name = "None"
+            bldg_class = "Null"
+            bldg_name = "Null"
         else:
             uprns = building_data[building_data['building'] == b].iloc[0]['uprns']
             bldg_theme = building_data[building_data['building'] == b].iloc[0]['theme']
             bldg_class = building_data[building_data['building'] == b].iloc[0]['class']
             bldg_name = building_data[building_data['building'] == b].iloc[0]['name']
+            if(bldg_class == None):
+                bldg_class = "Null"
+            if(bldg_name == None):
+                bldg_name = "Null"
 
         # Lump all building usages except Education, Medical Care, and Emergency Services into 'Other buildings'
         if not bldg_theme or bldg_theme not in building_types.keys():
