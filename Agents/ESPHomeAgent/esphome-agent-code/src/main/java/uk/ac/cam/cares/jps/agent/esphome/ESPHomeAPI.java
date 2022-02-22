@@ -30,7 +30,7 @@ public class ESPHomeAPI{
 	/**
      * Logger for reporting info/errors.
      */
-    private static final Logger LOGGER = LogManager.getLogger(ESPHomeAPI.class);
+    private static final Logger LOGGER = LogManager.getLogger(ESPHomeAgent.class);
     
     //POST request reading path
     private String esphomePath;
@@ -49,6 +49,7 @@ public class ESPHomeAPI{
     	JSONObject message = new JSONObject();
     	if (timeSeriesValue > esphomeThreshold) {
     		if (status == true) {
+    			LOGGER.info("The switch is already in the ON state.");
     			message.put("message", "The switch is already in the ON state.");
     		}
     		else {
@@ -70,6 +71,7 @@ public class ESPHomeAPI{
     			
     		}
     		else {
+    			LOGGER.info("The switch is already in the OFF state.");
     			message.put("message", "The switch is already in the OFF state.");
     		}
     	}

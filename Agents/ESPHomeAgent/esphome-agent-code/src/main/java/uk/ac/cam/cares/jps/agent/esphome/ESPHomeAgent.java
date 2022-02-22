@@ -204,6 +204,7 @@ public class ESPHomeAgent extends JPSAgent{
 		
     	try {
 		result = esphomeApi.esphomeSwitchControl(latestTimeSeriesValue, state);
+		LOGGER.info("A request has been successfully sent to the ESPHome web server.");
 		result.accumulate("message","A request has been successfully sent to the ESPHome web server.");
 		} catch (JPSRuntimeException | NullPointerException e) {
 			throw new JPSRuntimeException(ESPHOME_ERROR_MSG, e);
