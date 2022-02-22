@@ -5,7 +5,6 @@ from chemaboxwriters.common import PREFIXES
 from chemaboxwriters.common.handler import IHandler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.globals import aboxStages
-import re
 from typing import List
 from enum import Enum
 from dataclasses import dataclass, field
@@ -28,11 +27,11 @@ class OC_JSON_TO_OC_CSV_Handler(IHandler):
     Outputs: List of owl file paths
     """
 
-    name: str = field(default="OC_LOG_OC_CSV")
+    name: str = field(default="OC_LOG_TO_OC_CSV")
     in_stages: List[Enum] = field(default_factory=lambda: [aboxStages.OC_JSON])
     out_stage: Enum = field(default=aboxStages.OC_CSV)
 
-    def handle_input(
+    def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,

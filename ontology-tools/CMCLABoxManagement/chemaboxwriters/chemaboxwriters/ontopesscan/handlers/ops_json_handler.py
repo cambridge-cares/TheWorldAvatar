@@ -1,6 +1,5 @@
 import json
 import csv
-from os import stat
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common.handler import IHandler
 from chemaboxwriters.common import PREFIXES
@@ -37,7 +36,7 @@ class OPS_JSON_TO_OPS_CSV_Handler(IHandler):
     in_stages: List[Enum] = field(default_factory=lambda: [globals.aboxStages.OPS_JSON])
     out_stage: Enum = field(default=globals.aboxStages.OPS_CSV)
 
-    def handle_input(
+    def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,

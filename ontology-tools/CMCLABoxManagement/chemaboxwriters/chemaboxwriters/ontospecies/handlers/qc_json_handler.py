@@ -1,4 +1,3 @@
-from os import stat
 import chemutils.obabelutils.obconverter as obconverter
 import chemutils.obabelutils.obutils as obutils
 import compchemparser.helpers.utils as ccparse_utils
@@ -59,7 +58,7 @@ class QC_JSON_TO_OS_JSON_Handler(IHandler):
     in_stages: List[Enum] = field(default_factory=lambda: [globals.aboxStages.QC_JSON])
     out_stage: Enum = field(default=globals.aboxStages.OS_JSON)
 
-    def handle_input(
+    def _handle_input(
         self, inputs: List[str], out_dir: str, **handler_kwargs
     ) -> List[str]:
 

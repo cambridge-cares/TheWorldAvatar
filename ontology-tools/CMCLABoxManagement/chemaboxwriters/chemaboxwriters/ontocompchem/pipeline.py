@@ -5,28 +5,31 @@ from chemaboxwriters.ontocompchem.handlers import (
     OC_JSON_TO_OC_CSV_Handler,
     QC_JSON_TO_OC_JSON_Handler,
 )
-from typing import Optional
 import logging
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-OC_PIPELINE = "ONTOCOMPCHEM"
+OC_PIPELINE = "ontocompchem"
 
 
-def assemble_oc_pipeline(out_stage: Optional[Enum] = None) -> Pipeline:
+def assemble_oc_pipeline(silent: bool = False) -> Pipeline:
 
-    logger.info(f"Assembling the {OC_PIPELINE} pipeline.")
+    if not silent:
+        logger.info(f"Assembling the {OC_PIPELINE} pipeline.")
 
-    pipeline = get_pipeline(name=OC_PIPELINE, out_stage=out_stage)
+    pipeline = get_pipeline(name=OC_PIPELINE)
 
-    pipeline.add_handler(handler=handlers.QC_LOG_TO_QC_JSON_Handler())
-    pipeline.add_handler(handler=QC_JSON_TO_OC_JSON_Handler())
-    pipeline.add_handler(handler=OC_JSON_TO_OC_CSV_Handler()).add_handler(
+    pipeline.register_handler(
+        handler=handlers.QC_LOG_TO_QC_JSON_Handler(), silent=silent
+    )
+    pipeline.register_handler(handler=QC_JSON_TO_OC_JSON_Handler(), silent=silent)
+    pipeline.register_handler(handler=OC_JSON_TO_OC_CSV_Handler())
+    pipeline.register_handler(
         handler=handlers.CSV_TO_OWL_Handler(
             name="OC_CSV_TO_OC_OWL",
             in_stages=[globals.aboxStages.OC_CSV],
             out_stage=globals.aboxStages.OC_OWL,
-        )
+        ),
+        silent=silent,
     )
     return pipeline

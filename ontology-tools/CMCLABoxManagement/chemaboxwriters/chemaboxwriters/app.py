@@ -128,13 +128,13 @@ def _write_abox(
 
 def assemble_pipeline(pipeline_type: str) -> Pipeline:
 
-    if pipeline_type.upper() == OC_PIPELINE:
+    if pipeline_type.lower() == OC_PIPELINE:
         return assemble_oc_pipeline()
-    if pipeline_type.upper() == OS_PIPELINE:
+    if pipeline_type.lower() == OS_PIPELINE:
         return assemble_os_pipeline()
-    if pipeline_type.upper() == OPS_PIPELINE:
+    if pipeline_type.lower() == OPS_PIPELINE:
         return assemble_ops_pipeline()
-    if pipeline_type.upper() == OMOPS_PIPELINE:
+    if pipeline_type.lower() == OMOPS_PIPELINE:
         return assemble_omops_pipeline()
 
     SUPPORTED_PIPELINES = [OC_PIPELINE, OS_PIPELINE, OPS_PIPELINE, OMOPS_PIPELINE]

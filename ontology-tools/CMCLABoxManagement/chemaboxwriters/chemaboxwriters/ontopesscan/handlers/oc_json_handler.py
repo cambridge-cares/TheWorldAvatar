@@ -32,7 +32,7 @@ class OC_JSON_TO_OPS_JSON_Handler(IHandler):
     in_stages: List[Enum] = field(default_factory=lambda: [globals.aboxStages.OC_JSON])
     out_stage: Enum = field(default=globals.aboxStages.OPS_JSON)
 
-    def handle_input(
+    def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,
@@ -61,6 +61,8 @@ class OC_JSON_TO_OPS_JSON_Handler(IHandler):
         os_atoms_iris: str,
         oc_atoms_pos: str,
         random_id: str = "",
+        *args,
+        **kwargs
     ):
         data_out = {}
         data_out[globals.SPECIES_IRI] = os_iris.split(",")

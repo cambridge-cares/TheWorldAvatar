@@ -27,7 +27,7 @@ class QC_JSON_TO_OC_JSON_Handler(IHandler):
     in_stages: List[Enum] = field(default_factory=lambda: [aboxStages.QC_JSON])
     out_stage: Enum = field(default=aboxStages.OC_JSON)
 
-    def handle_input(
+    def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,
@@ -57,6 +57,8 @@ class QC_JSON_TO_OC_JSON_Handler(IHandler):
         output_file_path: str,
         random_id: str = "",
         spec_IRI: Optional[str] = None,
+        *args,
+        **kwargs
     ) -> None:
 
         with open(file_path, "r") as file_handle:

@@ -23,7 +23,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(IHandler):
     )
     out_stage: Enum = field(default=globals.aboxStages.OM_JSON)
 
-    def handle_input(
+    def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,

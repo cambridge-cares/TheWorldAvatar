@@ -35,7 +35,7 @@ class OM_JSON_TO_OM_CSV_Handler(IHandler):
     in_stages: List[Enum] = field(default_factory=lambda: [globals.aboxStages.OM_JSON])
     out_stage: Enum = field(default=globals.aboxStages.OM_CSV)
 
-    def handle_input(
+    def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,

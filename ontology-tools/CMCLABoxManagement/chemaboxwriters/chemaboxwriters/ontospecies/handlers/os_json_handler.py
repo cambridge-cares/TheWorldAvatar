@@ -59,7 +59,7 @@ class OS_JSON_TO_OS_CSV_Handler(IHandler):
     in_stages: List[Enum] = field(default_factory=lambda: [globals.aboxStages.OS_JSON])
     out_stage: Enum = field(default=globals.aboxStages.OS_CSV)
 
-    def handle_input(
+    def _handle_input(
         self, inputs: List[str], out_dir: str, **handler_kwargs
     ) -> List[str]:
 
