@@ -10,7 +10,7 @@
     <!-- <!ENTITY om      "http://www.wurvoc.org/vocabularies/om-2.0/"> -->
     <!-- <!ENTITY om      "http://www.ontology-of-units-of-measure.org/vocabularies/om-2/"> -->
     <!ENTITY om      "http://www.ontology-of-units-of-measure.org/resource/om-2/">
-    <!ENTITY ontouom      "https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-add-ontouom-concepts/JPS_Ontology/ontology/ontouom/">
+    <!ENTITY ontouom      "http://theworldavatar.com/resource/ontouom/">
   ]>
 
   <rdf:RDF
