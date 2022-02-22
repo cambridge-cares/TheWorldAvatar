@@ -50,7 +50,7 @@ def check_no_of_buildings(v):
     """ 
         Convert selected type of string information for the number of buildings into boolean
     """
-    return v.lower() in ("","none","None","All","all")
+    return v.lower() in (""," ","none","None","All","all")
 
 def read_properties_file(filepath):
     """
@@ -63,13 +63,13 @@ def read_properties_file(filepath):
     global OUTPUT_DIR, QUERY_ENDPOINT, NOOFBUILDINGS, SKIP_WORKFLOW
 
     # Extract no. of building from environmental variables
+    # Default return to "None"
+    NOOFBUILDINGS = "None"
     if 'MAX_NUM_BUILDINGS' in os.environ:
         NOOFBUILDINGS = read_env_var('MAX_NUM_BUILDINGS')
+        # If other return to "None"
         if check_no_of_buildings(NOOFBUILDINGS):
             NOOFBUILDINGS = "None"
-    else:
-        # No environmental variable is specified, return "None"
-        NOOFBUILDINGS = "None"
 
     # Extract output directory for JSON file containing retrieved time series data from KG
     OUTPUT_DIR = read_env_var('OUTPUT_DIR')
