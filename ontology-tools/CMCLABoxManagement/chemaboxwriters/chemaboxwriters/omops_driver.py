@@ -4,17 +4,19 @@ from chemaboxwriters.ontomops.pipeline import OMOPS_PIPELINE
 
 __doc__: str = """aboxwriter
 Usage:
-    omops <fileOrDir>  [--inp-file-type=<type>]
-                       [--file-ext=<ext>]
-                       [--config-file=<file>]
-                       [--out-dir=<dir>]
-                       [--log-file-name=<name>]
-                       [--log-file-dir=<dir>]
-                       [--no-file-logging]
-                       [--dry-run=<dry_run>]
-                       [--info]
+    omops   [--file-or-dir>]
+            [--inp-file-type=<type>]
+            [--file-ext=<ext>]
+            [--config-file=<file>]
+            [--out-dir=<dir>]
+            [--log-file-name=<name>]
+            [--log-file-dir=<dir>]
+            [--no-file-logging]
+            [--dry-run=<dry_run>]
+            [--info]
 
 Options:
+--file-or-dir                  Path to input file or directory
 --inp-file-type=<type>         Types of the allowed input files
                                to the omops abox writer:
                                 - omops input json file           [default: ominp_json]
@@ -60,7 +62,7 @@ def start():
 
     write_abox(
         pipeline_type=OMOPS_PIPELINE,
-        file_or_dir=args["<fileOrDir>"],
+        file_or_dir=args["--file-or-dir"],
         input_file_type=args["--inp-file-type"],
         file_ext=args["--file-ext"],
         config_file=args["--config-file"],

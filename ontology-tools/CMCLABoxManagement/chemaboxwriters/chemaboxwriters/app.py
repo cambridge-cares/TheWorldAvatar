@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def write_abox(
     pipeline_type: str,
-    file_or_dir: str,
+    file_or_dir: Optional[str],
     input_file_type: str,
     file_ext: Optional[str] = None,
     config_file: Optional[str] = None,
@@ -58,7 +58,7 @@ def write_abox(
 
 def _write_abox(
     pipeline_type: str,
-    file_or_dir: str,
+    file_or_dir: Optional[str],
     input_file_type: str,
     file_ext: Optional[str] = None,
     config_file: Optional[str] = None,
@@ -76,20 +76,19 @@ def _write_abox(
     if log_file_name is None:
         log_file_name = f"{pipeline_type}_pipeline.aboxlog"
 
-    # if info:
-    #    no_file_logging = True
-
     utilsfunc.config_logging(
         log_file_dir=log_file_dir,
         log_file_name=log_file_name,
         no_file_logging=no_file_logging,
     )
 
-    pipeline = assemble_pipeline(pipeline_type=pipeline_type, config_file=config_file)
+    pipeline = assemble_pipeline(
+        pipeline_type=pipeline_type, config_file=config_file, silent=info
+    )
 
-    # if info:
-    #    pipeline.info(handlerKwargs=handlerKwargs)
-    #    return pipeline
+    if info:
+        pipeline.info()
+        return pipeline
 
     in_stage = utilsfunc.stage_name_to_enum(input_file_type)
     if in_stage not in pipeline.in_stages:
@@ -104,6 +103,10 @@ def _write_abox(
             )
         )
         raise app_exceptions.UnsupportedStage
+
+    if file_or_dir is None:
+        logger.warning(f"""Input file or dir not provided. Nothing to process.""")
+        return pipeline
 
     input_file_paths = utilsfunc.get_stage_files(
         file_or_dir=file_or_dir, in_stage=in_stage, file_ext=file_ext
@@ -130,17 +133,17 @@ def _write_abox(
 
 
 def assemble_pipeline(
-    pipeline_type: str, config_file: Optional[str] = None
+    pipeline_type: str, silent: bool = False, config_file: Optional[str] = None
 ) -> Pipeline:
 
     if pipeline_type.lower() == OC_PIPELINE:
-        return assemble_oc_pipeline(config_file=config_file)
+        return assemble_oc_pipeline(config_file=config_file, silent=silent)
     if pipeline_type.lower() == OS_PIPELINE:
-        return assemble_os_pipeline(config_file=config_file)
+        return assemble_os_pipeline(config_file=config_file, silent=silent)
     if pipeline_type.lower() == OPS_PIPELINE:
-        return assemble_ops_pipeline(config_file=config_file)
+        return assemble_ops_pipeline(config_file=config_file, silent=silent)
     if pipeline_type.lower() == OMOPS_PIPELINE:
-        return assemble_omops_pipeline(config_file=config_file)
+        return assemble_omops_pipeline(config_file=config_file, silent=silent)
 
     SUPPORTED_PIPELINES = [OC_PIPELINE, OS_PIPELINE, OPS_PIPELINE, OMOPS_PIPELINE]
 

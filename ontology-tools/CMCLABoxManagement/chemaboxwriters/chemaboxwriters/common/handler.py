@@ -38,6 +38,11 @@ class IHandler(ABC):
 
         return outputs, self.out_stage
 
+    def info(self) -> None:
+        logger.info(f"handler: {self.name}")
+        logger.info(f"in_stages: {self.in_stages}")
+        logger.info(f"out_stage: {self.out_stage}")
+
     @abstractmethod
     def _handle_input(
         self,

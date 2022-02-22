@@ -6,6 +6,7 @@ import chemaboxwriters.common.globals as globals
 from collections import defaultdict
 from chemaboxwriters.common.uploaders import Uploaders
 from pyuploader.uploaders.uploader import Uploader
+from pprint import pformat
 import logging
 
 logger = logging.getLogger(__name__)
@@ -134,6 +135,17 @@ class Pipeline:
         self._uploaders.do_uploads(
             inputs=inputs, input_type=input_type, dry_run=dry_run
         )
+
+    def info(self) -> None:
+        logger.info(f"============== Information on {self.name} pipeline ==============")
+        logger.info("")
+        logger.info("Registered handlers:")
+        for handler in self._handlers:
+            handler.info()
+        logger.info("")
+        logger.info("Upload config settings:")
+        logger.info(pformat(self._uploaders.upload_config))
+        logger.info(f"=================================================================")
 
 
 def get_pipeline(
