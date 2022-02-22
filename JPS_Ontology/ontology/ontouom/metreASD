@@ -30,12 +30,12 @@
 
   <!-- Water Level Height Units Ontology -->
 
-  <!-- Unspecified Metre Ontology -->
+  <!-- Metre Above Local Stage Ontology -->
 
-  <om:Unit rdf:about="&ontouom;metreUnspecified">
-    <rdfs:label xml:lang="en">metre</rdfs:label>
-    <rdfs:comment xml:lang="en">Meters relative to unspecified datum, usually fixed point on or close to the riverbed</rdfs:comment>
-    <om:symbol>m</om:symbol>
+  <om:Unit rdf:about="&ontouom;metreASD">
+    <rdfs:label xml:lang="en">metre ASD</rdfs:label>
+    <rdfs:comment xml:lang="en">Meters relative to the local stage datum</rdfs:comment>
+    <om:symbol>mASD</om:symbol>
     <rdf:type rdf:resource="&om;SingularUnit"/>
     <om:hasDimension rdf:resource="&om;length-Dimension"/>
   </om:Unit>

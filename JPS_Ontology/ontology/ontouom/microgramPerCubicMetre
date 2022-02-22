@@ -28,16 +28,18 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Water Level Height Units Ontology -->
+  <!-- Micrograms Per Cubic Metre Ontology -->
 
-  <!-- Unspecified Metre Ontology -->
-
-  <om:Unit rdf:about="&ontouom;metreUnspecified">
-    <rdfs:label xml:lang="en">metre</rdfs:label>
-    <rdfs:comment xml:lang="en">Meters relative to unspecified datum, usually fixed point on or close to the riverbed</rdfs:comment>
-    <om:symbol>m</om:symbol>
-    <rdf:type rdf:resource="&om;SingularUnit"/>
-    <om:hasDimension rdf:resource="&om;length-Dimension"/>
-  </om:Unit>
+  <om:UnitDivision rdf:about="&ontouom;microgramPerCubicMetre">
+    <rdfs:label xml:lang="en">microgram per cubic metre</rdfs:label>
+    <rdfs:comment xml:lang="en">Microgram per cubic metre is a unit of (mass) concentration defined as microgram divided by cubic metre.</rdfs:comment>
+    <om:longcomment>Microgram per cubic metre is a unit of (mass) concentration defined as microgram divided by cubic metre. It is a derived unit in the International System of Units.</om:longcomment>
+    <om:symbol>μg/m3</om:symbol>
+    <om:alternativeSymbol>μg m-3</om:alternativeSymbol>
+    <om:alternativeSymbol>μg·m-3</om:alternativeSymbol>
+    <om:hasNumerator rdf:resource="&om;microgram"/>
+    <om:hasDenominator rdf:resource="&om;cubicMetre"/>
+    <om:hasDimension rdf:resource="&ontouom;MassOfSubstanceConcentration-Dimension"/>
+  </om:UnitDivision>
 
 </rdf:RDF>

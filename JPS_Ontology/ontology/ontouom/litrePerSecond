@@ -28,16 +28,17 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Water Level Height Units Ontology -->
+  <!-- Additional Flow Rate Units Ontology -->
 
-  <!-- Unspecified Metre Ontology -->
+  <!-- Litre Per Second Ontology -->
 
-  <om:Unit rdf:about="&ontouom;metreUnspecified">
-    <rdfs:label xml:lang="en">metre</rdfs:label>
-    <rdfs:comment xml:lang="en">Meters relative to unspecified datum, usually fixed point on or close to the riverbed</rdfs:comment>
-    <om:symbol>m</om:symbol>
-    <rdf:type rdf:resource="&om;SingularUnit"/>
-    <om:hasDimension rdf:resource="&om;length-Dimension"/>
-  </om:Unit>
+  <om:UnitDivision rdf:about="&ontouom;litrePerSecond">
+    <rdfs:label xml:lang="en">litre per second</rdfs:label>
+    <om:symbol>l/s</om:symbol>
+    <om:alternativeSymbol>l s-1</om:alternativeSymbol>
+    <om:alternativeSymbol>l·s-1</om:alternativeSymbol>
+    <om:hasNumerator rdf:resource="&om;litre"/>
+    <om:hasDenominator rdf:resource="&om;second-Time"/>
+  </om:UnitDivision>
 
 </rdf:RDF>

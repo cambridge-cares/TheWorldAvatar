@@ -30,12 +30,12 @@
 
   <!-- Water Level Height Units Ontology -->
 
-  <!-- Unspecified Metre Ontology -->
+  <!-- Metre Above Ordnance Datum Ontology -->
 
-  <om:Unit rdf:about="&ontouom;metreUnspecified">
-    <rdfs:label xml:lang="en">metre</rdfs:label>
-    <rdfs:comment xml:lang="en">Meters relative to unspecified datum, usually fixed point on or close to the riverbed</rdfs:comment>
-    <om:symbol>m</om:symbol>
+  <om:Unit rdf:about="&ontouom;metreAOD">
+    <rdfs:label xml:lang="en">metre AOD</rdfs:label>
+    <rdfs:comment xml:lang="en">Meters relative to the Ordnance Survey datum (i.e. mean sea level at the UK Ordnance datum at Newlyn, Cornwall)</rdfs:comment>
+    <om:symbol>mAOD</om:symbol>
     <rdf:type rdf:resource="&om;SingularUnit"/>
     <om:hasDimension rdf:resource="&om;length-Dimension"/>
   </om:Unit>

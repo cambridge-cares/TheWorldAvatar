@@ -28,16 +28,24 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <!-- Water Level Height Units Ontology -->
+  <!-- Additional Flow Rate Units Ontology -->
 
-  <!-- Unspecified Metre Ontology -->
+  <!-- Update List of Volumetric Flow Rate Units -->
 
-  <om:Unit rdf:about="&ontouom;metreUnspecified">
-    <rdfs:label xml:lang="en">metre</rdfs:label>
-    <rdfs:comment xml:lang="en">Meters relative to unspecified datum, usually fixed point on or close to the riverbed</rdfs:comment>
-    <om:symbol>m</om:symbol>
-    <rdf:type rdf:resource="&om;SingularUnit"/>
-    <om:hasDimension rdf:resource="&om;length-Dimension"/>
-  </om:Unit>
+  <owl:Class rdf:about="&ontouom;VolumetricFlowRateUnit">
+    <rdfs:label xml:lang="en">volumetric flow rate unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&om;Unit"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <om:UnitDivision rdf:about="&om;cubicMetrePerSecond-Time"/>
+          <om:UnitDivision rdf:about="&om;cubicMetrePerYear"/>
+          <om:UnitDivision rdf:about="&om;litrePerHour"/>
+          <om:UnitDivision rdf:about="&ontouom;litrePerSecond"/>
+          <om:UnitDivision rdf:about="&ontouom;litrePerDay"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class> 
 
 </rdf:RDF>
