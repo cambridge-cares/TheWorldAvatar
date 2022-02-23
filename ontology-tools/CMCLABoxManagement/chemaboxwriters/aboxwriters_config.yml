@@ -1,15 +1,43 @@
+# these are default settings that will be applied to any file uploads
+# in the upload_to_file_server and upload_to_triple_store sections
 triple_store_sparql_endpoint: <default_triple_store_sparql_endpoint>
 triple_store_secrets_file: <default_triple_store_secrets_file>
 file_server_upload_endpoint: <default_file_server_upload_endpoint>
 file_server_secrets_file: <default_file_server_secrets_file>
 file_server_subdir: <default_file_server_subdir>
+# this section defines what type of files should be uploaded to the file server
 upload_to_file_server:
-    <inp-file-type>:
+    # this section should be repeated for each input file type you wish to upload
+    # below you can see some default options
+    qc_log:
+        # any file server options defined here would overwrite the default
+        # options.
         file_server_upload_endpoint: <file_server_upload_endpoint>
         file_server_secrets_file: <file_server_secrets_file>
-        file_server_subdir: <file_server_subdir>
-        file_server_subdir: <file_server_subdir>
+        file_server_subdir: ontocompchem
+    ominp_xyz:
+        # ontomops xyz data
+        file_server_upload_endpoint: <file_server_upload_endpoint>
+        file_server_secrets_file: <file_server_secrets_file>
+        file_server_subdir: ontomops
 upload_to_triple_store:
-    <inp-file-type>:
+    # this section should be repeated for each input file type you wish to upload
+    # below you can see some default options
+    oc_owl:
+        # ontocompchem abox
+        # any triple store options defined here would overwrite the default
+        # options.
+        triple_store_sparql_endpoint: <triple_store_sparql_endpoint>
+        triple_store_secrets_file: <triple_store_secrets_file>
+    os_owl:
+      # ontospecies abox
+        triple_store_sparql_endpoint: <triple_store_sparql_endpoint>
+        triple_store_secrets_file: <triple_store_secrets_file>
+    ops_owl:
+      # ontopesscan abox
+        triple_store_sparql_endpoint: <triple_store_sparql_endpoint>
+        triple_store_secrets_file: <triple_store_secrets_file>
+    om_owl:
+      # ontomops abox
         triple_store_sparql_endpoint: <triple_store_sparql_endpoint>
         triple_store_secrets_file: <triple_store_secrets_file>

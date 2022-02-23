@@ -14,6 +14,7 @@ Usage:
                  [--no-file-logging]
                  [--dry-run=<dry_run>]
                  [--info]
+                 [--help]
 
 Options:
 --file-or-dir                  Path to the input file or directory
@@ -50,6 +51,7 @@ Options:
                                run mode (files are not uploaded).
                                Choose between True / False
 --info                         Prints the pipeline's info without running it.
+--help                         Prints this help message.
 """
 
 
