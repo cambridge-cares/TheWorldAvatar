@@ -1,21 +1,15 @@
-triple_store_sparql_endpoint: http:///default/sparql
-triple_store_secrets_file: config_secrets.txt
-file_server_upload_endpoint: http:///default/upload
-file_server_secrets_file: config_secrets.txt
-file_server_subdir: ""
+triple_store_sparql_endpoint: <default_triple_store_sparql_endpoint>
+triple_store_secrets_file: <default_triple_store_secrets_file>
+file_server_upload_endpoint: <default_file_server_upload_endpoint>
+file_server_secrets_file: <default_file_server_secrets_file>
+file_server_subdir: <default_file_server_subdir>
 upload_to_file_server:
-    qc_log:
-        file_server_subdir: ontocompchem
-    qc_json:
-        file_server_subdir: ontocompchem2
-    ominp_xyz:
-        file_server_subdir: ontomops
+    <inp-file-type>:
+        file_server_upload_endpoint: <file_server_upload_endpoint>
+        file_server_secrets_file: <file_server_secrets_file>
+        file_server_subdir: <file_server_subdir>
+        file_server_subdir: <file_server_subdir>
 upload_to_triple_store:
-    oc_owl:
-        triple_store_sparql_endpoint: http:///ontocompchem/sparql
-    os_owl:
-        triple_store_sparql_endpoint: http:///ontospecies/sparql
-    om_owl:
-        triple_store_sparql_endpoint: http:///ontomops/sparql
-    ops_owl:
-        triple_store_sparql_endpoint: http:///ontopesscan/sparql
+    <inp-file-type>:
+        triple_store_sparql_endpoint: <triple_store_sparql_endpoint>
+        triple_store_secrets_file: <triple_store_secrets_file>
