@@ -36,17 +36,26 @@ class Uploaders:
     def get_upload_config(self, config_file: Optional[str] = None) -> Dict:
         upload_configs = {}
         if config_file is None:
-            config_file = os.environ[globals.CONFIG_FILE_ENV_VAR]
-        with open(config_file, "r") as stream:
-            upload_configs = yaml.safe_load(stream)
+            try:
+                logger.info(
+                    f"Reading the config_file path form the {globals.CONFIG_FILE_ENV_VAR} environment variable"
+                )
+                config_file = os.environ[globals.CONFIG_FILE_ENV_VAR]
+            except KeyError:
+                logger.warning(
+                    f"The {globals.CONFIG_FILE_ENV_VAR} environment variable not set. Could not read the config file path."
+                )
+        if config_file is not None:
+            with open(config_file, "r") as stream:
+                upload_configs = yaml.safe_load(stream)
 
-        self._set_default_upload_specs(upload_configs=upload_configs)
-        self._propagate_default_upload_specs(
-            upload_configs=upload_configs, upload_to=globals.UPLOAD_TO_FILE_SERVER
-        )
-        self._propagate_default_upload_specs(
-            upload_configs=upload_configs, upload_to=globals.UPLOAD_TO_TRIPLE_STORE
-        )
+            self._set_default_upload_specs(upload_configs=upload_configs)
+            self._propagate_default_upload_specs(
+                upload_configs=upload_configs, upload_to=globals.UPLOAD_TO_FILE_SERVER
+            )
+            self._propagate_default_upload_specs(
+                upload_configs=upload_configs, upload_to=globals.UPLOAD_TO_TRIPLE_STORE
+            )
         return upload_configs
 
     def _set_default_upload_specs(self, upload_configs: Dict) -> None:
@@ -101,9 +110,12 @@ class Uploaders:
         )
 
         if this_upload_configs is None:
-            raise app_exceptions.MissingUploadConfigs(
+            logger.warning(
                 f"No file server upload configs specified for the {input_type.name.lower()} stage. Skipping the upload!"
             )
+            if not dry_run:
+                raise app_exceptions.MissingUploadConfigs
+            return
 
         upload_url = this_upload_configs[globals.FILE_SERVER_UPLOAD_ENDPOINT_KEY]
         upload_auth_file = this_upload_configs[globals.FILE_SERVER_SECRETS_FILE_KEY]
@@ -113,12 +125,16 @@ class Uploaders:
             logger.warning(
                 f"No file server upload endpoint specified for the {input_type.name.lower()} stage. Skipping the upload!"
             )
+            if not dry_run:
+                raise app_exceptions.MissingUploadConfigs
             return
 
         if upload_auth_file is None:
             logger.warning(
                 f"No file server upload secrets file specified for the {input_type.name.lower()} stage. Skipping the upload!"
             )
+            if not dry_run:
+                raise app_exceptions.MissingUploadConfigs
             return
 
         for inp_file in inputs:
