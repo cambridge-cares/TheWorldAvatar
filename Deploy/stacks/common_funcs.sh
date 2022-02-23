@@ -168,6 +168,9 @@ write_env_file()
 
   if [ -e "$env_filename" ]; then
     rm "$env_filename"
+    if [ -e "${env_filename}.extra" ]; then
+      cp "${env_filename}.extra" "$env_filename"
+    fi
   fi
 
   # Determine network name
