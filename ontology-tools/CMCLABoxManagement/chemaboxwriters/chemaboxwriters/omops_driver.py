@@ -16,7 +16,7 @@ Usage:
             [--info]
 
 Options:
---file-or-dir=<file>           Path to input file or directory
+--file-or-dir=<file>           Path to the input file or directory
 --inp-file-type=<type>         Types of the allowed input files
                                to the omops abox writer:
                                 - omops input json file           [default: ominp_json]

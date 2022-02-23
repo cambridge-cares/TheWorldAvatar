@@ -16,7 +16,7 @@ Usage:
                 [--info]
 
 Options:
---file-or-dir                  Path to input file or directory
+--file-or-dir                  Path to the input file or directory
 --inp-file-type=<type>         Types of the allowed input files
                                to the ospecies abox writer:
                                 - quantum calculation log            [default: qc_log]

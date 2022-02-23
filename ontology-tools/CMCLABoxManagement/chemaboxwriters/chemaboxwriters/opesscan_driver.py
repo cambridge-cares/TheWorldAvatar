@@ -18,7 +18,7 @@ Usage:
                [--info]
 
 Options:
---file-or-dir                  Path to input file or directory
+--file-or-dir                  Path to the input file or directory
 --os-iris=<iri>                OntoSpecies iri associated with the
                                scan points
 --os-atoms-iris=<iris>         Comma separated iris of ontospecies
@@ -65,7 +65,7 @@ Options:
 --dry-run=<dry_run>            Run the abox writer tool in a dry    [default: True]
                                run mode (files are not uploaded).
                                Choose between True / False
---info                         Prints the pipeline's info. Do not run it.
+--info                         Prints the pipeline's info without running it.
 """
 
 

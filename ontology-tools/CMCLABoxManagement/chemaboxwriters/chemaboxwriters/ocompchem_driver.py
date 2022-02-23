@@ -16,7 +16,7 @@ Usage:
                  [--info]
 
 Options:
---file-or-dir                  Path to input file or directory
+--file-or-dir                  Path to the input file or directory
 --inp-file-type=<type>         Types of the allowed input files
                                to the ocompchem abox writer:
                                  - quantum calculation log         [default: qc_log]
@@ -49,7 +49,6 @@ Options:
 --dry-run=<dry_run>            Run the abox writer tool in a dry    [default: True]
                                run mode (files are not uploaded).
                                Choose between True / False
-                               To see handlers default nmsp use the --info option.
 --info                         Prints the pipeline's info without running it.
 """
 
