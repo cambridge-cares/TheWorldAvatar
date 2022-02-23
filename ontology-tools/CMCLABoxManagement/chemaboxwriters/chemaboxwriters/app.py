@@ -43,6 +43,7 @@ def write_abox(
             log_file_dir=log_file_dir,
             log_file_name=log_file_name,
             no_file_logging=no_file_logging,
+            dry_run=dry_run,
             info=info,
             *args,
             **kwargs,
