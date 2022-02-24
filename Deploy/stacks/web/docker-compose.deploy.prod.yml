@@ -17,6 +17,8 @@ services:
     container_name: "certbot-${MODE}"
     # After starting, run 'certbot renew' every 12 hours
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     restart: unless-stopped
     volumes:
       # Add a bind volume (shared with the reverse_proxy container) for the letsencrypt config dir

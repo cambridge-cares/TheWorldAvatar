@@ -24,7 +24,7 @@ public class MetaDataQuery implements Prefixes {
 		//return KnowledgeBaseClient.query(metadataSetUrl, null, sparql);
 		String datasetUrl = KeyValueManager.get(IKeys.URL_RDF_METADATA);
 		QueryExecution q = QueryExecutionFactory.sparqlService(datasetUrl,sparql);
-		ResultSet rs_metadata = q.execSelect();			
+		ResultSet rs_metadata = q.execSelect();
 		return JenaResultSetFormatter.convertToJSONW3CStandard(rs_metadata);
 	}
 

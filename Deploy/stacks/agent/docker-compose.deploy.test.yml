@@ -22,7 +22,7 @@ services:
   gas-grid-agent:
     ports:
       - 41081:80
-
+      
   # JPS Chatbot
   jps-chatbot:
     ports:
@@ -42,6 +42,10 @@ services:
   oscml-agent:
     ports:
       - 46001:5000
+
+  stdc-agent:
+    ports:
+      - 46002:5000
 
   # Weather Agent
   weather-agent:
