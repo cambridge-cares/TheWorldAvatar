@@ -1,4 +1,4 @@
 SPARQL_ENDPOINTS = {
-    'ontospecies': 'http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ontospecies/sparql',
-    'ontomops': 'http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ontomops/sparql'
+    'ontospecies': 'http://theworldavatar.com/blazegraph/namespace/ontospecies/sparql',
+    'ontomops': 'https://kg.cmclinnovations.com/blazegraph_geo/namespace/ontomops/sparql'
 }
