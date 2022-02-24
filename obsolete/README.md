@@ -26,3 +26,48 @@ RDF4J_SPARQL_GUI
 
 ## Quantum Chemistry
 OntoCompChemUpload, molhub 
+
+## Other Projects
+APServlet
+Biodiesel Plant Economic Performance Ontology
+BiodieselPlant AspenPlus full model with heating utility-02.12.2016
+BiodieselPlant Ontology
+Master simulations
+SemPWServlet
+SemPrCombinedServlet
+Semakau
+arcgistoowl
+APWOWHRServlet
+APWWHRServlet
+JParkSim
+OptServlet
+PWServlet_New
+PWServlet_OWL
+QUERYServlet
+updateowl
+Flask_deployment_docker_image
+JPS_BMS
+admsInput
+JPS_SHIP_CRAWLER
+Leakage
+PlantOwlFileSplitting
+TextRewrite
+JPS_DISCOVERY
+JPS_POWERPLANTEMISSION
+KnowledgeBaseCreator
+OPALRTServlet
+OWLRewrite
+PerformanceEvaluation
+PipeLineSegment
+Semakau_Simulation
+citygmlkb
+csvmerging
+kbduplicate
+kbirichanger
+Add_Feature_0.1
+CSV_To_Ontology
+HttpTempNode
+JPS_Version_0
+PWServlet
+JPS_DIGITAL_TWIN
+JPS_ONTOMATCH
