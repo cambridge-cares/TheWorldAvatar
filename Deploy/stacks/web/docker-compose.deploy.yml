@@ -80,6 +80,9 @@ services:
     restart: unless-stopped
     security_opt:
       - label=disable
+    environment:
+      GEOSERVER_HOST: "credo-geoserver"
+      GEOSERVER_PORT: "${GEOSERVER_PORT}"
     volumes:
       - vis_data:/var/www/html/data
       - vis_docs:/var/www/html/docs
@@ -87,10 +90,12 @@ services:
   # CReDo GeoServer
   credo-geoserver:
     image: docker.cmclinnovations.com/credo-geoserver:${GEOSERVER_VERSION}
-    container_name: "credo-geoserver"
+    container_name: "credo-geoserver${CONTAINER_NAME_SUFFIX}"
     environment:
       GEOSERVER_PASSWORD_FILE: /run/secrets/geoserver_password
       DATA_IN_DIR: "/inputs/${GEOTIF_DIR}"
+      GEOSERVER_HOST: "localhost"
+      GEOSERVER_PORT: "8080"
     pull_policy: if_not_present
     env_file:
       - .env
