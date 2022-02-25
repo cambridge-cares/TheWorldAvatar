@@ -1,14 +1,15 @@
-from chemaboxwriters.app import _write_abox
+from chemaboxwriters.app import write_abox
 from chemaboxwriters.common.utilsfunc import readFile, fileExists
 import pytest
 import shutil
 import re
 import os
+from chemaboxwriters.common.assemble_pipeline import assemble_pipeline
 from chemaboxwriters.ontocompchem.pipeline import OC_PIPELINE
 from chemaboxwriters.ontospecies.pipeline import OS_PIPELINE
 from chemaboxwriters.ontomops.pipeline import OMOPS_PIPELINE
 from chemaboxwriters.ontopesscan.pipeline import OPS_PIPELINE
-from typing import List, Dict, Any
+from typing import List
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -16,6 +17,33 @@ OCOMPCHEM_REF_DIR = os.path.join(THIS_DIR, "refData", "ontocompchem")
 OSPECIES_REF_DIR = os.path.join(THIS_DIR, "refData", "ontospecies")
 OPSSCAN_REF_DIR = os.path.join(THIS_DIR, "refData", "ontopesscan")
 OMOPS_REF_DIR = os.path.join(THIS_DIR, "refData", "ontomops")
+
+
+OPS_bond_handler_kwargs = {
+    "OC_JSON_TO_OPS_JSON": {
+        "os_iris": "Species_11-111-111",
+        "os_atoms_iris": "Atom_11-11-111_C1,Atom_11-11-111_C2",
+        "oc_atoms_pos": "1,2",
+        "random_id": "OPStestID-111-111-11",
+    }
+}
+OPS_angle_handler_kwargs = {
+    "OC_JSON_TO_OPS_JSON": {
+        "os_iris": "Species_11-111-111",
+        "os_atoms_iris": "Atom_11-11-111_C1,Atom_11-11-111_O1,Atom_11-11-111_H1",
+        "oc_atoms_pos": "2,3,9",
+        "random_id": "OPStestID-111-111-11",
+    }
+}
+
+OPS_dihedral_angle_handler_kwargs = {
+    "OC_JSON_TO_OPS_JSON": {
+        "os_iris": "Species_11-111-111",
+        "os_atoms_iris": "Atom_11-11-111_H1,Atom_11-11-111_C1,Atom_11-11-111_C2,Atom_11-11-111_H2",
+        "oc_atoms_pos": "4,1,2,8",
+        "random_id": "OPStestID-111-111-11",
+    }
+}
 
 
 class DummyPubchemComp:
@@ -92,18 +120,18 @@ def test_ocompchem_abox_writer(
     print()
 
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR, inp_file_or_dir)
-    handler_kwargs = {"QC_JSON_TO_OC_JSON": {"random_id": "testID-111-111-111"}}
     mocker.patch(
         "chemaboxwriters.kgoperations.querytemplates.get_species_iri",
         return_value="test_species_iri",
     )
 
-    pipeline = _write_abox(
-        pipeline_type=OC_PIPELINE,
-        file_or_dir=inp_file_or_dir,
-        input_file_type=inp_file_type,
-        handler_kwargs=handler_kwargs,
-        no_file_logging=True,
+    pipeline = assemble_pipeline(pipeline_type=OC_PIPELINE)
+    pipeline.set_handlers_kwargs(
+        handlers_kwargs={"QC_JSON_TO_OC_JSON": {"random_id": "testID-111-111-111"}}
+    )
+
+    write_abox(
+        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type
     )
 
     fileExts = ["oc_json", "oc_csv"]
@@ -144,19 +172,21 @@ def test_ospecies_abox_writer(
     print()
 
     inp_file_or_dir = os.path.join(OSPECIES_REF_DIR, inp_file_or_dir)
-    handler_kwargs = {"QC_JSON_TO_OS_JSON": {"random_id": "testID-111-111-111"}}
-
     mocker.patch(
         "chemaboxwriters.ontospecies.handlers.qc_json_handler.pcp.get_compounds",
         return_value=[DummyPubchemComp(cid=1111, synonyms=["1111-11-1"])],
     )
 
-    pipeline = _write_abox(
-        pipeline_type=OS_PIPELINE,
+    pipeline = assemble_pipeline(pipeline_type=OS_PIPELINE)
+
+    pipeline.set_handlers_kwargs(
+        handlers_kwargs={"QC_JSON_TO_OS_JSON": {"random_id": "testID-111-111-111"}}
+    )
+
+    write_abox(
+        pipeline=pipeline,
         file_or_dir=inp_file_or_dir,
         input_file_type=inp_file_type,
-        handler_kwargs=handler_kwargs,
-        no_file_logging=True,
     )
 
     fileExts = ["os_json", "os_csv"]
@@ -173,19 +203,25 @@ def test_ospecies_abox_writer(
 
 
 @pytest.mark.parametrize(
-    "inp_file_or_dir, inp_file_type, \
+    "inp_file_or_dir, inp_file_type, handler_kwargs, \
                           regenerate_result",
     [
-        ("OPS_oc_json_test", "oc_json", False),
-        ("OPS_qc_json_test\\co2_cbsapno_g09.qc_json", "qc_json", False),
-        ("OPS_qc_log_test", "qc_log", False),
-        ("OPS_qc_log_angle_test", "qc_log", False),
-        ("OPS_qc_log_dihedral_test", "qc_log", False),
+        ("OPS_oc_json_bond_test", "oc_json", OPS_bond_handler_kwargs, False),
+        ("OPS_oc_json_angle_test", "oc_json", OPS_angle_handler_kwargs, False),
+        (
+            "OPS_oc_json_dihedral_test",
+            "oc_json",
+            OPS_dihedral_angle_handler_kwargs,
+            False,
+        ),
+        ("OPS_ops_json_test", "ops_json", {}, False),
+        ("OPS_ops_csv_test", "ops_csv", {}, False),
     ],
 )
 def test_opsscan_abox_writer(
     inp_file_or_dir,
     inp_file_type,
+    handler_kwargs,
     regenerate_result,
     clean_tests,
     regenerate_all_results=False,
@@ -198,44 +234,11 @@ def test_opsscan_abox_writer(
 
     inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR, inp_file_or_dir)
 
-    handler_kwargs: Dict[str, Any]
+    pipeline = assemble_pipeline(pipeline_type=OPS_PIPELINE)
+    pipeline.set_handlers_kwargs(handlers_kwargs=handler_kwargs)
 
-    if "angle" in inp_file_or_dir:
-        handler_kwargs = {
-            "OC_JSON_TO_OPS_JSON": {
-                "os_iris": "Species_11-111-111",
-                "os_atoms_iris": "Atom_11-11-111_C1,Atom_11-11-111_O1,Atom_11-11-111_H1",
-                "oc_atoms_pos": "2,3,9",
-                "random_id": "OPStestID-111-111-11",
-            }
-        }
-    elif "dihedral" in inp_file_or_dir:
-        handler_kwargs = {
-            "OC_JSON_TO_OPS_JSON": {
-                "os_iris": "Species_11-111-111",
-                "os_atoms_iris": "Atom_11-11-111_H1,Atom_11-11-111_C1,Atom_11-11-111_C2,Atom_11-11-111_H2",
-                "oc_atoms_pos": "4,1,2,8",
-                "random_id": "OPStestID-111-111-11",
-            }
-        }
-    else:
-        handler_kwargs = {
-            "OC_JSON_TO_OPS_JSON": {
-                "os_iris": "Species_11-111-111",
-                "os_atoms_iris": "Atom_11-11-111_C1,Atom_11-11-111_C2",
-                "oc_atoms_pos": "1,2",
-                "random_id": "OPStestID-111-111-11",
-            }
-        }
-
-    handler_kwargs["QC_JSON_TO_OC_JSON"] = {"random_id": "OCtestID-111-111-111"}
-
-    pipeline = _write_abox(
-        pipeline_type=OPS_PIPELINE,
-        file_or_dir=inp_file_or_dir,
-        input_file_type=inp_file_type,
-        handler_kwargs=handler_kwargs,
-        no_file_logging=True,
+    write_abox(
+        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type
     )
 
     fileExts = ["ops_json", "ops_csv"]
@@ -272,14 +275,14 @@ def test_omops_abox_writer(
     print()
 
     inp_file_or_dir = os.path.join(OMOPS_REF_DIR, inp_file_or_dir)
-    handler_kwargs = {"OMINP_JSON_TO_OM_JSON": {"random_id": "testID-111-111-111"}}
 
-    pipeline = _write_abox(
-        pipeline_type=OMOPS_PIPELINE,
-        file_or_dir=inp_file_or_dir,
-        input_file_type=inp_file_type,
-        handler_kwargs=handler_kwargs,
-        no_file_logging=True,
+    pipeline = assemble_pipeline(pipeline_type=OMOPS_PIPELINE)
+    pipeline.set_handlers_kwargs(
+        handlers_kwargs={"OMINP_JSON_TO_OM_JSON": {"random_id": "testID-111-111-111"}}
+    )
+
+    write_abox(
+        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type
     )
 
     fileExts = ["om_json", "om_csv"]
