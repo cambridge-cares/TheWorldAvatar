@@ -1,9 +1,0 @@
-configobj
-pandas
-py4jps
-pytz
-tqdm
-wget
-numpy
-psycopg2
-requests
