@@ -1,24 +1,30 @@
-from chemaboxwriters.common.handler import IHandler
+from chemaboxwriters.common.handler import Handler
 from compchemparser.app import parseLog
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF as entityrdfizer
-from typing import List
+from typing import List, Optional, Dict
 from enum import Enum
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
 from chemaboxwriters.common.globals import aboxStages
-from dataclasses import dataclass, field
 import json
 
 
-@dataclass
-class QC_LOG_TO_QC_JSON_Handler(IHandler):
+class QC_LOG_TO_QC_JSON_Handler(Handler):
     """Gaussian quantum claculations log files handler.
     Inputs: List of gaussian log file paths
     Outputs: List of parsed json file paths
     """
 
-    name: str = field(default="QC_LOG_TO_QC_JSON")
-    in_stages: List[Enum] = field(default_factory=lambda: [aboxStages.QC_LOG])
-    out_stage: Enum = field(default=aboxStages.QC_JSON)
+    def __init__(
+        self,
+        endpoints_proxy: Optional[Endpoints_proxy] = None,
+    ) -> None:
+        super().__init__(
+            name="QC_LOG_TO_QC_JSON",
+            in_stage=aboxStages.QC_LOG,
+            out_stage=aboxStages.QC_JSON,
+            endpoints_proxy=endpoints_proxy,
+        )
 
     def _handle_input(
         self,
@@ -26,6 +32,8 @@ class QC_LOG_TO_QC_JSON_Handler(IHandler):
         out_dir: str,
         input_type: Enum,
         dry_run: bool,
+        triple_store_uploads: Optional[Dict] = None,
+        file_server_uploads: Optional[Dict] = None,
         **handler_kwargs,
     ) -> List[str]:
 
@@ -36,7 +44,7 @@ class QC_LOG_TO_QC_JSON_Handler(IHandler):
             if len(cclog_parsed_jobs) == 1:
                 out_file_path = utilsfunc.get_out_file_path(
                     input_file_path=cclog_file_path,
-                    file_extension=self.out_stage.name.lower(),
+                    file_extension=self._out_stage.name.lower(),
                     out_dir=out_dir,
                     replace_last_ext=False,
                 )
@@ -48,7 +56,7 @@ class QC_LOG_TO_QC_JSON_Handler(IHandler):
                 for i, cclog_parsed_job in enumerate(cclog_parsed_jobs):
                     out_file_path = utilsfunc.get_out_file_path(
                         input_file_path=f"{cclog_file_path}_{i+1}",
-                        file_extension=self.out_stage.name.lower(),
+                        file_extension=self._out_stage.name.lower(),
                         out_dir=out_dir,
                         replace_last_ext=False,
                     )
@@ -60,13 +68,26 @@ class QC_LOG_TO_QC_JSON_Handler(IHandler):
         return outputs
 
 
-class CSV_TO_OWL_Handler(IHandler):
+class CSV_TO_OWL_Handler(Handler):
     """Handler converting csv files to owl.
     Inputs: List of csv file paths
     Outputs: List of owl file paths
     """
 
-    name: str = field(default="CSV_TO_OWL")
+    def __init__(
+        self,
+        name: str,
+        in_stage: Enum,
+        out_stage: Enum,
+        endpoints_proxy: Optional[Endpoints_proxy] = None,
+    ) -> None:
+
+        super().__init__(
+            name=name,
+            in_stage=in_stage,
+            out_stage=out_stage,
+            endpoints_proxy=endpoints_proxy,
+        )
 
     def _handle_input(
         self,
@@ -74,6 +95,8 @@ class CSV_TO_OWL_Handler(IHandler):
         out_dir: str,
         input_type: Enum,
         dry_run: bool,
+        triple_store_uploads: Optional[Dict] = None,
+        file_server_uploads: Optional[Dict] = None,
         **handler_kwargs,
     ) -> List[str]:
 
@@ -81,7 +104,7 @@ class CSV_TO_OWL_Handler(IHandler):
         for csv_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=csv_file_path,
-                file_extension=self.out_stage.name.lower(),
+                file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
             with open(csv_file_path, "r") as csvfile:

@@ -17,8 +17,13 @@ formula_clean_re = re.compile("(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)")
 
 
 def config_logging(
-    log_file_dir: Optional[str], log_file_name: str, no_file_logging: bool
+    log_file_dir: Optional[str] = None,
+    log_file_name: Optional[str] = None,
+    no_file_logging: bool = False,
 ) -> None:
+
+    if log_file_name is None:
+        log_file_name = "aboxwriter_pipeline.log"
 
     if log_file_dir is None:
         log_file_dir = os.getcwd()
@@ -132,3 +137,4 @@ def get_out_file_path(
         return str((p.parents[0]).joinpath(filename))
     else:
         return str((pathlib.Path(out_dir)).joinpath(filename))
+
