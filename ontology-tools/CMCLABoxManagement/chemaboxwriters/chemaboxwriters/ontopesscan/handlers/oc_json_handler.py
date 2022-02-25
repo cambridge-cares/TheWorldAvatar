@@ -8,9 +8,9 @@ import json
 import numpy as np
 import chemaboxwriters.common.globals as globals
 from compchemparser.parsers.ccgaussian_parser import GEOM
-from chemaboxwriters.common.handler import IHandler
-from dataclasses import dataclass, field
-from typing import List
+from chemaboxwriters.common.handler import Handler
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+from typing import List, Optional, Dict
 from enum import Enum
 
 SCAN_COORDINATE_ATOMS_IRIS = "ScanCoordinateAtomsIRIs"
@@ -21,16 +21,22 @@ SCAN_POINTS_JOBS = "ScanPointsJobs"
 SCAN_ATOM_IDS = "ScanAtomIDs"
 
 
-@dataclass
-class OC_JSON_TO_OPS_JSON_Handler(IHandler):
-    """Handler converting qc json files to oc json.
-    Inputs: List of qc json file paths
-    Outputs: List of oc json file paths
+class OC_JSON_TO_OPS_JSON_Handler(Handler):
+    """Handler converting oc_json files to ops_json.
+    Inputs: List of oc_json file paths
+    Outputs: List of ops_json file paths
     """
 
-    name: str = field(default="OC_JSON_TO_OPS_JSON")
-    in_stages: List[Enum] = field(default_factory=lambda: [globals.aboxStages.OC_JSON])
-    out_stage: Enum = field(default=globals.aboxStages.OPS_JSON)
+    def __init__(
+        self,
+        endpoints_proxy: Optional[Endpoints_proxy] = None,
+    ) -> None:
+        super().__init__(
+            name="OC_JSON_TO_OPS_JSON",
+            in_stage=globals.aboxStages.OC_JSON,
+            out_stage=globals.aboxStages.OPS_JSON,
+            endpoints_proxy=endpoints_proxy,
+        )
 
     def _handle_input(
         self,
@@ -38,17 +44,18 @@ class OC_JSON_TO_OPS_JSON_Handler(IHandler):
         out_dir: str,
         input_type: Enum,
         dry_run: bool,
-        **handler_kwargs
+        triple_store_uploads: Optional[Dict] = None,
+        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []
         out_file_path = utilsfunc.get_out_file_path(
             input_file_path=inputs[0],
-            file_extension=self.out_stage.name.lower(),
+            file_extension=self._out_stage.name.lower(),
             out_dir=out_dir,
         )
         self._ops_jsonwriter(
-            file_paths=inputs, output_file_path=out_file_path, **handler_kwargs
+            file_paths=inputs, output_file_path=out_file_path, **self._handler_kwargs
         )
         outputs.append(out_file_path)
         return outputs

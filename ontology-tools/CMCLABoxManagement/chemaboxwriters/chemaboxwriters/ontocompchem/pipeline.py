@@ -1,38 +1,39 @@
 from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
-import chemaboxwriters.common.handlers as handlers
+import chemaboxwriters.common.handlers as hnds
 import chemaboxwriters.common.globals as globals
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
 from chemaboxwriters.ontocompchem.handlers import (
     OC_JSON_TO_OC_CSV_Handler,
     QC_JSON_TO_OC_JSON_Handler,
 )
-from typing import Optional
+from typing import Optional, Dict
 import logging
 
 logger = logging.getLogger(__name__)
 
-OC_PIPELINE = "ontocompchem"
+OC_PIPELINE = "ocompchem"
 
 
 def assemble_oc_pipeline(
-    config_file: Optional[str] = None, silent: bool = False
+    endpoints_config: Optional[Dict] = None,
+    endpoints_proxy: Optional[Endpoints_proxy] = None,
 ) -> Pipeline:
 
-    if not silent:
-        logger.info(f"Assembling the {OC_PIPELINE} pipeline.")
-
-    pipeline = get_pipeline(name=OC_PIPELINE, config_file=config_file)
-
-    pipeline.register_handler(
-        handler=handlers.QC_LOG_TO_QC_JSON_Handler(), silent=silent
-    )
-    pipeline.register_handler(handler=QC_JSON_TO_OC_JSON_Handler(), silent=silent)
-    pipeline.register_handler(handler=OC_JSON_TO_OC_CSV_Handler())
-    pipeline.register_handler(
-        handler=handlers.CSV_TO_OWL_Handler(
+    handlers = [
+        hnds.QC_LOG_TO_QC_JSON_Handler(),
+        QC_JSON_TO_OC_JSON_Handler(),
+        OC_JSON_TO_OC_CSV_Handler(),
+        hnds.CSV_TO_OWL_Handler(
             name="OC_CSV_TO_OC_OWL",
-            in_stages=[globals.aboxStages.OC_CSV],
+            in_stage=globals.aboxStages.OC_CSV,
             out_stage=globals.aboxStages.OC_OWL,
         ),
-        silent=silent,
+    ]
+
+    pipeline = get_pipeline(
+        name=OC_PIPELINE,
+        handlers=handlers,
+        endpoints_config=endpoints_config,
+        endpoints_proxy=endpoints_proxy,
     )
     return pipeline

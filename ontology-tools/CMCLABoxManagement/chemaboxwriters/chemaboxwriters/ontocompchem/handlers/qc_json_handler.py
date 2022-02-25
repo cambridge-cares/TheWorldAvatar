@@ -7,25 +7,33 @@ import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
 from compchemparser.parsers.ccgaussian_parser import PROGRAM_NAME, PROGRAM_VERSION
 from chemaboxwriters.common.globals import aboxStages
-from chemaboxwriters.common.handler import IHandler
+from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Dict
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
 
 comp_pref = PREFIXES["comp_pref"]
 
 
 @dataclass
-class QC_JSON_TO_OC_JSON_Handler(IHandler):
-    """Handler converting qc json files to oc json.
-    Inputs: List of qc json file paths
-    Outputs: List of oc json file paths
+class QC_JSON_TO_OC_JSON_Handler(Handler):
+    """Handler converting qc_json files to oc_json.
+    Inputs: List of qc_json file paths
+    Outputs: List of oc_json file paths
     """
 
-    name: str = field(default="QC_JSON_TO_OC_JSON")
-    in_stages: List[Enum] = field(default_factory=lambda: [aboxStages.QC_JSON])
-    out_stage: Enum = field(default=aboxStages.OC_JSON)
+    def __init__(
+        self,
+        endpoints_proxy: Optional[Endpoints_proxy] = None,
+    ) -> None:
+        super().__init__(
+            name="QC_JSON_TO_OC_JSON",
+            in_stage=aboxStages.QC_JSON,
+            out_stage=aboxStages.OC_JSON,
+            endpoints_proxy=endpoints_proxy,
+        )
 
     def _handle_input(
         self,
@@ -33,20 +41,21 @@ class QC_JSON_TO_OC_JSON_Handler(IHandler):
         out_dir: str,
         input_type: Enum,
         dry_run: bool,
-        **handler_kwargs
+        triple_store_uploads: Optional[Dict] = None,
+        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self.out_stage.name.lower(),
+                file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
             self._oc_jsonwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **handler_kwargs
+                **self._handler_kwargs
             )
             outputs.append(out_file_path)
         return outputs

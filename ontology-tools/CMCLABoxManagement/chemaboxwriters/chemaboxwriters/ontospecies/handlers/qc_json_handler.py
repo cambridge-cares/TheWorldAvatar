@@ -19,10 +19,10 @@ import json
 import re
 import time
 import chemaboxwriters.common.globals as globals
-from chemaboxwriters.common.handler import IHandler
-from dataclasses import dataclass, field
+from chemaboxwriters.common.handler import Handler
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 cas_re = re.compile("\d{2,7}-\d\d-\d")
@@ -47,32 +47,44 @@ ENTH_PROV = "StandardEnthalpyofFormationProvenance"
 spec_pref = PREFIXES["spec_pref"]
 
 
-@dataclass
-class QC_JSON_TO_OS_JSON_Handler(IHandler):
-    """Handler converting qc json files to os json.
-    Inputs: List of qc json file paths
-    Outputs: List of os json file paths
+class QC_JSON_TO_OS_JSON_Handler(Handler):
+    """Handler converting qc_json files to os_json.
+    Inputs: List of qc_json file paths
+    Outputs: List of os_json file paths
     """
 
-    name: str = field(default="QC_JSON_TO_OS_JSON")
-    in_stages: List[Enum] = field(default_factory=lambda: [globals.aboxStages.QC_JSON])
-    out_stage: Enum = field(default=globals.aboxStages.OS_JSON)
+    def __init__(
+        self,
+        endpoints_proxy: Optional[Endpoints_proxy] = None,
+    ) -> None:
+        super().__init__(
+            name="QC_JSON_TO_OS_JSON",
+            in_stage=globals.aboxStages.QC_JSON,
+            out_stage=globals.aboxStages.OS_JSON,
+            endpoints_proxy=endpoints_proxy,
+        )
 
     def _handle_input(
-        self, inputs: List[str], out_dir: str, **handler_kwargs
+        self,
+        inputs: List[str],
+        out_dir: str,
+        input_type: Enum,
+        dry_run: bool,
+        triple_store_uploads: Optional[Dict] = None,
+        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self.out_stage.name.lower(),
+                file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
             self._os_jsonwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **handler_kwargs
+                **self._handler_kwargs
             )
             outputs.append(out_file_path)
         return outputs

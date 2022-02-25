@@ -1,41 +1,39 @@
 from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
 import chemaboxwriters.common.globals as globals
-from chemaboxwriters.ontocompchem.pipeline import assemble_oc_pipeline
+import chemaboxwriters.common.handlers as hnds
 from chemaboxwriters.ontopesscan.handlers import (
     OC_JSON_TO_OPS_JSON_Handler,
     OPS_JSON_TO_OPS_CSV_Handler,
 )
-import chemaboxwriters.common.handlers as handlers
-from typing import Optional
+from typing import Optional, Dict
 
 import logging
 
 logger = logging.getLogger(__name__)
 
-OPS_PIPELINE = "ontopesscan"
+OPS_PIPELINE = "opsscan"
 
 
 def assemble_ops_pipeline(
-    config_file: Optional[str] = None, silent: bool = False
+    endpoints_config: Optional[Dict] = None,
+    endpoints_proxy: Optional[Endpoints_proxy] = None,
 ) -> Pipeline:
 
-    if not silent:
-        logger.info(f"Assembling {OPS_PIPELINE} pipeline.")
-
-    pipeline = get_pipeline(name=OPS_PIPELINE, config_file=config_file)
-    oc_pipeline = assemble_oc_pipeline(silent=True)
-
-    # add all oc pipeline handlers
-    for handler in oc_pipeline._handlers:
-        pipeline.register_handler(handler=handler, silent=silent)
-    pipeline.register_handler(handler=OC_JSON_TO_OPS_JSON_Handler(), silent=silent)
-    pipeline.register_handler(handler=OPS_JSON_TO_OPS_CSV_Handler(), silent=silent)
-    pipeline.register_handler(
-        handler=handlers.CSV_TO_OWL_Handler(
+    handlers = [
+        OC_JSON_TO_OPS_JSON_Handler(),
+        OPS_JSON_TO_OPS_CSV_Handler(),
+        hnds.CSV_TO_OWL_Handler(
             name="OPS_CSV_TO_OPS_OWL",
-            in_stages=[globals.aboxStages.OPS_CSV],
+            in_stage=globals.aboxStages.OPS_CSV,
             out_stage=globals.aboxStages.OPS_OWL,
         ),
-        silent=silent,
+    ]
+
+    pipeline = get_pipeline(
+        name=OPS_PIPELINE,
+        handlers=handlers,
+        endpoints_config=endpoints_config,
+        endpoints_proxy=endpoints_proxy,
     )
     return pipeline

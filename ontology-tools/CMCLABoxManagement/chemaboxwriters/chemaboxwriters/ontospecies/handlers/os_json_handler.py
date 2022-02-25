@@ -35,10 +35,10 @@ from chemaboxwriters.ontospecies.handlers.qc_json_handler import (
 
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
-from dataclasses import dataclass, field
-from typing import List
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+from typing import List, Optional, Dict
 from enum import Enum
-from chemaboxwriters.common.handler import IHandler
+from chemaboxwriters.common.handler import Handler
 
 onto_spec = PREFIXES["onto_spec"]
 gain_pref = PREFIXES["gain_pref"]
@@ -48,32 +48,44 @@ unit_pref = PREFIXES["unit_pref"]
 spec_pref = PREFIXES["spec_pref"]
 
 
-@dataclass
-class OS_JSON_TO_OS_CSV_Handler(IHandler):
-    """Handler converting os json files to os csv.
-    Inputs: List of os json file paths
-    Outputs: List of os csv file paths
+class OS_JSON_TO_OS_CSV_Handler(Handler):
+    """Handler converting os_json files to os_csv.
+    Inputs: List of os_json file paths
+    Outputs: List of os_csv file paths
     """
 
-    name: str = field(default="OS_JSON_TO_OS_CSV")
-    in_stages: List[Enum] = field(default_factory=lambda: [globals.aboxStages.OS_JSON])
-    out_stage: Enum = field(default=globals.aboxStages.OS_CSV)
+    def __init__(
+        self,
+        endpoints_proxy: Optional[Endpoints_proxy] = None,
+    ) -> None:
+        super().__init__(
+            name="OS_JSON_TO_OS_CSV",
+            in_stage=globals.aboxStages.OS_JSON,
+            out_stage=globals.aboxStages.OS_CSV,
+            endpoints_proxy=endpoints_proxy,
+        )
 
     def _handle_input(
-        self, inputs: List[str], out_dir: str, **handler_kwargs
+        self,
+        inputs: List[str],
+        out_dir: str,
+        input_type: Enum,
+        dry_run: bool,
+        triple_store_uploads: Optional[Dict] = None,
+        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self.out_stage.name.lower(),
+                file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
             self._os_csvwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **handler_kwargs
+                **self._handler_kwargs
             )
             outputs.append(out_file_path)
         return outputs

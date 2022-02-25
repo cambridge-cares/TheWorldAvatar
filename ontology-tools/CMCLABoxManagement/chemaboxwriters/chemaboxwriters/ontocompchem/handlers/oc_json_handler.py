@@ -2,13 +2,12 @@ import json
 import csv
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
-from chemaboxwriters.common.handler import IHandler
+from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.globals import aboxStages
-from typing import List
+from typing import List, Optional, Dict
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
 from enum import Enum
-from dataclasses import dataclass, field
-
 
 comp_pref = PREFIXES["comp_pref"]
 data_pref = PREFIXES["data_pref"]
@@ -20,16 +19,22 @@ table_pref = PREFIXES["table_pref"]
 unit_pref = PREFIXES["unit_pref"]
 
 
-@dataclass
-class OC_JSON_TO_OC_CSV_Handler(IHandler):
-    """Handler converting csv files to owl.
-    Inputs: List of csv file paths
+class OC_JSON_TO_OC_CSV_Handler(Handler):
+    """Handler converting oc_json files to oc_csv.
+    Inputs: List of oc json file paths
     Outputs: List of owl file paths
     """
 
-    name: str = field(default="OC_LOG_TO_OC_CSV")
-    in_stages: List[Enum] = field(default_factory=lambda: [aboxStages.OC_JSON])
-    out_stage: Enum = field(default=aboxStages.OC_CSV)
+    def __init__(
+        self,
+        endpoints_proxy: Optional[Endpoints_proxy] = None,
+    ) -> None:
+        super().__init__(
+            name="OC_JSON_TO_OC_CSV",
+            in_stage=aboxStages.OC_JSON,
+            out_stage=aboxStages.OC_CSV,
+            endpoints_proxy=endpoints_proxy,
+        )
 
     def _handle_input(
         self,
@@ -37,6 +42,8 @@ class OC_JSON_TO_OC_CSV_Handler(IHandler):
         out_dir: str,
         input_type: Enum,
         dry_run: bool,
+        triple_store_uploads: Optional[Dict] = None,
+        file_server_uploads: Optional[Dict] = None,
         **handler_kwargs
     ) -> List[str]:
 
@@ -44,7 +51,7 @@ class OC_JSON_TO_OC_CSV_Handler(IHandler):
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self.out_stage.name.lower(),
+                file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
             self._oc_csvwriter(

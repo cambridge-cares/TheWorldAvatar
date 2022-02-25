@@ -1,7 +1,7 @@
 import json
 import csv
 import chemaboxwriters.common.globals as globals
-from chemaboxwriters.common.handler import IHandler
+from chemaboxwriters.common.handler import Handler
 from chemaboxwriters.common import PREFIXES
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.ontopesscan.handlers.oc_json_handler import (
@@ -12,8 +12,8 @@ from chemaboxwriters.ontopesscan.handlers.oc_json_handler import (
     SCAN_POINTS_JOBS,
     SCAN_ATOM_IDS,
 )
-from dataclasses import dataclass, field
-from typing import List
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+from typing import List, Optional, Dict
 from enum import Enum
 
 spec_pref = PREFIXES["spec_pref"]
@@ -25,16 +25,22 @@ onto_comp = PREFIXES["onto_comp"]
 onto_pes = PREFIXES["onto_pes"]
 
 
-@dataclass
-class OPS_JSON_TO_OPS_CSV_Handler(IHandler):
-    """Handler converting ops josn files to ops csv.
-    Inputs: List of ops json file paths
-    Outputs: List of ops csv file paths
+class OPS_JSON_TO_OPS_CSV_Handler(Handler):
+    """Handler converting ops_json files to ops_csv.
+    Inputs: List of ops_json file paths
+    Outputs: List of ops_csv file paths
     """
 
-    name: str = field(default="OPS_JSON_TO_OPS_CSV")
-    in_stages: List[Enum] = field(default_factory=lambda: [globals.aboxStages.OPS_JSON])
-    out_stage: Enum = field(default=globals.aboxStages.OPS_CSV)
+    def __init__(
+        self,
+        endpoints_proxy: Optional[Endpoints_proxy] = None,
+    ) -> None:
+        super().__init__(
+            name="OPS_JSON_TO_OPS_CSV",
+            in_stage=globals.aboxStages.OPS_JSON,
+            out_stage=globals.aboxStages.OPS_CSV,
+            endpoints_proxy=endpoints_proxy,
+        )
 
     def _handle_input(
         self,
@@ -42,20 +48,21 @@ class OPS_JSON_TO_OPS_CSV_Handler(IHandler):
         out_dir: str,
         input_type: Enum,
         dry_run: bool,
-        **handler_kwargs
+        triple_store_uploads: Optional[Dict] = None,
+        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self.out_stage.name.lower(),
+                file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
             self._ops_csvwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **handler_kwargs
+                **self._handler_kwargs
             )
             outputs.append(out_file_path)
         return outputs

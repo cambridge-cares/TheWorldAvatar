@@ -1,27 +1,31 @@
 import json
-from chemaboxwriters.common.handler import IHandler
+from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
-from dataclasses import dataclass, field
-from typing import List
+from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+from typing import List, Optional, Dict
 from enum import Enum
 
 omops_entry_prefix = PREFIXES["omops_entry_prefix"]
 
 
-@dataclass
-class OMINP_JSON_TO_OM_JSON_Handler(IHandler):
-    """Handler converting ontomops ominp json files to om json.
-    Inputs: List of ominp json file paths
-    Outputs: List of om json file paths
+class OMINP_JSON_TO_OM_JSON_Handler(Handler):
+    """Handler converting ontomops ominp_json files to om_json.
+    Inputs: List of ominp_json file paths
+    Outputs: List of om_json file paths
     """
 
-    name: str = field(default="OMINP_JSON_TO_OM_JSON")
-    in_stages: List[Enum] = field(
-        default_factory=lambda: [globals.aboxStages.OMINP_JSON]
-    )
-    out_stage: Enum = field(default=globals.aboxStages.OM_JSON)
+    def __init__(
+        self,
+        endpoints_proxy: Optional[Endpoints_proxy] = None,
+    ) -> None:
+        super().__init__(
+            name="OMINP_JSON_TO_OM_JSON",
+            in_stage=globals.aboxStages.OMINP_JSON,
+            out_stage=globals.aboxStages.OM_JSON,
+            endpoints_proxy=endpoints_proxy,
+        )
 
     def _handle_input(
         self,
@@ -29,20 +33,31 @@ class OMINP_JSON_TO_OM_JSON_Handler(IHandler):
         out_dir: str,
         input_type: Enum,
         dry_run: bool,
-        **handler_kwargs
+        triple_store_uploads: Optional[Dict] = None,
+        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
+
+        xyz_inputs = self._extract_XYZ_data(inputs)
+        if xyz_inputs:
+            self.do_uploads(
+                inputs=xyz_inputs,
+                input_type=globals.aboxStages.OMINP_XYZ,
+                dry_run=dry_run,
+                triple_store_uploads=triple_store_uploads,
+                file_server_uploads=file_server_uploads,
+            )
 
         outputs: List[str] = []
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self.out_stage.name.lower(),
+                file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
             self.om_jsonwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **handler_kwargs
+                **self._handler_kwargs
             )
             outputs.append(out_file_path)
         return outputs
@@ -62,3 +77,16 @@ class OMINP_JSON_TO_OM_JSON_Handler(IHandler):
         data[globals.ENTRY_IRI] = omops_entry_prefix + random_id
 
         utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
+
+    @staticmethod
+    def _extract_XYZ_data(inputs: List[str]):
+        xyz_file_paths = []
+        for file_path in inputs:
+            with open(file_path, "r") as file_handle:
+                data = json.load(file_handle)
+                xyz_file = data.get("Mops_XYZ_coordinates_file")
+                if xyz_file is not None:
+                    if xyz_file not in xyz_file_paths:
+                        xyz_file_paths.append(xyz_file)
+
+        return xyz_file_paths
