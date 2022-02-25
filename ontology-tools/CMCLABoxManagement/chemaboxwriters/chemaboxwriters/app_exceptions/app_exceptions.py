@@ -16,6 +16,12 @@ class IncorrectHandlerParameter(Exception):
     pass
 
 
+class IncorrectInputArgument(Exception):
+    """Raise for incorrect input argument."""
+
+    pass
+
+
 class IncorrectFileOrDirPath(Exception):
     """Raise for incorrect file or dir paths."""
 
@@ -24,5 +30,11 @@ class IncorrectFileOrDirPath(Exception):
 
 class MissingUploadConfigs(Exception):
     """Raise for missing upload configs."""
+
+    pass
+
+
+class MissingRequiredInput(Exception):
+    """Raise for missing input that is required."""
 
     pass
