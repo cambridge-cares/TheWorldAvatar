@@ -20,11 +20,6 @@ setup(
     ],
     include_package_data=True,
     entry_points={
-        "console_scripts": [
-            "ocompchem=chemaboxwriters.ocompchem_driver:start",
-            "ospecies=chemaboxwriters.ospecies_driver:start",
-            "opesscan=chemaboxwriters.opesscan_driver:start",
-            "omops=chemaboxwriters.omops_driver:start",
-        ],
+        "console_scripts": ["aboxwriter=chemaboxwriters.abox_driver:start"],
     },
 )
