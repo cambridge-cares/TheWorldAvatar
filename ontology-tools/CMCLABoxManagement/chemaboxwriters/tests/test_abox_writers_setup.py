@@ -10,104 +10,23 @@ from typing import List, Dict
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_CONFIG_FILES = os.path.join(THIS_DIR, "refData", "test_config_files")
+TEST_RESULTS = "test_results"
 
-
-OPS_bond_handler_kwargs = {
-    "OC_JSON_TO_OPS_JSON": {
-        "os_iris": "Species_11-111-111",
-        "os_atoms_iris": "Atom_11-11-111_C1,Atom_11-11-111_C2",
-        "oc_atoms_pos": "1,2",
-        "random_id": "OPStestID-111-111-11",
-    }
-}
-OPS_angle_handler_kwargs = {
-    "OC_JSON_TO_OPS_JSON": {
-        "os_iris": "Species_11-111-111",
-        "os_atoms_iris": "Atom_11-11-111_C1,Atom_11-11-111_O1,Atom_11-11-111_H1",
-        "oc_atoms_pos": "2,3,9",
-        "random_id": "OPStestID-111-111-11",
-    }
-}
-
-OPS_dihedral_angle_handler_kwargs = {
-    "OC_JSON_TO_OPS_JSON": {
-        "os_iris": "Species_11-111-111",
-        "os_atoms_iris": "Atom_11-11-111_H1,Atom_11-11-111_C1,Atom_11-11-111_C2,Atom_11-11-111_H2",
-        "oc_atoms_pos": "4,1,2,8",
-        "random_id": "OPStestID-111-111-11",
-    }
-}
+PIPELINES = [
+    OC_PIPELINE,
+    OS_PIPELINE,
+    OMOPS_PIPELINE,
+    OPS_PIPELINE,
+]
 
 
 @pytest.mark.parametrize(
-    "endpoints_config_file, pipeline_handlers_test_configs",
+    "endpoints_config_file, pipeline_types",
     [
-        (
-            "test_config_1.yml",
-            [
-                {
-                    "pipeline_type": OC_PIPELINE,
-                    "configs": {
-                        "QC_LOG_TO_QC_JSON": {
-                            endp_conf.FILE_SERVER_SUBDIR_KEY: "ocompchem",
-                            endp_conf.TRIPLE_STORE_SPARQL_ENDPOINT_KEY: "ocompchem",
-                            endp_conf.UPLOAD_TO_TRIPLE_STORE_KEY: [],
-                            endp_conf.UPLOAD_TO_FILE_SERVER_KEY: ["qc_log"],
-                        },
-                        "OC_CSV_TO_OC_OWL": {
-                            endp_conf.FILE_SERVER_SUBDIR_KEY: "ocompchem",
-                            endp_conf.TRIPLE_STORE_SPARQL_ENDPOINT_KEY: "ocompchem",
-                            endp_conf.UPLOAD_TO_TRIPLE_STORE_KEY: ["oc_owl"],
-                            endp_conf.UPLOAD_TO_FILE_SERVER_KEY: [],
-                        },
-                    },
-                },
-                {
-                    "pipeline_type": OS_PIPELINE,
-                    "configs": {
-                        "OS_CSV_TO_OS_OWL": {
-                            endp_conf.FILE_SERVER_SUBDIR_KEY: "ospecies",
-                            endp_conf.TRIPLE_STORE_SPARQL_ENDPOINT_KEY: "ospecies",
-                            endp_conf.UPLOAD_TO_TRIPLE_STORE_KEY: ["os_owl"],
-                            endp_conf.UPLOAD_TO_FILE_SERVER_KEY: [],
-                        }
-                    },
-                },
-                {
-                    "pipeline_type": OMOPS_PIPELINE,
-                    "configs": {
-                        "OMINP_JSON_TO_OM_JSON": {
-                            endp_conf.FILE_SERVER_SUBDIR_KEY: "omops",
-                            endp_conf.TRIPLE_STORE_SPARQL_ENDPOINT_KEY: "omops",
-                            endp_conf.UPLOAD_TO_TRIPLE_STORE_KEY: [],
-                            endp_conf.UPLOAD_TO_FILE_SERVER_KEY: ["ominp_xyz"],
-                        },
-                        "OM_CSV_TO_OM_OWL": {
-                            endp_conf.FILE_SERVER_SUBDIR_KEY: "omops",
-                            endp_conf.TRIPLE_STORE_SPARQL_ENDPOINT_KEY: "omops",
-                            endp_conf.UPLOAD_TO_TRIPLE_STORE_KEY: ["om_owl"],
-                            endp_conf.UPLOAD_TO_FILE_SERVER_KEY: [],
-                        },
-                    },
-                },
-                {
-                    "pipeline_type": OPS_PIPELINE,
-                    "configs": {
-                        "OPS_CSV_TO_OPS_OWL": {
-                            endp_conf.FILE_SERVER_SUBDIR_KEY: "opsscan",
-                            endp_conf.TRIPLE_STORE_SPARQL_ENDPOINT_KEY: "opsscan",
-                            endp_conf.UPLOAD_TO_TRIPLE_STORE_KEY: ["ops_owl"],
-                            endp_conf.UPLOAD_TO_FILE_SERVER_KEY: [],
-                        }
-                    },
-                },
-            ],
-        ),
+        ("test_config_1.yml", PIPELINES),
     ],
 )
-def test_abox_writer_setup(
-    endpoints_config_file: str, pipeline_handlers_test_configs: List[Dict]
-):
+def test_abox_writer_setup(endpoints_config_file: str, pipeline_types: List[str]):
     print("========================================================")
     print("TEST CONFIG FILE: ", endpoints_config_file)
     print()
@@ -116,19 +35,20 @@ def test_abox_writer_setup(
     config_file = os.path.join(TEST_CONFIG_FILES, endpoints_config_file)
     endpoints_config = endp_conf.get_endpoints_config_file(config_file=config_file)
 
-    for test_item in pipeline_handlers_test_configs:
-        pipeline_type = test_item["pipeline_type"]
-        handlers_test_configs = test_item["configs"]
+    for pipeline_type in pipeline_types:
 
         pipeline = assemble_pipeline(
             pipeline_type=pipeline_type, endpoints_config=endpoints_config
         )
 
-        for handler_name, test_configs in handlers_test_configs.items():
-            handler = pipeline.get_handler_by_name(handler_name=handler_name)
-            handler_configs = handler.endpoints_config  # type: ignore
-            for key, value in test_configs.items():
-                assert handler_configs[key] == value
+        test_results = endpoints_config[TEST_RESULTS][pipeline_type]
+
+        for handler_name_ref, handler_results_ref in test_results[
+            endp_conf.HANDLERS_CONFIG_KEY
+        ].items():
+            handler_test = pipeline.get_handler_by_name(handler_name_ref.upper())
+            assert handler_test.endpoints_config is not None  # type: ignore
+            assert handler_test.endpoints_config == handler_results_ref  # type: ignore
 
     print("")
 
