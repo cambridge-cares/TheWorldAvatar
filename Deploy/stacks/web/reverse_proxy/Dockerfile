@@ -29,11 +29,11 @@ RUN chmod 755 /etc/cron.daily/parse-logs
 COPY log-parser.py /usr/local/log-parser.py
 RUN chmod 777 /usr/local/log-parser.py
 
-# Create 'credo-user' account
-COPY credentials/* /usr/local/
-COPY setup-credo.sh /usr/local/setup-credo.sh
-RUN chmod 755 /usr/local/setup-credo.sh
-RUN /usr/local/setup-credo.sh
+# Create 'credo-user' account (currently disabled)
+#COPY credentials/* /usr/local/
+#COPY setup-credo.sh /usr/local/setup-credo.sh
+#RUN chmod 755 /usr/local/setup-credo.sh
+#RUN /usr/local/setup-credo.sh
 
 # Run both nginx and cron together on boot
 CMD [ "sh", "-c", "cron && nginx -g 'daemon off;'" ]

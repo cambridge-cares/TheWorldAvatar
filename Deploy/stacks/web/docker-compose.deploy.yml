@@ -82,7 +82,7 @@ services:
       - label=disable
     environment:
       GEOSERVER_HOST: "credo-geoserver"
-      GEOSERVER_PORT: "${GEOSERVER_PORT}"
+      GEOSERVER_PORT: "8080"
     volumes:
       - vis_data:/var/www/html/data
       - vis_docs:/var/www/html/docs
