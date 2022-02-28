@@ -1,43 +1,97 @@
-# these are default settings that will be applied to any file uploads
-# in the upload_to_file_server and upload_to_triple_store sections
-triple_store_sparql_endpoint: <default_triple_store_sparql_endpoint>
-triple_store_secrets_file: <default_triple_store_secrets_file>
-file_server_upload_endpoint: <default_file_server_upload_endpoint>
-file_server_secrets_file: <default_file_server_secrets_file>
-file_server_subdir: <default_file_server_subdir>
-# this section defines what type of files should be uploaded to the file server
-upload_to_file_server:
-    # this section should be repeated for each input file type you wish to upload
-    # below you can see some default options
-    qc_log:
-        # any file server options defined here would overwrite the default
-        # options.
-        file_server_upload_endpoint: <file_server_upload_endpoint>
-        file_server_secrets_file: <file_server_secrets_file>
-        file_server_subdir: ontocompchem
-    ominp_xyz:
-        # ontomops xyz data
-        file_server_upload_endpoint: <file_server_upload_endpoint>
-        file_server_secrets_file: <file_server_secrets_file>
-        file_server_subdir: ontomops
-upload_to_triple_store:
-    # this section should be repeated for each input file type you wish to upload
-    # below you can see some default options
-    oc_owl:
-        # ontocompchem abox
-        # any triple store options defined here would overwrite the default
-        # options.
-        triple_store_sparql_endpoint: <triple_store_sparql_endpoint>
-        triple_store_secrets_file: <triple_store_secrets_file>
-    os_owl:
-      # ontospecies abox
-        triple_store_sparql_endpoint: <triple_store_sparql_endpoint>
-        triple_store_secrets_file: <triple_store_secrets_file>
-    ops_owl:
-      # ontopesscan abox
-        triple_store_sparql_endpoint: <triple_store_sparql_endpoint>
-        triple_store_secrets_file: <triple_store_secrets_file>
-    om_owl:
-      # ontomops abox
-        triple_store_sparql_endpoint: <triple_store_sparql_endpoint>
-        triple_store_secrets_file: <triple_store_secrets_file>
+# ------------------------------------------------------------------------------
+# This is the aboxwriters config file that is used to specify all the upload
+# and query settings. All the settings can be specified at three different
+# levels of granularity:
+#
+# - default settings  - any settings defined here would apply to all
+#                       pipelines handlers
+# - pipeline settings - any settings defined here would apply to all
+#                       handlers for the selected pipeline and would
+#                       overwrite any default settings
+# - handler settings  - any settings defined here would apply only
+#                       to the selected pipeline handler and would
+#                       overwrite any default and pipeline level settings
+# ------------------------------------------------------------------------------
+# DEFAULTS
+# ------------------------------------------------------------------------------
+triple_store_sparql_endpoint: default_triple_store_sparql_endpoint
+triple_store_secrets_file: default_triple_store_secrets_file
+file_server_upload_endpoint: default_file_server_upload_endpoint
+file_server_secrets_file: default_file_server_secrets_file
+file_server_subdir: default_file_server_subdir
+ospecies_query_endpoint: ospecies_query_endpoint
+omops_query_endpoint: omops_query_endpoint
+ocompchem_query_endpoint: ocompchem_query_endpoint
+opsscan_query_endpoint: opsscan_query_endpoint
+#
+# These settings define which files would be uploaded to the file server and
+# or to the triple store by indicating the stages they belong to. These are
+# default global settings which would propagate to all defined pipelines and
+# their handlers unless overwritten.
+#
+# upload_to_file_server:
+#     - test_stage1
+# upload_to_triple_store:
+#     - test_stage2
+# ------------------------------------------------------------------------------
+# PIPELINES
+# ------------------------------------------------------------------------------
+#
+# OCOMPCHEM
+#-----------------------------------------
+ocompchem:
+    # these options would overwrite any default settings above
+    file_server_subdir: ontocompchem
+    triple_store_sparql_endpoint: ontocompchem
+    #-----------------------------------------
+    # OCOMPCHEM HANDLERS
+    #-----------------------------------------
+    # these options define any handler specific settings and would overwrite
+    # any pipeline and default settings
+    handlers:
+        qc_log_to_qc_json:
+            upload_to_file_server:
+                - qc_log
+        oc_csv_to_oc_owl:
+            upload_to_triple_store:
+                - oc_owl
+# OSPECIES
+#-----------------------------------------
+ospecies:
+    file_server_subdir: ospecies
+    triple_store_sparql_endpoint: ospecies
+    #-----------------------------------------
+    # OSPECIES HANDLERS
+    #-----------------------------------------
+    handlers:
+        os_csv_to_os_owl:
+            upload_to_triple_store:
+                - os_owl
+# OMOPS
+#-----------------------------------------
+omops:
+    file_server_subdir: omops
+    triple_store_sparql_endpoint: omops
+    #-----------------------------------------
+    # OMOPS HANDLERS
+    #-----------------------------------------
+    handlers:
+        ominp_json_to_om_json:
+            upload_to_file_server:
+                - ominp_xyz
+        om_csv_to_om_owl:
+            upload_to_triple_store:
+                - om_owl
+# OPSSCAN
+#-----------------------------------------
+opsscan:
+    file_server_subdir: opsscan
+    triple_store_sparql_endpoint: opsscan
+    #-----------------------------------------
+    # OPSSCAN HANDLERS
+    #-----------------------------------------
+    handlers:
+        ops_csv_to_ops_owl:
+            upload_to_triple_store:
+                - ops_owl
+# ------------------------------------------------------------------------------
