@@ -13,6 +13,9 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional, Dict
 from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import logging
+
+logger = logging.getLogger(__name__)
 
 comp_pref = PREFIXES["comp_pref"]
 
@@ -60,8 +63,8 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             outputs.append(out_file_path)
         return outputs
 
-    @staticmethod
     def _oc_jsonwriter(
+        self,
         file_path: str,
         output_file_path: str,
         random_id: str = "",
@@ -75,8 +78,15 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
 
         xyz = get_xyz_from_parsed_json(data)
         inchi = obconverter.obConvert(xyz, "xyz", "inchi")
-        if spec_IRI is None:
-            spec_IRI = querytemplates.get_species_iri(inchi)
+        ospecies_query_endpoint = self.endpoints_config.get("ospecies_query_endpoint")
+        if ospecies_query_endpoint is None:
+            logger.warning(
+                "Couldn't query for the ontospecies IRI, The query endpoint not specified in the aboxwriters config file."
+            )
+        if spec_IRI is None and ospecies_query_endpoint is not None:
+            spec_IRI = querytemplates.get_species_iri(
+                inchi=inchi, query_endpoint=ospecies_query_endpoint
+            )
         if not random_id:
             random_id = get_random_id()
 

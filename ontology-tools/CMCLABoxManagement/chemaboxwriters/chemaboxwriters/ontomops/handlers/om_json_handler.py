@@ -15,6 +15,9 @@ from chemaboxwriters.common.handler import Handler
 from typing import List, Optional, Dict
 from chemaboxwriters.common.endpoints_config import Endpoints_proxy
 from enum import Enum
+import logging
+
+logger = logging.getLogger(__name__)
 
 onto_spec = PREFIXES["onto_spec"]
 onto_mops = PREFIXES["onto_mops"]
@@ -82,24 +85,30 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
             )
 
-            search1 = get_assembly_iri(
-                data["Mops_Chemical_Building_Units"][0]["GenericUnitModularity"],
-                data["Mops_Chemical_Building_Units"][0]["GenericUnitPlanarity"],
-                data["Mops_Chemical_Building_Units"][0]["GenericUnitNumber"],
-                data["Mops_Symmetry_Point_Group"],
-            )
-
-            search2 = get_assembly_iri(
-                data["Mops_Chemical_Building_Units"][1]["GenericUnitModularity"],
-                data["Mops_Chemical_Building_Units"][1]["GenericUnitPlanarity"],
-                data["Mops_Chemical_Building_Units"][1]["GenericUnitNumber"],
-                data["Mops_Symmetry_Point_Group"],
-            )
-
             assemblymodel = None
+            omops_query_endpoint = self.endpoints_config.get('omops_query_endpoint')
+            if omops_query_endpoint is None:
+                logger.warning(
+                    "Couldn't query for the assembly model IRI, The query endpoint not specified in the aboxwriters config file."
+                )
+            else:
+                search1 = get_assembly_iri(
+                    omops_query_endpoint,
+                    data["Mops_Chemical_Building_Units"][0]["GenericUnitModularity"],
+                    data["Mops_Chemical_Building_Units"][0]["GenericUnitPlanarity"],
+                    data["Mops_Chemical_Building_Units"][0]["GenericUnitNumber"],
+                    data["Mops_Symmetry_Point_Group"],
+                )
 
-            if search1 and search2:
-                assemblymodel = list(set(search1).intersection(search2))[0]
+                search2 = get_assembly_iri(
+                    omops_query_endpoint,
+                    data["Mops_Chemical_Building_Units"][1]["GenericUnitModularity"],
+                    data["Mops_Chemical_Building_Units"][1]["GenericUnitPlanarity"],
+                    data["Mops_Chemical_Building_Units"][1]["GenericUnitNumber"],
+                    data["Mops_Symmetry_Point_Group"],
+                )
+                if search1 and search2:
+                    assemblymodel = list(set(search1).intersection(search2))[0]
 
             spamwriter = csv.writer(
                 csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL

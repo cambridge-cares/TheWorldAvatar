@@ -1,4 +1,3 @@
-from chemaboxwriters.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from chemaboxwriters.kgoperations.querykg import querykg
 
 # from py4j.java_gateway import Py4JJavaError
@@ -36,14 +35,14 @@ def spec_inchi_query(inchi_string):
     return query
 
 
-def get_species_iri(inchi: str) -> Optional[str]:
+def get_species_iri(inchi: str, query_endpoint: str) -> Optional[str]:
     # Query OntoSpecies to find Species IRI that corresponds to a given InChI.
     speciesIRI = None
     results = []
     try:
         # results  = querykg(SPARQL_ENDPOINTS['ontospecies'], spec_inchi_query(inchi)) #query_endpoint(endpoint, spec_inchi_query(inchi))
         # TODO, find a way to fix this query on the java side so that it works as expected
-        sparql = SPARQLWrapper(SPARQL_ENDPOINTS["ontospecies"])
+        sparql = SPARQLWrapper(query_endpoint)
         sparql.setReturnFormat(JSON)
         query = spec_inchi_query(inchi)
         sparql.setQuery(query)
@@ -91,11 +90,11 @@ def get_assemblyModel(modularity, planarity, gbu_number, symmetry):
     return queryStr
 
 
-def get_assembly_iri(modularity, planarity, gbu_number, symmetry):
+def get_assembly_iri(query_endpoint, modularity, planarity, gbu_number, symmetry):
     # Query OntoSpecies to find Species IRI that corresponds to a given InChI.
     target = None
     results = querykg(
-        SPARQL_ENDPOINTS["ontomops"],
+        query_endpoint,
         get_assemblyModel(modularity, planarity, gbu_number, symmetry),
     )
     if results:

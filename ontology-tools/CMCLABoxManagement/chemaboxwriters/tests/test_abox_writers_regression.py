@@ -120,14 +120,14 @@ def test_ocompchem_abox_writer(
     print()
 
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR, inp_file_or_dir)
-    mocker.patch(
-        "chemaboxwriters.kgoperations.querytemplates.get_species_iri",
-        return_value="test_species_iri",
-    )
-
     pipeline = assemble_pipeline(pipeline_type=OC_PIPELINE)
     pipeline.set_handlers_kwargs(
-        handlers_kwargs={"QC_JSON_TO_OC_JSON": {"random_id": "testID-111-111-111"}}
+        handlers_kwargs={
+            "QC_JSON_TO_OC_JSON": {
+                "random_id": "testID-111-111-111",
+                "spec_IRI": "test_species_iri",
+            }
+        }
     )
 
     write_abox(
