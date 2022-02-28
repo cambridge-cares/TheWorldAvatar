@@ -259,10 +259,6 @@ def pre_process_endpoints_config(endpoints_config: Dict, config_key: str) -> Dic
     else:
         for handler_name, configs in handlers_config.items():
             configs = {**pipeline_default_configs, **configs}
-            if UPLOAD_TO_FILE_SERVER_KEY not in configs:
-                configs[UPLOAD_TO_FILE_SERVER_KEY] = []
-            if UPLOAD_TO_TRIPLE_STORE_KEY not in configs:
-                configs[UPLOAD_TO_TRIPLE_STORE_KEY] = []
 
             pipeline_configs[HANDLERS_CONFIG_KEY][handler_name] = configs
     return pipeline_configs[HANDLERS_CONFIG_KEY]
