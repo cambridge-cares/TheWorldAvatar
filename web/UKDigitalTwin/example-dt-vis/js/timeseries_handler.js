@@ -41,14 +41,15 @@ class TimeseriesHandler {
                 
                 // Get timestamps
                 var tableTimes = entry["time"];
+
                 // Condition time format
                 var timeClass = null
                 if(tableTimes[0].match(/^\d{4}-\d{2}-\d{2}T\d{2}(:\d{2}){1,2}Z/)) {
                     timeClass = "dateTime"
-                } else if(tableTimes[0].match(/^\d{2}(:\d{2}){1,2}Z/)) {
+                } else {
                     timeClass = "offsetTime"
                 }
-                
+
                 // Align time series formats
                 // dateTime / Instant: "YYYY-MM-DD HH:mm:ss"
                 // offsetTime: "HH:mm:ss"
@@ -197,20 +198,18 @@ class TimeseriesHandler {
         if(data == null) return;
 
         // Get data for plotting
-        var independents = data["times"];
+        var independents = [...data["times"]];
         var dependents = [];
 
         for(var i = 0 ; i < independents.length; i++) {
-
             if(data["timeClass"] === "dateTime") {
                 independents[i] = moment(independents[i], "YYYY-MM-DD HH:mm:ss");
             } else if(data["timeClass"] === "offsetTime") {
                 independents[i] = moment(independents[i], "HH:mm:ss");
             }
-            let independent =  independents[i];
 
             dependents.push({
-                x: independent,
+                x: independents[i],
                 y: (!isNaN(data["values"][i])) ? data["values"][i] : Number(data["values"][i])
             });
         }
@@ -222,14 +221,13 @@ class TimeseriesHandler {
 
         // Create the new chart element
         var ctx = document.getElementById("chart-canvas").getContext("2d");
-        var xAxisType = "linear";
 
+        // Determine axis types
+        var yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
+        var xAxisType = "linear";
         if(data["timeClass"] === "dateTime" || data["timeClass"] === "offsetTime") {        
             xAxisType = "time";
-            console.log("X AXIS IS TIME");
         }
-
-        var yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
 
         // Create the chart object
         this._currentChart = new Chart(ctx, 
