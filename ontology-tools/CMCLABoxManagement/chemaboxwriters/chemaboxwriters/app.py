@@ -4,7 +4,7 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 import os
 import logging
 import textwrap
-from typing import Optional, Dict, Any, Union
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
