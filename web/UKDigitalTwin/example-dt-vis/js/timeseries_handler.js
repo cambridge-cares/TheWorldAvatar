@@ -178,17 +178,22 @@ class TimeseriesHandler {
         if(data == null) return;
 
         // Get data for plotting
-        var independents = data["times"];
+        var independents = [...data["times"]];
         var dependents = [];
 
         for(var i = 0 ; i < independents.length; i++) {
             if(data["timeClass"] === "OffsetTime") {
-                independents[i] = moment(independents[i].replace("Z", ""), "HH:mm");
-            }
-            let independent =  independents[i];
+                let str = String(independents[i]);
 
+                if(str.split(":").length > 2) {
+                    independents[i] = moment(independents[i].replace("Z", ""), "HH:mm:ss");
+                } else {
+                    independents[i] = moment(independents[i].replace("Z", ""), "HH:mm");
+                }
+            }
+            
             dependents.push({
-                x: independent,
+                x:  independents[i],
                 y: (!isNaN(data["values"][i])) ? data["values"][i] : Number(data["values"][i])
             });
         }
