@@ -24,6 +24,7 @@ PIPELINES = [
     "endpoints_config_file, pipeline_types",
     [
         ("test_config_1.yml", PIPELINES),
+        ("test_config_2.yml", [OC_PIPELINE]),
     ],
 )
 def test_abox_writer_setup(endpoints_config_file: str, pipeline_types: List[str]):

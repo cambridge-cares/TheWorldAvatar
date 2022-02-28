@@ -23,6 +23,8 @@ OSPECIES_QUERY_ENDPOINT_KEY = "ospecies_query_endpoint"
 OMOPS_QUERY_ENDPOINT_KEY = "omops_query_endpoint"
 OPSSCAN_QUERY_ENDPOINT_KEY = "opsscan_query_endpoint"
 OCOMPCHEM_QUERY_ENDPOINT_KEY = "ocompchem_query_endpoint"
+UPLOAD_TO_FILE_SERVER_KEY = "upload_to_file_server"
+UPLOAD_TO_TRIPLE_STORE_KEY = "upload_to_triple_store"
 
 DEFAULT_CONFIG_KEYS = [
     TRIPLE_STORE_SPARQL_ENDPOINT_KEY,
@@ -36,10 +38,10 @@ DEFAULT_CONFIG_KEYS = [
     OSPECIES_QUERY_ENDPOINT_KEY,
     OMOPS_QUERY_ENDPOINT_KEY,
     OPSSCAN_QUERY_ENDPOINT_KEY,
+    UPLOAD_TO_FILE_SERVER_KEY,
+    UPLOAD_TO_TRIPLE_STORE_KEY,
 ]
 HANDLERS_CONFIG_KEY = "handlers"
-UPLOAD_TO_FILE_SERVER_KEY = "upload_to_file_server"
-UPLOAD_TO_TRIPLE_STORE_KEY = "upload_to_triple_store"
 
 
 class Endpoints_proxy:
@@ -239,26 +241,36 @@ def get_endpoints_config_file(config_file: str) -> Dict:
     return endpoints_config
 
 
+def _read_config_settings(endpoints_config: Dict, config_keys: List[str]) -> Dict:
+    return {key: value for key, value in endpoints_config.items() if key in config_keys}
+
+
 def pre_process_endpoints_config(endpoints_config: Dict, config_key: str) -> Dict:
+    # get default configs
     default_configs = {
         key: value
         for key, value in endpoints_config.items()
         if key in DEFAULT_CONFIG_KEYS
     }
-    pipeline_configs = endpoints_config.get(config_key, {})
-    pipeline_configs = {**default_configs, **pipeline_configs}
-    pipeline_default_configs = {
-        key: value
-        for key, value in pipeline_configs.items()
-        if key in DEFAULT_CONFIG_KEYS
-    }
 
-    handlers_config = pipeline_configs.get(HANDLERS_CONFIG_KEY)
-    if handlers_config is None:
-        pipeline_configs[HANDLERS_CONFIG_KEY] = {}
-    else:
+    # get pipeline level configs, and merge in the defaults one
+    pipeline_configs = _merge_endpoints_configs(
+        merge_into=endpoints_config.get(config_key, {}), merge_from=default_configs
+    )
+
+    # get handler level configs, and merge in the pipeline configs
+    handlers_config = pipeline_configs.pop(HANDLERS_CONFIG_KEY, {})
+    if handlers_config:
         for handler_name, configs in handlers_config.items():
-            configs = {**pipeline_default_configs, **configs}
+            if configs is None:
+                configs = {}
+            handlers_config[handler_name] = _merge_endpoints_configs(
+                merge_into=configs, merge_from=pipeline_configs
+            )
 
-            pipeline_configs[HANDLERS_CONFIG_KEY][handler_name] = configs
-    return pipeline_configs[HANDLERS_CONFIG_KEY]
+        pipeline_configs[HANDLERS_CONFIG_KEY] = handlers_config
+    return handlers_config
+
+
+def _merge_endpoints_configs(merge_into: Dict, merge_from: Dict) -> Dict:
+    return {**merge_from, **merge_into}
