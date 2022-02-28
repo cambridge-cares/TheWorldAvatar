@@ -8,6 +8,7 @@ file_server_subdir: fs_subdir/subdir
 ospecies_query_endpoint: ospecies
 omops_query_endpoint: omops
 ocompchem_query_endpoint: ocompchem
+opsscan_query_endpoint: opsscan
 # this section defines what type of files should be uploaded to the file server
 ocompchem:
     file_server_subdir: ocompchem
@@ -55,6 +56,7 @@ test_results:
                 ospecies_query_endpoint: ospecies
                 omops_query_endpoint: omops
                 ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
                 upload_to_file_server:
                     - qc_log
             oc_csv_to_oc_owl:
@@ -66,6 +68,7 @@ test_results:
                 ospecies_query_endpoint: ospecies
                 omops_query_endpoint: omops
                 ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
                 upload_to_triple_store:
                     - oc_owl
     ospecies:
@@ -79,6 +82,7 @@ test_results:
                 ospecies_query_endpoint: ospecies
                 omops_query_endpoint: omops
                 ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
                 upload_to_triple_store:
                     - os_owl
     omops:
@@ -92,6 +96,7 @@ test_results:
                 ospecies_query_endpoint: ospecies
                 omops_query_endpoint: omops
                 ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
                 upload_to_file_server:
                     - ominp_xyz
             om_csv_to_om_owl:
@@ -103,6 +108,7 @@ test_results:
                 ospecies_query_endpoint: ospecies
                 omops_query_endpoint: omops
                 ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
                 upload_to_triple_store:
                     - om_owl
     opsscan:
@@ -116,5 +122,6 @@ test_results:
                 ospecies_query_endpoint: ospecies
                 omops_query_endpoint: omops
                 ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
                 upload_to_triple_store:
                     - ops_owl
