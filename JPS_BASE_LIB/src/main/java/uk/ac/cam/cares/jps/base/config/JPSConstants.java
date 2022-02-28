@@ -4,9 +4,9 @@ public interface JPSConstants {
 
 	static String KNOWLEDGE_BASE_JPS = "jps";
 	static String KNOWLEDGE_BASE_PATH_JPS_DATASET = "/jps/dataset";
-	static String ACCESS_AGENT_PATH = "/access-agent/access";
-	static String ACCESS_AGENT_HOST = "www.theworldavatar.com:83";
 	
+	static String ACCESS_AGENT_PATH = "/access-agent/access";
+		
 	static String SCENARIO_NAME_BASE = "base";
 	static String SCENARIO_SUBDIR_KB = "kb";
 	static String SCENARIO_SUBDIR_DATA = "data";

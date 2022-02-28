@@ -8,7 +8,6 @@
 
 version: "3.8"
 
-
 services:
 
   # Flood Map
@@ -85,5 +84,19 @@ services:
         authors: "support@cmclinnovations"
         builder: "${BUILDER}"
         description: "HTTPD hosted static Grav website containing Knowledge Graph content."
+        hash: "${HASH}"
+      target: ${MODE}
+
+  # CReDo GeoServer
+  credo-geoserver:
+    image: docker.cmclinnovations.com/credo-geoserver:${GEOSERVER_VERSION}
+    build:
+      context: credo-geoserver
+      args:
+        GEOSERVER_VERSION: ${GEOSERVER_VERSION}
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Server to display geospatial data for the CReDo visualisation."
         hash: "${HASH}"
       target: ${MODE}
