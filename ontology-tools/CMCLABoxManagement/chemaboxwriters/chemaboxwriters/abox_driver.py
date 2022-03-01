@@ -101,8 +101,12 @@ def start():
 
     try:
         _process_user_inputs(args)
+        disable_endpoints_config_check = args["--info"]
+
         pipeline = asp.assemble_pipeline(
-            pipeline_type=args["--pipeline-type"], config_file=args["--config-file"]
+            pipeline_type=args["--pipeline-type"],
+            config_file=args["--config-file"],
+            disable_endpoints_config_check=disable_endpoints_config_check,
         )
         if args["--handlers-kwargs"] is not None:
             pipeline.set_handlers_kwargs(handlers_kwargs=args["--handlers-kwargs"])

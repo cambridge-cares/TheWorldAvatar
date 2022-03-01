@@ -38,9 +38,8 @@ class Handler(ABC):
     def set_endpoints_config(self, endpoints_config: Optional[Dict] = None) -> None:
         if endpoints_config is not None:
             self._endpoints_config = endpoints_config
-        self._check_required_endpoints_config()
 
-    def _check_required_endpoints_config(self) -> None:
+    def check_required_endpoints_config(self) -> None:
         if self._required_endpoints_config is not None:
             for (
                 req_config_group,
@@ -127,10 +126,15 @@ class Handler(ABC):
         self._handler_kwargs = handler_kwargs
 
     def info(self) -> None:
+        logger.info("--------------------------------------------")
         logger.info(f"handler: {self.name}")
         logger.info(f"in_stages: {self._in_stage}")
         logger.info(f"out_stage: {self._out_stage}")
-        logger.info(f"handler_endpoints_config: {pformat(self._endpoints_config)}")
+        logger.info(f"endpoints_config: {pformat(self._endpoints_config)}")
+        if self._required_endpoints_config is not None:
+            logger.info(
+                f"required_endpoints_config: {pformat(self._required_endpoints_config)}"
+            )
         logger.info(f"handler_kwargs: {pformat(self._handler_kwargs)}")
 
     def clean_written_files(self) -> None:

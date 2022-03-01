@@ -13,6 +13,7 @@ def assemble_pipeline(
     config_file: Optional[str] = None,
     endpoints_config: Optional[Dict] = None,
     endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
+    disable_endpoints_config_check: bool = False,
 ) -> Pipeline:
 
     if endpoints_config is None:
@@ -23,7 +24,8 @@ def assemble_pipeline(
         else:
             endpoints_config = {}
 
-    if endpoints_proxy is None: endpoints_proxy = endp_conf.get_endpoints_proxy()
+    if endpoints_proxy is None:
+        endpoints_proxy = endp_conf.get_endpoints_proxy()
 
     if pipeline_type.upper() == OC_PIPELINE.upper():
         endpoints_config = endp_conf.pre_process_endpoints_config(
@@ -31,28 +33,36 @@ def assemble_pipeline(
         )
 
         pipeline = assemble_oc_pipeline(
-            endpoints_config=endpoints_config, endpoints_proxy=endpoints_proxy
+            endpoints_config=endpoints_config,
+            endpoints_proxy=endpoints_proxy,
+            disable_endpoints_config_check=disable_endpoints_config_check,
         )
     elif pipeline_type.upper() == OS_PIPELINE.upper():
         endpoints_config = endp_conf.pre_process_endpoints_config(
             endpoints_config=endpoints_config, config_key=OS_PIPELINE
         )
         pipeline = assemble_os_pipeline(
-            endpoints_config=endpoints_config, endpoints_proxy=endpoints_proxy
+            endpoints_config=endpoints_config,
+            endpoints_proxy=endpoints_proxy,
+            disable_endpoints_config_check=disable_endpoints_config_check,
         )
     elif pipeline_type.upper() == OMOPS_PIPELINE.upper():
         endpoints_config = endp_conf.pre_process_endpoints_config(
             endpoints_config=endpoints_config, config_key=OMOPS_PIPELINE
         )
         pipeline = assemble_omops_pipeline(
-            endpoints_config=endpoints_config, endpoints_proxy=endpoints_proxy
+            endpoints_config=endpoints_config,
+            endpoints_proxy=endpoints_proxy,
+            disable_endpoints_config_check=disable_endpoints_config_check,
         )
     elif pipeline_type.upper() == OPS_PIPELINE.upper():
         endpoints_config = endp_conf.pre_process_endpoints_config(
             endpoints_config=endpoints_config, config_key=OPS_PIPELINE
         )
         pipeline = assemble_ops_pipeline(
-            endpoints_config=endpoints_config, endpoints_proxy=endpoints_proxy
+            endpoints_config=endpoints_config,
+            endpoints_proxy=endpoints_proxy,
+            disable_endpoints_config_check=disable_endpoints_config_check,
         )
     else:
         raise app_exc.UnsupportedPipeline(f"Selected pipeline type is not supported")

@@ -121,6 +121,7 @@ def get_pipeline(
     handlers: Optional[List[Handler]] = None,
     endpoints_config: Optional[Dict] = None,
     endpoints_proxy: Optional[Endpoints_proxy] = None,
+    disable_endpoints_config_check: bool = False,
 ) -> Pipeline:
 
     if endpoints_config is None:
@@ -135,6 +136,8 @@ def get_pipeline(
             handler.set_endpoints_config(
                 endpoints_config=endpoints_config.get(handler.name.lower())
             )
+            if not disable_endpoints_config_check:
+                handler.check_required_endpoints_config()
             handler.set_endpoints_proxy(endpoints_proxy=endpoints_proxy)
             pipeline.add_handler(handler=handler)
     return pipeline

@@ -17,6 +17,7 @@ OC_PIPELINE = "ocompchem"
 def assemble_oc_pipeline(
     endpoints_config: Optional[Dict] = None,
     endpoints_proxy: Optional[Endpoints_proxy] = None,
+    disable_endpoints_config_check: bool = False,
 ) -> Pipeline:
 
     handlers = [
