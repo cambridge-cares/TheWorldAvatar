@@ -14,6 +14,8 @@ TRIPLE_STORE = "triple store"
 
 UPLOAD_SETTINGS_KEY = "upload_settings"
 QUERY_SETTINGS_KEY = "query_settings"
+WRITERS_PREFIXES_KEY = "prefixes"
+
 TRIPLE_STORE_SPARQL_ENDPOINT_KEY = "triple_store_sparql_endpoint"
 TRIPLE_STORE_SECRETS_FILE_KEY = "triple_store_secrets_file"
 TRIPLE_STORE_NO_AUTH_KEY = "triple_store_no_auth"
@@ -254,11 +256,13 @@ def pre_process_endpoints_config(endpoints_config: Dict, config_key: str) -> Dic
     # get default upload and query configs
     default_upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
     default_query_configs = endpoints_config.get(QUERY_SETTINGS_KEY, {})
+    default_prefixes = endpoints_config.get(WRITERS_PREFIXES_KEY, {})
 
     # get pipeline level configs, and merge in the default configs
     pipeline_configs = endpoints_config.get(config_key, {})
     pipeline_upload_configs = pipeline_configs.get(UPLOAD_SETTINGS_KEY, {})
     pipeline_query_configs = pipeline_configs.get(QUERY_SETTINGS_KEY, {})
+    pipeline_prefixes = pipeline_configs.get(WRITERS_PREFIXES_KEY, {})
 
     pipeline_upload_configs = _merge_endpoints_configs(
         merge_into=pipeline_upload_configs,
@@ -268,6 +272,11 @@ def pre_process_endpoints_config(endpoints_config: Dict, config_key: str) -> Dic
     pipeline_query_configs = _merge_endpoints_configs(
         merge_into=pipeline_query_configs,
         merge_from=default_query_configs,
+    )
+
+    pipeline_prefixes = _merge_endpoints_configs(
+        merge_into=pipeline_prefixes,
+        merge_from=default_prefixes,
     )
 
     # get handler level configs, and merge in the pipeline configs
@@ -280,6 +289,8 @@ def pre_process_endpoints_config(endpoints_config: Dict, config_key: str) -> Dic
                 configs[UPLOAD_SETTINGS_KEY] = {}
             if QUERY_SETTINGS_KEY not in configs:
                 configs[QUERY_SETTINGS_KEY] = {}
+            if WRITERS_PREFIXES_KEY not in configs:
+                configs[WRITERS_PREFIXES_KEY] = {}
 
             upload_configs = _merge_endpoints_configs(
                 merge_into=configs[UPLOAD_SETTINGS_KEY],
@@ -290,11 +301,17 @@ def pre_process_endpoints_config(endpoints_config: Dict, config_key: str) -> Dic
                 merge_from=pipeline_query_configs,
             )
 
+            prefixes_configs = _merge_endpoints_configs(
+                merge_into=configs[WRITERS_PREFIXES_KEY],
+                merge_from=pipeline_prefixes,
+            )
+
             if handlers_config[handler_name] is None:
                 handlers_config[handler_name] = {}
 
             handlers_config[handler_name][UPLOAD_SETTINGS_KEY] = upload_configs
             handlers_config[handler_name][QUERY_SETTINGS_KEY] = query_configs
+            handlers_config[handler_name][WRITERS_PREFIXES_KEY] = prefixes_configs
     return handlers_config
 
 

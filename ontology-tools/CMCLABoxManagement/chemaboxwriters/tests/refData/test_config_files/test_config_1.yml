@@ -66,6 +66,7 @@ test_results:
     ocompchem:
         handlers:
             qc_log_to_qc_json:
+                prefixes: {}
                 upload_settings:
                     triple_store_sparql_endpoint: ocompchem
                     triple_store_secrets_file: ts_dummy_secrets
@@ -82,6 +83,7 @@ test_results:
                     ocompchem_query_endpoint: ocompchem
                     opsscan_query_endpoint: opsscan
             oc_csv_to_oc_owl:
+                prefixes: {}
                 upload_settings:
                     triple_store_sparql_endpoint: ocompchem
                     triple_store_secrets_file: ts_dummy_secrets
@@ -100,6 +102,7 @@ test_results:
     ospecies:
         handlers:
             os_csv_to_os_owl:
+                prefixes: {}
                 upload_settings:
                     triple_store_sparql_endpoint: ospecies
                     triple_store_secrets_file: ts_dummy_secrets
@@ -118,6 +121,7 @@ test_results:
     omops:
         handlers:
             ominp_json_to_om_json:
+                prefixes: {}
                 upload_settings:
                     triple_store_sparql_endpoint: omops
                     triple_store_secrets_file: ts_dummy_secrets
@@ -134,6 +138,7 @@ test_results:
                     ocompchem_query_endpoint: ocompchem
                     opsscan_query_endpoint: opsscan
             om_csv_to_om_owl:
+                prefixes: {}
                 upload_settings:
                     triple_store_sparql_endpoint: omops
                     triple_store_secrets_file: ts_dummy_secrets
@@ -152,6 +157,7 @@ test_results:
     opsscan:
         handlers:
             ops_csv_to_ops_owl:
+                prefixes: {}
                 upload_settings:
                     triple_store_sparql_endpoint: opsscan
                     triple_store_secrets_file: ts_dummy_secrets

@@ -26,6 +26,7 @@ test_results:
                     upload_to_triple_store:
                         - test_stage2
                 query_settings: {}
+                prefixes: {}
             oc_csv_to_oc_owl:
                 upload_settings:
                     upload_to_file_server:
@@ -33,3 +34,4 @@ test_results:
                     upload_to_triple_store:
                         - test_stage2
                 query_settings: {}
+                prefixes: {}

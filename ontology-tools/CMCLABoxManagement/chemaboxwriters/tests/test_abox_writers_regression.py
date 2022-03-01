@@ -12,6 +12,7 @@ from chemaboxwriters.ontopesscan.pipeline import OPS_PIPELINE
 from typing import List
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+ABOX_CONFIG_FILE = os.path.join(THIS_DIR, "..", "aboxwriters_config.yml")
 
 OCOMPCHEM_REF_DIR = os.path.join(THIS_DIR, "refData", "ontocompchem")
 OSPECIES_REF_DIR = os.path.join(THIS_DIR, "refData", "ontospecies")
@@ -120,7 +121,9 @@ def test_ocompchem_abox_writer(
     print()
 
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR, inp_file_or_dir)
-    pipeline = assemble_pipeline(pipeline_type=OC_PIPELINE)
+    pipeline = assemble_pipeline(
+        pipeline_type=OC_PIPELINE, config_file=ABOX_CONFIG_FILE
+    )
     pipeline.set_handlers_kwargs(
         handlers_kwargs={
             "QC_JSON_TO_OC_JSON": {
@@ -177,7 +180,9 @@ def test_ospecies_abox_writer(
         return_value=[DummyPubchemComp(cid=1111, synonyms=["1111-11-1"])],
     )
 
-    pipeline = assemble_pipeline(pipeline_type=OS_PIPELINE)
+    pipeline = assemble_pipeline(
+        pipeline_type=OS_PIPELINE, config_file=ABOX_CONFIG_FILE
+    )
 
     pipeline.set_handlers_kwargs(
         handlers_kwargs={"QC_JSON_TO_OS_JSON": {"random_id": "testID-111-111-111"}}
@@ -234,7 +239,9 @@ def test_opsscan_abox_writer(
 
     inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR, inp_file_or_dir)
 
-    pipeline = assemble_pipeline(pipeline_type=OPS_PIPELINE)
+    pipeline = assemble_pipeline(
+        pipeline_type=OPS_PIPELINE, config_file=ABOX_CONFIG_FILE
+    )
     pipeline.set_handlers_kwargs(handlers_kwargs=handler_kwargs)
 
     write_abox(
@@ -265,6 +272,7 @@ def test_omops_abox_writer(
     inp_file_or_dir,
     inp_file_type,
     regenerate_result,
+    mocker,
     clean_tests,
     regenerate_all_results=False,
 ):
@@ -275,8 +283,14 @@ def test_omops_abox_writer(
     print()
 
     inp_file_or_dir = os.path.join(OMOPS_REF_DIR, inp_file_or_dir)
+    mocker.patch(
+        "chemaboxwriters.ontomops.handlers.om_json_handler.qtmpl.get_assembly_iri",
+        return_value=[],
+    )
 
-    pipeline = assemble_pipeline(pipeline_type=OMOPS_PIPELINE)
+    pipeline = assemble_pipeline(
+        pipeline_type=OMOPS_PIPELINE, config_file=ABOX_CONFIG_FILE
+    )
     pipeline.set_handlers_kwargs(
         handlers_kwargs={"OMINP_JSON_TO_OM_JSON": {"random_id": "testID-111-111-111"}}
     )
