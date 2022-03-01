@@ -12,6 +12,7 @@ def assemble_pipeline(
     pipeline_type: str,
     config_file: Optional[str] = None,
     endpoints_config: Optional[Dict] = None,
+    endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
 ) -> Pipeline:
 
     if endpoints_config is None:
@@ -22,7 +23,7 @@ def assemble_pipeline(
         else:
             endpoints_config = {}
 
-    endpoints_proxy = endp_conf.get_endpoints_proxy()
+    if endpoints_proxy is None: endpoints_proxy = endp_conf.get_endpoints_proxy()
 
     if pipeline_type.upper() == OC_PIPELINE.upper():
         endpoints_config = endp_conf.pre_process_endpoints_config(
