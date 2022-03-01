@@ -101,6 +101,7 @@ class Endpoints_proxy:
     def _check_connection_configs(
         url: Optional[str],
         auth_file: Optional[str],
+        no_auth: bool,
         dry_run: bool,
         input_type: Enum,
         upload_type: str,
@@ -113,7 +114,7 @@ class Endpoints_proxy:
                 raise app_exceptions.MissingUploadConfigs
             return
 
-        if auth_file is None:
+        if auth_file is None and not no_auth:
             logger.warning(
                 f"No {upload_type} upload secrets file specified for the {input_type.name.lower()} stage."
             )
@@ -138,6 +139,7 @@ class Endpoints_proxy:
         self._check_connection_configs(
             url=url,
             auth_file=auth_file,
+            no_auth=no_auth,
             dry_run=dry_run,
             input_type=input_type,
             upload_type=FILE_SERVER,
@@ -176,6 +178,7 @@ class Endpoints_proxy:
         self._check_connection_configs(
             url=url,
             auth_file=auth_file,
+            no_auth=no_auth,
             dry_run=dry_run,
             input_type=input_type,
             upload_type=TRIPLE_STORE,
@@ -216,7 +219,7 @@ class Endpoints_proxy:
         upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
         url = upload_configs.get(url_key)
         auth_file = upload_configs.get(auth_key)
-        no_auth = upload_configs.get(no_auth_key)
+        no_auth = upload_configs.get(no_auth_key, False)
 
         return url, auth_file, no_auth
 
