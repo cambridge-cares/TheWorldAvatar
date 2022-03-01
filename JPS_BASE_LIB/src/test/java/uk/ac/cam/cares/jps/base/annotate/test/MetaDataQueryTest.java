@@ -3,22 +3,25 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import jena.cmdline.Arg;
 import org.junit.Assert;
 
 import org.junit.Test;
 
 
-
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+import org.junit.function.ThrowingRunnable;
+import org.mockito.*;
+import org.semanticweb.owlapi.change.ConvertPropertyAssertionsToAnnotations;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 
+import static org.junit.Assert.assertThrows;
 
 
 public class MetaDataQueryTest {
@@ -179,7 +182,7 @@ public class MetaDataQueryTest {
     @Test//This unit test is for the queryResources method that accepts eight arguments
         public void testQueryResources1(){
 
-        String sparql="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
+        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
                 +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
@@ -201,15 +204,15 @@ public class MetaDataQueryTest {
 
         String expected= "queryResultString";
 
-        try(MockedStatic<MetaDataQuery> mtq= Mockito.mockStatic(MetaDataQuery.class)){
-            mtq.when(()->MetaDataQuery.queryResources(MediaType.TEXT_TURTLE,"testFromCreationTime", "testToCreationTime",
-                    "testIriCreatingAgent", "testFromSimulationTime","testToSimulationTime",
-                    "testIriScenario",Arrays.asList("topic1"))).thenReturn(expected);
+        try(MockedStatic<MetaDataQuery> mtq= Mockito.mockStatic(MetaDataQuery.class,Mockito.CALLS_REAL_METHODS)){
+            mtq.when(()-> MetaDataQuery.query(sparql1)).thenReturn(expected);
+
             String actual=MetaDataQuery.queryResources(MediaType.TEXT_TURTLE,"testFromCreationTime", "testToCreationTime",
                     "testIriCreatingAgent", "testFromSimulationTime","testToSimulationTime",
                     "testIriScenario",Arrays.asList("topic1"));
+
             Assert.assertEquals(expected,actual);
-        }
+       }
     }
 
     @Test//This unit test is for the queryResources method that accepts only three arguments
@@ -232,9 +235,8 @@ public class MetaDataQueryTest {
 
 
         String expected="queryResultString";
-        try(MockedStatic<MetaDataQuery> mtq=Mockito.mockStatic(MetaDataQuery.class)){
-            mtq.when(()->MetaDataQuery.queryResources("testIriCreatingAgent","testFromSimulationTime",
-                    "testToSimulationTime")).thenReturn(expected);
+        try(MockedStatic<MetaDataQuery> mtq=Mockito.mockStatic(MetaDataQuery.class,Mockito.CALLS_REAL_METHODS)){
+            mtq.when(()->MetaDataQuery.query(sparql1)).thenReturn(expected);
             String actual= MetaDataQuery.queryResources("testIriCreatingAgent","testFromSimulationTime",
                     "testToSimulationTime");
             Assert.assertEquals(expected,actual);
