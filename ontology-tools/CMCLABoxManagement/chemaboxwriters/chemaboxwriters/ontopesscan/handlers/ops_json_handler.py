@@ -2,7 +2,6 @@ import json
 import csv
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common.handler import Handler
-from chemaboxwriters.common import PREFIXES
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.ontopesscan.handlers.oc_json_handler import (
     SCAN_COORDINATE_ATOMS_IRIS,
@@ -12,17 +11,9 @@ from chemaboxwriters.ontopesscan.handlers.oc_json_handler import (
     SCAN_POINTS_JOBS,
     SCAN_ATOM_IDS,
 )
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import chemaboxwriters.common.endpoints_config as endp_conf
 from typing import List, Optional, Dict
 from enum import Enum
-
-spec_pref = PREFIXES["spec_pref"]
-pes_pref = PREFIXES["pes_pref"]
-gain_pref = PREFIXES["gain_pref"]
-unit_pref = PREFIXES["unit_pref"]
-onto_spec = PREFIXES["onto_spec"]
-onto_comp = PREFIXES["onto_comp"]
-onto_pes = PREFIXES["onto_pes"]
 
 
 class OPS_JSON_TO_OPS_CSV_Handler(Handler):
@@ -33,13 +24,24 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="OPS_JSON_TO_OPS_CSV",
             in_stage=globals.aboxStages.OPS_JSON,
             out_stage=globals.aboxStages.OPS_CSV,
             endpoints_proxy=endpoints_proxy,
+            required_endpoints_config={
+                endp_conf.WRITERS_PREFIXES_KEY: [
+                    "spec_pref",
+                    "pes_pref",
+                    "gain_pref",
+                    "unit_pref",
+                    "onto_spec",
+                    "onto_comp",
+                    "onto_pes",
+                ]
+            },
         )
 
     def _handle_input(
@@ -89,8 +91,13 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             self._write_scancoordinate(spamwriter, calc_id, data)
             self._write_scanpoints(spamwriter, entryIRI, calc_id, data)
 
-    @staticmethod
-    def _write_initial(spamwriter, entryIRI, spec_IRI):
+    def _write_initial(self, spamwriter, entryIRI, spec_IRI):
+
+        onto_pes = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_pes"]
+        pes_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["pes_pref"]
+        spec_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["spec_pref"]
+        onto_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_spec"]
+
         spamwriter.writerow(
             [
                 "ABoxOntoPESSscan",
@@ -135,8 +142,13 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             ]
         )
 
-    @staticmethod
-    def _write_scancoordinate(spamwriter, calc_id, data):
+    def _write_scancoordinate(self, spamwriter, calc_id, data):
+
+        onto_pes = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_pes"]
+        pes_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["pes_pref"]
+        spec_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["spec_pref"]
+        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
+
         scan_type = data[SCAN_COORDINATE_TYPE]
         spamwriter.writerow(
             [
@@ -173,8 +185,14 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
                 ]
             )
 
-    @staticmethod
-    def _write_scanpoints(spamwriter, entryIRI, calc_id, data):
+    def _write_scanpoints(self, spamwriter, entryIRI, calc_id, data):
+
+        onto_pes = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_pes"]
+        pes_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["pes_pref"]
+        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["unit_pref"]
+
         for k in range(len(data[SCAN_COORDINATE_VALUE])):
             gauss_type = data[SCAN_POINTS_JOBS][k].split("_")[0][-3:]
             spamwriter.writerow(

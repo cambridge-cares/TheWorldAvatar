@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Tuple, Dict, Optional
 import chemaboxwriters.common.endpoints_config as endp_conf
+import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from abc import ABC, abstractmethod
 from pprint import pformat
 import logging
@@ -19,6 +20,7 @@ class Handler(ABC):
         in_stage: Enum,
         out_stage: Enum,
         endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
+        required_endpoints_config: Optional[Dict] = None,
     ) -> None:
 
         self.name = name
@@ -28,6 +30,7 @@ class Handler(ABC):
         self._handler_kwargs = {}
         self.written_files = []
         self._endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None
+        self._required_endpoints_config = required_endpoints_config
 
     def set_endpoints_proxy(self, endpoints_proxy: endp_conf.Endpoints_proxy) -> None:
         self._endpoints_proxy = endpoints_proxy
@@ -35,6 +38,25 @@ class Handler(ABC):
     def set_endpoints_config(self, endpoints_config: Optional[Dict] = None) -> None:
         if endpoints_config is not None:
             self._endpoints_config = endpoints_config
+        self._check_required_endpoints_config()
+
+    def _check_required_endpoints_config(self) -> None:
+        if self._required_endpoints_config is not None:
+            for (
+                req_config_group,
+                req_config_keys,
+            ) in self._required_endpoints_config.items():
+                config_group = self._endpoints_config.get(req_config_group)
+                if config_group is None:
+                    app_exceptions.MissingHandlerConfig(
+                        f"The required '{config_group}' configuration is missing for handler {self.name}."
+                    )
+                else:
+                    for req_key in req_config_keys:
+                        if req_key not in config_group:
+                            app_exceptions.MissingHandlerConfig(
+                                f"The required '{req_key}' configuration is missing for handler {self.name}."
+                            )
 
     @property
     def endpoints_config(self) -> Dict:

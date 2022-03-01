@@ -2,12 +2,10 @@ import json
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import chemaboxwriters.common.globals as globals
-from chemaboxwriters.common import PREFIXES
+import chemaboxwriters.common.endpoints_config as endp_conf
 from chemaboxwriters.common.endpoints_config import Endpoints_proxy
 from typing import List, Optional, Dict
 from enum import Enum
-
-omops_entry_prefix = PREFIXES["omops_entry_prefix"]
 
 
 class OMINP_JSON_TO_OM_JSON_Handler(Handler):
@@ -25,6 +23,9 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             in_stage=globals.aboxStages.OMINP_JSON,
             out_stage=globals.aboxStages.OM_JSON,
             endpoints_proxy=endpoints_proxy,
+            required_endpoints_config={
+                endp_conf.WRITERS_PREFIXES_KEY: ["omops_entry_prefix"]
+            },
         )
 
     def _handle_input(
@@ -62,10 +63,18 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             outputs.append(out_file_path)
         return outputs
 
-    @staticmethod
     def om_jsonwriter(
-        file_path: str, output_file_path: str, random_id: str = "", *args, **kwargs
+        self,
+        file_path: str,
+        output_file_path: str,
+        random_id: str = "",
+        *args,
+        **kwargs
     ) -> None:
+
+        omops_entry_prefix = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
+            "omops_entry_prefix"
+        ]
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)

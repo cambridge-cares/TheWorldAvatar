@@ -4,7 +4,6 @@ from compchemparser.helpers.utils import get_xyz_from_parsed_json
 from chemaboxwriters.common.utilsfunc import get_random_id
 import json
 import chemaboxwriters.common.globals as globals
-from chemaboxwriters.common import PREFIXES
 from compchemparser.parsers.ccgaussian_parser import PROGRAM_NAME, PROGRAM_VERSION
 from chemaboxwriters.common.globals import aboxStages
 from chemaboxwriters.common.handler import Handler
@@ -16,8 +15,6 @@ import chemaboxwriters.common.endpoints_config as endp_conf
 import logging
 
 logger = logging.getLogger(__name__)
-
-comp_pref = PREFIXES["comp_pref"]
 
 
 @dataclass
@@ -36,6 +33,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             in_stage=aboxStages.QC_JSON,
             out_stage=aboxStages.OC_JSON,
             endpoints_proxy=endpoints_proxy,
+            required_endpoints_config={endp_conf.WRITERS_PREFIXES_KEY: ["comp_pref"]},
         )
 
     def _handle_input(
@@ -75,6 +73,8 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
+
+        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
 
         xyz = get_xyz_from_parsed_json(data)
         inchi = obconverter.obConvert(xyz, "xyz", "inchi")

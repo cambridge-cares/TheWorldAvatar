@@ -7,10 +7,9 @@ Created on Thu Mar  4 16:10:02 2021
 
 import json
 import csv
-from chemaboxwriters.kgoperations.querytemplates import get_assembly_iri
+import chemaboxwriters.kgoperations.querytemplates as qtmpl
 import chemaboxwriters.common.globals as globals
 import chemaboxwriters.common.utilsfunc as utilsfunc
-from chemaboxwriters.common import PREFIXES
 from chemaboxwriters.common.handler import Handler
 from typing import List, Optional, Dict
 import chemaboxwriters.common.endpoints_config as endp_conf
@@ -18,13 +17,6 @@ from enum import Enum
 import logging
 
 logger = logging.getLogger(__name__)
-
-onto_spec = PREFIXES["onto_spec"]
-onto_mops = PREFIXES["onto_mops"]
-mops_pref = PREFIXES["mops_pref"]
-rdf_pref = PREFIXES["rdf_pref"]
-uom_pref = PREFIXES["uom_pref"]
-unres_pref = PREFIXES["unres_pref"]
 
 
 class OM_JSON_TO_OM_CSV_Handler(Handler):
@@ -42,6 +34,16 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             in_stage=globals.aboxStages.OM_JSON,
             out_stage=globals.aboxStages.OM_CSV,
             endpoints_proxy=endpoints_proxy,
+            required_endpoints_config={
+                endp_conf.WRITERS_PREFIXES_KEY: [
+                    "onto_spec",
+                    "onto_mops",
+                    "mops_pref",
+                    "rdf_pref",
+                    "uom_pref",
+                    "unres_pref",
+                ]
+            },
         )
 
     def _handle_input(
@@ -73,6 +75,15 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         self, file_path: str, output_file_path: str, *args, **kwargs
     ) -> None:
 
+        onto_mops = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_mops"]
+        mops_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["mops_pref"]
+        rdf_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["rdf_pref"]
+        onto_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        uom_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["uom_pref"]
+        unres_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
+            "unres_pref"
+        ]
+
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
@@ -97,7 +108,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     "Couldn't query for the assembly model IRI, The query endpoint not specified in the aboxwriters config file."
                 )
             else:
-                search1 = get_assembly_iri(
+                search1 = qtmpl.get_assembly_iri(
                     omops_query_endpoint,
                     data["Mops_Chemical_Building_Units"][0]["GenericUnitModularity"],
                     data["Mops_Chemical_Building_Units"][0]["GenericUnitPlanarity"],
@@ -105,7 +116,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     data["Mops_Symmetry_Point_Group"],
                 )
 
-                search2 = get_assembly_iri(
+                search2 = qtmpl.get_assembly_iri(
                     omops_query_endpoint,
                     data["Mops_Chemical_Building_Units"][1]["GenericUnitModularity"],
                     data["Mops_Chemical_Building_Units"][1]["GenericUnitPlanarity"],

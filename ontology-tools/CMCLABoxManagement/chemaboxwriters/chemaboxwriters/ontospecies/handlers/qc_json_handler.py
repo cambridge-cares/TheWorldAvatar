@@ -2,7 +2,6 @@ import chemutils.obabelutils.obconverter as obconverter
 import chemutils.obabelutils.obutils as obutils
 import compchemparser.helpers.utils as ccparse_utils
 import chemaboxwriters.common.utilsfunc as utilsfunc
-from chemaboxwriters.common import PREFIXES
 from compchemparser.parsers.ccgaussian_parser import (
     ATOM_MASSES,
     FORMAL_CHARGE,
@@ -20,7 +19,7 @@ import re
 import time
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common.handler import Handler
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import chemaboxwriters.common.endpoints_config as endp_conf
 from enum import Enum
 from typing import List, Optional, Dict
 
@@ -44,8 +43,6 @@ ENTH_REFTEMP = "ReferenceTemperature"
 ENTH_REFTEMP_UNIT = "ReferenceTemperatureUnit"
 ENTH_PROV = "StandardEnthalpyofFormationProvenance"
 
-spec_pref = PREFIXES["spec_pref"]
-
 
 class QC_JSON_TO_OS_JSON_Handler(Handler):
     """Handler converting qc_json files to os_json.
@@ -55,13 +52,14 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="QC_JSON_TO_OS_JSON",
             in_stage=globals.aboxStages.QC_JSON,
             out_stage=globals.aboxStages.OS_JSON,
             endpoints_proxy=endpoints_proxy,
+            required_endpoints_config={endp_conf.WRITERS_PREFIXES_KEY: ["spec_pref"]},
         )
 
     def _handle_input(
@@ -94,7 +92,6 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         file_path: str,
         output_file_path: str,
         random_id: str = "",
-        spec_pref: str = PREFIXES["spec_pref"],
         hf: Optional[str] = None,
         hf_unit: Optional[str] = None,
         hf_phase: Optional[str] = None,
@@ -104,6 +101,8 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         *args,
         **kwargs
     ) -> None:
+
+        spec_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["spec_pref"]
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
