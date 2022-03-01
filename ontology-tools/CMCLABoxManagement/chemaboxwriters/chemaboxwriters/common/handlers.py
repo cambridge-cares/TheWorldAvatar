@@ -1,5 +1,5 @@
 from chemaboxwriters.common.handler import Handler
-from compchemparser.app import parseLog
+import compchemparser.app as qcparser
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF as entityrdfizer
 from typing import List, Optional, Dict
@@ -39,7 +39,7 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
 
         outputs: List[str] = []
         for cclog_file_path in inputs:
-            cclog_parsed_jobs = parseLog(cclog_file_path)
+            cclog_parsed_jobs = qcparser.parseLog(cclog_file_path)
 
             if len(cclog_parsed_jobs) == 1:
                 out_file_path = utilsfunc.get_out_file_path(
