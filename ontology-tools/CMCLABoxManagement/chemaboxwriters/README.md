@@ -180,25 +180,31 @@ Prior to running any abox creation and upload it is necessary to configure appro
 # ------------------------------------------------------------------------------
 # DEFAULTS
 # ------------------------------------------------------------------------------
-triple_store_sparql_endpoint: default_triple_store_sparql_endpoint
-triple_store_secrets_file: default_triple_store_secrets_file
-file_server_upload_endpoint: default_file_server_upload_endpoint
-file_server_secrets_file: default_file_server_secrets_file
-file_server_subdir: default_file_server_subdir
-ospecies_query_endpoint: ospecies_query_endpoint
-omops_query_endpoint: omops_query_endpoint
-ocompchem_query_endpoint: ocompchem_query_endpoint
-opsscan_query_endpoint: opsscan_query_endpoint
+upload_settings:
+    triple_store_sparql_endpoint: default_triple_store_sparql_endpoint
+    triple_store_secrets_file: default_triple_store_secrets_file
+    #triple_store_no_auth: False # if True, no athorisation is made and the
+    #                            # triple store secrets file is not needed
+    file_server_upload_endpoint: default_file_server_upload_endpoint
+    file_server_secrets_file: default_file_server_secrets_file
+    file_server_subdir: default_file_server_subdir
+    #file_server_no_auth: False # if True, no athorisation is made and the
+    #                           # file server secrets file is not needed
+    # These settings define which files would be uploaded to the file server and
+    # or to the triple store by indicating the stages they belong to. These are
+    # default global settings which would propagate to all defined pipelines and
+    # their handlers unless overwritten.
+    #
+    # upload_to_file_server:
+    #     - test_stage1
+    # upload_to_triple_store:
+    #     - test_stage2
+query_settings:
+    ospecies_query_endpoint: ospecies_query_endpoint
+    omops_query_endpoint: omops_query_endpoint
+    ocompchem_query_endpoint: ocompchem_query_endpoint
+    opsscan_query_endpoint: opsscan_query_endpoint
 #
-# These settings define which files would be uploaded to the file server and
-# or to the triple store by indicating the stages they belong to. These are
-# default global settings which would propagate to all defined pipelines and
-# their handlers unless overwritten.
-#
-# upload_to_file_server:
-#     - test_stage1
-# upload_to_triple_store:
-#     - test_stage2
 # ------------------------------------------------------------------------------
 # PIPELINES
 # ------------------------------------------------------------------------------
@@ -207,8 +213,9 @@ opsscan_query_endpoint: opsscan_query_endpoint
 #-----------------------------------------
 ocompchem:
     # these options would overwrite any default settings above
-    file_server_subdir: ontocompchem
-    triple_store_sparql_endpoint: ontocompchem
+    upload_settings:
+        file_server_subdir: ontocompchem
+        triple_store_sparql_endpoint: ontocompchem
     #-----------------------------------------
     # OCOMPCHEM HANDLERS
     #-----------------------------------------
@@ -216,56 +223,65 @@ ocompchem:
     # any pipeline and default settings
     handlers:
         qc_log_to_qc_json:
-            upload_to_file_server:
-                - qc_log
+            upload_settings:
+                upload_to_file_server:
+                    - qc_log
         oc_csv_to_oc_owl:
-            upload_to_triple_store:
-                - oc_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - oc_owl
 # OSPECIES
 #-----------------------------------------
 ospecies:
-    file_server_subdir: ospecies
-    triple_store_sparql_endpoint: ospecies
+    upload_settings:
+        file_server_subdir: ospecies
+        triple_store_sparql_endpoint: ospecies
     #-----------------------------------------
     # OSPECIES HANDLERS
     #-----------------------------------------
     handlers:
         os_csv_to_os_owl:
-            upload_to_triple_store:
-                - os_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - os_owl
 # OMOPS
 #-----------------------------------------
 omops:
-    file_server_subdir: omops
-    triple_store_sparql_endpoint: omops
+    upload_settings:
+        file_server_subdir: omops
+        triple_store_sparql_endpoint: omops
     #-----------------------------------------
     # OMOPS HANDLERS
     #-----------------------------------------
     handlers:
         ominp_json_to_om_json:
-            upload_to_file_server:
-                - ominp_xyz
+            upload_settings:
+                upload_to_file_server:
+                    - ominp_xyz
         om_csv_to_om_owl:
-            upload_to_triple_store:
-                - om_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - om_owl
 # OPSSCAN
 #-----------------------------------------
 opsscan:
-    file_server_subdir: opsscan
-    triple_store_sparql_endpoint: opsscan
+    upload_settings:
+        file_server_subdir: opsscan
+        triple_store_sparql_endpoint: opsscan
     #-----------------------------------------
     # OPSSCAN HANDLERS
     #-----------------------------------------
     handlers:
         ops_csv_to_ops_owl:
-            upload_to_triple_store:
-                - ops_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - ops_owl
 # ------------------------------------------------------------------------------
 ```
 
 # Command line interface #
 
-The command line interface for all the supported abox writers is presented below. A more abox writer specific CLI description can be obtained by running the each of the abox writers with the --help argument.
+The command line interface for all the supported abox writers is presented below.
 
 ```bash
 Usage:
@@ -343,68 +359,111 @@ Options:
                         "oc_json" input file type.
 ```
 
-# Example usage #
+It is important to note that all abox writers run in a `dry-run` mode by default. This mode disables all the file server and triple store uploads and can be used to testing things out before the final run.
 
-Throughout this section the following alias will be used:
+# Example usage
+
+This section provides usage examples of all the supported abox writers. Note that the `<awriter>` variable can take any of the following values:
 
 ```bash
-<aboxwriter> = ocompchem, ospecies, omops, opesscan
+
+<awriter> = ocompchem, ospecies, omops, opsscan
+
 ```
 
-1. Printing the abox writer info. Use it to check if the abox writer has been correctly configured (especially the upload settings)
+
+
+1. Printing the abox writer help:
 
 ```bash
-# this reads the config file path from the ABOXWRITERS_CONFIG_FILE env variable
-<aboxwriter> --info
-# config file path explicitly passed
-<aboxwriter> --info --config-file config_file_path
+
+aboxwriter <awriter> --help
+
 ```
 
-2. Running the abox writer on a single file in dry-run mode (default)
+2. Printing the abox writer info:
+
 ```bash
-# this will run the abox writer on file1.ext1
-<aboxwriter> --file-or-dir file1.ext1
+# prints pipeline's handlers info such as:
+# - handler name,
+# - handler in_stage and out_stage,
+# - handler endpoints config,
+# - any extra handler arguments
+#
+# the command below would try to read the abox config file
+# from the ABOXWRITERS_CONFIG_FILE environment variable
+# if that is not defined the handler endpoints config
+# printout will be empty
+
+aboxwriter <awriter> --info
+
+# this command explicitly passes the config file location
+
+aboxwriter <awriter> --info --config-file config_file_path
 ```
 
-3. Running the abox writer on a single file in non dry-run mode. This will upload any output files to appropriate endpoints as specified in the config yml file.
-
+3. Running the abox writer on a single file
 ```bash
-<aboxwriter> --file-or-dir file1.ext1 --dry-run FALSE
+# note that omitting the --inp-file-type option sets it
+# to the abox writer-specific default value
+# also, the --file-ext option is not used for the single
+# file inputs and should be omitted
+
+aboxwriter <awriter> --file-or-dir file.file_ext
+
+# example ospecies writer usage
+# this would run the ospecies abox writer with the
+# --inp-file-type set to default qc_log
+
+aboxwriter ospecies --file-or-dir file.log
 ```
 
-4. Running the abox writer on a single file in non dry-run mode while specifying the file type. This will upload any output files to appropriate endpoints as specified in the config yml file.
-
+4. Running the abox writer on a single file with defined input type
 ```bash
-# --inp-file-type argument simply sets the first processing stage in the abox writer
-<aboxwriter> --file-or-dir file1.ext1 --inp-file-type type --dry-run FALSE
+
+aboxwriter <awriter> --file-or-dir file.file_ext --inp-file-type <type>
+
+# example ospecies writer usage
+# this would run the ospecies abox writer with the
+# --inp-file-type set to os_json
+
+aboxwriter ospecies --file-or-dir file.os_json --inp-file-type os_json
 ```
 
-5. Running the abox writer on a directory in non dry-run mode. This will upload any output files to appropriate endpoints as specified in the config yml file.
-
+5. Running the abox writer on a directory
 ```bash
-# depending on the abox writer, different --inp-file-type and --file-ext will be assumed
-# the files in the directory will be then picked based on the default --file-ext
-# and processed starting from the --inp-file-type stage
-<aboxwriter> --file-or-dir my_dir --dry-run FALSE
+# source_dir has the following content:
+# source_dir:
+#    - file_1.log
+#    - file_2.out
+#    - file_3.g09
+#
+aboxwriter <awriter> --file-or-dir source_dir --inp-file-type <type> --file-ext "log,out,g09"
+
+# example ocompchem writer usage
+# this would run the ocompchem abox writer with the
+# --inp-file-type set to default qc_log and
+# --file-ext set to defualt "qc_log,log,out,g03,g09,g16"
+# thus it is not necessary to provide these extra arguments
+
+aboxwriter ocompchem --file-or-dir source_dir
 ```
 
-6. Running the abox writer on a directory in non dry-run mode while specifying the file type and extension. This will upload any output files to appropriate endpoints as specified in the config yml file.
-
+6. Running the abox writer on a single file in non dry-run mode
 ```bash
-# the --file-ext argument is useful if your file extensions are different than the abox writer defaults
-# the files in the directory will be then picked based on the passed --file-ext
-# and processed starting from the --inp-file-type stage
-<aboxwriter> --file-or-dir my_dir --inp-file-type type --file-ext ext1 --dry-run FALSE
+
+# this would upload any files to appropriate endpoints as specified in the config yml file.
+aboxwriter <awriter> --file-or-dir file.file_ext --dry-run FALSE
+
 ```
-
-7. Running the opesscan abox writer on a single Gaussian log file (qc_log stage) in a non dry-run mode. In case of the qc_log, qc_json and oc_json type inputs, three additional arguments are required. These are --os-iris, --os-atoms-iris and --oc-atoms-ids. For a simple ethanol C1-C2 scan, the --os-iris must be set to the iri of the ethanol in ontospecies triple store, the --os-atoms-iris must be set to the ethanol C1 and C2 atoms iris in the ontospecies triple store and --oc-atoms-ids must be set to the C1 and C2 atoms indices according to the order used in the quantum calculation job. If, e.g. the atom C1 and C2 order was 2 and 3 in the log file the --oc-atoms-ids must be set to "2,3". Please also note that running the opesscan abox writer on qc_log, qc_json and oc_json stages will result in creation and upload of the ontocompchem aboxes as well as the ontopescan aboxes.
+7. Running the opesscan abox writer in a non dry-run mode on directory with oc_json files containing processed scan jobs on a particular chemical species. In case of the oc_json type input, three additional arguments are required. These are --os-iris, --os-atoms-iris and --oc-atoms-ids. For a simple ethanol C1-C2 scan, the --os-iris must be set to the iri of the ethanol in ontospecies triple store, the --os-atoms-iris must be set to the ethanol C1 and C2 atoms iris in the ontospecies triple store and --oc-atoms-ids must be set to the C1 and C2 atoms indices according to the order used in the quantum calculation job. If, e.g. the atom C1 and C2 order was 2 and 3 in the log file the --oc-atoms-ids must be set to "2,3". Note that it would be assumed that the scan points defined in all oc_json files belong to the same scan.
 
 ```bash
-opesscan --file-or-dir my_scan.log
-         --os-iris "http://example_ontospecies_iri"
-         --os-atoms-iris "http://example_ontospecies_iri/atom_C1_iri,http://example_ontospecies_iri/atom_C2_iri"
-         --oc-atoms-ids = "2,3"
-         --dry-run FALSE
+aboxwriter opsscan --file-or-dir my_scan_dir
+                    --os-iris "http://example_ontospecies_iri"
+                    --os-atoms-iris "http://example_ontospecies_iri/atom_C1_iri,http://example_ontospecies_iri/atom_C2_iri"
+                    --oc-atoms-ids = "2,3"
+                    --dry-run FALSE
 ```
 
 
