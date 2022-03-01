@@ -18,7 +18,6 @@ class JPSConstantsTest {
 		assertEquals(JPSConstants.SCENARIO_SUBDIR_DATA, "data");
 		assertEquals(JPSConstants.SCENARIO_NAME_TEST, "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario");
 		assertEquals(JPSConstants.SCENARIO_JPS_CONTEXT, "jpscontext");
-		
 		assertEquals(JPSConstants.SCENARIO_URL, "scenariourl");
 		assertEquals(JPSConstants.SCENARIO_USE_CASE_URL, "usecaseurl");
 		assertEquals(JPSConstants.SCENARIO_RESOURCE, "scenarioresource");
@@ -30,7 +29,6 @@ class JPSConstantsTest {
 		assertEquals(JPSConstants.QUERY_SPARQL_UPDATE, "sparqlupdate");
 		assertEquals(JPSConstants.QUERY_FILE, "file");
 		assertEquals(JPSConstants.RUN_SIMULATION, "runsimulation");
-		
 		assertEquals(JPSConstants.CONTENT, "body");
 		assertEquals(JPSConstants.REQUESTURL, "requestUrl");
 		assertEquals(JPSConstants.PATH, "path");
@@ -40,11 +38,8 @@ class JPSConstantsTest {
 		assertEquals(JPSConstants.TARGETIRI, "targetresourceiri");
 		assertEquals(JPSConstants.TARGETGRAPH, "targetgraph");
 		assertEquals(JPSConstants.KNOWLEDGE_BASE_URL, "jps/kb");
-		
 		assertTrue(JPSConstants.COPY_ON_READ);
-		
 		assertEquals(JPSConstants.SCENARIO_OPTION_COPY_ON_READ, "copyonread");
-	
 	}
 
 }

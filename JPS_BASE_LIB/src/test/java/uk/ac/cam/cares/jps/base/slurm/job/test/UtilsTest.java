@@ -313,7 +313,7 @@ class UtilsTest {
 		assertTrue(Utils.isJobNotStarted(new File(tmpdir)));
 		statusfile1.delete();
 
-		// False scenario 1
+		// False scenario - 1
 		Utils utils = new Utils();
 		Field isStatusFileOpen = utils.getClass().getDeclaredField("isStatusFileOpen");
 		isStatusFileOpen.setAccessible(true);
@@ -321,7 +321,7 @@ class UtilsTest {
 		assertFalse(Utils.isJobNotStarted(new File(tmpdir)));
 		isStatusFileOpen.setBoolean(isStatusFileOpen, false);
 
-		// False scenario 2
+		// False scenario - 2
 		File statusfile2 = new File(tmpdir + Status.STATUS_FILE.getName());
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile1));
 		bw2.write(" ");

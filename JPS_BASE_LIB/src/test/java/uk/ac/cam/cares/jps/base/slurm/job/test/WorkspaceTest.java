@@ -35,6 +35,7 @@ class WorkspaceTest {
 		workspace.delete();
 		
 		assertNotNull(Workspace.getWorkspace(workspaceParentPath, agentClass));
+		
 		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
 	}
 	
