@@ -98,7 +98,7 @@
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Buildings", function() {
+		manager.readMetadata("Mixed", function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
@@ -181,7 +181,6 @@
 
 					// This callback will be fired when a final group is selected in the dropdowns
 					let selectCallback = function(selectedGroups) {
-					
 						// Show loading icon
 						showLoadingOverlay();
 							
@@ -200,7 +199,6 @@
 					
 					// Show mouse position
 					manager.showDeveloperControls();
-
 					loadedOnce = true;
 				}
 				

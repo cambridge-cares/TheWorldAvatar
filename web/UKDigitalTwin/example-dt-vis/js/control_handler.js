@@ -52,7 +52,7 @@ class ControlHandler {
 			<div id="layerContainer">
 				<div id="controlTitle">
 					<p>Layers:</p>
-					<div class="tooltip">
+					<div class="tooltip" id="placenameContainer">
 						<label class="switch"><input type="checkbox" onclick="manager.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
 						<span class="tooltiptext">Show/Hide place names</span>
 					</div>
