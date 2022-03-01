@@ -1,127 +1,169 @@
 # these are default settings that will be applied to any file uploads
 # in the upload_to_file_server and upload_to_triple_store sections
-triple_store_sparql_endpoint: ts_endpoint
-triple_store_secrets_file: ts_dummy_secrets
-file_server_upload_endpoint: fs_endpoint
-file_server_secrets_file: fs_dummy_secrets
-file_server_subdir: fs_subdir/subdir
-ospecies_query_endpoint: ospecies
-omops_query_endpoint: omops
-ocompchem_query_endpoint: ocompchem
-opsscan_query_endpoint: opsscan
+upload_settings:
+    triple_store_sparql_endpoint: ts_endpoint
+    triple_store_secrets_file: ts_dummy_secrets
+    triple_store_no_auth: False
+    file_server_upload_endpoint: fs_endpoint
+    file_server_secrets_file: fs_dummy_secrets
+    file_server_subdir: fs_subdir/subdir
+    file_server_no_auth: True
+query_settings:
+    ospecies_query_endpoint: ospecies
+    omops_query_endpoint: omops
+    ocompchem_query_endpoint: ocompchem
+    opsscan_query_endpoint: opsscan
 # this section defines what type of files should be uploaded to the file server
 ocompchem:
-    file_server_subdir: ocompchem
-    triple_store_sparql_endpoint: ocompchem
+    upload_settings:
+        file_server_subdir: ocompchem
+        triple_store_sparql_endpoint: ocompchem
+        triple_store_no_auth: True
+        file_server_no_auth: False
     handlers:
         qc_log_to_qc_json:
-            upload_to_file_server:
-                - qc_log
+            upload_settings:
+                upload_to_file_server:
+                    - qc_log
         oc_csv_to_oc_owl:
-            upload_to_triple_store:
-                - oc_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - oc_owl
 ospecies:
-    file_server_subdir: ospecies
-    triple_store_sparql_endpoint: ospecies
+    upload_settings:
+        file_server_subdir: ospecies
+        triple_store_sparql_endpoint: ospecies
     handlers:
         os_csv_to_os_owl:
-            upload_to_triple_store:
-                - os_owl
+            upload_settings:
+                triple_store_no_auth: True
+                upload_to_triple_store:
+                    - os_owl
 omops:
-    file_server_subdir: omops
-    triple_store_sparql_endpoint: omops
+    upload_settings:
+        file_server_subdir: omops
+        triple_store_sparql_endpoint: omops
     handlers:
         ominp_json_to_om_json:
-            upload_to_file_server:
-                - ominp_xyz
+            upload_settings:
+                file_server_no_auth: False
+                upload_to_file_server:
+                    - ominp_xyz
         om_csv_to_om_owl:
-            upload_to_triple_store:
-                - om_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - om_owl
 opsscan:
-    file_server_subdir: opsscan
-    triple_store_sparql_endpoint: opsscan
+    upload_settings:
+        file_server_subdir: opsscan
+        triple_store_sparql_endpoint: opsscan
     handlers:
         ops_csv_to_ops_owl:
-            upload_to_triple_store:
-                - ops_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - ops_owl
 test_results:
     ocompchem:
         handlers:
             qc_log_to_qc_json:
-                triple_store_sparql_endpoint: ocompchem
-                triple_store_secrets_file: ts_dummy_secrets
-                file_server_upload_endpoint: fs_endpoint
-                file_server_secrets_file: fs_dummy_secrets
-                file_server_subdir: ocompchem
-                ospecies_query_endpoint: ospecies
-                omops_query_endpoint: omops
-                ocompchem_query_endpoint: ocompchem
-                opsscan_query_endpoint: opsscan
-                upload_to_file_server:
-                    - qc_log
+                upload_settings:
+                    triple_store_sparql_endpoint: ocompchem
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: True
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: ocompchem
+                    file_server_no_auth: False
+                    upload_to_file_server:
+                        - qc_log
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
             oc_csv_to_oc_owl:
-                triple_store_sparql_endpoint: ocompchem
-                triple_store_secrets_file: ts_dummy_secrets
-                file_server_upload_endpoint: fs_endpoint
-                file_server_secrets_file: fs_dummy_secrets
-                file_server_subdir: ocompchem
-                ospecies_query_endpoint: ospecies
-                omops_query_endpoint: omops
-                ocompchem_query_endpoint: ocompchem
-                opsscan_query_endpoint: opsscan
-                upload_to_triple_store:
-                    - oc_owl
+                upload_settings:
+                    triple_store_sparql_endpoint: ocompchem
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: True
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: ocompchem
+                    file_server_no_auth: False
+                    upload_to_triple_store:
+                        - oc_owl
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
     ospecies:
         handlers:
             os_csv_to_os_owl:
-                triple_store_sparql_endpoint: ospecies
-                triple_store_secrets_file: ts_dummy_secrets
-                file_server_upload_endpoint: fs_endpoint
-                file_server_secrets_file: fs_dummy_secrets
-                file_server_subdir: ospecies
-                ospecies_query_endpoint: ospecies
-                omops_query_endpoint: omops
-                ocompchem_query_endpoint: ocompchem
-                opsscan_query_endpoint: opsscan
-                upload_to_triple_store:
-                    - os_owl
+                upload_settings:
+                    triple_store_sparql_endpoint: ospecies
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: True
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: ospecies
+                    file_server_no_auth: True
+                    upload_to_triple_store:
+                        - os_owl
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
     omops:
         handlers:
             ominp_json_to_om_json:
-                triple_store_sparql_endpoint: omops
-                triple_store_secrets_file: ts_dummy_secrets
-                file_server_upload_endpoint: fs_endpoint
-                file_server_secrets_file: fs_dummy_secrets
-                file_server_subdir: omops
-                ospecies_query_endpoint: ospecies
-                omops_query_endpoint: omops
-                ocompchem_query_endpoint: ocompchem
-                opsscan_query_endpoint: opsscan
-                upload_to_file_server:
-                    - ominp_xyz
+                upload_settings:
+                    triple_store_sparql_endpoint: omops
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: False
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: omops
+                    file_server_no_auth: False
+                    upload_to_file_server:
+                        - ominp_xyz
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
             om_csv_to_om_owl:
-                triple_store_sparql_endpoint: omops
-                triple_store_secrets_file: ts_dummy_secrets
-                file_server_upload_endpoint: fs_endpoint
-                file_server_secrets_file: fs_dummy_secrets
-                file_server_subdir: omops
-                ospecies_query_endpoint: ospecies
-                omops_query_endpoint: omops
-                ocompchem_query_endpoint: ocompchem
-                opsscan_query_endpoint: opsscan
-                upload_to_triple_store:
-                    - om_owl
+                upload_settings:
+                    triple_store_sparql_endpoint: omops
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: False
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: omops
+                    file_server_no_auth: True
+                    upload_to_triple_store:
+                        - om_owl
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
     opsscan:
         handlers:
             ops_csv_to_ops_owl:
-                triple_store_sparql_endpoint: opsscan
-                triple_store_secrets_file: ts_dummy_secrets
-                file_server_upload_endpoint: fs_endpoint
-                file_server_secrets_file: fs_dummy_secrets
-                file_server_subdir: opsscan
-                ospecies_query_endpoint: ospecies
-                omops_query_endpoint: omops
-                ocompchem_query_endpoint: ocompchem
-                opsscan_query_endpoint: opsscan
-                upload_to_triple_store:
-                    - ops_owl
+                upload_settings:
+                    triple_store_sparql_endpoint: opsscan
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: False
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: opsscan
+                    file_server_no_auth: True
+                    upload_to_triple_store:
+                        - ops_owl
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan

@@ -14,25 +14,31 @@
 # ------------------------------------------------------------------------------
 # DEFAULTS
 # ------------------------------------------------------------------------------
-triple_store_sparql_endpoint: default_triple_store_sparql_endpoint
-triple_store_secrets_file: default_triple_store_secrets_file
-file_server_upload_endpoint: default_file_server_upload_endpoint
-file_server_secrets_file: default_file_server_secrets_file
-file_server_subdir: default_file_server_subdir
-ospecies_query_endpoint: ospecies_query_endpoint
-omops_query_endpoint: omops_query_endpoint
-ocompchem_query_endpoint: ocompchem_query_endpoint
-opsscan_query_endpoint: opsscan_query_endpoint
+upload_settings:
+    triple_store_sparql_endpoint: default_triple_store_sparql_endpoint
+    triple_store_secrets_file: default_triple_store_secrets_file
+    #triple_store_no_auth: False # if True, no athorisation is made and the
+    #                            # triple store secrets file is not needed
+    file_server_upload_endpoint: default_file_server_upload_endpoint
+    file_server_secrets_file: default_file_server_secrets_file
+    file_server_subdir: default_file_server_subdir
+    #file_server_no_auth: False # if True, no athorisation is made and the
+    #                           # file server secrets file is not needed
+    # These settings define which files would be uploaded to the file server and
+    # or to the triple store by indicating the stages they belong to. These are
+    # default global settings which would propagate to all defined pipelines and
+    # their handlers unless overwritten.
+    #
+    # upload_to_file_server:
+    #     - test_stage1
+    # upload_to_triple_store:
+    #     - test_stage2
+query_settings:
+    ospecies_query_endpoint: ospecies_query_endpoint
+    omops_query_endpoint: omops_query_endpoint
+    ocompchem_query_endpoint: ocompchem_query_endpoint
+    opsscan_query_endpoint: opsscan_query_endpoint
 #
-# These settings define which files would be uploaded to the file server and
-# or to the triple store by indicating the stages they belong to. These are
-# default global settings which would propagate to all defined pipelines and
-# their handlers unless overwritten.
-#
-# upload_to_file_server:
-#     - test_stage1
-# upload_to_triple_store:
-#     - test_stage2
 # ------------------------------------------------------------------------------
 # PIPELINES
 # ------------------------------------------------------------------------------
@@ -41,8 +47,9 @@ opsscan_query_endpoint: opsscan_query_endpoint
 #-----------------------------------------
 ocompchem:
     # these options would overwrite any default settings above
-    file_server_subdir: ontocompchem
-    triple_store_sparql_endpoint: ontocompchem
+    upload_settings:
+        file_server_subdir: ontocompchem
+        triple_store_sparql_endpoint: ontocompchem
     #-----------------------------------------
     # OCOMPCHEM HANDLERS
     #-----------------------------------------
@@ -50,48 +57,57 @@ ocompchem:
     # any pipeline and default settings
     handlers:
         qc_log_to_qc_json:
-            upload_to_file_server:
-                - qc_log
+            upload_settings:
+                upload_to_file_server:
+                    - qc_log
         oc_csv_to_oc_owl:
-            upload_to_triple_store:
-                - oc_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - oc_owl
 # OSPECIES
 #-----------------------------------------
 ospecies:
-    file_server_subdir: ospecies
-    triple_store_sparql_endpoint: ospecies
+    upload_settings:
+        file_server_subdir: ospecies
+        triple_store_sparql_endpoint: ospecies
     #-----------------------------------------
     # OSPECIES HANDLERS
     #-----------------------------------------
     handlers:
         os_csv_to_os_owl:
-            upload_to_triple_store:
-                - os_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - os_owl
 # OMOPS
 #-----------------------------------------
 omops:
-    file_server_subdir: omops
-    triple_store_sparql_endpoint: omops
+    upload_settings:
+        file_server_subdir: omops
+        triple_store_sparql_endpoint: omops
     #-----------------------------------------
     # OMOPS HANDLERS
     #-----------------------------------------
     handlers:
         ominp_json_to_om_json:
-            upload_to_file_server:
-                - ominp_xyz
+            upload_settings:
+                upload_to_file_server:
+                    - ominp_xyz
         om_csv_to_om_owl:
-            upload_to_triple_store:
-                - om_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - om_owl
 # OPSSCAN
 #-----------------------------------------
 opsscan:
-    file_server_subdir: opsscan
-    triple_store_sparql_endpoint: opsscan
+    upload_settings:
+        file_server_subdir: opsscan
+        triple_store_sparql_endpoint: opsscan
     #-----------------------------------------
     # OPSSCAN HANDLERS
     #-----------------------------------------
     handlers:
         ops_csv_to_ops_owl:
-            upload_to_triple_store:
-                - ops_owl
+            upload_settings:
+                upload_to_triple_store:
+                    - ops_owl
 # ------------------------------------------------------------------------------

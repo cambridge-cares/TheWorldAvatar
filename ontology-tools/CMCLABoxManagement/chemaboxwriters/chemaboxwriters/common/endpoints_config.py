@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 FILE_SERVER = "file server"
 TRIPLE_STORE = "triple store"
 
+UPLOAD_SETTINGS_KEY = "upload_settings"
+QUERY_SETTINGS_KEY = "query_settings"
 TRIPLE_STORE_SPARQL_ENDPOINT_KEY = "triple_store_sparql_endpoint"
 TRIPLE_STORE_SECRETS_FILE_KEY = "triple_store_secrets_file"
 TRIPLE_STORE_NO_AUTH_KEY = "triple_store_no_auth"
@@ -140,7 +142,8 @@ class Endpoints_proxy:
             input_type=input_type,
             upload_type=FILE_SERVER,
         )
-        subirs = endpoints_config.get(FILE_SERVER_SUBDIR_KEY, "")
+        upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
+        subdirs = upload_configs.get(FILE_SERVER_SUBDIR_KEY, "")
 
         for inp_file in inputs:
             uploaded_files_locations = self._file_server_uploader.upload(
@@ -148,7 +151,7 @@ class Endpoints_proxy:
                 url=url,
                 auth_file=auth_file,
                 no_auth=no_auth,
-                subdirs=subirs,
+                subdirs=subdirs,
                 file_ext="all",
                 dry_run=dry_run,
             )
@@ -210,18 +213,21 @@ class Endpoints_proxy:
     def _get_endpoint_connection_configs(
         self, endpoints_config: Dict, url_key: str, auth_key: str, no_auth_key: str
     ) -> Tuple:
-        url = endpoints_config.get(url_key)
-        auth_file = endpoints_config.get(auth_key)
-        no_auth = endpoints_config.get(no_auth_key)
+        upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
+        url = upload_configs.get(url_key)
+        auth_file = upload_configs.get(auth_key)
+        no_auth = upload_configs.get(no_auth_key)
 
         return url, auth_file, no_auth
 
     def _do_file_server_upload(self, input_type: Enum, endpoints_config: Dict) -> bool:
-        upload_stages = endpoints_config.get(UPLOAD_TO_FILE_SERVER_KEY, [])
+        upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
+        upload_stages = upload_configs.get(UPLOAD_TO_FILE_SERVER_KEY, [])
         return input_type.name.lower() in upload_stages
 
     def _do_triple_store_upload(self, input_type: Enum, endpoints_config: Dict) -> bool:
-        upload_stages = endpoints_config.get(UPLOAD_TO_TRIPLE_STORE_KEY, [])
+        upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
+        upload_stages = upload_configs.get(UPLOAD_TO_TRIPLE_STORE_KEY, [])
         return input_type.name.lower() in upload_stages
 
 
@@ -241,21 +247,24 @@ def get_endpoints_config_file(config_file: str) -> Dict:
     return endpoints_config
 
 
-def _read_config_settings(endpoints_config: Dict, config_keys: List[str]) -> Dict:
-    return {key: value for key, value in endpoints_config.items() if key in config_keys}
-
-
 def pre_process_endpoints_config(endpoints_config: Dict, config_key: str) -> Dict:
-    # get default configs
-    default_configs = {
-        key: value
-        for key, value in endpoints_config.items()
-        if key in DEFAULT_CONFIG_KEYS
-    }
+    # get default upload and query configs
+    default_upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
+    default_query_configs = endpoints_config.get(QUERY_SETTINGS_KEY, {})
 
-    # get pipeline level configs, and merge in the defaults one
-    pipeline_configs = _merge_endpoints_configs(
-        merge_into=endpoints_config.get(config_key, {}), merge_from=default_configs
+    # get pipeline level configs, and merge in the default configs
+    pipeline_configs = endpoints_config.get(config_key, {})
+    pipeline_upload_configs = pipeline_configs.get(UPLOAD_SETTINGS_KEY, {})
+    pipeline_query_configs = pipeline_configs.get(QUERY_SETTINGS_KEY, {})
+
+    pipeline_upload_configs = _merge_endpoints_configs(
+        merge_into=pipeline_upload_configs,
+        merge_from=default_upload_configs,
+    )
+
+    pipeline_query_configs = _merge_endpoints_configs(
+        merge_into=pipeline_query_configs,
+        merge_from=default_query_configs,
     )
 
     # get handler level configs, and merge in the pipeline configs
@@ -264,11 +273,25 @@ def pre_process_endpoints_config(endpoints_config: Dict, config_key: str) -> Dic
         for handler_name, configs in handlers_config.items():
             if configs is None:
                 configs = {}
-            handlers_config[handler_name] = _merge_endpoints_configs(
-                merge_into=configs, merge_from=pipeline_configs
+            if UPLOAD_SETTINGS_KEY not in configs:
+                configs[UPLOAD_SETTINGS_KEY] = {}
+            if QUERY_SETTINGS_KEY not in configs:
+                configs[QUERY_SETTINGS_KEY] = {}
+
+            upload_configs = _merge_endpoints_configs(
+                merge_into=configs[UPLOAD_SETTINGS_KEY],
+                merge_from=pipeline_upload_configs,
+            )
+            query_configs = _merge_endpoints_configs(
+                merge_into=configs[QUERY_SETTINGS_KEY],
+                merge_from=pipeline_query_configs,
             )
 
-        pipeline_configs[HANDLERS_CONFIG_KEY] = handlers_config
+            if handlers_config[handler_name] is None:
+                handlers_config[handler_name] = {}
+
+            handlers_config[handler_name][UPLOAD_SETTINGS_KEY] = upload_configs
+            handlers_config[handler_name][QUERY_SETTINGS_KEY] = query_configs
     return handlers_config
 
 

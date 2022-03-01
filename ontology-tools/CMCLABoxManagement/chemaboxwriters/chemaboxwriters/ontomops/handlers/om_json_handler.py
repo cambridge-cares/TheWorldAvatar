@@ -13,7 +13,7 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common import PREFIXES
 from chemaboxwriters.common.handler import Handler
 from typing import List, Optional, Dict
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import chemaboxwriters.common.endpoints_config as endp_conf
 from enum import Enum
 import logging
 
@@ -35,7 +35,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="OM_JSON_TO_OM_CSV",
@@ -86,7 +86,12 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )
 
             assemblymodel = None
-            omops_query_endpoint = self.endpoints_config.get('omops_query_endpoint')
+            query_endpoints = self.endpoints_config.get(
+                endp_conf.QUERY_SETTINGS_KEY, {}
+            )
+            omops_query_endpoint = query_endpoints.get(
+                endp_conf.OMOPS_QUERY_ENDPOINT_KEY
+            )
             if omops_query_endpoint is None:
                 logger.warning(
                     "Couldn't query for the assembly model IRI, The query endpoint not specified in the aboxwriters config file."

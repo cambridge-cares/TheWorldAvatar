@@ -12,7 +12,7 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional, Dict
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import chemaboxwriters.common.endpoints_config as endp_conf
 import logging
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="QC_JSON_TO_OC_JSON",
@@ -78,7 +78,10 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
 
         xyz = get_xyz_from_parsed_json(data)
         inchi = obconverter.obConvert(xyz, "xyz", "inchi")
-        ospecies_query_endpoint = self.endpoints_config.get("ospecies_query_endpoint")
+        query_endpoints = self.endpoints_config.get(endp_conf.QUERY_SETTINGS_KEY, {})
+        ospecies_query_endpoint = query_endpoints.get(
+            endp_conf.OSPECIES_QUERY_ENDPOINT_KEY
+        )
         if ospecies_query_endpoint is None:
             logger.warning(
                 "Couldn't query for the ontospecies IRI, The query endpoint not specified in the aboxwriters config file."
