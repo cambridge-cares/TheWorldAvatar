@@ -44,12 +44,14 @@ class TimeseriesHandler {
 
                 // Condition time format
                 var timeClass = null
-                if(tableTimes[0].match(/^\d{4}-\d{2}-\d{2}T\d{2}(:\d{2}){1,2}Z/)) {
+                if(String(tableTimes[0]).match(/^\d{4}-\d{2}-\d{2}T\d{2}(:\d{2}){1,2}Z/)) {
                     timeClass = "dateTime"
-                } else {
+                } else if(String(tableTimes[0]).includes(":")) {
                     timeClass = "offsetTime"
+                } else {
+                    timeClass = "number";
                 }
-
+                
                 // Align time series formats
                 // dateTime / Instant: "YYYY-MM-DD HH:mm:ss"
                 // offsetTime: "HH:mm:ss"
