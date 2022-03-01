@@ -34,8 +34,10 @@ class WorkspaceTest {
 		
 		workspace.delete();
 		
+		assertEquals(workspaceParentPath.concat(File.separator).concat(agentClass), Workspace.getWorkspace(workspaceParentPath, agentClass).getAbsolutePath().split("_")[0]);
 		assertNotNull(Workspace.getWorkspace(workspaceParentPath, agentClass));
 		
+		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
 		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
 	}
 	
@@ -47,7 +49,10 @@ class WorkspaceTest {
 		Workspace workspace = new Workspace();
 		Method createWorkspaceName = workspace.getClass().getDeclaredMethod("createWorkspaceName", String.class, String.class);
 		createWorkspaceName.setAccessible(true);
+		File wspace = (File) createWorkspaceName.invoke(workspace, workspaceParentPath, agentClass);
+		assertEquals(workspaceParentPath.concat(File.separator).concat(agentClass), wspace.getAbsolutePath().split("_")[0]);
 		assertNotNull(createWorkspaceName.invoke(workspace, workspaceParentPath, agentClass));
+		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
 		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
 		
 	}
