@@ -1,7 +1,8 @@
 from enum import Enum
 from typing import List, Tuple, Dict, Optional
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import chemaboxwriters.common.endpoints_config as endp_conf
 from abc import ABC, abstractmethod
+from pprint import pformat
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ class Handler(ABC):
         name: str,
         in_stage: Enum,
         out_stage: Enum,
-        endpoints_proxy: Optional[Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
     ) -> None:
 
         self.name = name
@@ -26,9 +27,9 @@ class Handler(ABC):
         self._endpoints_config = {}
         self._handler_kwargs = {}
         self.written_files = []
-        self._endpoints_proxy: Optional[Endpoints_proxy] = None
+        self._endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None
 
-    def set_endpoints_proxy(self, endpoints_proxy: Endpoints_proxy) -> None:
+    def set_endpoints_proxy(self, endpoints_proxy: endp_conf.Endpoints_proxy) -> None:
         self._endpoints_proxy = endpoints_proxy
 
     def set_endpoints_config(self, endpoints_config: Optional[Dict] = None) -> None:
@@ -107,7 +108,8 @@ class Handler(ABC):
         logger.info(f"handler: {self.name}")
         logger.info(f"in_stages: {self._in_stage}")
         logger.info(f"out_stage: {self._out_stage}")
-        logger.info(f"handler_kwargs: {self._handler_kwargs}")
+        logger.info(f"handler_endpoints_config: {pformat(self._endpoints_config)}")
+        logger.info(f"handler_kwargs: {pformat(self._handler_kwargs)}")
 
     def clean_written_files(self) -> None:
         self.written_files = []
