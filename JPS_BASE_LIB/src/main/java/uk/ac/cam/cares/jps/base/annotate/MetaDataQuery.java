@@ -18,8 +18,9 @@ public class MetaDataQuery implements Prefixes {
 
 	public static String query(String sparql, String metadataSetUrl) {
 		if (metadataSetUrl.isEmpty()) {
-			metadataSetUrl = MetaDataAnnotator.getMetadataSetUrl();
+			//metadataSetUrl = MetaDataAnnotator.getMetadataSetUrl();
 			return AccessAgentCaller.query(MetaDataAnnotator.getMetadataSetUrl(), null, sparql);
+
 		}
 		//return KnowledgeBaseClient.query(metadataSetUrl, null, sparql);
 		String datasetUrl = KeyValueManager.get(IKeys.URL_RDF_METADATA);
