@@ -38,3 +38,9 @@ class MissingRequiredInput(Exception):
     """Raise for missing input that is required."""
 
     pass
+
+
+class MissingHandlerConfig(Exception):
+    """Raise for missing handler config."""
+
+    pass
