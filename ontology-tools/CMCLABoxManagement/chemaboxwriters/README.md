@@ -410,9 +410,6 @@ Options:
                             - omops processed json file          [omops_json]
                             - omops meta csv                     [omops_csv]
                           * opsscan aboxwriter
-                            Inputs that require the extra
-                            (--os-iris, --os-atoms-iris
-                             --oc-atoms-ids)
                             - ontocompchem meta json (defualt)   [oc_json]
                             - ontopesscan meta json              [ops_json]
                             - ontopesscan meta csv               [ops_csv]
@@ -445,7 +442,7 @@ Options:
 --info                  Prints the pipeline info.
 ```
 
-It is important to note that all abox writers run in a `dry-run` mode by default. This mode disables all the file server and triple store uploads and can be used to testing things out before the final run.
+It is important to note that all abox writers run in a `dry-run` mode by default. This mode disables all the file server and triple store uploads and can be used to test things out before the final run.
 
 # Example usage
 
@@ -545,7 +542,7 @@ aboxwriter <awriter> --file-or-dir file.file_ext --dry-run FALSE
 7. Running the `opsscan` abox writer in a non `dry-run` mode on directory with `oc_json` files containing processed scan jobs on a particular chemical species. In case of the `oc_json` type input, three additional `handler_kwargs` are required for the `oc_json_to_ops_json` handler. These are `os_iris`, `os_atoms_iris` and `oc_atoms_ids`. For a simple ethanol C1-C2 scan, the `os_iris` must be set to the iri of the ethanol in ontospecies triple store, the `os_atoms_iris` must be set to the ethanol C1 and C2 atoms iris in the ontospecies triple store and `oc_atoms_ids` must be set to the C1 and C2 atoms indices according to the order used in the quantum calculation job. If, e.g. the atom C1 and C2 order was 2 and 3 in the log file the `oc_atoms_ids` must be set to "2,3". Note that it would be assumed that the scan points defined in all oc_json files belong to the same scan.
 
 ```bash
-aboxwriter opsscan --file-or-dir my_scan_dir --dry-run FALSE
+aboxwriter opsscan --file-or-dir my_scan_dir --config-file config_file --dry-run FALSE
 ```
 
 and an example aboxwriters config file section:
