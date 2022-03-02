@@ -302,7 +302,6 @@ class InteractionHandler {
 
             } else if(features != null) {
                 features.forEach(leaf => {
-                    console.log(leaf);
                     leaf["layer"] = [];
                     leaf["source"] = sourceName;
                     leaf["layer"]["id"] = feature["layer"]["id"].replace("_cluster", "");
@@ -313,49 +312,51 @@ class InteractionHandler {
     }
 
     /**
-     * Given an array of possible GeoJSON features, create controls to allow the user
-     * to selet an individual feature, then return it.
+     * Given an array of possible GeoJSON features, this function create a dropdown control
+     * to allow the user to selet an individual feature. This also supports arrays of clustered
+     * features.
      * 
      * @param {JSONObject[]} features array of possible features. 
-     * 
-     * @returns selected GeoJSON feature
+     * @param {Function} callback to fire with selected individual feature.
      */
     #handleMultipleFeatures(features, callback) {
+        // Base HTML for control
         let html = `
-            <div style="padding: 15px">
-                <p>Multiple features are located at these coordinates, please choose which
-                feature you'd like to select using the drop-down boxes below.</p>
-                <br/><br/>
-                <label for="select-feature">Feature:</label>
-                <select name="features" id="select-feature" style>
-                <option value="" disabled selected>Select a feature...</option>
+            <div id="first-feature-select" style="margin-bottom: 10px;">
+                <select name="features" id="select-feature" style="width: 90%;">
+                    <option value="" disabled selected>Select a feature...</option>
         `;
 
-        let added = [];
+        // Are any of the sub-features clusters themselves?
+        let hasClusters = features[0]["cluster"] === true;
 
+        // Loop over features/clusters to build options for the dropdown.
         for(var i = 0; i < features.length; i++) {
+
+            // Get (or construct) the feature's display name
             let displayName = features[i]["properties"]["displayName"];
-            if(added.includes(displayName)) continue;
-            added.push(displayName);
 
             if(displayName == null) {
-                displayName = "Cluster of " + features[i]["properties"]["point_count_abbreviated"] + " features from '";
+                // No display name, this will be a cluster then
+                displayName = features[i]["properties"]["point_count_abbreviated"] + " features from '";
 
+                // Get the internal layer ID and use the tree to determine the user facing name
                 let layerID = features[i]["layer"]["id"].replace("_cluster", "");
                 let layerName = null;
+
                 for (const [key, value] of Object.entries(DT.treeDictionary)) {
                     if(value.includes(layerID)) {
                         layerName = key;
                     }
                 }
                 
+                // Append layer name
                 if(layerName == null) layerName = layerID;
                 displayName += layerName + "' layer."
             }
 
-            // The DT.selectColorer is an optional function (set externally) that 
-            // when passed a feature will return a CSS color string to use for any
-            // select options representing that feature.
+            // The DT.selectColorer is an optional function (set externally) that when passed a feature
+            // will return a CSS color string to use for any select options representing that feature.
             let color = "black";
             if(DT.selectColorer != null) {
                 color = DT.selectColorer(features[i]);
@@ -365,21 +366,49 @@ class InteractionHandler {
             html += `
                 <option style="color: ` + color + `;" value="` + i + `">` + displayName + `</option>
             `;
-           
         };
-        html += `</select></div>`;
 
-        this._panelHandler.setTitle("<h3>Multiple Features</h3>");
-        this._panelHandler.setContent(html);
+        // Finish HTML
+        html += `
+                </select>
+            </div>
+            <div id="second-feature-select">
+            </div>
+        `;
+
+        // Add the select option to the side panel
+        this._panelHandler.setTitle("<h3>Multiple Features Selected</h3>");
         this._panelHandler.toggleLegend(false);
+
+        let selectElement = document.querySelector("#first-feature-select select");
+        if(selectElement === null) {
+            this._panelHandler.setContent(`
+                <p>Multiple features (or multiple clusters of features) are located at these coordinates,
+                please choose which individual feature you'd like to select using the drop-down boxes below.</p>
+                <br/><br/>`
+                + html
+            );
+
+            selectElement = document.querySelector("#first-feature-select select");
+        } else {
+            let sidePanel = document.getElementById("contentContainer");
+            let container = sidePanel.querySelector("#second-feature-select");
+            container.innerHTML = html;
+
+            selectElement = document.querySelector("#second-feature-select select");
+        }
+
+        // Show the return option
         document.getElementById("footerContainer").style.display = "block";
 
-        let selectElement = document.getElementById("select-feature");
-        selectElement.addEventListener("click", function() {
-            if(callback != null) {
-                callback(features[selectElement.value]);
-            }
-        });
+        if(selectElement != null) {
+            selectElement.addEventListener("click", function() {
+                if(callback != null) {
+                    // Fire callback on option select
+                    callback(features[selectElement.value]);
+                }
+            });
+        }
     }
 
     /**
@@ -397,10 +426,11 @@ class InteractionHandler {
             this.#handleClusterClick(feature, function(newFeature) {
                 self.mouseClick(layerName.replace("_cluster", ""), newFeature);
             });
+            return;
         } 
         
         // Clear existing side panel content
-        this._panelHandler.setContent("");
+        //this._panelHandler.setContent("");
 
         // Hide the legend
         this._panelHandler.toggleLegend(false);

@@ -306,6 +306,8 @@
 			let rootDir = this._rootDirectories[this._currentRootDirName];
 			this._panelHandler.showLinkedFiles(this._registry.globalMeta, rootDir);
 		}
+
+        this.storePanelDefault();
 	}
 
 	/**
@@ -433,6 +435,7 @@
 		if(this._defaultPanelCallback != null) {
 			this._defaultPanelCallback();
 		}
+        console.log("RETURNED TO DEFAULT?");
 	}
 	
 	/**
