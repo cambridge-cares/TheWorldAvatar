@@ -1,18 +1,17 @@
 # ------------------------------------------------------------------------------
-# This is the aboxwriters config file that is used to specify all the upload
-# and query settings. All the settings can be specified at three different
-# levels of granularity:
+# This is the aboxwriters config file used to specify all the writers settings.
+# The settings can be specified at three different levels of granularity:
 #
-# - default settings  - any settings defined here would apply to all
+# - global settings  - any settings defined here would apply to all
 #                       pipelines handlers
 # - pipeline settings - any settings defined here would apply to all
 #                       handlers for the selected pipeline and would
-#                       overwrite any default settings
+#                       overwrite any global settings
 # - handler settings  - any settings defined here would apply only
 #                       to the selected pipeline handler and would
-#                       overwrite any default and pipeline level settings
+#                       overwrite any global and pipeline level settings
 # ------------------------------------------------------------------------------
-# DEFAULTS
+# GLOBAL
 # ------------------------------------------------------------------------------
 upload_settings:
     triple_store_sparql_endpoint: default_triple_store_sparql_endpoint
@@ -26,7 +25,7 @@ upload_settings:
     #                           # file server secrets file is not needed
     # These settings define which files would be uploaded to the file server and
     # or to the triple store by indicating the stages they belong to. These are
-    # default global settings which would propagate to all defined pipelines and
+    # global settings which would propagate to all defined pipelines and
     # their handlers unless overwritten.
     #
     # upload_to_file_server:
@@ -61,9 +60,9 @@ prefixes:
     pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/"
     onto_pes:  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl"
 #
-# this setting can be used to pass extra names arguments to all the handlers.
+# these setting can be used to pass extra named arguments to all the handlers.
 # please note that not all handlers may support the extra arguments. It is usually
-# better to set the handler_kwargs option at individual handler level
+# better to set the handler_kwargs at individual handler level
 #
 # handler_kwargs:
 #   arg1_name: arg1_value
@@ -77,7 +76,7 @@ prefixes:
 # OCOMPCHEM
 #-----------------------------------------
 ocompchem:
-    # these options would overwrite any default settings above
+    # these options would overwrite any global settings above
     upload_settings:
         file_server_subdir: ontocompchem
         triple_store_sparql_endpoint: ontocompchem
@@ -85,7 +84,7 @@ ocompchem:
     # OCOMPCHEM HANDLERS
     #-----------------------------------------
     # these options define any handler specific settings and would overwrite
-    # any pipeline and default settings
+    # any pipeline and global settings
     handlers:
         qc_log_to_qc_json:
             upload_settings:
@@ -146,4 +145,3 @@ opsscan:
             upload_settings:
                 upload_to_triple_store:
                     - ops_owl
-# ------------------------------------------------------------------------------
