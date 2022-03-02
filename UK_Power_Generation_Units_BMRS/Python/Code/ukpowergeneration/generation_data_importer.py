@@ -324,12 +324,12 @@ def get_power_data_from_api():
     #Or just paste it below directly#
     #Key = '' #####NEED THIS#####
     AutoFile = 'Input-Template-Auto.csv'
-    powerplant_df, generator_df = bmrs.Auto_Call(Key, AutoFile)
+    #powerplant_df, generator_df = bmrs.Auto_Call(Key, AutoFile)
     #Read the Input-Template.csv file from a URL. 
     #Simplified Data Link
     #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
     #Standardised Day Link
-    #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
+    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
     
     #Note, will want to call the overall funtion, rather than convert_csv_to_triple_dfs longer term. 
 
@@ -492,7 +492,7 @@ def update_triple_store():
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
     new_powerplants = False
     for gt in powerplants_with_data:
-        if gt not in powerplants_instantiated.keys():
+        if (gt not in powerplants_instantiated.keys()) and (gt != ""):
             instantiate_powerplant(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
             new_powerplants = True
 
@@ -545,7 +545,7 @@ def update_triple_store():
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
     new_generators = False
     for gt in generators_with_data:
-        if gt not in generators_instantiated.keys():
+        if (gt not in generators_instantiated.keys()) and (gt != ""):
             instantiate_generator(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
             new_generators = True
 
