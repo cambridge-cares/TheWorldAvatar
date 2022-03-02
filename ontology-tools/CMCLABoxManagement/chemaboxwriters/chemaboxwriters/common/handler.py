@@ -22,6 +22,7 @@ class Handler(ABC):
         endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
         required_endpoints_config: Optional[Dict] = None,
         required_handler_kwargs: Optional[List] = None,
+        supported_handler_kwargs: Optional[List] = None,
     ) -> None:
 
         self.name = name
@@ -33,6 +34,7 @@ class Handler(ABC):
         self._endpoints_proxy = endpoints_proxy
         self._required_endpoints_config = required_endpoints_config
         self._required_handler_kwargs = required_handler_kwargs
+        self._supported_handler_kwargs = supported_handler_kwargs
 
     def set_endpoints_proxy(self, endpoints_proxy: abconf.Endpoints_proxy) -> None:
         self._endpoints_proxy = endpoints_proxy
@@ -143,16 +145,22 @@ class Handler(ABC):
             self._handler_kwargs[key] = value
 
     def info(self) -> None:
-        logger.info("--------------------------------------------")
-        logger.info(f"handler: {self.name}")
-        logger.info(f"in_stages: {self._in_stage}")
-        logger.info(f"out_stage: {self._out_stage}")
-        logger.info(f"endpoints_config: {pformat(self._endpoints_config)}")
+        print("--------------------------------------------")
+        print(f"handler: {self.name}")
+        print(f"in_stages: {self._in_stage}")
+        print(f"out_stage: {self._out_stage}")
+        print(f"endpoints_config: {pformat(self._endpoints_config)}")
         if self._required_endpoints_config is not None:
-            logger.info(
+            print(
                 f"required_endpoints_config: {pformat(self._required_endpoints_config)}"
             )
-        logger.info(f"handler_kwargs: {pformat(self._handler_kwargs)}")
+        if self._supported_handler_kwargs is not None:
+            print(
+                f"supported_handler_kwargs: {pformat(self._supported_handler_kwargs)}"
+            )
+        if self._required_handler_kwargs is not None:
+            print(f"required_handler_kwargs: {pformat(self._required_handler_kwargs)}")
+        print(f"set handler_kwargs: {pformat(self._handler_kwargs)}")
 
     def clean_written_files(self) -> None:
         self.written_files = []

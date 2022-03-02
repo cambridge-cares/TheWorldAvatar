@@ -105,17 +105,13 @@ class Pipeline:
                 )
 
     def info(self) -> None:
-        logger.info(
-            f"============== Information on {self.name} pipeline =============="
-        )
-        logger.info("")
-        logger.info("Registered handlers:")
+        print(f"============== Information on {self.name} pipeline ==============")
+        print("")
+        print("Registered handlers:")
         for handler in self._handlers.values():
             handler.info()
-        logger.info("")
-        logger.info(
-            f"================================================================="
-        )
+        print("")
+        print(f"=================================================================")
 
     def check_handlers_config(self, input_type: Optional[Enum] = None) -> None:
         if input_type is None:

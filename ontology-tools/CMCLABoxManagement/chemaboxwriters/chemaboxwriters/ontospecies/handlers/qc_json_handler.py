@@ -61,6 +61,15 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             out_stage=globals.aboxStages.OS_JSON,
             endpoints_proxy=endpoints_proxy,
             required_endpoints_config={abconf.WRITERS_PREFIXES_KEY: ["spec_pref"]},
+            supported_handler_kwargs=[
+                "random_id",
+                "enth_of_form",
+                "enth_of_form_unit",
+                "enth_of_form_phase",
+                "enth_of_form_ref_temp",
+                "enth_of_form_ref_temp_unit",
+                "enth_of_form_provenance",
+            ],
         )
 
     def _handle_input(
@@ -93,12 +102,12 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         file_path: str,
         output_file_path: str,
         random_id: str = "",
-        hf: Optional[str] = None,
-        hf_unit: Optional[str] = None,
-        hf_phase: Optional[str] = None,
-        hfTref: Optional[str] = None,
-        hfTref_unit: Optional[str] = None,
-        hf_prov: Optional[str] = None,
+        enth_of_form: Optional[str] = None,
+        enth_of_form_unit: Optional[str] = None,
+        enth_of_form_phase: Optional[str] = None,
+        enth_of_form_ref_temp: Optional[str] = None,
+        enth_of_form_ref_temp_unit: Optional[str] = None,
+        enth_of_form_provenance: Optional[str] = None,
         *args,
         **kwargs
     ) -> None:
@@ -119,18 +128,18 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         data_out[GEOM] = data[GEOM]
         data_out[SPIN_MULT] = data[SPIN_MULT]
 
-        if hf:
-            data_out[ENTH_FORM] = hf
-        if hf_unit:
-            data_out[ENTH_UNIT] = hf_unit
-        if hf_phase:
-            data_out[ENTH_PHASE] = hf_phase
-        if hfTref:
-            data_out[ENTH_REFTEMP] = hfTref
-        if hfTref_unit:
-            data_out[ENTH_REFTEMP_UNIT] = hfTref_unit
-        if hf_prov:
-            data_out[ENTH_PROV] = hf_prov
+        if enth_of_form:
+            data_out[ENTH_FORM] = enth_of_form
+        if enth_of_form_unit:
+            data_out[ENTH_UNIT] = enth_of_form_unit
+        if enth_of_form_phase:
+            data_out[ENTH_PHASE] = enth_of_form_phase
+        if enth_of_form_ref_temp:
+            data_out[ENTH_REFTEMP] = enth_of_form_ref_temp
+        if enth_of_form_ref_temp_unit:
+            data_out[ENTH_REFTEMP_UNIT] = enth_of_form_ref_temp_unit
+        if enth_of_form_provenance:
+            data_out[ENTH_PROV] = enth_of_form_provenance
 
         if ATOM_MASSES not in data.keys():
             data_out[MOLWT] = get_molwt_from_atom_types(data_out[ATOM_TYPES])

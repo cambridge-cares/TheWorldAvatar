@@ -37,6 +37,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             out_stage=aboxStages.OC_JSON,
             endpoints_proxy=endpoints_proxy,
             required_endpoints_config={abconf.WRITERS_PREFIXES_KEY: ["comp_pref"]},
+            supported_handler_kwargs=["random_id", "ontospecies_IRI"],
         )
 
     def _handle_input(
@@ -69,7 +70,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         file_path: str,
         output_file_path: str,
         random_id: str = "",
-        spec_IRI: Optional[str] = None,
+        ontospecies_IRI: Optional[str] = None,
         *args,
         **kwargs
     ) -> None:
@@ -89,8 +90,8 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             logger.warning(
                 "Couldn't query for the ontospecies IRI, The query endpoint not specified in the aboxwriters config file."
             )
-        if spec_IRI is None and ospecies_query_endpoint is not None:
-            spec_IRI = querytemplates.get_species_iri(
+        if ontospecies_IRI is None and ospecies_query_endpoint is not None:
+            ontospecies_IRI = querytemplates.get_species_iri(
                 inchi=inchi, query_endpoint=ospecies_query_endpoint
             )
         if not random_id:
@@ -103,7 +104,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
                 jobType = "G" + data[PROGRAM_VERSION][2:4]
             else:
                 jobType = "Gxx"
-        data[globals.SPECIES_IRI] = spec_IRI
+        data[globals.SPECIES_IRI] = ontospecies_IRI
         data[globals.ENTRY_IRI] = comp_pref + jobType + "_" + random_id
         data[globals.ENTRY_UUID] = random_id
 

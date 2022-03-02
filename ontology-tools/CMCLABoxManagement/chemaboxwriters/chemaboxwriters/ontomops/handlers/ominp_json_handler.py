@@ -26,6 +26,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             required_endpoints_config={
                 abconf.WRITERS_PREFIXES_KEY: ["omops_entry_prefix"]
             },
+            supported_handler_kwargs=["random_id"],
         )
 
     def _handle_input(
