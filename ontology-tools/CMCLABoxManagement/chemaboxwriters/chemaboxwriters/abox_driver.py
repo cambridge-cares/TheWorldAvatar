@@ -35,9 +35,6 @@ Options:
                             - omops processed json file          [omops_json]
                             - omops meta csv                     [omops_csv]
                           * opsscan aboxwriter
-                            Inputs that require the extra
-                            (--os-iris, --os-atoms-iris
-                             --oc-atoms-ids)
                             - ontocompchem meta json (defualt)   [oc_json]
                             - ontopesscan meta json              [ops_json]
                             - ontopesscan meta csv               [ops_csv]
