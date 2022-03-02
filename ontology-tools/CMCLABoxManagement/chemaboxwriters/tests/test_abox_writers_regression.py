@@ -128,7 +128,7 @@ def test_ocompchem_abox_writer(
         handlers_kwargs={
             "QC_JSON_TO_OC_JSON": {
                 "random_id": "testID-111-111-111",
-                "spec_IRI": "test_species_iri",
+                "ontospecies_IRI": "test_species_iri",
             }
         }
     )
