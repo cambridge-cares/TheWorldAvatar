@@ -29,7 +29,7 @@ The ontospecies abox writer creates and uploads the ontospecies aboxes. The writ
 - QC_LOG_TO_QC_JSON
   - input type: QC_LOG - the quantum calculation log files (currently only Gaussian G03, G06, G09, G16 are supported)
   - output type: QC_JSON - a generic quantum calculations json file
-  - required_endpoints_config: None - this lists the required endpoints configs that can be passed to the handler via the config file
+  - required_endpoints_config: None - this lists the required endpoints configs that must be passed to the handler via the config file
   - supported_handler_kwargs: None - this lists the supported arguments that can be passed to the handler via the config file
 - QC_JSON_TO_OS_JSON
   - input type: QC_JSON
@@ -53,7 +53,7 @@ The ontospecies abox writer creates and uploads the ontospecies aboxes. The writ
       - spec_pref
       - onto_spec - OntoSpecies ontology prefix
       - gain_pref - Gainesville Core ontology prefix
-      - kin_pref  - OntoKin ontology prefix
+      - onto_kin  - OntoKin ontology prefix
       - table_pref - PeriodicTable ontology prefix
       - unit_pref - QUDT ontology prefix
   - supported_handler_kwargs: None
@@ -93,7 +93,7 @@ The ontocompchem abox writer creates and uploads the ontocompchem aboxes. The wr
       - table_pref
       - unit_pref
       - onto_comp
-      - data_pref
+      - ocompchem_data_pref
       - inst_spec
       - has_spec
   - supported_handler_kwargs: None
@@ -273,25 +273,32 @@ query_settings:
 prefixes:
     # these configs define any prefixes to be used when writing the aboxes
     # the settings are then passed to the relevant handlers.
-    comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
-    data_pref: "http://www.theworldavatar.com/data/ontocompchem/"
+    #
+    # TWA ontology prefixes - needed for object and data properties
     onto_comp: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"
+    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"
+    onto_mops: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl"
+    onto_pes:  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl"
+    onto_kin: "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"
+    # used to create iris of instances
+    spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
+    mops_pref: "http://www.theworldavatar.com/kb/ontomops/"
+    comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
+    pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/"
+    # used to create iris of instances of any reference files
+    # so far only defined for ontocompchem to reference associated log files
+    ocompchem_data_pref: "http://www.theworldavatar.com/data/ontocompchem/"
+    # other prefixes
     inst_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"
     has_spec: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpecies"
     gain_pref: "http://purl.org/gc/"
     table_pref: "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl"
     unit_pref: "http://data.nasa.gov/qudt/owl/"
-    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"
-    onto_mops: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl"
     rdf_pref: "http://www.w3.org/2000/01/rdf-schema"
-    kin_pref: "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"
-    spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
-    mops_pref: "http://www.theworldavatar.com/kb/ontomops/"
     uom_pref: "http://www.ontology-of-units-of-measure.org/resource/om-2/"
     unres_pref: "http://theworldavatar.com/resource/ontouom/"
     omops_entry_prefix: "MetalOrganicPolyhedra_"
-    pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/"
-    onto_pes:  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl"
+
 #
 # these setting can be used to pass extra named arguments to all the handlers.
 # please note that not all handlers may support the extra arguments. It is usually

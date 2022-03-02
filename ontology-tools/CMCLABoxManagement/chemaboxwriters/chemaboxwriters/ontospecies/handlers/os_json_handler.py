@@ -60,7 +60,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 abconf.WRITERS_PREFIXES_KEY: [
                     "onto_spec",
                     "gain_pref",
-                    "kin_pref",
+                    "onto_kin",
                     "table_pref",
                     "unit_pref",
                     "spec_pref",
@@ -419,7 +419,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
     def _write_atoms(self, spamwriter, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
-        kin_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["kin_pref"]
+        onto_kin = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_kin"]
 
         atom_list = data[ATOM_LIST]
         atom_counts = data[ATOM_COUNTS]
@@ -428,7 +428,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 [
                     "Element_" + atom_list[i],
                     "Instance",
-                    kin_pref + "#Element",
+                    onto_kin + "#Element",
                     "",
                     "",
                     "",
@@ -439,7 +439,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                     "MolecularFormula_" + gen_id,
                     "Instance",
                     "Element_" + atom_list[i],
-                    kin_pref + "#hasElement",
+                    onto_kin + "#hasElement",
                     "",
                     "",
                 ]
@@ -448,7 +448,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 [
                     "ElementNumber_" + gen_id + "_" + str(i + 1),
                     "Instance",
-                    kin_pref + "#ElementNumber",
+                    onto_kin + "#ElementNumber",
                     "",
                     "",
                     "",
@@ -459,14 +459,14 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                     "MolecularFormula_" + gen_id,
                     "Instance",
                     "ElementNumber_" + gen_id + "_" + str(i + 1),
-                    kin_pref + "#hasElementNumber",
+                    onto_kin + "#hasElementNumber",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    kin_pref + "#hasNumberOfElement",
+                    onto_kin + "#hasNumberOfElement",
                     "Data Property",
                     "ElementNumber_" + gen_id + "_" + str(i + 1),
                     "",
@@ -479,7 +479,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                     "ElementNumber_" + gen_id + "_" + str(i + 1),
                     "Instance",
                     "Element_" + atom_list[i],
-                    kin_pref + "#indicatesNumberOf",
+                    onto_kin + "#indicatesNumberOf",
                     "",
                     "",
                 ]
@@ -536,7 +536,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
     def _write_enth(self, spamwriter, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
-        kin_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["kin_pref"]
+        onto_kin = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_kin"]
 
         # Write enthalpy of formation data.
         if ENTH_FORM in data:
@@ -624,7 +624,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 [
                     data[ENTH_PHASE] + "Phase_" + gen_id,
                     "Instance",
-                    kin_pref + "#" + data[ENTH_PHASE] + "Phase",
+                    onto_kin + "#" + data[ENTH_PHASE] + "Phase",
                     "",
                     "",
                     "",
@@ -641,7 +641,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 ]
             )
             spamwriter.writerow(
-                ["Reference_" + gen_id, "Instance", kin_pref + "#Reference", "", "", ""]
+                ["Reference_" + gen_id, "Instance", onto_kin + "#Reference", "", "", ""]
             )
             spamwriter.writerow(
                 [

@@ -28,7 +28,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             required_endpoints_config={
                 abconf.WRITERS_PREFIXES_KEY: [
                     "comp_pref",
-                    "data_pref",
+                    "ocompchem_data_pref",
                     "onto_comp",
                     "inst_spec",
                     "has_spec",
@@ -1525,7 +1525,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
         onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
-        data_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["data_pref"]
+        ocompchem_data_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY][
+            "ocompchem_data_pref"
+        ]
 
         spamwriter.writerow(
             [
@@ -1559,7 +1561,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                data_pref + "OutputSource_" + calc_id + ".g09",
+                ocompchem_data_pref + "OutputSource_" + calc_id + ".g09",
                 "Instance",
                 onto_comp + "#OutputSource",
                 "",
@@ -1571,7 +1573,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             [
                 comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
                 "Instance",
-                data_pref + "OutputSource_" + calc_id + ".g09",
+                ocompchem_data_pref + "OutputSource_" + calc_id + ".g09",
                 gain_pref + "hasOutputFile",
                 "",
                 "",
@@ -1579,7 +1581,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                data_pref + "OutputSource_" + calc_id + ".xml",
+                ocompchem_data_pref + "OutputSource_" + calc_id + ".xml",
                 "Instance",
                 onto_comp + "#OutputSource",
                 "",
@@ -1591,7 +1593,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             [
                 comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
                 "Instance",
-                data_pref + "OutputSource_" + calc_id + ".xml",
+                ocompchem_data_pref + "OutputSource_" + calc_id + ".xml",
                 gain_pref + "hasOutputFile",
                 "",
                 "",
@@ -1599,7 +1601,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                data_pref + "OutputSource_" + calc_id + ".png",
+                ocompchem_data_pref + "OutputSource_" + calc_id + ".png",
                 "Instance",
                 onto_comp + "#OutputSource",
                 "",
@@ -1611,7 +1613,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             [
                 comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
                 "Instance",
-                data_pref + "OutputSource_" + calc_id + ".png",
+                ocompchem_data_pref + "OutputSource_" + calc_id + ".png",
                 gain_pref + "hasOutputFile",
                 "",
                 "",
