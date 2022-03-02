@@ -152,7 +152,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     ontolab:isContainedIn :Laboratory_Dummy;
     ontolab:hasPowerSupply :VapR4_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "4"^^xsd:int;
+    ontovapourtec:locationID "4"^^xsd:string;
     ontovapourtec:hasReactorMaterial :VapourtecR4_Dummy_ReactorMaterial; #TODO to be added
     ontovapourtec:hasInternalDiameter :VapourtecR4_Dummy_ReactorDiameter;
     ontovapourtec:hasReactorLength :VapourtecR4_Dummy_ReactorLength;
@@ -224,7 +224,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     ontolab:isContainedIn :Laboratory_Dummy;
     ontolab:hasPowerSupply :VapR4_Another_DummyPowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "1"^^xsd:int; # NOTE this is different from the locationID of :VapourtecR4_Dummy
+    ontovapourtec:locationID "1"^^xsd:string; # NOTE this is different from the locationID of :VapourtecR4_Dummy
     ontovapourtec:hasReactorMaterial :VapourtecR4_Another_Dummy_ReactorMaterial; #TODO to be added
     ontovapourtec:hasInternalDiameter :VapourtecR4_Another_Dummy_ReactorDiameter;
     ontovapourtec:hasReactorLength :VapourtecR4_Another_Dummy_ReactorLength;
@@ -296,7 +296,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     ontolab:isContainedIn :Laboratory_Dummy;
     ontolab:hasPowerSupply :VapR2_1_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "1"^^xsd:int;
+    ontovapourtec:locationID "A"^^xsd:string;
     ontolab:specifiedBy :VapourtecR2_1_Dummy_Setting;
 .
 
@@ -313,7 +313,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     ontolab:isContainedIn :Laboratory_Dummy;
     ontolab:hasPowerSupply :VapR2_2_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "2"^^xsd:int;
+    ontovapourtec:locationID "B"^^xsd:string;
 .
 
 #################################
@@ -324,7 +324,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     ontolab:isContainedIn :Laboratory_Dummy;
     ontolab:hasPowerSupply :VapR2_3_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "3"^^xsd:int;
+    ontovapourtec:locationID "C"^^xsd:string;
 .
 
 #################################
@@ -335,7 +335,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     ontolab:isContainedIn :Laboratory_Dummy;
     ontolab:hasPowerSupply :VapR2_4_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "4"^^xsd:int;
+    ontovapourtec:locationID "D"^^xsd:string;
 .
 
 #########################
@@ -570,7 +570,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :Site_1
     a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "1"^^xsd:int;
+    ontovapourtec:locationID "1"^^xsd:string;
     ontovapourtec:holds :Vial_1;
 .
 
@@ -619,7 +619,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :Site_2
     a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "2"^^xsd:int;
+    ontovapourtec:locationID "2"^^xsd:string;
     ontovapourtec:holds :Vial_2;
 .
 
@@ -668,7 +668,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :Site_3
     a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "3"^^xsd:int;
+    ontovapourtec:locationID "3"^^xsd:string;
     ontovapourtec:holds :Vial_3;
 .
 
@@ -717,7 +717,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :Site_4
     a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "4"^^xsd:int;
+    ontovapourtec:locationID "4"^^xsd:string;
     ontovapourtec:holds :Vial_4;
 .
 

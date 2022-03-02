@@ -24,6 +24,12 @@ ONTOCAPE_LIQUID = ONTOCAPE_PHASESYSTEM + 'liquid'
 ONTOCAPE_HASUNITOFMEASURE = ONTOCAPE_SYSTEM + 'hasUnitOfMeasure'
 ONTOCAPE_NUMERICALVALUE = ONTOCAPE_SYSTEM + 'numericalValue'
 ONTORXN_ISASSIGNEDTO = ONTORXN + 'isAssignedTo'
+ONTORXN_HASEQUIPMENTSETTINGS = ONTORXN + 'hasEquipmentSettings'
+ONTOKIN_SPECIES = ONTOKIN + 'Species'
+ONTOKIN_REACTANT = ONTOKIN + 'Reactant'
+ONTOCAPE_HASREACTANT = ONTOCAPE_REACTIONMECHANISM + 'hasReactant'
+ONTOCAPE_HASPRODUCT = ONTOCAPE_REACTIONMECHANISM + 'hasProduct'
+ONTOSPECIES_HASUNIQUESPECIES = ONTOSPECIES + 'hasUniqueSpecies'
 # TODO delete ONTORXN_CONDUCTEDIN from pyasyncagent.data_model.iris and OntoRxn TBox
 
 # NOTE only classes/relationships that are actively used in OntoRxn are presented here for ALL OntoCAPE related concepts in this script
@@ -79,10 +85,40 @@ class InputChemical(OntoCAPE_Material):
 class OutputChemical(OntoCAPE_Material):
     clz: str = ONTORXN_OUTPUTCHEMICAL
 
+class OntoKin_Species(BaseOntology):
+    clz: str = ONTOKIN_SPECIES
+    hasUniqueSpecies: str # NOTE here we simplify the implementation by using str instead of the actual OntoSpecies:Species
+
+class OntoKin_Reactant(OntoKin_Species):
+    clz: str = ONTOKIN_REACTANT
+
+class OntoKin_Product(OntoKin_Species):
+    clz: str = ONTOKIN_PRODUCT
+
+class Catalyst(OntoKin_Species):
+    clz: str = ONTORXN_CATALYST
+
+class Solvent(OntoKin_Species):
+    clz: str = ONTORXN_SOLVENT
+
+class TargetProduct(OntoKin_Product):
+    clz: str = ONTORXN_TARGETPRODUCT
+
+class Impurity(OntoKin_Product):
+    clz: str = ONTORXN_IMPURITY
+
+class OntoCAPE_ChemicalReaction(BaseOntology):
+    clz: str = ONTOCAPE_CHEMICALREACTION
+    hasReactant: List[OntoKin_Species]
+    hasProduct: List[OntoKin_Species]
+    hasCatalyst: Optional[List[OntoKin_Species]]
+    hasSolvent: Optional[List[OntoKin_Species]]
+
 class ReactionCondition(BaseOntology):
     objPropWithExp: List[str]
     hasValue: OM_Measure
     positionalID: Optional[int] = None
+    translateToParameterSetting: Optional[str] # NOTE here we put str to simplify the implementation, should be ontolab.ParameterSetting
     # instead of the actual class, str is used to host the instance IRI of OntoRxn:InputChemical for simplicity
     # StoichiometryRatio indicatesMultiplicityOf InputChemical
     indicatesMultiplicityOf: Optional[str] = None
@@ -210,11 +246,12 @@ class ReactionExperiment(BaseOntology):
     hasOutputChemical: Optional[List[OutputChemical]] = None
     isAssignedTo: Optional[str] # NOTE here it should be pointing to OntoVapourtec:VapourtecR4Reactor, but we put str to simplify the implementation
     clz: str = ONTORXN_REACTIONEXPERIMENT
+    isOccurenceOf: Optional[OntoCAPE_ChemicalReaction] = None
 
     @pydantic.root_validator
     @classmethod
     def if_exp_assigned(cls, values):
-        if values.get('instance_iri') != INSTANCE_IRI_TO_BE_INITIALISED:
+        if 'namespace_for_init' not in values: # means we are not creating a new reaction experiment that yet to be uploaded to the KG, i.e. we are pulling existing data from the KG
             if values.get('isAssignedTo') == None and values.get('hasOutputChemical') != None:
                 raise Exception(
                     'The reaction experiment <%s> should already be assigned and conducted as it hasOutputChemical: %s' % (values.get('instance_iri'), str(values.get('hasOutputChemical')))

@@ -74,6 +74,7 @@
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> a ns2:ReactionVariation ;
+    ns2:isOccurenceOf <https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1>;
     ns2:hasInputChemical <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> ;
@@ -159,6 +160,7 @@
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> a ns2:ReactionVariation ;
+    ns2:isOccurenceOf <https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1>;
     ns2:hasInputChemical <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> ;
@@ -244,6 +246,7 @@
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> a ns2:ReactionVariation ;
+    ns2:isOccurenceOf <https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1>;
     ns2:hasInputChemical <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> ;

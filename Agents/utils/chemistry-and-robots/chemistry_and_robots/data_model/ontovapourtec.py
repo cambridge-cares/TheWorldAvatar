@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pydantic
 from typing import List, Union
 
@@ -12,42 +13,32 @@ from chemistry_and_robots.data_model.ontolab import *
 ONTOVAPOURTEC_LOCATIONID = ONTOVAPOURTEC + 'locationID'
 ONTOVAPOURTEC_HASREACTORTEMPERATUREUPPERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureUpperLimit'
 ONTOVAPOURTEC_HASREACTORTEMPERATURELOWERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureLowerLimit'
+ONTOVAPOURTEC_STOICHIOMETRYRATIOSETTING = ONTOVAPOURTEC + 'StoichiometryRatioSetting'
+ONTOVAPOURTEC_HASSTOICHIOMETRYRATIOSETTING = ONTOVAPOURTEC + 'hasStoichiometryRatioSetting'
+LIST_ONTOVAPOURTEC_VALIDSTATE = [ONTOVAPOURTEC_IDLE, ONTOVAPOURTEC_NULL, ONTOVAPOURTEC_FAULTY,
+ONTOVAPOURTEC_INACTIVE, ONTOVAPOURTEC_CLEANINGREACTION, ONTOVAPOURTEC_REACTIONCOMPLETED,
+ONTOVAPOURTEC_RUNNINGREACTOR] # TODO should be ONTOVAPOURTEC_RUNNINGREACTION
 # ONTOVAPOURTEC_CONDUCTED = ONTOVAPOURTEC + 'conducted'
 
 class SampleLoopVolumeSetting(VolumeSetting):
-    pass
+    clz: str = ONTOVAPOURTEC_SAMPLELOOPVOLUMESETTING
+
+class StoichiometryRatioSetting(ParameterSetting):
+    clz: str = ONTOVAPOURTEC_STOICHIOMETRYRATIOSETTING
 
 class ReactorTemperatureSetting(TemperatureSetting):
     clz: str = ONTOVAPOURTEC_REACTORTEMPERATURESETTING
 
-    def create_instance_for_kg(self, g: Graph) -> Graph:
-        # <reactorTempSetting> <rdf:type> <OntoVapourtec:ReactorTemperatureSetting>
-        g.add((URIRef(self.instance_iri), RDF.type, URIRef(ONTOVAPOURTEC_REACTORTEMPERATURESETTING)))
-        # <reactorTempSetting> <OntoLab:hasQuantiry> <quantity>
-        g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_HASQUANTITY), URIRef(self.hasQuantity)))
-
-        return g
-
 class ResidenceTimeSetting(DurationSetting):
     clz: str = ONTOVAPOURTEC_RESIDENCETIMESETTING
-
-    def create_instance_for_kg(self, g: Graph) -> Graph:
-        # <resTimeSetting> <rdf:type> <OntoVapourtec:ResidenceTimeSetting>
-        g.add((URIRef(self.instance_iri), RDF.type, URIRef(ONTOVAPOURTEC_RESIDENCETIMESETTING)))
-        # <resTimeSetting> <OntoLab:hasQuantiry> <quantity>
-        g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_HASQUANTITY), URIRef(self.hasQuantity)))
-
-        return g
 
 class ReactorSettings(EquipmentSettings):
     hasResidenceTimeSetting: ResidenceTimeSetting
     hasReactorTemperatureSetting: ReactorTemperatureSetting
     clz: str = ONTOVAPOURTEC_REACTORSETTING
+    specifies: VapourtecR4Reactor
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
-        # <reactorSetting> <rdf:type> <OntoVapourtec:ReactorSettings>
-        g.add((URIRef(self.instance_iri), RDF.type, URIRef(ONTOVAPOURTEC_REACTORSETTING)))
-
         # <reactorSetting> <OntoVapourtec:hasReactorTemperatureSetting> <reactorTempSetting>
         g.add((
             URIRef(self.instance_iri),
@@ -64,23 +55,38 @@ class ReactorSettings(EquipmentSettings):
         ))
         g = self.hasResidenceTimeSetting.create_instance_for_kg(g)
 
-        # TODO re-think below triples
-        # # <reactionExperiment> <OntoRxn:hasEquipmentSettings> <reactorSetting>
-        # g.add((URIRef(self.wasGeneratedFor if isinstance(self.wasGeneratedFor, str) else self.wasGeneratedFor.instance_iri), URIRef(ONTORXN_HASEQUIPMENTSETTINGS), URIRef(self.instance_iri)))
-        # # <reactorSetting> <OntoLab:wasGeneratedFor> <reactionExperiment>
-        # g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_WASGENERATEDFOR), URIRef(self.wasGeneratedFor if isinstance(self.wasGeneratedFor, str) else self.wasGeneratedFor.instance_iri)))
-
-        return g
+        return super().create_instance_for_kg(g)
 
 class PumpSettings(EquipmentSettings):
-    hasFlowRateSetting: FlowRateSetting
-    hasSampleLoopVolumeSetting: SampleLoopVolumeSetting
-    # Here pumpsLiquidFrom is kept as str for simplicity for now
-    pumpsLiquidFrom: str
+    hasFlowRateSetting: Optional[FlowRateSetting] = None
+    hasSampleLoopVolumeSetting: Optional[SampleLoopVolumeSetting] = None
+    hasStoichiometryRatioSetting: Optional[StoichiometryRatioSetting]
+    # TODO revisit: Here pumpsLiquidFrom is kept as str for simplicity for now
+    pumpsLiquidFrom: AutoSamplerSite
     clz: str = ONTOVAPOURTEC_PUMPSETTINGS
+    specifies: VapourtecR2Pump
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
-        pass
+        # TODO should we distinguish between hasFlowRateSetting, hasSampleLoopVolumeSetting, hasStoichiometryRatioSetting used in different occasions?
+        # <pumpSetting> <OntoVapourtec:hasFlowRateSetting> <stoichisetting>
+        if self.hasFlowRateSetting is not None:
+            g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_HASFLOWRATESETTING), URIRef(self.hasFlowRateSetting.instance_iri)))
+            g = self.hasFlowRateSetting.create_instance_for_kg(g)
+
+        # <pumpSetting> <OntoVapourtec:hasSampleLoopVolumeSetting> <stoichisetting>
+        if self.hasSampleLoopVolumeSetting is not None:
+            g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_HASSAMPLELOOPVOLUMESETTING), URIRef(self.hasSampleLoopVolumeSetting.instance_iri)))
+            g = self.hasSampleLoopVolumeSetting.create_instance_for_kg(g)
+
+        # <pumpSetting> <OntoVapourtec:hasStoichiometryRatioSetting> <stoichisetting>
+        if self.hasStoichiometryRatioSetting is not None:
+            g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_HASSTOICHIOMETRYRATIOSETTING), URIRef(self.hasStoichiometryRatioSetting.instance_iri)))
+            g = self.hasStoichiometryRatioSetting.create_instance_for_kg(g)
+
+        # <pumpSetting> <OntoVapourtec:pumpsLiquidFrom> <autosampler_site>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_PUMPSLIQUIDFROM), URIRef(self.pumpsLiquidFrom.instance_iri)))
+
+        return super().create_instance_for_kg(g)
 
 class Vial(BaseOntology):
     clz: str = ONTOVAPOURTEC_VIAL
@@ -93,7 +99,7 @@ class Vial(BaseOntology):
 class AutoSamplerSite(BaseOntology):
     clz: str = ONTOVAPOURTEC_AUTOSAMPLERSITE
     holds: Vial
-    locationID: int
+    locationID: str
 
 class AutoSampler(LabEquipment):
     clz: str = ONTOVAPOURTEC_AUTOSAMPLER
@@ -101,7 +107,7 @@ class AutoSampler(LabEquipment):
 
 class VapourtecR4Reactor(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECR4REACTOR
-    locationID: int
+    locationID: str
     hasReactorMaterial: Union[str, OntoCAPE_MaterialAmount] # NOTE TODO here str is provided as an optional to simplify the implementation
     hasInternalDiameter: OM_Diameter
     hasReactorLength: OM_Length
@@ -123,8 +129,14 @@ class VapourtecR4Reactor(LabEquipment):
 
 class VapourtecR2Pump(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECR2PUMP
-    locationID: int
+    locationID: str
 
 class VapourtecRS400(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECRS400
     hasState: str = ONTOVAPOURTEC_NULL
+
+#########################################
+## Put all update_forward_refs() below ##
+#########################################
+ReactorSettings.update_forward_refs()
+PumpSettings.update_forward_refs()
