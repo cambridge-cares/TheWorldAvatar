@@ -4,48 +4,11 @@ import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from typing import Dict, List, Optional, Tuple
 from enum import Enum
 from pyuploader.uploaders.uploader import Uploader
+import chemaboxwriters.common.aboxconfig as abconf
 from pyuploader import get_uploader
 import logging
 
 logger = logging.getLogger(__name__)
-
-FILE_SERVER = "file server"
-TRIPLE_STORE = "triple store"
-
-UPLOAD_SETTINGS_KEY = "upload_settings"
-QUERY_SETTINGS_KEY = "query_settings"
-WRITERS_PREFIXES_KEY = "prefixes"
-
-TRIPLE_STORE_SPARQL_ENDPOINT_KEY = "triple_store_sparql_endpoint"
-TRIPLE_STORE_SECRETS_FILE_KEY = "triple_store_secrets_file"
-TRIPLE_STORE_NO_AUTH_KEY = "triple_store_no_auth"
-FILE_SERVER_UPLOAD_ENDPOINT_KEY = "file_server_upload_endpoint"
-FILE_SERVER_SECRETS_FILE_KEY = "file_server_secrets_file"
-FILE_SERVER_SUBDIR_KEY = "file_server_subdir"
-FILE_SERVER_NO_AUTH_KEY = "file_server_no_auth"
-OSPECIES_QUERY_ENDPOINT_KEY = "ospecies_query_endpoint"
-OMOPS_QUERY_ENDPOINT_KEY = "omops_query_endpoint"
-OPSSCAN_QUERY_ENDPOINT_KEY = "opsscan_query_endpoint"
-OCOMPCHEM_QUERY_ENDPOINT_KEY = "ocompchem_query_endpoint"
-UPLOAD_TO_FILE_SERVER_KEY = "upload_to_file_server"
-UPLOAD_TO_TRIPLE_STORE_KEY = "upload_to_triple_store"
-
-DEFAULT_CONFIG_KEYS = [
-    TRIPLE_STORE_SPARQL_ENDPOINT_KEY,
-    TRIPLE_STORE_SECRETS_FILE_KEY,
-    TRIPLE_STORE_NO_AUTH_KEY,
-    FILE_SERVER_UPLOAD_ENDPOINT_KEY,
-    FILE_SERVER_SECRETS_FILE_KEY,
-    FILE_SERVER_SUBDIR_KEY,
-    FILE_SERVER_NO_AUTH_KEY,
-    OCOMPCHEM_QUERY_ENDPOINT_KEY,
-    OSPECIES_QUERY_ENDPOINT_KEY,
-    OMOPS_QUERY_ENDPOINT_KEY,
-    OPSSCAN_QUERY_ENDPOINT_KEY,
-    UPLOAD_TO_FILE_SERVER_KEY,
-    UPLOAD_TO_TRIPLE_STORE_KEY,
-]
-HANDLERS_CONFIG_KEY = "handlers"
 
 
 class Endpoints_proxy:
@@ -144,10 +107,10 @@ class Endpoints_proxy:
             no_auth=no_auth,
             dry_run=dry_run,
             input_type=input_type,
-            upload_type=FILE_SERVER,
+            upload_type=abconf.FILE_SERVER,
         )
-        upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
-        subdirs = upload_configs.get(FILE_SERVER_SUBDIR_KEY, "")
+        upload_configs = endpoints_config.get(abconf.UPLOAD_SETTINGS_KEY, {})
+        subdirs = upload_configs.get(abconf.FILE_SERVER_SUBDIR_KEY, "")
 
         for inp_file in inputs:
             uploaded_files_locations = self._file_server_uploader.upload(
@@ -183,7 +146,7 @@ class Endpoints_proxy:
             no_auth=no_auth,
             dry_run=dry_run,
             input_type=input_type,
-            upload_type=TRIPLE_STORE,
+            upload_type=abconf.TRIPLE_STORE,
         )
 
         for inp_file in inputs:
@@ -202,23 +165,23 @@ class Endpoints_proxy:
     def _get_file_server_connection_configs(self, endpoints_config: Dict) -> Tuple:
         return self._get_endpoint_connection_configs(
             endpoints_config=endpoints_config,
-            url_key=FILE_SERVER_UPLOAD_ENDPOINT_KEY,
-            auth_key=FILE_SERVER_SECRETS_FILE_KEY,
-            no_auth_key=FILE_SERVER_NO_AUTH_KEY,
+            url_key=abconf.FILE_SERVER_UPLOAD_ENDPOINT_KEY,
+            auth_key=abconf.FILE_SERVER_SECRETS_FILE_KEY,
+            no_auth_key=abconf.FILE_SERVER_NO_AUTH_KEY,
         )
 
     def _get_triple_store_connection_configs(self, endpoints_config: Dict) -> Tuple:
         return self._get_endpoint_connection_configs(
             endpoints_config=endpoints_config,
-            url_key=TRIPLE_STORE_SPARQL_ENDPOINT_KEY,
-            auth_key=TRIPLE_STORE_SECRETS_FILE_KEY,
-            no_auth_key=TRIPLE_STORE_NO_AUTH_KEY,
+            url_key=abconf.TRIPLE_STORE_SPARQL_ENDPOINT_KEY,
+            auth_key=abconf.TRIPLE_STORE_SECRETS_FILE_KEY,
+            no_auth_key=abconf.TRIPLE_STORE_NO_AUTH_KEY,
         )
 
     def _get_endpoint_connection_configs(
         self, endpoints_config: Dict, url_key: str, auth_key: str, no_auth_key: str
     ) -> Tuple:
-        upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
+        upload_configs = endpoints_config.get(abconf.UPLOAD_SETTINGS_KEY, {})
         url = upload_configs.get(url_key)
         auth_file = upload_configs.get(auth_key)
         no_auth = upload_configs.get(no_auth_key, False)
@@ -226,13 +189,13 @@ class Endpoints_proxy:
         return url, auth_file, no_auth
 
     def _do_file_server_upload(self, input_type: Enum, endpoints_config: Dict) -> bool:
-        upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
-        upload_stages = upload_configs.get(UPLOAD_TO_FILE_SERVER_KEY, [])
+        upload_configs = endpoints_config.get(abconf.UPLOAD_SETTINGS_KEY, {})
+        upload_stages = upload_configs.get(abconf.UPLOAD_TO_FILE_SERVER_KEY, [])
         return input_type.name.lower() in upload_stages
 
     def _do_triple_store_upload(self, input_type: Enum, endpoints_config: Dict) -> bool:
-        upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
-        upload_stages = upload_configs.get(UPLOAD_TO_TRIPLE_STORE_KEY, [])
+        upload_configs = endpoints_config.get(abconf.UPLOAD_SETTINGS_KEY, {})
+        upload_stages = upload_configs.get(abconf.UPLOAD_TO_TRIPLE_STORE_KEY, [])
         return input_type.name.lower() in upload_stages
 
 
@@ -244,76 +207,3 @@ def get_endpoints_proxy(
         file_server_uploader=file_server_uploader,
         triple_store_uploader=triple_store_uploader,
     )
-
-
-def get_endpoints_config_file(config_file: str) -> Dict:
-    with open(config_file, "r") as stream:
-        endpoints_config = yaml.safe_load(stream)
-    return endpoints_config
-
-
-def pre_process_endpoints_config(endpoints_config: Dict, config_key: str) -> Dict:
-    # get default upload and query configs
-    default_upload_configs = endpoints_config.get(UPLOAD_SETTINGS_KEY, {})
-    default_query_configs = endpoints_config.get(QUERY_SETTINGS_KEY, {})
-    default_prefixes = endpoints_config.get(WRITERS_PREFIXES_KEY, {})
-
-    # get pipeline level configs, and merge in the default configs
-    pipeline_configs = endpoints_config.get(config_key, {})
-    pipeline_upload_configs = pipeline_configs.get(UPLOAD_SETTINGS_KEY, {})
-    pipeline_query_configs = pipeline_configs.get(QUERY_SETTINGS_KEY, {})
-    pipeline_prefixes = pipeline_configs.get(WRITERS_PREFIXES_KEY, {})
-
-    pipeline_upload_configs = _merge_endpoints_configs(
-        merge_into=pipeline_upload_configs,
-        merge_from=default_upload_configs,
-    )
-
-    pipeline_query_configs = _merge_endpoints_configs(
-        merge_into=pipeline_query_configs,
-        merge_from=default_query_configs,
-    )
-
-    pipeline_prefixes = _merge_endpoints_configs(
-        merge_into=pipeline_prefixes,
-        merge_from=default_prefixes,
-    )
-
-    # get handler level configs, and merge in the pipeline configs
-    handlers_config = pipeline_configs.pop(HANDLERS_CONFIG_KEY, {})
-    if handlers_config:
-        for handler_name, configs in handlers_config.items():
-            if configs is None:
-                configs = {}
-            if UPLOAD_SETTINGS_KEY not in configs:
-                configs[UPLOAD_SETTINGS_KEY] = {}
-            if QUERY_SETTINGS_KEY not in configs:
-                configs[QUERY_SETTINGS_KEY] = {}
-            if WRITERS_PREFIXES_KEY not in configs:
-                configs[WRITERS_PREFIXES_KEY] = {}
-
-            upload_configs = _merge_endpoints_configs(
-                merge_into=configs[UPLOAD_SETTINGS_KEY],
-                merge_from=pipeline_upload_configs,
-            )
-            query_configs = _merge_endpoints_configs(
-                merge_into=configs[QUERY_SETTINGS_KEY],
-                merge_from=pipeline_query_configs,
-            )
-
-            prefixes_configs = _merge_endpoints_configs(
-                merge_into=configs[WRITERS_PREFIXES_KEY],
-                merge_from=pipeline_prefixes,
-            )
-
-            if handlers_config[handler_name] is None:
-                handlers_config[handler_name] = {}
-
-            handlers_config[handler_name][UPLOAD_SETTINGS_KEY] = upload_configs
-            handlers_config[handler_name][QUERY_SETTINGS_KEY] = query_configs
-            handlers_config[handler_name][WRITERS_PREFIXES_KEY] = prefixes_configs
-    return handlers_config
-
-
-def _merge_endpoints_configs(merge_into: Dict, merge_from: Dict) -> Dict:
-    return {**merge_from, **merge_into}

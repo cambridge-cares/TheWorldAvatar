@@ -1,7 +1,6 @@
 import shutil
-from chemaboxwriters.app import write_abox
 import chemaboxwriters.common.utilsfunc as utilsfunc
-import chemaboxwriters.common.endpoints_config as endp_conf
+import chemaboxwriters.common.endpoints_proxy as endp
 from pyuploader.uploaders.uploader import Uploader
 import pytest
 import shutil
@@ -96,12 +95,7 @@ def test_abox_uploads(clean_tests):
         default_no_auth=True,
     )
 
-    endpoints_config = endp_conf.get_endpoints_config_file(config_file=ABOX_CONFIG_FILE)
-    endpoints_config = endp_conf.pre_process_endpoints_config(
-        endpoints_config=endpoints_config, config_key=pipeline_name
-    )
-
-    endpoints_proxy = endp_conf.get_endpoints_proxy(
+    endpoints_proxy = endp.get_endpoints_proxy(
         file_server_uploader=dummy_uploader, triple_store_uploader=dummy_uploader
     )
 
@@ -121,9 +115,10 @@ def test_abox_uploads(clean_tests):
     pipeline = get_pipeline(
         name=pipeline_name,
         handlers=handlers,
-        endpoints_config=endpoints_config,
         endpoints_proxy=endpoints_proxy,
     )
+
+    pipeline.configure_from_file(config_file=ABOX_CONFIG_FILE)
 
     pipeline.run(
         inputs=dummy_inputs,

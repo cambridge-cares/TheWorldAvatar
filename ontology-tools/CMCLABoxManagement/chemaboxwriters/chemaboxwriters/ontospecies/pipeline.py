@@ -1,5 +1,5 @@
 from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import chemaboxwriters.common.endpoints_proxy as abconf
 import chemaboxwriters.common.handlers as hnds
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.ontospecies.handlers import (
@@ -16,9 +16,7 @@ OS_PIPELINE = "ospecies"
 
 
 def assemble_os_pipeline(
-    endpoints_config: Optional[Dict] = None,
-    endpoints_proxy: Optional[Endpoints_proxy] = None,
-    disable_endpoints_config_check: bool = False,
+    endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
 ) -> Pipeline:
 
     handlers = [
@@ -35,7 +33,6 @@ def assemble_os_pipeline(
     pipeline = get_pipeline(
         name=OS_PIPELINE,
         handlers=handlers,
-        endpoints_config=endpoints_config,
         endpoints_proxy=endpoints_proxy,
     )
     return pipeline

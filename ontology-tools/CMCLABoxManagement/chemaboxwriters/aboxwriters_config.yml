@@ -61,6 +61,15 @@ prefixes:
     pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/"
     onto_pes:  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl"
 #
+# this setting can be used to pass extra names arguments to all the handlers.
+# please note that not all handlers may support the extra arguments. It is usually
+# better to set the handler_kwargs option at individual handler level
+#
+# handler_kwargs:
+#   arg1_name: arg1_value
+#   arg2_name: arg2_value
+#   arg3_name: arg3_value
+#   ...
 # ------------------------------------------------------------------------------
 # PIPELINES
 # ------------------------------------------------------------------------------
@@ -82,8 +91,6 @@ ocompchem:
             upload_settings:
                 upload_to_file_server:
                     - qc_log
-        qc_json_to_oc_json: {}
-        oc_json_to_oc_csv: {}
         oc_csv_to_oc_owl:
             upload_settings:
                 upload_to_triple_store:
@@ -98,9 +105,6 @@ ospecies:
     # OSPECIES HANDLERS
     #-----------------------------------------
     handlers:
-        qc_log_to_qc_json: {}
-        qc_json_to_os_json: {}
-        os_json_to_os_csv: {}
         os_csv_to_os_owl:
             upload_settings:
                 upload_to_triple_store:
@@ -119,7 +123,6 @@ omops:
             upload_settings:
                 upload_to_file_server:
                     - ominp_xyz
-        om_json_to_om_csv: {}
         om_csv_to_om_owl:
             upload_settings:
                 upload_to_triple_store:
@@ -134,8 +137,11 @@ opsscan:
     # OPSSCAN HANDLERS
     #-----------------------------------------
     handlers:
-        oc_json_to_ops_json: {}
-        ops_json_to_ops_csv: {}
+        oc_json_to_ops_json:
+            handler_kwargs:
+                os_iris: "dummy_iri1"
+                os_atoms_iris: "dummy_atom1_iri, dummy_atom2_iri"
+                oc_atoms_pos: "1,3"
         ops_csv_to_ops_owl:
             upload_settings:
                 upload_to_triple_store:

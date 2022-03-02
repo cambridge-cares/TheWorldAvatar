@@ -4,7 +4,7 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 import entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF as entityrdfizer
 from typing import List, Optional, Dict
 from enum import Enum
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import chemaboxwriters.common.endpoints_proxy as abconf
 from chemaboxwriters.common.globals import aboxStages
 import json
 
@@ -17,7 +17,7 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[Endpoints_proxy] = None,
+        endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="QC_LOG_TO_QC_JSON",
@@ -79,7 +79,7 @@ class CSV_TO_OWL_Handler(Handler):
         name: str,
         in_stage: Enum,
         out_stage: Enum,
-        endpoints_proxy: Optional[Endpoints_proxy] = None,
+        endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
     ) -> None:
 
         super().__init__(

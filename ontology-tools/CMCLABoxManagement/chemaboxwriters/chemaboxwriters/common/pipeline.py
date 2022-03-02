@@ -1,9 +1,11 @@
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from collections import OrderedDict
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 from chemaboxwriters.common.handler import Handler
 from enum import Enum
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy, get_endpoints_proxy
+import chemaboxwriters.common.endpoints_proxy as endp
+import chemaboxwriters.common.aboxconfig as abconf
+import yaml
 import logging
 
 logger = logging.getLogger(__name__)
@@ -115,29 +117,111 @@ class Pipeline:
             f"================================================================="
         )
 
+    def check_handlers_config(self, input_type: Optional[Enum] = None) -> None:
+        if input_type is None:
+            for handler in self._handlers.values():
+                handler.check_required_endpoints_config()
+                handler.check_handler_kwargs()
+        else:
+            for handler in self._handlers.values():
+                if handler._in_stage == input_type:
+                    handler.check_required_endpoints_config()
+                    handler.check_handler_kwargs()
+                    input_type = handler._out_stage
+
+    def configure_from_file(self, config_file: str) -> None:
+        pipeline_config = self._read_config_file(config_file=config_file)
+        if pipeline_config:
+            self.configure_from_dict(config=pipeline_config)
+
+    def configure_from_dict(self, config: Dict) -> None:
+        pipeline_config, handlers_config = self._get_pipeline_handler_configs(
+            config=config
+        )
+        for handler_name, handler in self._handlers.items():
+            if handler_name.lower() in handlers_config:
+                handlers_config_to_use = handlers_config[handler_name.lower()]
+            else:
+                handlers_config_to_use = pipeline_config
+
+            handlers_kwargs = handlers_config_to_use.pop(abconf.HANDLER_KWARGS, {})
+            handler.set_endpoints_config(handlers_config_to_use)
+            handler.set_handle_input_kwargs(handler_kwargs=handlers_kwargs)
+
+    def _get_pipeline_handler_configs(self, config: Dict) -> Tuple[Dict, Dict]:
+        if abconf.HANDLERS_CONFIG_KEY in config:
+            logger.warning(
+                f"Found '{abconf.HANDLERS_CONFIG_KEY}' key in the default config section. This will be omitted."
+            )
+            config.pop(abconf.HANDLERS_CONFIG_KEY)
+
+        pipeline_configs = config.get(self.name, {})
+
+        merge_on_keys = [
+            abconf.UPLOAD_SETTINGS_KEY,
+            abconf.QUERY_SETTINGS_KEY,
+            abconf.WRITERS_PREFIXES_KEY,
+            abconf.HANDLER_KWARGS,
+        ]
+
+        for key in merge_on_keys:
+            self._merge_config_field(
+                merge_from=config,
+                merge_to=pipeline_configs,
+                merge_on=key,
+            )
+
+        handlers_config = pipeline_configs.pop(abconf.HANDLERS_CONFIG_KEY, {})
+        handlers = handlers_config.keys()
+        for handler in handlers:
+            for key in merge_on_keys:
+                self._merge_config_field(
+                    merge_from=pipeline_configs,
+                    merge_to=handlers_config[handler],
+                    merge_on=key,
+                )
+
+        return pipeline_configs, handlers_config
+
+    def _merge_config_field(
+        self, merge_from: Dict, merge_to: Dict, merge_on: str
+    ) -> None:
+        merge_from_configs = merge_from.get(merge_on, {})
+        merge_to_configs = merge_to.get(merge_on, {})
+
+        merge_to_configs = self._merge_configs(
+            merge_into=merge_to_configs,
+            merge_from=merge_from_configs,
+        )
+
+        merge_to[merge_on] = merge_to_configs
+
+    @staticmethod
+    def _merge_configs(merge_into: Dict, merge_from: Dict) -> Dict:
+        return {**merge_from, **merge_into}
+
+    @staticmethod
+    def _read_config_file(config_file: str) -> Dict:
+        pipeline_config = {}
+        if config_file is not None:
+            with open(config_file, "r") as stream:
+                pipeline_config = yaml.safe_load(stream)
+
+        return pipeline_config
+
 
 def get_pipeline(
     name: str = "",
     handlers: Optional[List[Handler]] = None,
-    endpoints_config: Optional[Dict] = None,
-    endpoints_proxy: Optional[Endpoints_proxy] = None,
-    disable_endpoints_config_check: bool = False,
+    endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
 ) -> Pipeline:
 
-    if endpoints_config is None:
-        endpoints_config = {}
-
     if endpoints_proxy is None:
-        endpoints_proxy = get_endpoints_proxy()
+        endpoints_proxy = endp.get_endpoints_proxy()
 
     pipeline = Pipeline(name=name)
     if handlers is not None:
         for handler in handlers:
-            handler.set_endpoints_config(
-                endpoints_config=endpoints_config.get(handler.name.lower())
-            )
-            if not disable_endpoints_config_check:
-                handler.check_required_endpoints_config()
             handler.set_endpoints_proxy(endpoints_proxy=endpoints_proxy)
             pipeline.add_handler(handler=handler)
     return pipeline

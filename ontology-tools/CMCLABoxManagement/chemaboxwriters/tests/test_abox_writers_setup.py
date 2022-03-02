@@ -1,7 +1,7 @@
 import pytest
 import os
 from chemaboxwriters.common.assemble_pipeline import assemble_pipeline
-import chemaboxwriters.common.endpoints_config as endp_conf
+import chemaboxwriters.common.aboxconfig as abconf
 from chemaboxwriters.ontocompchem.pipeline import OC_PIPELINE
 from chemaboxwriters.ontospecies.pipeline import OS_PIPELINE
 from chemaboxwriters.ontomops.pipeline import OMOPS_PIPELINE
@@ -34,22 +34,25 @@ def test_abox_writer_setup(endpoints_config_file: str, pipeline_types: List[str]
     print()
 
     config_file = os.path.join(TEST_CONFIG_FILES, endpoints_config_file)
-    endpoints_config = endp_conf.get_endpoints_config_file(config_file=config_file)
 
     for pipeline_type in pipeline_types:
 
-        pipeline = assemble_pipeline(
-            pipeline_type=pipeline_type, endpoints_config=endpoints_config
-        )
+        pipeline = assemble_pipeline(pipeline_type=pipeline_type)
 
-        test_results = endpoints_config[TEST_RESULTS][pipeline_type]
+        pipeline.configure_from_file(config_file=config_file)
+
+        test_results = pipeline._read_config_file(config_file=config_file)
+        test_results = test_results[TEST_RESULTS][pipeline_type]
 
         for handler_name_ref, handler_results_ref in test_results[
-            endp_conf.HANDLERS_CONFIG_KEY
+            abconf.HANDLERS_CONFIG_KEY
         ].items():
+
+            handler_kwargs = handler_results_ref.pop(abconf.HANDLER_KWARGS, {})
             handler_test = pipeline.get_handler_by_name(handler_name_ref.upper())
             assert handler_test.endpoints_config is not None  # type: ignore
             assert handler_test.endpoints_config == handler_results_ref  # type: ignore
+            assert handler_test._handler_kwargs == handler_kwargs  # type: ignore
 
     print("")
 

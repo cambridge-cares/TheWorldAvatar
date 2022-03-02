@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Tuple, Dict, Optional
-import chemaboxwriters.common.endpoints_config as endp_conf
+import chemaboxwriters.common.endpoints_proxy as abconf
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from abc import ABC, abstractmethod
 from pprint import pformat
@@ -19,8 +19,9 @@ class Handler(ABC):
         name: str,
         in_stage: Enum,
         out_stage: Enum,
-        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
+        endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
         required_endpoints_config: Optional[Dict] = None,
+        required_handler_kwargs: Optional[List] = None,
     ) -> None:
 
         self.name = name
@@ -29,15 +30,27 @@ class Handler(ABC):
         self._endpoints_config = {}
         self._handler_kwargs = {}
         self.written_files = []
-        self._endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None
+        self._endpoints_proxy = endpoints_proxy
         self._required_endpoints_config = required_endpoints_config
+        self._required_handler_kwargs = required_handler_kwargs
 
-    def set_endpoints_proxy(self, endpoints_proxy: endp_conf.Endpoints_proxy) -> None:
+    def set_endpoints_proxy(self, endpoints_proxy: abconf.Endpoints_proxy) -> None:
         self._endpoints_proxy = endpoints_proxy
 
     def set_endpoints_config(self, endpoints_config: Optional[Dict] = None) -> None:
         if endpoints_config is not None:
             self._endpoints_config = endpoints_config
+
+    def check_handler_kwargs(self) -> None:
+        if self._required_handler_kwargs is not None:
+            missing_args = []
+            for arg_name in self._required_handler_kwargs:
+                if arg_name not in self._handler_kwargs:
+                    missing_args.append(arg_name)
+            if missing_args:
+                raise app_exceptions.MissingHandlerConfig(
+                    f"The required {missing_args} arguments are missing for the {self.name} handler."
+                )
 
     def check_required_endpoints_config(self) -> None:
         if self._required_endpoints_config is not None:
@@ -48,13 +61,13 @@ class Handler(ABC):
                 config_group = self._endpoints_config.get(req_config_group)
                 if config_group is None:
                     app_exceptions.MissingHandlerConfig(
-                        f"The required '{config_group}' configuration is missing for handler {self.name}."
+                        f"The required '{config_group}' configuration is missing for the {self.name} handler."
                     )
                 else:
                     for req_key in req_config_keys:
                         if req_key not in config_group:
                             app_exceptions.MissingHandlerConfig(
-                                f"The required '{req_key}' configuration is missing for handler {self.name}."
+                                f"The required '{req_key}' configuration is missing for the {self.name} handler."
                             )
 
     @property
@@ -122,8 +135,12 @@ class Handler(ABC):
                 file_server_uploads=file_server_uploads,
             )
 
-    def set_handle_input_kwargs(self, handler_kwargs) -> None:
+    def set_handle_input_kwargs(self, handler_kwargs: Dict) -> None:
         self._handler_kwargs = handler_kwargs
+
+    def update_handle_input_kwargs(self, handler_kwargs: Dict) -> None:
+        for key, value in handler_kwargs.items():
+            self._handler_kwargs[key] = value
 
     def info(self) -> None:
         logger.info("--------------------------------------------")

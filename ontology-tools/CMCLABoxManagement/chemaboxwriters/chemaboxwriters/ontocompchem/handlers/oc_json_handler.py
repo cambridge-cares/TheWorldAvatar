@@ -5,7 +5,8 @@ from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.globals import aboxStages
 from typing import List, Optional, Dict
-import chemaboxwriters.common.endpoints_config as endp_conf
+import chemaboxwriters.common.endpoints_proxy as endp
+import chemaboxwriters.common.aboxconfig as abconf
 from enum import Enum
 
 
@@ -17,7 +18,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="OC_JSON_TO_OC_CSV",
@@ -25,7 +26,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             out_stage=aboxStages.OC_CSV,
             endpoints_proxy=endpoints_proxy,
             required_endpoints_config={
-                endp_conf.WRITERS_PREFIXES_KEY: [
+                abconf.WRITERS_PREFIXES_KEY: [
                     "comp_pref",
                     "data_pref",
                     "onto_comp",
@@ -102,11 +103,11 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
     def _write_initial(self, spamwriter, jobIRI, calc_id, spec_IRI):
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
-        inst_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["inst_spec"]
-        has_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["has_spec"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        inst_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["inst_spec"]
+        has_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["has_spec"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
 
         # This is all the initialization part of the ABox
         spamwriter.writerow(
@@ -193,11 +194,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         # This section starts the representation of the molecule, namely dividing the species into sub-molecules that contain the different atom types.
         # This will hopefully be changed by an update in OntoCompChem later.
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        table_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
-            "table_pref"
-        ]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        table_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["table_pref"]
 
         at_count = []
         for key, value in data["Atom counts"].items():
@@ -320,9 +319,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
     def _write_level_of_theory(self, spamwriter, calc_id, data):
         # This section writes the information related to the level of theory for the ABox (method and basis set).
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
 
         spamwriter.writerow(
             [
@@ -398,8 +397,8 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
     def _write_name(self, spamwriter, calc_id, data):
         # This writes the name of the species, taken as the formula, but with extraneous 1s removed.
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
 
         spamwriter.writerow(
             [
@@ -415,10 +414,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
     def _write_frequencies(self, spamwriter, jobIRI, calc_id, data):
         # This section writes the vibrations to the ABox (if they exist).
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
-        unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["unit_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "Frequencies" in data:
             spamwriter.writerow(
@@ -504,27 +503,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
     def _write_rotations(self, spamwriter, jobIRI, calc_id, data):
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
-        unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["unit_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "Rotational constants" in data:
             # This section writes the rotational constants information
             # - rotational symmetry, rotational constants, and their values/units.
 
-            comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
-                "comp_pref"
-            ]
-            onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
-                "onto_comp"
-            ]
-            gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
-                "gain_pref"
-            ]
-            unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
-                "unit_pref"
-            ]
+            comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+            onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
+            gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+            unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
             spamwriter.writerow(
                 [
@@ -612,9 +603,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
     def _write_geom_type(self, spamwriter, jobIRI, calc_id, data):
         # This section writes the geometry type information.
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
 
         spamwriter.writerow(
             [
@@ -651,10 +642,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         # This section writes the zero-point energy information (if it exists).
         # Note that this requires a frequency calculation to be computed.
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
-        unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["unit_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "Electronic and ZPE energy" in data and "Electronic energy" in data:
             spamwriter.writerow(
@@ -781,10 +772,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
     def _write_scf(self, spamwriter, jobIRI, calc_id, data):
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
-        unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["unit_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "Electronic energy" in data:
             # This section writes the electronic (SCF) energy information.
@@ -852,10 +843,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
     def _write_occ(self, spamwriter, jobIRI, calc_id, data):
         # This section writes the information on the occupied orbitals: HOMO, HOMO-1, HOMO-2 energies.
         # HOMO
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
-        unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["unit_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "HOMO energy" in data:
             spamwriter.writerow(
@@ -1047,10 +1038,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         # This section writes the information on the unoccupied (virtual) orbitals: LUMO, LUMO+1, LUMO+2 energies.
         # LUMO
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
-        unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["unit_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "LUMO energy" in data:
             spamwriter.writerow(
@@ -1242,9 +1233,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         # This section writes the geometry optimization, spin multiplicity
         # and formal charge information.
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
 
         spamwriter.writerow(
             [
@@ -1340,12 +1331,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
     def _write_atom_info(self, spamwriter, calc_id, data):
         # This section writes the atom coordinates and masses information.
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["unit_pref"]
-        table_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
-            "table_pref"
-        ]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
+        table_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["table_pref"]
 
         count = 1  # This count essentially counts the indices of the atoms starting with 1. Basically, this additional number helps uniquely assign an IRI to each atom.
         coord_string = ["x3", "y3", "z3"]  # How the coordinates are labeled.
@@ -1533,10 +1522,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         # These are the final parts of the ABox with the
         # auxillary info like software used and job run date.
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        onto_comp = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_comp"]
-        data_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["data_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
+        data_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["data_pref"]
 
         spamwriter.writerow(
             [

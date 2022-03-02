@@ -67,6 +67,7 @@ test_results:
         handlers:
             qc_log_to_qc_json:
                 prefixes: {}
+                handler_kwargs: {}
                 upload_settings:
                     triple_store_sparql_endpoint: ocompchem
                     triple_store_secrets_file: ts_dummy_secrets
@@ -82,8 +83,41 @@ test_results:
                     omops_query_endpoint: omops
                     ocompchem_query_endpoint: ocompchem
                     opsscan_query_endpoint: opsscan
+            qc_json_to_oc_json:
+                prefixes: {}
+                handler_kwargs: {}
+                upload_settings:
+                    triple_store_sparql_endpoint: ocompchem
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: True
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: ocompchem
+                    file_server_no_auth: False
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
+            oc_json_to_oc_csv:
+                prefixes: {}
+                handler_kwargs: {}
+                upload_settings:
+                    triple_store_sparql_endpoint: ocompchem
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: True
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: ocompchem
+                    file_server_no_auth: False
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
             oc_csv_to_oc_owl:
                 prefixes: {}
+                handler_kwargs: {}
                 upload_settings:
                     triple_store_sparql_endpoint: ocompchem
                     triple_store_secrets_file: ts_dummy_secrets
@@ -101,8 +135,57 @@ test_results:
                     opsscan_query_endpoint: opsscan
     ospecies:
         handlers:
+            qc_log_to_qc_json:
+                prefixes: {}
+                handler_kwargs: {}
+                upload_settings:
+                    triple_store_sparql_endpoint: ospecies
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: False
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: ospecies
+                    file_server_no_auth: True
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
+            qc_json_to_os_json:
+                prefixes: {}
+                handler_kwargs: {}
+                upload_settings:
+                    triple_store_sparql_endpoint: ospecies
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: False
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: ospecies
+                    file_server_no_auth: True
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
+            os_json_to_os_csv:
+                prefixes: {}
+                handler_kwargs: {}
+                upload_settings:
+                    triple_store_sparql_endpoint: ospecies
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: False
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: ospecies
+                    file_server_no_auth: True
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
             os_csv_to_os_owl:
                 prefixes: {}
+                handler_kwargs: {}
                 upload_settings:
                     triple_store_sparql_endpoint: ospecies
                     triple_store_secrets_file: ts_dummy_secrets
@@ -122,6 +205,7 @@ test_results:
         handlers:
             ominp_json_to_om_json:
                 prefixes: {}
+                handler_kwargs: {}
                 upload_settings:
                     triple_store_sparql_endpoint: omops
                     triple_store_secrets_file: ts_dummy_secrets
@@ -137,8 +221,25 @@ test_results:
                     omops_query_endpoint: omops
                     ocompchem_query_endpoint: ocompchem
                     opsscan_query_endpoint: opsscan
+            om_json_to_om_csv:
+                prefixes: {}
+                handler_kwargs: {}
+                upload_settings:
+                    triple_store_sparql_endpoint: omops
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: False
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: omops
+                    file_server_no_auth: True
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
             om_csv_to_om_owl:
                 prefixes: {}
+                handler_kwargs: {}
                 upload_settings:
                     triple_store_sparql_endpoint: omops
                     triple_store_secrets_file: ts_dummy_secrets
@@ -156,8 +257,41 @@ test_results:
                     opsscan_query_endpoint: opsscan
     opsscan:
         handlers:
+            oc_json_to_ops_json:
+                prefixes: {}
+                handler_kwargs: {}
+                upload_settings:
+                    triple_store_sparql_endpoint: opsscan
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: False
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: opsscan
+                    file_server_no_auth: True
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
+            ops_json_to_ops_csv:
+                prefixes: {}
+                handler_kwargs: {}
+                upload_settings:
+                    triple_store_sparql_endpoint: opsscan
+                    triple_store_secrets_file: ts_dummy_secrets
+                    triple_store_no_auth: False
+                    file_server_upload_endpoint: fs_endpoint
+                    file_server_secrets_file: fs_dummy_secrets
+                    file_server_subdir: opsscan
+                    file_server_no_auth: True
+                query_settings:
+                    ospecies_query_endpoint: ospecies
+                    omops_query_endpoint: omops
+                    ocompchem_query_endpoint: ocompchem
+                    opsscan_query_endpoint: opsscan
             ops_csv_to_ops_owl:
                 prefixes: {}
+                handler_kwargs: {}
                 upload_settings:
                     triple_store_sparql_endpoint: opsscan
                     triple_store_secrets_file: ts_dummy_secrets

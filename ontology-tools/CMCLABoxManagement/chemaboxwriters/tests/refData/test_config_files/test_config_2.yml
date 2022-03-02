@@ -15,7 +15,6 @@ ocompchem:
             upload_settings:
                 upload_to_file_server:
                     - test_stage4
-        oc_csv_to_oc_owl:
 test_results:
     ocompchem:
         handlers:
@@ -27,6 +26,25 @@ test_results:
                         - test_stage2
                 query_settings: {}
                 prefixes: {}
+                handler_kwargs: {}
+            qc_json_to_oc_json:
+                upload_settings:
+                    upload_to_file_server:
+                        - test_stage3
+                    upload_to_triple_store:
+                        - test_stage2
+                query_settings: {}
+                prefixes: {}
+                handler_kwargs: {}
+            oc_json_to_oc_csv:
+                upload_settings:
+                    upload_to_file_server:
+                        - test_stage3
+                    upload_to_triple_store:
+                        - test_stage2
+                query_settings: {}
+                prefixes: {}
+                handler_kwargs: {}
             oc_csv_to_oc_owl:
                 upload_settings:
                     upload_to_file_server:
@@ -35,3 +53,4 @@ test_results:
                         - test_stage2
                 query_settings: {}
                 prefixes: {}
+                handler_kwargs: {}

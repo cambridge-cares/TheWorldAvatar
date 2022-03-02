@@ -19,7 +19,8 @@ import re
 import time
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common.handler import Handler
-import chemaboxwriters.common.endpoints_config as endp_conf
+import chemaboxwriters.common.endpoints_proxy as endp
+import chemaboxwriters.common.aboxconfig as abconf
 from enum import Enum
 from typing import List, Optional, Dict
 
@@ -52,14 +53,14 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="QC_JSON_TO_OS_JSON",
             in_stage=globals.aboxStages.QC_JSON,
             out_stage=globals.aboxStages.OS_JSON,
             endpoints_proxy=endpoints_proxy,
-            required_endpoints_config={endp_conf.WRITERS_PREFIXES_KEY: ["spec_pref"]},
+            required_endpoints_config={abconf.WRITERS_PREFIXES_KEY: ["spec_pref"]},
         )
 
     def _handle_input(
@@ -102,7 +103,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         **kwargs
     ) -> None:
 
-        spec_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["spec_pref"]
+        spec_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["spec_pref"]
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)

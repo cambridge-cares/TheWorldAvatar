@@ -12,7 +12,8 @@ import chemaboxwriters.common.globals as globals
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.handler import Handler
 from typing import List, Optional, Dict
-import chemaboxwriters.common.endpoints_config as endp_conf
+import chemaboxwriters.common.aboxconfig as abconf
+import chemaboxwriters.common.endpoints_proxy as endp
 from enum import Enum
 import logging
 
@@ -27,7 +28,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="OM_JSON_TO_OM_CSV",
@@ -35,7 +36,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             out_stage=globals.aboxStages.OM_CSV,
             endpoints_proxy=endpoints_proxy,
             required_endpoints_config={
-                endp_conf.WRITERS_PREFIXES_KEY: [
+                abconf.WRITERS_PREFIXES_KEY: [
                     "onto_spec",
                     "onto_mops",
                     "mops_pref",
@@ -75,14 +76,12 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         self, file_path: str, output_file_path: str, *args, **kwargs
     ) -> None:
 
-        onto_mops = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_mops"]
-        mops_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["mops_pref"]
-        rdf_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["rdf_pref"]
-        onto_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_spec"]
-        uom_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["uom_pref"]
-        unres_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
-            "unres_pref"
-        ]
+        onto_mops = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_mops"]
+        mops_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["mops_pref"]
+        rdf_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["rdf_pref"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        uom_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["uom_pref"]
+        unres_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unres_pref"]
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
@@ -97,12 +96,8 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )
 
             assemblymodel = None
-            query_endpoints = self.endpoints_config.get(
-                endp_conf.QUERY_SETTINGS_KEY, {}
-            )
-            omops_query_endpoint = query_endpoints.get(
-                endp_conf.OMOPS_QUERY_ENDPOINT_KEY
-            )
+            query_endpoints = self.endpoints_config.get(abconf.QUERY_SETTINGS_KEY, {})
+            omops_query_endpoint = query_endpoints.get(abconf.OMOPS_QUERY_ENDPOINT_KEY)
             if omops_query_endpoint is None:
                 logger.warning(
                     "Couldn't query for the assembly model IRI, The query endpoint not specified in the aboxwriters config file."

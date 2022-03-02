@@ -9,7 +9,8 @@ import numpy as np
 import chemaboxwriters.common.globals as globals
 from compchemparser.parsers.ccgaussian_parser import GEOM
 from chemaboxwriters.common.handler import Handler
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import chemaboxwriters.common.endpoints_proxy as endp
+import chemaboxwriters.common.aboxconfig as abconf
 from typing import List, Optional, Dict
 from enum import Enum
 
@@ -29,13 +30,14 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="OC_JSON_TO_OPS_JSON",
             in_stage=globals.aboxStages.OC_JSON,
             out_stage=globals.aboxStages.OPS_JSON,
             endpoints_proxy=endpoints_proxy,
+            required_handler_kwargs=["os_iris", "os_atoms_iris", "oc_atoms_pos"],
         )
 
     def _handle_input(

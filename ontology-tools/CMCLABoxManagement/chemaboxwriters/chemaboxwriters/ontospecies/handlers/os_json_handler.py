@@ -34,7 +34,8 @@ from chemaboxwriters.ontospecies.handlers.qc_json_handler import (
 )
 
 import chemaboxwriters.common.globals as globals
-import chemaboxwriters.common.endpoints_config as endp_conf
+import chemaboxwriters.common.endpoints_proxy as endp
+import chemaboxwriters.common.aboxconfig as abconf
 from typing import List, Optional, Dict
 from enum import Enum
 from chemaboxwriters.common.handler import Handler
@@ -48,7 +49,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="OS_JSON_TO_OS_CSV",
@@ -56,7 +57,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             out_stage=globals.aboxStages.OS_CSV,
             endpoints_proxy=endpoints_proxy,
             required_endpoints_config={
-                endp_conf.WRITERS_PREFIXES_KEY: [
+                abconf.WRITERS_PREFIXES_KEY: [
                     "onto_spec",
                     "gain_pref",
                     "kin_pref",
@@ -126,8 +127,8 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def _write_prelim(self, spamwriter, out_id, label):
 
-        spec_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["spec_pref"]
-        onto_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        spec_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["spec_pref"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         spamwriter.writerow(
             [
@@ -166,7 +167,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def _write_identifier_geom(self, spamwriter, out_id, data):
 
-        onto_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         pubchem_alt_label_value = data.get(PUBCHEM_ALT_LABEL)
         if pubchem_alt_label_value is not None:
@@ -243,11 +244,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def _write_atom_info(self, spamwriter, gen_id, out_id, data):
 
-        gain_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        table_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
-            "table_pref"
-        ]
-        unit_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["unit_pref"]
+        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
+        table_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["table_pref"]
+        unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         coords = ["X", "Y", "Z"]  # The three cartesian corrdinates.
         atom_counters = {atom_type: 1 for atom_type in set(data[ATOM_TYPES])}
@@ -358,7 +357,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def _write_charge_info(self, spamwriter, gen_id, out_id, data):
 
-        onto_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         if FORMAL_CHARGE in data:
             charge = data[FORMAL_CHARGE]
@@ -419,8 +418,8 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def _write_atoms(self, spamwriter, gen_id, out_id, data):
 
-        onto_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_spec"]
-        kin_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["kin_pref"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        kin_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["kin_pref"]
 
         atom_list = data[ATOM_LIST]
         atom_counts = data[ATOM_COUNTS]
@@ -489,7 +488,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def _write_molwts(self, spamwriter, gen_id, out_id, data):
 
-        onto_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         if MOLWT in data:
             molwt = data[MOLWT]
@@ -536,8 +535,8 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def _write_enth(self, spamwriter, gen_id, out_id, data):
 
-        onto_spec = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["onto_spec"]
-        kin_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["kin_pref"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        kin_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["kin_pref"]
 
         # Write enthalpy of formation data.
         if ENTH_FORM in data:

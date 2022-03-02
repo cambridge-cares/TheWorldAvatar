@@ -2,8 +2,8 @@ import json
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import chemaboxwriters.common.globals as globals
-import chemaboxwriters.common.endpoints_config as endp_conf
-from chemaboxwriters.common.endpoints_config import Endpoints_proxy
+import chemaboxwriters.common.endpoints_proxy as endp
+import chemaboxwriters.common.aboxconfig as abconf
 from typing import List, Optional, Dict
 from enum import Enum
 
@@ -16,7 +16,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="OMINP_JSON_TO_OM_JSON",
@@ -24,7 +24,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             out_stage=globals.aboxStages.OM_JSON,
             endpoints_proxy=endpoints_proxy,
             required_endpoints_config={
-                endp_conf.WRITERS_PREFIXES_KEY: ["omops_entry_prefix"]
+                abconf.WRITERS_PREFIXES_KEY: ["omops_entry_prefix"]
             },
         )
 
@@ -72,7 +72,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         **kwargs
     ) -> None:
 
-        omops_entry_prefix = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY][
+        omops_entry_prefix = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY][
             "omops_entry_prefix"
         ]
 

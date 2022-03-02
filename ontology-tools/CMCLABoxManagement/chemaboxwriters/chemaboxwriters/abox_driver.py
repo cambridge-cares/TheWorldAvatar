@@ -15,7 +15,6 @@ Usage:
    aboxwriter ocompchem  [options]
    aboxwriter omops      [options]
    aboxwriter opsscan    [options]
-                         [(--os-iris=<iri> --os-atoms-iris=<iris> --oc-atoms-ids=<ids>)]
 
 Options:
 --help                  Prints this help message.
@@ -69,21 +68,6 @@ Options:
                         run mode (files are not uploaded).
                         Choose between True / False
 --info                  Prints the pipeline info.
---os-iris=<iri>         OntoSpecies iri associated with the
-                        scan points. Only required for the
-                        opsscan command run with the
-                        "oc_json" input file type.
---os-atoms-iris=<iris>  Comma separated iris of ontospecies
-                        atoms defining the scan coordinate.
-                        Only required for the opsscan
-                        command run with the "oc_json" input
-                        file type.
---oc-atoms-ids=<ids>    Positions of atoms in ontocompchem
-                        scan point geometries (index starts
-                        from one), e.g. "1,2". Only required
-                        for the opsscan command run with the
-                        "oc_json" input file type.
-
 """
 
 
@@ -101,19 +85,18 @@ def start():
 
     try:
         _process_user_inputs(args)
-        disable_endpoints_config_check = args["--info"]
 
         pipeline = asp.assemble_pipeline(
-            pipeline_type=args["--pipeline-type"],
-            config_file=args["--config-file"],
-            disable_endpoints_config_check=disable_endpoints_config_check,
+            pipeline_type=args["--pipeline-type"], config_file=args["--config-file"]
         )
-        if args["--handlers-kwargs"] is not None:
-            pipeline.set_handlers_kwargs(handlers_kwargs=args["--handlers-kwargs"])
 
         if args["--info"]:
             pipeline.info()  # type: ignore
             return
+
+        pipeline.check_handlers_config(
+            input_type=utilsfunc.stage_name_to_enum(args["--inp-file-type"])
+        )
 
         if args["--file-or-dir"] is None:
             logger.warning(
@@ -121,8 +104,11 @@ def start():
             )
             return
 
+        pipeline
+
         write_abox(
             pipeline=pipeline,  # type: ignore
+            file_or_dir=args["--file-or-dir"],
             input_file_type=args["--inp-file-type"],
             file_ext=args["--file-ext"],
             out_dir=args["--out-dir"],
@@ -168,26 +154,6 @@ def _process_user_inputs(args: Dict) -> None:
         args["--pipeline-type"] = asp.OPS_PIPELINE
         if args["--inp-file-type"] is None:
             args["--inp-file-type"] = "oc_json"
-        if args["--inp-file-type"] == "oc_json":
-            if (
-                args["--os-iris"] is None
-                and args["--os-atoms-iris"] is None
-                and args["--oc-atoms-ids"] is None
-                and not args["--info"]
-            ):
-
-                raise app_exc.MissingRequiredInput(
-                    """For opsscan pipeline run with the oc_json input type,
-                    --os-iris, --os-atoms-iris and --oc-atoms-ids must be provided."""
-                )
-            else:
-                args["--handlers_kwargs"] = {
-                    "OC_JSON_TO_OPS_JSON": {
-                        "os_iris": args["--os-iris"],
-                        "os_atoms_iris": args["--os-atoms-iris"],
-                        "oc_atoms_pos": args["--oc-atoms-ids"],
-                    }
-                }
     else:
         args["pipeline_type"] = "Unknown"
 

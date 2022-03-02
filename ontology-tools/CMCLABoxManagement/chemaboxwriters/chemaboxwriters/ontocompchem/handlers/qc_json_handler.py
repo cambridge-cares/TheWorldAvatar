@@ -11,7 +11,10 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional, Dict
-import chemaboxwriters.common.endpoints_config as endp_conf
+import chemaboxwriters.common.endpoints_proxy as endp
+import chemaboxwriters.common.aboxconfig as abconf
+
+# import chemaboxwriters.common.aboxconfig as abconf
 import logging
 
 logger = logging.getLogger(__name__)
@@ -26,14 +29,14 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
 
     def __init__(
         self,
-        endpoints_proxy: Optional[endp_conf.Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
     ) -> None:
         super().__init__(
             name="QC_JSON_TO_OC_JSON",
             in_stage=aboxStages.QC_JSON,
             out_stage=aboxStages.OC_JSON,
             endpoints_proxy=endpoints_proxy,
-            required_endpoints_config={endp_conf.WRITERS_PREFIXES_KEY: ["comp_pref"]},
+            required_endpoints_config={abconf.WRITERS_PREFIXES_KEY: ["comp_pref"]},
         )
 
     def _handle_input(
@@ -74,13 +77,13 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
-        comp_pref = self._endpoints_config[endp_conf.WRITERS_PREFIXES_KEY]["comp_pref"]
+        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
 
         xyz = get_xyz_from_parsed_json(data)
         inchi = obconverter.obConvert(xyz, "xyz", "inchi")
-        query_endpoints = self.endpoints_config.get(endp_conf.QUERY_SETTINGS_KEY, {})
+        query_endpoints = self.endpoints_config.get(abconf.QUERY_SETTINGS_KEY, {})
         ospecies_query_endpoint = query_endpoints.get(
-            endp_conf.OSPECIES_QUERY_ENDPOINT_KEY
+            abconf.OSPECIES_QUERY_ENDPOINT_KEY
         )
         if ospecies_query_endpoint is None:
             logger.warning(
