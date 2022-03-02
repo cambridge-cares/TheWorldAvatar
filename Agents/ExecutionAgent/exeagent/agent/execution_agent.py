@@ -2,9 +2,12 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import List
 import json
+import time
 import os
 
 from pyasyncagent import AsyncAgent
+
+from chemistry_and_robots.hardware import vapourtec
 
 from exeagent.kg_operations import *
 from exeagent.data_model import *
@@ -27,18 +30,45 @@ class ExecutionAgent(AsyncAgent):
         self.logger.info("Collected inputs from the knowledge graph: ")
         self.logger.info(json.dumps(rxn_exp_instance.dict()))
 
-        # Get the digital twin of the most suitable hardware
-        # preferred_digital_twin = self.sparql_client.get_dt_of_preferred_hardware(rxn_exp_instance)
+        # Check until it's the turn for the given reaction experiment
+        rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_instance.instance_iri)
+        while len(rxn_exp_queue) > 0:
+            time.sleep(60)
+            rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_instance.instance_iri)
 
-        # Call function to create a list of OntoLab.EquipmentSettings instances from OntoRxn:ReactionExperiment/ReactionVariation
-        list_equip_settings = self.sparql_client.create_equip_settings_from_rxn_exp(rxn_exp_instance)
+        # Check until get the digital twin of the most suitable hardware
+        # yes, done TODO do we return the whole instance of vapourtec_rs400 here? which will be used for
+        preferred_rs400, preferred_r4_reactor = self.sparql_client.get_preferred_vapourtec_rs400(rxn_exp_instance)
+        while (preferred_rs400, preferred_r4_reactor) == (None, None):
+            time.sleep(60)
+            preferred_rs400, preferred_r4_reactor = self.sparql_client.get_preferred_vapourtec_rs400(rxn_exp_instance)
 
-        # Upload the created OntoLab:EquipmentSettings triples to KG
-        self.sparql_client.write_equip_settings_to_kg(list_equip_settings)
+        # Call function to create a list of ontolab.EquipmentSettings instances from ontorxn.ReactionExperiment/ReactionVariation and ontovapourtec.VapourtecRS400 and VapourtecR4Reactor instances
+        # yes, done TODO do we pass the instance of vapourtecrs400 and reaction experiment both as arguments?
+        list_equip_settings = self.sparql_client.create_equip_settings_for_rs400_from_rxn_exp(rxn_exp_instance, preferred_rs400, preferred_r4_reactor)
 
-        list_equip_settings_iri = [es.instance_iri for es in list_equip_settings]
-        self.logger.info(f"The proposed new equipment settings are recorded in: <{'>, <'.join(list_equip_settings_iri)}>.")
-        return list_equip_settings_iri
+        # Upload the create OntoLab:EquipmentSettings triples to KG
+        # yes, done TODO do we need to connect the equipment settings to the lab equipment here?
+        self.sparql_client.write_equip_settings_to_kg(list_equip_settings) # TODO this function should be changed, do we need to write it to the kg?
+        self.logger.info(f"The proposed new equipment settings are recorded in: <{'>, <'.join([es.instance_iri for es in list_equip_settings])}>.")
+
+        # Generate the execution CSV file and send for execution
+        # yes, done? TODO pass an instance of rxn exp and list of equipment settings
+        run_csv_path = vapourtec.create_exp_run_csv(rxn_exp_instance, list_equip_settings)
+        # TODO this file will be uploaded to KG file server - to be downloaded by specific agent deployed together with hardware
+        self.logger.info(f"The generated CSV run file path is {run_csv_path}")
+        # vapourtec.connect_to_fc() # TODO
+        # vapourtec.send_exp_csv_for_exe() # TODO
+        return []
+
+        # Check until a new HPLC report is generated
+        # hplc_report = self.sparql_client.get_hplc_report_given_ # TODO
+        # self.logger.info(f"The generated new HPLC report (raw data) is hosted at: <{hplc_report.instance_iri}>.")
+        # TODO make the connection between HPLCReport and HPLCJob here?
+        # TODO where do we generate the instance of HPLCJob?
+        # TODO do we remove the settings for the hardware from the digital twin? --> so within each operation of execution agent, the settings got generated and deleted
+
+        # return [hplc_report.instance_iri]
 
     def collectInputsInformation(self, agent_inputs) -> ReactionExperiment:
         """

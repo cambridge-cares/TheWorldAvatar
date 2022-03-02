@@ -1,6 +1,7 @@
 # The purpose of this module is to provide utility functions
 # to interact with the knowledge graph
 #============================================================
+from typing import Tuple
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
 import pandas as pd
@@ -240,7 +241,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         # TODO add support for parsing InputChemical and OutputChemical
                         hasInputChemical=self.get_input_chemical_of_rxn_exp(exp_iri),
                         hasOutputChemical=self.get_output_chemical_of_rxn_exp(exp_iri),
-                        isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri)
+                        isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri),
+                        isOccurenceOf=self.get_chemical_reaction(exp_iri)
                     )
                 )
             elif rdf_type_rxn == ONTORXN_REACTIONVARIATION:
@@ -252,10 +254,87 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         # TODO add support for parsing InputChemical and OutputChemical
                         hasInputChemical=self.get_input_chemical_of_rxn_exp(exp_iri),
                         hasOutputChemical=self.get_output_chemical_of_rxn_exp(exp_iri),
-                        isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri)
+                        isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri),
+                        isOccurenceOf=self.get_chemical_reaction(exp_iri)
                     )
                 )
         return list_exp
+
+    def get_chemical_reaction(self, rxnexp_iri: str) -> OntoCAPE_ChemicalReaction:
+        rxnexp_iri = trimIRI(rxnexp_iri)
+        query = PREFIX_RDF + """SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
+                   ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species
+                   WHERE {
+                       VALUES ?reac_type {<%s> <%s>}.
+                       VALUES ?prod_type {<%s> <%s> <%s> <%s>}.
+                       <%s> <%s> ?chem_rxn.
+                       ?chem_rxn <%s> ?reactant; <%s> ?product.
+                       ?reactant rdf:type ?reac_type; <%s> ?reac_species.
+                       ?product rdf:type ?prod_type; <%s> ?prod_species.
+                       optional{VALUES ?cata_type {<%s> <%s>}. ?chem_rxn <%s> ?catalyst. ?catalyst rdf:type ?cata_type; <%s> ?cata_species.}
+                       optional{VALUES ?solv_type {<%s> <%s>}. ?chem_rxn <%s> ?solvent. ?solvent rdf:type ?solv_type; <%s> ?solv_species.}
+                   }""" % (ONTOKIN_SPECIES, ONTOKIN_REACTANT, ONTOKIN_SPECIES, ONTOKIN_PRODUCT, ONTORXN_TARGETPRODUCT, ONTORXN_IMPURITY,
+                   rxnexp_iri, ONTORXN_ISOCCURENCEOF, ONTOCAPE_HASREACTANT, ONTOCAPE_HASPRODUCT,
+                   ONTOSPECIES_HASUNIQUESPECIES, ONTOSPECIES_HASUNIQUESPECIES,
+                   ONTOKIN_SPECIES, ONTORXN_CATALYST, ONTOCAPE_CATALYST, ONTOSPECIES_HASUNIQUESPECIES,
+                   ONTOKIN_SPECIES, ONTORXN_SOLVENT, ONTORXN_HASSOLVENT, ONTOSPECIES_HASUNIQUESPECIES)
+        response = self.performQuery(query)
+        logger.debug(response)
+
+        unique_chem_rxn = self.get_unique_values_in_list_of_dict(response, 'chem_rxn')
+        if len(unique_chem_rxn) > 1:
+            raise Exception("Multiple OntoCAPE:ChemicalReaction identified for reaction experiment <%s>: %s" % (rxnexp_iri, str(unique_chem_rxn)))
+        elif len(unique_chem_rxn) < 1:
+            raise Exception("Reaction experiment <%s> is missing OntoCAPE:ChemicalReaction." % (rxnexp_iri))
+        else:
+            unique_chem_rxn = unique_chem_rxn[0]
+
+        chem_rxn = OntoCAPE_ChemicalReaction(
+            instance_iri=unique_chem_rxn,
+            hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
+            hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
+            hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
+            hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species')
+        )
+
+        return chem_rxn
+
+    def get_ontokin_species_from_chem_rxn(self, list_of_dict: List[Dict], species_role: str, species_type: str, ontospecies_key: str) -> List[OntoKin_Species]:
+        """Example: species_role='reactant', species_type='reac_type', species_key='reac_species'"""
+        list_species = []
+        if not self.check_if_key_in_list_of_dict(list_of_dict, species_role):
+            return None
+        else:
+            wanted_info = self.keep_wanted_keys_from_list_of_dict(list_of_dict, [species_role, species_type, ontospecies_key])
+            wanted_info = self.remove_duplicate_dict_from_list_of_dict(wanted_info)
+            unique_species_iri = self.get_unique_values_in_list_of_dict(wanted_info, species_role)
+            for u_s in unique_species_iri:
+                u_s_info = self.get_sublist_in_list_of_dict_matching_key_value(wanted_info, species_role, u_s)
+                if len(u_s_info) > 1:
+                    raise Exception("Multiple OntoSpecies:Species identified given one instance of %s <%s>: %s" % (species_role ,u_s, str(u_s_info)))
+                elif len(u_s_info) < 1:
+                    raise Exception("No unique OntoSpecies:Species identified for instance of %s <%s>." % (species_role, u_s))
+                else:
+                    u_s_info = u_s_info[0]
+                if u_s_info[species_type] == ONTOKIN_SPECIES:
+                    species = OntoKin_Species(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
+                elif u_s_info[species_type] == ONTOKIN_REACTANT:
+                    species = OntoKin_Reactant(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
+                elif u_s_info[species_type] == ONTOKIN_PRODUCT:
+                    species = OntoKin_Product(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
+                elif u_s_info[species_type] == ONTORXN_TARGETPRODUCT:
+                    species = TargetProduct(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
+                elif u_s_info[species_type] == ONTORXN_IMPURITY:
+                    species = Impurity(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
+                elif u_s_info[species_type] == ONTORXN_CATALYST:
+                    species = Catalyst(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
+                elif u_s_info[species_type] == ONTORXN_SOLVENT:
+                    species = Solvent(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
+                else:
+                    raise Exception("Species type (%s) NOT supported for: %s" % (u_s_info[species_type], str(u_s_info)))
+                list_species.append(species)
+
+            return list_species
 
     def get_rdf_type_of_rxn_exp(self, rxnexp_iri: str) -> str:
         rxnexp_iri = trimIRI(rxnexp_iri)
@@ -726,40 +805,120 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             return response[0]['newexp']
 
-    def create_equip_settings_from_rxn_exp(self, rxnexp: ReactionExperiment) -> List[EquipmentSettings]:
+    def create_equip_settings_for_rs400_from_rxn_exp(self, rxnexp: ReactionExperiment, rs400: VapourtecRS400, preferred_r4_reactor: VapourtecR4Reactor) -> List[EquipmentSettings]:
         list_equip_setting = []
         reactor_setting = ReactorSettings(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             hasResidenceTimeSetting=ResidenceTimeSetting(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTORXN_RESIDENCETIME).instance_iri,
+                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTORXN_RESIDENCETIME),
                 namespace_for_init=getNameSpace(rxnexp.instance_iri)
             ),
             hasReactorTemperatureSetting=ReactorTemperatureSetting(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTORXN_REACTIONTEMPERATURE).instance_iri,
+                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTORXN_REACTIONTEMPERATURE),
                 namespace_for_init=getNameSpace(rxnexp.instance_iri)
             ),
-            namespace_for_init=getNameSpace(rxnexp.instance_iri)
+            namespace_for_init=getNameSpace(rxnexp.instance_iri),
+            specifies=preferred_r4_reactor,
+            wasGeneratedFor=rxnexp.instance_iri
         )
 
         list_equip_setting.append(reactor_setting)
 
         # TODO add support for PumpSettings
-        # pump_setting = PumpSettings()
-        # list_equip_setting.append(pump_setting)
+        # first identify the reference reactant
+        dict_stoi_ratio = {cond.indicatesMultiplicityOf:cond for cond in rxnexp.hasReactionCondition if cond.clz == ONTORXN_STOICHIOMETRYRATIO}
+        reference_input_chemical = [chem for chem in dict_stoi_ratio if abs(dict_stoi_ratio.get(chem).hasValue.hasNumericalValue - 1) < 0.000001]
+        if len(reference_input_chemical) > 1:
+            raise Exception("Multiple reference chemicals are identified: " + str(reference_input_chemical) + " for reaction experiment: " + str(rxnexp.dict()))
+        elif len(reference_input_chemical) < 1:
+            raise Exception("No reference chemicals are identified for reaction experiment: " + str(rxnexp.dict()))
+        else:
+            reference_input_chemical = reference_input_chemical[0]
+
+        reaction_scale = [cond for cond in rxnexp.hasReactionCondition if cond.clz == ONTORXN_REACTIONSCALE]
+        if len(reaction_scale) > 1:
+            raise Exception("Multiple reaction scale are identified: " + str(reaction_scale) + " for reaction experiment: " + str(rxnexp.dict()))
+        elif len(reaction_scale) < 1:
+            raise Exception("No reaction scale are identified for reaction experiment: " + str(rxnexp.dict()))
+        else:
+            reaction_scale = reaction_scale[0]
+
+        if reference_input_chemical != reaction_scale.indicateUsageOf:
+            raise Exception("Reference input chemical is specified as <%s>, however, the reaction scale is spedified for <%s> in reaction experiment <%s>." % (
+                reference_input_chemical, reaction_scale.indicateUsageOf, rxnexp.instance_iri))
+
+        dict_pumps = self.sort_r2_pumps_in_vapourtec_rs400(rs400)
+        reference_pump = dict_pumps.pop("A") # NOTE here we hardcode implicit knowledge that Pump A is the reference pump
+        autosampler = self.get_autosampler_from_vapourtec_rs400(rs400)
+        for input_chem in rxnexp.hasInputChemical:
+            # first get the AutoSamplerSite that contains the suitable chemical
+            autosamplersite = self.get_autosampler_site_given_input_chemical(autosampler, input_chem)
+
+            # then check if it's the reference reactant, if so, assign the reference pump
+            if input_chem.instance_iri == reference_input_chemical:
+                pump_setting = PumpSettings(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=getNameSpace(rxnexp.instance_iri),
+                    specifies=reference_pump,
+                    hasStoichiometryRatioSetting=StoichiometryRatioSetting(
+                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                        namespace_for_init=getNameSpace(rxnexp.instance_iri),
+                        hasQuantity=dict_stoi_ratio.get(input_chem.instance_iri)
+                    ),
+                    hasSampleLoopVolumeSetting=SampleLoopVolumeSetting( # this is specific setting that refers to the Pump A (reference pump)
+                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                        namespace_for_init=getNameSpace(rxnexp.instance_iri),
+                        hasQuantity=reaction_scale
+                    ),
+                    pumpsLiquidFrom=autosamplersite,
+                    wasGeneratedFor=rxnexp.instance_iri
+                )
+            else:
+                key = list(dict_pumps.keys())[0]
+                pump = dict_pumps.pop(key)
+                pump_setting = PumpSettings(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=getNameSpace(rxnexp.instance_iri),
+                    specifies=pump,
+                    hasStoichiometryRatioSetting=StoichiometryRatioSetting(
+                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                        namespace_for_init=getNameSpace(rxnexp.instance_iri),
+                        hasQuantity=dict_stoi_ratio.get(input_chem.instance_iri)
+                    ),
+                    pumpsLiquidFrom=autosamplersite,
+                    wasGeneratedFor=rxnexp.instance_iri
+                )
+            list_equip_setting.append(pump_setting)
 
         return list_equip_setting
 
+    def get_autosampler_site_given_input_chemical(self, autosampler: AutoSampler, input_chem: InputChemical) -> AutoSamplerSite:
+        for site in autosampler.hasSite:
+            if site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour == input_chem.thermodynamicBehaviour:
+                return site
+        return None
+
+    def get_autosampler_from_vapourtec_rs400(self, rs400: VapourtecRS400) -> AutoSampler:
+        # NOTE this method assumes there's only one AutoSampler associated with one VapourtecRS400 module
+        for equip in rs400.consistsOf:
+            if isinstance(equip, AutoSampler):
+                return equip
+        return None
+
+    def sort_r2_pumps_in_vapourtec_rs400(self, rs400: VapourtecRS400) -> Dict[str, VapourtecR2Pump]:
+        return {pump.locationID:pump for pump in rs400.consistsOf if isinstance(pump, VapourtecR2Pump)}
+
     def write_equip_settings_to_kg(self, equip_settings: List[EquipmentSettings]):
-        filePath = f'{str(uuid.uuid4())}.xml'
+        filePath = f'{str(uuid.uuid4())}.ttl'
 
         g = Graph()
         for es in equip_settings:
             g = es.create_instance_for_kg(g)
-        g.serialize(filePath, format='xml')
+        g.serialize(filePath, format='ttl')
         self.uploadOntology(filePath)
-        # Delete generated XML file
+        # Delete generated TTL file
         # os.remove(filePath)
 
     def get_rxn_con_or_perf_ind(self, list_: List[ReactionCondition] or List[PerformanceIndicator], clz, positionalID=None):
@@ -779,8 +938,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             logger.error(var[0])
             return var[0]
 
-    def get_preferred_r4_reactor(self, rxnexp: ReactionExperiment) -> str:
-        """ This function queries the digital twin of the most suitable hardware for the given reaction experiment."""
+    def get_preferred_vapourtec_rs400(self, rxnexp: ReactionExperiment) -> Tuple[VapourtecRS400, VapourtecR4Reactor]:
+        """ This function queries the digital twin of the most suitable VapourtecRS400 for the given reaction experiment."""
         # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals that has the same thermodynamicBehaviour as the InputChemical of a reaction experiment
         list_autosampler = self.get_all_autosampler_with_fill()
         list_input_chemical = self.get_input_chemical_of_rxn_exp(rxnexp.instance_iri)
@@ -805,13 +964,26 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 for reactor in list_reactor:
                     # TODO NOTE here the temperature comparison need to be modified to support different temperature units
                     if reactor.hasReactorTemperatureLowerLimit.hasValue.hasNumericalValue <= temp_condition <= reactor.hasReactorTemperatureUpperLimit.hasValue.hasNumericalValue:
-                        # return the first reactor that is idle
-                        # TODO future work should support recording of estimated time for the VapourtecR4Reactor to be available (just in case None of the reactor is available)
-                        # TODO maybe calculate based on residence time and other information {'labequip_1': 1, 'labequip_2': 2}
-                        if vapourtec_rs400.hasState == ONTOVAPOURTEC_IDLE:
-                            return reactor.instance_iri
+                        # here we also checks if the amount of InputChemical is less than the amount of VapourtecR2Pumps available
+                        if len(list_input_chemical) <= len([pump_ for pump_ in vapourtec_rs400.consistsOf if isinstance(pump_, VapourtecR2Pump)]):
+                            # return the first reactor that is idle
+                            # TODO future work should support recording of estimated time for the VapourtecR4Reactor to be available (just in case None of the reactor is available)
+                            # TODO maybe calculate based on residence time and other information {'labequip_1': 1, 'labequip_2': 2}
+                            if vapourtec_rs400.hasState == ONTOVAPOURTEC_IDLE:
+                                return vapourtec_rs400, reactor
 
-        return None
+        return None, None
+
+    def update_vapourtec_rs400_state(self, vapourtec_rs400_iri: str, target_state: str):
+        vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
+        target_state = trimIRI(target_state)
+        if target_state in LIST_ONTOVAPOURTEC_VALIDSTATE:
+            update = """DELETE {<%s> <%s> ?state} INSERT {<%s> <%s> <%s>} WHERE {<%s> <%s> ?state}""" % (
+                vapourtec_rs400_iri, SAREF_HASSTATE, vapourtec_rs400_iri, SAREF_HASSTATE, target_state, vapourtec_rs400_iri, SAREF_HASSTATE
+            )
+            self.performUpdate(update)
+        else:
+            raise Exception("Target state <%s> is not recognised as a valid state for VapourtecRS400, the intended instance of VapourtecRS400 is <%s>." % (target_state, vapourtec_rs400_iri))
 
     def get_autosampler(self, autosampler_iri: str) -> AutoSampler:
         autosampler = self.get_all_autosampler_with_fill(given_autosampler_iri=autosampler_iri)
@@ -1059,6 +1231,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         update = """INSERT DATA {<%s> <%s> <%s>}""" % (hplc_report.instance_iri, ONTOHPLC_HASREPORTPATH, hplc_report.hasReportPath)
         self.performUpdate(update)
 
+    #######################################################
+    ## Some utility functions handling the list and dict ##
+    #######################################################
     def get_sublist_in_list_of_dict_matching_key_value(self, list_of_dict: List[Dict], key: str, value: Any) -> list:
         if len(list_of_dict) > 0:
             try:
@@ -1086,3 +1261,18 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             logger.error("An empty list is passed in while requesting return value of key '%s'." % (key))
             return []
+
+    def keep_wanted_keys_from_list_of_dict(self, list_of_dict: List[dict], wanted_keys: List[str]) -> list:
+        return_list = []
+        for one_dict in list_of_dict:
+            return_list.append({key:one_dict[key] for key in wanted_keys})
+        return return_list
+
+    def remove_duplicate_dict_from_list_of_dict(self, list_of_dict: List[dict]) -> list:
+        return [dict(t) for t in {tuple(sorted(d.items())) for d in list_of_dict}]
+
+    def check_if_key_in_list_of_dict(self, list_of_dict: List[dict], key: str):
+        for d in list_of_dict:
+            if key in d:
+                return True
+        return False

@@ -1,4 +1,5 @@
 from chemistry_and_robots.data_model.ontovapourtec import AutoSampler
+from chemistry_and_robots.kg_operations import sparql_client
 from testcontainers.core.container import DockerContainer
 from rdflib import Graph
 from pathlib import Path
@@ -13,7 +14,7 @@ import os
 logging.getLogger("py4j").setLevel(logging.INFO)
 logger = logging.getLogger('test_sparql_client')
 
-from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
+from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient, ONTOVAPOURTEC_NULL, ONTOVAPOURTEC_IDLE
 
 class TargetIRIs(Enum):
     AUTOMATEDRXNPLATFORM_DUMMY_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/AutomatedRxnPlatform_Dummy'
@@ -35,6 +36,14 @@ class TargetIRIs(Enum):
     NEW_RXN_EXP_1_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1'
     NEW_RXN_EXP_2_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a'
     NEW_RXN_EXP_3_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c'
+    CHEMICAL_REACTION_IRI = 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1'
+    REACTANT_SPECIES_DICTIONARY = {'https://www.example.com/triplestore/ontorxn/ChemRxn_1/Species_1': 'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+    'https://www.example.com/triplestore/ontorxn/ChemRxn_1/Species_2': 'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3'}
+    PRODUCT_SPECIES_DICTIONARY = {'https://www.example.com/triplestore/ontorxn/ChemRxn_1/Species_3': 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/Species_placeholder_pubchemcid_637759',
+    'https://www.example.com/triplestore/ontorxn/ChemRxn_1/Species_4': 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/Species_placeholder_pubchemcid_640180'}
+    CATALYST_SPECIES_DICTIONARY = {'https://www.example.com/triplestore/ontorxn/ChemRxn_1/Species_5': 'http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d'}
+    SOLVENT_SPECIES_DICTIONARY = {'https://www.example.com/triplestore/ontorxn/ChemRxn_1/Species_6': 'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',
+    'https://www.example.com/triplestore/ontorxn/ChemRxn_1/Species_7': 'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'}
     LIST_RXN_EXP_1_INPUT_CHEMICAL_IRI = ['https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1',
     'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2',
     'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3']
@@ -196,20 +205,31 @@ def test_get_vapourtec_rs400_given_autosampler(initialise_triples):
     assert  response.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
 
 @pytest.mark.parametrize(
-    "new_rxn_exp_iri,list_r4_reactor_iri",
+    "new_rxn_exp_iri,list_r4_reactor_iri,vapourtec_rs400",
     [
-        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value),
-        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value),
-        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value),
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value),
     ],
 )
-def test_get_preferred_r4_reactor(initialise_triples, new_rxn_exp_iri, list_r4_reactor_iri):
+def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, list_r4_reactor_iri, vapourtec_rs400):
     sparql_client = initialise_triples
     response = sparql_client.getReactionExperiment(new_rxn_exp_iri)
     assert len(response) == 1
     assert response[0].instance_iri == new_rxn_exp_iri
-    preferred_r4_reactor = sparql_client.get_preferred_r4_reactor(response[0])
-    assert preferred_r4_reactor in list_r4_reactor_iri
+    preferred_rs400, preferred_r4_reactor = sparql_client.get_preferred_vapourtec_rs400(response[0])
+    assert preferred_r4_reactor.instance_iri in list_r4_reactor_iri
+    assert preferred_rs400.instance_iri == vapourtec_rs400
+
+    # Change the status to Null
+    sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, ONTOVAPOURTEC_NULL)
+    # Now perform the same checking
+    new_rs400, new_r4_reactor = sparql_client.get_preferred_vapourtec_rs400(response[0])
+    # Change back the status to Idle
+    sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, ONTOVAPOURTEC_IDLE)
+    # Now perform the same checking, the returned values should be None, None
+    assert None == new_rs400
+    assert None == new_r4_reactor
 
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,r4_reactor_iri",
@@ -251,6 +271,50 @@ def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_e
     sparql_client = initialise_triples
     rxn_exp_queue = sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_iri)
     assert all(item in prior_rxn_exp for item in [*rxn_exp_queue])
+
+@pytest.mark.parametrize(
+    "rxn_exp_iri,chem_rxn_iri,reactant,product,catalyst,solvent",
+    [
+        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+    ],
+)
+def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, chem_rxn_iri, reactant, product, catalyst, solvent):
+    sparql_client = initialise_triples
+    chem_rxn = sparql_client.get_chemical_reaction(rxn_exp_iri)
+    print(chem_rxn)
+    print(chem_rxn.instance_iri)
+    assert chem_rxn.instance_iri == chem_rxn_iri
+    dict_reactant = {reactant.instance_iri:reactant.hasUniqueSpecies for reactant in chem_rxn.hasReactant}
+    assert dict_reactant == reactant
+    dict_product = {product.instance_iri:product.hasUniqueSpecies for product in chem_rxn.hasProduct}
+    assert dict_product == product
+    dict_catalyst = {catalyst.instance_iri:catalyst.hasUniqueSpecies for catalyst in chem_rxn.hasCatalyst}
+    assert dict_catalyst == catalyst
+    dict_solvent = {solvent.instance_iri:solvent.hasUniqueSpecies for solvent in chem_rxn.hasSolvent}
+    assert dict_solvent == solvent
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer
