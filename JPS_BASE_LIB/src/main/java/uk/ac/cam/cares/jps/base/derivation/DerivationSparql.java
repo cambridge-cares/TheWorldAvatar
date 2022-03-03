@@ -57,7 +57,6 @@ public class DerivationSparql{
 	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
 	
 	// status concepts
-	private static String PENDINGUPDATE = "PendingUpdate";
 	private static String REQUESTED = "Requested";
 	private static String INPROGRESS = "InProgress";
 	private static String FINISHED = "Finished";
@@ -75,7 +74,6 @@ public class DerivationSparql{
 	private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
 	private static Iri DerivationAsyn = p_derived.iri("DerivationAsyn");
 	private static Iri Status = p_derived.iri("Status");
-	private static Iri PendingUpdate = p_derived.iri(PENDINGUPDATE);
 	private static Iri Requested = p_derived.iri(REQUESTED);
 	private static Iri InProgress = p_derived.iri(INPROGRESS);
 	private static Iri Finished = p_derived.iri(FINISHED);
@@ -109,7 +107,6 @@ public class DerivationSparql{
 	private static final Map<String, StatusType> statusToType;
 	static {
 		Map<String, StatusType> statusMap = new HashMap<>();
-		statusMap.put(derivednamespace.concat(PENDINGUPDATE), StatusType.PENDINGUPDATE);
 		statusMap.put(derivednamespace.concat(REQUESTED), StatusType.REQUESTED);
 		statusMap.put(derivednamespace.concat(INPROGRESS), StatusType.INPROGRESS);
 		statusMap.put(derivednamespace.concat(FINISHED), StatusType.FINISHED);
@@ -502,25 +499,6 @@ public class DerivationSparql{
 		} else {
 			return true;
 		}
-	}
-	
-	/**
-	 * This method marks the status of the derivation as "PendingUpdate".
-	 * @param derivation
-	 */
-	void markAsPendingUpdate(String derivation) {
-		deleteStatus(derivation);
-		ModifyQuery modify = Queries.MODIFY();
-		
-		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		
-		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
-		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(PendingUpdate);
-		
-		modify.prefix(p_derived).insert(insert_tp);
-		modify.prefix(p_derived).insert(insert_tp_rdf_type);
-		
-		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
