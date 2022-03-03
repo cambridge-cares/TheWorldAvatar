@@ -23,13 +23,11 @@ This example contains a chain of asynchronous derivations:
 3. Minimum Value Derivation: the minimum value in the generated list of random numbers
 4. Difference Derivation: difference between the maximum and minimum values
 
-Each derivation has an asynchronous agent associated with it that keeps monitoring its status. Based on four `rdf:type` of status (`PendingUpdate`, `Requested`, `InProgress`, and `Finished`), asynchronous agent performs tasks organised by the asynchronous operation mode as part of `DerivationClient`. All instances within this chain of derivation depend on three pure inputs: UpperLimit, LowerLimit, and NumberOfPoints. Once the request for update derivations is fired, each derivation will be marked as `PendingUpdate`, and each asynchronous agent will work out when to update the derivation it monitors. The information propagates through the knowledge graph and finally the whole knowledge graph is up-to-date.
+Each derivation has an asynchronous agent associated with it that keeps monitoring its status. Based on three `rdf:type` of status (`Requested`, `InProgress`, and `Finished`), asynchronous agent performs tasks organised by the asynchronous operation mode as part of `DerivationClient`. All instances within this chain of derivation depend on three pure inputs: UpperLimit, LowerLimit, and NumberOfPoints. As the derivations are marked as `Requested` at their creations, each agent performs an update as soon as its immediate upstream derivation is up-to-date. The information propagates through the knowledge graph and finally the whole knowledge graph is up-to-date. If the pure inputs got updated after that, developer can fire requests for update derivations, all involved derivations will be marked as `Requested`, and each asynchronous agent will work out when to update the derivation it monitors - the information propagates through the knowledge graph again.
 
 A more visual illustration can be found below:
 
-<p align="center">
-    <img src="https://lucid.app/publicSegments/view/2f4a9840-5d5a-4273-b4a2-5f71d98f5987/image.png" width="750"/>
-</p>
+![Alt text](DerivationAsynExample.png?raw=true)
 
 ### Pure inputs
 The pure inputs of the first (upstream) derivation in the chain are instances of `UpperLimit` (20), `LowerLimit` (3), and `NumberOfPoints` (6), with the value in brackets as their own default value in this example. Upon initialisation, the following triples are created in blazegraph:
@@ -253,7 +251,7 @@ docker cp derivationasynexample:root/.jps/ .
 ```
 
 ## Initialisation
-Assuming the stack is up and running, the instances can be initialised by running the following command:
+If you would like to test the example on a more interactive basis, you can spin up the docker container to execute initialisation and update by yourself. Assuming the stack is up and running, the instances can be initialised by running the following command:
 ```
 curl http://localhost:58085/DerivationAsynExample/InitialiseInstances
 ```
@@ -267,15 +265,7 @@ If this is not successful, it may be the case that the `derivationasynexample` c
 ```
 
 ## Updating the derivations
-The derivations in this example can be checked for update by running the command:
-```
-curl http://localhost:58085/DerivationAsynExample/UpdateDerivations
-```
-On a successful update request, you should receive an HTTP response, e.g.:
-```json
-{"status":"Checked derivation of difference <https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_d299313f-f5d7-4380-a616-b854498d1e11>, the update should be done in a few minutes"}
-```
-As here we are demonstrating asynchronous operation, you may use below SPARQL query in the blazegraph container (http://localhost:8889/blazegraph) to check the status during the course of update:
+As the derivations are marked as `Requested` at their creations, the update will be done automatically. As here we are demonstrating asynchronous operation, you may use below SPARQL query in the blazegraph container (http://localhost:8889/blazegraph) to check the status during the course of update:
 ```
 PREFIX OntoDerivation: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
 PREFIX time: <http://www.w3.org/2006/time#>
@@ -305,7 +295,7 @@ If after the derivations are updated successfully and you would like to have ano
 ```
 curl http://localhost:58085/DerivationAsynExample/InputAgent
 ```
-If the update is successful, you should receive an HTTP response, e.g.:
+If the update of `numofpoints` value is successful, you should receive an HTTP response, e.g.:
 ```json
 {"Updated successfully":{"NumberOfPoints instance":"http://derivation_asyn_example#2f9149b2-05ed-440a-8762-767fee51d211"}}
 ```
@@ -319,7 +309,11 @@ If you now run the SPARQL query privided above again, you may find results look 
 | `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_3d38ae98-da52-44ca-8abf-dedcb5c21531>` | 1638648307 |
 | `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_d299313f-f5d7-4380-a616-b854498d1e11>` | 1638648322 |
 
-You can see that one of the `inputTime` of `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_0f064364-f3b5-4e2e-b628-dd840112bd29>` is updated from 1638647788 to 1638651402 and this derivation is now out-of-date in theory. You may want to fire another request for an update and you should receive an HTTP response like:
+You can see that one of the `inputTime` of `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_0f064364-f3b5-4e2e-b628-dd840112bd29>` is updated from 1638647788 to 1638651402 and this derivation is now out-of-date in theory. You may want to fire a request for an update by running the command:
+```
+curl http://localhost:58085/DerivationAsynExample/UpdateDerivations
+```
+and you should receive an HTTP response on a successful update request, e.g.:
 ```json
 {"status":"Checked derivation of difference <https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_d299313f-f5d7-4380-a616-b854498d1e11>, the update should be done in a few minutes"}
 ```
