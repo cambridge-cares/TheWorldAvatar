@@ -981,8 +981,7 @@ public class DerivationSparql{
 		// check if the upstreamDerivation (outdated timestamp compared to pure input || outdated timestamp compared to its own upstream derivations || has status)
 		Expression<?> upstreamDerivationFilter = Expressions.or(Expressions.lt(upstreamDerivationTimestamp, pureInputTimestamp), // ?upstreamDerivationTimestamp < ?pureInputTimestamp
 				Expressions.lt(upstreamDerivationTimestamp, inputsBelongingToDerivationTimestamp), // ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp
-				Expressions.equals(statusType, PendingUpdate), // ?statusType IN (derived:PendingUpdate, derived:Requested, derived:InProgress, derived:Finished)
-				Expressions.equals(statusType, Requested),
+				Expressions.equals(statusType, Requested), // ?statusType IN (derived:Requested, derived:InProgress, derived:Finished)
 				Expressions.equals(statusType, InProgress),
 				Expressions.equals(statusType, Finished));
 		
@@ -1006,11 +1005,11 @@ public class DerivationSparql{
 		//		   }
 		//   OPTIONAL{?upstreamDerivation derived:isDerivedFrom/time:hasTime/time:inTimePosition/time:numericPosition ?pureInputTimestamp}
 		//   OPTIONAL{?upstreamDerivation derived:isDerivedFrom/derived:belongsTo/time:hasTime/time:inTimePosition/time:numericPosition ?inputsBelongingToDerivationTimestamp}
-		//   FILTER((?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType = derived:PendingUpdate || ?statusType = derived:Requested || ?statusType = derived:InProgress || ?statusType = derived:Finished))
+		//   FILTER((?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType = derived:Requested || ?statusType = derived:InProgress || ?statusType = derived:Finished))
 		// }
 		
 		// it should be noted that the final FILTER has a simplified version but was not implemented as IN operator was not found in SparqlBuilder (to the best of the author's knowledge):
-		// FILTER(?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType IN (derived:PendingUpdate, derived:Requested, derived:InProgress, derived:Finished))
+		// FILTER(?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType IN (derived:Requested, derived:InProgress, derived:Finished))
 		
 		query.prefix(p_derived,p_time).select(upstreamDerivation)
 		.where(GraphPatterns.and(upstreamDerivationPattern,upDevTimePattern,upDevStatusTypePattern,upDevPureInputTimePattern,inputsBelongsToDevTimePattern).filter(upstreamDerivationFilter));

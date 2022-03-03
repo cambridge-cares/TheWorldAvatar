@@ -33,7 +33,7 @@ public class DerivationClient {
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	DerivationSparql sparqlClient;
-	boolean upstreamDerivationPendingUpdate;
+	boolean upstreamDerivationRequested;
 	
 	 /**
 	 * Logger for error output.
@@ -231,7 +231,7 @@ public class DerivationClient {
 		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
 		try {
 			// the flag upstreamDerivationRequested is set as false by default
-			upstreamDerivationPendingUpdate = false;
+			upstreamDerivationRequested = false;
 			updateDerivationAsyn(derivationIRI, graph);
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
@@ -399,23 +399,17 @@ public class DerivationClient {
 	}
 	
 	/**
-	 * This method checks at the status "PendingUpdate" to decide whether change it to "Requested".
+	 * This method checks at the status "Requested" to see if any immediate upstream derivations are yet to be updated.
 	 * @param derivation
 	 */
-	public List<String> checkAtPendingUpdate(String derivation) {
-		// get a list of upstream derivations that need an update
+	public List<String> checkImmediateUpstreamDerivation(String derivation) {
+		// get a list of immediate upstream derivations that need an update
 		// (IMMEDIATE upstream derivations in the chain - <derivation> <isDerivedFrom>/<belongsTo> <upstreamDerivation>)
 		// if all IMMEDIATE upstream derivations are up-to-date,
 		// or if the derivation is the first one in the chain, this function returns empty list
-		List<String> upstreamDerivationsNeedUpdate = this.sparqlClient.getUpstreamDerivationsNeedUpdate(derivation);
-		
-		// if the list is empty, mark this derivation as Requested
 		// TODO when the list is not empty, it is possible to add more operations as now we know exactly which IMMEDIATE upstream derivation(s) need an update
 		// TODO additional support to be added when detecting any upstream derivation needs an update is synchronous derivation
-		if (upstreamDerivationsNeedUpdate.isEmpty()) {
-			this.sparqlClient.markAsRequested(derivation);
-		}
-
+		List<String> upstreamDerivationsNeedUpdate = this.sparqlClient.getUpstreamDerivationsNeedUpdate(derivation);
 		return upstreamDerivationsNeedUpdate;
 	}
 	
@@ -596,20 +590,20 @@ public class DerivationClient {
 			if (isDerivedAsynchronous(instance)) {
 				// we start with checking if this derivation is OutOfDate
 				if (isOutOfDate(instance, inputs)) {
-					// if it is OutOfDate and no status, just mark it as PendingUpdate
-					// from PendingUpdate to other status will be handled from AsynAgent side
+					// if it is OutOfDate and no status, just mark it as Requested
+					// from Requested to other status will be handled from AsynAgent side
 					if (!this.sparqlClient.hasStatus(instance)) {
-						this.sparqlClient.markAsPendingUpdate(instance);
+						this.sparqlClient.markAsRequested(instance);
 					}
-					// set the flag to true so that other derivations will know there is one derivation upstream already PendingUpdate
-					// thus they can be marked as PendingUpdate as well
-					upstreamDerivationPendingUpdate = true;
+					// set the flag to true so that other derivations will know there is one derivation upstream already Requested
+					// thus they can be marked as Requested as well
+					upstreamDerivationRequested = true;
 				} else {
-					// if the Derivation is not OutOfDate, then only consider mark it as PendingUpdate if meet all below situations
-					// (1) there is upstream derivation being marked as PendingUpdate;
+					// if the Derivation is not OutOfDate, then only consider mark it as Requested if meet all below situations
+					// (1) there is upstream derivation being marked as Requested;
 					// (2) this Derivation does NOT have any status, otherwise just leave it with its existing status
-					if (upstreamDerivationPendingUpdate && !this.sparqlClient.hasStatus(instance)) {
-						this.sparqlClient.markAsPendingUpdate(instance);
+					if (upstreamDerivationRequested && !this.sparqlClient.hasStatus(instance)) {
+						this.sparqlClient.markAsRequested(instance);
 					}
 				}
 			}
