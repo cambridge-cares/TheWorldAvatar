@@ -66,16 +66,16 @@ public class DerivationSparql{
 	// classes
 	private static Iri Service = p_agent.iri("Service");
 	private static Iri Operation = p_agent.iri("Operation");
-    private static Iri TimePosition = p_time.iri("TimePosition");
-    private static Iri Derivation = p_derived.iri("Derivation");
-    private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
-    private static Iri DerivationAsyn = p_derived.iri("DerivationAsyn");
-    private static Iri Status = p_derived.iri("Status");
-    private static Iri PendingUpdate = p_derived.iri(PENDINGUPDATE);
-    private static Iri Requested = p_derived.iri(REQUESTED);
-    private static Iri InProgress = p_derived.iri(INPROGRESS);
-    private static Iri Finished = p_derived.iri(FINISHED);
-    private static Iri InstantClass = p_time.iri("Instant");
+	private static Iri TimePosition = p_time.iri("TimePosition");
+	private static Iri Derivation = p_derived.iri("Derivation");
+	private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
+	private static Iri DerivationAsyn = p_derived.iri("DerivationAsyn");
+	private static Iri Status = p_derived.iri("Status");
+	private static Iri PendingUpdate = p_derived.iri(PENDINGUPDATE);
+	private static Iri Requested = p_derived.iri(REQUESTED);
+	private static Iri InProgress = p_derived.iri(INPROGRESS);
+	private static Iri Finished = p_derived.iri(FINISHED);
+	private static Iri InstantClass = p_time.iri("Instant");
 	
 	// object properties
 	private static Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
@@ -144,7 +144,7 @@ public class DerivationSparql{
 	 * @param inputs
 	 */
 	String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
-	    ModifyQuery modify = Queries.MODIFY();
+		ModifyQuery modify = Queries.MODIFY();
 		
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
@@ -171,16 +171,16 @@ public class DerivationSparql{
 		// add agent url
 		modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
 		modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
-	    
-	    // link to each input
-	    for (String input : inputs) {
-	    	modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
-	    }
-	    
-	    storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
-	    storeClient.executeUpdate();
-	    
-	    return derivedQuantity;
+		
+		// link to each input
+		for (String input : inputs) {
+			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
+		}
+		
+		storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
+		storeClient.executeUpdate();
+		
+		return derivedQuantity;
 	}
 
 	/**
@@ -226,7 +226,7 @@ public class DerivationSparql{
 		for (String input : inputs) {
 			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
 		}
-	    
+		
 		modify.prefix(p_time,p_derived,p_agent);
 		
 		storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
@@ -310,7 +310,7 @@ public class DerivationSparql{
 	 * @param inputs
 	 */
 	String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
-	    ModifyQuery modify = Queries.MODIFY();
+		ModifyQuery modify = Queries.MODIFY();
 		
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
@@ -336,18 +336,18 @@ public class DerivationSparql{
 		// add agent url
 		modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
 		modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
-	    
-	    // link to each input
-	    for (String input : inputs) {
-	    	modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
-	    }
-	    
-	    modify.prefix(p_time,p_derived,p_agent);
-	    
-	    storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
-	    storeClient.executeUpdate();
-	    
-	    return derivedQuantity;
+		
+		// link to each input
+		for (String input : inputs) {
+			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
+		}
+		
+		modify.prefix(p_time,p_derived,p_agent);
+		
+		storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
+		storeClient.executeUpdate();
+		
+		return derivedQuantity;
 	}
 	
 	/**
@@ -459,7 +459,7 @@ public class DerivationSparql{
 		for (String input : inputs) {
 			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
 		}
-	    
+		
 		modify.prefix(p_time,p_derived,p_agent);
 		
 		storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
@@ -673,23 +673,23 @@ public class DerivationSparql{
 	 */
 	@Deprecated
 	private boolean checkInstanceExists(String instance) {
-    	SelectQuery query = Queries.SELECT();
-    	
-    	// includes both cases where the instance is a subject and object
-    	// {<instance> ?x0 ?x1} {?x2 ?x3 <instance>}
-    	GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(query.var(),query.var()).optional(),
-    			query.var().has(query.var(),iri(instance)).optional());
-    	
-    	query.where(queryPattern);
-    
-    	JSONArray queryresult = storeClient.executeQuery(query.getQueryString());
+		SelectQuery query = Queries.SELECT();
+		
+		// includes both cases where the instance is a subject and object
+		// {<instance> ?x0 ?x1} {?x2 ?x3 <instance>}
+		GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(query.var(),query.var()).optional(),
+				query.var().has(query.var(),iri(instance)).optional());
+		
+		query.where(queryPattern);
+	
+		JSONArray queryresult = storeClient.executeQuery(query.getQueryString());
 
-    	if (queryresult.getJSONObject(0).isEmpty()) {
-    		return false;
-    	} else {
-    		return true;
-    	}
-    }
+		if (queryresult.getJSONObject(0).isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 	
 	/**
 	 * add a time stamp instance to the input or derivation if it does not exist
@@ -709,12 +709,12 @@ public class DerivationSparql{
 		Iri time_unix_iri = iri(time_unix);
 		
 		// unix time following the w3c standard
-	    modify.insert(iri(entity).has(hasTime,time_instant_iri));
-	    modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
-	    modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, iri("http://dbpedia.org/resource/Unix_time")));
-	    	    
-	    storeClient.setQuery(modify.prefix(p_time).getQueryString());
-	    storeClient.executeUpdate();
+		modify.insert(iri(entity).has(hasTime,time_instant_iri));
+		modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
+		modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, iri("http://dbpedia.org/resource/Unix_time")));
+				
+		storeClient.setQuery(modify.prefix(p_time).getQueryString());
+		storeClient.executeUpdate();
 	}
 	
 	/**
@@ -734,12 +734,12 @@ public class DerivationSparql{
 			Iri time_unix_iri = iri(time_unix);
 			
 			// unix time following the w3c standard
-		    modify.insert(iri(entity).has(hasTime,time_instant_iri));
-		    modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
-		    modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, iri("http://dbpedia.org/resource/Unix_time")));
+			modify.insert(iri(entity).has(hasTime,time_instant_iri));
+			modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
+			modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, iri("http://dbpedia.org/resource/Unix_time")));
 		}
 
-	    storeClient.executeUpdate(modify.prefix(p_time).getQueryString());
+		storeClient.executeUpdate(modify.prefix(p_time).getQueryString());
 	}
 	
 	/**
@@ -953,10 +953,10 @@ public class DerivationSparql{
 		//   <derivation> derived:isDerivedFrom/derived:belongsTo ?upstreamDerivation.
 		//   ?upstreamDerivation time:hasTime/time:inTimePosition/time:numericPosition ?upstreamDerivationTimestamp.
 		//   OPTIONAL{?upstreamDerivation derived:hasStatus ?status .
-		//              {?status a ?statusType .
-		//               FILTER((?statusType != <http://www.w3.org/2002/07/owl#Thing> && ?statusType != <http://www.w3.org/2002/07/owl#NamedIndividual>))
-		//              }
-		//           }
+		//			  {?status a ?statusType .
+		//			   FILTER((?statusType != <http://www.w3.org/2002/07/owl#Thing> && ?statusType != <http://www.w3.org/2002/07/owl#NamedIndividual>))
+		//			  }
+		//		   }
 		//   OPTIONAL{?upstreamDerivation derived:isDerivedFrom/time:hasTime/time:inTimePosition/time:numericPosition ?pureInputTimestamp}
 		//   OPTIONAL{?upstreamDerivation derived:isDerivedFrom/derived:belongsTo/time:hasTime/time:inTimePosition/time:numericPosition ?inputsBelongingToDerivationTimestamp}
 		//   FILTER((?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType = derived:PendingUpdate || ?statusType = derived:Requested || ?statusType = derived:InProgress || ?statusType = derived:Finished))
@@ -1001,7 +1001,7 @@ public class DerivationSparql{
 		// direct inputs to derive this
 		GraphPattern inputPattern = GraphPatterns.and(iri(derived).has(isDerivedFrom,input));
 		// some inputs may be a part of a derived instance
-	    // this is also added to the list to ensure that there are no circular dependencies via a different entity within the same derived instance
+		// this is also added to the list to ensure that there are no circular dependencies via a different entity within the same derived instance
 		GraphPattern derivedPattern = input.has(belongsTo, derivedOfInput).optional();
 		
 		query.prefix(p_derived).where(inputPattern,derivedPattern).select(input,derivedOfInput);
@@ -1343,7 +1343,7 @@ public class DerivationSparql{
 		query.select(type,instance).where(valuePattern,typePattern);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-	    
+		
 		List<Entity> newEntities = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			String iri = queryResult.getJSONObject(i).getString(instance.getQueryString().substring(1));
@@ -1782,27 +1782,27 @@ public class DerivationSparql{
 	 * @return
 	 */
 	private String getNameSpace(String iri) {
-    	iri = trimIRI(iri);
-    	if (iri.contains("#")) {
-    		iri = iri.substring(0, iri.lastIndexOf("#")+1);
-    	} else if (iri.contains("/")) {
-    		iri = iri.substring(0, iri.lastIndexOf("/")+1);
-    	}
-    	return iri;
-    }
-    
+		iri = trimIRI(iri);
+		if (iri.contains("#")) {
+			iri = iri.substring(0, iri.lastIndexOf("#")+1);
+		} else if (iri.contains("/")) {
+			iri = iri.substring(0, iri.lastIndexOf("/")+1);
+		}
+		return iri;
+	}
+	
 	/**
 	 * This method trims the given iri by removing the "<" at the start and the ">" at the end.
 	 * @param iri
 	 * @return
 	 */
-    private String trimIRI(String iri) {
-    	if (iri.startsWith("<")) {
-    		iri = iri.substring(1);
-    	}
-    	if (iri.endsWith(">")) {
-    		iri = iri.substring(0, iri.length()-1);
-    	}
-    	return iri;
-    }
+	private String trimIRI(String iri) {
+		if (iri.startsWith("<")) {
+			iri = iri.substring(1);
+		}
+		if (iri.endsWith(">")) {
+			iri = iri.substring(0, iri.length()-1);
+		}
+		return iri;
+	}
 }
