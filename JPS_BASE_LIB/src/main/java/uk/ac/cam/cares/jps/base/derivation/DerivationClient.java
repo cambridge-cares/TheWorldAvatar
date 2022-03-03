@@ -158,6 +158,24 @@ public class DerivationClient {
 	}
 	
 	/**
+	 * This method creates a new asynchronous derived instance given an existing derivation and adds the following statements
+	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <derived> <isDerivedFrom> <inputsIRI>
+	 * Note that the <inputsIRI> to be used are actually derivation outputs retrieved from the given derivation.
+	 * Use this for asynchronous instances that get replaced by agents, also when the information about agent exists already
+	 * @param entities
+	 * @param agentIRI
+	 * @param derivation
+	 * @param forUpdate
+	 * @return
+	 */
+	public String createAsyncDerivation(List<String> entities, String agentIRI, String derivation, boolean forUpdate) {
+		// first retrieve a list of inputs
+		List<String> inputsIRI = this.sparqlClient.retrieveMatchingInstances(derivation, agentIRI);
+		// then create asynchronous derivation as usual
+		return createAsyncDerivation(entities, agentIRI, inputsIRI, forUpdate);
+	}
+
+	/**
 	 * adds a timestamp to your input following the w3c standard for unix timestamp https://www.w3.org/TR/owl-time/
 	 * <entity> <hasTime> <time>, <time> <numericPosition> 123
 	 * @param entity

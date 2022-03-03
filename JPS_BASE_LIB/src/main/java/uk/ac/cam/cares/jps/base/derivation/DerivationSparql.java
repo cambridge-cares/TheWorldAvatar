@@ -34,6 +34,9 @@ import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import jena.query;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -848,6 +851,38 @@ public class DerivationSparql{
 		}
 		
 		return agentInputs;
+	}
+
+	/**
+	 * This method matches the output instances of the upstream derivation with the input signature of
+	 * the agent that monitors the downstream derivation. The matched instances are finally structured
+	 * as a List<String> to be used for creating the downstream derivation.
+	 * @param upstreamDerivation
+	 * @param agentIRI
+	 * @return
+	 */
+	List<String> retrieveMatchingInstances(String upstreamDerivation, String agentIRI) {
+		String typeKey = "type";
+		String outputKey = "output";
+		
+		Variable type = SparqlBuilder.var(typeKey);
+		Variable output = SparqlBuilder.var(outputKey);
+		
+		// make use of SPARQL Property Paths
+		GraphPattern agentTypePattern = iri(agentIRI).has(PropertyPaths.path(hasOperation,hasInput,hasMandatoryPart,hasType),type);
+		GraphPattern derivationOutputPattern = output.has(belongsTo, iri(upstreamDerivation));
+		GraphPattern mappingPattern = output.has(PropertyPaths.path(PropertyPaths.zeroOrMore(RdfPredicate.a),PropertyPaths.zeroOrMore(iri(RDFS.SUBCLASSOF.toString()))), type);
+		SelectQuery query = Queries.SELECT().distinct();
+		
+		query.prefix(p_derived,p_agent).where(agentTypePattern,derivationOutputPattern,mappingPattern).select(output,type);
+		// query.prefix(p_derived,p_agent).where(agentTypePattern,derivationOutputPattern).select(output,type);
+		storeClient.setQuery(query.getQueryString());
+		JSONArray queryResult = storeClient.executeQuery();
+		List<String> matchingInstances = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			matchingInstances.add(queryResult.getJSONObject(i).getString(outputKey));
+		}
+		return matchingInstances;
 	}
 	
 	/**
