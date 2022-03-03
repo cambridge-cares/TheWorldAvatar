@@ -20,6 +20,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 /**
  * integration tests for updateInstance is provided at TheWorldAvater/Agents/DerivationExample
  * @author Kok Foong Lee
+ * @author Jiaru Bai
  *
  */
 public class DerivedQuantityClientTest{
@@ -130,6 +131,84 @@ public class DerivedQuantityClientTest{
         Assert.assertTrue(e.getMessage().contains("part of another derivation"));
 	}
 	
+	@Test
+	public void testCreateAsyncDerivationForUpdate() {
+		boolean forUpdate = true;
+		String createdDerived = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, forUpdate);
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Individual devIndividual = testKG.getIndividual(createdDerived);
+		Assert.assertNotNull(devIndividual);
+		Assert.assertEquals(DerivationSparql.derivednamespace + "DerivationAsyn", devIndividual.getRDFType().toString()) ;
+		
+		// check that each entity is connected to the derived instance
+		for (String entity : entities) {
+		    Assert.assertTrue(testKG.contains(testKG.getIndividual(entity), 
+		    		ResourceFactory.createProperty(DerivationSparql.derivednamespace+"belongsTo"),
+		    		devIndividual));
+		}
+		
+		// checks for agent
+		Assert.assertTrue(testKG.contains(devIndividual,
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedUsing"),
+				testKG.getIndividual(derivedAgentIRI)));
+        
+		// checks for inputs
+		for (String input : inputs) {
+			Assert.assertTrue(testKG.contains(devIndividual,
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+		
+		// checks the status
+		Assert.assertEquals(StatusType.REQUESTED, devClient.getStatusType(createdDerived));
+
+		// checks the timestamp should be 0
+		Assert.assertEquals(0, devClient.sparqlClient.getTimestamp(createdDerived));
+
+		// an instance cannot be part of two derived quantities
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.createDerivation(entities, derivedAgentIRI3, derivedAgentURL3, inputs));
+        Assert.assertTrue(e.getMessage().contains("part of another derivation"));
+	}
+
+	@Test
+	public void testCreateAsyncDerivationForMarkup() {
+		boolean forUpdate = false;
+		String createdDerived = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, forUpdate);
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Individual devIndividual = testKG.getIndividual(createdDerived);
+		Assert.assertNotNull(devIndividual);
+		Assert.assertEquals(DerivationSparql.derivednamespace + "DerivationAsyn", devIndividual.getRDFType().toString()) ;
+		
+		// check that each entity is connected to the derived instance
+		for (String entity : entities) {
+		    Assert.assertTrue(testKG.contains(testKG.getIndividual(entity), 
+		    		ResourceFactory.createProperty(DerivationSparql.derivednamespace+"belongsTo"),
+		    		devIndividual));
+		}
+		
+		// checks for agent
+		Assert.assertTrue(testKG.contains(devIndividual,
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedUsing"),
+				testKG.getIndividual(derivedAgentIRI)));
+        
+		// checks for inputs
+		for (String input : inputs) {
+			Assert.assertTrue(testKG.contains(devIndividual,
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+		
+		// checks the status
+		Assert.assertEquals(StatusType.NOSTATUS, devClient.getStatusType(createdDerived));
+
+		// checks the timestamp should be current timestamp (>0)
+		Assert.assertTrue(devClient.sparqlClient.getTimestamp(createdDerived) > 0);
+
+		// an instance cannot be part of two derived quantities
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.createDerivation(entities, derivedAgentIRI3, derivedAgentURL3, inputs));
+        Assert.assertTrue(e.getMessage().contains("part of another derivation"));
+	}
+
 	@Test
 	public void testAddTimeInstance() {
 		String namespace = "http://www.w3.org/2006/time#";

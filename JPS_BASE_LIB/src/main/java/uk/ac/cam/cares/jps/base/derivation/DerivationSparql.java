@@ -430,7 +430,7 @@ public class DerivationSparql{
 	 * @param inputs
 	 * @return
 	 */
-	String createDerivationAsyn(List<String> entities, String agentIRI, List<String> inputs) {
+	String createDerivationAsync(List<String> entities, String agentIRI, List<String> inputs, boolean forUpdate) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
@@ -460,6 +460,17 @@ public class DerivationSparql{
 			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
 		}
 		
+		// if the derivation is created for update, mark it as Requested
+		if (forUpdate) {
+			String statusIRI = derivationInstanceBaseURL + "status_" + UUID.randomUUID().toString();
+
+			TriplePattern insert_tp = derived_iri.has(hasStatus, iri(statusIRI));
+			TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Requested);
+
+			modify.insert(insert_tp);
+			modify.insert(insert_tp_rdf_type);
+		}
+
 		modify.prefix(p_time,p_derived,p_agent);
 		
 		storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());

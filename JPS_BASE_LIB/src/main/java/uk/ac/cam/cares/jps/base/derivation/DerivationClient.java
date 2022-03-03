@@ -143,9 +143,13 @@ public class DerivationClient {
 	 * @param inputsIRI
 	 * @return
 	 */
-	public String createAsynDerivation(List<String> entities, String agentIRI, List<String> inputsIRI) {
-		String createdDerivation = this.sparqlClient.createDerivationAsyn(entities, agentIRI, inputsIRI);
+	public String createAsyncDerivation(List<String> entities, String agentIRI, List<String> inputsIRI, boolean forUpdate) {
+		String createdDerivation = this.sparqlClient.createDerivationAsync(entities, agentIRI, inputsIRI, forUpdate);
 		this.sparqlClient.addTimeInstance(createdDerivation);
+		// mark up the derivation with current timestamp
+		if (!forUpdate) {
+			this.sparqlClient.updateTimeStamp(createdDerivation);
+		}
 		LOGGER.info("Instantiated asynchronous derivation <" + createdDerivation + ">");
 		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
 		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");

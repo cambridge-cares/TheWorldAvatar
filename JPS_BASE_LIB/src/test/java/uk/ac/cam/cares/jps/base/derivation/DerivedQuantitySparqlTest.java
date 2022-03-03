@@ -23,6 +23,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * createDerivedQuantity, createDerivedQuantityWithTimeSeries, updateTimestamp, addTimeinstance
  * are already tested in DerivedQuantityClientTest
  * @author Kok Foong Lee
+ * @author Jiaru Bai
  *
  */
 public class DerivedQuantitySparqlTest {
@@ -276,6 +277,62 @@ public class DerivedQuantitySparqlTest {
 		}
 	}
 	
+	@Test
+	public void testCreateDerivationAsyncForUpdate() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		boolean forUpdate = true;
+		Resource derivationType = ResourceFactory.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+
+		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
+		Assert.assertEquals(derivationType, testKG.getIndividual(derivationIRI).getRDFType());
+
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
+				ResourceFactory.createResource(derivedAgentIRI)));
+
+		for (String entity : entities) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivationIRI)));
+		}
+
+		for (String input : inputs) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+
+		Assert.assertEquals(StatusType.REQUESTED, devClient.getStatusType(derivationIRI));
+	}
+
+	@Test
+	public void testCreateDerivationAsyncForMarkup() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		boolean forUpdate = false;
+		Resource derivationType = ResourceFactory.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+
+		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
+		Assert.assertEquals(derivationType, testKG.getIndividual(derivationIRI).getRDFType());
+
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
+				ResourceFactory.createResource(derivedAgentIRI)));
+
+		for (String entity : entities) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivationIRI)));
+		}
+
+		for (String input : inputs) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+
+		Assert.assertEquals(StatusType.NOSTATUS, devClient.getStatusType(derivationIRI));
+	}
+
 	@Test
 	public void testBulkCreateDerivationsWithTimeSeries() {
 		OntModel testKG = mockClient.getKnowledgeBase();
