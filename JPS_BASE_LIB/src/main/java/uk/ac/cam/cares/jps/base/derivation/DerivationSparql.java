@@ -30,6 +30,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -824,8 +825,8 @@ public class DerivationSparql{
 		// make use of SPARQL Property Paths
 		GraphPattern agentTypePattern = iri(agentIRI).has(PropertyPaths.path(hasOperation,hasInput,hasMandatoryPart,hasType),type);
 		GraphPattern derivationInputPattern = iri(derivedQuantity).has(isDerivedFrom, input);
-		GraphPattern mappingPattern = input.has(PropertyPaths.path(PropertyPaths.oneOrMore(RdfPredicate.a)), type);
-		SelectQuery query = Queries.SELECT();
+		GraphPattern mappingPattern = input.has(PropertyPaths.path(PropertyPaths.zeroOrMore(RdfPredicate.a),PropertyPaths.zeroOrMore(iri(RDFS.SUBCLASSOF.toString()))), type);
+		SelectQuery query = Queries.SELECT().distinct();
 		
 		query.prefix(p_derived,p_agent).where(agentTypePattern,derivationInputPattern,mappingPattern).select(input,type);
 		storeClient.setQuery(query.getQueryString());
