@@ -41,9 +41,31 @@ class TimeseriesHandler {
                 
                 // Get timestamps
                 var tableTimes = entry["time"];
-                //for(var t = 0; t < tableTimes.length; t++) {
-                //    tableTimes[t] = tableTimes[t].replace("T", " ").replace("Z", "");
-                //}
+
+                // Condition time format
+                var timeClass = null
+                if(String(tableTimes[0]).match(/^\d{4}-\d{2}-\d{2}T\d{2}(:\d{2}){1,2}Z/)) {
+                    timeClass = "dateTime"
+                } else if(String(tableTimes[0]).includes(":")) {
+                    timeClass = "offsetTime"
+                } else {
+                    timeClass = "number";
+                }
+                
+                // Align time series formats
+                // dateTime / Instant: "YYYY-MM-DD HH:mm:ss"
+                // offsetTime: "HH:mm:ss"
+                // All times are local times!!
+                for(var t = 0; t < tableTimes.length; t++) {
+                    // dateTime/Instant format
+                    if(timeClass === "dateTime") {
+                        tableTimes[t] = moment(tableTimes[t], "YYYY-MM-DDTHH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+                    }
+                    // OffsetTime format
+                    else if(timeClass === "offsetTime") {
+                        tableTimes[t] = moment(tableTimes[t], "HH:mm:ss").format("HH:mm:ss");
+                    }
+                }
 
                 // Get correct value array
                 var tableValues = entry["values"][j];
@@ -55,7 +77,7 @@ class TimeseriesHandler {
                     "unit": tableUnit,
                     "times": tableTimes,
                     "values": tableValues,
-                    "timeClass": (entry["timeClass"]) ? entry["timeClass"] : "Instant",
+                    "timeClass": timeClass,
                     "valuesClass": (entry["valuesClass"]) ? entry["valuesClass"][j] : "Number"
                 });
             }            
@@ -178,10 +200,16 @@ class TimeseriesHandler {
         if(data == null) return;
 
         // Get data for plotting
-        var independents = data["times"];
+        var independents = [...data["times"]];
         var dependents = [];
 
         for(var i = 0 ; i < independents.length; i++) {
+            if(data["timeClass"] === "dateTime") {
+                independents[i] = moment(independents[i], "YYYY-MM-DD HH:mm:ss");
+            } else if(data["timeClass"] === "offsetTime") {
+                independents[i] = moment(independents[i], "HH:mm:ss");
+            }
+
             dependents.push({
                 x: independents[i],
                 y: (!isNaN(data["values"][i])) ? data["values"][i] : Number(data["values"][i])
@@ -195,8 +223,13 @@ class TimeseriesHandler {
 
         // Create the new chart element
         var ctx = document.getElementById("chart-canvas").getContext("2d");
-        var xAxisType = ("Instant" === data["timeClass"]) ? "time" : "linear";
+
+        // Determine axis types
         var yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
+        var xAxisType = "linear";
+        if(data["timeClass"] === "dateTime" || data["timeClass"] === "offsetTime") {        
+            xAxisType = "time";
+        }
 
         // Create the chart object
         this._currentChart = new Chart(ctx, 

@@ -85,6 +85,9 @@ class InteractionHandler {
                 feature.layer.metadata?.provider === "cmcl" && feature.layer.metadata?.clickable);
             if (features.length == 0) return;
 
+            // Reset the side panel
+            this._panelHandler.setContent("");
+
             // Filter to determine how many non-default, circle/symbol features are present
             let siteFeatures = features.filter(feature =>
                 !feature.layer.id.endsWith("_clickable") && !feature.layer.id.endsWith("_arrows") &&
@@ -213,7 +216,6 @@ class InteractionHandler {
 
             } else if (features != null) {
                 features.forEach(leaf => {
-                    console.log(leaf);
                     leaf["layer"] = [];
                     leaf["source"] = sourceName;
                     leaf["layer"]["id"] = feature["layer"]["id"].replace("_cluster", "");
@@ -224,12 +226,12 @@ class InteractionHandler {
     }
 
     /**
-     * Given an array of possible GeoJSON features, create controls to allow the user
-     * to selet an individual feature, then return it.
+     * Given an array of possible GeoJSON features, this function create a dropdown control
+     * to allow the user to selet an individual feature. This also supports arrays of clustered
+     * features.
      * 
      * @param {JSONObject[]} features array of possible features. 
-     * 
-     * @returns selected GeoJSON feature
+     * @param {Function} callback to fire with selected individual feature.
      */
     #handleMultipleFeatures(features, callback) {
         let html = `

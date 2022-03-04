@@ -93,12 +93,13 @@
 			"Churchill": "./data/set-0",
 			"Mixed": "./data/set-1",
 			"Zoom Limited": "./data/set-2",
-			"Clustered": "./data/set-3"
+			"Clustered": "./data/set-3",
+			"Buildings": "./data/set-4"
 		};
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Clustered", function() {
+		manager.readMetadata("Mixed", function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
@@ -186,7 +187,6 @@
 
 					// This callback will be fired when a final group is selected in the dropdowns
 					let selectCallback = function(selectedGroups) {
-					
 						// Show loading icon
 						showLoadingOverlay();
 							
@@ -205,7 +205,6 @@
 
 					// Show mouse position
 					manager.showDeveloperControls();
-
 					loadedOnce = true;
 				}
 
