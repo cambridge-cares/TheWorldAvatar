@@ -25,7 +25,7 @@ class Endpoints_proxy:
         self._triple_store_uploader = (
             triple_store_uploader
             if triple_store_uploader is not None
-            else get_uploader("fs_uploader")
+            else get_uploader("ts_uploader")
         )
 
     def do_uploads(
