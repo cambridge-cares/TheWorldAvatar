@@ -62,34 +62,39 @@ class UtilsTest {
 	@Test
 	public void isJobCompletedOneTest() throws IOException {
 
-		String tmpdir = System.getProperty("java.io.tmpdir");
-
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder + File.separator + Status.STATUS_FILE.getName();
+		
 		// prepare status file for JobStatus:completed
-		File statusfile1 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_COMPLETED.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobCompleted(new File(tmpdir)));
+		assertTrue(Utils.isJobCompleted(jobFolder));
 		statusfile1.delete();
 
 		// prepare status file for JobStatus:error termination
-		File statusfile2 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
-		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_ERROR_TERMINATED.getName());
+		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_ERROR_TERMINATED.getName());
 		bw2.close();
 		// test
-		assertTrue(Utils.isJobCompleted(new File(tmpdir)));
+		assertTrue(Utils.isJobCompleted(jobFolder));
 		statusfile2.delete();
 
 		// prepare status file for fail
-		File statusfile3 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile3 = new File(status_path);
 		BufferedWriter bw3 = new BufferedWriter(new FileWriter(statusfile3));
 		bw3.write(" ");
 		bw3.close();
 		// test
-		assertFalse(Utils.isJobCompleted(new File(tmpdir)));
+		assertFalse(Utils.isJobCompleted(jobFolder));
 		statusfile3.delete();
+
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
@@ -99,218 +104,238 @@ class UtilsTest {
 		slurmJobProperty.setAgentClass("UnitTestAgent");
 		slurmJobProperty.setAgentCompletedJobsSpacePrefix("CompletedJobs");
 		slurmJobProperty.setAgentFailedJobsSpacePrefix("FailedJobs");
-		String tmpdir = System.getProperty("java.io.tmpdir") + "jobFolder\\";
-		String path = tmpdir + Status.STATUS_FILE.getName();
+		
+		File taskspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());;
+		String jobFolder_path = taskspace.getAbsolutePath()+File.separator+"login-skylake.hpc.cam.ac.uk_110761971919363";
+		String status_path = jobFolder_path+File.separator+Status.STATUS_FILE.getName();
 		
 		// JobStatus:completed and JobOutput:processed
-		new File(tmpdir).mkdir();
-		File statusfile1 = new File(path);
+		File jobFolder1 = new File(jobFolder_path);
+		jobFolder1.mkdirs();
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETED.getName()+"\n");
-		bw1.write(Status.ATTRIBUTE_JOB_OUTPUT.getName()+Status.OUTPUT_PROCESSED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETED.getName()+"\n"+Status.ATTRIBUTE_JOB_OUTPUT.getName()+Status.OUTPUT_PROCESSED.getName());
 		bw1.close();
-		String[] src1 = new File(tmpdir).list();
-		
-		File workspace1 = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
-				slurmJobProperty.getAgentClass());	
-		File completedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
-				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace1.getName())
-				.concat(File.separator).concat(new File(tmpdir).getName()));
+		String[] src1 = jobFolder1.list();
+		File completedJobsDir_parent = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
+				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(taskspace.getName()));
+		File completedJobsDir = new File(completedJobsDir_parent+File.separator+jobFolder1.getName());
 
-		assertTrue(Utils.isJobCompleted(new File(tmpdir), slurmJobProperty));
+		assertTrue(Utils.isJobCompleted(jobFolder1, slurmJobProperty));
 		assertTrue(completedJobsDir.isDirectory());
 		for (String file : src1) {
 			assertTrue(Arrays.asList(completedJobsDir.list()).contains(file));
 		}
-		assertFalse(new File(tmpdir).exists());
-		workspace1.delete();
+		assertFalse(jobFolder1.exists());
 
 		// JobStatus:completed
-		new File(tmpdir).mkdir();
-		File statusfile2 = new File(path);
+		File jobFolder2 = new File(jobFolder_path);
+		jobFolder2.mkdirs();
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
 		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETED.getName()+"\n");
 		bw2.close();
 
-		assertTrue(Utils.isJobCompleted(new File(tmpdir), slurmJobProperty));
-
+		assertTrue(Utils.isJobCompleted(jobFolder2, slurmJobProperty));
+		statusfile2.delete();
+		
 		// JobStatus: error termination
-		new File(tmpdir).mkdir();
-		File statusfile3 = new File(path);
+		File statusfile3 = new File(status_path);
 		BufferedWriter bw3 = new BufferedWriter(new FileWriter(statusfile3));
 		bw3.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_ERROR_TERMINATED.getName());
 		bw3.close();
-		String[] src2 = new File(tmpdir).list();
+		String[] src2 = jobFolder2.list();
 		
-		File workspace2 = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
-				slurmJobProperty.getAgentClass());
-		File FailedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
-				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(workspace2.getName())
-				.concat(File.separator).concat(new File(tmpdir).getName()));
+		File FailedJobsDir_parent = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
+				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(taskspace.getName()));
+		File FailedJobsDir = new File(FailedJobsDir_parent+File.separator+jobFolder2.getName());
 
-		assertTrue(Utils.isJobCompleted(new File(tmpdir), slurmJobProperty));
+		assertTrue(Utils.isJobCompleted(jobFolder2, slurmJobProperty));
 		assertTrue(FailedJobsDir.isDirectory());
 		for (String file : src2) {
 			assertTrue(Arrays.asList(FailedJobsDir.list()).contains(file));
 		}
-		assertFalse(new File(tmpdir).exists());
-		workspace2.delete();
+		assertFalse(jobFolder2.exists());
 
 		// false scenario
-		new File(tmpdir).mkdir();
-		File statusfile4 = new File(path);
+		File jobFolder3 = new File(jobFolder_path);
+		jobFolder3.mkdirs();
+		File statusfile4 = new File(status_path);
 		BufferedWriter bw4 = new BufferedWriter(new FileWriter(statusfile4));
 		bw4.write(" ");
 		bw4.close();
-		assertFalse(Utils.isJobCompleted(new File(tmpdir), slurmJobProperty));
-		statusfile4.delete();
-		new File(tmpdir).delete();
+		assertFalse(Utils.isJobCompleted(jobFolder3, slurmJobProperty));
+
+		FileUtils.forceDelete(taskspace);
+		FileUtils.forceDelete(completedJobsDir_parent);
+		FileUtils.forceDelete(FailedJobsDir_parent);
 	}
 
 	@Test
 	public void isJobErroneouslyCompletedOneTest() throws IOException {
 
-		String tmpdir = System.getProperty("java.io.tmpdir");
-
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath() + File.separator + Status.STATUS_FILE.getName();
+		
 		// prepare status file for Jobstatus:error termination
-		File statusfile1 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_ERROR_TERMINATED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_ERROR_TERMINATED.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobErroneouslyCompleted(new File(tmpdir)));
+		assertTrue(Utils.isJobErroneouslyCompleted(jobFolder));
 		statusfile1.delete();
 
 		// prepare status file for fail
-		File statusfile2 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
 		bw2.write(" ");
 		bw2.close();
 		// test
-		assertFalse(Utils.isJobErroneouslyCompleted(new File(tmpdir)));
+		assertFalse(Utils.isJobErroneouslyCompleted(jobFolder));
+		
+		FileUtils.forceDelete(taskspace);
 
 	}
 
 	@Test
 	public void isJobErroneouslyCompletedTwoTest() throws IOException {
-
-		String path = System.getProperty("java.io.tmpdir") + Status.STATUS_FILE.getName();
+		
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
 
 		// prepare status file for Jobstatus:error termination
-		File statusfile1 = new File(path);
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_ERROR_TERMINATED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_ERROR_TERMINATED.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobErroneouslyCompleted(path));
+		assertTrue(Utils.isJobErroneouslyCompleted(status_path));
 		statusfile1.delete();
 
 		// prepare status file for fail
-		File statusfile2 = new File(path);
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
 		bw2.write(" ");
 		bw2.close();
 		// test
-		assertFalse(Utils.isJobErroneouslyCompleted(path));
-		statusfile2.delete();
+		assertFalse(Utils.isJobErroneouslyCompleted(status_path));
+		
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
 	public void isJobRunningOneTest() throws IOException {
 
-		String tmpdir = System.getProperty("java.io.tmpdir");
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
 
 		// prepare status file for JobStatus:running
-		File statusfile1 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_RUNNING.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_RUNNING.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobRunning(new File(tmpdir)));
+		assertTrue(Utils.isJobRunning(jobFolder));
 		statusfile1.delete();
 
 		// prepare status file for JobStatus:completing
-		File statusfile2 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
-		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETING.getName());
+		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_COMPLETING.getName());
 		bw2.close();
 		// test
-		assertTrue(Utils.isJobRunning(new File(tmpdir)));
+		assertTrue(Utils.isJobRunning(jobFolder));
 		statusfile2.delete();
 
 		// prepare status file for JobStatus:pending
-		File statusfile3 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile3 = new File(status_path);
 		BufferedWriter bw3 = new BufferedWriter(new FileWriter(statusfile3));
-		bw3.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_PENDING.getName());
+		bw3.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_PENDING.getName());
 		bw3.close();
 		// test
-		assertTrue(Utils.isJobRunning(new File(tmpdir)));
+		assertTrue(Utils.isJobRunning(jobFolder));
 		statusfile3.delete();
 
 		// prepare status file for fail
-		File statusfile4 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile4 = new File(status_path);
 		BufferedWriter bw4 = new BufferedWriter(new FileWriter(statusfile4));
 		bw4.write(" ");
 		bw4.close();
 		// test
-		assertFalse(Utils.isJobRunning(new File(tmpdir)));
-		statusfile4.delete();
+		assertFalse(Utils.isJobRunning(jobFolder));
+		
+		FileUtils.forceDelete(taskspace);
+		
 	}
 
 	@Test
 	public void isJobRunningTwoTest() throws IOException {
 
-		String path = System.getProperty("java.io.tmpdir") + Status.STATUS_FILE.getName();
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
 
 		// prepare status file for JobStatus:running
-		File statusfile1 = new File(path);
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_RUNNING.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_RUNNING.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobRunning(path));
+		assertTrue(Utils.isJobRunning(status_path));
 		statusfile1.delete();
 
 		// prepare status file for JobStatus:completing
-		File statusfile2 = new File(path);
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
-		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETING.getName());
+		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_COMPLETING.getName());
 		bw2.close();
 		// test
-		assertTrue(Utils.isJobRunning(path));
+		assertTrue(Utils.isJobRunning(status_path));
 		statusfile2.delete();
 
 		// prepare status file for JobStatus:pending
-		File statusfile3 = new File(path);
+		File statusfile3 = new File(status_path);
 		BufferedWriter bw3 = new BufferedWriter(new FileWriter(statusfile3));
-		bw3.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_PENDING.getName());
+		bw3.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_PENDING.getName());
 		bw3.close();
 		// test
-		assertTrue(Utils.isJobRunning(path));
+		assertTrue(Utils.isJobRunning(status_path));
 		statusfile3.delete();
 
 		// prepare status file for fail
-		File statusfile4 = new File(path);
+		File statusfile4 = new File(status_path);
 		BufferedWriter bw4 = new BufferedWriter(new FileWriter(statusfile4));
 		bw4.write(" ");
 		bw4.close();
 		// test
-		assertFalse(Utils.isJobRunning(path));
-		statusfile4.delete();
+		assertFalse(Utils.isJobRunning(status_path));
+		
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
 	public void isJobNotStartedOneTest() throws IOException, NoSuchFieldException, IllegalAccessException {
 
-		String tmpdir = System.getProperty("java.io.tmpdir");
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
 
 		// prepare status file for JobStatus:not started
-		File statusfile1 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_NOT_STARTED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_NOT_STARTED.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobNotStarted(new File(tmpdir)));
+		assertTrue(Utils.isJobNotStarted(jobFolder));
 		statusfile1.delete();
 
 		// False scenario - 1
@@ -318,31 +343,35 @@ class UtilsTest {
 		Field isStatusFileOpen = utils.getClass().getDeclaredField("isStatusFileOpen");
 		isStatusFileOpen.setAccessible(true);
 		isStatusFileOpen.setBoolean(isStatusFileOpen, true);
-		assertFalse(Utils.isJobNotStarted(new File(tmpdir)));
+		assertFalse(Utils.isJobNotStarted(jobFolder));
 		isStatusFileOpen.setBoolean(isStatusFileOpen, false);
 
 		// False scenario - 2
-		File statusfile2 = new File(tmpdir + Status.STATUS_FILE.getName());
-		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile1));
+		File statusfile2 = new File(status_path);
+		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
 		bw2.write(" ");
 		bw2.close();
 		// test
-		assertFalse(Utils.isJobNotStarted(new File(tmpdir)));
-		statusfile2.delete();
+		assertFalse(Utils.isJobNotStarted(jobFolder));
+		
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
 	public void isJobNotStartedTwoTest() throws IOException, NoSuchFieldException, IllegalAccessException {
 
-		String path = System.getProperty("java.io.tmpdir") + Status.STATUS_FILE.getName();
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
 
 		// prepare status file for JobStatus:not started
-		File statusfile1 = new File(path);
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_NOT_STARTED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_NOT_STARTED.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobNotStarted(path));
+		assertTrue(Utils.isJobNotStarted(status_path));
 		statusfile1.delete();
 
 		// False scenario 1
@@ -350,50 +379,55 @@ class UtilsTest {
 		Field isStatusFileOpen = utils.getClass().getDeclaredField("isStatusFileOpen");
 		isStatusFileOpen.setAccessible(true);
 		isStatusFileOpen.setBoolean(isStatusFileOpen, true);
-		assertFalse(Utils.isJobNotStarted(path));
+		assertFalse(Utils.isJobNotStarted(status_path));
 		isStatusFileOpen.setBoolean(isStatusFileOpen, false);
 
 		// False scenario 2
-		File statusfile2 = new File(path);
-		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile1));
+		File statusfile2 = new File(status_path);
+		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
 		bw2.write(" ");
 		bw2.close();
 		// test
-		assertFalse(Utils.isJobNotStarted(path));
-		statusfile2.delete();
+		assertFalse(Utils.isJobNotStarted(status_path));
+		
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
 	public void isJobFinishedOneTest() throws IOException {
-
-		String tmpdir = System.getProperty("java.io.tmpdir");
-		String path = tmpdir + Status.STATUS_FILE.getName();
+		
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
+		
+			
 		// prepare status file for JobStatus:completed
-		File statusfile1 = new File(path);
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_COMPLETED.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobFinished(new File(tmpdir), path));
+		assertTrue(Utils.isJobFinished(jobFolder, status_path));
 		statusfile1.delete();
 
 		// prepare status file for JobStatus:error termination
-		File statusfile2 = new File(path);
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
-		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_ERROR_TERMINATED.getName());
+		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_ERROR_TERMINATED.getName());
 		bw2.close();
 		// test
-		assertTrue(Utils.isJobFinished(new File(tmpdir), path));
+		assertTrue(Utils.isJobFinished(jobFolder, status_path));
 		statusfile2.delete();
 
 		// prepare status file for fail
-		File statusfile3 = new File(path);
+		File statusfile3 = new File(status_path);
 		BufferedWriter bw3 = new BufferedWriter(new FileWriter(statusfile3));
 		bw3.write(" ");
 		bw3.close();
 		// test
-		assertFalse(Utils.isJobFinished(new File(tmpdir), path));
-		statusfile3.delete();
+		assertFalse(Utils.isJobFinished(jobFolder, status_path));
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
@@ -403,152 +437,169 @@ class UtilsTest {
 		slurmJobProperty.setAgentClass("UnitTestAgent");
 		slurmJobProperty.setAgentCompletedJobsSpacePrefix("CompletedJobs");
 		slurmJobProperty.setAgentFailedJobsSpacePrefix("FailedJobs");
-		String tmpdir = System.getProperty("java.io.tmpdir") + "jobFolder\\";
-		new File(tmpdir).mkdir();
-		String path = tmpdir + Status.STATUS_FILE.getName();
+		
+		File taskspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());;
+		String jobFolder_path = taskspace.getAbsolutePath()+File.separator+"login-skylake.hpc.cam.ac.uk_110761971919363";
+		String status_path = jobFolder_path+File.separator+Status.STATUS_FILE.getName();
 		
 		// JobStatus:completed and JobOutput:processed
-		File statusfile1 = new File(path);
+		File jobFolder1 = new File(jobFolder_path);
+		jobFolder1.mkdirs();
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETED.getName()+"\n");
-		bw1.write(Status.ATTRIBUTE_JOB_OUTPUT.getName()+Status.OUTPUT_PROCESSED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_COMPLETED.getName() + "\n" + Status.ATTRIBUTE_JOB_OUTPUT.getName() + Status.OUTPUT_PROCESSED.getName());
 		bw1.close();
-		String[] src1 = new File(tmpdir).list();
-		
-		File workspace1 = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
-				slurmJobProperty.getAgentClass());
-		File completedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
-				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace1.getName())
-				.concat(File.separator).concat(new File(tmpdir).getName()));
+		String[] src1 = jobFolder1.list();
 
-		assertTrue(Utils.isJobFinished(new File(tmpdir), path, slurmJobProperty));
+		File completedJobsDir_parent = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
+				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(taskspace.getName()));
+		File completedJobsDir = new File(completedJobsDir_parent+File.separator+jobFolder1.getName());
+
+		assertTrue(Utils.isJobFinished(jobFolder1, status_path, slurmJobProperty));
 		assertTrue(completedJobsDir.isDirectory());
 		for (String file : src1) {
 			assertTrue(Arrays.asList(completedJobsDir.list()).contains(file));
 		}
-		assertFalse(new File(tmpdir).exists());
-		workspace1.delete();
+		assertFalse(jobFolder1.exists());
 
 		// JobStatus:completed
-		new File(tmpdir).mkdir();
-		File statusfile2 = new File(path);
+		File jobFolder2 = new File(jobFolder_path);
+		jobFolder2.mkdirs();
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
-		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETED.getName()+"\n");
+		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_COMPLETED.getName() + "\n");
 		bw2.close();
 
-		assertTrue(Utils.isJobFinished(new File(tmpdir), path, slurmJobProperty));
-
-		// JobStatus: error termination
-		new File(tmpdir).mkdir();
-		File statusfile3 = new File(path);
-		BufferedWriter bw3 = new BufferedWriter(new FileWriter(statusfile3));
-		bw3.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_ERROR_TERMINATED.getName());
-		bw3.close();
-		String[] src2 = new File(tmpdir).list();
+		assertTrue(Utils.isJobFinished(jobFolder2, status_path, slurmJobProperty));
+		statusfile2.delete();
 		
-		File workspace2 = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
-		File FailedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
-				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(workspace2.getName())
-				.concat(File.separator).concat(new File(tmpdir).getName()));
+		// JobStatus: error termination
+		File statusfile3 = new File(status_path);
+		BufferedWriter bw3 = new BufferedWriter(new FileWriter(statusfile3));
+		bw3.write(Status.ATTRIBUTE_JOB_STATUS.getName() + Status.STATUS_JOB_ERROR_TERMINATED.getName());
+		bw3.close();
+		String[] src2 = jobFolder2.list();
 
-		assertTrue(Utils.isJobFinished(new File(tmpdir), path, slurmJobProperty));
+		File FailedJobsDir_parent = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
+				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(taskspace.getName()));
+		File FailedJobsDir = new File(FailedJobsDir_parent+File.separator+jobFolder2.getName());
+
+		assertTrue(Utils.isJobFinished(jobFolder2, status_path, slurmJobProperty));
 		assertTrue(FailedJobsDir.isDirectory());
 		for (String file : src2) {
 			assertTrue(Arrays.asList(FailedJobsDir.list()).contains(file));
 		}
-		assertFalse(new File(tmpdir).exists());
-		workspace2.delete();
-
-		// false scenario
-		new File(tmpdir).mkdir();
-		File statusfile4 = new File(path);
+		assertFalse(jobFolder2.exists());
+		
+//		// false scenario
+		File jobFolder3 = new File(jobFolder_path);
+		jobFolder3.mkdirs();
+		File statusfile4 = new File(status_path);
 		BufferedWriter bw4 = new BufferedWriter(new FileWriter(statusfile4));
 		bw4.write(" ");
 		bw4.close();
-		assertFalse(Utils.isJobFinished(new File(tmpdir), path, slurmJobProperty));
-		statusfile4.delete();
-		new File(tmpdir).delete();
+		assertFalse(Utils.isJobFinished(jobFolder3, status_path, slurmJobProperty));
+		
+		FileUtils.forceDelete(taskspace);
+		FileUtils.forceDelete(completedJobsDir_parent);
+		FileUtils.forceDelete(FailedJobsDir_parent);
 
 	}
 
 	@Test
 	public void isJobPostProcessedTest() throws IOException {
 
-		String tmpdir = System.getProperty("java.io.tmpdir");
-		String path = tmpdir + Status.STATUS_FILE.getName();
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
+		
 		// prepare status file for Jobstatus:error termination
-		File statusfile1 = new File(path);
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_OUTPUT.getName()+Status.OUTPUT_PROCESSED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_OUTPUT.getName() + Status.OUTPUT_PROCESSED.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobPostProcessed(new File(tmpdir), path));
+		assertTrue(Utils.isJobPostProcessed(jobFolder, status_path));
 		statusfile1.delete();
 
 		// prepare status file for fail
-		File statusfile2 = new File(path);
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
 		bw2.write(" ");
 		bw2.close();
 		// test
-		assertFalse(Utils.isJobPostProcessed(new File(tmpdir), path));
+		assertFalse(Utils.isJobPostProcessed(jobFolder, status_path));
+		
+		FileUtils.forceDelete(taskspace);
 
 	}
 
 	@Test
 	public void isJobOutputProcessedOneTest() throws IOException {
 
-		String tmpdir = System.getProperty("java.io.tmpdir");
-
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
+		
 		// prepare status file for JobOutput:processed
-		File statusfile1 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_OUTPUT.getName()+Status.OUTPUT_PROCESSED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_OUTPUT.getName() + Status.OUTPUT_PROCESSED.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobOutputProcessed(new File(tmpdir)));
+		assertTrue(Utils.isJobOutputProcessed(jobFolder));
 		statusfile1.delete();
 
 		// prepare status file for fail
-		File statusfile2 = new File(tmpdir + Status.STATUS_FILE.getName());
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
 		bw2.write(" ");
 		bw2.close();
 		// test
-		assertFalse(Utils.isJobOutputProcessed(new File(tmpdir)));
-
+		assertFalse(Utils.isJobOutputProcessed(jobFolder));
+		
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
 	public void isJobOutputProcessedTwoTest() throws IOException {
 
-		String path = System.getProperty("java.io.tmpdir") + Status.STATUS_FILE.getName();
-
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
+		
 		// prepare status file for JobOutput:processed
-		File statusfile1 = new File(path);
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_OUTPUT.getName()+Status.OUTPUT_PROCESSED.getName());
+		bw1.write(Status.ATTRIBUTE_JOB_OUTPUT.getName() + Status.OUTPUT_PROCESSED.getName());
 		bw1.close();
 		// test
-		assertTrue(Utils.isJobOutputProcessed(path));
+		assertTrue(Utils.isJobOutputProcessed(status_path));
 		statusfile1.delete();
 
 		// prepare status file for fail
-		File statusfile2 = new File(path);
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
 		bw2.write(" ");
 		bw2.close();
 		// test
-		assertFalse(Utils.isJobOutputProcessed(path));
-		statusfile2.delete();
+		assertFalse(Utils.isJobOutputProcessed(status_path));
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
 	public void getJobIdTest() throws IOException {
-		String path = System.getProperty("java.io.tmpdir") + Status.STATUS_FILE.getName();
-		String tmpstr = "JobId: 28082086";
+		
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
+		String tmpstr = Status.ATTRIBUTE_JOB_ID.getName()+" 28082086";
 
-		File statusfile1 = new File(path);
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
 		bw1.write(tmpstr);
 		bw1.close();
@@ -559,197 +610,213 @@ class UtilsTest {
 		if (tokens.length >= 2 && tokens[1].trim().length() > 0)
 			tmpid = tokens[1].trim();
 
-		assertEquals(tmpid, Utils.getJobId(path));
+		assertEquals(tmpid, Utils.getJobId(status_path));
 		statusfile1.delete();
 
-		File statusfile2 = new File(path);
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
-		bw2.write("JobId:");
+		bw2.write(Status.ATTRIBUTE_JOB_ID.getName());
 		bw2.close();
 
-		assertNull(Utils.getJobId(path));
-		statusfile2.delete();
-
+		assertNull(Utils.getJobId(status_path));
+		
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
 	public void addJobIdTest() throws IOException {
-		String path = System.getProperty("java.io.tmpdir") + Status.STATUS_FILE.getName();
+
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
 		String jobid = "28082086";
 
 		// prepare status file for addobId method with JobStatus and JobId
-		File statusfile1 = new File(path);
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write("JobStatus:\n");
-		bw1.write("JobId:");
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+"\n"+Status.ATTRIBUTE_JOB_ID.getName());
 		bw1.close();
 
-		Utils.addJobId(path, jobid);
+		Utils.addJobId(status_path, jobid);
 
 		// test contents of status file
-		BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+		BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(status_path), "UTF-8"));
 		String line;
 		while ((line = br1.readLine()) != null) {
 			if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName()))
-				assertEquals("JobStatus: running", line);
+				assertEquals(Status.ATTRIBUTE_JOB_STATUS.getName()+" "+ Status.STATUS_JOB_RUNNING.getName(), line);
 			if (line.trim().startsWith(Status.ATTRIBUTE_JOB_ID.getName()))
-				assertEquals("JobId: 28082086", line);
+				assertEquals(Status.ATTRIBUTE_JOB_ID.getName()+" "+jobid, line);
 
 		}
 		br1.close();
 		statusfile1.delete();
 
 		// prepare status file for addobId method with only JobId
-		File statusfile2 = new File(path);
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
-		bw2.write("JobId:");
+		bw2.write(Status.ATTRIBUTE_JOB_ID.getName());
 		bw2.close();
 
-		Utils.addJobId(path, jobid);
+		Utils.addJobId(status_path, jobid);
 
 		// test contents of status file
-		BufferedReader br2 = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+		BufferedReader br2 = new BufferedReader(new InputStreamReader(new FileInputStream(status_path), "UTF-8"));
 		while ((line = br2.readLine()) != null) {
 			if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName()))
-				assertEquals("JobStatus: running", line);
+				assertEquals(Status.ATTRIBUTE_JOB_STATUS.getName()+" "+ Status.STATUS_JOB_RUNNING.getName(), line);
 			if (line.trim().startsWith(Status.ATTRIBUTE_JOB_ID.getName()))
-				assertEquals("JobId: 28082086", line);
-
+				assertEquals(Status.ATTRIBUTE_JOB_ID.getName()+" "+jobid, line);
 		}
 		br2.close();
 		statusfile2.delete();
 
 		// prepare status file for addobId method without anything
-		File statusfile3 = new File(path);
+		File statusfile3 = new File(status_path);
 		BufferedWriter bw3 = new BufferedWriter(new FileWriter(statusfile3));
-		bw3.write("");
 		bw3.close();
 
-		Utils.addJobId(path, jobid);
+		Utils.addJobId(status_path, jobid);
 
 		// test contents of status file
-		BufferedReader br3 = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+		BufferedReader br3 = new BufferedReader(new InputStreamReader(new FileInputStream(status_path), "UTF-8"));
 		while ((line = br3.readLine()) != null) {
 			if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName()))
-				assertEquals("JobStatus: running", line);
+				assertEquals(Status.ATTRIBUTE_JOB_STATUS.getName()+" "+ Status.STATUS_JOB_RUNNING.getName(), line);
 			if (line.trim().startsWith(Status.ATTRIBUTE_JOB_ID.getName()))
-				assertEquals("JobId: 28082086", line);
-
+				assertEquals(Status.ATTRIBUTE_JOB_ID.getName()+" "+jobid, line);
 		}
 		br3.close();
-		statusfile3.delete();
+		
+		FileUtils.forceDelete(taskspace);
 
 	}
 
 	@Test
 	public void modifyStatusTest() throws IOException {
-		String path = System.getProperty("java.io.tmpdir") + Status.STATUS_FILE.getName();
+		
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
 		String status1 = Status.STATUS_JOB_RUNNING.getName();
 		String status2 = Status.STATUS_JOB_COMPLETED.getName();
 
 		// test for modifyStatus completed -> running
-		File statusfile1 = new File(path);
+		File statusfile1 = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile1));
-		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_COMPLETED.getName()+"\n");
+		bw1.write(Status.ATTRIBUTE_JOB_STATUS.getName() + status2 + "\n");
 		bw1.close();
 
-		Utils.modifyStatus(path, status1);
+		Utils.modifyStatus(status_path, status1);
 
-		BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+		BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(status_path), "UTF-8"));
 		String line;
 		while ((line = br1.readLine()) != null) {
 			if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName()))
-				assertEquals(Status.ATTRIBUTE_JOB_STATUS.getName()+" "+Status.STATUS_JOB_RUNNING.getName(), line);
+				assertEquals(Status.ATTRIBUTE_JOB_STATUS.getName() + " " + status1, line);
 
 		}
 		br1.close();
 		statusfile1.delete();
 
 		// test for modifyStatus running -> completed
-		File statusfile2 = new File(path);
+		File statusfile2 = new File(status_path);
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(statusfile2));
-		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName()+Status.STATUS_JOB_RUNNING.getName()+"\n");
+		bw2.write(Status.ATTRIBUTE_JOB_STATUS.getName() + status1 + "\n");
 		bw2.close();
 
-		Utils.modifyStatus(path, status2);
+		Utils.modifyStatus(status_path, status2);
 
-		BufferedReader br2 = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+		BufferedReader br2 = new BufferedReader(new InputStreamReader(new FileInputStream(status_path), "UTF-8"));
 		while ((line = br2.readLine()) != null) {
 			if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName()))
-				assertEquals(Status.ATTRIBUTE_JOB_STATUS.getName()+" "+Status.STATUS_JOB_COMPLETED.getName(), line);
+				assertEquals(Status.ATTRIBUTE_JOB_STATUS.getName() + " " + status2, line);
 
 		}
 		br2.close();
-		statusfile2.delete();
-
+		
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
 	public void getStatusFileTest() throws IOException {
-		String tmpdir1 = System.getProperty("java.io.tmpdir");
-		String tmpdir2 = "";
-		String path = System.getProperty("java.io.tmpdir") + Status.STATUS_FILE.getName();
-		File statusfile = new File(path);
+		
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		File jobFolder_null = new File("");
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
+		
+		File statusfile = new File(status_path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(statusfile));
 		bw1.close();
-		assertEquals(path, Utils.getStatusFile(new File(tmpdir1)).getAbsolutePath());
-		assertNull(Utils.getStatusFile(new File(tmpdir2)));
+		assertEquals(status_path, Utils.getStatusFile(jobFolder).getAbsolutePath());
+		assertNull(Utils.getStatusFile(jobFolder_null));
 	}
 
 	@Test
 	public void getLogFilePathOnHPCTest() throws UnknownHostException {
-		
-		String runningJob = "runningJobhpc";
-		String userName = "abc";
-		File taskSpace =  new File("taskspace");
-		String hpcAddress = "hpc";
+
+		String runningJob = "login-skylake.hpc.cam.ac.uk_110761971919363";
+		String userName = "hpcServerUserName";
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		String hpcAddress = "login-skylake.hpc.cam.ac.uk";
 		InetAddress address;
 		address = InetAddress.getLocalHost();
 		String MachineAddress = address.toString().replace("/", "_");
-		
-		assertEquals("/home/".concat(userName).concat("/").concat(taskSpace.getName()).concat("/").concat(runningJob.replace(hpcAddress, MachineAddress)).concat("/")
-				.concat(runningJob.replace(hpcAddress, MachineAddress)).concat(Status.EXTENSION_LOG_FILE.getName()), Utils.getLogFilePathOnHPC(runningJob, userName, taskSpace, hpcAddress));
+
+		assertEquals("/home/".concat(userName).concat("/").concat(taskspace.getName()).concat("/")
+				.concat(runningJob.replace(hpcAddress, MachineAddress)).concat("/")
+				.concat(runningJob.replace(hpcAddress, MachineAddress)).concat(Status.EXTENSION_LOG_FILE.getName()),
+				Utils.getLogFilePathOnHPC(runningJob, userName, taskspace, hpcAddress));
+
+		taskspace.delete();
 	}
 
 	@Test
 	public void getOutputFilePathOnHPCTest() throws UnknownHostException {
-		
-		String runningJob = "runningJobhpc";
-		String userName = "abc";
-		File taskSpace =  new File("taskspace");
-		String hpcAddress = "hpc";
-		String outputFileNameWithExtension = "outputFileNameWithExtension.log";
+
+		String runningJob = "login-skylake.hpc.cam.ac.uk_110761971919363";
+		String userName = "hpcServerUserName";
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		String hpcAddress = "login-skylake.hpc.cam.ac.uk";
+		String outputFileNameWithExtension = "output.log";
 		InetAddress address;
 		address = InetAddress.getLocalHost();
 		String MachineAddress = address.toString().replace("/", "_");
-		
-		assertEquals("/home/".concat(userName).concat("/").concat(taskSpace.getName()).concat("/").concat(runningJob.replace(hpcAddress, MachineAddress)).concat("/").
-				concat(outputFileNameWithExtension), Utils.getOutputFilePathOnHPC(runningJob, userName, taskSpace, hpcAddress, outputFileNameWithExtension));
+
+		assertEquals("/home/".concat(userName).concat("/").concat(taskspace.getName()).concat("/")
+				.concat(runningJob.replace(hpcAddress, MachineAddress)).concat("/").concat(outputFileNameWithExtension),
+				Utils.getOutputFilePathOnHPC(runningJob, userName, taskspace, hpcAddress, outputFileNameWithExtension));
 	}
 
 	@Test
 	public void getJobFolderPathOnHPCTest() throws UnknownHostException {
-		String runningJob = "runningJobhpc";
-		String userName = "abc";
-		File taskSpace =  new File("taskspace");
-		String hpcAddress = "hpc";
+		String runningJob = "login-skylake.hpc.cam.ac.uk_110761971919363";
+		String userName = "hpcServerUserName";
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		String hpcAddress = "login-skylake.hpc.cam.ac.uk";
 		InetAddress address;
 		address = InetAddress.getLocalHost();
 		String MachineAddress = address.toString().replace("/", "_");
-		assertEquals("/home/".concat(userName).concat("/").concat(taskSpace.getName()).concat("/").concat(runningJob.replace(hpcAddress, MachineAddress)), Utils.getJobFolderPathOnHPC(runningJob, userName, taskSpace, hpcAddress));
-		
-		
+		assertEquals("/home/".concat(userName).concat("/").concat(taskspace.getName()).concat("/")
+						.concat(runningJob.replace(hpcAddress, MachineAddress)),
+				Utils.getJobFolderPathOnHPC(runningJob, userName, taskspace, hpcAddress));
+
 	}
 
 	@Test
 	public void getJobOutputFilePathOnAgentPCTest() {
-		
-		String runningJob = "runningJobhpc";
-		File taskSpace =  new File("taskspace");
-		String outputFileName = "outputFileName";
+
+		String runningJob = "login-skylake.hpc.cam.ac.uk_110761971919363";
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		String outputFileName = "output";
 		String outputFileExtension = ".log";
-		assertEquals(taskSpace.getAbsolutePath().concat(File.separator).concat(runningJob).concat(File.separator)
-				.concat(outputFileName).concat(outputFileExtension), Utils.getJobOutputFilePathOnAgentPC(runningJob, taskSpace, outputFileName, outputFileExtension));
+		assertEquals(taskspace.getAbsolutePath().concat(File.separator).concat(runningJob).concat(File.separator)
+						.concat(outputFileName).concat(outputFileExtension),
+				Utils.getJobOutputFilePathOnAgentPC(runningJob, taskspace, outputFileName, outputFileExtension));
 	}
 
 	@Test
@@ -783,46 +850,52 @@ class UtilsTest {
 	public void translateLineEndingIntoUnixTest() throws IOException {
 		File src = new File(System.getProperty("java.io.tmpdir") + "src.txt");
 		File dest = new File(System.getProperty("java.io.tmpdir") + "dest.txt");
-		
+
 		BufferedWriter bw = new BufferedWriter(new FileWriter(src));
-		bw.write("Lorem ipsum dolor sit amet\rconsectetur adipisci elit,\rsed eiusmod tempor incidunt\rminim veniam, quis nostrum exercitationem ullam corporis suscipit\r" );
+		bw.write(
+				"Lorem ipsum dolor sit amet\rconsectetur adipisci elit,\rsed eiusmod tempor incidunt\rminim veniam, quis nostrum exercitationem ullam corporis suscipit\r");
 		bw.close();
-		
+
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(dest));
-		bw1.write("Lorem ipsum dolor sit amet\nconsectetur adipisci elit,\nsed eiusmod tempor incidunt\nminim veniam, quis nostrum exercitationem ullam corporis suscipit\n" );
+		bw1.write(
+				"Lorem ipsum dolor sit amet\nconsectetur adipisci elit,\nsed eiusmod tempor incidunt\nminim veniam, quis nostrum exercitationem ullam corporis suscipit\n");
 		bw1.close();
-		
+
 		Utils.translateLineEndingIntoUnix(src);
-		
+
 		assertTrue(FileUtils.contentEquals(dest, src));
-		src.delete();		
+		src.delete();
 		dest.delete();
 	}
 
 	@Test
-	public void copyModifiedContentForUnixTest() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void copyModifiedContentForUnixTest()
+			throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		File src = new File("src.txt");
 		File dest = new File("dest.txt");
 		File expected = new File("expected.txt");
-		
+
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(src));
-		bw1.write("Lorem ipsum dolor sit amet \r consectetur adipisci elit,\r sed eiusmod tempor incidunt \r minim veniam, quis nostrum exercitationem ullam corporis suscipit \r" );
+		bw1.write(
+				"Lorem ipsum dolor sit amet \r consectetur adipisci elit,\r sed eiusmod tempor incidunt \r minim veniam, quis nostrum exercitationem ullam corporis suscipit \r");
 		bw1.close();
-		
+
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(expected));
-		bw2.write("Lorem ipsum dolor sit amet \n consectetur adipisci elit,\n sed eiusmod tempor incidunt \n minim veniam, quis nostrum exercitationem ullam corporis suscipit \n" );
+		bw2.write(
+				"Lorem ipsum dolor sit amet \n consectetur adipisci elit,\n sed eiusmod tempor incidunt \n minim veniam, quis nostrum exercitationem ullam corporis suscipit \n");
 		bw2.close();
-		
+
 		Utils utils = new Utils();
-		Method copyModifiedContentForUnix = utils.getClass().getDeclaredMethod("copyModifiedContentForUnix", File.class, File.class);
+		Method copyModifiedContentForUnix = utils.getClass().getDeclaredMethod("copyModifiedContentForUnix", File.class,
+				File.class);
 		copyModifiedContentForUnix.setAccessible(true);
 		copyModifiedContentForUnix.invoke(utils, src, dest);
-		
+
 		assertTrue(FileUtils.contentEquals(dest, expected));
-		src.delete();		
+		src.delete();
 		dest.delete();
 		expected.delete();
-		
+
 	}
 
 	@Test
@@ -834,19 +907,19 @@ class UtilsTest {
 		String tmpdir = System.getProperty("java.io.tmpdir") + "jobFolder\\";
 		new File(tmpdir).mkdir();
 		String path = tmpdir + Status.STATUS_FILE.getName();
-		
+
 		File statusfile = new File(path);
 		BufferedWriter bw = new BufferedWriter(new FileWriter(statusfile));
 		bw.write("XYZ");
 		bw.close();
 		String[] src = new File(tmpdir).list();
-		
+
 		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
 				slurmJobProperty.getAgentClass());
 		File completedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
 				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName())
 				.concat(File.separator).concat(new File(tmpdir).getName()));
-		
+
 		Utils.moveToCompletedJobsFolder(new File(tmpdir), slurmJobProperty);
 		assertTrue(completedJobsDir.isDirectory());
 		for (String file : src) {
@@ -869,7 +942,7 @@ class UtilsTest {
 		File completedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
 				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName())
 				.concat(File.separator).concat(new File(tmpdir).getName()));
-		
+
 		assertEquals(completedJobsDir, Utils.getCompletedJobsDirectory(new File(tmpdir), slurmJobProperty));
 		workspace.delete();
 	}
@@ -883,19 +956,19 @@ class UtilsTest {
 		String tmpdir = System.getProperty("java.io.tmpdir") + "jobFolder\\";
 		new File(tmpdir).mkdir();
 		String path = tmpdir + Status.STATUS_FILE.getName();
-		
+
 		File statusfile = new File(path);
 		BufferedWriter bw = new BufferedWriter(new FileWriter(statusfile));
 		bw.write("XYZ");
 		bw.close();
 		String[] src = new File(tmpdir).list();
-		
+
 		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
 				slurmJobProperty.getAgentClass());
 		File FailedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
 				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName())
 				.concat(File.separator).concat(new File(tmpdir).getName()));
-		
+
 		Utils.moveToFailedJobsFolder(new File(tmpdir), slurmJobProperty);
 		assertTrue(FailedJobsDir.isDirectory());
 		for (String file : src) {
@@ -918,7 +991,7 @@ class UtilsTest {
 		File FailedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
 				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName())
 				.concat(File.separator).concat(new File(tmpdir).getName()));
-		
+
 		assertEquals(FailedJobsDir, Utils.getFailedJobsDirectory(new File(tmpdir), slurmJobProperty));
 		workspace.delete();
 	}
