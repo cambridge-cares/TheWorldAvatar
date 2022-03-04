@@ -493,7 +493,6 @@ class InteractionHandler {
         var metaGroup = this._registry.getGroup(DT.currentGroup);
         if (metaGroup == null) return;
 
-        let self = this;
         var allPromises = [];
 
 
@@ -513,17 +512,17 @@ class InteractionHandler {
                         let metaFile = metaDir + "/" + metaFiles[j];
 
                         var promise;
-                        if(self._cachedMetadata[metaFile]) {
+                        if(this._cachedMetadata[metaFile]) {
                             // Use cached version
-                            let json = self._cachedMetadata[metaFile];
+                            let json = this._cachedMetadata[metaFile];
                             promise = new Promise((resolve, reject) => {
-                                resolve(json.find((feature) => feature["id"] == feature.id));
+                                resolve(json.find((metadataObject) => metadataObject.id == feature.id));
                             });
                         } else {
                             // Load file asynchronously
                             promise = $.getJSON(metaFile).then(json => {
-                                self._cachedMetadata[metaFile] = json;
-                                return json.find((feature) => feature["id"] == feature.id);
+                                this._cachedMetadata[metaFile] = json;
+                                return json.find((metadataObject) => metadataObject.id == feature.id);
                             });
                         }
 
@@ -550,17 +549,6 @@ class InteractionHandler {
 
         var allPromises = [];
 
-        // Once read, return the nodes with the matching feature id
-        let postRead = function(json) {
-            var timeSeriesNodes = [];
-            for(var i = 0; i < json.length; i++) {
-                if(json[i]["id"] == feature.id) {
-                    timeSeriesNodes.push(json[i]);
-                }
-            }
-            return timeSeriesNodes;
-        }
-
         metaGroup["dataSets"].forEach(dataSet => {
             // Check if the layer name is the same
             if (dataSet["name"] === layerName) {
@@ -574,17 +562,17 @@ class InteractionHandler {
                         let timeFile = metaDir + "/" + timeFiles[j];
 
                         var promise;
-                        if(self._cachedTimeseries[timeFile]) {
+                        if(this._cachedTimeseries[timeFile]) {
                             // Use cached version
-                            let json = self._cachedTimeseries[timeFile];
+                            let json = this._cachedTimeseries[timeFile];
                             promise = new Promise((resolve, reject) => {
-                                resolve(postRead(json));
+                                resolve(json.filter((timeSeriesNode) => timeSeriesNode.id == feature.id));
                             });
                         } else {
                             // Load file asynchronously
                             promise = $.getJSON(timeFile).then(json => {
-                                self._cachedTimeseries[timeFile] = json;
-                                return postRead(json);
+                                this._cachedTimeseries[timeFile] = json;
+                                return json.filter((timeSeriesNode) => timeSeriesNode.id == feature.id);
                             });
                         }
 
