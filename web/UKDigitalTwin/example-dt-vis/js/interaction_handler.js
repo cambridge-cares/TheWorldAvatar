@@ -101,6 +101,9 @@ class InteractionHandler {
             let features = this._map.queryRenderedFeatures(event.point);
             let feature = features[0];
 
+            // Reset the side panel
+            this._panelHandler.setContent("");
+
             // Filter to determine how many non-default, circle/symbol features are present
             let self = this;
             let siteFeatures = features.filter(feature => {
@@ -327,9 +330,6 @@ class InteractionHandler {
                     <option value="" disabled selected>Select a feature...</option>
         `;
 
-        // Are any of the sub-features clusters themselves?
-        let hasClusters = features[0]["cluster"] === true;
-
         // Loop over features/clusters to build options for the dropdown.
         for(var i = 0; i < features.length; i++) {
 
@@ -429,9 +429,6 @@ class InteractionHandler {
             return;
         } 
         
-        // Clear existing side panel content
-        //this._panelHandler.setContent("");
-
         // Hide the legend
         this._panelHandler.toggleLegend(false);
         
