@@ -8,5 +8,9 @@
         "id": 4,
         "gmlId": "UUID_88daa2ad-9674-4933-a820-260e71100b7b",
         "cityObjectId": "http://localhost:9999/blazegraph/namespace/churchill/sparql/thematicsurface/052f5860-274d-4627-a9d6-44713da8f938"
+    },
+    {
+        "id": 1050,
+        "gmlId": "Texture example"
     }
 ]

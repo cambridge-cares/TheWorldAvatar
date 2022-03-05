@@ -117,6 +117,21 @@ class CesiumWrapper {
         this._viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
     }
 
+    _geoJsonRingToPolygonHierarchy(ring) {
+        return ring.map((coordinate) => new Cesium.Cartesian2(coordinate[0], coordinate[1]));
+    }
+
+    _geoJsonPolygonToPolygonHierarchy(polygon) {
+        console.log(polygon);
+        return {
+            positions: this._geoJsonRingToPolygonHierarchy(polygon[0]),
+            holes: polygon.slice(1).map((ring) => { return {
+                positions: this._geoJsonRingToPolygonHierarchy(ring),
+                holes: []
+            }; })
+        };
+    }
+
     addSource(name, options) {
         if (options.type != "geojson") {
             console.error("Non-GeoJSON sources not supported for Cesium viewer: " + options.location);
@@ -126,10 +141,16 @@ class CesiumWrapper {
             dataSource.name = name;
             this._viewer.dataSources.add(dataSource);
             for (let entity of dataSource.entities.values) {
-                if (entity.polygon && !entity.properties.image) {
+                const props = entity.properties;
+                if (props["image"]) {
+                    entity.polygon.material = new Cesium.ImageMaterialProperty({image: props["image"].valueOf()});
+                    if(props["texture-coordinates"]){
+                        entity.polygon.textureCoordinates = new Cesium.ConstantProperty(this._geoJsonPolygonToPolygonHierarchy(props["texture-coordinates"].valueOf()));
+                    }
+                    console.log(entity);
+                } else if (entity.polygon) {
                     // Both Mapbox ("fill-extrusion-color", "fill-color", "circle-color", "fill-outline-color", "circle-stroke-color")
                     // and Cesium ion property names ("fill", "stroke") are captured.
-                    const props = entity.properties;
                     const fillColorHex = props["fill-extrusion-color"] ?? props["fill-color"] ?? props["circle-color"] ?? props["fill"] ?? "#666666";
                     const fillColor = Cesium.Color.fromCssColorString(fillColorHex.valueOf());
                     const fillColorProperty = new Cesium.CallbackProperty((time, result) => {
@@ -144,20 +165,20 @@ class CesiumWrapper {
                     entity.polygon.material = new Cesium.ColorMaterialProperty(fillColorProperty);
                     entity.polygon.outlineColor = outlineColor;
                 } else if (entity.billboard) {
-                    if (entity.properties["icon-image"]) {
+                    if (props["icon-image"]) {
                         entity.billboard.image = new Cesium.CallbackProperty(
-                            (time, result) => result = this._images[entity.properties["icon-image"]].valueOf(),
+                            (time, result) => result = this._images[props["icon-image"]].valueOf(),
                             false);
                         // By default it is a pin with the bottom center on the coordinates; this changes
                         // the image to also vertically center on the coordinates, which I believe is the MapBox behaviour.
                         entity.billboard.verticalOrigin = 0;
-                    } else if (entity.properties["circle-color"]) {
+                    } else if (props["circle-color"]) {
                         // This is to support Mapbox property names; Cesium ion also natively supports color specification "marker-color".
-                        entity.billboard.color = new Cesium.Color.fromCssColorString(entity.properties["circle-color"].valueOf());
+                        entity.billboard.color = new Cesium.Color.fromCssColorString(props["circle-color"].valueOf());
                     }
-                } else if (entity.polyline && entity.properties["line-color"]) {
+                } else if (entity.polyline && props["line-color"]) {
                     // This is to support Mapbox property names; Cesium ion also natively supports color specification by "stroke".
-                    let color = new Cesium.Color.fromCssColorString(entity.properties["line-color"].valueOf());
+                    let color = new Cesium.Color.fromCssColorString(props["line-color"].valueOf());
                     entity.polyline.material = new Cesium.ColorMaterialProperty(color);
                 }
                 entity.dataSource = dataSource;
