@@ -13,10 +13,13 @@
                 "fill-extrusion-opacity": 0.66,
                 "image": "http://cdn.ecommercedns.uk/files/4/214034/1/2517411/sj4271-num-grid-chalkboard-med-80cm-01.jpg",
                 "texture-coordinates": [
-                    [0, 0],
-                    [0.4, 0],
-                    [0.4, 0.3],
-                    [0, 0.3]
+                    [
+                        [0, 0],
+                        [0.4, 0],
+                        [0.4, 0.3],
+                        [0, 0.3],
+                        [0, 0]
+                    ]
                 ]
             },
             "geometry": {

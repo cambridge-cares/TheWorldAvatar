@@ -122,7 +122,6 @@ class CesiumWrapper {
     }
 
     _geoJsonPolygonToPolygonHierarchy(polygon) {
-        console.log(polygon);
         return {
             positions: this._geoJsonRingToPolygonHierarchy(polygon[0]),
             holes: polygon.slice(1).map((ring) => { return {
@@ -147,7 +146,6 @@ class CesiumWrapper {
                     if(props["texture-coordinates"]){
                         entity.polygon.textureCoordinates = new Cesium.ConstantProperty(this._geoJsonPolygonToPolygonHierarchy(props["texture-coordinates"].valueOf()));
                     }
-                    console.log(entity);
                 } else if (entity.polygon) {
                     // Both Mapbox ("fill-extrusion-color", "fill-color", "circle-color", "fill-outline-color", "circle-stroke-color")
                     // and Cesium ion property names ("fill", "stroke") are captured.
