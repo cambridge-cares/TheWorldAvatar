@@ -26,12 +26,12 @@ class SimpleTestClass_NotAllInclude(SimpleTestClass_AllInclude):
     def _exclude_keys_for_compare_(self, *keys_to_exclude) -> Dict[str, Any]:
         return super()._exclude_keys_for_compare_('str_attr_to_exclude_if_not_all_include', 'int_attr_to_exclude_if_not_all_include', *keys_to_exclude)
 
-class TestClass_AllInclude(SimpleTestClass_AllInclude):
+class NestedTestClass_AllInclude(SimpleTestClass_AllInclude):
     clz: str = TESTCLASS_CLZ
     list_attr_to_include: List[SimpleTestClass_AllInclude] = None
     list_attr_to_exclude_if_not_all_include: List[SimpleTestClass_AllInclude] = None
 
-class TestClass_NotAllInclude(SimpleTestClass_NotAllInclude):
+class NestedTestClass_NotAllInclude(SimpleTestClass_NotAllInclude):
     clz: str = TESTCLASS_CLZ
     list_attr_to_include: List[SimpleTestClass_AllInclude] = None
     list_attr_to_exclude_if_not_all_include: List[SimpleTestClass_AllInclude] = None
@@ -128,7 +128,7 @@ def generate_simple_test_class_instance(all_include: bool, str_to_include: str, 
 def generate_test_class_instance(all_include: bool, all_include_simple: bool, str_to_include: str, int_to_include: int):
     list_attr = [generate_simple_test_class_instance(all_include_simple, str_to_include, int_to_include)]
     if all_include:
-        return TestClass_AllInclude(
+        return NestedTestClass_AllInclude(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=NAMESPACE_FOR_INIT,
             str_attr_to_include=str_to_include,
@@ -139,7 +139,7 @@ def generate_test_class_instance(all_include: bool, all_include_simple: bool, st
             list_attr_to_exclude_if_not_all_include=list_attr if not all_include else None
         )
     else:
-        return TestClass_NotAllInclude(
+        return NestedTestClass_NotAllInclude(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=NAMESPACE_FOR_INIT,
             str_attr_to_include=str_to_include,
