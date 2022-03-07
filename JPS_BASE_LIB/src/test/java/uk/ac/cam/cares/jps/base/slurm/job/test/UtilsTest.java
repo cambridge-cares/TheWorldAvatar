@@ -821,7 +821,11 @@ class UtilsTest {
 
 	@Test
 	public void isErrorTerminationTest() throws IOException {
-		String path = System.getProperty("java.io.tmpdir") + "logFileOnAgentPC";
+		
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String path = jobFolder.getAbsolutePath() + File.separator + "logFileOnAgentPC";
 
 		File logfile1 = new File(path);
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(logfile1));
@@ -835,7 +839,8 @@ class UtilsTest {
 		bw2.write(" ");
 		bw2.close();
 		assertFalse(Utils.isErrorTermination(path));
-		logfile2.delete();
+		
+		FileUtils.forceDelete(taskspace);
 	}
 
 	@Test
@@ -900,99 +905,115 @@ class UtilsTest {
 
 	@Test
 	public void moveToCompletedJobsFolderTest() throws IOException {
+		
 		SlurmJobProperty slurmJobProperty = new SlurmJobProperty();
 		slurmJobProperty.setAgentClass("UnitTestAgent");
 		slurmJobProperty.setAgentCompletedJobsSpacePrefix("CompletedJobs");
 		slurmJobProperty.setAgentFailedJobsSpacePrefix("FailedJobs");
-		String tmpdir = System.getProperty("java.io.tmpdir") + "jobFolder\\";
-		new File(tmpdir).mkdir();
-		String path = tmpdir + Status.STATUS_FILE.getName();
-
-		File statusfile = new File(path);
+		
+		File taskspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
+		
+		File statusfile = new File(status_path);
 		BufferedWriter bw = new BufferedWriter(new FileWriter(statusfile));
 		bw.write("XYZ");
 		bw.close();
-		String[] src = new File(tmpdir).list();
+		String[] src = jobFolder.list();
 
-		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
-				slurmJobProperty.getAgentClass());
-		File completedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
-				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName())
-				.concat(File.separator).concat(new File(tmpdir).getName()));
-
-		Utils.moveToCompletedJobsFolder(new File(tmpdir), slurmJobProperty);
+		
+		File completedJobsDir_parent = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
+				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(taskspace.getName()));
+		File completedJobsDir = new File(completedJobsDir_parent+File.separator+jobFolder.getName());
+		
+		Utils.moveToCompletedJobsFolder(jobFolder, slurmJobProperty);
 		assertTrue(completedJobsDir.isDirectory());
 		for (String file : src) {
 			assertTrue(Arrays.asList(completedJobsDir.list()).contains(file));
 		}
-		assertFalse(new File(tmpdir).exists());
-		workspace.delete();
+		assertFalse(jobFolder.exists());
+		
+		FileUtils.forceDelete(taskspace);
+		FileUtils.forceDelete(completedJobsDir_parent);
 	}
 
 	@Test
 	public void getCompletedJobsDirectoryTest() throws IOException {
-		String tmpdir = System.getProperty("java.io.tmpdir");
+
 		SlurmJobProperty slurmJobProperty = new SlurmJobProperty();
 		slurmJobProperty.setAgentClass("UnitTestAgent");
 		slurmJobProperty.setAgentCompletedJobsSpacePrefix("CompletedJobs");
 		slurmJobProperty.setAgentFailedJobsSpacePrefix("FailedJobs");
 
-		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
-				slurmJobProperty.getAgentClass());
-		File completedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
-				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName())
-				.concat(File.separator).concat(new File(tmpdir).getName()));
-
-		assertEquals(completedJobsDir, Utils.getCompletedJobsDirectory(new File(tmpdir), slurmJobProperty));
-		workspace.delete();
+		File taskspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		File completedJobsDir_parent = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
+				.concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(taskspace.getName()));
+		File completedJobsDir = new File(completedJobsDir_parent+File.separator+jobFolder.getName());
+		
+		
+		assertEquals(completedJobsDir, Utils.getCompletedJobsDirectory(jobFolder, slurmJobProperty));
+		FileUtils.forceDelete(taskspace);
+		FileUtils.forceDelete(completedJobsDir_parent);
 	}
 
 	@Test
 	public void moveToFailedJobsFolderTest() throws IOException {
+		
 		SlurmJobProperty slurmJobProperty = new SlurmJobProperty();
 		slurmJobProperty.setAgentClass("UnitTestAgent");
 		slurmJobProperty.setAgentCompletedJobsSpacePrefix("CompletedJobs");
 		slurmJobProperty.setAgentFailedJobsSpacePrefix("FailedJobs");
-		String tmpdir = System.getProperty("java.io.tmpdir") + "jobFolder\\";
-		new File(tmpdir).mkdir();
-		String path = tmpdir + Status.STATUS_FILE.getName();
-
-		File statusfile = new File(path);
+		
+		File taskspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String status_path = jobFolder.getAbsolutePath()+ File.separator + Status.STATUS_FILE.getName();
+		
+		File statusfile = new File(status_path);
 		BufferedWriter bw = new BufferedWriter(new FileWriter(statusfile));
 		bw.write("XYZ");
 		bw.close();
-		String[] src = new File(tmpdir).list();
+		String[] src = jobFolder.list();
 
-		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
-				slurmJobProperty.getAgentClass());
-		File FailedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
-				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName())
-				.concat(File.separator).concat(new File(tmpdir).getName()));
+		
+		File FailedJobsDir_parent = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
+				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(taskspace.getName()));
+		File FailedJobsDir = new File(FailedJobsDir_parent+File.separator+jobFolder.getName());
 
-		Utils.moveToFailedJobsFolder(new File(tmpdir), slurmJobProperty);
+		Utils.moveToFailedJobsFolder(jobFolder, slurmJobProperty);
 		assertTrue(FailedJobsDir.isDirectory());
 		for (String file : src) {
 			assertTrue(Arrays.asList(FailedJobsDir.list()).contains(file));
 		}
-		assertFalse(new File(tmpdir).exists());
-		workspace.delete();
+		assertFalse(jobFolder.exists());
+		
+		FileUtils.forceDelete(taskspace);
+		FileUtils.forceDelete(FailedJobsDir_parent);
+		
 	}
 
 	@Test
 	public void getFailedJobsDirectoryTest() throws IOException {
-		String tmpdir = System.getProperty("java.io.tmpdir");
+		
 		SlurmJobProperty slurmJobProperty = new SlurmJobProperty();
 		slurmJobProperty.setAgentClass("UnitTestAgent");
 		slurmJobProperty.setAgentCompletedJobsSpacePrefix("CompletedJobs");
 		slurmJobProperty.setAgentFailedJobsSpacePrefix("FailedJobs");
 
-		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
-				slurmJobProperty.getAgentClass());
-		File FailedJobsDir = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
-				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName())
-				.concat(File.separator).concat(new File(tmpdir).getName()));
-
-		assertEquals(FailedJobsDir, Utils.getFailedJobsDirectory(new File(tmpdir), slurmJobProperty));
-		workspace.delete();
+		File taskspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		File FailedJobsDir_parent = new File(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator)
+				.concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(taskspace.getName()));
+		File FailedJobsDir = new File(FailedJobsDir_parent+File.separator+jobFolder.getName());
+		
+		
+		assertEquals(FailedJobsDir, Utils.getFailedJobsDirectory(jobFolder, slurmJobProperty));
+		FileUtils.forceDelete(taskspace);
+		FileUtils.forceDelete(FailedJobsDir_parent);
+		
 	}
 }
