@@ -6,7 +6,6 @@ from compchemparser.parsers.ccgaussian_parser import (
     ATOM_MASSES,
     FORMAL_CHARGE,
     ATOM_TYPES,
-    ATOM_MASSES,
     EMP_FORMULA,
     GEOM,
     SPIN_MULT,
@@ -25,7 +24,7 @@ from enum import Enum
 from typing import List, Optional, Dict
 
 
-cas_re = re.compile("\d{2,7}-\d\d-\d")
+cas_re = re.compile(r"(\d{2,7}-\d\d-\d)")
 
 MOLWT = "MolecularWeight"
 INCHI = "InChi"
@@ -92,7 +91,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             self._os_jsonwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **self._handler_kwargs
+                **self._handler_kwargs,
             )
             outputs.append(out_file_path)
         return outputs
@@ -109,7 +108,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         enth_of_form_ref_temp_unit: Optional[str] = None,
         enth_of_form_provenance: Optional[str] = None,
         *args,
-        **kwargs
+        **kwargs,
     ) -> None:
 
         spec_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["spec_pref"]
@@ -155,11 +154,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         data_out[GEOM_STRING] = self._geom_info(data)
         bonds_info = obutils.obGetMolBonds(xyz)
         bonds_info_line = [
-            str(bond["beginAtom"]["atomId"])
-            + " "
-            + str(bond["endAtom"]["atomId"])
-            + " "
-            + str(bond["order"])
+            f"{bond['beginAtom']['atomId']} {bond['endAtom']['atomId']} {bond['order']}"
             for bond in bonds_info
         ]
         data_out[BOND_STRING] = " ".join(bonds_info_line)
@@ -204,7 +199,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
     def _get_substructure_cas(synonyms):
         cas_rns = []
         for syn in synonyms:
-            match = re.match("(\d{2,7}-\d\d-\d)", syn)
+            match = re.match(cas_re, syn)
             if match:
                 cas_rns.append(match.group(1))
         return cas_rns
@@ -215,15 +210,11 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         coords = data["Geometry"]
         geom_out = []
         for k in range(len(atoms)):
-            geom_out.append(
-                atoms[k]
-                + " "
-                + str(coords[k][0])
-                + " "
-                + str(coords[k][1])
-                + " "
-                + str(coords[k][2])
-            )
+            atom = atoms[k]
+            x = coords[k][0]
+            y = coords[k][1]
+            z = coords[k][2]
+            geom_out.append(f"{atom} {x} {y} {z}")
         geom_string = " ".join(geom_out)
         return geom_string
 

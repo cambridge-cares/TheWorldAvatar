@@ -10,7 +10,6 @@ import chemaboxwriters.common.globals as globals
 from compchemparser.parsers.ccgaussian_parser import GEOM
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.endpoints_proxy as endp
-import chemaboxwriters.common.aboxconfig as abconf
 from typing import List, Optional, Dict
 from enum import Enum
 
