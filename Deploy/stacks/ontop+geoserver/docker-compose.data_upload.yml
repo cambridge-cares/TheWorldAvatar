@@ -21,7 +21,7 @@ services:
       CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
       DATA_DIR: ${SHARED_DATA_DIR}
       DB: ${DEFAULT_DATABASE}
-      KEEP_ALIVE: "set"
+      WORKSPACE: ${GEOSERVER_WORKSPACE}
     env_file:
       - .env
       - postgis/postgres.env
