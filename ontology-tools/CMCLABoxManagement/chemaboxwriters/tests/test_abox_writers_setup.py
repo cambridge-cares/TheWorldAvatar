@@ -41,7 +41,7 @@ def test_abox_writer_setup(endpoints_config_file: str, pipeline_types: List[str]
 
         pipeline.configure_from_file(config_file=config_file)
 
-        test_results = pipeline._read_config_file(config_file=config_file)
+        test_results = abconf.read_config_file(config_file=config_file)
         test_results = test_results[TEST_RESULTS][pipeline_type]
 
         for handler_name_ref, handler_results_ref in test_results[
