@@ -47,7 +47,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
-        **handler_kwargs
+        **handler_kwargs,
     ) -> List[str]:
 
         outputs: List[str] = []
@@ -60,7 +60,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             self._oc_csvwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **handler_kwargs
+                **handler_kwargs,
             )
             outputs.append(out_file_path)
         return outputs
@@ -124,16 +124,15 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             ["ABoxOntoCompChem", "Ontology", comp_pref[:-1], "base", "", ""]
         )
         spamwriter.writerow([jobIRI, "Instance", onto_comp + "#G09", "", "", ""])
-        if (
-            spec_IRI
-        ):  # If you have the ontospecies IRI, it puts it here. Otherwise, it leaves it out.
+        if spec_IRI:  # If you have the ontospecies IRI, it puts it here.
+            # Otherwise, it leaves it out.
             spamwriter.writerow([spec_IRI, "Instance", inst_spec, "", "", ""])
             spamwriter.writerow([jobIRI, "Instance", spec_IRI, has_spec, "", ""])
         spamwriter.writerow(
             [
-                comp_pref + "InitializationModule_" + calc_id,
+                f"{comp_pref}InitializationModule_{calc_id}",
                 "Instance",
-                onto_comp + "#InitializationModule",
+                f"{onto_comp}#InitializationModule",
                 "",
                 "",
                 "",
@@ -143,17 +142,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             [
                 jobIRI,
                 "Instance",
-                comp_pref + "InitializationModule_" + calc_id,
-                onto_comp + "#hasInitialization",
+                f"{comp_pref}InitializationModule_{calc_id}",
+                f"{onto_comp}#hasInitialization",
                 "",
                 "",
             ]
         )
         spamwriter.writerow(
             [
-                comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
+                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
                 "Instance",
-                gain_pref + "SourcePackage",
+                f"{gain_pref}SourcePackage",
                 "",
                 "",
                 "",
@@ -163,17 +162,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             [
                 jobIRI,
                 "Instance",
-                comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
-                onto_comp + "#hasEnvironment",
+                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+                f"{onto_comp}#hasEnvironment",
                 "",
                 "",
             ]
         )
         spamwriter.writerow(
             [
-                comp_pref + "MoleculeProperty_" + calc_id,
+                f"{comp_pref}MoleculeProperty_{calc_id}",
                 "Instance",
-                gain_pref + "MoleculeProperty",
+                f"{gain_pref}MoleculeProperty",
                 "",
                 "",
                 "",
@@ -181,17 +180,18 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "InitializationModule_" + calc_id,
+                f"{comp_pref}InitializationModule_{calc_id}",
                 "Instance",
-                comp_pref + "MoleculeProperty_" + calc_id,
-                gain_pref + "hasMoleculeProperty",
+                f"{comp_pref}MoleculeProperty_{calc_id}",
+                f"{gain_pref}hasMoleculeProperty",
                 "",
                 "",
             ]
         )
 
     def _write_mols(self, spamwriter, calc_id, data):
-        # This section starts the representation of the molecule, namely dividing the species into sub-molecules that contain the different atom types.
+        # This section starts the representation of the molecule, namely dividing
+        # the species into sub-molecules that contain the different atom types.
         # This will hopefully be changed by an update in OntoCompChem later.
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
@@ -204,17 +204,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             at_count.append(temp)
         for k in range(
             len(at_count)
-        ):  # For each atom in the molecule, make a molecule object (This is the way it's done atm.)
+        ):  # For each atom in the molecule, make a molecule object
+            # (This is the way it's done atm.)
+
+            atom = at_count[k][0]
+            count = str(float(at_count[k][1]))
+
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "Molecule_"
-                    + calc_id
-                    + "_"
-                    + at_count[k][0]
-                    + str(float(at_count[k][1])),
+                    f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
                     "Instance",
-                    gain_pref + "Molecule",
+                    f"{gain_pref}Molecule",
                     "",
                     "",
                     "",
@@ -222,34 +222,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "MoleculeProperty_"
-                    + calc_id
-                    + "_"
-                    + at_count[k][0]
-                    + str(float(at_count[k][1])),
+                    f"{comp_pref}MoleculeProperty_{calc_id}_{atom}{count}",
                     "Instance",
-                    comp_pref
-                    + "Molecule_"
-                    + calc_id
-                    + "_"
-                    + at_count[k][0]
-                    + str(float(at_count[k][1])),
-                    gain_pref + "hasMolecule",
+                    f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
+                    f"{gain_pref}hasMolecule",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "Atom_"
-                    + calc_id
-                    + "_"
-                    + at_count[k][0]
-                    + str(float(at_count[k][1])),
+                    f"{comp_pref}Atom_{calc_id}_{atom}{count}",
                     "Instance",
-                    gain_pref + "Atom",
+                    f"{gain_pref}Atom",
                     "",
                     "",
                     "",
@@ -257,29 +242,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "Molecule_"
-                    + calc_id
-                    + "_"
-                    + at_count[k][0]
-                    + str(float(at_count[k][1])),
+                    f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
                     "Instance",
-                    comp_pref
-                    + "Atom_"
-                    + calc_id
-                    + "_"
-                    + at_count[k][0]
-                    + str(float(at_count[k][1])),
-                    gain_pref + "hasAtom",
+                    f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                    f"{gain_pref}hasAtom",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    table_pref + "#" + at_count[k][0],
+                    f"{table_pref}#{atom}",
                     "Instance",
-                    table_pref + "#Element",
+                    f"{table_pref}#Element",
                     "",
                     "",
                     "",
@@ -287,29 +262,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "Atom_"
-                    + calc_id
-                    + "_"
-                    + at_count[k][0]
-                    + str(float(at_count[k][1])),
+                    f"{comp_pref}Atom_{calc_id}_{atom}{count}",
                     "Instance",
-                    table_pref + "#" + at_count[k][0],
-                    gain_pref + "isElement",
+                    f"{table_pref}#{atom}",
+                    f"{gain_pref}isElement",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasNumberOfAtoms",
+                    f"{gain_pref}hasNumberOfAtoms",
                     "Data Property",
-                    comp_pref
-                    + "Atom_"
-                    + calc_id
-                    + "_"
-                    + at_count[k][0]
-                    + str(float(at_count[k][1])),
+                    f"{comp_pref}Atom_{calc_id}_{atom}{count}",
                     "",
                     at_count[k][1],
                     "",
@@ -317,7 +282,8 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
 
     def _write_level_of_theory(self, spamwriter, calc_id, data):
-        # This section writes the information related to the level of theory for the ABox (method and basis set).
+        # This section writes the information related to the level
+        # of theory for the ABox (method and basis set).
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
@@ -325,9 +291,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
         spamwriter.writerow(
             [
-                comp_pref + "LevelOfTheory_" + calc_id,
+                f"{comp_pref}LevelOfTheory_{calc_id}",
                 "Instance",
-                onto_comp + "#LevelOfTheory",
+                f"{onto_comp}#LevelOfTheory",
                 "",
                 "",
                 "",
@@ -335,9 +301,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "MethodologyFeature_" + calc_id + "_LevelofTheoryParameter",
+                f"{comp_pref}MethodologyFeature_{calc_id}_LevelofTheoryParameter",
                 "Instance",
-                gain_pref + "MethodologyFeature",
+                f"{gain_pref}MethodologyFeature",
                 "",
                 "",
                 "",
@@ -345,19 +311,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "InitializationModule_" + calc_id,
+                f"{comp_pref}InitializationModule_{calc_id}",
                 "Instance",
-                comp_pref + "MethodologyFeature_" + calc_id + "_LevelofTheoryParameter",
-                gain_pref + "hasParameter",
+                f"{comp_pref}MethodologyFeature_{calc_id}_LevelofTheoryParameter",
+                f"{gain_pref}hasParameter",
                 "",
                 "",
             ]
         )
         spamwriter.writerow(
             [
-                onto_comp + "#hasLevelOfTheory",
+                f"{onto_comp}#hasLevelOfTheory",
                 "Data Property",
-                comp_pref + "MethodologyFeature_" + calc_id + "_LevelofTheoryParameter",
+                f"{comp_pref}MethodologyFeature_{calc_id}_LevelofTheoryParameter",
                 "",
                 data["Method"],
                 "",
@@ -365,9 +331,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "BasisSet_" + calc_id,
+                f"{comp_pref}BasisSet_{calc_id}",
                 "Instance",
-                gain_pref + "BasisSet",
+                f"{gain_pref}BasisSet",
                 "",
                 "",
                 "",
@@ -375,36 +341,37 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "InitializationModule_" + calc_id,
+                f"{comp_pref}InitializationModule_{calc_id}",
                 "Instance",
-                comp_pref + "BasisSet_" + calc_id,
-                gain_pref + "hasParameter",
+                f"{comp_pref}BasisSet_{calc_id}",
+                f"{gain_pref}hasParameter",
                 "",
                 "",
             ]
         )
         spamwriter.writerow(
             [
-                gain_pref + "hasBasisSet",
+                f"{gain_pref}hasBasisSet",
                 "Data Property",
-                comp_pref + "BasisSet_" + calc_id,
+                f"{comp_pref}BasisSet_{calc_id}",
                 "",
-                '"{}"'.format(data["Basis set"]),
+                f'"{data["Basis set"]}"',
                 "",
             ]
         )  # Note that the string formatting is used to escape the ',' in basis sets.
 
     def _write_name(self, spamwriter, calc_id, data):
-        # This writes the name of the species, taken as the formula, but with extraneous 1s removed.
+        # This writes the name of the species, taken as the formula,
+        # but with extraneous 1s removed.
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
 
         spamwriter.writerow(
             [
-                gain_pref + "hasName",
+                f"{gain_pref}hasName",
                 "Data Property",
-                comp_pref + "MoleculeProperty_" + calc_id,
+                f"{comp_pref}MoleculeProperty_{calc_id}",
                 "",
                 utilsfunc.formula_clean_re.sub("", data["Empirical formula"]),
                 "",
@@ -422,9 +389,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         if "Frequencies" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "VibrationalAnalysis_" + calc_id,
+                    f"{comp_pref}VibrationalAnalysis_{calc_id}",
                     "Instance",
-                    gain_pref + "VibrationalAnalysis",
+                    f"{gain_pref}VibrationalAnalysis",
                     "",
                     "",
                     "",
@@ -434,17 +401,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "VibrationalAnalysis_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}VibrationalAnalysis_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "Frequency_" + calc_id,
+                    f"{comp_pref}Frequency_{calc_id}",
                     "Instance",
-                    gain_pref + "Frequency",
+                    f"{gain_pref}Frequency",
                     "",
                     "",
                     "",
@@ -452,19 +419,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "VibrationalAnalysis_" + calc_id,
+                    f"{comp_pref}VibrationalAnalysis_{calc_id}",
                     "Instance",
-                    comp_pref + "Frequency_" + calc_id,
-                    gain_pref + "hasResult",
+                    f"{comp_pref}Frequency_{calc_id}",
+                    f"{gain_pref}hasResult",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    onto_comp + "#hasFrequencies",
+                    f"{onto_comp}#hasFrequencies",
                     "Data Property",
-                    comp_pref + "Frequency_" + calc_id,
+                    f"{comp_pref}Frequency_{calc_id}",
                     "",
                     " ".join(str(i) for i in data["Frequencies"]),
                     "",
@@ -472,9 +439,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasVibrationCount",
+                    f"{gain_pref}hasVibrationCount",
                     "Data Property",
-                    comp_pref + "Frequency_" + calc_id,
+                    f"{comp_pref}Frequency_{calc_id}",
                     "",
                     data["Frequencies number"],
                     "",
@@ -482,9 +449,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "cm-1",
+                    f"{gain_pref}cm-1",
                     "Instance",
-                    unit_pref + "qudt#FrequencyUnit",
+                    f"{unit_pref}qudt#FrequencyUnit",
                     "",
                     "",
                     "",
@@ -492,10 +459,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "Frequency_" + calc_id,
+                    f"{comp_pref}Frequency_{calc_id}",
                     "Instance",
-                    gain_pref + "cm-1",
-                    gain_pref + "hasUnit",
+                    f"{gain_pref}cm-1",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -519,9 +486,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
             spamwriter.writerow(
                 [
-                    comp_pref + "RotationalConstants_" + calc_id,
+                    f"{comp_pref}RotationalConstants_{calc_id}",
                     "Instance",
-                    onto_comp + "#RotationalConstants",
+                    f"{onto_comp}#RotationalConstants",
                     "",
                     "",
                     "",
@@ -531,17 +498,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "RotationalConstants_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}RotationalConstants_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    onto_comp + "#hasRotationalConstants",
+                    f"{onto_comp}#hasRotationalConstants",
                     "Data Property",
-                    comp_pref + "RotationalConstants_" + calc_id,
+                    f"{comp_pref}RotationalConstants_{calc_id}",
                     "",
                     " ".join(str(i) for i in data["Rotational constants"]),
                     "",
@@ -549,9 +516,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    onto_comp + "#hasRotationalConstantsCount",
+                    f"{onto_comp}#hasRotationalConstantsCount",
                     "Data Property",
-                    comp_pref + "RotationalConstants_" + calc_id,
+                    f"{comp_pref}RotationalConstants_{calc_id}",
                     "",
                     data["Rotational constants number"],
                     "",
@@ -559,10 +526,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "RotationalConstants_" + calc_id,
+                    f"{comp_pref}RotationalConstants_{calc_id}",
                     "Instance",
-                    unit_pref + "unit#GigaHertz",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#GigaHertz",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -571,9 +538,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         if "Rotational symmetry number" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "RotationalSymmetry_" + calc_id,
+                    f"{comp_pref}RotationalSymmetry_{calc_id}",
                     "Instance",
-                    onto_comp + "#RotationalSymmetry",
+                    f"{onto_comp}#RotationalSymmetry",
                     "",
                     "",
                     "",
@@ -583,17 +550,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "RotationalSymmetry_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}RotationalSymmetry_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    onto_comp + "#hasRotationalSymmetryNumber",
+                    f"{onto_comp}#hasRotationalSymmetryNumber",
                     "Data Property",
-                    comp_pref + "RotationalSymmetry_" + calc_id,
+                    f"{comp_pref}RotationalSymmetry_{calc_id}",
                     "",
                     int(data["Rotational symmetry number"]),
                     "",
@@ -609,9 +576,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
         spamwriter.writerow(
             [
-                comp_pref + "GeometryType_" + calc_id,
+                f"{comp_pref}GeometryType_{calc_id}",
                 "Instance",
-                onto_comp + "#GeometryType",
+                f"{onto_comp}#GeometryType",
                 "",
                 "",
                 "",
@@ -621,17 +588,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             [
                 jobIRI,
                 "Instance",
-                comp_pref + "GeometryType_" + calc_id,
-                gain_pref + "isCalculationOn",
+                f"{comp_pref}GeometryType_{calc_id}",
+                f"{gain_pref}isCalculationOn",
                 "",
                 "",
             ]
         )
         spamwriter.writerow(
             [
-                onto_comp + "#hasGeometryType",
+                f"{onto_comp}#hasGeometryType",
                 "Data Property",
-                comp_pref + "GeometryType_" + calc_id,
+                f"{comp_pref}GeometryType_{calc_id}",
                 "",
                 data["Geometry type"],
                 "",
@@ -650,9 +617,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         if "Electronic and ZPE energy" in data and "Electronic energy" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "ZeroPointEnergy_" + calc_id,
+                    f"{comp_pref}ZeroPointEnergy_{calc_id}",
                     "Instance",
-                    onto_comp + "#ZeroPointEnergy",
+                    f"{onto_comp}#ZeroPointEnergy",
                     "",
                     "",
                     "",
@@ -662,17 +629,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "ZeroPointEnergy_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}ZeroPointEnergy_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_ZeroPointEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -680,19 +647,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "ZeroPointEnergy_" + calc_id,
+                    f"{comp_pref}ZeroPointEnergy_{calc_id}",
                     "Instance",
-                    comp_pref + "FloatValue_" + calc_id + "_ZeroPointEnergy",
-                    gain_pref + "hasElectronicEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
+                    f"{gain_pref}hasElectronicEnergy",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref + "FloatValue_" + calc_id + "_ZeroPointEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
                     "",
                     data["Electronic and ZPE energy"] - data["Electronic energy"],
                     "",
@@ -700,10 +667,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_ZeroPointEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
                     "Instance",
-                    unit_pref + "unit#Hartree",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Hartree",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -711,9 +678,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         elif "Electronic and ZPE energy" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "ElectronicAndZPEEnergy_" + calc_id,
+                    f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
                     "Instance",
-                    onto_comp + "#ElectronicAndZPEEnergy",
+                    f"{onto_comp}#ElectronicAndZPEEnergy",
                     "",
                     "",
                     "",
@@ -723,17 +690,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "ElectronicAndZPEEnergy_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_ElectronicAndZPEEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -741,19 +708,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "ElectronicAndZPEEnergy_" + calc_id,
+                    f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
                     "Instance",
-                    comp_pref + "FloatValue_" + calc_id + "_ElectronicAndZPEEnergy",
-                    gain_pref + "hasElectronicEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
+                    f"{gain_pref}hasElectronicEnergy",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref + "FloatValue_" + calc_id + "_ElectronicAndZPEEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
                     "",
                     data["Electronic and ZPE energy"],
                     "",
@@ -761,10 +728,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_ElectronicAndZPEEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
                     "Instance",
-                    unit_pref + "unit#Hartree",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Hartree",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -781,9 +748,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             # This section writes the electronic (SCF) energy information.
             spamwriter.writerow(
                 [
-                    comp_pref + "ScfEnergy_" + calc_id,
+                    f"{comp_pref}ScfEnergy_{calc_id}",
                     "Instance",
-                    onto_comp + "#ScfEnergy",
+                    f"{onto_comp}#ScfEnergy",
                     "",
                     "",
                     "",
@@ -793,17 +760,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "ScfEnergy_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}ScfEnergy_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_ScfEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -811,19 +778,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "ScfEnergy_" + calc_id,
+                    f"{comp_pref}ScfEnergy_{calc_id}",
                     "Instance",
-                    comp_pref + "FloatValue_" + calc_id + "_ScfEnergy",
-                    gain_pref + "hasElectronicEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
+                    f"{gain_pref}hasElectronicEnergy",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref + "FloatValue_" + calc_id + "_ScfEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
                     "",
                     data["Electronic energy"],
                     "",
@@ -831,17 +798,18 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_ScfEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
                     "Instance",
-                    unit_pref + "unit#Hartree",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Hartree",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
             )
 
     def _write_occ(self, spamwriter, jobIRI, calc_id, data):
-        # This section writes the information on the occupied orbitals: HOMO, HOMO-1, HOMO-2 energies.
+        # This section writes the information on the occupied orbitals:
+        # HOMO, HOMO-1, HOMO-2 energies.
         # HOMO
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
@@ -851,9 +819,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         if "HOMO energy" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "HomoEnergy_" + calc_id,
+                    f"{comp_pref}HomoEnergy_{calc_id}",
                     "Instance",
-                    onto_comp + "#HomoEnergy",
+                    f"{onto_comp}#HomoEnergy",
                     "",
                     "",
                     "",
@@ -863,17 +831,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "HomoEnergy_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}HomoEnergy_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_HomoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -881,19 +849,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "HomoEnergy_" + calc_id,
+                    f"{comp_pref}HomoEnergy_{calc_id}",
                     "Instance",
-                    comp_pref + "FloatValue_" + calc_id + "_HomoEnergy",
-                    onto_comp + "#hasHomoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
+                    f"{onto_comp}#hasHomoEnergy",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref + "FloatValue_" + calc_id + "_HomoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
                     "",
                     data["HOMO energy"],
                     "",
@@ -901,10 +869,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_HomoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
                     "Instance",
-                    unit_pref + "unit#Hartree",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Hartree",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -913,9 +881,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         if "HOMO-1 energy" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "HomoMinusOneEnergy_" + calc_id,
+                    f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
                     "Instance",
-                    onto_comp + "#HomoMinusOneEnergy",
+                    f"{onto_comp}#HomoMinusOneEnergy",
                     "",
                     "",
                     "",
@@ -925,17 +893,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "HomoMinusOneEnergy_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_HomoMinusOneEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -943,19 +911,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "HomoMinusOneEnergy_" + calc_id,
+                    f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
                     "Instance",
-                    comp_pref + "FloatValue_" + calc_id + "_HomoMinusOneEnergy",
-                    onto_comp + "#hasHomoMinusOneEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
+                    f"{onto_comp}#hasHomoMinusOneEnergy",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref + "FloatValue_" + calc_id + "_HomoMinusOneEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
                     "",
                     data["HOMO-1 energy"],
                     "",
@@ -963,10 +931,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_HomoMinusOneEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
                     "Instance",
-                    unit_pref + "unit#Hartree",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Hartree",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -975,9 +943,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         if "HOMO-2 energy" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "HomoMinusTwoEnergy_" + calc_id,
+                    f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
                     "Instance",
-                    onto_comp + "#HomoMinusTwoEnergy",
+                    f"{onto_comp}#HomoMinusTwoEnergy",
                     "",
                     "",
                     "",
@@ -987,17 +955,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "HomoMinusTwoEnergy_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_HomoMinusTwoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -1005,19 +973,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "HomoMinusTwoEnergy_" + calc_id,
+                    f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
                     "Instance",
-                    comp_pref + "FloatValue_" + calc_id + "_HomoMinusTwoEnergy",
-                    onto_comp + "#hasHomoMinusTwoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
+                    f"{onto_comp}#hasHomoMinusTwoEnergy",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref + "FloatValue_" + calc_id + "_HomoMinusTwoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
                     "",
                     data["HOMO-2 energy"],
                     "",
@@ -1025,17 +993,18 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_HomoMinusTwoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
                     "Instance",
-                    unit_pref + "unit#Hartree",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Hartree",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
             )
 
     def _write_virt(self, spamwriter, jobIRI, calc_id, data):
-        # This section writes the information on the unoccupied (virtual) orbitals: LUMO, LUMO+1, LUMO+2 energies.
+        # This section writes the information on the unoccupied (virtual)
+        # orbitals: LUMO, LUMO+1, LUMO+2 energies.
         # LUMO
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
@@ -1046,9 +1015,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         if "LUMO energy" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "LumoEnergy_" + calc_id,
+                    f"{comp_pref}LumoEnergy_{calc_id}",
                     "Instance",
-                    onto_comp + "#LumoEnergy",
+                    f"{onto_comp}#LumoEnergy",
                     "",
                     "",
                     "",
@@ -1058,17 +1027,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "LumoEnergy_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}LumoEnergy_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_LumoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -1076,19 +1045,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "LumoEnergy_" + calc_id,
+                    f"{comp_pref}LumoEnergy_{calc_id}",
                     "Instance",
-                    comp_pref + "FloatValue_" + calc_id + "_LumoEnergy",
-                    onto_comp + "#hasLumoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
+                    f"{onto_comp}#hasLumoEnergy",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref + "FloatValue_" + calc_id + "_LumoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
                     "",
                     data["LUMO energy"],
                     "",
@@ -1096,10 +1065,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_LumoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
                     "Instance",
-                    unit_pref + "unit#Hartree",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Hartree",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -1108,9 +1077,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         if "LUMO+1 energy" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "LumoPlusOneEnergy_" + calc_id,
+                    f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
                     "Instance",
-                    onto_comp + "#LumoPlusOneEnergy",
+                    f"{onto_comp}#LumoPlusOneEnergy",
                     "",
                     "",
                     "",
@@ -1120,17 +1089,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "LumoPlusOneEnergy_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_LumoPlusOneEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -1138,19 +1107,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "LumoPlusOneEnergy_" + calc_id,
+                    f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
                     "Instance",
-                    comp_pref + "FloatValue_" + calc_id + "_LumoPlusOneEnergy",
-                    onto_comp + "#hasLumoPlusOneEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
+                    f"{onto_comp}#hasLumoPlusOneEnergy",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref + "FloatValue_" + calc_id + "_LumoPlusOneEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
                     "",
                     data["LUMO+1 energy"],
                     "",
@@ -1158,10 +1127,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_LumoPlusOneEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
                     "Instance",
-                    unit_pref + "unit#Hartree",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Hartree",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -1170,9 +1139,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         if "LUMO+2 energy" in data:
             spamwriter.writerow(
                 [
-                    comp_pref + "LumoPlusTwoEnergy_" + calc_id,
+                    f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
                     "Instance",
-                    onto_comp + "#LumoPlusTwoEnergy",
+                    f"{onto_comp}#LumoPlusTwoEnergy",
                     "",
                     "",
                     "",
@@ -1182,17 +1151,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 [
                     jobIRI,
                     "Instance",
-                    comp_pref + "LumoPlusTwoEnergy_" + calc_id,
-                    gain_pref + "isCalculationOn",
+                    f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
+                    f"{gain_pref}isCalculationOn",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_LumoPlusTwoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -1200,19 +1169,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "LumoPlusTwoEnergy_" + calc_id,
+                    f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
                     "Instance",
-                    comp_pref + "FloatValue_" + calc_id + "_LumoPlusTwoEnergy",
-                    onto_comp + "#hasLumoPlusTwoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
+                    f"{onto_comp}#hasLumoPlusTwoEnergy",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref + "FloatValue_" + calc_id + "_LumoPlusTwoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
                     "",
                     data["LUMO+2 energy"],
                     "",
@@ -1220,10 +1189,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "FloatValue_" + calc_id + "_LumoPlusTwoEnergy",
+                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
                     "Instance",
-                    unit_pref + "unit#Hartree",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Hartree",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -1239,9 +1208,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
         spamwriter.writerow(
             [
-                comp_pref + "GeometryOptimization_" + calc_id,
+                f"{comp_pref}GeometryOptimization_{calc_id}",
                 "Instance",
-                gain_pref + "GeometryOptimization",
+                f"{gain_pref}GeometryOptimization",
                 "",
                 "",
                 "",
@@ -1251,17 +1220,17 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             [
                 jobIRI,
                 "Instance",
-                comp_pref + "GeometryOptimization_" + calc_id,
-                gain_pref + "isCalculationOn",
+                f"{comp_pref}GeometryOptimization_{calc_id}",
+                f"{gain_pref}isCalculationOn",
                 "",
                 "",
             ]
         )
         spamwriter.writerow(
             [
-                comp_pref + "Molecule_" + calc_id,
+                f"{comp_pref}Molecule_{calc_id}",
                 "Instance",
-                gain_pref + "Molecule",
+                f"{gain_pref}Molecule",
                 "",
                 "",
                 "",
@@ -1269,19 +1238,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "GeometryOptimization_" + calc_id,
+                f"{comp_pref}GeometryOptimization_{calc_id}",
                 "Instance",
-                comp_pref + "Molecule_" + calc_id,
-                gain_pref + "hasMolecule",
+                f"{comp_pref}Molecule_{calc_id}",
+                f"{gain_pref}hasMolecule",
                 "",
                 "",
             ]
         )
         spamwriter.writerow(
             [
-                onto_comp + "#hasSpinMultiplicity",
+                f"{onto_comp}#hasSpinMultiplicity",
                 "Data Property",
-                comp_pref + "Molecule_" + calc_id,
+                f"{comp_pref}Molecule_{calc_id}",
                 "",
                 data["Spin multiplicity"],
                 "",
@@ -1289,9 +1258,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "IntegerValue_" + calc_id + "_FormalCharge",
+                f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
                 "Instance",
-                gain_pref + "IntegerValue",
+                f"{gain_pref}IntegerValue",
                 "",
                 "",
                 "",
@@ -1299,19 +1268,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "Molecule_" + calc_id,
+                f"{comp_pref}Molecule_{calc_id}",
                 "Instance",
-                comp_pref + "IntegerValue_" + calc_id + "_FormalCharge",
-                gain_pref + "hasFormalCharge",
+                f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
+                f"{gain_pref}hasFormalCharge",
                 "",
                 "",
             ]
         )
         spamwriter.writerow(
             [
-                gain_pref + "hasValue",
+                f"{gain_pref}hasValue",
                 "Data Property",
-                comp_pref + "IntegerValue_" + calc_id + "_FormalCharge",
+                f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
                 "",
                 data["Formal charge"],
                 "",
@@ -1319,10 +1288,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "IntegerValue_" + calc_id + "_FormalCharge",
+                f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
                 "Instance",
-                gain_pref + "atomicUnit",
-                gain_pref + "hasUnit",
+                f"{gain_pref}atomicUnit",
+                f"{gain_pref}hasUnit",
                 "",
                 "",
             ]
@@ -1336,21 +1305,22 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
         table_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["table_pref"]
 
-        count = 1  # This count essentially counts the indices of the atoms starting with 1. Basically, this additional number helps uniquely assign an IRI to each atom.
+        count = 1  # This count essentially counts the indices of the atoms starting
+        # with 1. Basically, this additional number helps uniquely assign an IRI
+        # to each atom.
         coord_string = ["x3", "y3", "z3"]  # How the coordinates are labeled.
         coords = ["X", "Y", "Z"]  # The three cartesian corrdinates.
         # Coordinates.
         for k in range(len(data["Atom types"])):
+
+            atom = data["Atom types"][k]
+            atom_id = f"{calc_id}_{atom}{count}"
+
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "Atom_"
-                    + calc_id
-                    + "_"
-                    + data["Atom types"][k]
-                    + str(count),
+                    f"{comp_pref}Atom_{atom_id}",
                     "Instance",
-                    gain_pref + "Atom",
+                    f"{gain_pref}Atom",
                     "",
                     "",
                     "",
@@ -1358,30 +1328,20 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref + "Molecule_" + calc_id,
+                    f"{comp_pref}Molecule_{calc_id}",
                     "Instance",
-                    comp_pref
-                    + "Atom_"
-                    + calc_id
-                    + "_"
-                    + data["Atom types"][k]
-                    + str(count),
-                    gain_pref + "hasAtom",
+                    f"{comp_pref}Atom_{atom_id}",
+                    f"{gain_pref}hasAtom",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "Atom_"
-                    + calc_id
-                    + "_"
-                    + data["Atom types"][k]
-                    + str(count),
+                    f"{comp_pref}Atom_{atom_id}",
                     "Instance",
-                    table_pref + "#" + data["Atom types"][k],
-                    gain_pref + "isElement",
+                    f"{table_pref}#{atom}",
+                    f"{gain_pref}isElement",
                     "",
                     "",
                 ]
@@ -1389,17 +1349,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             for i in range(3):
                 spamwriter.writerow(
                     [
-                        comp_pref
-                        + "FloatValue_"
-                        + calc_id
-                        + "_"
-                        + data["Atom types"][k]
-                        + str(count)
-                        + "_"
-                        + coord_string[i]
-                        + "Coordinate",
+                        f"{comp_pref}FloatValue_{atom_id}_{coord_string[i]}Coordinate",
                         "Instance",
-                        gain_pref + "FloatValue",
+                        f"{gain_pref}FloatValue",
                         "",
                         "",
                         "",
@@ -1407,40 +1359,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 )
                 spamwriter.writerow(
                     [
-                        comp_pref
-                        + "Atom_"
-                        + calc_id
-                        + "_"
-                        + data["Atom types"][k]
-                        + str(count),
+                        f"{comp_pref}Atom_{calc_id}_{atom}{count}",
                         "Instance",
-                        comp_pref
-                        + "FloatValue_"
-                        + calc_id
-                        + "_"
-                        + data["Atom types"][k]
-                        + str(count)
-                        + "_"
-                        + coord_string[i]
-                        + "Coordinate",
-                        gain_pref + "hasAtomCoordinate" + coords[i],
+                        f"{comp_pref}FloatValue_{atom_id}_{coord_string[i]}Coordinate",
+                        f"{gain_pref}hasAtomCoordinate{coords[i]}",
                         "",
                         "",
                     ]
                 )
                 spamwriter.writerow(
                     [
-                        gain_pref + "hasValue",
+                        f"{gain_pref}hasValue",
                         "Data Property",
-                        comp_pref
-                        + "FloatValue_"
-                        + calc_id
-                        + "_"
-                        + data["Atom types"][k]
-                        + str(count)
-                        + "_"
-                        + coord_string[i]
-                        + "Coordinate",
+                        f"{comp_pref}FloatValue_{atom_id}_{coord_string[i]}Coordinate",
                         "",
                         data["Geometry"][k][i],
                         "",
@@ -1449,15 +1380,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             # Write atom masses.
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "FloatValue_"
-                    + calc_id
-                    + "_"
-                    + data["Atom types"][k]
-                    + str(count)
-                    + "_Mass",
+                    f"{comp_pref}FloatValue_{atom_id}_Mass",
                     "Instance",
-                    gain_pref + "FloatValue",
+                    f"{gain_pref}FloatValue",
                     "",
                     "",
                     "",
@@ -1465,36 +1390,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "Atom_"
-                    + calc_id
-                    + "_"
-                    + data["Atom types"][k]
-                    + str(count),
+                    f"{comp_pref}Atom_{atom_id}",
                     "Instance",
-                    comp_pref
-                    + "FloatValue_"
-                    + calc_id
-                    + "_"
-                    + data["Atom types"][k]
-                    + str(count)
-                    + "_Mass",
-                    gain_pref + "hasMass",
+                    f"{comp_pref}FloatValue_{atom_id}_Mass",
+                    f"{gain_pref}hasMass",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    comp_pref
-                    + "FloatValue_"
-                    + calc_id
-                    + "_"
-                    + data["Atom types"][k]
-                    + str(count)
-                    + "_Mass",
+                    f"{comp_pref}FloatValue_{atom_id}_Mass",
                     "",
                     data["Atomic masses"][k],
                     "",
@@ -1502,16 +1410,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    comp_pref
-                    + "FloatValue_"
-                    + calc_id
-                    + "_"
-                    + data["Atom types"][k]
-                    + str(count)
-                    + "_Mass",
+                    f"{comp_pref}FloatValue_{atom_id}_Mass",
                     "Instance",
-                    unit_pref + "unit#Dalton",
-                    gain_pref + "hasUnit",
+                    f"{unit_pref}unit#Dalton",
+                    f"{gain_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -1531,9 +1433,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
         spamwriter.writerow(
             [
-                onto_comp + "#hasProgram",
+                f"{onto_comp}#hasProgram",
                 "Data Property",
-                comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
+                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
                 "",
                 data["Program name"],
                 "",
@@ -1541,9 +1443,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                onto_comp + "#hasProgramVersion",
+                f"{onto_comp}#hasProgramVersion",
                 "Data Property",
-                comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
+                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
                 "",
                 data["Program version"].split("+")[0][-1],
                 "",
@@ -1551,9 +1453,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                onto_comp + "#hasRunDate",
+                f"{onto_comp}#hasRunDate",
                 "Data Property",
-                comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
+                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
                 "",
                 data["Run date"],
                 "",
@@ -1561,9 +1463,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                ocompchem_data_pref + "OutputSource_" + calc_id + ".g09",
+                f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
                 "Instance",
-                onto_comp + "#OutputSource",
+                f"{onto_comp}#OutputSource",
                 "",
                 "",
                 "",
@@ -1571,39 +1473,19 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
+                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
                 "Instance",
-                ocompchem_data_pref + "OutputSource_" + calc_id + ".g09",
-                gain_pref + "hasOutputFile",
+                f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
+                f"{gain_pref}hasOutputFile",
                 "",
                 "",
             ]
         )
         spamwriter.writerow(
             [
-                ocompchem_data_pref + "OutputSource_" + calc_id + ".xml",
+                f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
                 "Instance",
-                onto_comp + "#OutputSource",
-                "",
-                "",
-                "",
-            ]
-        )
-        spamwriter.writerow(
-            [
-                comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
-                "Instance",
-                ocompchem_data_pref + "OutputSource_" + calc_id + ".xml",
-                gain_pref + "hasOutputFile",
-                "",
-                "",
-            ]
-        )
-        spamwriter.writerow(
-            [
-                ocompchem_data_pref + "OutputSource_" + calc_id + ".png",
-                "Instance",
-                onto_comp + "#OutputSource",
+                f"{onto_comp}#OutputSource",
                 "",
                 "",
                 "",
@@ -1611,10 +1493,30 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                comp_pref + "SourcePackage_" + calc_id + "_EnvironmentModule",
+                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
                 "Instance",
-                ocompchem_data_pref + "OutputSource_" + calc_id + ".png",
-                gain_pref + "hasOutputFile",
+                f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
+                f"{gain_pref}hasOutputFile",
+                "",
+                "",
+            ]
+        )
+        spamwriter.writerow(
+            [
+                f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
+                "Instance",
+                f"{onto_comp}#OutputSource",
+                "",
+                "",
+                "",
+            ]
+        )
+        spamwriter.writerow(
+            [
+                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+                "Instance",
+                f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
+                f"{gain_pref}hasOutputFile",
                 "",
                 "",
             ]
