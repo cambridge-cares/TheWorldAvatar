@@ -30,7 +30,7 @@ def assemble_pipeline(
     elif pipeline_type.upper() == OPS_PIPELINE.upper():
         pipeline = assemble_ops_pipeline(endpoints_proxy=endpoints_proxy)
     else:
-        raise app_exc.UnsupportedPipeline(f"Selected pipeline type is not supported")
+        raise app_exc.UnsupportedPipeline("Selected pipeline type is not supported")
 
     if config_dict is not None:
         pipeline.configure_from_dict(config=config_dict)
