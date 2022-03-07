@@ -1203,6 +1203,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     rdf:type OntoCAPEPha:Composition;
     OntoCAPEUpp:comprisesDirectly :PhaseComponent_1_Property_1;
     OntoCAPEUpp:comprisesDirectly :PhaseComponent_6_Property_1;
+    OntoCAPEUpp:comprisesDirectly :PhaseComponent_IS_Input_Property_1;
 .
 
 :Phase_2

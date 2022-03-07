@@ -956,6 +956,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         list_input_chemical_single_phase = [input_chem.thermodynamicBehaviour for input_chem in list_input_chemical]
         for autosampler in list_autosampler:
             list_chemical_solution_mat_single_phase = [site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour for site in autosampler.hasSite]
+            logger.debug([sp.dict() for sp in list_chemical_solution_mat_single_phase])
+            logger.debug([sp.dict() for sp in list_input_chemical_single_phase])
             if all(item in list_chemical_solution_mat_single_phase for item in list_input_chemical_single_phase):
                 # second step: query if the operation range covers the reaction condition
                 # NOTE here we only consider the reaction temperature at the moment, support for checking more reaction conditions (e.g. reactor material, autosampler liquid level, etc.) can be added later on
