@@ -20,13 +20,14 @@ unit_dict = {'megawatt': 'MW'}
 # Specify plotting properties for GeoJSON features
 geojson_attributes = { 'displayName': '',
                   'description': '',
-                  'circle-color': '#FF0000',
-                  'circle-stroke-width': 1,
-                  'circle-stroke-color': '#000000',
-                  'circle-stroke-opacity': 0.75,
-                  'circle-opacity': 0.75
+                  'icon-size': 1.0,
+                  'icon-image': '',
+                  'hasState': 0
                   }
 
+
+powerplant_image_label = "powerplant"
+generator_image_label = "generator"
 
 def get_instance_time_series_data(instanceIRI, TSClient, KGClient):
     '''
@@ -490,6 +491,7 @@ def generate_powerplant_visualisation_data(powerplants, powerplant_coordinates, 
         # Update GeoJSON properties
         geojson_attributes['description'] = str(powerplant)
         geojson_attributes['displayName'] = powerplant
+        geojson_attributes['icon-image'] = powerplant_image_label
         # Append results to overall GeoJSON FeatureCollection
         if powerplant.lower() in powerplant_coordinates:
             #print('powerplant_coordinates[powerplant.lower()]:', powerplant_coordinates[powerplant.lower()])
@@ -547,6 +549,7 @@ def generate_generator_visualisation_data(generators, generator_coordinates, KGC
         # Update GeoJSON properties
         geojson_attributes['description'] = str(generator)
         geojson_attributes['displayName'] = generator
+        geojson_attributes['icon-image'] = generator_image_label
         # Append results to overall GeoJSON FeatureCollection
         if generator.lower() in generator_coordinates:
             geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, generator_coordinates[generator.lower()]))

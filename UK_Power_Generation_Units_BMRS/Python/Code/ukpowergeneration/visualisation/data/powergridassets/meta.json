@@ -8,7 +8,7 @@
             "cluster": true,
             "clusterRadius": 30,
             "clusterProperties": {
-                "icon-image": ["string", "alpha-empty"],
+                "icon-image": ["string", "powerplant-empty"],
                 "text-color": ["string", "#0050bf"]
             },            
             "metaFiles": ["powerplants-meta.json"],
@@ -22,9 +22,9 @@
             "cluster": true,
             "clusterRadius": 30,
             "clusterProperties": {
-                "icon-image": ["string", "beta-empty"],
+                "icon-image": ["string", "generator-empty"],
                 "text-color": ["string", "#bc0000"],
-                "floodCount": ["+", ["get", "floodCount", ["properties"]]]
+                "floodCount": ["+", ["get", "generatorCount", ["properties"]]]
             },            
             "metaFiles": ["generators-meta.json"],
 			"timeseriesFiles": ["generators-timeseries.json"]
