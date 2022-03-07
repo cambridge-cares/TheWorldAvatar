@@ -1,7 +1,5 @@
-import yaml
-from typing import Dict, Optional
+from typing import Dict, Optional, List, Tuple
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
-from typing import Dict, List, Optional, Tuple
 from enum import Enum
 from pyuploader.uploaders.uploader import Uploader
 import chemaboxwriters.common.aboxconfig as abconf
@@ -17,6 +15,7 @@ class Endpoints_proxy:
         file_server_uploader: Optional[Uploader] = None,
         triple_store_uploader: Optional[Uploader] = None,
     ) -> None:
+
         self._file_server_uploader = (
             file_server_uploader
             if file_server_uploader is not None
@@ -73,7 +72,10 @@ class Endpoints_proxy:
     ) -> None:
         if url is None:
             logger.warning(
-                f"No {upload_type} upload endpoint specified for the {input_type.name.lower()} stage."
+                (
+                    f"No {upload_type} upload endpoint specified for the "
+                    f"{input_type.name.lower()} stage."
+                )
             )
             if not dry_run:
                 raise app_exceptions.MissingUploadConfigs
@@ -81,7 +83,10 @@ class Endpoints_proxy:
 
         if auth_file is None and not no_auth:
             logger.warning(
-                f"No {upload_type} upload secrets file specified for the {input_type.name.lower()} stage."
+                (
+                    f"No {upload_type} upload secrets file specified for the "
+                    f"{input_type.name.lower()} stage."
+                )
             )
             if not dry_run:
                 raise app_exceptions.MissingUploadConfigs
