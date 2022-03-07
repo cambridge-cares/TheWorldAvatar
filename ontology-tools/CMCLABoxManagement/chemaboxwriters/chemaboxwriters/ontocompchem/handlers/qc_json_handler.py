@@ -8,19 +8,15 @@ from compchemparser.parsers.ccgaussian_parser import PROGRAM_NAME, PROGRAM_VERSI
 from chemaboxwriters.common.globals import aboxStages
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional, Dict
 import chemaboxwriters.common.endpoints_proxy as endp
 import chemaboxwriters.common.aboxconfig as abconf
-
-# import chemaboxwriters.common.aboxconfig as abconf
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
 class QC_JSON_TO_OC_JSON_Handler(Handler):
     """Handler converting qc_json files to oc_json.
     Inputs: List of qc_json file paths
@@ -88,7 +84,10 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         )
         if ospecies_query_endpoint is None:
             logger.warning(
-                "Couldn't query for the ontospecies IRI, The query endpoint not specified in the aboxwriters config file."
+                (
+                    "Couldn't query for the ontospecies IRI, The query "
+                    "endpoint not specified in the aboxwriters config file."
+                )
             )
         if ontospecies_IRI is None and ospecies_query_endpoint is not None:
             ontospecies_IRI = querytemplates.get_species_iri(

@@ -6,7 +6,7 @@ from chemaboxwriters.ontocompchem.handlers import (
     OC_JSON_TO_OC_CSV_Handler,
     QC_JSON_TO_OC_JSON_Handler,
 )
-from typing import Optional, Dict
+from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)

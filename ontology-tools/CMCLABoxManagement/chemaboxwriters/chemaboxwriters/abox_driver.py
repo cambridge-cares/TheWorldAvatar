@@ -72,7 +72,9 @@ def start():
     try:
         args = docopt.docopt(__doc__)
     except docopt.DocoptExit:  # type: ignore
-        raise docopt.DocoptExit("Error: aboxwriter called with wrong arguments.")  # type: ignore
+        raise docopt.DocoptExit(  # type: ignore
+            "Error: aboxwriter called with wrong arguments."
+        )
 
     utilsfunc.config_logging(
         log_file_dir=args["--log-file-dir"],
@@ -81,7 +83,7 @@ def start():
     )
 
     try:
-        _process_user_inputs(args)
+        _process_args(args)
 
         pipeline = asp.assemble_pipeline(
             pipeline_type=args["--pipeline-type"], config_file=args["--config-file"]
@@ -96,9 +98,7 @@ def start():
         )
 
         if args["--file-or-dir"] is None:
-            logger.warning(
-                f"""Missing --inp-file-or-dir argument. Nothing to process."""
-            )
+            logger.warning("""Missing --file-or-dir argument. Nothing to process.""")
             return
 
         pipeline
@@ -114,12 +114,15 @@ def start():
         logger.info("Abox writer finished successfully.")
     except Exception as e:
         logger.error(
-            "Abox writer failed. Please check the log for a more detailed error description."
+            (
+                "Abox writer failed. Please check the log "
+                "for a more detailed error description."
+            )
         )
         logger.exception(e)
 
 
-def _process_user_inputs(args: Dict) -> None:
+def _process_args(args: Dict) -> None:
 
     # set default handlers_kwargs argument
     args["--handlers-kwargs"] = None
