@@ -88,7 +88,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             self._os_csvwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **self._handler_kwargs
+                **self._handler_kwargs,
             )
             outputs.append(out_file_path)
         return outputs
@@ -185,7 +185,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         if cas_number_value is not None:
             spamwriter.writerow(
                 [
-                    onto_spec + "#casRegistryID",
+                    f"{onto_spec}#casRegistryID",
                     "Data Property",
                     out_id,
                     "",
@@ -194,16 +194,16 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 ]
             )
         spamwriter.writerow(
-            [onto_spec + "#SMILES", "Data Property", out_id, "", data[SMILES], "String"]
+            [f"{onto_spec}#SMILES", "Data Property", out_id, "", data[SMILES], "String"]
         )
         spamwriter.writerow(
-            [onto_spec + "#inChI", "Data Property", out_id, "", data[INCHI], "String"]
+            [f"{onto_spec}#inChI", "Data Property", out_id, "", data[INCHI], "String"]
         )
         pubchem_cid_value = data.get(PUBCHEM_CID)
         if pubchem_cid_value is not None:
             spamwriter.writerow(
                 [
-                    onto_spec + "#pubChemCID",
+                    f"{onto_spec}#pubChemCID",
                     "Data Property",
                     out_id,
                     "",
@@ -213,7 +213,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
         spamwriter.writerow(
             [
-                onto_spec + "#hasAtomicBond",
+                f"{onto_spec}#hasAtomicBond",
                 "Data Property",
                 out_id,
                 "",
@@ -223,7 +223,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                onto_spec + "#hasGeometry",
+                f"{onto_spec}#hasGeometry",
                 "Data Property",
                 out_id,
                 "",
@@ -233,7 +233,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                onto_spec + "#spinMultiplicity",
+                f"{onto_spec}#spinMultiplicity",
                 "Data Property",
                 out_id,
                 "",
@@ -256,9 +256,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             # Now the atoms are written here
             spamwriter.writerow(
                 [
-                    "Atom_" + gen_id + "_" + atom_type + "_" + str(atom_nr),
+                    f"Atom_{gen_id}_{atom_type}_{atom_nr}",
                     "Instance",
-                    gain_pref + "Atom",
+                    f"{gain_pref}Atom",
                     "",
                     "",
                     "",
@@ -268,18 +268,18 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 [
                     out_id,
                     "Instance",
-                    "Atom_" + gen_id + "_" + atom_type + "_" + str(atom_nr),
-                    gain_pref + "hasAtom",
+                    f"Atom_{gen_id}_{atom_type}_{atom_nr}",
+                    f"{gain_pref}hasAtom",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    "Atom_" + gen_id + "_" + atom_type + "_" + str(atom_nr),
+                    f"Atom_{gen_id}_{atom_type}_{atom_nr}",
                     "Instance",
-                    table_pref + "#" + atom_type,
-                    gain_pref + "isElement",
+                    f"{table_pref}#{atom_type}",
+                    f"{gain_pref}isElement",
                     "",
                     "",
                 ]
@@ -287,16 +287,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             for i in range(3):  # Write the atom coordinates.
                 spamwriter.writerow(
                     [
-                        "AtomCoordinate"
-                        + coords[i]
-                        + "_"
-                        + gen_id
-                        + "_"
-                        + atom_type
-                        + "_"
-                        + str(atom_nr),
+                        f"AtomCoordinate{coords[i]}_{gen_id}_{atom_type}_{atom_nr}",
                         "Instance",
-                        gain_pref + "FloatValue",
+                        f"{gain_pref}FloatValue",
                         "",
                         "",
                         "",
@@ -304,33 +297,19 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 )
                 spamwriter.writerow(
                     [
-                        "Atom_" + gen_id + "_" + atom_type + "_" + str(atom_nr),
+                        f"Atom_{gen_id}_{atom_type}_{atom_nr}",
                         "Instance",
-                        "AtomCoordinate"
-                        + coords[i]
-                        + "_"
-                        + gen_id
-                        + "_"
-                        + atom_type
-                        + "_"
-                        + str(atom_nr),
-                        gain_pref + "hasAtomCoordinate" + coords[i],
+                        f"AtomCoordinate{coords[i]}_{gen_id}_{atom_type}_{atom_nr}",
+                        f"{gain_pref}hasAtomCoordinate{coords[i]}",
                         "",
                         "",
                     ]
                 )
                 spamwriter.writerow(
                     [
-                        gain_pref + "hasValue",
+                        f"{gain_pref}hasValue",
                         "Data Property",
-                        "AtomCoordinate"
-                        + coords[i]
-                        + "_"
-                        + gen_id
-                        + "_"
-                        + atom_type
-                        + "_"
-                        + str(atom_nr),
+                        f"AtomCoordinate{coords[i]}_{gen_id}_{atom_type}_{atom_nr}",
                         "",
                         data["Geometry"][k][i],
                         "String",
@@ -338,17 +317,10 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 )
                 spamwriter.writerow(
                     [
-                        "AtomCoordinate"
-                        + coords[i]
-                        + "_"
-                        + gen_id
-                        + "_"
-                        + atom_type
-                        + "_"
-                        + str(atom_nr),
+                        f"AtomCoordinate{coords[i]}_{gen_id}_{atom_type}_{atom_nr}",
                         "Instance",
-                        unit_pref + "unit#Angstrom",
-                        gain_pref + "hasUnit",
+                        f"{unit_pref}unit#Angstrom",
+                        f"{gain_pref}hasUnit",
                         "",
                         "",
                     ]
@@ -363,23 +335,23 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             charge = data[FORMAL_CHARGE]
 
             spamwriter.writerow(
-                ["Charge_" + gen_id, "Instance", onto_spec + "#Charge", "", "", ""]
+                [f"Charge_{gen_id}", "Instance", f"{onto_spec}#Charge", "", "", ""]
             )
             spamwriter.writerow(
                 [
                     out_id,
                     "Instance",
-                    "Charge_" + gen_id,
-                    onto_spec + "#hasCharge",
+                    f"Charge_{gen_id}",
+                    f"{onto_spec}#hasCharge",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    onto_spec + "#value",
+                    f"{onto_spec}#value",
                     "Data Property",
-                    "Charge_" + gen_id,
+                    f"Charge_{gen_id}",
                     "",
                     charge,
                     "String",
@@ -387,9 +359,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    onto_spec + "#units",
+                    f"{onto_spec}#units",
                     "Data Property",
-                    "Charge_" + gen_id,
+                    f"Charge_{gen_id}",
                     "",
                     "e",
                     "String",
@@ -397,9 +369,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    "MolecularFormula_" + gen_id,
+                    f"MolecularFormula_{gen_id}",
                     "Instance",
-                    onto_spec + "#MolecularFormula",
+                    f"{onto_spec}#MolecularFormula",
                     "",
                     "",
                     "",
@@ -409,8 +381,8 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 [
                     out_id,
                     "Instance",
-                    "MolecularFormula_" + gen_id,
-                    onto_spec + "#hasMolecularFormula",
+                    f"MolecularFormula_{gen_id}",
+                    f"{onto_spec}#hasMolecularFormula",
                     "",
                     "",
                 ]
@@ -426,9 +398,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         for i in range(len(atom_list)):
             spamwriter.writerow(
                 [
-                    "Element_" + atom_list[i],
+                    f"Element_{atom_list[i]}",
                     "Instance",
-                    onto_kin + "#Element",
+                    f"{onto_kin}#Element",
                     "",
                     "",
                     "",
@@ -436,19 +408,19 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    "MolecularFormula_" + gen_id,
+                    f"MolecularFormula_{gen_id}",
                     "Instance",
-                    "Element_" + atom_list[i],
-                    onto_kin + "#hasElement",
+                    f"Element_{atom_list[i]}",
+                    f"{onto_kin}#hasElement",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    "ElementNumber_" + gen_id + "_" + str(i + 1),
+                    f"ElementNumber_{gen_id}_{i + 1}",
                     "Instance",
-                    onto_kin + "#ElementNumber",
+                    f"{onto_kin}#ElementNumber",
                     "",
                     "",
                     "",
@@ -456,19 +428,19 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    "MolecularFormula_" + gen_id,
+                    f"MolecularFormula_{gen_id}",
                     "Instance",
-                    "ElementNumber_" + gen_id + "_" + str(i + 1),
-                    onto_kin + "#hasElementNumber",
+                    f"ElementNumber_{gen_id}_{i + 1}",
+                    f"{onto_kin}#hasElementNumber",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    onto_kin + "#hasNumberOfElement",
+                    f"{onto_kin}#hasNumberOfElement",
                     "Data Property",
-                    "ElementNumber_" + gen_id + "_" + str(i + 1),
+                    f"ElementNumber_{gen_id}_{i + 1}",
                     "",
                     atom_counts[i],
                     "Integer",
@@ -476,15 +448,15 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    "ElementNumber_" + gen_id + "_" + str(i + 1),
+                    f"ElementNumber_{gen_id}_{i + 1}",
                     "Instance",
-                    "Element_" + atom_list[i],
-                    onto_kin + "#indicatesNumberOf",
+                    f"Element_{atom_list[i]}",
+                    f"{onto_kin}#indicatesNumberOf",
                     "",
                     "",
                 ]
             )
-        spamwriter.writerow([out_id, "Instance", onto_spec + "#Species", "", "", ""])
+        spamwriter.writerow([out_id, "Instance", f"{onto_spec}#Species", "", "", ""])
 
     def _write_molwts(self, spamwriter, gen_id, out_id, data):
 
@@ -494,9 +466,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             molwt = data[MOLWT]
             spamwriter.writerow(
                 [
-                    "MolecularWeight_" + gen_id,
+                    f"MolecularWeight_{gen_id}",
                     "Instance",
-                    onto_spec + "#MolecularWeight",
+                    f"{onto_spec}#MolecularWeight",
                     "",
                     "",
                     "",
@@ -506,17 +478,17 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 [
                     out_id,
                     "Instance",
-                    "MolecularWeight_" + gen_id,
-                    onto_spec + "#hasMolecularWeight",
+                    f"MolecularWeight_{gen_id}",
+                    f"{onto_spec}#hasMolecularWeight",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    onto_spec + "#value",
+                    f"{onto_spec}#value",
                     "Data Property",
-                    "MolecularWeight_" + gen_id,
+                    f"MolecularWeight_{gen_id}",
                     "",
                     molwt,
                     "String",
@@ -524,9 +496,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    onto_spec + "#units",
+                    f"{onto_spec}#units",
                     "Data Property",
-                    "MolecularWeight_" + gen_id,
+                    f"MolecularWeight_{gen_id}",
                     "",
                     "g/mol",
                     "String",
@@ -542,9 +514,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         if ENTH_FORM in data:
             spamwriter.writerow(
                 [
-                    "StandardEnthalpyOfFormation_" + gen_id,
+                    f"StandardEnthalpyOfFormation_{gen_id}",
                     "Instance",
-                    onto_spec + "#StandardEnthalpyOfFormation",
+                    f"{onto_spec}#StandardEnthalpyOfFormation",
                     "",
                     "",
                     "",
@@ -554,17 +526,17 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 [
                     out_id,
                     "Instance",
-                    "StandardEnthalpyOfFormation_" + gen_id,
-                    onto_spec + "#hasStandardEnthalpyOfFormation",
+                    f"StandardEnthalpyOfFormation_{gen_id}",
+                    f"{onto_spec}#hasStandardEnthalpyOfFormation",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    onto_spec + "#value",
+                    f"{onto_spec}#value",
                     "Data Property",
-                    "StandardEnthalpyOfFormation_" + gen_id,
+                    f"StandardEnthalpyOfFormation_{gen_id}",
                     "",
                     data[ENTH_FORM],
                     "String",
@@ -572,9 +544,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    onto_spec + "#units",
+                    f"{onto_spec}#units",
                     "Data Property",
-                    "StandardEnthalpyOfFormation_" + gen_id,
+                    f"StandardEnthalpyOfFormation_{gen_id}",
                     "",
                     data[ENTH_UNIT],
                     "String",
@@ -582,9 +554,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    "Temperature_" + gen_id,
+                    f"Temperature_{gen_id}",
                     "Instance",
-                    onto_spec + "#Temperature",
+                    f"{onto_spec}#Temperature",
                     "",
                     "",
                     "",
@@ -592,19 +564,19 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    "StandardEnthalpyOfFormation_" + gen_id,
+                    f"StandardEnthalpyOfFormation_{gen_id}",
                     "Instance",
-                    "Temperature_" + gen_id,
-                    onto_spec + "#hasReferenceTemperature",
+                    f"Temperature_{gen_id}",
+                    f"{onto_spec}#hasReferenceTemperature",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    onto_spec + "#value",
+                    f"{onto_spec}#value",
                     "Data Property",
-                    "Temperature_" + gen_id,
+                    f"Temperature_{gen_id}",
                     "",
                     data[ENTH_REFTEMP],
                     "String",
@@ -612,9 +584,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    onto_spec + "#units",
+                    f"{onto_spec}#units",
                     "Data Property",
-                    "Temperature_" + gen_id,
+                    f"Temperature_{gen_id}",
                     "",
                     data[ENTH_REFTEMP_UNIT],
                     "String",
@@ -622,9 +594,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    data[ENTH_PHASE] + "Phase_" + gen_id,
+                    f"{data[ENTH_PHASE]}Phase_{gen_id}",
                     "Instance",
-                    onto_kin + "#" + data[ENTH_PHASE] + "Phase",
+                    f"{onto_kin}#{data[ENTH_PHASE]}Phase",
                     "",
                     "",
                     "",
@@ -632,23 +604,23 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    "StandardEnthalpyOfFormation_" + gen_id,
+                    f"StandardEnthalpyOfFormation_{gen_id}",
                     "Instance",
-                    data[ENTH_PHASE] + "Phase_" + gen_id,
-                    onto_spec + "#hasPhase",
+                    f"{data[ENTH_PHASE]}Phase_{gen_id}",
+                    f"{onto_spec}#hasPhase",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
-                ["Reference_" + gen_id, "Instance", onto_kin + "#Reference", "", "", ""]
+                [f"Reference_{gen_id}", "Instance", f"{onto_kin}#Reference", "", "", ""]
             )
             spamwriter.writerow(
                 [
-                    "StandardEnthalpyOfFormation_" + gen_id,
+                    f"StandardEnthalpyOfFormation_{gen_id}",
                     "Instance",
-                    "Reference_" + gen_id,
-                    onto_spec + "#hasProvenance",
+                    f"Reference_{gen_id}",
+                    f"{onto_spec}#hasProvenance",
                     "",
                     "",
                 ]
@@ -657,7 +629,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 [
                     "http://www.w3.org/2000/01/rdf-schema#label",
                     "Data Property",
-                    "Reference_" + gen_id,
+                    f"Reference_{gen_id}",
                     "",
                     data[ENTH_PROV],
                     "String",
