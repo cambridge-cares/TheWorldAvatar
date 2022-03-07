@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Tuple, Dict, Optional
-import chemaboxwriters.common.endpoints_proxy as abconf
+import chemaboxwriters.common.endpoints_proxy as endp
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from abc import ABC, abstractmethod
 from pprint import pformat
@@ -19,7 +19,7 @@ class Handler(ABC):
         name: str,
         in_stage: Enum,
         out_stage: Enum,
-        endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
+        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
         required_endpoints_config: Optional[Dict] = None,
         required_handler_kwargs: Optional[List] = None,
         supported_handler_kwargs: Optional[List] = None,
@@ -32,11 +32,12 @@ class Handler(ABC):
         self._handler_kwargs = {}
         self.written_files = []
         self._endpoints_proxy = endpoints_proxy
+
         self._required_endpoints_config = required_endpoints_config
         self._required_handler_kwargs = required_handler_kwargs
         self._supported_handler_kwargs = supported_handler_kwargs
 
-    def set_endpoints_proxy(self, endpoints_proxy: abconf.Endpoints_proxy) -> None:
+    def set_endpoints_proxy(self, endpoints_proxy: endp.Endpoints_proxy) -> None:
         self._endpoints_proxy = endpoints_proxy
 
     def set_endpoints_config(self, endpoints_config: Optional[Dict] = None) -> None:
@@ -51,7 +52,10 @@ class Handler(ABC):
                     missing_args.append(arg_name)
             if missing_args:
                 raise app_exceptions.MissingHandlerConfig(
-                    f"The required {missing_args} arguments are missing for the {self.name} handler."
+                    (
+                        f"The required {missing_args} arguments are missing "
+                        f"for the {self.name} handler."
+                    )
                 )
 
     def check_required_endpoints_config(self) -> None:
@@ -63,13 +67,19 @@ class Handler(ABC):
                 config_group = self._endpoints_config.get(req_config_group)
                 if config_group is None:
                     app_exceptions.MissingHandlerConfig(
-                        f"The required '{config_group}' configuration is missing for the {self.name} handler."
+                        (
+                            f"The required '{config_group}' configuration is missing "
+                            f"for the {self.name} handler."
+                        )
                     )
                 else:
                     for req_key in req_config_keys:
                         if req_key not in config_group:
                             app_exceptions.MissingHandlerConfig(
-                                f"The required '{req_key}' configuration is missing for the {self.name} handler."
+                                (
+                                    f"The required '{req_key}' configuration is "
+                                    f" missing for the {self.name} handler."
+                                )
                             )
 
     @property
@@ -125,7 +135,10 @@ class Handler(ABC):
 
         if self._endpoints_proxy is None:
             logger.warning(
-                f"Endpoint proxy not defined for {self.name} handler. Skipping any uploads."
+                (
+                    f"Endpoint proxy not defined for {self.name} handler. "
+                    "Skipping any uploads."
+                )
             )
         else:
             self._endpoints_proxy.do_uploads(
