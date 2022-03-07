@@ -8,6 +8,8 @@ import chemaboxwriters.common.endpoints_proxy as abconf
 from chemaboxwriters.common.globals import aboxStages
 import json
 
+CCLOG_SOURCE_LOCATION = "cclog_source_location"
+
 
 class QC_LOG_TO_QC_JSON_Handler(Handler):
     """Gaussian quantum claculations log files handler.
@@ -38,33 +40,30 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
     ) -> List[str]:
 
         outputs: List[str] = []
+        cclog_upload_loc = None
         for cclog_file_path in inputs:
+            if file_server_uploads is not None:
+                cclog_upload_loc = file_server_uploads.get(cclog_file_path)
+
             cclog_parsed_jobs = qcparser.parseLog(cclog_file_path)
 
-            if len(cclog_parsed_jobs) == 1:
+            for i, cclog_parsed_job in enumerate(cclog_parsed_jobs):
+                inp_file_suffix = f"_{i+1}" if len(cclog_parsed_jobs) > 1 else ""
+
                 out_file_path = utilsfunc.get_out_file_path(
-                    input_file_path=cclog_file_path,
+                    input_file_path=f"{cclog_file_path}{inp_file_suffix}",
                     file_extension=self._out_stage.name.lower(),
                     out_dir=out_dir,
                     replace_last_ext=False,
                 )
+                cclog_dict_data = json.loads(cclog_parsed_job)
+                if cclog_upload_loc is not None:
+                    cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc
                 utilsfunc.write_dict_to_file(
-                    dict_data=json.loads(cclog_parsed_jobs[0]), dest_path=out_file_path
+                    dict_data=cclog_dict_data,
+                    dest_path=out_file_path,
                 )
                 outputs.append(out_file_path)
-            else:
-                for i, cclog_parsed_job in enumerate(cclog_parsed_jobs):
-                    out_file_path = utilsfunc.get_out_file_path(
-                        input_file_path=f"{cclog_file_path}_{i+1}",
-                        file_extension=self._out_stage.name.lower(),
-                        out_dir=out_dir,
-                        replace_last_ext=False,
-                    )
-                    utilsfunc.write_dict_to_file(
-                        dict_data=json.loads(cclog_parsed_job),
-                        dest_path=out_file_path,
-                    )
-                    outputs.append(out_file_path)
         return outputs
 
 
