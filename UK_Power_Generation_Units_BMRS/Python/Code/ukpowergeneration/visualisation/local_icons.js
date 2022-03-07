@@ -7,10 +7,8 @@ const EXAMPLE_ICONS = [
     "img/icons/circle-black.png",
     "img/icons/warning.png",
     "img/icons/error.png",
-    "img/icons/alpha.png",
-    "img/icons/alpha-empty.png",
-    "img/icons/beta.png",
-    "img/icons/beta-empty.png",
-    "img/icons/gamma.png",
-    "img/icons/gamma-empty.png"
+    "img/icons/powerplant.png",
+    "img/icons/powerplant-empty.png",
+    "img/icons/generator.png",
+    "img/icons/generator-empty.png"
 ];
