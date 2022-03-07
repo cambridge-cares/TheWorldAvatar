@@ -40,7 +40,10 @@ def write_abox(
 
     if not input_file_paths:
         logger.warning(
-            f"""No {in_stage.name.lower()} files to process. Directory / file path is either empty or does not exists."""
+            (
+                f"No {in_stage.name.lower()} files to process. "
+                "Directory / file path is either empty or does not exists."
+            )
         )
         return
 
