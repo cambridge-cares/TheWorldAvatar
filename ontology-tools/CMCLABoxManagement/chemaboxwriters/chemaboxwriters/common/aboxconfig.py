@@ -1,3 +1,5 @@
+from typing import Dict, Tuple
+import yaml
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,3 +42,69 @@ DEFAULT_CONFIG_KEYS = [
     UPLOAD_TO_TRIPLE_STORE_KEY,
 ]
 HANDLERS_CONFIG_KEY = "handlers"
+
+
+CONFIG_GROUPS = [
+    UPLOAD_SETTINGS_KEY,
+    QUERY_SETTINGS_KEY,
+    WRITERS_PREFIXES_KEY,
+    HANDLER_KWARGS,
+]
+
+
+def get_pipeline_handler_configs(pipeline_name: str, config: Dict) -> Tuple[Dict, Dict]:
+
+    if HANDLERS_CONFIG_KEY in config:
+        logger.warning(
+            (
+                f"Found '{HANDLERS_CONFIG_KEY}' key in the default config section. "
+                "This will be omitted."
+            )
+        )
+        config.pop(HANDLERS_CONFIG_KEY)
+
+    pipeline_configs = config.get(pipeline_name, {})
+
+    _merge_config_groups(
+        merge_from=config,
+        merge_to=pipeline_configs,
+    )
+
+    handlers_config = pipeline_configs.pop(HANDLERS_CONFIG_KEY, {})
+    handlers = handlers_config.keys()
+    for handler in handlers:
+        _merge_config_groups(
+            merge_from=pipeline_configs, merge_to=handlers_config[handler]
+        )
+
+    return pipeline_configs, handlers_config
+
+
+def _merge_config_groups(merge_from: Dict, merge_to: Dict) -> None:
+    for key in CONFIG_GROUPS:
+        _merge_config_field(merge_from=merge_from, merge_to=merge_to, merge_on=key)
+
+
+def _merge_config_field(merge_from: Dict, merge_to: Dict, merge_on: str) -> None:
+    merge_from_configs = merge_from.get(merge_on, {})
+    merge_to_configs = merge_to.get(merge_on, {})
+
+    merge_to_configs = _merge_configs(
+        merge_into=merge_to_configs,
+        merge_from=merge_from_configs,
+    )
+
+    merge_to[merge_on] = merge_to_configs
+
+
+def _merge_configs(merge_into: Dict, merge_from: Dict) -> Dict:
+    return {**merge_from, **merge_into}
+
+
+def read_config_file(config_file: str) -> Dict:
+    config_dict = {}
+    if config_file is not None:
+        with open(config_file, "r") as stream:
+            config_dict = yaml.safe_load(stream)
+
+    return config_dict

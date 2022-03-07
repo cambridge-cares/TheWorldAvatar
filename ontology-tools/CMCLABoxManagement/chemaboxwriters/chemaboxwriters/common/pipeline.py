@@ -1,11 +1,10 @@
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from collections import OrderedDict
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any
 from chemaboxwriters.common.handler import Handler
 from enum import Enum
 import chemaboxwriters.common.endpoints_proxy as endp
 import chemaboxwriters.common.aboxconfig as abconf
-import yaml
 import logging
 
 logger = logging.getLogger(__name__)
@@ -64,7 +63,10 @@ class Pipeline:
                 handler.set_handle_input_kwargs(handler_kwargs=handler_kwargs)
             else:
                 logger.warning(
-                    f"Could not set handler_kwargs for the {handler_name} handler. Handler does not exist."
+                    (
+                        f"Could not set handler_kwargs for the {handler_name} handler. "
+                        "Handler does not exist."
+                    )
                 )
 
     def clean_written_files(self) -> None:
@@ -73,7 +75,7 @@ class Pipeline:
 
     def run(
         self, inputs: List[str], input_type: Enum, out_dir: str, dry_run: bool = True
-    ):
+    ) -> None:
 
         logger.info(f"Running the {self.name} pipeline.")
 
@@ -90,7 +92,7 @@ class Pipeline:
 
     def _run_handlers(
         self, inputs: List[str], input_type: Enum, out_dir: str, dry_run: bool
-    ):
+    ) -> None:
 
         for handler in self._handlers.values():
             if input_type == handler._in_stage:
@@ -111,7 +113,7 @@ class Pipeline:
         for handler in self._handlers.values():
             handler.info()
         print("")
-        print(f"=================================================================")
+        print("=================================================================")
 
     def check_handlers_config(self, input_type: Optional[Enum] = None) -> None:
         if input_type is None:
@@ -126,13 +128,13 @@ class Pipeline:
                     input_type = handler._out_stage
 
     def configure_from_file(self, config_file: str) -> None:
-        pipeline_config = self._read_config_file(config_file=config_file)
+        pipeline_config = abconf.read_config_file(config_file=config_file)
         if pipeline_config:
             self.configure_from_dict(config=pipeline_config)
 
     def configure_from_dict(self, config: Dict) -> None:
-        pipeline_config, handlers_config = self._get_pipeline_handler_configs(
-            config=config
+        pipeline_config, handlers_config = abconf.get_pipeline_handler_configs(
+            pipeline_name=self.name, config=config
         )
         for handler_name, handler in self._handlers.items():
             if handler_name.lower() in handlers_config:
@@ -143,67 +145,6 @@ class Pipeline:
             handlers_kwargs = handlers_config_to_use.pop(abconf.HANDLER_KWARGS, {})
             handler.set_endpoints_config(handlers_config_to_use)
             handler.set_handle_input_kwargs(handler_kwargs=handlers_kwargs)
-
-    def _get_pipeline_handler_configs(self, config: Dict) -> Tuple[Dict, Dict]:
-        if abconf.HANDLERS_CONFIG_KEY in config:
-            logger.warning(
-                f"Found '{abconf.HANDLERS_CONFIG_KEY}' key in the default config section. This will be omitted."
-            )
-            config.pop(abconf.HANDLERS_CONFIG_KEY)
-
-        pipeline_configs = config.get(self.name, {})
-
-        merge_on_keys = [
-            abconf.UPLOAD_SETTINGS_KEY,
-            abconf.QUERY_SETTINGS_KEY,
-            abconf.WRITERS_PREFIXES_KEY,
-            abconf.HANDLER_KWARGS,
-        ]
-
-        for key in merge_on_keys:
-            self._merge_config_field(
-                merge_from=config,
-                merge_to=pipeline_configs,
-                merge_on=key,
-            )
-
-        handlers_config = pipeline_configs.pop(abconf.HANDLERS_CONFIG_KEY, {})
-        handlers = handlers_config.keys()
-        for handler in handlers:
-            for key in merge_on_keys:
-                self._merge_config_field(
-                    merge_from=pipeline_configs,
-                    merge_to=handlers_config[handler],
-                    merge_on=key,
-                )
-
-        return pipeline_configs, handlers_config
-
-    def _merge_config_field(
-        self, merge_from: Dict, merge_to: Dict, merge_on: str
-    ) -> None:
-        merge_from_configs = merge_from.get(merge_on, {})
-        merge_to_configs = merge_to.get(merge_on, {})
-
-        merge_to_configs = self._merge_configs(
-            merge_into=merge_to_configs,
-            merge_from=merge_from_configs,
-        )
-
-        merge_to[merge_on] = merge_to_configs
-
-    @staticmethod
-    def _merge_configs(merge_into: Dict, merge_from: Dict) -> Dict:
-        return {**merge_from, **merge_into}
-
-    @staticmethod
-    def _read_config_file(config_file: str) -> Dict:
-        pipeline_config = {}
-        if config_file is not None:
-            with open(config_file, "r") as stream:
-                pipeline_config = yaml.safe_load(stream)
-
-        return pipeline_config
 
 
 def get_pipeline(
