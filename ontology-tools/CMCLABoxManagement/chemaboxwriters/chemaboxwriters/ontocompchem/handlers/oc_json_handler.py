@@ -25,7 +25,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             in_stage=aboxStages.OC_JSON,
             out_stage=aboxStages.OC_CSV,
             endpoints_proxy=endpoints_proxy,
-            required_endpoints_config={
+            required_configs={
                 abconf.WRITERS_PREFIXES_KEY: [
                     "comp_pref",
                     "ocompchem_data_pref",

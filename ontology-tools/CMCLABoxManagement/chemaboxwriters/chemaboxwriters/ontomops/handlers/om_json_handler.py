@@ -35,7 +35,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             in_stage=globals.aboxStages.OM_JSON,
             out_stage=globals.aboxStages.OM_CSV,
             endpoints_proxy=endpoints_proxy,
-            required_endpoints_config={
+            required_configs={
                 abconf.WRITERS_PREFIXES_KEY: [
                     "onto_spec",
                     "onto_mops",

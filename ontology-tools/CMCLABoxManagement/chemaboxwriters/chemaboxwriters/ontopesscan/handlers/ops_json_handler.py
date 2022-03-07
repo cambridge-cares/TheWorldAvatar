@@ -32,7 +32,7 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             in_stage=globals.aboxStages.OPS_JSON,
             out_stage=globals.aboxStages.OPS_CSV,
             endpoints_proxy=endpoints_proxy,
-            required_endpoints_config={
+            required_configs={
                 abconf.WRITERS_PREFIXES_KEY: [
                     "spec_pref",
                     "pes_pref",

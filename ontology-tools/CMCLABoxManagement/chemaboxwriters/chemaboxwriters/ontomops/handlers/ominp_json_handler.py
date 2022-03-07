@@ -23,9 +23,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             in_stage=globals.aboxStages.OMINP_JSON,
             out_stage=globals.aboxStages.OM_JSON,
             endpoints_proxy=endpoints_proxy,
-            required_endpoints_config={
-                abconf.WRITERS_PREFIXES_KEY: ["omops_entry_prefix"]
-            },
+            required_configs={abconf.WRITERS_PREFIXES_KEY: ["omops_entry_prefix"]},
             supported_handler_kwargs=["random_id"],
         )
 

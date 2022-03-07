@@ -37,12 +37,7 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
             out_stage=globals.aboxStages.OPS_JSON,
             endpoints_proxy=endpoints_proxy,
             required_handler_kwargs=["os_iris", "os_atoms_iris", "oc_atoms_pos"],
-            supported_handler_kwargs=[
-                "random_id",
-                "os_iris",
-                "os_atoms_iris",
-                "oc_atoms_pos",
-            ],
+            supported_handler_kwargs=["random_id"],
         )
 
     def _handle_input(

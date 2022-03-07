@@ -20,7 +20,7 @@ class Handler(ABC):
         in_stage: Enum,
         out_stage: Enum,
         endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-        required_endpoints_config: Optional[Dict] = None,
+        required_configs: Optional[Dict] = None,
         required_handler_kwargs: Optional[List] = None,
         supported_handler_kwargs: Optional[List] = None,
     ) -> None:
@@ -33,7 +33,7 @@ class Handler(ABC):
         self.written_files = []
         self._endpoints_proxy = endpoints_proxy
 
-        self._required_endpoints_config = required_endpoints_config
+        self._required_configs = required_configs
         self._required_handler_kwargs = required_handler_kwargs
         self._supported_handler_kwargs = supported_handler_kwargs
 
@@ -59,11 +59,11 @@ class Handler(ABC):
                 )
 
     def check_required_endpoints_config(self) -> None:
-        if self._required_endpoints_config is not None:
+        if self._required_configs is not None:
             for (
                 req_config_group,
                 req_config_keys,
-            ) in self._required_endpoints_config.items():
+            ) in self._required_configs.items():
                 config_group = self._endpoints_config.get(req_config_group)
                 if config_group is None:
                     raise app_exceptions.MissingHandlerConfig(
@@ -164,10 +164,8 @@ class Handler(ABC):
         print(f"in_stages: {self._in_stage}")
         print(f"out_stage: {self._out_stage}")
         print(f"endpoints_config: {pformat(self._endpoints_config)}")
-        if self._required_endpoints_config is not None:
-            print(
-                f"required_endpoints_config: {pformat(self._required_endpoints_config)}"
-            )
+        if self._required_configs is not None:
+            print(f"required_configs: {pformat(self._required_configs)}")
         if self._supported_handler_kwargs is not None:
             print(
                 f"supported_handler_kwargs: {pformat(self._supported_handler_kwargs)}"

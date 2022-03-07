@@ -32,7 +32,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             in_stage=aboxStages.QC_JSON,
             out_stage=aboxStages.OC_JSON,
             endpoints_proxy=endpoints_proxy,
-            required_endpoints_config={abconf.WRITERS_PREFIXES_KEY: ["comp_pref"]},
+            required_configs={abconf.WRITERS_PREFIXES_KEY: ["comp_pref"]},
             supported_handler_kwargs=["random_id", "ontospecies_IRI"],
         )
 

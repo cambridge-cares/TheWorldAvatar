@@ -59,7 +59,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             in_stage=globals.aboxStages.QC_JSON,
             out_stage=globals.aboxStages.OS_JSON,
             endpoints_proxy=endpoints_proxy,
-            required_endpoints_config={abconf.WRITERS_PREFIXES_KEY: ["spec_pref"]},
+            required_configs={abconf.WRITERS_PREFIXES_KEY: ["spec_pref"]},
             supported_handler_kwargs=[
                 "random_id",
                 "enth_of_form",
