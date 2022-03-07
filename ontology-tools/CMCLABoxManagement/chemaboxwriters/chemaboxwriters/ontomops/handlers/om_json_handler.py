@@ -67,7 +67,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             self._om_csvwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **self._handler_kwargs
+                **self._handler_kwargs,
             )
             outputs.append(out_file_path)
         return outputs
@@ -100,7 +100,10 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             omops_query_endpoint = query_endpoints.get(abconf.OMOPS_QUERY_ENDPOINT_KEY)
             if omops_query_endpoint is None:
                 logger.warning(
-                    "Couldn't query for the assembly model IRI, The query endpoint not specified in the aboxwriters config file."
+                    (
+                        "Couldn't query for the assembly model IRI, The query "
+                        "endpoint not specified in the aboxwriters config file."
+                    )
                 )
             else:
                 search1 = qtmpl.get_assembly_iri(
@@ -142,21 +145,22 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             spamwriter.writerow(["ABoxOntoMOPs", "Ontology", mops_pref, "base", "", ""])
             spamwriter.writerow(
                 [
-                    mops_pref + mops_id,
+                    f"{mops_pref}{mops_id}",
                     "Instance",
-                    onto_mops + "#MetalOrganicPolyhedra",
+                    f"{onto_mops}#MetalOrganicPolyhedra",
                     "",
                     "",
                     "",
                 ]
             )
 
-            # Write the properties directly connected to MOPS instance that then terminate.
+            # Write the properties directly connected to MOPS instance
+            # that then terminate.
             spamwriter.writerow(
                 [
-                    rdf_pref + "#label",
+                    f"{rdf_pref}#label",
                     "Data Property",
-                    mops_pref + mops_id,
+                    f"{mops_pref}{mops_id}",
                     "",
                     data["Mops_Label"],
                     "String",
@@ -164,9 +168,9 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )  # label for the MOP
             spamwriter.writerow(
                 [
-                    onto_mops + "#hasMOPFormula",
+                    f"{onto_mops}#hasMOPFormula",
                     "Data Property",
-                    mops_pref + mops_id,
+                    f"{mops_pref}{mops_id}",
                     "",
                     data["Mops_Formula"],
                     "String",
@@ -174,23 +178,24 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )  # Chemical formula for the MOP
             spamwriter.writerow(
                 [
-                    onto_mops + "#hasCCDCNumber",
+                    f"{onto_mops}#hasCCDCNumber",
                     "Data Property",
-                    mops_pref + mops_id,
+                    f"{mops_pref}{mops_id}",
                     "",
                     data["Mops_CCDC_Number"],
                     "String",
                 ]
             )  # CCDC No. for the MOP
-            # spamwriter.writerow([onto_mops + '#hasXYZGeometry','Data Property',mops_pref + mops_id,
-            #'',data["Mops_Geometry"],'String']) #XYZ Geometry in string form for the MOP.
+            # spamwriter.writerow([onto_mops + '#hasXYZGeometry',
+            # 'Data Property',mops_pref + mops_id,'',data["Mops_Geometry"],'String'])
+            #  XYZ Geometry in string form for the MOP.
 
             # Write the Provenance of the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + "Provenance_" + gen_id,
+                    f"{mops_pref}Provenance_{gen_id}",
                     "Instance",
-                    onto_mops + "#Provenance",
+                    f"{onto_mops}#Provenance",
                     "",
                     "",
                     "",
@@ -198,19 +203,19 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )  # Initialize the Provenance object for the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + mops_id,
+                    f"{mops_pref}{mops_id}",
                     "Instance",
-                    mops_pref + "Provenance_" + gen_id,
-                    onto_mops + "#hasProvenance",
+                    f"{mops_pref}Provenance_{gen_id}",
+                    f"{onto_mops}#hasProvenance",
                     "",
                     "",
                 ]
             )  # Connect the Provenance to the MOPs instance.
             spamwriter.writerow(
                 [
-                    onto_mops + "#hasReferenceDOI",
+                    f"{onto_mops}#hasReferenceDOI",
                     "Data Property",
-                    mops_pref + "Provenance_" + gen_id,
+                    f"{mops_pref}Provenance_{gen_id}",
                     "",
                     data["Mops_Reference_DOI"],
                     "String",
@@ -220,9 +225,9 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             # Write the Molecular Weight section for the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + "MolecularWeight_" + gen_id,
+                    f"{mops_pref}MolecularWeight_{gen_id}",
                     "Instance",
-                    onto_spec + "#MolecularWeight",
+                    f"{onto_spec}#MolecularWeight",
                     "",
                     "",
                     "",
@@ -230,53 +235,54 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )  # Initialize the Molecular Weight object for the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + mops_id,
+                    f"{mops_pref}{mops_id}",
                     "Instance",
-                    mops_pref + "MolecularWeight_" + gen_id,
-                    onto_spec + "#hasMolecularWeight",
+                    f"{mops_pref}MolecularWeight_{gen_id}",
+                    f"{onto_spec}#hasMolecularWeight",
                     "",
                     "",
                 ]
             )  # Link the Molecular Weight object to the MOPs.
             spamwriter.writerow(
                 [
-                    uom_pref + "Measure_MolecularWeight_" + gen_id,
+                    f"{uom_pref}Measure_MolecularWeight_{gen_id}",
                     "Instance",
-                    uom_pref + "Measure",
+                    f"{uom_pref}Measure",
                     "",
                     "",
                     "",
                 ]
-            )  # This is the Measure from the Ontology of Units of Measure that we will use for Molecular Weight.
+            )  # This is the Measure from the Ontology of Units of Measure
+            # that we will use for Molecular Weight.
             spamwriter.writerow(
                 [
-                    mops_pref + "MolecularWeight_" + gen_id,
+                    f"{mops_pref}MolecularWeight_{gen_id}",
                     "Instance",
-                    uom_pref + "Measure_MolecularWeight_" + gen_id,
-                    uom_pref + "hasValue",
+                    f"{uom_pref}Measure_MolecularWeight_{gen_id}",
+                    f"{uom_pref}hasValue",
                     "",
                     "",
                 ]
             )  # Link the Measure to the Molecular Weight instance.
             spamwriter.writerow(
                 [
-                    uom_pref + "hasNumericalValue",
+                    f"{uom_pref}hasNumericalValue",
                     "Data Property",
-                    uom_pref + "Measure_MolecularWeight_" + gen_id,
+                    f"{uom_pref}Measure_MolecularWeight_{gen_id}",
                     "",
                     data["Mops_Molecular_Weight"],
                     "String",
                 ]
             )  # Link the Numerical Value of Molecular Weight to the Measure.
             spamwriter.writerow(
-                [uom_pref + "MolarMassUnit", "Instance", uom_pref + "Unit", "", "", ""]
+                [f"{uom_pref}MolarMassUnit", "Instance", f"{uom_pref}Unit", "", "", ""]
             )  # Take the MolarMass Unit instance from the UOM ontology.
             spamwriter.writerow(
                 [
-                    uom_pref + "Measure_MolecularWeight_" + gen_id,
+                    f"{uom_pref}Measure_MolecularWeight_{gen_id}",
                     "Instance",
-                    uom_pref + "MolarMassUnit",
-                    uom_pref + "hasUnit",
+                    f"{uom_pref}MolarMassUnit",
+                    f"{uom_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -285,9 +291,9 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             # Write the Charge section for the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + "Charge_" + gen_id,
+                    f"{mops_pref}Charge_{gen_id}",
                     "Instance",
-                    onto_spec + "#Charge",
+                    f"{onto_spec}#Charge",
                     "",
                     "",
                     "",
@@ -295,39 +301,40 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )  # Initialize the Charge object for the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + mops_id,
+                    f"{mops_pref}{mops_id}",
                     "Instance",
-                    mops_pref + "Charge_" + gen_id,
-                    onto_spec + "#hasCharge",
+                    f"{mops_pref}Charge_{gen_id}",
+                    f"{onto_spec}#hasCharge",
                     "",
                     "",
                 ]
             )  # Link the Charge object to the MOPs.
             spamwriter.writerow(
                 [
-                    uom_pref + "Measure_Charge_" + gen_id,
+                    f"{uom_pref}Measure_Charge_{gen_id}",
                     "Instance",
-                    uom_pref + "Measure",
+                    f"{uom_pref}Measure",
                     "",
                     "",
                     "",
                 ]
-            )  # This is the Measure from the Ontology of Units of Measure that we will use for Charge.
+            )  # This is the Measure from the Ontology of Units of Measure
+            # that we will use for Charge.
             spamwriter.writerow(
                 [
-                    mops_pref + "Charge_" + gen_id,
+                    f"{mops_pref}Charge_{gen_id}",
                     "Instance",
-                    uom_pref + "Measure_Charge_" + gen_id,
-                    uom_pref + "hasValue",
+                    f"{uom_pref}Measure_Charge_{gen_id}",
+                    f"{uom_pref}hasValue",
                     "",
                     "",
                 ]
             )  # Link the Measure to the Charge instance.
             spamwriter.writerow(
                 [
-                    uom_pref + "hasNumericalValue",
+                    f"{uom_pref}hasNumericalValue",
                     "Data Property",
-                    uom_pref + "Measure_Charge_" + gen_id,
+                    f"{uom_pref}Measure_Charge_{gen_id}",
                     "",
                     data["Mops_Charge"],
                     "String",
@@ -335,20 +342,21 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )  # Link the Numerical Value of Charge to the Measure.
             spamwriter.writerow(
                 [
-                    unres_pref + "elementary_charge",
+                    f"{unres_pref}elementary_charge",
                     "Instance",
-                    uom_pref + "Unit",
+                    f"{uom_pref}Unit",
                     "",
                     "",
                     "",
                 ]
-            )  # Take the elementary charge Unit instance from our extension of the UOM ontology.
+            )  # Take the elementary charge Unit instance from our extension
+            # of the UOM ontology.
             spamwriter.writerow(
                 [
-                    uom_pref + "Measure_Charge_" + gen_id,
+                    f"{uom_pref}Measure_Charge_{gen_id}",
                     "Instance",
-                    unres_pref + "elementary_charge",
-                    uom_pref + "hasUnit",
+                    f"{unres_pref}elementary_charge",
+                    f"{uom_pref}hasUnit",
                     "",
                     "",
                 ]
@@ -357,9 +365,9 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             # Write the Cavity section for the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + "Cavity_" + gen_id,
+                    f"{mops_pref}Cavity_{gen_id}",
                     "Instance",
-                    onto_mops + "#Cavity",
+                    f"{onto_mops}#Cavity",
                     "",
                     "",
                     "",
@@ -367,19 +375,19 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )  # Initialize the Cavity object for the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + mops_id,
+                    f"{mops_pref}{mops_id}",
                     "Instance",
-                    mops_pref + "Cavity_" + gen_id,
-                    onto_mops + "#hasCavity",
+                    f"{mops_pref}Cavity_{gen_id}",
+                    f"{onto_mops}#hasCavity",
                     "",
                     "",
                 ]
             )  # Link the Cavity object to the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + "Volume_" + gen_id,
+                    f"{mops_pref}Volume_{gen_id}",
                     "Instance",
-                    onto_mops + "#Volume",
+                    f"{onto_mops}#Volume",
                     "",
                     "",
                     "",
@@ -387,66 +395,68 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             )  # Initialize the Volume object for the MOPs.
             spamwriter.writerow(
                 [
-                    mops_pref + "Cavity_" + gen_id,
+                    f"{mops_pref}Cavity_{gen_id}",
                     "Instance",
-                    mops_pref + "Volume_" + gen_id,
-                    onto_mops + "#hasMOPCavityVolume",
+                    f"{mops_pref}Volume_{gen_id}",
+                    f"{onto_mops}#hasMOPCavityVolume",
                     "",
                     "",
                 ]
             )  # Link the Volume object to the cavity.
             spamwriter.writerow(
                 [
-                    uom_pref + "Measure_Volume_" + gen_id,
+                    f"{uom_pref}Measure_Volume_{gen_id}",
                     "Instance",
-                    uom_pref + "Measure",
+                    f"{uom_pref}Measure",
                     "",
                     "",
                     "",
                 ]
-            )  # This is the Measure from the Ontology of Units of Measure that we will use for Volume.
+            )  # This is the Measure from the Ontology of Units of Measure
+            # that we will use for Volume.
             spamwriter.writerow(
                 [
-                    mops_pref + "Volume_" + gen_id,
+                    f"{mops_pref}Volume_{gen_id}",
                     "Instance",
-                    uom_pref + "Measure_Volume_" + gen_id,
-                    uom_pref + "hasValue",
+                    f"{uom_pref}Measure_Volume_{gen_id}",
+                    f"{uom_pref}hasValue",
                     "",
                     "",
                 ]
             )  # Link the Measure to the Volume instance.
             spamwriter.writerow(
                 [
-                    uom_pref + "hasNumericalValue",
+                    f"{uom_pref}hasNumericalValue",
                     "Data Property",
-                    uom_pref + "Measure_Volume_" + gen_id,
+                    f"{uom_pref}Measure_Volume_{gen_id}",
                     "",
                     data["Mops_CavityVolume"],
                     "String",
                 ]
             )  # Link the Numerical Value of Volume to the Measure.
             spamwriter.writerow(
-                [uom_pref + "cubicNanometre", "Instance", uom_pref + "Unit", "", "", ""]
+                [f"{uom_pref}cubicNanometre", "Instance", f"{uom_pref}Unit", "", "", ""]
             )  # Take the Cubic Nanometre Unit instance from the UOM ontology.
             spamwriter.writerow(
                 [
-                    uom_pref + "Measure_Volume_" + gen_id,
+                    f"{uom_pref}Measure_Volume_{gen_id}",
                     "Instance",
-                    uom_pref + "cubicNanometre",
-                    uom_pref + "hasUnit",
+                    f"{uom_pref}cubicNanometre",
+                    f"{uom_pref}hasUnit",
                     "",
                     "",
                 ]
             )
 
-            # Write the Assembly Model initialization and shape/symmetry related instances.
+            # Write the Assembly Model initialization and shape/symmetry
+            # related instances.
 
             if assemblymodel is None:
                 spamwriter.writerow(
                     [
-                        mops_pref + "AssemblyModel_" + gen_id,
+                        f"{mops_pref}AssemblyModel_{gen_id}",
                         "Instance",
-                        onto_mops + "#AssemblyModel",
+                        f"{onto_mops}#AssemblyModel",
                         "",
                         "",
                         "",
@@ -454,19 +464,19 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 )  # Initialize the Assembly Model object for the MOPs.
                 spamwriter.writerow(
                     [
-                        mops_pref + mops_id,
+                        f"{mops_pref}{mops_id}",
                         "Instance",
-                        mops_pref + "AssemblyModel_" + gen_id,
-                        onto_mops + "#hasAssemblyModel",
+                        f"{mops_pref}AssemblyModel_{gen_id}",
+                        f"{onto_mops}#hasAssemblyModel",
                         "",
                         "",
                     ]
                 )  # Connect the MOPs instance to the Assembly Model instance.
                 spamwriter.writerow(
                     [
-                        onto_mops + "#hasSymmetryPointGroup",
+                        f"{onto_mops}#hasSymmetryPointGroup",
                         "Data Property",
-                        mops_pref + "AssemblyModel_" + gen_id,
+                        f"{mops_pref}AssemblyModel_{gen_id}",
                         "",
                         data["Mops_Symmetry_Point_Group"],
                         "String",
@@ -474,41 +484,42 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 )  # Write the Symmetry point group for the MOPs.
                 spamwriter.writerow(
                     [
-                        mops_pref + data["Mops_Polyhedral_Shape"] + "_" + gen_id,
+                        f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
                         "Instance",
-                        onto_mops + "#" + data["Mops_Polyhedral_Shape"],
+                        f"{onto_mops}#{data['Mops_Polyhedral_Shape']}",
                         "",
                         "",
                         "",
                     ]
-                )  # Initialize an instance of Polyhedral Shape that is the given shape from the JSON file.
+                )  # Initialize an instance of Polyhedral Shape that is the given
+                # shape from the JSON file.
                 spamwriter.writerow(
                     [
-                        mops_pref + "AssemblyModel_" + gen_id,
+                        f"{mops_pref}AssemblyModel_{gen_id}",
                         "Instance",
-                        mops_pref + data["Mops_Polyhedral_Shape"] + "_" + gen_id,
-                        onto_mops + "#hasPolyhedralShape",
+                        f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
+                        f"{onto_mops}#hasPolyhedralShape",
                         "",
                         "",
                     ]
                 )  # Connect the Assembly model to polyhedral shape.
                 spamwriter.writerow(
                     [
-                        onto_mops + "#hasSymbol",
+                        f"{onto_mops}#hasSymbol",
                         "Data Property",
-                        mops_pref + data["Mops_Polyhedral_Shape"] + "_" + gen_id,
+                        f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
                         "",
                         data["Mops_Polyhedral_Shape_Symbol"],
                         "String",
                     ]
                 )
             else:
-                assemblymodel_uuid = assemblymodel.split("_")[-1]
+                asmodel_uuid = assemblymodel.split("_")[-1]
                 spamwriter.writerow(
                     [
-                        mops_pref + "AssemblyModel_" + assemblymodel_uuid,
+                        f"{mops_pref}AssemblyModel_{asmodel_uuid}",
                         "Instance",
-                        onto_mops + "#AssemblyModel",
+                        f"{onto_mops}#AssemblyModel",
                         "",
                         "",
                         "",
@@ -516,19 +527,19 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 )  # Initialize the Assembly Model object for the MOPs.
                 spamwriter.writerow(
                     [
-                        mops_pref + mops_id,
+                        f"{mops_pref}{mops_id}",
                         "Instance",
-                        mops_pref + "AssemblyModel_" + assemblymodel_uuid,
-                        onto_mops + "#hasAssemblyModel",
+                        f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+                        f"{onto_mops}#hasAssemblyModel",
                         "",
                         "",
                     ]
                 )  # Connect the MOPs instance to the Assembly Model instance.
                 spamwriter.writerow(
                     [
-                        onto_mops + "#hasSymmetryPointGroup",
+                        f"{onto_mops}#hasSymmetryPointGroup",
                         "Data Property",
-                        mops_pref + "AssemblyModel_" + assemblymodel_uuid,
+                        f"{mops_pref}AssemblyModel_{asmodel_uuid}",
                         "",
                         data["Mops_Symmetry_Point_Group"],
                         "String",
@@ -536,29 +547,30 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 )  # Write the Symmetry point group for the MOPs.
                 spamwriter.writerow(
                     [
-                        mops_pref + data["Mops_Polyhedral_Shape"] + "_" + gen_id,
+                        f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
                         "Instance",
-                        onto_mops + "#" + data["Mops_Polyhedral_Shape"],
+                        f"{onto_mops}#{data['Mops_Polyhedral_Shape']}",
                         "",
                         "",
                         "",
                     ]
-                )  # Initialize an instance of Polyhedral Shape that is the given shape from the JSON file.
+                )  # Initialize an instance of Polyhedral Shape that is the given
+                # shape from the JSON file.
                 spamwriter.writerow(
                     [
-                        mops_pref + "AssemblyModel_" + assemblymodel_uuid,
+                        f"{mops_pref}AssemblyModel_{asmodel_uuid}",
                         "Instance",
-                        mops_pref + data["Mops_Polyhedral_Shape"] + "_" + gen_id,
-                        onto_mops + "#hasPolyhedralShape",
+                        f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
+                        f"{onto_mops}#hasPolyhedralShape",
                         "",
                         "",
                     ]
                 )  # Connect the Assembly model to polyhedral shape.
                 spamwriter.writerow(
                     [
-                        onto_mops + "#hasSymbol",
+                        f"{onto_mops}#hasSymbol",
                         "Data Property",
-                        mops_pref + data["Mops_Polyhedral_Shape"] + "_" + gen_id,
+                        f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
                         "",
                         data["Mops_Polyhedral_Shape_Symbol"],
                         "String",
@@ -569,11 +581,14 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             for i in range(
                 len(data["Mops_Chemical_Building_Units"])
             ):  # We will loop through all the building units in the JSON.
+
+                cbu_i = data["Mops_Chemical_Building_Units"][i]
+
                 spamwriter.writerow(
                     [
-                        mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
+                        f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
                         "Instance",
-                        onto_mops + "#ChemicalBuildingUnit",
+                        f"{onto_mops}#ChemicalBuildingUnit",
                         "",
                         "",
                         "",
@@ -581,35 +596,29 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 )  # Instantiate the Chemical Building Unit.
                 spamwriter.writerow(
                     [
-                        mops_pref + mops_id,
+                        f"{mops_pref}{mops_id}",
                         "Instance",
-                        mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
-                        onto_mops + "#hasChemicalBuildingUnit",
+                        f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                        f"{onto_mops}#hasChemicalBuildingUnit",
                         "",
                         "",
                     ]
                 )  # Connect the CBU instance to the MOPs instance.
                 spamwriter.writerow(
                     [
-                        onto_mops + "#hasCBUFormula",
+                        f"{onto_mops}#hasCBUFormula",
                         "Data Property",
-                        mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
+                        f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
                         "",
-                        data["Mops_Chemical_Building_Units"][i]["CBU_Formula"],
+                        cbu_i["CBU_Formula"],
                         "",
                     ]
                 )  # CBU Formula
                 spamwriter.writerow(
                     [
-                        mops_pref
-                        + data["Mops_Chemical_Building_Units"][i]["BindingDirection"]
-                        + "Binding_"
-                        + gen_id,
+                        f"{mops_pref}{cbu_i['BindingDirection']}Binding_{gen_id}",
                         "Instance",
-                        onto_mops
-                        + "#"
-                        + data["Mops_Chemical_Building_Units"][i]["BindingDirection"]
-                        + "Binding",
+                        f"{onto_mops}#{cbu_i['BindingDirection']}Binding",
                         "",
                         "",
                         "",
@@ -617,13 +626,10 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 )  # Instantiate the binding direction for the CBU
                 spamwriter.writerow(
                     [
-                        mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
+                        f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
                         "Instance",
-                        mops_pref
-                        + data["Mops_Chemical_Building_Units"][i]["BindingDirection"]
-                        + "Binding_"
-                        + gen_id,
-                        onto_mops + "#hasBindingDirection",
+                        f"{mops_pref}{cbu_i['BindingDirection']}Binding_{gen_id}",
+                        f"{onto_mops}#hasBindingDirection",
                         "",
                         "",
                     ]
@@ -631,10 +637,10 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 # Connect Binding direction instance to CBU instance.
                 spamwriter.writerow(
                     [
-                        mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
+                        f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
                         "Instance",
-                        data["Mops_Chemical_Building_Units"][i]["OntoSpecies_IRI"],
-                        onto_spec + "#hasUniqueSpecies",
+                        f"{cbu_i['OntoSpecies_IRI']}",
+                        f"{onto_spec}#hasUniqueSpecies",
                         "",
                         "",
                     ]
@@ -642,15 +648,9 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
 
                 spamwriter.writerow(
                     [
-                        mops_pref
-                        + data["Mops_Chemical_Building_Units"][i]["Binding_Site"]
-                        + "Site_"
-                        + gen_id,
+                        f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
                         "Instance",
-                        onto_mops
-                        + "#"
-                        + data["Mops_Chemical_Building_Units"][i]["Binding_Site"]
-                        + "Site",
+                        f"{onto_mops}#{cbu_i['Binding_Site']}Site",
                         "",
                         "",
                         "",
@@ -658,13 +658,10 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 )  # Instantiate the binding site for the CBU.
                 spamwriter.writerow(
                     [
-                        mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
+                        f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
                         "Instance",
-                        mops_pref
-                        + data["Mops_Chemical_Building_Units"][i]["Binding_Site"]
-                        + "Site_"
-                        + gen_id,
-                        onto_mops + "#hasBindingSite",
+                        f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
+                        f"{onto_mops}#hasBindingSite",
                         "",
                         "",
                     ]
@@ -672,38 +669,30 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 # Connect Binding site instance to CBU instance.
                 spamwriter.writerow(
                     [
-                        rdf_pref + "#label",
+                        f"{rdf_pref}#label",
                         "Data Property",
-                        mops_pref
-                        + data["Mops_Chemical_Building_Units"][i]["Binding_Site"]
-                        + "Site_"
-                        + gen_id,
+                        f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
                         "",
-                        data["Mops_Chemical_Building_Units"][i]["Binding_Site_Label"],
+                        f"{cbu_i['Binding_Site_Label']}",
                         "String",
                     ]
                 )  # label for the Binding Site.
                 spamwriter.writerow(
                     [
-                        onto_mops + "#hasOuterCoordinationNumber",
+                        f"{onto_mops}#hasOuterCoordinationNumber",
                         "Data Property",
-                        mops_pref
-                        + data["Mops_Chemical_Building_Units"][i]["Binding_Site"]
-                        + "Site_"
-                        + gen_id,
+                        f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
                         "",
-                        data["Mops_Chemical_Building_Units"][i][
-                            "Binding_SiteCoordNumber"
-                        ],
+                        f"{cbu_i['Binding_SiteCoordNumber']}",
                         "String",
                     ]
                 )
 
                 spamwriter.writerow(
                     [
-                        mops_pref + "Core_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Core_{gen_id}_{i}",
                         "Instance",
-                        onto_mops + "#Core",
+                        f"{onto_mops}#Core",
                         "",
                         "",
                         "",
@@ -712,29 +701,29 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 # Instantiate the Core for this CBU.
                 spamwriter.writerow(
                     [
-                        mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
+                        f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
                         "Instance",
-                        mops_pref + "Core_" + gen_id + "_" + str(i),
-                        onto_mops + "#hasCore",
+                        f"{mops_pref}Core_{gen_id}_{i}",
+                        f"{onto_mops}#hasCore",
                         "",
                         "",
                     ]
                 )  # Connect the Core instance to the CBU instance.
                 spamwriter.writerow(
                     [
-                        rdf_pref + "#label",
+                        f"{rdf_pref}#label",
                         "Data Property",
-                        mops_pref + "Core_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Core_{gen_id}_{i}",
                         "",
-                        data["Mops_Chemical_Building_Units"][i]["CoreLabel"],
+                        f"{cbu_i['CoreLabel']}",
                         "String",
                     ]
                 )  # Attach label to Core.
                 spamwriter.writerow(
                     [
-                        mops_pref + "Substituent_Core_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Substituent_Core_{gen_id}_{i}",
                         "Instance",
-                        onto_mops + "#Substituent",
+                        f"{onto_mops}#Substituent",
                         "",
                         "",
                         "",
@@ -742,30 +731,30 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 )  # Instantiate the Core Substituent.
                 spamwriter.writerow(
                     [
-                        mops_pref + "Core_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Core_{gen_id}_{i}",
                         "Instance",
-                        mops_pref + "Substituent_Core_" + gen_id + "_" + str(i),
-                        onto_mops + "#hasSubstituent",
+                        f"{mops_pref}Substituent_Core_{gen_id}_{i}",
+                        f"{onto_mops}#hasSubstituent",
                         "",
                         "",
                     ]
                 )  # Connect the Core Substituent to the Core.
                 spamwriter.writerow(
                     [
-                        rdf_pref + "#label",
+                        f"{rdf_pref}#label",
                         "Data Property",
-                        mops_pref + "Substituent_Core_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Substituent_Core_{gen_id}_{i}",
                         "",
-                        data["Mops_Chemical_Building_Units"][i]["CoreSubstituentLabel"],
+                        f"{cbu_i['CoreSubstituentLabel']}",
                         "String",
                     ]
                 )  # Attach label to Core Substituent.
 
                 spamwriter.writerow(
                     [
-                        mops_pref + "Spacer_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Spacer_{gen_id}_{i}",
                         "Instance",
-                        onto_mops + "#Spacer",
+                        f"{onto_mops}#Spacer",
                         "",
                         "",
                         "",
@@ -774,29 +763,29 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 # Instantiate the Spacer for this CBU.
                 spamwriter.writerow(
                     [
-                        mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
+                        f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
                         "Instance",
-                        mops_pref + "Spacer_" + gen_id + "_" + str(i),
-                        onto_mops + "#hasSpacer",
+                        f"{mops_pref}Spacer_{gen_id}_{i}",
+                        f"{onto_mops}#hasSpacer",
                         "",
                         "",
                     ]
                 )  # Connect the Spacer instance to the CBU instance.
                 spamwriter.writerow(
                     [
-                        rdf_pref + "#label",
+                        f"{rdf_pref}#label",
                         "Data Property",
-                        mops_pref + "Spacer_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Spacer_{gen_id}_{i}",
                         "",
-                        data["Mops_Chemical_Building_Units"][i]["SpacerLabel"],
+                        f"{cbu_i['SpacerLabel']}",
                         "String",
                     ]
                 )  # Attach label to Spacer.
                 spamwriter.writerow(
                     [
-                        mops_pref + "Substituent_Spacer_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
                         "Instance",
-                        onto_mops + "#Substituent",
+                        f"{onto_mops}#Substituent",
                         "",
                         "",
                         "",
@@ -804,23 +793,21 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 )  # Instantiate the Spacer Substituent.
                 spamwriter.writerow(
                     [
-                        mops_pref + "Spacer_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Spacer_{gen_id}_{i}",
                         "Instance",
-                        mops_pref + "Substituent_Spacer_" + gen_id + "_" + str(i),
-                        onto_mops + "#hasSubstituent",
+                        f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
+                        f"{onto_mops}#hasSubstituent",
                         "",
                         "",
                     ]
                 )  # Connect the Spacer Substituent to the Core.
                 spamwriter.writerow(
                     [
-                        rdf_pref + "#label",
+                        f"{rdf_pref}#label",
                         "Data Property",
-                        mops_pref + "Substituent_Spacer_" + gen_id + "_" + str(i),
+                        f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
                         "",
-                        data["Mops_Chemical_Building_Units"][i][
-                            "SpacerSubstituentLabel"
-                        ],
+                        f"{cbu_i['SpacerSubstituentLabel']}",
                         "String",
                     ]
                 )  # Attach label to Spacer Substituent.
@@ -828,9 +815,9 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 if assemblymodel is None:
                     spamwriter.writerow(
                         [
-                            mops_pref + "GenericBuildingUnit_" + gen_id + "_" + str(i),
+                            f"{mops_pref}GenericBuildingUnit_{gen_id}_{i}",
                             "Instance",
-                            onto_mops + "#GenericBuildingUnit",
+                            f"{onto_mops}#GenericBuildingUnit",
                             "",
                             "",
                             "",
@@ -838,47 +825,39 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     )  # Instantiate the corresponding Generic Building Unit.
                     spamwriter.writerow(
                         [
-                            mops_pref + "AssemblyModel_" + gen_id,
+                            f"{mops_pref}AssemblyModel_{gen_id}",
                             "Instance",
-                            mops_pref + "GenericBuildingUnit_" + gen_id + "_" + str(i),
-                            onto_mops + "#hasGenericBuildingUnit",
+                            f"{mops_pref}GenericBuildingUnit_{gen_id}_{i}",
+                            f"{onto_mops}#hasGenericBuildingUnit",
                             "",
                             "",
                         ]
                     )  # Connect the GBU instance to the Assembly Model instance.
                     spamwriter.writerow(
                         [
-                            onto_mops + "#hasPlanarity",
+                            f"{onto_mops}#hasPlanarity",
                             "Data Property",
-                            mops_pref + "GenericBuildingUnit_" + gen_id + "_" + str(i),
+                            f"{mops_pref}GenericBuildingUnit_{gen_id}_{i}",
                             "",
-                            data["Mops_Chemical_Building_Units"][i][
-                                "GenericUnitPlanarity"
-                            ],
+                            f"{cbu_i['GenericUnitPlanarity']}",
                             "String",
                         ]
                     )  # Planarity of GBU.
                     spamwriter.writerow(
                         [
-                            onto_mops + "#hasModularity",
+                            f"{onto_mops}#hasModularity",
                             "Data Property",
-                            mops_pref + "GenericBuildingUnit_" + gen_id + "_" + str(i),
+                            f"{mops_pref}GenericBuildingUnit_{gen_id}_{i}",
                             "",
-                            data["Mops_Chemical_Building_Units"][i][
-                                "GenericUnitModularity"
-                            ],
+                            f"{cbu_i['GenericUnitModularity']}",
                             "String",
                         ]
                     )  # Modularity of GBU.
                     spamwriter.writerow(
                         [
-                            mops_pref
-                            + "GenericBuildingUnitNumber_"
-                            + gen_id
-                            + "_"
-                            + str(i),
+                            f"{mops_pref}GenericBuildingUnitNumber_{gen_id}_{i}",
                             "Instance",
-                            onto_mops + "#GenericBuildingUnitNumber",
+                            f"{onto_mops}#GenericBuildingUnitNumber",
                             "",
                             "",
                             "",
@@ -886,70 +865,52 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     )  # Instantiate the corresponding Generic Building Unit Number.
                     spamwriter.writerow(
                         [
-                            mops_pref + "AssemblyModel_" + gen_id,
+                            f"{mops_pref}AssemblyModel_{gen_id}",
                             "Instance",
-                            mops_pref
-                            + "GenericBuildingUnitNumber_"
-                            + gen_id
-                            + "_"
-                            + str(i),
-                            onto_mops + "#hasGenericBuildingUnitNumber",
+                            f"{mops_pref}GenericBuildingUnitNumber_{gen_id}_{i}",
+                            f"{onto_mops}#hasGenericBuildingUnitNumber",
                             "",
                             "",
                         ]
                     )  # Connect the GBU Number instance to the Assembly Model instance.
                     spamwriter.writerow(
                         [
-                            mops_pref
-                            + "GenericBuildingUnitNumber_"
-                            + gen_id
-                            + "_"
-                            + str(i),
+                            f"{mops_pref}GenericBuildingUnitNumber_{gen_id}_{i}",
                             "Instance",
-                            mops_pref + "GenericBuildingUnit_" + gen_id + "_" + str(i),
-                            onto_mops + "#isNumberOf",
+                            f"{mops_pref}GenericBuildingUnit_{gen_id}_{i}",
+                            f"{onto_mops}#isNumberOf",
                             "",
                             "",
                         ]
                     )  # Connect the GBU Number to its GBU.
                     spamwriter.writerow(
                         [
-                            onto_spec + "#value",
+                            f"{onto_spec}#value",
                             "Data Property",
-                            mops_pref
-                            + "GenericBuildingUnitNumber_"
-                            + gen_id
-                            + "_"
-                            + str(i),
+                            f"{mops_pref}GenericBuildingUnitNumber_{gen_id}_{i}",
                             "",
-                            data["Mops_Chemical_Building_Units"][i][
-                                "GenericUnitNumber"
-                            ],
+                            f"{cbu_i['GenericUnitNumber']}",
                             "String",
                         ]
                     )  # Give the GBU Number its value.
 
                     spamwriter.writerow(
                         [
-                            mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
+                            f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
                             "Instance",
-                            mops_pref + "GenericBuildingUnit_" + gen_id + "_" + str(i),
-                            onto_mops + "#isFunctioningAs",
+                            f"{mops_pref}GenericBuildingUnit_{gen_id}_{i}",
+                            f"{onto_mops}#isFunctioningAs",
                             "",
                             "",
                         ]
                     )  # Connect the CBU to its corresonding GBU
                 else:
-                    assemblymodel_uuid = assemblymodel.split("_")[-1]
+                    asmodel_uuid = assemblymodel.split("_")[-1]
                     spamwriter.writerow(
                         [
-                            mops_pref
-                            + "GenericBuildingUnit_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
+                            f"{mops_pref}GenericBuildingUnit_{asmodel_uuid}_{i}",
                             "Instance",
-                            onto_mops + "#GenericBuildingUnit",
+                            f"{onto_mops}#GenericBuildingUnit",
                             "",
                             "",
                             "",
@@ -957,59 +918,39 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     )  # Instantiate the corresponding Generic Building Unit.
                     spamwriter.writerow(
                         [
-                            mops_pref + "AssemblyModel_" + assemblymodel_uuid,
+                            f"{mops_pref}AssemblyModel_{asmodel_uuid}",
                             "Instance",
-                            mops_pref
-                            + "GenericBuildingUnit_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
-                            onto_mops + "#hasGenericBuildingUnit",
+                            f"{mops_pref}GenericBuildingUnit_{asmodel_uuid}_{i}",
+                            f"{onto_mops}#hasGenericBuildingUnit",
                             "",
                             "",
                         ]
                     )  # Connect the GBU instance to the Assembly Model instance.
                     spamwriter.writerow(
                         [
-                            onto_mops + "#hasPlanarity",
+                            f"{onto_mops}#hasPlanarity",
                             "Data Property",
-                            mops_pref
-                            + "GenericBuildingUnit_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
+                            f"{mops_pref}GenericBuildingUnit_{asmodel_uuid}_{i}",
                             "",
-                            data["Mops_Chemical_Building_Units"][i][
-                                "GenericUnitPlanarity"
-                            ],
+                            f"{cbu_i['GenericUnitPlanarity']}",
                             "String",
                         ]
                     )  # Planarity of GBU.
                     spamwriter.writerow(
                         [
-                            onto_mops + "#hasModularity",
+                            f"{onto_mops}#hasModularity",
                             "Data Property",
-                            mops_pref
-                            + "GenericBuildingUnit_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
+                            f"{mops_pref}GenericBuildingUnit_{asmodel_uuid}_{i}",
                             "",
-                            data["Mops_Chemical_Building_Units"][i][
-                                "GenericUnitModularity"
-                            ],
+                            f"{cbu_i['GenericUnitModularity']}",
                             "String",
                         ]
                     )  # Modularity of GBU.
                     spamwriter.writerow(
                         [
-                            mops_pref
-                            + "GenericBuildingUnitNumber_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
+                            f"{mops_pref}GenericBuildingUnitNumber_{asmodel_uuid}_{i}",
                             "Instance",
-                            onto_mops + "#GenericBuildingUnitNumber",
+                            f"{onto_mops}#GenericBuildingUnitNumber",
                             "",
                             "",
                             "",
@@ -1017,63 +958,41 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     )  # Instantiate the corresponding Generic Building Unit Number.
                     spamwriter.writerow(
                         [
-                            mops_pref + "AssemblyModel_" + assemblymodel_uuid,
+                            f"{mops_pref}AssemblyModel_{asmodel_uuid}",
                             "Instance",
-                            mops_pref
-                            + "GenericBuildingUnitNumber_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
-                            onto_mops + "#hasGenericBuildingUnitNumber",
+                            f"{mops_pref}GenericBuildingUnitNumber_{asmodel_uuid}_{i}",
+                            f"{onto_mops}#hasGenericBuildingUnitNumber",
                             "",
                             "",
                         ]
                     )  # Connect the GBU Number instance to the Assembly Model instance.
                     spamwriter.writerow(
                         [
-                            mops_pref
-                            + "GenericBuildingUnitNumber_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
+                            f"{mops_pref}GenericBuildingUnitNumber_{asmodel_uuid}_{i}",
                             "Instance",
-                            mops_pref
-                            + "GenericBuildingUnit_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
-                            onto_mops + "#isNumberOf",
+                            f"{mops_pref}GenericBuildingUnit_{asmodel_uuid}_{i}",
+                            f"{onto_mops}#isNumberOf",
                             "",
                             "",
                         ]
                     )  # Connect the GBU Number to its GBU.
                     spamwriter.writerow(
                         [
-                            onto_spec + "#value",
+                            f"{onto_spec}#value",
                             "Data Property",
-                            mops_pref
-                            + "GenericBuildingUnitNumber_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
+                            f"{mops_pref}GenericBuildingUnitNumber_{asmodel_uuid}_{i}",
                             "",
-                            data["Mops_Chemical_Building_Units"][i][
-                                "GenericUnitNumber"
-                            ],
+                            f"{cbu_i['GenericUnitNumber']}",
                             "String",
                         ]
                     )  # Give the GBU Number its value.
 
                     spamwriter.writerow(
                         [
-                            mops_pref + "ChemicalBuildingUnit_" + gen_id + "_" + str(i),
+                            f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
                             "Instance",
-                            mops_pref
-                            + "GenericBuildingUnit_"
-                            + assemblymodel_uuid
-                            + "_"
-                            + str(i),
-                            onto_mops + "#isFunctioningAs",
+                            f"{mops_pref}GenericBuildingUnit_{asmodel_uuid}_{i}",
+                            f"{onto_mops}#isFunctioningAs",
                             "",
                             "",
                         ]
