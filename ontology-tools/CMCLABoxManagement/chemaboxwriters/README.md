@@ -14,13 +14,13 @@ All of the listed abox writers were built in a modular fashion as an input proce
 
 Running any of the supported abox writers results in the following steps:
 1. assemble the pipeline
-2. configure the pipeline handlers for the upload and query operations
+2. configure the pipeline handlers
 3. check the inputs and pass it to a handler that supports it
 4. handler: receives the inputs
 5. handler: if configured, uploads the inputs to the specified endpoints
 6. handler: handles the inputs and produces the outputs
 7. handler: if configured, uploads the outputs to the specified endpoints
-8. Repeat steps 2-4 until the end of the pipeline is reached
+8. Repeat steps 3-7 until the end of the pipeline is reached
 
 
 ### OntoSpecies abox writer
