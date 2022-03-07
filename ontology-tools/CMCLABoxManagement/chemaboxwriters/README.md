@@ -29,18 +29,17 @@ The ontospecies abox writer creates and uploads the ontospecies aboxes. The writ
 - QC_LOG_TO_QC_JSON
   - input type: QC_LOG - the quantum calculation log files (currently only Gaussian G03, G06, G09, G16 are supported)
   - output type: QC_JSON - a generic quantum calculations json file
-  - required_endpoints_config: None - this lists the required endpoints configs that must be passed to the handler via the config file
-  - supported_handler_kwargs: None - this lists the supported arguments that can be passed to the handler via the config file
+  - handler_configs: None - this lists the handler configs that can be set in the config file
 - QC_JSON_TO_OS_JSON
   - input type: QC_JSON
   - output type: OS_JSON - an intermediate ontospecies meta json file
-  - required_endpoints_config:
+  - handler_configs:
     - prefixes:
-      - spec_pref - prefix used to set the ontospecies IRI (ontospecies_IRI = spec_pref + "Species_" + random_id)
-  - supported_handler_kwargs:
-      - random_id (str) OPTIONAL           - random id used in all the ontospecies instances, if not provided, randomly generated as uuid
-      - enth_of_form (str) OPTIONAL        - enthalpy of formation value, not included in the abox if omitted
-      - enth_of_form_unit (str) OPTIONAL  - enthalpy of formation unit, not included in the abox if omitted
+      - spec_pref (str) REQUIRED - prefix used to set the ontospecies IRI (ontospecies_IRI = spec_pref + "Species_" + random_id)
+    - handler_kwargs:
+      - random_id (str) OPTIONAL - random id used in all the ontospecies instances, if not provided, randomly generated as uuid
+      - enth_of_form (str) OPTIONAL - enthalpy of formation value, not included in the abox if omitted
+      - enth_of_form_unit (str) OPTIONAL - enthalpy of formation unit, not included in the abox if omitted
       - enth_of_form_phase (str) OPTIONAL - phase that the enthalpy of formation entry corresponds to, not included in the abox if omitted
       - enth_of_form_ref_temp (str) OPTIONAL - enthalpy of formation reference temperature, not included in the abox if omitted
       - enth_of_form_ref_temp_unit (str) OPTIONAL - enthalpy of formation reference temperature unit, not included in the abox if omitted
@@ -48,20 +47,18 @@ The ontospecies abox writer creates and uploads the ontospecies aboxes. The writ
 - OS_JSON_TO_OS_CSV
   - input type: OS_JSON
   - output type: OS_CSV - an intermediate ontospecies csv file
-  - required_endpoints_config:
+  - handler_configs:
     - prefixes:
-      - spec_pref
-      - onto_spec - OntoSpecies ontology prefix
-      - gain_pref - Gainesville Core ontology prefix
-      - onto_kin  - OntoKin ontology prefix
-      - table_pref - PeriodicTable ontology prefix
-      - unit_pref - QUDT ontology prefix
-  - supported_handler_kwargs: None
+      - spec_pref (str) REQUIRED
+      - onto_spec (str) REQUIRED - OntoSpecies ontology prefix
+      - gain_pref (str) REQUIRED - Gainesville Core ontology prefix
+      - onto_kin  (str) REQUIRED - OntoKin ontology prefix
+      - table_pref (str) REQUIRED - PeriodicTable ontology prefix
+      - unit_pref (str) REQUIRED - QUDT ontology prefix
 - OS_CSV_TO_OS_OWL
   - input type: OS_CSV
   - output type: OS_OWL - the ontospecies owl file
-  - required_endpoints_config: None
-  - supported_handler_kwargs: None
+  - handler_configs: None
 
 
 <a>
@@ -77,31 +74,29 @@ The ontocompchem abox writer creates and uploads the ontocompchem aboxes. The wr
 - QC_JSON_TO_OC_JSON
   - input type: QC_JSON
   - output type: OC_JSON - an intermediate ontocompchem meta json file
-  - required_endpoints_config:
+  - handler_configs:
     - prefixes:
-      - comp_pref - prefix used to set the ontocompchem IRI (ontocompchem_IRI = comp_pref + jobType + "_" + random_id), where the jobType is any of the following values: G03, G06, G09, G16 or Gxx
-  - supported_handler_kwargs:
-    - random_id (str) OPTIONAL
-    - ontospecies_IRI (str) OPTIONAL - IRI of an ontospecies entry to link to. If not provied a query based on inchi will be made to find the ontospecies IRI. If that fails, the ontospecies link is not included in the ontocompchem abox
+      - comp_pref (str) REQUIRED - prefix used to set the ontocompchem IRI (ontocompchem_IRI = comp_pref + jobType + "_" + random_id), where the jobType is any of the following values: G03, G06, G09, G16 or Gxx
+    - handler_kwargs:
+      - random_id (str) OPTIONAL
+      - ontospecies_IRI (str) OPTIONAL - IRI of an ontospecies entry to link to. If not provied a query based on inchi will be made to find the ontospecies IRI. If that fails, the ontospecies link is not included in the ontocompchem abox
 - OC_JSON_TO_OC_CSV
   - input type: OC_JSON
   - output type: OC_CSV - an intermediate ontocompchem csv file
-  - required_endpoints_config:
+  - handler_configs:
     - prefixes:
-      - comp_pref
-      - gain_pref
-      - table_pref
-      - unit_pref
-      - onto_comp
-      - ocompchem_data_pref
-      - inst_spec
-      - has_spec
-  - supported_handler_kwargs: None
+      - comp_pref (str) REQUIRED
+      - gain_pref (str) REQUIRED
+      - table_pref (str) REQUIRED
+      - unit_pref (str) REQUIRED
+      - onto_comp (str) REQUIRED
+      - ocompchem_data_pref (str) REQUIRED
+      - inst_spec (str) REQUIRED
+      - has_spec (str) REQUIRED
 - OC_CSV_TO_OC_OWL
   - input type: OC_CSV
   - output type: OC_OWL - the ontocompchem owl file
-  - required_endpoints_config: None
-  - supported_handler_kwargs: None
+  - handler_configs: None
 <a>
   <center>
     <img src="ocompchem.svg" width="600">
@@ -116,30 +111,28 @@ The ontopesscan abox writer creates and uploads the ontopesscan aboxes. The writ
 - OC_JSON_TO_OPS_JSON
   - input type: OC_JSON
   - output type: OPS_JSON - an intermediate ontopesscan json file
-  - required_endpoints_config: None
-  - supported_handler_kwargs:
-    - random_id (str) OPTIONAL
-    - os_iris (str) REQUIRED - ontospecies IRI that the scan is about
-    - os_atoms_iris (str) REQUIRED - ontospecies atoms IRIs defining the scan coordinate (two IRIs - bond scan, three IRIs - angle scan and four IRIs - dihedral angle scan, note that atoms order matters)
-    - oc_atoms_pos (str) REQUIRED - atoms indices (starting from one) in the ontocompchem entries corresponding to the indicated ontospecies atoms, e.g. for the bond scan jobs between the ontospecies "atom1_iri,atom2_iri" this input should provide these atoms positions in the ontocompchem jobs reference frame, e.g. "3,4" in case "atom1_iri,atom2_iri" where located at position 3 and 4
+  - handler_configs:
+    - handler_kwargs:
+      - random_id (str) OPTIONAL
+      - os_iris (str) REQUIRED - ontospecies IRI that the scan is about
+      - os_atoms_iris (str) REQUIRED - ontospecies atoms IRIs defining the scan coordinate (two IRIs - bond scan, three IRIs - angle scan and four IRIs - dihedral angle scan, note that atoms order matters)
+      - oc_atoms_pos (str) REQUIRED - atoms indices (starting from one) in the ontocompchem entries corresponding to the indicated ontospecies atoms, e.g. for the bond scan jobs between the ontospecies "atom1_iri,atom2_iri" this input should provide these atoms positions in the ontocompchem jobs reference frame, e.g. "3,4" in case "atom1_iri,atom2_iri" where located at position 3 and 4
 - OPS_JSON_TO_OPS_CSV
   - input type: OPS_JSON
   - output type: OPS_CSV - an intermediate ontopesscan csv file
-  - required_endpoints_config:
+  - handler_configs:
     - prefixes:
-      - spec_pref
-      - pes_pref
-      - gain_pref
-      - unit_pref
-      - onto_spec
-      - onto_comp
-      - onto_pes
-  - supported_handler_kwargs: None
+      - spec_pref (str) REQUIRED
+      - pes_pref (str) REQUIRED
+      - gain_pref (str) REQUIRED
+      - unit_pref (str) REQUIRED
+      - onto_spec (str) REQUIRED
+      - onto_comp (str) REQUIRED
+      - onto_pes (str) REQUIRED
 - OPS_CSV_TO_OPS_OWL
   - input type: OPS_CSV
   - output type: OPS_OWL - the ontopesscan owl file
-  - required_endpoints_config: None
-  - supported_handler_kwargs: None
+  - handler_configs: None
 
 <a>
   <center>
@@ -160,28 +153,26 @@ The ontomops abox writer creates and uploads the ontomops aboxes. The writer is 
 - OMINP_JSON_TO_OM_JSON
   - input type: OMINP_JSON - an ontomops input json file
   - output type: OM_JSON - an intermediate ontomops json file
-  - required_endpoints_config:
+  - handler_configs:
     - prefixes:
-      - onto_spec
-      - onto_mops
-      - mops_pref
-      - rdf_pref
-      - uom_pref
-      - unres_pref
-  - supported_handler_kwarg: None
+      - onto_spec (str) REQUIRED
+      - onto_mops (str) REQUIRED
+      - mops_pref (str) REQUIRED
+      - rdf_pref (str) REQUIRED
+      - uom_pref (str) REQUIRED
+      - unres_pref (str) REQUIRED
 - OM_JSON_TO_OM_CSV
   - input type: OM_JSON - an intermediate ontomops json file
   - output type: OM_CSV - an intermediate ontomops csv file
-  - required_endpoints_config
+  - handler_configs
     - prefixes:
-      - omops_entry_prefix
-  - supported_handler_kwarg:
+      - omops_entry_prefix (str) REQUIRED
+  - handler_kwarg:
     - random_id (str) OPTIONAL
 - OM_CSV_TO_OM_OWL
   - input type: OM_CSV - an intermediate ontomops csv file
   - output type: OM_OWL - the ontomops owl file
-  - required_endpoints_config: None
-  - supported_handler_kwargs: None
+  - handler_configs: None
 
 <a>
   <center>
