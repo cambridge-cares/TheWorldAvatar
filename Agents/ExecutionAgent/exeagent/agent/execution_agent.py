@@ -66,6 +66,13 @@ class ExecutionAgent(AsyncAgent):
         # self.logger.info(f"The generated new HPLC report (raw data) is hosted at: <{hplc_report.instance_iri}>.")
         # TODO make the connection between HPLCReport and HPLCJob here?
         # TODO where do we generate the instance of HPLCJob?
+        # <hplc> <hasJob> <hplc_job>
+        # <hplc_job> <characterises> <rxnexp>
+        # <hplc_job> <usesMethod> <hplc_method> # these hplc_method should pre-exist, we only need to attach to it # maybe also can check what HPLCMethod was used for previous rxnexp?
+        # <hplc_job> <hasReport> <hplc_report>
+        # <hplc_report> <generatedFor> <chemical_solution>
+        # <chemical_solution> <fills> <vial> # here we should write the vial location to the KG
+        # <vial> <hasFillLevel> <xxx> # (the rest information about vial should already be known as part of digital twin of autosampler)
         # TODO do we remove the settings for the hardware from the digital twin? --> so within each operation of execution agent, the settings got generated and deleted
 
         # return [hplc_report.instance_iri]

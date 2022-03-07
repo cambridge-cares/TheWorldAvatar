@@ -15,6 +15,7 @@ DBPEDIA_CSVFILE = 'http://dbpedia.org/resource/Comma-separated_values'
 DBPEDIA_TXTFILE = 'http://dbpedia.org/resource/Text_file'
 # DBPEDIA_XLSFILE, DBPEDIA_CSVFILE, and DBPEDIA_TXTFILE all have rdf:type DBPEDIA_WIKICATFILENAMEEXTENSIONS
 DBPEDIA_WIKICATFILENAMEEXTENSIONS = 'http://dbpedia.org/class/yago/WikicatFilenameExtensions'
+ONTOHPLC_CHARACTERISES = ONTOHPLC + 'characterises'
 
 class PeakArea(OM_Quantity):
     clz: str = ONTOHPLC_PEAKAREA
@@ -49,6 +50,13 @@ class HPLCMethod(BaseOntology):
     usesInternalStandard: InternalStandard
     rdfs_comment: str
 
+class HPLCJob(BaseOntology):
+    clz: str = ONTOHPLC_HPLCJOB
+    hasReport: HPLCReport
+    characterises: ReactionExperiment
+    usesMethod: HPLCMethod
+
 class HPLC(LabEquipment):
     clz: str = ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY
     reportExtension: str # this should be DBPEDIA_WIKICATFILENAMEEXTENSIONS but we simplify as str
+    hasJob: List[HPLCJob]

@@ -85,11 +85,92 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     a ontohplc:HPLCJob;
     ontohplc:hasReport :HPLCReport_Dummy;
     ontohplc:usesMethod :HPLCMethod_Dummy;
+    ontohplc:characterises exp1:RxnExp_1;
 .
 
 :HPLCReport_Dummy
     a ontohplc:HPLCReport;
-    # TODO complete information
+    ontohplc:generatedFor :ChemicalSolution_For_OutputChemical_4;
+    ontohplc:hasReportPath "placeholder_path"^^xsd:string; # TODO this should be added once the file server is deployed
+    ontohplc:records :ChromatogramPoint_Dummy_1;
+    ontohplc:records :ChromatogramPoint_Dummy_2;
+    ontohplc:records :ChromatogramPoint_Dummy_3;
+    ontohplc:records :ChromatogramPoint_Dummy_4;
+    ontohplc:records :ChromatogramPoint_Dummy_5;
+    ontohplc:records :ChromatogramPoint_Dummy_6;
+    ontohplc:records :ChromatogramPoint_Dummy_7;
+    ontohplc:records :ChromatogramPoint_Dummy_8;
+.
+
+# RetTime	Area
+# 0.55	3000 reactant benzaldehyde
+# 1.55	15000 product benzalacetone
+# 2.55	3400 reactant acetone
+# 3.55	120 internal standard
+# 4.55	20 impurity dibenzylideneacetone
+# 5.55	900 catalyst NaOH
+# 6.55	150 solvent acetonitrile
+# 7.55  100 solvent ethanol
+:ChemicalSolution_For_OutputChemical_4
+    a ontolab:ChemicalSolution;
+    ontocapecpsb:refersToMaterial exp1:OutputChemical_4;
+    ontovapourtec:fills :Vial_5;
+.
+
+:ChromatogramPoint_Dummy_1
+    a ontohplc:ChromatogramPoint;
+    ontohplc:hasPeakArea "3000"^^xsd:double;
+    ontohplc:atRetentionTIme "0.55"^^xsd:double;
+    ontohplc:indicatesComponent SinglePhase:PhaseComponent_1_exp1_oc;
+.
+
+:ChromatogramPoint_Dummy_2
+    a ontohplc:ChromatogramPoint;
+    ontohplc:hasPeakArea "3400"^^xsd:double;
+    ontohplc:atRetentionTIme "2.55"^^xsd:double;
+    ontohplc:indicatesComponent SinglePhase:PhaseComponent_2_exp1_oc;
+.
+
+:ChromatogramPoint_Dummy_3
+    a ontohplc:ChromatogramPoint;
+    ontohplc:hasPeakArea "15000"^^xsd:double;
+    ontohplc:atRetentionTIme "1.55"^^xsd:double;
+    ontohplc:indicatesComponent SinglePhase:PhaseComponent_3_exp1_oc;
+.
+
+:ChromatogramPoint_Dummy_4
+    a ontohplc:ChromatogramPoint;
+    ontohplc:hasPeakArea "20"^^xsd:double;
+    ontohplc:atRetentionTIme "4.55"^^xsd:double;
+    ontohplc:indicatesComponent SinglePhase:PhaseComponent_4_exp1_oc;
+.
+
+:ChromatogramPoint_Dummy_5
+    a ontohplc:ChromatogramPoint;
+    ontohplc:hasPeakArea "900"^^xsd:double;
+    ontohplc:atRetentionTIme "5.55"^^xsd:double;
+    ontohplc:indicatesComponent SinglePhase:PhaseComponent_5_exp1_oc;
+.
+
+:ChromatogramPoint_Dummy_6
+    a ontohplc:ChromatogramPoint;
+    ontohplc:hasPeakArea "150"^^xsd:double;
+    ontohplc:atRetentionTIme "6.55"^^xsd:double;
+    ontohplc:indicatesComponent SinglePhase:PhaseComponent_6_exp1_oc;
+.
+
+:ChromatogramPoint_Dummy_7
+    a ontohplc:ChromatogramPoint;
+    ontohplc:hasPeakArea "100"^^xsd:double;
+    ontohplc:atRetentionTIme "7.55"^^xsd:double;
+    ontohplc:indicatesComponent SinglePhase:PhaseComponent_7_exp1_oc;
+.
+
+:ChromatogramPoint_Dummy_8
+    a ontohplc:ChromatogramPoint;
+    ontohplc:hasPeakArea "120"^^xsd:double;
+    ontohplc:atRetentionTIme "3.55"^^xsd:double;
+    ontohplc:indicatesComponent SinglePhase:PhaseComponent_IS_exp1_oc;
 .
 
 :HPLCMethod_Dummy
@@ -133,16 +214,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
     OntoCAPEUpp:numericalValue "0.02"^^xsd:double;
 .
-
-# RetTime	Area
-# 0.55	3000
-# 1.55	15000
-# 2.55	3400
-# 3.55	120
-# 4.55	20
-# 5.55	900
-# 6.55	150
-# 7.55  100
 
 :ResponseFactor_1 # reactant benzaldehyde
     a ontohplc:ResponseFactor;
@@ -1021,27 +1092,80 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "7"^^xsd:int;
 .
 
+:Site_5
+    a ontovapourtec:AutoSamplerSite;
+    ontovapourtec:locationID "5"^^xsd:string;
+    ontovapourtec:holds :Vial_5;
+.
+
+:Vial_5
+    a ontovapourtec:Vial;
+    ontovapourtec:isHeldIn :Site_5;
+    ontovapourtec:isFilledWith :ChemicalSolution_For_OutputChemical_4;
+    ontovapourtec:hasMaxLevel :Vial_5_level_max;
+    #ontovapourtec:hasWarningLevel :Vial_5_level_warning; # TODO delete this
+    ontovapourtec:hasFillLevel :Vial_5_level_fill;
+.
+
+:Vial_5_level_max
+    a om:Volume;
+    om:hasValue :Vial_5_level_max_value;
+.
+
+:Vial_5_level_max_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "10"^^xsd:int;
+.
+
+# TODO delete this
+#:Vial_5_level_warning
+#    a om:Volume;
+#    om:hasValue :Vial_5_level_warning_value;
+#.
+
+#:Vial_5_level_warning_value
+#    a om:Measure;
+#    om:hasUnit om:millilitre;
+#    om:hasNumericalValue "8"^^xsd:int;
+#.
+
+:Vial_5_level_fill
+    a om:Volume;
+    om:hasValue :Vial_5_level_fill_value;
+.
+
+:Vial_5_level_fill_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "3"^^xsd:int;
+.
+
 ##################################
 ## Chemical solutions instances ##
 ##################################
 
 :ChemicalSolution_1
     a ontolab:ChemicalSolution;
+    ontovapourtec:fills :Vial_1;
     ontocapecpsb:refersToMaterial :Material_1;
 .
 
 :ChemicalSolution_2
     a ontolab:ChemicalSolution;
+    ontovapourtec:fills :Vial_2;
     ontocapecpsb:refersToMaterial :Material_2;
 .
 
 :ChemicalSolution_3
     a ontolab:ChemicalSolution;
+    ontovapourtec:fills :Vial_3;
     ontocapecpsb:refersToMaterial :Material_3;
 .
 
 :ChemicalSolution_4
     a ontolab:ChemicalSolution;
+    ontovapourtec:fills :Vial_4;
     ontocapecpsb:refersToMaterial :Material_4;
 .
 
@@ -1072,6 +1196,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     OntoCAPEPha:has_composition :Composition_1;
     OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_1;
     OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_6;
+    OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_IS_Input;
 .
 
 :Composition_1
@@ -1138,6 +1263,12 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     OntoCAPEUpp:hasProperty :PhaseComponent_2_Property_1;
 .
 
+:PhaseComponent_IS_Input
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoCAPEUpp:hasProperty :PhaseComponent_IS_Input_Property_1;
+.
+
 :PhaseComponent_3
     rdf:type OntoCAPEPha:PhaseComponent;
     OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_637759;
@@ -1194,6 +1325,17 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     rdf:type OntoCAPEUpp:ScalarValue;
     OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
     OntoCAPEUpp:numericalValue "6.73"^^xsd:double;
+.
+
+:PhaseComponent_IS_Input_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue :PhaseComponent_IS_Input_Property_1_ScalarValue_1;
+.
+
+:PhaseComponent_IS_Input_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.02"^^xsd:double;
 .
 
 :PhaseComponent_3_Property_1

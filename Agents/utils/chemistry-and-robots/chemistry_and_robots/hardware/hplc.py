@@ -1,4 +1,3 @@
-from tkinter.font import names
 from chemistry_and_robots.data_model import *
 from io import StringIO
 import pandas as pd
@@ -7,7 +6,7 @@ import uuid
 
 RETENTION_TIME_MATCH_THRESHOLD = 0.15
 
-def process_raw_hplc_report_file(hplc_report_iri: str, file_path: str, filename_extension: str) -> list:
+def read_raw_hplc_report_file(hplc_report_iri: str, file_path: str, filename_extension: str) -> list:
     """This method extracts the chromatogram points from the given raw HPLC report."""
     if filename_extension == DBPEDIA_XLSFILE:
         # TODO this is a shortcut that we hardcoded the sheet_name and columns

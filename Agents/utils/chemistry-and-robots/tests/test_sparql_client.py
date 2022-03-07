@@ -1,7 +1,6 @@
-from chemistry_and_robots.data_model.ontohplc import HPLCMethod
+from chemistry_and_robots.data_model.ontorxn import OntoCAPE_PhaseComponentConcentration
 from chemistry_and_robots.data_model.ontovapourtec import AutoSampler
 from chemistry_and_robots.hardware import hplc
-from chemistry_and_robots.kg_operations import sparql_client
 from testcontainers.core.container import DockerContainer
 from rdflib import Graph
 from pathlib import Path
@@ -87,6 +86,17 @@ class TargetIRIs(Enum):
     ONTOSPECIES_INTERNAL_STANDARD_IRI = 'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'
     MOLARITY_INTERNAL_STANDARD = 0.02
     HPLCReport_DUMMY_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCReport_Dummy'
+    CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/ChemicalSolution_For_OutputChemical_4'
+    CHROMATOGRAMPOINT_1_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/ChromatogramPoint_Dummy_1'
+    CHROMATOGRAMPOINT_2_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/ChromatogramPoint_Dummy_2'
+    CHROMATOGRAMPOINT_3_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/ChromatogramPoint_Dummy_3'
+    CHROMATOGRAMPOINT_4_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/ChromatogramPoint_Dummy_4'
+    CHROMATOGRAMPOINT_5_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/ChromatogramPoint_Dummy_5'
+    CHROMATOGRAMPOINT_6_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/ChromatogramPoint_Dummy_6'
+    CHROMATOGRAMPOINT_7_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/ChromatogramPoint_Dummy_7'
+    CHROMATOGRAMPOINT_8_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/ChromatogramPoint_Dummy_8'
+    LIST_CHROMATOGRAMPOINT_IRI = [CHROMATOGRAMPOINT_1_IRI, CHROMATOGRAMPOINT_2_IRI, CHROMATOGRAMPOINT_3_IRI, CHROMATOGRAMPOINT_4_IRI,
+    CHROMATOGRAMPOINT_5_IRI, CHROMATOGRAMPOINT_6_IRI, CHROMATOGRAMPOINT_7_IRI, CHROMATOGRAMPOINT_8_IRI]
 
 # The (scope="module") is added to make the initialisation only run once for the whole python module so it saves time
 @pytest.fixture(scope="module")
@@ -352,8 +362,31 @@ def test_get_hplc_method_given_hplc_report(initialise_triples):
     assert all(rf.refersToSpecies is not None for rf in hplc_method.hasResponseFactor)
     assert all(rt.refersToSpecies is not None for rt in hplc_method.hasRetentionTime)
 
-def test_get_hplc_report(initialise_triples):
-    # TODO implement this test case once
+def test_get_chromatogram_point_of_hplc_report(initialise_triples):
+    sparql_client = initialise_triples
+    list_chrom_pts = sparql_client.get_chromatogram_point_of_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    for pt in list_chrom_pts:
+        assert pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value
+        assert pt.indicatesComponent.instance_iri is not None
+        assert pt.indicatesComponent.representsOccurenceOf is not None
+        assert isinstance(pt.indicatesComponent.hasProperty, OntoCAPE_PhaseComponentConcentration)
+        assert pt.indicatesComponent.hasProperty.hasValue.numericalValue > 0
+        assert pt.atRetentionTime.hasValue.hasNumericalValue > 0
+        assert pt.atRetentionTime.hasValue.hasUnit is not None
+        assert pt.hasPeakArea.hasValue.hasNumericalValue > 0
+        assert pt.hasPeakArea.hasValue.hasUnit is not None
+
+def test_get_existing_hplc_report(initialise_triples):
+    sparql_client = initialise_triples
+    list_chrom_pts = sparql_client.get_chromatogram_point_of_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    assert all(pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value for pt in list_chrom_pts)
+    hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    assert all(pt in list_chrom_pts for pt in hplc_report.records)
+    assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI.value
+    assert hplc_report.hasReportPath is not None
+
+def test_process_raw_hplc_report(initialise_triples):
+    # TODO implement this test case once the file server is sorted
     pass
 
 def get_endpoint(docker_container):

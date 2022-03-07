@@ -1,6 +1,7 @@
 # The purpose of this module is to provide utility functions
 # to interact with the knowledge graph
 #============================================================
+from lib2to3.pgen2.pgen import ParserGenerator
 from typing import Tuple
 from urllib import response
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
@@ -357,7 +358,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         rxnexp_iri = trimIRI(rxnexp_iri)
         return self.get_ontocape_material(rxnexp_iri, ONTORXN_HASOUTPUTCHEMICAL)
 
-    def get_ontocape_material(self, subject_iri, predicate_iri) -> List[OntoCAPE_Material]:
+    def get_ontocape_material(self, subject_iri, predicate_iri, desired_type: str=None) -> List[OntoCAPE_Material]:
         subject_iri = trimIRI(subject_iri)
         predicate_iri = trimIRI(predicate_iri)
 
@@ -466,9 +467,16 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     representsThermodynamicBehaviorOf=ontocape_material_iri
                 )
 
-                if predicate_iri == ONTORXN_HASINPUTCHEMICAL:
+                if desired_type is None:
+                    if predicate_iri == ONTORXN_HASINPUTCHEMICAL:
+                        ocm_instance = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
+                    elif predicate_iri == ONTORXN_HASOUTPUTCHEMICAL:
+                        ocm_instance = OutputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
+                    else:
+                        ocm_instance = OntoCAPE_Material(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
+                elif desired_type == ONTORXN_INPUTCHEMICAL:
                     ocm_instance = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
-                elif predicate_iri == ONTORXN_HASOUTPUTCHEMICAL:
+                elif desired_type == ONTORXN_OUTPUTCHEMICAL:
                     ocm_instance = OutputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
                 else:
                     ocm_instance = OntoCAPE_Material(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
@@ -1352,10 +1360,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
         return hplc_method
 
-    def get_hplc_report(self, hplc_report_iri: str) -> HPLCReport:
+    def process_raw_hplc_report(self, hplc_report_iri: str) -> HPLCReport:
+        """Here we can assume that the required information are already provided by the previous agents."""
         hplc_report_path, hplc_report_extension = self.get_raw_hplc_report_path_and_extension(hplc_report_iri)
+        # TODO test if need to download the file from here? or can be processed directly?
         # retrieve a list of points
-        list_points = hplc.process_raw_hplc_report_file(file_path=hplc_report_path, filename_extension=hplc_report_extension)
+        list_points = hplc.read_raw_hplc_report_file(hplc_report_iri=hplc_report_iri, file_path=hplc_report_path, filename_extension=hplc_report_extension)
 
         # get the instance of HPLCMethod
         hplc_method = self.get_hplc_method_given_hplc_report(hplc_report_iri)
@@ -1363,6 +1373,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # map them to chromatogram point (qury phase component based on hplc method, and hplc)
         list_concentration = []
         list_phase_component = []
+        list_chrom_pts= []
         for pt in list_points:
             # generate phase component
             ontospecies_species = self.get_matching_species_from_hplc_results(pt.get(ONTOHPLC_RETENTIONTIME), hplc_method)
@@ -1392,6 +1403,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             )
             list_concentration.append(concentration)
             list_phase_component.append(phase_component)
+            list_chrom_pts.append(chrom_pt)
 
         composition = OntoCAPE_Composition(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
@@ -1415,22 +1427,112 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
 
         # create chemical solution instance
-        # chemical_solution = ChemicalSolution(
-        #     instance_iri="",
-        #     refersToMaterial=output_chemical,
-        #     fills=
-        # )
+        chem_sol_response = self.performQuery("""SELECT ?sol ?vial WHERE{<%s> <%s> ?sol. ?sol <%s> ?vial.}""" % (
+            hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOVAPOURTEC_FILLS))
+        if len(chem_sol_response) > 1:
+            raise Exception("Multiple instances of ChemicalSolution identified for HPLCReport <%s>: %s" % (hplc_report_iri, str(chem_sol_response)))
+        elif len(chem_sol_response) < 1:
+            raise Exception("No instance of ChemicalSolution identified for HPLCReport <%s>" % hplc_report_iri)
+        else:
+            chem_sol_iri = chem_sol_response[0]['sol']
+            chem_sol_vial = chem_sol_response[0]['vial']
+
+        chemical_solution = ChemicalSolution(
+            instance_iri=chem_sol_iri,
+            refersToMaterial=output_chemical,
+            fills=chem_sol_vial
+        )
 
         # generate hplc report instance
-        # hplc_report_instance = HPLCReport(
-        #     instance_iri=hplc_report_iri,
-        #     hasReportPath=,
-        #     records=,
-        #     generatedFor=
-        # )
+        hplc_report_instance = HPLCReport(
+            instance_iri=hplc_report_iri,
+            hasReportPath=hplc_report_path,
+            records=list_chrom_pts,
+            generatedFor=chemical_solution
+        )
 
-        # TODO think about when do we write these triples back to the knowledge graph
-        return #hplc_report_instance
+        # TODO think about when do we write these triples (generated ones for CHromatogramPoint and ChemicalSolution) back to the knowledge graph
+        return hplc_report_instance
+
+    def get_chromatogram_point_of_hplc_report(self, hplc_report_iri: str) -> List[ChromatogramPoint]:
+        hplc_report_iri = trimIRI(hplc_report_iri)
+        query = PREFIX_RDF+"""SELECT ?pt ?phase_component ?chemical_species ?conc ?conc_type ?conc_value
+                   ?conc_value ?conc_unit ?conc_num_val ?area ?area_value ?area_unit ?area_num_val
+                   ?rt ?rt_value ?rt_unit ?rt_num_val
+                   WHERE {
+                       <%s> <%s> ?pt.
+                       ?pt <%s> ?phase_component; <%s> ?area; <%s> ?rt.
+                       ?phase_component <%s> ?chemical_species.
+                       ?phase_component <%s> ?conc. ?conc rdf:type ?conc_type; <%s> ?conc_value.
+                       ?conc_value <%s> ?conc_unit; <%s> ?conc_num_val.
+                       ?area <%s> ?area_value. ?area_value <%s> ?area_unit; <%s> ?area_num_val.
+                       ?rt <%s> ?rt_value. ?rt_value <%s> ?rt_unit; <%s> ?rt_num_val.
+                   }""" % (
+                       hplc_report_iri, ONTOHPLC_RECORDS, ONTOHPLC_INDICATESCOMPONENT, ONTOHPLC_HASPEAKAREA, ONTOHPLC_HASRETENTIONTIME,
+                       ONTOCAPE_REPRESENTSOCCURENCEOF, ONTOCAPE_HASPROPERTY, ONTOCAPE_HASVALUE, ONTOCAPE_HASUNITOFMEASURE, ONTOCAPE_NUMERICALVALUE,
+                       OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE
+                   )
+        response = self.performQuery(query)
+
+        list_chrom_pts = []
+        if len(response) != len(self.get_unique_values_in_list_of_dict(response, 'pt')):
+            raise Exception("The ChromatogramPoint of the given HPLCReport <%s> is not uniquely stored: %s" % (
+                hplc_report_iri, str(response)))
+        for r in response:
+            if r['conc_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
+                concentration = OntoCAPE_Molarity(instance_iri=r['conc'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['conc_value'],numericalValue=r['conc_num_val'],hasUnitOfMeasure=r['conc_unit']))
+            else:
+                # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+                raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['conc_type'])
+            pt = ChromatogramPoint(
+                instance_iri=r['pt'],
+                indicatesComponent=OntoCAPE_PhaseComponent(
+                    instance_iri=r['phase_component'],
+                    hasProperty=concentration,
+                    representsOccurenceOf=r['chemical_species']
+                ),
+                hasPeakArea=PeakArea(
+                    instance_iri=r['area'],
+                    hasValue=OM_Measure(instance_iri=r['area_value'],hasUnit=r['area_unit'],hasNumericalValue=r['area_num_val'])
+                ),
+                atRetentionTime=RetentionTime(
+                    instance_iri=r['rt'],
+                    hasValue=OM_Measure(instance_iri=r['rt_value'],hasUnit=r['rt_unit'],hasNumericalValue=r['rt_num_val'])
+                )
+            )
+            list_chrom_pts.append(pt)
+
+        return list_chrom_pts
+
+    def get_existing_hplc_report(self, hplc_report_iri: str) -> HPLCReport:
+        hplc_report_iri = trimIRI(hplc_report_iri)
+        query = """SELECT ?chemical_solution ?report_path ?vial
+                   WHERE {<%s> <%s> ?chemical_solution; <%s> ?report_path. ?chemical_solution <%s> ?vial.}""" % (
+                       hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_HASREPORTPATH, ONTOVAPOURTEC_FILLS)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple instances of ChemicalSolution or HPLCReport path identified for HPLCReport <%s>: %s" % (
+                hplc_report_iri, str(response)
+            ))
+        elif len(response) < 1:
+            raise Exception("No instances of ChemicalSolution or HPLCReport path identified for HPLCReport <%s>" % (hplc_report_iri))
+        else:
+            chem_sol_iri = response[0]['chemical_solution']
+            hplc_report_path = response[0]['report_path']
+            chem_sol_vial = response[0]['vial']
+
+        hplc_report_instance = HPLCReport(
+            instance_iri=hplc_report_iri,
+            hasReportPath=hplc_report_path,
+            records=self.get_chromatogram_point_of_hplc_report(hplc_report_iri),
+            generatedFor=ChemicalSolution(
+                instance_iri=chem_sol_iri,
+                refersToMaterial=self.get_ontocape_material(chem_sol_iri, ONTOCAPE_REFERSTOMATERIAL, ONTORXN_OUTPUTCHEMICAL)[0],
+                fills=chem_sol_vial
+            )
+        )
+
+        return hplc_report_instance
 
     #######################################################
     ## Some utility functions handling the list and dict ##
