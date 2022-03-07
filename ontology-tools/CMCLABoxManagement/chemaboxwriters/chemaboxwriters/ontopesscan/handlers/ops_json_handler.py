@@ -65,7 +65,7 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             self._ops_csvwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **self._handler_kwargs
+                **self._handler_kwargs,
             )
             outputs.append(out_file_path)
         return outputs
@@ -114,9 +114,9 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                pes_pref + entryIRI,
+                f"{pes_pref}{entryIRI}",
                 "Instance",
-                onto_pes + "#PotentialEnergySurfaceScan",
+                f"{onto_pes}#PotentialEnergySurfaceScan",
                 "",
                 "",
                 "",
@@ -124,9 +124,9 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                spec_pref + spec_IRI[0],
+                f"{spec_pref}{spec_IRI[0]}",
                 "Instance",
-                onto_spec + "#Species",
+                f"{onto_spec}#Species",
                 "",
                 "",
                 "",
@@ -134,10 +134,10 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                pes_pref + entryIRI,
+                f"{pes_pref}{entryIRI}",
                 "Instance",
-                spec_pref + spec_IRI[0],
-                onto_pes + "#onSpecies",
+                f"{spec_pref}{spec_IRI[0]}",
+                f"{onto_pes}#onSpecies",
                 "",
                 "",
             ]
@@ -153,9 +153,9 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         scan_type = data[SCAN_COORDINATE_TYPE]
         spamwriter.writerow(
             [
-                pes_pref + scan_type + "_" + calc_id,
+                f"{pes_pref}{scan_type}_{calc_id}",
                 "Instance",
-                onto_pes + "#" + scan_type,
+                f"{onto_pes}#{scan_type}",
                 "",
                 "",
                 "",
@@ -163,24 +163,24 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         )
         spamwriter.writerow(
             [
-                pes_pref + data["EntryIRI"],
+                f"{pes_pref}{data['EntryIRI']}",
                 "Instance",
-                pes_pref + scan_type + "_" + calc_id,
-                onto_pes + "#hasScanCoordinate",
+                f"{pes_pref}{scan_type}_{calc_id}",
+                f"{onto_pes}#hasScanCoordinate",
                 "",
                 "",
             ],
         )
         for atomiri in data[SCAN_COORDINATE_ATOMS_IRIS]:
             spamwriter.writerow(
-                [spec_pref + atomiri, "Instance", gain_pref + "Atom", "", "", ""]
+                [f"{spec_pref}{atomiri}", "Instance", f"{gain_pref}Atom", "", "", ""]
             )
             spamwriter.writerow(
                 [
-                    pes_pref + scan_type + "_" + calc_id,
+                    f"{pes_pref}{scan_type}_{calc_id}",
                     "Instance",
-                    spec_pref + atomiri,
-                    onto_pes + "#hasScanAtom",
+                    f"{spec_pref}{atomiri}",
+                    f"{onto_pes}#hasScanAtom",
                     "",
                     "",
                 ]
@@ -198,9 +198,9 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             gauss_type = data[SCAN_POINTS_JOBS][k].split("_")[0][-3:]
             spamwriter.writerow(
                 [
-                    pes_pref + "ScanPoint_" + calc_id + "_" + str(k + 1),
+                    f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
                     "Instance",
-                    onto_pes + "#ScanPoint",
+                    f"{onto_pes}#ScanPoint",
                     "",
                     "",
                     "",
@@ -208,10 +208,10 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    pes_pref + entryIRI,
+                    f"{pes_pref}{entryIRI}",
                     "Instance",
-                    pes_pref + "ScanPoint_" + calc_id + "_" + str(k + 1),
-                    onto_pes + "#hasScanPoint",
+                    f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
+                    f"{onto_pes}#hasScanPoint",
                     "",
                     "",
                 ]
@@ -220,7 +220,7 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
                 [
                     data[SCAN_POINTS_JOBS][k],
                     "Instance",
-                    onto_comp + "#" + gauss_type,
+                    f"{onto_comp}#{gauss_type}",
                     "",
                     "",
                     "",
@@ -228,19 +228,19 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    pes_pref + "ScanPoint_" + calc_id + "_" + str(k + 1),
+                    f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
                     "Instance",
                     data[SCAN_POINTS_JOBS][k],
-                    onto_pes + "#hasCalculation",
+                    f"{onto_pes}#hasCalculation",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    onto_pes + "#hasInputAtomIds",
+                    f"{onto_pes}#hasInputAtomIds",
                     "Data Property",
-                    pes_pref + "ScanPoint_" + calc_id + "_" + str(k + 1),
+                    f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
                     "",
                     data[SCAN_ATOM_IDS],
                     "String",
@@ -249,9 +249,9 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
 
             spamwriter.writerow(
                 [
-                    pes_pref + "ScanCoordinateValue_" + calc_id + "_" + str(k + 1),
+                    f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
                     "Instance",
-                    onto_pes + "#ScanCoordinateValue",
+                    f"{onto_pes}#ScanCoordinateValue",
                     "",
                     "",
                     "",
@@ -259,19 +259,19 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             )
             spamwriter.writerow(
                 [
-                    pes_pref + "ScanPoint_" + calc_id + "_" + str(k + 1),
+                    f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
                     "Instance",
-                    pes_pref + "ScanCoordinateValue_" + calc_id + "_" + str(k + 1),
-                    onto_pes + "#hasScanCoordinateValue",
+                    f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
+                    f"{onto_pes}#hasScanCoordinateValue",
                     "",
                     "",
                 ]
             )
             spamwriter.writerow(
                 [
-                    gain_pref + "hasValue",
+                    f"{gain_pref}hasValue",
                     "Data Property",
-                    pes_pref + "ScanCoordinateValue_" + calc_id + "_" + str(k + 1),
+                    f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
                     "",
                     data[SCAN_COORDINATE_VALUE][k],
                     "String",
@@ -280,10 +280,10 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             if data[SCAN_COORDINATE_UNIT] == "Angstrom":
                 spamwriter.writerow(
                     [
-                        pes_pref + "ScanCoordinateValue_" + calc_id + "_" + str(k + 1),
+                        f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
                         "Instance",
-                        unit_pref + "unit#Angstrom",
-                        gain_pref + "hasUnit",
+                        f"{unit_pref}unit#Angstrom",
+                        f"{gain_pref}hasUnit",
                         "",
                         "",
                     ]
@@ -292,10 +292,10 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             elif data[SCAN_COORDINATE_UNIT] == "Degrees":
                 spamwriter.writerow(
                     [
-                        pes_pref + "ScanCoordinateValue_" + calc_id + "_" + str(k + 1),
+                        f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
                         "Instance",
-                        unit_pref + "unit#DegreeAngle",
-                        gain_pref + "hasUnit",
+                        f"{unit_pref}unit#DegreeAngle",
+                        f"{gain_pref}hasUnit",
                         "",
                         "",
                     ]
