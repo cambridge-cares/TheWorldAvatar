@@ -1,4 +1,6 @@
+from chemistry_and_robots.data_model.ontohplc import HPLCMethod
 from chemistry_and_robots.data_model.ontovapourtec import AutoSampler
+from chemistry_and_robots.hardware import hplc
 from chemistry_and_robots.kg_operations import sparql_client
 from testcontainers.core.container import DockerContainer
 from rdflib import Graph
@@ -80,6 +82,11 @@ class TargetIRIs(Enum):
     RXN_EXP_5_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2, RXN_EXP_QUEUE_3, RXN_EXP_QUEUE_4]
     RXN_EXP_6_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2, RXN_EXP_QUEUE_3, RXN_EXP_QUEUE_4]
     RXN_EXP_7_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2, RXN_EXP_QUEUE_3, RXN_EXP_QUEUE_4]
+    HPLCMETHOD_DUMMY_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy'
+    PHASECOMPONENT_INTERNAL_STANDARD_IRI = 'https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_InternalStandard'
+    ONTOSPECIES_INTERNAL_STANDARD_IRI = 'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'
+    MOLARITY_INTERNAL_STANDARD = 0.02
+    HPLCReport_DUMMY_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCReport_Dummy'
 
 # The (scope="module") is added to make the initialisation only run once for the whole python module so it saves time
 @pytest.fixture(scope="module")
@@ -315,6 +322,39 @@ def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, chem_rxn_iri, re
     assert dict_catalyst == catalyst
     dict_solvent = {solvent.instance_iri:solvent.hasUniqueSpecies for solvent in chem_rxn.hasSolvent}
     assert dict_solvent == solvent
+
+def test_get_raw_hplc_report_path_and_extension():
+    # TODO implement this test case once the file server is working
+    pass
+
+def test_get_internal_standard(initialise_triples):
+    sparql_client = initialise_triples
+    internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
+    assert internal_standard.instance_iri == TargetIRIs.PHASECOMPONENT_INTERNAL_STANDARD_IRI.value
+    assert internal_standard.representsOccurenceOf == TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value
+    assert internal_standard.hasProperty.hasValue.numericalValue == TargetIRIs.MOLARITY_INTERNAL_STANDARD.value
+
+def test_get_hplc_method(initialise_triples):
+    sparql_client = initialise_triples
+    hplc_method = sparql_client.get_hplc_method(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
+    internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
+    assert hplc_method.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
+    assert hplc_method.usesInternalStandard == internal_standard
+    assert all(rf.refersToSpecies is not None for rf in hplc_method.hasResponseFactor)
+    assert all(rt.refersToSpecies is not None for rt in hplc_method.hasRetentionTime)
+
+def test_get_hplc_method_given_hplc_report(initialise_triples):
+    sparql_client = initialise_triples
+    hplc_method = sparql_client.get_hplc_method_given_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
+    assert hplc_method.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
+    assert hplc_method.usesInternalStandard == internal_standard
+    assert all(rf.refersToSpecies is not None for rf in hplc_method.hasResponseFactor)
+    assert all(rt.refersToSpecies is not None for rt in hplc_method.hasRetentionTime)
+
+def test_get_hplc_report(initialise_triples):
+    # TODO implement this test case once
+    pass
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer

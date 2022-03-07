@@ -24,6 +24,7 @@
 @prefix exp5:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/> .
 @prefix ontorxn:        <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#> .
 @prefix ChemRxn:        <https://www.example.com/triplestore/ontorxn/ChemRxn_1/> .
+@prefix SinglePhase:    <https://www.example.com/triplestore/ontorxn/SinglePhase/> .
 
 ################################################################
 ## ReactionExperiment done in the dummy Vapourtec R4 Reactors ##
@@ -76,7 +77,263 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 :HPLC_Dummy # TODO
     a ontohplc:HPLC;
     ontohplc:localReportDirectory "C:\\CHEM32"^^xsd:string;
-    ontohplc:reportExtension "xls"^^xsd:string;
+    ontohplc:reportExtension <http://dbpedia.org/resource/Microsoft_Excel>;
+    ontohplc:hasJob :HPLCJob_Dummy;
+.
+
+:HPLCJob_Dummy
+    a ontohplc:HPLCJob;
+    ontohplc:hasReport :HPLCReport_Dummy;
+    ontohplc:usesMethod :HPLCMethod_Dummy;
+.
+
+:HPLCReport_Dummy
+    a ontohplc:HPLCReport;
+    # TODO complete information
+.
+
+:HPLCMethod_Dummy
+# all data in this field are made-up
+    a ontohplc:HPLCMethod;
+    ontohplc:hasResponseFactor :ResponseFactor_1;
+    ontohplc:hasRetentionTime :RetentionTime_1;
+    ontohplc:hasResponseFactor :ResponseFactor_2;
+    ontohplc:hasRetentionTime :RetentionTime_2;
+    ontohplc:hasResponseFactor :ResponseFactor_3;
+    ontohplc:hasRetentionTime :RetentionTime_3;
+    ontohplc:hasResponseFactor :ResponseFactor_4;
+    ontohplc:hasRetentionTime :RetentionTime_4;
+    ontohplc:hasResponseFactor :ResponseFactor_5;
+    ontohplc:hasRetentionTime :RetentionTime_5;
+    ontohplc:hasResponseFactor :ResponseFactor_6;
+    ontohplc:hasRetentionTime :RetentionTime_6;
+    ontohplc:hasResponseFactor :ResponseFactor_7;
+    ontohplc:hasRetentionTime :RetentionTime_7;
+    ontohplc:hasResponseFactor :ResponseFactor_8;
+    ontohplc:hasRetentionTime :RetentionTime_8;
+    ontohplc:usesInternalStandard SinglePhase:PhaseComponent_InternalStandard;
+    rdfs:comment "HPLCMethod records the operation details of an HPLC job, e.g. HPLC analysis was performed using a XXX system equipped with a XXX pump, XXX column and XXX variable wavelength detector (VWD)... https://doi.org/10.1002/cmtd.202000044"^^xsd:string;
+.
+
+## Internal Standard instances TODO: move these triples to rxn_data.ttl
+# note that this should also be added to the ChemicalReaction and also the AutoSampler solution part
+SinglePhase:PhaseComponent_InternalStandard
+    rdf:type ontohplc:InternalStandard;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_InternalStandard_Property_1;
+.
+
+SinglePhase:PhaseComponent_InternalStandard_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.02"^^xsd:double;
+.
+
+# RetTime	Area
+# 0.55	3000
+# 1.55	15000
+# 2.55	3400
+# 3.55	120
+# 4.55	20
+# 5.55	900
+# 6.55	150
+# 7.55  100
+
+:ResponseFactor_1 # reactant benzaldehyde
+    a ontohplc:ResponseFactor;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    om:hasValue :ResponseFactor_1_value;
+.
+
+:ResponseFactor_1_value
+    a om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "10"^^xsd:double;
+.
+
+:RetentionTime_1
+    a ontohplc:RetentionTime;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    om:hasValue :RetentionTime_1_value;
+.
+
+:RetentionTime_1_value
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "0.55"^^xsd:double;
+.
+
+:ResponseFactor_2 # product benzalacetone
+    a ontohplc:ResponseFactor;
+    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_637759;
+    om:hasValue :ResponseFactor_2_value;
+.
+
+:ResponseFactor_2_value
+    a om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "100"^^xsd:double;
+.
+
+:RetentionTime_2
+    a ontohplc:RetentionTime;
+    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_637759;
+    om:hasValue :RetentionTime_2_value;
+.
+
+:RetentionTime_2_value
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "1.55"^^xsd:double;
+.
+
+:ResponseFactor_3 # reactant acetone
+    a ontohplc:ResponseFactor;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+    om:hasValue :ResponseFactor_3_value;
+.
+
+:ResponseFactor_3_value
+    a om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "25"^^xsd:double;
+.
+
+:RetentionTime_3
+    a ontohplc:RetentionTime;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+    om:hasValue :RetentionTime_3_value;
+.
+
+:RetentionTime_3_value
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "2.56"^^xsd:double;
+.
+
+:ResponseFactor_4 # internal standard
+    a ontohplc:ResponseFactor;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    om:hasValue :ResponseFactor_4_value;
+.
+
+:ResponseFactor_4_value
+    a om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1"^^xsd:double;
+.
+
+:RetentionTime_4
+    a ontohplc:RetentionTime;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    om:hasValue :RetentionTime_4_value;
+.
+
+:RetentionTime_4_value
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "3.62"^^xsd:double;
+.
+
+:ResponseFactor_5 # impurity dibenzylideneacetone
+    a ontohplc:ResponseFactor;
+    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_640180;
+    om:hasValue :ResponseFactor_5_value;
+.
+
+:ResponseFactor_5_value
+    a om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "50"^^xsd:double;
+.
+
+:RetentionTime_5
+    a ontohplc:RetentionTime;
+    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_640180;
+    om:hasValue :RetentionTime_5_value;
+.
+
+:RetentionTime_5_value
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "4.55"^^xsd:double;
+.
+
+:ResponseFactor_6 # catalyst NaOH
+    a ontohplc:ResponseFactor;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+    om:hasValue :ResponseFactor_6_value;
+.
+
+:ResponseFactor_6_value
+    a om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "40"^^xsd:double;
+.
+
+:RetentionTime_6
+    a ontohplc:RetentionTime;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+    om:hasValue :RetentionTime_6_value;
+.
+
+:RetentionTime_6_value
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "5.60"^^xsd:double;
+.
+
+:ResponseFactor_7 # solvent acetonitrile
+    a ontohplc:ResponseFactor;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    om:hasValue :ResponseFactor_7_value;
+.
+
+:ResponseFactor_7_value
+    a om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "30"^^xsd:double;
+.
+
+:RetentionTime_7
+    a ontohplc:RetentionTime;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    om:hasValue :RetentionTime_7_value;
+.
+
+:RetentionTime_7_value
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "6.49"^^xsd:double;
+.
+
+:ResponseFactor_8 # solvent ethanol
+    a ontohplc:ResponseFactor;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+    om:hasValue :ResponseFactor_8_value;
+.
+
+:ResponseFactor_8_value
+    a om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "20"^^xsd:double;
+.
+
+:RetentionTime_8
+    a ontohplc:RetentionTime;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+    om:hasValue :RetentionTime_8_value;
+.
+
+:RetentionTime_8_value
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "7.5"^^xsd:double;
 .
 
 #################

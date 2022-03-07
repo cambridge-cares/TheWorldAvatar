@@ -2,6 +2,7 @@
 # to interact with the knowledge graph
 #============================================================
 from typing import Tuple
+from urllib import response
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
 import pandas as pd
@@ -15,6 +16,7 @@ from pyasyncagent.kg_operations import PySparqlClient
 from pyasyncagent.data_model import *
 
 from chemistry_and_robots.data_model import *
+from chemistry_and_robots.hardware import hplc
 
 import logging
 logger = logging.getLogger('chemistry_and_robots_sparql_client')
@@ -444,7 +446,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                             concentration = OntoCAPE_Molarity(instance_iri=r['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
                         else:
                             # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
-                            pass
+                            raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['concentration_type'])
                         list_phase_component_concentration.append(concentration)
                     else:
                         raise Exception("Concentration is not defined for")
@@ -1230,6 +1232,205 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def write_hplc_report_path_to_kg(self, hplc_report: HPLCReport):
         update = """INSERT DATA {<%s> <%s> <%s>}""" % (hplc_report.instance_iri, ONTOHPLC_HASREPORTPATH, hplc_report.hasReportPath)
         self.performUpdate(update)
+
+    def get_raw_hplc_report_path_and_extension(self, hplc_report_iri: str) -> Tuple[str, str]:
+        hplc_report_iri = trimIRI(hplc_report_iri)
+        query = """SELECT ?path ?extension WHERE {<%s> <%s> ?path . ?hplc <%s>/<%s> <%s> . ?hplc <%s> ?extension .}""" % (
+            hplc_report_iri, ONTOHPLC_HASREPORTPATH, ONTOHPLC_HASJOB, ONTOHPLC_HASREPORT, hplc_report_iri, ONTOHPLC_REPORTEXTENSION)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple matches for filepath and extension for raw HPLC report <%s> was found: %s" % (hplc_report_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No raw HPLC report found for <%s>" % hplc_report_iri)
+        else:
+            res = response[0]
+        return res['path'], res['extension']
+
+    def get_matching_species_from_hplc_results(self, retention_time: RetentionTime, hplc_method: HPLCMethod) -> str:
+        # TODO here we took a shortcut, but in theory unit should also be checked - unit conversion is a generic problem that needs to be solved...
+        hplc_rt = {rt.refersToSpecies:rt.hasValue.hasNumericalValue for rt in hplc_method.hasRetentionTime}
+        rt_diff = {key: abs(hplc_rt[key] - retention_time.hasValue.hasNumericalValue) for key in hplc_rt}
+        key_min_rt_diff = min(rt_diff, key=rt_diff.get)
+        if rt_diff.get(key_min_rt_diff) < hplc.RETENTION_TIME_MATCH_THRESHOLD:
+            return key_min_rt_diff
+        else:
+            raise Exception("No OntoSpecies:Species identified for OntoHPLC:RetentionTime instance (%s) given RETENTION_TIME_MATCH_THRESHOLD of %s and OntoHPLC:HPLCMethod (%s)" % (
+                retention_time, hplc.RETENTION_TIME_MATCH_THRESHOLD, hplc_method))
+
+    def get_internal_standard(self, hplc_method_iri: str) -> InternalStandard:
+        hplc_method_iri = trimIRI(hplc_method_iri)
+        query = PREFIX_RDF+"""SELECT ?is ?species ?property ?property_type ?value ?unit ?num_val
+                   WHERE {
+                       VALUES ?type {<%s>}.
+                       <%s> <%s> ?is.
+                       ?is rdf:type ?type; <%s> ?species; <%s> ?property.
+                       ?property rdf:type ?property_type; <%s> ?value.
+                       ?value <%s> ?unit; <%s> ?num_val.
+                   }""" % (ONTOHPLC_INTERNALSTANDARD, hplc_method_iri, ONTOHPLC_USESINTERNALSTANDARD,
+                ONTOCAPE_REPRESENTSOCCURENCEOF, ONTOCAPE_HASPROPERTY, ONTOCAPE_HASVALUE, ONTOCAPE_HASUNITOFMEASURE, ONTOCAPE_NUMERICALVALUE)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise NotImplementedError("Multiple instances of InternalStandard (%s) are identified for HPLCMethod <%s>, this is NOT support yet." % (
+                str(response), hplc_method_iri))
+        elif len(response) < 1:
+            raise Exception("InternalStandard NOT found for HPLCMethod <%s>" % hplc_method_iri)
+        else:
+            r = response[0]
+
+        if r['property_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
+            concentration = OntoCAPE_Molarity(instance_iri=r['property'],
+                hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
+        else:
+            # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+            raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['property_type'])
+        internal_standard = InternalStandard(
+            instance_iri=r['is'],
+            hasProperty=concentration,
+            representsOccurenceOf=r['species']
+        )
+        return internal_standard
+
+    def get_hplc_method_given_hplc_report(self, hplc_report_iri: str) -> HPLCMethod:
+        hplc_report_iri = trimIRI(hplc_report_iri)
+        query = PREFIX_RDF+"""SELECT ?hplc_method WHERE {?hplc_job rdf:type <%s>; <%s> <%s>; <%s> ?hplc_method}""" % (
+            ONTOHPLC_HPLCJOB, ONTOHPLC_HASREPORT, hplc_report_iri, ONTOHPLC_USESMETHOD)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple instances identified for HPLCMethod given HPLCReport <%s>: %s" % (hplc_report_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No record of HPLCMethod found given the HPLCReport <%s>" % hplc_report_iri)
+        else:
+            return self.get_hplc_method(response[0]['hplc_method'])
+
+    def get_hplc_method(self, hplc_method_iri: str) -> HPLCMethod:
+        hplc_method_iri = trimIRI(hplc_method_iri)
+        query = PREFIX_RDF + """SELECT ?type ?r ?species ?measure ?unit ?value
+                   WHERE {
+                       VALUES ?type {<%s> <%s>}.
+                       <%s> <%s>|<%s> ?r.
+                       ?r rdf:type ?type; <%s> ?species; <%s> ?measure.
+                       ?measure <%s> ?unit; <%s> ?value.
+                   }
+                """ % (ONTOHPLC_RESPONSEFACTOR, ONTOHPLC_RETENTIONTIME, hplc_method_iri, ONTOHPLC_HASRESPONSEFACTOR, ONTOHPLC_HASRETENTIONTIME,
+                    ONTOHPLC_REFERSTOSPECIES, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
+
+        response = self.performQuery(query)
+
+        list_rf = [] # list of ResponseFactor
+        list_rt = [] # list of RetentionTime
+        for res in response:
+            if res['type'] == ONTOHPLC_RESPONSEFACTOR:
+                rf = ResponseFactor(
+                    instance_iri=res['r'],
+                    hasValue=OM_Measure(
+                        instance_iri=res['measure'],
+                        hasUnit=res['unit'],
+                        hasNumericalValue=res['value']
+                    ),
+                    refersToSpecies=res['species']
+                )
+                list_rf.append(rf)
+            elif res['type'] == ONTOHPLC_RETENTIONTIME:
+                rt = RetentionTime(
+                    instance_iri=res['r'],
+                    hasValue=OM_Measure(
+                        instance_iri=res['measure'],
+                        hasUnit=res['unit'],
+                        hasNumericalValue=res['value']
+                    ),
+                    refersToSpecies=res['species']
+                )
+                list_rt.append(rt)
+
+        comment = self.performQuery(PREFIX_RDFS+"SELECT ?comment WHERE {<%s> rdfs:comment ?comment}" % hplc_method_iri)[0]['comment']
+        hplc_method = HPLCMethod(
+            instance_iri=hplc_method_iri,
+            hasResponseFactor=list_rf,
+            hasRetentionTime=list_rt,
+            usesInternalStandard=self.get_internal_standard(hplc_method_iri),
+            rdfs_comment=comment
+        )
+        return hplc_method
+
+    def get_hplc_report(self, hplc_report_iri: str) -> HPLCReport:
+        hplc_report_path, hplc_report_extension = self.get_raw_hplc_report_path_and_extension(hplc_report_iri)
+        # retrieve a list of points
+        list_points = hplc.process_raw_hplc_report_file(file_path=hplc_report_path, filename_extension=hplc_report_extension)
+
+        # get the instance of HPLCMethod
+        hplc_method = self.get_hplc_method_given_hplc_report(hplc_report_iri)
+
+        # map them to chromatogram point (qury phase component based on hplc method, and hplc)
+        list_concentration = []
+        list_phase_component = []
+        for pt in list_points:
+            # generate phase component
+            ontospecies_species = self.get_matching_species_from_hplc_results(pt.get(ONTOHPLC_RETENTIONTIME), hplc_method)
+            concentration = OntoCAPE_Molarity(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(hplc_report_iri),
+                hasValue=OntoCAPE_ScalarValue(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=getNameSpace(hplc_report_iri),
+                    # hasUnitOfMeasure=, # TODO
+                    # numericalValue= # TODO
+                )
+            )
+            phase_component = OntoCAPE_PhaseComponent(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(hplc_report_iri),
+                hasProperty=concentration,
+                representsOccurenceOf=ontospecies_species
+            )
+
+            chrom_pt = ChromatogramPoint(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(hplc_report_iri),
+                indicatesComponent=phase_component,
+                hasPeakArea=pt.get(ONTOHPLC_PEAKAREA),
+                atRetentionTime=pt.get(ONTOHPLC_RETENTIONTIME)
+            )
+            list_concentration.append(concentration)
+            list_phase_component.append(phase_component)
+
+        composition = OntoCAPE_Composition(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=getNameSpace(hplc_report_iri),
+            comprisesDirectly=list_concentration
+        )
+
+        # create output chemical instance
+        # generate instance_iri for output_chemical (so that it can be used in OntoCAPE_SinglePhase)
+        output_chemical_iri = initialiseInstanceIRI(getNameSpace(hplc_report_iri), ONTORXN_OUTPUTCHEMICAL)
+        output_chemical = OutputChemical(
+            instance_iri=output_chemical_iri,
+            thermodynamicBehaviour=OntoCAPE_SinglePhase(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(hplc_report_iri),
+                hasStateOfAggregation=OntoCAPE_liquid,
+                isComposedOfSubsystem=list_phase_component,
+                has_composition=composition,
+                representsThermodynamicBehaviorOf=output_chemical_iri
+            )
+        )
+
+        # create chemical solution instance
+        # chemical_solution = ChemicalSolution(
+        #     instance_iri="",
+        #     refersToMaterial=output_chemical,
+        #     fills=
+        # )
+
+        # generate hplc report instance
+        # hplc_report_instance = HPLCReport(
+        #     instance_iri=hplc_report_iri,
+        #     hasReportPath=,
+        #     records=,
+        #     generatedFor=
+        # )
+
+        # TODO think about when do we write these triples back to the knowledge graph
+        return #hplc_report_instance
 
     #######################################################
     ## Some utility functions handling the list and dict ##

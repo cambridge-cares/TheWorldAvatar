@@ -925,6 +925,12 @@ ChemRxn:Species_7
     skos:altLabel "ethanol"^^xsd:string;
 .
 
+<http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>
+    OntoSpecies:pubChemCID "931"^^xsd:string;
+    rdfs:label "C10H8"^^xsd:string;
+    skos:altLabel "naphthalene"^^xsd:string;
+.
+
 ##############################
 ## Chemical phase instances ##
 ##############################

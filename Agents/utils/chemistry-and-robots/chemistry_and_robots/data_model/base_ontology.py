@@ -16,6 +16,7 @@ ONTODERIVATION_ISDERIVEDUSING = ONTODERIVATION + 'isDerivedUsing'
 ONTODERIVATION_HASSTATUS = ONTODERIVATION + 'hasStatus'
 DOEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__DoE#Service'
 EXEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service'
+OM_MINUTETIME = UNITS_OF_MEASURE + 'minute-Time'
 
 class InstanceIRIInitialisationError(Exception):
     instance_iri_missing = """IRI of instance_iri is missing, please put it as pyasyncagent.data_model.utils.INSTANCE_IRI_TO_BE_INITIALISED \
@@ -145,3 +146,9 @@ class OM_Length(OM_Quantity):
 
 class OM_CelsiusTemperature(OM_Quantity):
     clz: str = OM_CELSIUSTEMPERATURE
+
+class OM_Duration(OM_Quantity):
+    clz: str = OM_DURATION
+
+class OM_QuantityOfDimensionOne(OM_Quantity):
+    clz: str = OM_QUANTITYOFDIMENSIONONE
