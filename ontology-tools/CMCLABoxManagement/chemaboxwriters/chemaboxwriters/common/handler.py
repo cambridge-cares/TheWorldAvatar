@@ -66,19 +66,20 @@ class Handler(ABC):
             ) in self._required_endpoints_config.items():
                 config_group = self._endpoints_config.get(req_config_group)
                 if config_group is None:
-                    app_exceptions.MissingHandlerConfig(
+                    raise app_exceptions.MissingHandlerConfig(
                         (
-                            f"The required '{config_group}' configuration is missing "
-                            f"for the {self.name} handler."
+                            f"The required '{req_config_group}' configuration "
+                            f"is missing for the {self.name} handler."
                         )
                     )
                 else:
                     for req_key in req_config_keys:
                         if req_key not in config_group:
-                            app_exceptions.MissingHandlerConfig(
+                            raise app_exceptions.MissingHandlerConfig(
                                 (
-                                    f"The required '{req_key}' configuration is "
-                                    f" missing for the {self.name} handler."
+                                    f"The required '{req_config_group}:{req_key}' "
+                                    f"configuration is missing for the {self.name} "
+                                    "handler."
                                 )
                             )
 
