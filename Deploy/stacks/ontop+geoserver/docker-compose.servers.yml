@@ -61,6 +61,22 @@ services:
       - geotifs:${GEOTIF_DIR}
       - postgis_data:/var/lib/postgresql/data
 
+  geoserver:
+    image: geosolutionsit/geoserver:${GEOSERVER_VERSION}
+    container_name: "geoserver"
+    env_file:
+      - geoserver/geoserver.env
+    ports:
+      - ${GEOSERVER_PORT}:8080
+    volumes:
+      - geotifs:/${GEOTIF_DIR}
+      - geoserver_datadir:${GEOSERVER_DATA_DIR}
+      - geoserver_grib_cache:${GRIB_CACHE_DIR}
+      - geoserver_gwc:${GEOWEBCACHE_CACHE_DIR}
+      - geoserver_gwc_config:${GEOWEBCACHE_CONFIG_DIR}
+      - geoserver_logs:${GEOSERVER_LOG_DIR}
+      - geoserver_netcfd:${NETCDF_DATA_DIR}
+
 # The default network name is set using a docker-compose environment variable.
 # Please don't modify the contents of the 'networks' node below.
 networks:
@@ -68,5 +84,12 @@ networks:
     name: ${NETWORK_NAME}
 
 volumes:
+  blazegraph_data: null
   postgis_data: null
   geotifs: null
+  geoserver_datadir: null
+  geoserver_grib_cache: null
+  geoserver_gwc: null
+  geoserver_gwc_config: null
+  geoserver_logs: null
+  geoserver_netcfd: null

@@ -25,6 +25,7 @@ services:
     env_file:
       - .env
       - postgis/postgres.env
+      - geoserver/geoserver.env
     security_opt:
       - label=disable
     volumes:

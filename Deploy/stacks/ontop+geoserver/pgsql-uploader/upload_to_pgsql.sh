@@ -10,10 +10,53 @@ ensure_unix_line_endings() {
   sed -i 's/\r$//' "${1}"
 }
 
+curl_test(){
+  HTTP_RESPONSE="$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -u "${ADMIN_USER}:${ADMIN_PASSWORD}" "$@")"
+
+  # extract the status
+  HTTP_STATUS=$(echo $HTTP_RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+  # example using the status
+  test $HTTP_STATUS -eq 200
+}
+
+curl_wrapper(){
+  HTTP_RESPONSE="$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -u "${ADMIN_USER}:${ADMIN_PASSWORD}" "$@")"
+
+  # extract the body
+  HTTP_BODY=$(echo $HTTP_RESPONSE | sed -e 's/HTTPSTATUS\:.*//g')
+
+  # extract the status
+  HTTP_STATUS=$(echo $HTTP_RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+  # example using the status
+  if [ $HTTP_STATUS -ge 300 ]; then
+    >&2 echo "Error [HTTP status: $HTTP_STATUS]"
+    # print the body
+    >&2 echo "$HTTP_BODY" | tr -d '\r'
+    exit 1
+  fi
+  
+  # print the body
+  echo "$HTTP_BODY" | tr -d '\r'
+}
+
 create_postgres_database() {
   db=${1}
   # Create the db
   echo "SELECT 'CREATE DATABASE ${db}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${db}')\gexec" | psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -w
+
+  if [ -n ${GEOSERVER_HOST} ]; then
+    if ! curl_test "http://${GEOSERVER_HOST}:${GEOSERVER_PORT}/geoserver/rest/workspaces/${WORKSPACE}" ; then
+      echo "Adding new workspace ..."
+      workspace_name="$(curl_wrapper -X POST -H "content-type: application/json" -d "$(envsubst < geoservertemplates/workspace.json)" "http://${GEOSERVER_HOST}:${GEOSERVER_PORT}/geoserver/rest/workspaces?default=true")"
+      echo "Added workspace '${workspace_name}'"
+    fi
+    if ! curl_test "http://${GEOSERVER_HOST}:${GEOSERVER_PORT}/geoserver/rest/workspaces/${WORKSPACE}/datastores/$DB" ; then
+      curl_wrapper -X POST -H "content-type: application/json" -d "$(envsubst < geoservertemplates/stores/postgres_store.json)" "http://${GEOSERVER_HOST}:${GEOSERVER_PORT}/geoserver/rest/workspaces/${WORKSPACE}/datastores"
+    fi
+  fi
+
 }
 install_postgis_extensions() {
   db=${1}
@@ -283,6 +326,22 @@ for c in "${CONFIG_DIR}"/*.conf; do (
           
           mode=a # Just append the data from subsequent shp files
         done
+
+        if [ -e "${DATA_DIR}/${DATASET_DIR}/${SHP_TABLE}.json" ]; then
+          if ! curl_test "http://${GEOSERVER_HOST}:${GEOSERVER_PORT}/geoserver/rest/workspaces/${WORKSPACE}/datastores/${DB}/featuretypes/${SHP_TABLE}" ; then
+            curl_wrapper -X POST -H "content-type: application/json" -d @"${DATA_DIR}/${DATASET_DIR}/${SHP_TABLE}.json" "http://${GEOSERVER_HOST}:${GEOSERVER_PORT}/geoserver/rest/workspaces/${WORKSPACE}/datastores/${DB}/featuretypes"
+          fi
+          if [ -e "${DATA_DIR}/${DATASET_DIR}/${SHP_TABLE}.sld" ]; then
+            if ! curl_test "http://${GEOSERVER_HOST}:${GEOSERVER_PORT}/geoserver/rest/workspaces/${WORKSPACE}/styles/${SHP_TABLE}.json" ; then
+              echo "Adding style '${SHP_TABLE}' to workspace '${WORKSPACE}' ..."
+              curl_wrapper -X POST -H "content-type: application/vnd.ogc.sld+xml" -d @"${DATA_DIR}/${DATASET_DIR}/${SHP_TABLE}.sld" "http://${GEOSERVER_HOST}:${GEOSERVER_PORT}/geoserver/rest/workspaces/${WORKSPACE}/styles?name=${SHP_TABLE}"
+              echo "Added style '${SHP_TABLE}' to workspace '${WORKSPACE}'"
+            fi
+            echo "Adding style to layer '${SHP_TABLE}' ..."
+            style_name="$(curl_wrapper -X POST -H "content-type: application/json" -d "$(export STYLE="${SHP_TABLE}" && envsubst < geoservertemplates/layers/styleconfig.json)" "http://${GEOSERVER_HOST}:${GEOSERVER_PORT}/geoserver/rest/layers/${WORKSPACE}:${SHP_TABLE}/styles?default=true")"
+            echo "Added style '${SHP_TABLE}' to layer '${SHP_TABLE}'"
+          fi
+        fi
 
       else
         echo No .shp files found.
