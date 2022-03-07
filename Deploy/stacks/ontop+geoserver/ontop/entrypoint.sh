@@ -29,7 +29,7 @@ sed -e "s/POSTGRES_HOST/$POSTGRES_HOST/" \
     > $ONTOP_PROPERTIES_FILE
 
 # Run ontop, waiting for the postgis server to start first
-/opt/ontop-setup/wait-for-it.sh ${POSTGRES_HOST}:${POSTGRES_PORT} \
+/opt/ontop/wait-for-it.sh ${POSTGRES_HOST}:${POSTGRES_PORT} \
                                 --timeout=0 \
                                 --strict \
                                 -- \

@@ -21,7 +21,7 @@ COPY --from=jar_fetcher \
      /root/.m2/repository/org/postgresql/postgresql/${ONTOP_POSTGRES_VERSION}/postgresql-${ONTOP_POSTGRES_VERSION}.jar \
      /opt/ontop/jdbc/
 
-COPY wait-for-it.sh transform_obda.sh /opt/ontop-setup/
+COPY wait-for-it.sh transform_obda.sh ontop.properties.template /opt/ontop/
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
