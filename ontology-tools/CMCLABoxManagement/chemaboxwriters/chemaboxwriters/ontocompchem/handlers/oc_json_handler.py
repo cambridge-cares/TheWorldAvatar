@@ -1,5 +1,4 @@
 import json
-import csv
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
@@ -8,6 +7,8 @@ from typing import List, Optional, Dict
 import chemaboxwriters.common.endpoints_proxy as endp
 import chemaboxwriters.common.aboxconfig as abconf
 from enum import Enum
+
+Abox_Writer = utilsfunc.Abox_csv_writer
 
 
 class OC_JSON_TO_OC_CSV_Handler(Handler):
@@ -76,32 +77,25 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         calc_id = data[globals.ENTRY_UUID]
         entryIRI = data[globals.ENTRY_IRI]
 
-        with open(output_file_path, "w", newline="") as csvfile:
+        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as aboxwriter:
+            aboxwriter.write_header()
 
-            spamwriter = csv.writer(
-                csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
-            )
+            self._write_initial(aboxwriter, entryIRI, calc_id, spec_IRI)
+            self._write_mols(aboxwriter, calc_id, data)
+            self._write_level_of_theory(aboxwriter, calc_id, data)
+            self._write_name(aboxwriter, calc_id, data)
+            self._write_frequencies(aboxwriter, entryIRI, calc_id, data)
+            self._write_rotations(aboxwriter, entryIRI, calc_id, data)
+            self._write_geom_type(aboxwriter, entryIRI, calc_id, data)
+            self._write_zpe(aboxwriter, entryIRI, calc_id, data)
+            self._write_scf(aboxwriter, entryIRI, calc_id, data)
+            self._write_occ(aboxwriter, entryIRI, calc_id, data)
+            self._write_virt(aboxwriter, entryIRI, calc_id, data)
+            self._write_geom_opt(aboxwriter, entryIRI, calc_id, data)
+            self._write_atom_info(aboxwriter, calc_id, data)
+            self._write_metadata(aboxwriter, calc_id, data)
 
-            spamwriter.writerow(
-                ["Source", "Type", "Target", "Relation", "Value", "Data Type"]
-            )
-
-            self._write_initial(spamwriter, entryIRI, calc_id, spec_IRI)
-            self._write_mols(spamwriter, calc_id, data)
-            self._write_level_of_theory(spamwriter, calc_id, data)
-            self._write_name(spamwriter, calc_id, data)
-            self._write_frequencies(spamwriter, entryIRI, calc_id, data)
-            self._write_rotations(spamwriter, entryIRI, calc_id, data)
-            self._write_geom_type(spamwriter, entryIRI, calc_id, data)
-            self._write_zpe(spamwriter, entryIRI, calc_id, data)
-            self._write_scf(spamwriter, entryIRI, calc_id, data)
-            self._write_occ(spamwriter, entryIRI, calc_id, data)
-            self._write_virt(spamwriter, entryIRI, calc_id, data)
-            self._write_geom_opt(spamwriter, entryIRI, calc_id, data)
-            self._write_atom_info(spamwriter, calc_id, data)
-            self._write_metadata(spamwriter, calc_id, data)
-
-    def _write_initial(self, spamwriter, jobIRI, calc_id, spec_IRI):
+    def _write_initial(self, aboxwriter: Abox_Writer, jobIRI, calc_id, spec_IRI):
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
@@ -110,86 +104,50 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
 
         # This is all the initialization part of the ABox
-        spamwriter.writerow(
-            [
-                "ABoxOntoCompChem",
-                "Ontology",
-                onto_comp,
-                "http://www.w3.org/2002/07/owl#imports",
-                "",
-                "",
-            ]
+        aboxwriter.write_imports(
+            abox_name="ABoxOntoCompChem",
+            importing=onto_comp,
+            relation="http://www.w3.org/2002/07/owl#imports",
         )
-        spamwriter.writerow(
-            ["ABoxOntoCompChem", "Ontology", comp_pref[:-1], "base", "", ""]
+        aboxwriter.write_imports(
+            abox_name="ABoxOntoCompChem", importing=comp_pref[:-1], relation="base"
         )
-        spamwriter.writerow([jobIRI, "Instance", onto_comp + "#G09", "", "", ""])
+        aboxwriter.write_instance(inst_iri=jobIRI, inst_class=onto_comp + "#G09")
         if spec_IRI:  # If you have the ontospecies IRI, it puts it here.
             # Otherwise, it leaves it out.
-            spamwriter.writerow([spec_IRI, "Instance", inst_spec, "", "", ""])
-            spamwriter.writerow([jobIRI, "Instance", spec_IRI, has_spec, "", ""])
-        spamwriter.writerow(
-            [
-                f"{comp_pref}InitializationModule_{calc_id}",
-                "Instance",
-                f"{onto_comp}#InitializationModule",
-                "",
-                "",
-                "",
-            ]
+            aboxwriter.write_instance(inst_iri=spec_IRI, inst_class=inst_spec)
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI, trg_inst_iri=spec_IRI, relation=has_spec
+            )
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
+            inst_class=f"{onto_comp}#InitializationModule",
         )  # Sets up initialization.
-        spamwriter.writerow(
-            [
-                jobIRI,
-                "Instance",
-                f"{comp_pref}InitializationModule_{calc_id}",
-                f"{onto_comp}#hasInitialization",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=jobIRI,
+            trg_inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
+            relation=f"{onto_comp}#hasInitialization",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-                "Instance",
-                f"{gain_pref}SourcePackage",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            inst_class=f"{gain_pref}SourcePackage",
         )
-        spamwriter.writerow(
-            [
-                jobIRI,
-                "Instance",
-                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-                f"{onto_comp}#hasEnvironment",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=jobIRI,
+            trg_inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            relation=f"{onto_comp}#hasEnvironment",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}MoleculeProperty_{calc_id}",
-                "Instance",
-                f"{gain_pref}MoleculeProperty",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}MoleculeProperty_{calc_id}",
+            inst_class=f"{gain_pref}MoleculeProperty",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}InitializationModule_{calc_id}",
-                "Instance",
-                f"{comp_pref}MoleculeProperty_{calc_id}",
-                f"{gain_pref}hasMoleculeProperty",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
+            trg_inst_iri=f"{comp_pref}MoleculeProperty_{calc_id}",
+            relation=f"{gain_pref}hasMoleculeProperty",
         )
 
-    def _write_mols(self, spamwriter, calc_id, data):
+    def _write_mols(self, aboxwriter: Abox_Writer, calc_id, data):
         # This section starts the representation of the molecule, namely dividing
         # the species into sub-molecules that contain the different atom types.
         # This will hopefully be changed by an update in OntoCompChem later.
@@ -210,78 +168,39 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             atom = at_count[k][0]
             count = str(float(at_count[k][1]))
 
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
-                    "Instance",
-                    f"{gain_pref}Molecule",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
+                inst_class=f"{gain_pref}Molecule",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}MoleculeProperty_{calc_id}_{atom}{count}",
-                    "Instance",
-                    f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
-                    f"{gain_pref}hasMolecule",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}MoleculeProperty_{calc_id}_{atom}{count}",
+                trg_inst_iri=f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
+                relation=f"{gain_pref}hasMolecule",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                    "Instance",
-                    f"{gain_pref}Atom",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                inst_class=f"{gain_pref}Atom",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
-                    "Instance",
-                    f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                    f"{gain_pref}hasAtom",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
+                trg_inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                relation=f"{gain_pref}hasAtom",
             )
-            spamwriter.writerow(
-                [
-                    f"{table_pref}#{atom}",
-                    "Instance",
-                    f"{table_pref}#Element",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{table_pref}#{atom}", inst_class=f"{table_pref}#Element"
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                    "Instance",
-                    f"{table_pref}#{atom}",
-                    f"{gain_pref}isElement",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                trg_inst_iri=f"{table_pref}#{atom}",
+                relation=f"{gain_pref}isElement",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasNumberOfAtoms",
-                    "Data Property",
-                    f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                    "",
-                    at_count[k][1],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                relation=f"{gain_pref}hasNumberOfAtoms",
+                value=at_count[k][1],
             )
 
-    def _write_level_of_theory(self, spamwriter, calc_id, data):
+    def _write_level_of_theory(self, aboxwriter: Abox_Writer, calc_id, data):
         # This section writes the information related to the level
         # of theory for the ABox (method and basis set).
 
@@ -289,96 +208,53 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
         onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
 
-        spamwriter.writerow(
-            [
-                f"{comp_pref}LevelOfTheory_{calc_id}",
-                "Instance",
-                f"{onto_comp}#LevelOfTheory",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}LevelOfTheory_{calc_id}",
+            inst_class=f"{onto_comp}#LevelOfTheory",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}MethodologyFeature_{calc_id}_LevelofTheoryParameter",
-                "Instance",
-                f"{gain_pref}MethodologyFeature",
-                "",
-                "",
-                "",
-            ]
+        lvl_theory = "LevelofTheoryParameter"
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}MethodologyFeature_{calc_id}_{lvl_theory}",
+            inst_class=f"{gain_pref}MethodologyFeature",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}InitializationModule_{calc_id}",
-                "Instance",
-                f"{comp_pref}MethodologyFeature_{calc_id}_LevelofTheoryParameter",
-                f"{gain_pref}hasParameter",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
+            trg_inst_iri=f"{comp_pref}MethodologyFeature_{calc_id}_{lvl_theory}",
+            relation=f"{gain_pref}hasParameter",
         )
-        spamwriter.writerow(
-            [
-                f"{onto_comp}#hasLevelOfTheory",
-                "Data Property",
-                f"{comp_pref}MethodologyFeature_{calc_id}_LevelofTheoryParameter",
-                "",
-                data["Method"],
-                "",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=f"{comp_pref}MethodologyFeature_{calc_id}_{lvl_theory}",
+            relation=f"{onto_comp}#hasLevelOfTheory",
+            value=data["Method"],
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}BasisSet_{calc_id}",
-                "Instance",
-                f"{gain_pref}BasisSet",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}BasisSet_{calc_id}", inst_class=f"{gain_pref}BasisSet"
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}InitializationModule_{calc_id}",
-                "Instance",
-                f"{comp_pref}BasisSet_{calc_id}",
-                f"{gain_pref}hasParameter",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
+            trg_inst_iri=f"{comp_pref}BasisSet_{calc_id}",
+            relation=f"{gain_pref}hasParameter",
         )
-        spamwriter.writerow(
-            [
-                f"{gain_pref}hasBasisSet",
-                "Data Property",
-                f"{comp_pref}BasisSet_{calc_id}",
-                "",
-                f'"{data["Basis set"]}"',
-                "",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=f"{comp_pref}BasisSet_{calc_id}",
+            relation=f"{gain_pref}hasBasisSet",
+            value=f'"{data["Basis set"]}"',
         )  # Note that the string formatting is used to escape the ',' in basis sets.
 
-    def _write_name(self, spamwriter, calc_id, data):
+    def _write_name(self, aboxwriter: Abox_Writer, calc_id, data):
         # This writes the name of the species, taken as the formula,
         # but with extraneous 1s removed.
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
 
-        spamwriter.writerow(
-            [
-                f"{gain_pref}hasName",
-                "Data Property",
-                f"{comp_pref}MoleculeProperty_{calc_id}",
-                "",
-                utilsfunc.formula_clean_re.sub("", data["Empirical formula"]),
-                "",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=f"{comp_pref}MoleculeProperty_{calc_id}",
+            relation=f"{gain_pref}hasName",
+            value=utilsfunc.formula_clean_re.sub("", data["Empirical formula"]),
         )
 
-    def _write_frequencies(self, spamwriter, jobIRI, calc_id, data):
+    def _write_frequencies(self, aboxwriter, jobIRI, calc_id, data):
         # This section writes the vibrations to the ABox (if they exist).
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
@@ -387,88 +263,44 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "Frequencies" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}VibrationalAnalysis_{calc_id}",
-                    "Instance",
-                    f"{gain_pref}VibrationalAnalysis",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}VibrationalAnalysis_{calc_id}",
+                inst_class=f"{gain_pref}VibrationalAnalysis",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}VibrationalAnalysis_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}VibrationalAnalysis_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Frequency_{calc_id}",
-                    "Instance",
-                    f"{gain_pref}Frequency",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}Frequency_{calc_id}",
+                inst_class=f"{gain_pref}Frequency",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}VibrationalAnalysis_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}Frequency_{calc_id}",
-                    f"{gain_pref}hasResult",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}VibrationalAnalysis_{calc_id}",
+                trg_inst_iri=f"{comp_pref}Frequency_{calc_id}",
+                relation=f"{gain_pref}hasResult",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_comp}#hasFrequencies",
-                    "Data Property",
-                    f"{comp_pref}Frequency_{calc_id}",
-                    "",
-                    " ".join(str(i) for i in data["Frequencies"]),
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}Frequency_{calc_id}",
+                relation=f"{onto_comp}#hasFrequencies",
+                value=" ".join(str(i) for i in data["Frequencies"]),
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasVibrationCount",
-                    "Data Property",
-                    f"{comp_pref}Frequency_{calc_id}",
-                    "",
-                    data["Frequencies number"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}Frequency_{calc_id}",
+                relation=f"{gain_pref}hasVibrationCount",
+                value=data["Frequencies number"],
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}cm-1",
-                    "Instance",
-                    f"{unit_pref}qudt#FrequencyUnit",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{gain_pref}cm-1", inst_class=f"{unit_pref}qudt#FrequencyUnit"
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Frequency_{calc_id}",
-                    "Instance",
-                    f"{gain_pref}cm-1",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}Frequency_{calc_id}",
+                trg_inst_iri=f"{gain_pref}cm-1",
+                relation=f"{gain_pref}hasUnit",
             )
 
-    def _write_rotations(self, spamwriter, jobIRI, calc_id, data):
+    def _write_rotations(self, aboxwriter, jobIRI, calc_id, data):
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
@@ -484,128 +316,70 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
             unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}RotationalConstants_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#RotationalConstants",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                inst_class=f"{onto_comp}#RotationalConstants",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}RotationalConstants_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_comp}#hasRotationalConstants",
-                    "Data Property",
-                    f"{comp_pref}RotationalConstants_{calc_id}",
-                    "",
-                    " ".join(str(i) for i in data["Rotational constants"]),
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                relation=f"{onto_comp}#hasRotationalConstants",
+                value=" ".join(str(i) for i in data["Rotational constants"]),
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_comp}#hasRotationalConstantsCount",
-                    "Data Property",
-                    f"{comp_pref}RotationalConstants_{calc_id}",
-                    "",
-                    data["Rotational constants number"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                relation=f"{onto_comp}#hasRotationalConstantsCount",
+                value=data["Rotational constants number"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}RotationalConstants_{calc_id}",
-                    "Instance",
-                    f"{unit_pref}unit#GigaHertz",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                trg_inst_iri=f"{unit_pref}unit#GigaHertz",
+                relation=f"{gain_pref}hasUnit",
             )
 
         if "Rotational symmetry number" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}RotationalSymmetry_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#RotationalSymmetry",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}RotationalSymmetry_{calc_id}",
+                inst_class=f"{onto_comp}#RotationalSymmetry",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}RotationalSymmetry_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}RotationalSymmetry_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_comp}#hasRotationalSymmetryNumber",
-                    "Data Property",
-                    f"{comp_pref}RotationalSymmetry_{calc_id}",
-                    "",
-                    int(data["Rotational symmetry number"]),
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}RotationalSymmetry_{calc_id}",
+                relation=f"{onto_comp}#hasRotationalSymmetryNumber",
+                value=int(data["Rotational symmetry number"]),
             )
 
-    def _write_geom_type(self, spamwriter, jobIRI, calc_id, data):
+    def _write_geom_type(self, aboxwriter, jobIRI, calc_id, data):
         # This section writes the geometry type information.
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
         onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
 
-        spamwriter.writerow(
-            [
-                f"{comp_pref}GeometryType_{calc_id}",
-                "Instance",
-                f"{onto_comp}#GeometryType",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}GeometryType_{calc_id}",
+            inst_class=f"{onto_comp}#GeometryType",
         )
-        spamwriter.writerow(
-            [
-                jobIRI,
-                "Instance",
-                f"{comp_pref}GeometryType_{calc_id}",
-                f"{gain_pref}isCalculationOn",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=jobIRI,
+            trg_inst_iri=f"{comp_pref}GeometryType_{calc_id}",
+            relation=f"{gain_pref}isCalculationOn",
         )
-        spamwriter.writerow(
-            [
-                f"{onto_comp}#hasGeometryType",
-                "Data Property",
-                f"{comp_pref}GeometryType_{calc_id}",
-                "",
-                data["Geometry type"],
-                "",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=f"{comp_pref}GeometryType_{calc_id}",
+            relation=f"{onto_comp}#hasGeometryType",
+            value=data["Geometry type"],
         )
 
-    def _write_zpe(self, spamwriter, jobIRI, calc_id, data):
+    def _write_zpe(self, aboxwriter, jobIRI, calc_id, data):
         # This section writes the zero-point energy information (if it exists).
         # Note that this requires a frequency calculation to be computed.
 
@@ -615,129 +389,65 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "Electronic and ZPE energy" in data and "Electronic energy" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}ZeroPointEnergy_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#ZeroPointEnergy",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}ZeroPointEnergy_{calc_id}",
+                inst_class=f"{onto_comp}#ZeroPointEnergy",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}ZeroPointEnergy_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}ZeroPointEnergy_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}ZeroPointEnergy_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
-                    f"{gain_pref}hasElectronicEnergy",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}ZeroPointEnergy_{calc_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
+                relation=f"{gain_pref}hasElectronicEnergy",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
-                    "",
-                    data["Electronic and ZPE energy"] - data["Electronic energy"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
+                relation=f"{gain_pref}hasValue",
+                value=data["Electronic and ZPE energy"] - data["Electronic energy"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
-                    "Instance",
-                    f"{unit_pref}unit#Hartree",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
+                trg_inst_iri=f"{unit_pref}unit#Hartree",
+                relation=f"{gain_pref}hasUnit",
             )
         elif "Electronic and ZPE energy" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#ElectronicAndZPEEnergy",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
+                inst_class=f"{onto_comp}#ElectronicAndZPEEnergy",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
-                    f"{gain_pref}hasElectronicEnergy",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
+                relation=f"{gain_pref}hasElectronicEnergy",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
-                    "",
-                    data["Electronic and ZPE energy"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
+                relation=f"{gain_pref}hasValue",
+                value=data["Electronic and ZPE energy"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
-                    "Instance",
-                    f"{unit_pref}unit#Hartree",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
+                trg_inst_iri=f"{unit_pref}unit#Hartree",
+                relation=f"{gain_pref}hasUnit",
             )
 
-    def _write_scf(self, spamwriter, jobIRI, calc_id, data):
+    def _write_scf(self, aboxwriter, jobIRI, calc_id, data):
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
@@ -746,68 +456,36 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
         if "Electronic energy" in data:
             # This section writes the electronic (SCF) energy information.
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}ScfEnergy_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#ScfEnergy",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}ScfEnergy_{calc_id}",
+                inst_class=f"{onto_comp}#ScfEnergy",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}ScfEnergy_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}ScfEnergy_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}ScfEnergy_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
-                    f"{gain_pref}hasElectronicEnergy",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}ScfEnergy_{calc_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
+                relation=f"{gain_pref}hasElectronicEnergy",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
-                    "",
-                    data["Electronic energy"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
+                relation=f"{gain_pref}hasValue",
+                value=data["Electronic energy"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
-                    "Instance",
-                    f"{unit_pref}unit#Hartree",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
+                trg_inst_iri=f"{unit_pref}unit#Hartree",
+                relation=f"{gain_pref}hasUnit",
             )
 
-    def _write_occ(self, spamwriter, jobIRI, calc_id, data):
+    def _write_occ(self, aboxwriter, jobIRI, calc_id, data):
         # This section writes the information on the occupied orbitals:
         # HOMO, HOMO-1, HOMO-2 energies.
         # HOMO
@@ -817,192 +495,96 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "HOMO energy" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}HomoEnergy_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#HomoEnergy",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}HomoEnergy_{calc_id}",
+                inst_class=f"{onto_comp}#HomoEnergy",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}HomoEnergy_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}HomoEnergy_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}HomoEnergy_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
-                    f"{onto_comp}#hasHomoEnergy",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}HomoEnergy_{calc_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
+                relation=f"{onto_comp}#hasHomoEnergy",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
-                    "",
-                    data["HOMO energy"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
+                relation=f"{gain_pref}hasValue",
+                value=data["HOMO energy"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
-                    "Instance",
-                    f"{unit_pref}unit#Hartree",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
+                trg_inst_iri=f"{unit_pref}unit#Hartree",
+                relation=f"{gain_pref}hasUnit",
             )
         # HOMO-1
         if "HOMO-1 energy" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#HomoMinusOneEnergy",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
+                inst_class=f"{onto_comp}#HomoMinusOneEnergy",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
-                    f"{onto_comp}#hasHomoMinusOneEnergy",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
+                relation=f"{onto_comp}#hasHomoMinusOneEnergy",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
-                    "",
-                    data["HOMO-1 energy"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
+                relation=f"{gain_pref}hasValue",
+                value=data["HOMO-1 energy"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
-                    "Instance",
-                    f"{unit_pref}unit#Hartree",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
+                trg_inst_iri=f"{unit_pref}unit#Hartree",
+                relation=f"{gain_pref}hasUnit",
             )
         # HOMO-2
         if "HOMO-2 energy" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#HomoMinusTwoEnergy",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
+                inst_class=f"{onto_comp}#HomoMinusTwoEnergy",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
-                    f"{onto_comp}#hasHomoMinusTwoEnergy",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
+                relation=f"{onto_comp}#hasHomoMinusTwoEnergy",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
-                    "",
-                    data["HOMO-2 energy"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
+                relation=f"{gain_pref}hasValue",
+                value=data["HOMO-2 energy"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
-                    "Instance",
-                    f"{unit_pref}unit#Hartree",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
+                trg_inst_iri=f"{unit_pref}unit#Hartree",
+                relation=f"{gain_pref}hasUnit",
             )
 
-    def _write_virt(self, spamwriter, jobIRI, calc_id, data):
+    def _write_virt(self, aboxwriter, jobIRI, calc_id, data):
         # This section writes the information on the unoccupied (virtual)
         # orbitals: LUMO, LUMO+1, LUMO+2 energies.
         # LUMO
@@ -1013,192 +595,96 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "LUMO energy" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}LumoEnergy_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#LumoEnergy",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}LumoEnergy_{calc_id}",
+                inst_class=f"{onto_comp}#LumoEnergy",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}LumoEnergy_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}LumoEnergy_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}LumoEnergy_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
-                    f"{onto_comp}#hasLumoEnergy",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}LumoEnergy_{calc_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
+                relation=f"{onto_comp}#hasLumoEnergy",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
-                    "",
-                    data["LUMO energy"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
+                relation=f"{gain_pref}hasValue",
+                value=data["LUMO energy"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
-                    "Instance",
-                    f"{unit_pref}unit#Hartree",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
+                trg_inst_iri=f"{unit_pref}unit#Hartree",
+                relation=f"{gain_pref}hasUnit",
             )
         # LUMO+1
         if "LUMO+1 energy" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#LumoPlusOneEnergy",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
+                inst_class=f"{onto_comp}#LumoPlusOneEnergy",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
-                    f"{onto_comp}#hasLumoPlusOneEnergy",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
+                relation=f"{onto_comp}#hasLumoPlusOneEnergy",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
-                    "",
-                    data["LUMO+1 energy"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
+                relation=f"{gain_pref}hasValue",
+                value=data["LUMO+1 energy"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
-                    "Instance",
-                    f"{unit_pref}unit#Hartree",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
+                trg_inst_iri=f"{unit_pref}unit#Hartree",
+                relation=f"{gain_pref}hasUnit",
             )
         # LUMO+2
         if "LUMO+2 energy" in data:
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
-                    "Instance",
-                    f"{onto_comp}#LumoPlusTwoEnergy",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
+                inst_class=f"{onto_comp}#LumoPlusTwoEnergy",
             )
-            spamwriter.writerow(
-                [
-                    jobIRI,
-                    "Instance",
-                    f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
-                    f"{gain_pref}isCalculationOn",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=jobIRI,
+                trg_inst_iri=f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
+                relation=f"{gain_pref}isCalculationOn",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
-                    f"{onto_comp}#hasLumoPlusTwoEnergy",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
+                relation=f"{onto_comp}#hasLumoPlusTwoEnergy",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
-                    "",
-                    data["LUMO+2 energy"],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
+                relation=f"{gain_pref}hasValue",
+                value=data["LUMO+2 energy"],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
-                    "Instance",
-                    f"{unit_pref}unit#Hartree",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
+                trg_inst_iri=f"{unit_pref}unit#Hartree",
+                relation=f"{gain_pref}hasUnit",
             )
 
-    def _write_geom_opt(self, spamwriter, jobIRI, calc_id, data):
+    def _write_geom_opt(self, aboxwriter, jobIRI, calc_id, data):
         # This section writes the geometry optimization, spin multiplicity
         # and formal charge information.
 
@@ -1206,98 +692,49 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
         onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
 
-        spamwriter.writerow(
-            [
-                f"{comp_pref}GeometryOptimization_{calc_id}",
-                "Instance",
-                f"{gain_pref}GeometryOptimization",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}GeometryOptimization_{calc_id}",
+            inst_class=f"{gain_pref}GeometryOptimization",
         )
-        spamwriter.writerow(
-            [
-                jobIRI,
-                "Instance",
-                f"{comp_pref}GeometryOptimization_{calc_id}",
-                f"{gain_pref}isCalculationOn",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=jobIRI,
+            trg_inst_iri=f"{comp_pref}GeometryOptimization_{calc_id}",
+            relation=f"{gain_pref}isCalculationOn",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}Molecule_{calc_id}",
-                "Instance",
-                f"{gain_pref}Molecule",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}Molecule_{calc_id}", inst_class=f"{gain_pref}Molecule"
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}GeometryOptimization_{calc_id}",
-                "Instance",
-                f"{comp_pref}Molecule_{calc_id}",
-                f"{gain_pref}hasMolecule",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=f"{comp_pref}GeometryOptimization_{calc_id}",
+            trg_inst_iri=f"{comp_pref}Molecule_{calc_id}",
+            relation=f"{gain_pref}hasMolecule",
         )
-        spamwriter.writerow(
-            [
-                f"{onto_comp}#hasSpinMultiplicity",
-                "Data Property",
-                f"{comp_pref}Molecule_{calc_id}",
-                "",
-                data["Spin multiplicity"],
-                "",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=f"{comp_pref}Molecule_{calc_id}",
+            relation=f"{onto_comp}#hasSpinMultiplicity",
+            value=data["Spin multiplicity"],
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
-                "Instance",
-                f"{gain_pref}IntegerValue",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
+            inst_class=f"{gain_pref}IntegerValue",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}Molecule_{calc_id}",
-                "Instance",
-                f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
-                f"{gain_pref}hasFormalCharge",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=f"{comp_pref}Molecule_{calc_id}",
+            trg_inst_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
+            relation=f"{gain_pref}hasFormalCharge",
         )
-        spamwriter.writerow(
-            [
-                f"{gain_pref}hasValue",
-                "Data Property",
-                f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
-                "",
-                data["Formal charge"],
-                "",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
+            relation=f"{gain_pref}hasValue",
+            value=data["Formal charge"],
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
-                "Instance",
-                f"{gain_pref}atomicUnit",
-                f"{gain_pref}hasUnit",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
+            trg_inst_iri=f"{gain_pref}atomicUnit",
+            relation=f"{gain_pref}hasUnit",
         )
 
-    def _write_atom_info(self, spamwriter, calc_id, data):
+    def _write_atom_info(self, aboxwriter, calc_id, data):
         # This section writes the atom coordinates and masses information.
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
@@ -1316,111 +753,66 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             atom = data["Atom types"][k]
             atom_id = f"{calc_id}_{atom}{count}"
 
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Atom_{atom_id}",
-                    "Instance",
-                    f"{gain_pref}Atom",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}Atom_{atom_id}", inst_class=f"{gain_pref}Atom"
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Molecule_{calc_id}",
-                    "Instance",
-                    f"{comp_pref}Atom_{atom_id}",
-                    f"{gain_pref}hasAtom",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}Molecule_{calc_id}",
+                trg_inst_iri=f"{comp_pref}Atom_{atom_id}",
+                relation=f"{gain_pref}hasAtom",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Atom_{atom_id}",
-                    "Instance",
-                    f"{table_pref}#{atom}",
-                    f"{gain_pref}isElement",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}Atom_{atom_id}",
+                trg_inst_iri=f"{table_pref}#{atom}",
+                relation=f"{gain_pref}isElement",
             )
             for i in range(3):
-                spamwriter.writerow(
-                    [
-                        f"{comp_pref}FloatValue_{atom_id}_{coord_string[i]}Coordinate",
-                        "Instance",
-                        f"{gain_pref}FloatValue",
-                        "",
-                        "",
-                        "",
-                    ]
+                aboxwriter.write_instance(
+                    inst_iri=(
+                        f"{comp_pref}FloatValue_{atom_id}_"
+                        f"{coord_string[i]}Coordinate"
+                    ),
+                    inst_class=f"{gain_pref}FloatValue",
                 )
-                spamwriter.writerow(
-                    [
-                        f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                        "Instance",
-                        f"{comp_pref}FloatValue_{atom_id}_{coord_string[i]}Coordinate",
-                        f"{gain_pref}hasAtomCoordinate{coords[i]}",
-                        "",
-                        "",
-                    ]
+                aboxwriter.write_object_property(
+                    src_inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                    trg_inst_iri=(
+                        f"{comp_pref}FloatValue_{atom_id}_"
+                        f"{coord_string[i]}Coordinate"
+                    ),
+                    relation=f"{gain_pref}hasAtomCoordinate{coords[i]}",
                 )
-                spamwriter.writerow(
-                    [
-                        f"{gain_pref}hasValue",
-                        "Data Property",
-                        f"{comp_pref}FloatValue_{atom_id}_{coord_string[i]}Coordinate",
-                        "",
-                        data["Geometry"][k][i],
-                        "",
-                    ]
+                aboxwriter.write_data_property(
+                    inst_iri=(
+                        f"{comp_pref}FloatValue_{atom_id}_"
+                        f"{coord_string[i]}Coordinate"
+                    ),
+                    relation=f"{gain_pref}hasValue",
+                    value=data["Geometry"][k][i],
                 )
             # Write atom masses.
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{atom_id}_Mass",
-                    "Instance",
-                    f"{gain_pref}FloatValue",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
+                inst_class=f"{gain_pref}FloatValue",
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}Atom_{atom_id}",
-                    "Instance",
-                    f"{comp_pref}FloatValue_{atom_id}_Mass",
-                    f"{gain_pref}hasMass",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}Atom_{atom_id}",
+                trg_inst_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
+                relation=f"{gain_pref}hasMass",
             )
-            spamwriter.writerow(
-                [
-                    f"{gain_pref}hasValue",
-                    "Data Property",
-                    f"{comp_pref}FloatValue_{atom_id}_Mass",
-                    "",
-                    data["Atomic masses"][k],
-                    "",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
+                relation=f"{gain_pref}hasValue",
+                value=data["Atomic masses"][k],
             )
-            spamwriter.writerow(
-                [
-                    f"{comp_pref}FloatValue_{atom_id}_Mass",
-                    "Instance",
-                    f"{unit_pref}unit#Dalton",
-                    f"{gain_pref}hasUnit",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
+                trg_inst_iri=f"{unit_pref}unit#Dalton",
+                relation=f"{gain_pref}hasUnit",
             )
             count += 1
 
-    def _write_metadata(self, spamwriter, calc_id, data):
+    def _write_metadata(self, aboxwriter, calc_id, data):
         # These are the final parts of the ABox with the
         # auxillary info like software used and job run date.
 
@@ -1431,93 +823,45 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             "ocompchem_data_pref"
         ]
 
-        spamwriter.writerow(
-            [
-                f"{onto_comp}#hasProgram",
-                "Data Property",
-                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-                "",
-                data["Program name"],
-                "",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            relation=f"{onto_comp}#hasProgram",
+            value=data["Program name"],
         )
-        spamwriter.writerow(
-            [
-                f"{onto_comp}#hasProgramVersion",
-                "Data Property",
-                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-                "",
-                data["Program version"].split("+")[0][-1],
-                "",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            relation=f"{onto_comp}#hasProgramVersion",
+            value=data["Program version"].split("+")[0][-1],
         )
-        spamwriter.writerow(
-            [
-                f"{onto_comp}#hasRunDate",
-                "Data Property",
-                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-                "",
-                data["Run date"],
-                "",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            relation=f"{onto_comp}#hasRunDate",
+            value=data["Run date"],
         )
-        spamwriter.writerow(
-            [
-                f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
-                "Instance",
-                f"{onto_comp}#OutputSource",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
+            inst_class=f"{onto_comp}#OutputSource",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-                "Instance",
-                f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
-                f"{gain_pref}hasOutputFile",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            trg_inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
+            relation=f"{gain_pref}hasOutputFile",
         )
-        spamwriter.writerow(
-            [
-                f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
-                "Instance",
-                f"{onto_comp}#OutputSource",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
+            inst_class=f"{onto_comp}#OutputSource",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-                "Instance",
-                f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
-                f"{gain_pref}hasOutputFile",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            trg_inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
+            relation=f"{gain_pref}hasOutputFile",
         )
-        spamwriter.writerow(
-            [
-                f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
-                "Instance",
-                f"{onto_comp}#OutputSource",
-                "",
-                "",
-                "",
-            ]
+        aboxwriter.write_instance(
+            inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
+            inst_class=f"{onto_comp}#OutputSource",
         )
-        spamwriter.writerow(
-            [
-                f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-                "Instance",
-                f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
-                f"{gain_pref}hasOutputFile",
-                "",
-                "",
-            ]
+        aboxwriter.write_object_property(
+            src_inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            trg_inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
+            relation=f"{gain_pref}hasOutputFile",
         )
