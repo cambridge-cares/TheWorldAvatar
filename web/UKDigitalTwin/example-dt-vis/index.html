@@ -28,7 +28,7 @@
 
 	<!-- Framework CSS -->
 	<link href='./css/dtvf.css' rel='stylesheet' />
-	<link href="./css/jsonview.bundle.css" rel="stylesheet">
+	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
 
 	<!-- Framework JS -->
 	<script src='./js/manager.js'></script>
@@ -161,7 +161,7 @@
 			let footer = `Here is an example footer.`;
 
 			// Show content and store as default (so it can be returned to later)
-			manager.setPanelContent(title, content, legend, footer);
+			manager.setPanelContent(title, content,	legend,	footer);
 
 			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
 			// This means that we have to listen for this event (below) and re-add everything.
@@ -169,7 +169,7 @@
 			// styles, but there is an open feature request for MapBox to implement this.
 			var loadedOnce = false;
 
-			map.on('style.load', function () {
+			map.on('style.load', function() {
 				console.log("INFO: A new style has been loaded.");
 				
 				// Show loading icon
@@ -202,7 +202,7 @@
 					// Set up a callback that hides all connections whenever the user
 					// returns to the default side panel.
 					manager.setDefaultPanelCallback();
-
+					
 					// Show mouse position
 					manager.showDeveloperControls();
 					loadedOnce = true;
@@ -217,13 +217,13 @@
 					var dataPromise;
 
 					// Re-plot the previously selected group
-					if (DT.currentGroup != null && DT.currentGroup.length > 0) {
+					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
 						dataPromise = manager.plotGroup(DT.currentGroup, false);
 					} else {
 						dataPromise = manager.plotFirstGroup();
 					}
 
-					if (dataPromise != null) {
+					if(dataPromise != null) {
 						dataPromise.then(() => {
 							// Re-add the sky and (optionally) 3D terrain
 							manager.addSkyAndTerrain();
@@ -235,7 +235,7 @@
 						});
 					}
 				});
-
+				
 			});
 		}
 	</script>
