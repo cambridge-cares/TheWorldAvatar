@@ -6,14 +6,86 @@ from entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF import (
 import os
 import glob
 from enum import Enum
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Literal
 import uuid
 import logging
 import json
 import re
 import pathlib
+import csv
 
 formula_clean_re = re.compile("(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)")
+
+
+class Abox_csv_writer:
+    def __init__(self, file_path: str, configs: Optional[Dict] = None) -> None:
+        self.file_path = file_path
+        self._num_cols = 6
+        if configs is None:
+            configs = {}
+        self.instance_field = configs.get("instance", "Instance")
+        self.data_property_field = configs.get("data_property", "Data Property")
+        self.object_property_field = configs.get("object_property", "Instance")
+        self.ontology_field = configs.get("ontology", "Ontology")
+        self.default_prefix = configs.get("prefix", "")
+
+    def __enter__(self):
+        self._file_obj = open(self.file_path, "w", newline="").__enter__()
+        self.csvwriter = csv.writer(
+            self._file_obj, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+        )
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback) -> bool:
+        self._file_obj.__exit__(exc_type, exc_value, exc_traceback)
+        return True
+
+    def write_header(self) -> None:
+        self._write_row(
+            "Source",
+            "Type",
+            "Target",
+            "Relation",
+            "Value",
+            "Data Type",
+        )
+
+    def _write_row(self, *args: str) -> None:
+        content = [args[i] if i < len(args) else "" for i in range(self._num_cols)]
+        self.csvwriter.writerow(content)
+
+    def write_imports(
+        self,
+        abox_name: str,
+        importing: str,
+        relation: Optional[str] = None,
+    ) -> None:
+        if relation is None:
+            relation = "http://www.w3.org/2002/07/owl#imports"
+        self._write_row(abox_name, self.ontology_field, importing, relation)
+
+    def write_instance(
+        self, inst_iri: str, inst_class: str, relation: str = ""
+    ) -> None:
+        self._write_row(inst_iri, self.instance_field, inst_class, relation)
+
+    def write_data_property(
+        self,
+        inst_iri: str,
+        relation: str,
+        value: str,
+        data_type: Literal["String", "Integer", "Float", ""] = "",
+    ) -> None:
+        self._write_row(
+            relation, self.data_property_field, inst_iri, "", value, str(data_type)
+        )
+
+    def write_object_property(
+        self, src_inst_iri: str, relation: str, trg_inst_iri: str
+    ) -> None:
+        self._write_row(
+            src_inst_iri, self.object_property_field, trg_inst_iri, relation
+        )
 
 
 def config_logging(
@@ -137,4 +209,3 @@ def get_out_file_path(
         return str((p.parents[0]).joinpath(filename))
     else:
         return str((pathlib.Path(out_dir)).joinpath(filename))
-
