@@ -6,7 +6,6 @@ Created on Thu Mar  4 16:10:02 2021
 """
 
 import json
-import csv
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from compchemparser.parsers.ccgaussian_parser import (
     ATOM_TYPES,
@@ -39,6 +38,8 @@ import chemaboxwriters.common.aboxconfig as abconf
 from typing import List, Optional, Dict
 from enum import Enum
 from chemaboxwriters.common.handler import Handler
+
+Abox_Writer = utilsfunc.Abox_csv_writer
 
 
 class OS_JSON_TO_OS_CSV_Handler(Handler):
@@ -100,149 +101,108 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
         gen_id = data[globals.ENTRY_UUID]
 
-        with open(output_file_path, "w", newline="") as csvfile:
-
-            spamwriter = csv.writer(
-                csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
-            )
+        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as aboxwriter:
+            aboxwriter.write_header()
 
             out_id = data[globals.ENTRY_IRI]
 
             label = utilsfunc.formula_clean_re.sub("", data[EMP_FORMULA])
 
-            spamwriter = csv.writer(
-                csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
-            )
-            spamwriter.writerow(
-                ["Source", "Type", "Target", "Relation", "Value", "Data Type"]
-            )
+            self._write_prelim(aboxwriter, out_id, label)
+            self._write_identifier_geom(aboxwriter, out_id, data)
+            self._write_atom_info(aboxwriter, gen_id, out_id, data)
+            self._write_charge_info(aboxwriter, gen_id, out_id, data)
+            self._write_atoms(aboxwriter, gen_id, out_id, data)
+            self._write_molwts(aboxwriter, gen_id, out_id, data)
+            self._write_enth(aboxwriter, gen_id, out_id, data)
 
-            self._write_prelim(spamwriter, out_id, label)
-            self._write_identifier_geom(spamwriter, out_id, data)
-            self._write_atom_info(spamwriter, gen_id, out_id, data)
-            self._write_charge_info(spamwriter, gen_id, out_id, data)
-            self._write_atoms(spamwriter, gen_id, out_id, data)
-            self._write_molwts(spamwriter, gen_id, out_id, data)
-            self._write_enth(spamwriter, gen_id, out_id, data)
-
-    def _write_prelim(self, spamwriter, out_id, label):
+    def _write_prelim(self, aboxwriter: Abox_Writer, out_id, label):
 
         spec_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["spec_pref"]
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
-        spamwriter.writerow(
-            [
-                "ABoxOntoSpecies",
-                "Ontology",
-                onto_spec,
-                "http://www.w3.org/2002/07/owl#imports",
-                "",
-                "",
-            ]
+        aboxwriter.write_imports(
+            abox_name="ABoxOntoSpecies",
+            importing=onto_spec,
+            relation="http://www.w3.org/2002/07/owl#imports",
         )
-        spamwriter.writerow(
-            ["ABoxOntoSpecies", "Ontology", spec_pref[:-1], "base", "", ""]
+        aboxwriter.write_imports(
+            abox_name="ABoxOntoSpecies", importing=spec_pref[:-1], relation="base"
         )
-        spamwriter.writerow([out_id, "Instance", "Species", "", "", ""])
-        spamwriter.writerow(
-            [
-                "http://purl.org/dc/elements/1.1/identifier",
-                "Data Property",
-                out_id,
-                "",
-                out_id,
-                "String",
-            ]
+        aboxwriter.write_instance(inst_iri=out_id, inst_class="Species")
+        aboxwriter.write_data_property(
+            inst_iri=out_id,
+            relation="http://purl.org/dc/elements/1.1/identifier",
+            value=out_id,
+            data_type="String",
         )
-        spamwriter.writerow(
-            [
-                "http://www.w3.org/2000/01/rdf-schema#label",
-                "Data Property",
-                out_id,
-                "",
-                label,
-                "String",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=out_id,
+            relation="http://www.w3.org/2000/01/rdf-schema#label",
+            value=label,
+            data_type="String",
         )
 
-    def _write_identifier_geom(self, spamwriter, out_id, data):
+    def _write_identifier_geom(self, aboxwriter: Abox_Writer, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         pubchem_alt_label_value = data.get(PUBCHEM_ALT_LABEL)
         if pubchem_alt_label_value is not None:
-            spamwriter.writerow(
-                [
-                    "http://www.w3.org/2004/02/skos/core#altLabel",
-                    "Data Property",
-                    out_id,
-                    "",
-                    pubchem_alt_label_value,
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=out_id,
+                relation="http://www.w3.org/2004/02/skos/core#altLabel",
+                value=pubchem_alt_label_value,
+                data_type="String",
             )
         cas_number_value = data.get(CAS_NUMBER)
         if cas_number_value is not None:
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#casRegistryID",
-                    "Data Property",
-                    out_id,
-                    "",
-                    cas_number_value,
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=out_id,
+                relation=f"{onto_spec}#casRegistryID",
+                value=cas_number_value,
+                data_type="String",
             )
-        spamwriter.writerow(
-            [f"{onto_spec}#SMILES", "Data Property", out_id, "", data[SMILES], "String"]
+        aboxwriter.write_data_property(
+            inst_iri=out_id,
+            relation=f"{onto_spec}#SMILES",
+            value=data[SMILES],
+            data_type="String",
         )
-        spamwriter.writerow(
-            [f"{onto_spec}#inChI", "Data Property", out_id, "", data[INCHI], "String"]
+        aboxwriter.write_data_property(
+            inst_iri=out_id,
+            relation=f"{onto_spec}#inChI",
+            value=data[INCHI],
+            data_type="String",
         )
         pubchem_cid_value = data.get(PUBCHEM_CID)
         if pubchem_cid_value is not None:
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#pubChemCID",
-                    "Data Property",
-                    out_id,
-                    "",
-                    pubchem_cid_value,
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=out_id,
+                relation=f"{onto_spec}#pubChemCID",
+                value=pubchem_cid_value,
+                data_type="String",
             )
-        spamwriter.writerow(
-            [
-                f"{onto_spec}#hasAtomicBond",
-                "Data Property",
-                out_id,
-                "",
-                data[BOND_STRING],
-                "String",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=out_id,
+            relation=f"{onto_spec}#hasAtomicBond",
+            value=data[BOND_STRING],
+            data_type="String",
         )
-        spamwriter.writerow(
-            [
-                f"{onto_spec}#hasGeometry",
-                "Data Property",
-                out_id,
-                "",
-                data[GEOM_STRING],
-                "String",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=out_id,
+            relation=f"{onto_spec}#hasGeometry",
+            value=data[GEOM_STRING],
+            data_type="String",
         )
-        spamwriter.writerow(
-            [
-                f"{onto_spec}#spinMultiplicity",
-                "Data Property",
-                out_id,
-                "",
-                data[SPIN_MULT],
-                "String",
-            ]
+        aboxwriter.write_data_property(
+            inst_iri=out_id,
+            relation=f"{onto_spec}#spinMultiplicity",
+            value=data[SPIN_MULT],
+            data_type="String",
         )
 
-    def _write_atom_info(self, spamwriter, gen_id, out_id, data):
+    def _write_atom_info(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
 
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
         table_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["table_pref"]
@@ -253,142 +213,83 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         for k, atom_type in enumerate(data[ATOM_TYPES]):
 
             atom_nr = atom_counters[atom_type]
+            atom_id = f"{gen_id}_{atom_type}_{atom_nr}"
             # Now the atoms are written here
-            spamwriter.writerow(
-                [
-                    f"Atom_{gen_id}_{atom_type}_{atom_nr}",
-                    "Instance",
-                    f"{gain_pref}Atom",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"Atom_{atom_id}",
+                inst_class=f"{gain_pref}Atom",
             )
-            spamwriter.writerow(
-                [
-                    out_id,
-                    "Instance",
-                    f"Atom_{gen_id}_{atom_type}_{atom_nr}",
-                    f"{gain_pref}hasAtom",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=out_id,
+                trg_inst_iri=f"Atom_{atom_id}",
+                relation=f"{gain_pref}hasAtom",
             )
-            spamwriter.writerow(
-                [
-                    f"Atom_{gen_id}_{atom_type}_{atom_nr}",
-                    "Instance",
-                    f"{table_pref}#{atom_type}",
-                    f"{gain_pref}isElement",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"Atom_{atom_id}",
+                trg_inst_iri=f"{table_pref}#{atom_type}",
+                relation=f"{gain_pref}isElement",
             )
             for i in range(3):  # Write the atom coordinates.
-                spamwriter.writerow(
-                    [
-                        f"AtomCoordinate{coords[i]}_{gen_id}_{atom_type}_{atom_nr}",
-                        "Instance",
-                        f"{gain_pref}FloatValue",
-                        "",
-                        "",
-                        "",
-                    ]
+                aboxwriter.write_instance(
+                    inst_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                    inst_class=f"{gain_pref}FloatValue",
                 )
-                spamwriter.writerow(
-                    [
-                        f"Atom_{gen_id}_{atom_type}_{atom_nr}",
-                        "Instance",
-                        f"AtomCoordinate{coords[i]}_{gen_id}_{atom_type}_{atom_nr}",
-                        f"{gain_pref}hasAtomCoordinate{coords[i]}",
-                        "",
-                        "",
-                    ]
+                aboxwriter.write_object_property(
+                    src_inst_iri=f"Atom_{atom_id}",
+                    trg_inst_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                    relation=f"{gain_pref}hasAtomCoordinate{coords[i]}",
                 )
-                spamwriter.writerow(
-                    [
-                        f"{gain_pref}hasValue",
-                        "Data Property",
-                        f"AtomCoordinate{coords[i]}_{gen_id}_{atom_type}_{atom_nr}",
-                        "",
-                        data["Geometry"][k][i],
-                        "String",
-                    ]
+                aboxwriter.write_data_property(
+                    inst_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                    relation=f"{gain_pref}hasValue",
+                    value=data["Geometry"][k][i],
+                    data_type="String",
                 )
-                spamwriter.writerow(
-                    [
-                        f"AtomCoordinate{coords[i]}_{gen_id}_{atom_type}_{atom_nr}",
-                        "Instance",
-                        f"{unit_pref}unit#Angstrom",
-                        f"{gain_pref}hasUnit",
-                        "",
-                        "",
-                    ]
+                aboxwriter.write_object_property(
+                    src_inst_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                    trg_inst_iri=f"{unit_pref}unit#Angstrom",
+                    relation=f"{gain_pref}hasUnit",
                 )
             atom_counters[atom_type] += 1
 
-    def _write_charge_info(self, spamwriter, gen_id, out_id, data):
+    def _write_charge_info(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         if FORMAL_CHARGE in data:
             charge = data[FORMAL_CHARGE]
 
-            spamwriter.writerow(
-                [f"Charge_{gen_id}", "Instance", f"{onto_spec}#Charge", "", "", ""]
+            aboxwriter.write_instance(
+                inst_iri=f"Charge_{gen_id}", inst_class=f"{onto_spec}#Charge"
             )
-            spamwriter.writerow(
-                [
-                    out_id,
-                    "Instance",
-                    f"Charge_{gen_id}",
-                    f"{onto_spec}#hasCharge",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=out_id,
+                trg_inst_iri=f"Charge_{gen_id}",
+                relation=f"{onto_spec}#hasCharge",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#value",
-                    "Data Property",
-                    f"Charge_{gen_id}",
-                    "",
-                    charge,
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"Charge_{gen_id}",
+                relation=f"{onto_spec}#value",
+                value=charge,
+                data_type="String",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#units",
-                    "Data Property",
-                    f"Charge_{gen_id}",
-                    "",
-                    "e",
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"Charge_{gen_id}",
+                relation=f"{onto_spec}#units",
+                value="e",
+                data_type="String",
             )
-            spamwriter.writerow(
-                [
-                    f"MolecularFormula_{gen_id}",
-                    "Instance",
-                    f"{onto_spec}#MolecularFormula",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"MolecularFormula_{gen_id}",
+                inst_class=f"{onto_spec}#MolecularFormula",
             )
-            spamwriter.writerow(
-                [
-                    out_id,
-                    "Instance",
-                    f"MolecularFormula_{gen_id}",
-                    f"{onto_spec}#hasMolecularFormula",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=out_id,
+                trg_inst_iri=f"MolecularFormula_{gen_id}",
+                relation=f"{onto_spec}#hasMolecularFormula",
             )
 
-    def _write_atoms(self, spamwriter, gen_id, out_id, data):
+    def _write_atoms(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
         onto_kin = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_kin"]
@@ -396,242 +297,137 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         atom_list = data[ATOM_LIST]
         atom_counts = data[ATOM_COUNTS]
         for i in range(len(atom_list)):
-            spamwriter.writerow(
-                [
-                    f"Element_{atom_list[i]}",
-                    "Instance",
-                    f"{onto_kin}#Element",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"Element_{atom_list[i]}", inst_class=f"{onto_kin}#Element"
             )
-            spamwriter.writerow(
-                [
-                    f"MolecularFormula_{gen_id}",
-                    "Instance",
-                    f"Element_{atom_list[i]}",
-                    f"{onto_kin}#hasElement",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"MolecularFormula_{gen_id}",
+                trg_inst_iri=f"Element_{atom_list[i]}",
+                relation=f"{onto_kin}#hasElement",
             )
-            spamwriter.writerow(
-                [
-                    f"ElementNumber_{gen_id}_{i + 1}",
-                    "Instance",
-                    f"{onto_kin}#ElementNumber",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"ElementNumber_{gen_id}_{i + 1}",
+                inst_class=f"{onto_kin}#ElementNumber",
             )
-            spamwriter.writerow(
-                [
-                    f"MolecularFormula_{gen_id}",
-                    "Instance",
-                    f"ElementNumber_{gen_id}_{i + 1}",
-                    f"{onto_kin}#hasElementNumber",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"MolecularFormula_{gen_id}",
+                trg_inst_iri=f"ElementNumber_{gen_id}_{i + 1}",
+                relation=f"{onto_kin}#hasElementNumber",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_kin}#hasNumberOfElement",
-                    "Data Property",
-                    f"ElementNumber_{gen_id}_{i + 1}",
-                    "",
-                    atom_counts[i],
-                    "Integer",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"ElementNumber_{gen_id}_{i + 1}",
+                relation=f"{onto_kin}#hasNumberOfElement",
+                value=atom_counts[i],
+                data_type="Integer",
             )
-            spamwriter.writerow(
-                [
-                    f"ElementNumber_{gen_id}_{i + 1}",
-                    "Instance",
-                    f"Element_{atom_list[i]}",
-                    f"{onto_kin}#indicatesNumberOf",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"ElementNumber_{gen_id}_{i + 1}",
+                trg_inst_iri=f"Element_{atom_list[i]}",
+                relation=f"{onto_kin}#indicatesNumberOf",
             )
-        spamwriter.writerow([out_id, "Instance", f"{onto_spec}#Species", "", "", ""])
+        aboxwriter.write_instance(inst_iri=out_id, inst_class=f"{onto_spec}#Species")
 
-    def _write_molwts(self, spamwriter, gen_id, out_id, data):
+    def _write_molwts(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         if MOLWT in data:
             molwt = data[MOLWT]
-            spamwriter.writerow(
-                [
-                    f"MolecularWeight_{gen_id}",
-                    "Instance",
-                    f"{onto_spec}#MolecularWeight",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"MolecularWeight_{gen_id}",
+                inst_class=f"{onto_spec}#MolecularWeight",
             )
-            spamwriter.writerow(
-                [
-                    out_id,
-                    "Instance",
-                    f"MolecularWeight_{gen_id}",
-                    f"{onto_spec}#hasMolecularWeight",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=out_id,
+                trg_inst_iri=f"MolecularWeight_{gen_id}",
+                relation=f"{onto_spec}#hasMolecularWeight",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#value",
-                    "Data Property",
-                    f"MolecularWeight_{gen_id}",
-                    "",
-                    molwt,
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"MolecularWeight_{gen_id}",
+                relation=f"{onto_spec}#value",
+                value=molwt,
+                data_type="String",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#units",
-                    "Data Property",
-                    f"MolecularWeight_{gen_id}",
-                    "",
-                    "g/mol",
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"MolecularWeight_{gen_id}",
+                relation=f"{onto_spec}#units",
+                value="g/mol",
+                data_type="String",
             )
 
-    def _write_enth(self, spamwriter, gen_id, out_id, data):
+    def _write_enth(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
         onto_kin = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_kin"]
 
         # Write enthalpy of formation data.
         if ENTH_FORM in data:
-            spamwriter.writerow(
-                [
-                    f"StandardEnthalpyOfFormation_{gen_id}",
-                    "Instance",
-                    f"{onto_spec}#StandardEnthalpyOfFormation",
-                    "",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_instance(
+                inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                inst_class=f"{onto_spec}#StandardEnthalpyOfFormation",
             )
-            spamwriter.writerow(
-                [
-                    out_id,
-                    "Instance",
-                    f"StandardEnthalpyOfFormation_{gen_id}",
-                    f"{onto_spec}#hasStandardEnthalpyOfFormation",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=out_id,
+                trg_inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                relation=f"{onto_spec}#hasStandardEnthalpyOfFormation",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#value",
-                    "Data Property",
-                    f"StandardEnthalpyOfFormation_{gen_id}",
-                    "",
-                    data[ENTH_FORM],
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                relation=f"{onto_spec}#value",
+                value=data[ENTH_FORM],
+                data_type="String",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#units",
-                    "Data Property",
-                    f"StandardEnthalpyOfFormation_{gen_id}",
-                    "",
-                    data[ENTH_UNIT],
-                    "String",
-                ]
+        if ENTH_UNIT in data:
+            aboxwriter.write_data_property(
+                inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                relation=f"{onto_spec}#units",
+                value=data[ENTH_UNIT],
+                data_type="String",
             )
-            spamwriter.writerow(
-                [
-                    f"Temperature_{gen_id}",
-                    "Instance",
-                    f"{onto_spec}#Temperature",
-                    "",
-                    "",
-                    "",
-                ]
+        if ENTH_REFTEMP in data:
+            aboxwriter.write_instance(
+                inst_iri=f"Temperature_{gen_id}", inst_class=f"{onto_spec}#Temperature"
             )
-            spamwriter.writerow(
-                [
-                    f"StandardEnthalpyOfFormation_{gen_id}",
-                    "Instance",
-                    f"Temperature_{gen_id}",
-                    f"{onto_spec}#hasReferenceTemperature",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                trg_inst_iri=f"Temperature_{gen_id}",
+                relation=f"{onto_spec}#hasReferenceTemperature",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#value",
-                    "Data Property",
-                    f"Temperature_{gen_id}",
-                    "",
-                    data[ENTH_REFTEMP],
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"Temperature_{gen_id}",
+                relation=f"{onto_spec}#value",
+                value=data[ENTH_REFTEMP],
+                data_type="String",
             )
-            spamwriter.writerow(
-                [
-                    f"{onto_spec}#units",
-                    "Data Property",
-                    f"Temperature_{gen_id}",
-                    "",
-                    data[ENTH_REFTEMP_UNIT],
-                    "String",
-                ]
+        if ENTH_REFTEMP_UNIT in data:
+            aboxwriter.write_data_property(
+                inst_iri=f"Temperature_{gen_id}",
+                relation=f"{onto_spec}#units",
+                value=data[ENTH_REFTEMP_UNIT],
+                data_type="String",
             )
-            spamwriter.writerow(
-                [
-                    f"{data[ENTH_PHASE]}Phase_{gen_id}",
-                    "Instance",
-                    f"{onto_kin}#{data[ENTH_PHASE]}Phase",
-                    "",
-                    "",
-                    "",
-                ]
+        if ENTH_PHASE in data:
+            aboxwriter.write_instance(
+                inst_iri=f"{data[ENTH_PHASE]}Phase_{gen_id}",
+                inst_class=f"{onto_kin}#{data[ENTH_PHASE]}Phase",
             )
-            spamwriter.writerow(
-                [
-                    f"StandardEnthalpyOfFormation_{gen_id}",
-                    "Instance",
-                    f"{data[ENTH_PHASE]}Phase_{gen_id}",
-                    f"{onto_spec}#hasPhase",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                trg_inst_iri=f"{data[ENTH_PHASE]}Phase_{gen_id}",
+                relation=f"{onto_spec}#hasPhase",
             )
-            spamwriter.writerow(
-                [f"Reference_{gen_id}", "Instance", f"{onto_kin}#Reference", "", "", ""]
+        if ENTH_PROV in data:
+            aboxwriter.write_instance(
+                inst_iri=f"Reference_{gen_id}", inst_class=f"{onto_kin}#Reference"
             )
-            spamwriter.writerow(
-                [
-                    f"StandardEnthalpyOfFormation_{gen_id}",
-                    "Instance",
-                    f"Reference_{gen_id}",
-                    f"{onto_spec}#hasProvenance",
-                    "",
-                    "",
-                ]
+            aboxwriter.write_object_property(
+                src_inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                trg_inst_iri=f"Reference_{gen_id}",
+                relation=f"{onto_spec}#hasProvenance",
             )
-            spamwriter.writerow(
-                [
-                    "http://www.w3.org/2000/01/rdf-schema#label",
-                    "Data Property",
-                    f"Reference_{gen_id}",
-                    "",
-                    data[ENTH_PROV],
-                    "String",
-                ]
+            aboxwriter.write_data_property(
+                inst_iri=f"Reference_{gen_id}",
+                relation="http://www.w3.org/2000/01/rdf-schema#label",
+                value=data[ENTH_PROV],
+                data_type="String",
             )
