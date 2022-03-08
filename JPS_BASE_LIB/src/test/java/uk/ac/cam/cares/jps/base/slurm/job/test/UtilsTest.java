@@ -491,7 +491,7 @@ class UtilsTest {
 		}
 		assertFalse(jobFolder2.exists());
 		
-//		// false scenario
+		// false scenario
 		File jobFolder3 = new File(jobFolder_path);
 		jobFolder3.mkdirs();
 		File statusfile4 = new File(status_path);
