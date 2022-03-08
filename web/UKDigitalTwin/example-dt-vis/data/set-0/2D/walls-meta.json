@@ -1,0 +1,22 @@
+[
+    {
+        "id": 6,
+        "gmlId": "UUID_b821fa63-2ab7-4e84-908d-5d8a5c5d2767",
+        "cityObjectId": "http://localhost:9999/blazegraph/namespace/churchill/sparql/thematicsurface/b5076a2f-b0a4-4a87-8a3b-154965f9ccec"
+    },
+    {
+        "id": 8,
+        "gmlId": "UUID_501b82ba-45bc-4032-90bc-ba10eb27ffd6",
+        "cityObjectId": "http://localhost:9999/blazegraph/namespace/churchill/sparql/thematicsurface/b5dbfa97-4c86-4df4-8283-b827f3dec90e"
+    },
+    {
+        "id": 10,
+        "gmlId": "UUID_bb5f0d83-50b8-4d5f-8eb4-90457ff50274",
+        "cityObjectId": "http://localhost:9999/blazegraph/namespace/churchill/sparql/thematicsurface/a14f86d4-cd02-4121-8d7b-5c2a53477d2b"
+    },
+    {
+        "id": 12,
+        "gmlId": "UUID_cb8a92f8-9af7-482d-968a-dca4db07b3ec",
+        "cityObjectId": "http://localhost:9999/blazegraph/namespace/churchill/sparql/thematicsurface/374dd29a-4672-4021-be93-151afb6716ec"
+    }
+]

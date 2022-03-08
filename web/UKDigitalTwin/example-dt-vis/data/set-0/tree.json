@@ -1,0 +1,17 @@
+[
+    {
+        "layerName": "Walls",
+        "defaultState": "visible",
+        "layerIDs": ["walls"]
+    },
+    {
+        "layerName": "Roofs",
+        "defaultState": "visible",
+        "layerIDs": ["roofs"]
+    },
+    {
+        "layerName": "Grounds",
+        "defaultState": "visible",
+        "layerIDs": ["grounds"]
+    }
+]

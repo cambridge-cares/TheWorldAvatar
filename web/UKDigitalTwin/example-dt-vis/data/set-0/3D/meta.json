@@ -1,0 +1,25 @@
+{
+    "dataSets": [
+        {
+            "name": "roofs",
+            "dataType": "geojson",
+            "dataLocation": "roofs.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["roofs-meta.json"]
+        },
+        {
+            "name": "walls",
+            "dataType": "geojson",
+            "dataLocation": "walls.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["walls-meta.json"]
+        },
+        {
+            "name": "grounds",
+            "dataType": "geojson",
+            "dataLocation": "grounds.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["grounds-meta.json"]
+        }
+    ]
+}
