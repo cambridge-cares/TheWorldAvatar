@@ -857,13 +857,11 @@ class UtilsTest {
 		File dest = new File(System.getProperty("java.io.tmpdir") + "dest.txt");
 
 		BufferedWriter bw = new BufferedWriter(new FileWriter(src));
-		bw.write(
-				"Lorem ipsum dolor sit amet\rconsectetur adipisci elit,\rsed eiusmod tempor incidunt\rminim veniam, quis nostrum exercitationem ullam corporis suscipit\r");
+		bw.write("Lorem ipsum dolor sit amet\rconsectetur adipisci elit,\rsed eiusmod tempor incidunt\rminim veniam, quis nostrum exercitationem ullam corporis suscipit\r");
 		bw.close();
 
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(dest));
-		bw1.write(
-				"Lorem ipsum dolor sit amet\nconsectetur adipisci elit,\nsed eiusmod tempor incidunt\nminim veniam, quis nostrum exercitationem ullam corporis suscipit\n");
+		bw1.write("Lorem ipsum dolor sit amet\nconsectetur adipisci elit,\nsed eiusmod tempor incidunt\nminim veniam, quis nostrum exercitationem ullam corporis suscipit\n");
 		bw1.close();
 
 		Utils.translateLineEndingIntoUnix(src);
@@ -881,13 +879,11 @@ class UtilsTest {
 		File expected = new File("expected.txt");
 
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(src));
-		bw1.write(
-				"Lorem ipsum dolor sit amet \r consectetur adipisci elit,\r sed eiusmod tempor incidunt \r minim veniam, quis nostrum exercitationem ullam corporis suscipit \r");
+		bw1.write("Lorem ipsum dolor sit amet \r consectetur adipisci elit,\r sed eiusmod tempor incidunt \r minim veniam, quis nostrum exercitationem ullam corporis suscipit \r");
 		bw1.close();
 
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(expected));
-		bw2.write(
-				"Lorem ipsum dolor sit amet \n consectetur adipisci elit,\n sed eiusmod tempor incidunt \n minim veniam, quis nostrum exercitationem ullam corporis suscipit \n");
+		bw2.write("Lorem ipsum dolor sit amet \n consectetur adipisci elit,\n sed eiusmod tempor incidunt \n minim veniam, quis nostrum exercitationem ullam corporis suscipit \n");
 		bw2.close();
 
 		Utils utils = new Utils();
