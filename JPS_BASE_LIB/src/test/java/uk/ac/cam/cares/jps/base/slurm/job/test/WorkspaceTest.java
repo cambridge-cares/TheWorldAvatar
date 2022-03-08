@@ -25,7 +25,7 @@ class WorkspaceTest {
 	@Test
 	public void getWorkspaceTest() throws IOException {
 		
-		String workspaceParentPath = System.getProperty("user.home");
+		String workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
 		String agentClass = "UnitTestAgent";
 		File workspace = new File(workspaceParentPath.concat(File.separator).concat(agentClass).concat("_").concat(""+System.nanoTime()));
 		workspace.mkdir();
@@ -35,16 +35,17 @@ class WorkspaceTest {
 		workspace.delete();
 		
 		assertEquals(workspaceParentPath.concat(File.separator).concat(agentClass), Workspace.getWorkspace(workspaceParentPath, agentClass).getAbsolutePath().split("_")[0]);
+		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
 		assertNotNull(Workspace.getWorkspace(workspaceParentPath, agentClass));
 		
-		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
+		
 		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
 	}
 	
 	@Test
 	public void createWorkspaceNameTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		
-		String workspaceParentPath = System.getProperty("user.home");
+		String workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
 		String agentClass = "UnitTestAgent";
 		Workspace workspace = new Workspace();
 		Method createWorkspaceName = workspace.getClass().getDeclaredMethod("createWorkspaceName", String.class, String.class);
@@ -60,7 +61,7 @@ class WorkspaceTest {
 	@Test
 	public void isWorkspaceAvailableTestOne() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException{
 		
-		String workspaceParentPath = System.getProperty("user.home");
+		String workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
 		String agentClass = "UnitTestAgent";
 		File ws = new File(workspaceParentPath.concat(File.separator).concat(agentClass).concat("_").concat(""+System.nanoTime()));
 		ws.mkdir();
@@ -78,7 +79,7 @@ class WorkspaceTest {
 	@Test
 	public void isWorkspaceAvailableTestTwo() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException{
 		
-		String workspaceParentPath = System.getProperty("user.home");
+		String workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
 		String agentClass = "UnitTestAgent";
 		File ws = new File(workspaceParentPath.concat(File.separator).concat(agentClass).concat("_").concat(""+System.nanoTime()));
 		ws.mkdir();
@@ -95,39 +96,47 @@ class WorkspaceTest {
 	@Test
 	public void createJSONInputFileTest() throws IOException {
 		
-		String workspaceFolder = System.getProperty("java.io.tmpdir");
-		File wsfolder = new File(workspaceFolder);
-		String jsonInputFilePath = workspaceFolder+"input.json";
+		File workspaceFolder = new File(System.getProperty("java.io.tmpdir"));
+		String jsonInputFilePath = workspaceFolder.getAbsolutePath()+"input.json";
+		String jsonInputFilePath_temp = workspaceFolder.getAbsolutePath()+"input_temp.json";
 		String jsonString = "Lorem ipsum dolor sit amet\nconsectetur adipisci elit,\nsed eiusmod tempor incidunt\n minim veniam, quis nostrum exercitationem ullam corporis suscipit\n";
 		Workspace workspace = new Workspace();
-		assertEquals(Status.JOB_SETUP_SUCCESS_MSG.getName(), workspace.createJSONInputFile(wsfolder, jsonInputFilePath, jsonString));
+		
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(jsonInputFilePath_temp)));
+		bw.write("Lorem ipsum dolor sit amet\nconsectetur adipisci elit,\nsed eiusmod tempor incidunt\n minim veniam, quis nostrum exercitationem ullam corporis suscipit\n");
+		bw.close();
+		
+		assertEquals(Status.JOB_SETUP_SUCCESS_MSG.getName(), workspace.createJSONInputFile(workspaceFolder, jsonInputFilePath, jsonString));
+		assertTrue(FileUtils.contentEquals(new File(jsonInputFilePath), new File(jsonInputFilePath_temp)));
 		
 		new File(jsonInputFilePath).delete();
+		new File(jsonInputFilePath_temp).delete();
 	}
 	
 	@Test
-	public void getInputFilePathTest() {
+	public void getInputFilePathTest() throws IOException {
 		
-		File jobFolder = new File(System.getProperty("user.home")+File.separator+"hpcAddress_"+System.nanoTime());
-		
-		String hpcAddress = "hpcAddress";
+		File taskspace = new File(System.getProperty("java.io.tmpdir") + "UnitTestAgent_435827288195609");
+		File jobFolder = new File(taskspace + File.separator + "login-skylake.hpc.cam.ac.uk_110761971919363");
+		jobFolder.mkdirs();
+		String hpcAddress = "login-skylake.hpc.cam.ac.uk";
 		String inputFileExtension = ".com";
-		String[] tokens = jobFolder.toString().split("_");
+		String[] tokens = jobFolder.getName().split("_");
 		String timeStampPart = null;
 		if(tokens.length==2 && tokens[1]!=null && StringUtils.isNumeric(tokens[1]))
 			 timeStampPart = tokens[1];
 		Workspace workspace = new Workspace();
 		assertEquals(jobFolder.getAbsolutePath()+File.separator+hpcAddress+"_"+timeStampPart+inputFileExtension, workspace.getInputFilePath(jobFolder, hpcAddress, inputFileExtension));
 		
+		FileUtils.forceDelete(taskspace);
 	}
 	
 	@Test
 	public void getInputFileExtension() throws SlurmJobException, IOException {
 		
-		File input = new File(System.getProperty("user.home")+File.separator+"input.csv");
+		File input = new File(System.getProperty("java.io.tmpdir")+File.separator+"input.csv");
 		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(input));
-		bw.write("");
 		bw.close();
 		Workspace workspace = new Workspace();
 		
@@ -136,8 +145,8 @@ class WorkspaceTest {
 	
 	@Test
 	public void createJobFolderTest() {
-		String workspacePath = System.getProperty("user.home");
-		String hpcAddress = "hpcAddress";
+		String workspacePath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
+		String hpcAddress = "login-skylake.hpc.cam.ac.uk";
 		long timeStamp = System.nanoTime();
 		Workspace workspace = new Workspace();
 		File jobfolder = new File(workspacePath.concat(File.separator).concat(hpcAddress).concat("_").concat(""+timeStamp));
@@ -170,7 +179,7 @@ class WorkspaceTest {
 		
 		File workspaceFolder = new File(System.getProperty("java.io.tmpdir"));
 		String statusFilePath = workspaceFolder.toString()+File.separator+Status.STATUS_FILE.getName();
-		String hpcAddress = "hpcAddress";
+		String hpcAddress = "login-skylake.hpc.cam.ac.uk";
 		File tempFile = new File(workspaceFolder+File.separator+"temp.txt");
 		Workspace workspace = new Workspace();
 		
