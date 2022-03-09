@@ -201,7 +201,7 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             if data[SCAN_COORDINATE_UNIT] == "Angstrom":
                 scan_unit = f"{unit_pref}unit#Angstrom"
 
-            elif data[SCAN_COORDINATE_UNIT] == "Degrees":
+            elif data[SCAN_COORDINATE_UNIT] == "Degree":
                 scan_unit = f"{unit_pref}unit#DegreeAngle"
 
             if scan_unit:
