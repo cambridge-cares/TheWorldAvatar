@@ -125,17 +125,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         writer.write_imports(
             name="ABoxOntoSpecies", importing=spec_pref[:-1], rel="base"
         )
-        writer.write_inst(iri=out_id, type="Species")
-        writer.write_data_prop(
-            iri=out_id,
-            rel="http://purl.org/dc/elements/1.1/identifier",
-            value=out_id,
-        )
-        writer.write_data_prop(
-            iri=out_id,
-            rel="http://www.w3.org/2000/01/rdf-schema#label",
-            value=label,
-        )
+        writer.write_inst(iri=out_id, type="Species").add_data_prop(
+            rel="http://purl.org/dc/elements/1.1/identifier", value=out_id
+        ).add_data_prop(rel="http://www.w3.org/2000/01/rdf-schema#label", value=label)
 
     def _write_identifier_geom(self, writer: Abox_Writer, out_id, data):
 
@@ -204,36 +196,25 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             writer.write_inst(
                 iri=f"Atom_{atom_id}",
                 type=f"{gain_pref}Atom",
-            )
-            writer.write_obj_prop(
-                src_iri=out_id,
-                trg_iri=f"Atom_{atom_id}",
-                rel=f"{gain_pref}hasAtom",
-            )
-            writer.write_obj_prop(
-                src_iri=f"Atom_{atom_id}",
-                trg_iri=f"{table_pref}#{atom_type}",
+            ).add_obj_prop(iri=out_id, rel=f"{gain_pref}hasAtom",).add_obj_prop(
+                iri=f"{table_pref}#{atom_type}",
                 rel=f"{gain_pref}isElement",
+                reverse=True,
             )
             for i in range(3):  # Write the atom coordinates.
                 writer.write_inst(
                     iri=f"AtomCoordinate{coords[i]}_{atom_id}",
                     type=f"{gain_pref}FloatValue",
-                )
-                writer.write_obj_prop(
-                    src_iri=f"Atom_{atom_id}",
-                    trg_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                ).add_obj_prop(
+                    iri=f"Atom_{atom_id}",
                     rel=f"{gain_pref}hasAtomCoordinate{coords[i]}",
-                )
-                writer.write_data_prop(
-                    iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                ).add_data_prop(
                     rel=f"{gain_pref}hasValue",
                     value=data["Geometry"][k][i],
-                )
-                writer.write_obj_prop(
-                    src_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
-                    trg_iri=f"{unit_pref}unit#Angstrom",
+                ).add_obj_prop(
+                    iri=f"{unit_pref}unit#Angstrom",
                     rel=f"{gain_pref}hasUnit",
+                    reverse=True,
                 )
             atom_counters[atom_type] += 1
 
@@ -244,29 +225,20 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         if FORMAL_CHARGE in data:
             charge = data[FORMAL_CHARGE]
 
-            writer.write_inst(iri=f"Charge_{gen_id}", type=f"{onto_spec}#Charge")
-            writer.write_obj_prop(
-                src_iri=out_id,
-                trg_iri=f"Charge_{gen_id}",
-                rel=f"{onto_spec}#hasCharge",
-            )
-            writer.write_data_prop(
-                iri=f"Charge_{gen_id}",
+            writer.write_inst(
+                iri=f"Charge_{gen_id}", type=f"{onto_spec}#Charge"
+            ).add_obj_prop(iri=out_id, rel=f"{onto_spec}#hasCharge",).add_data_prop(
                 rel=f"{onto_spec}#value",
                 value=charge,
-            )
-            writer.write_data_prop(
-                iri=f"Charge_{gen_id}",
+            ).add_data_prop(
                 rel=f"{onto_spec}#units",
                 value="e",
             )
             writer.write_inst(
                 iri=f"MolecularFormula_{gen_id}",
                 type=f"{onto_spec}#MolecularFormula",
-            )
-            writer.write_obj_prop(
-                src_iri=out_id,
-                trg_iri=f"MolecularFormula_{gen_id}",
+            ).add_obj_prop(
+                iri=out_id,
                 rel=f"{onto_spec}#hasMolecularFormula",
             )
 
@@ -278,31 +250,26 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         atom_list = data[ATOM_LIST]
         atom_counts = data[ATOM_COUNTS]
         for i in range(len(atom_list)):
-            writer.write_inst(iri=f"Element_{atom_list[i]}", type=f"{onto_kin}#Element")
-            writer.write_obj_prop(
-                src_iri=f"MolecularFormula_{gen_id}",
-                trg_iri=f"Element_{atom_list[i]}",
+            writer.write_inst(
+                iri=f"Element_{atom_list[i]}", type=f"{onto_kin}#Element"
+            ).add_obj_prop(
+                iri=f"MolecularFormula_{gen_id}",
                 rel=f"{onto_kin}#hasElement",
             )
             writer.write_inst(
                 iri=f"ElementNumber_{gen_id}_{i + 1}",
                 type=f"{onto_kin}#ElementNumber",
-            )
-            writer.write_obj_prop(
-                src_iri=f"MolecularFormula_{gen_id}",
-                trg_iri=f"ElementNumber_{gen_id}_{i + 1}",
+            ).add_obj_prop(
+                iri=f"MolecularFormula_{gen_id}",
                 rel=f"{onto_kin}#hasElementNumber",
-            )
-            writer.write_data_prop(
-                iri=f"ElementNumber_{gen_id}_{i + 1}",
+            ).add_data_prop(
                 rel=f"{onto_kin}#hasNumberOfElement",
                 value=atom_counts[i],
                 data_type="Integer",
-            )
-            writer.write_obj_prop(
-                src_iri=f"ElementNumber_{gen_id}_{i + 1}",
-                trg_iri=f"Element_{atom_list[i]}",
+            ).add_obj_prop(
+                iri=f"Element_{atom_list[i]}",
                 rel=f"{onto_kin}#indicatesNumberOf",
+                reverse=True,
             )
         writer.write_inst(iri=out_id, type=f"{onto_spec}#Species")
 
@@ -315,19 +282,13 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             writer.write_inst(
                 iri=f"MolecularWeight_{gen_id}",
                 type=f"{onto_spec}#MolecularWeight",
-            )
-            writer.write_obj_prop(
-                src_iri=out_id,
-                trg_iri=f"MolecularWeight_{gen_id}",
+            ).add_obj_prop(
+                iri=out_id,
                 rel=f"{onto_spec}#hasMolecularWeight",
-            )
-            writer.write_data_prop(
-                iri=f"MolecularWeight_{gen_id}",
+            ).add_data_prop(
                 rel=f"{onto_spec}#value",
                 value=molwt,
-            )
-            writer.write_data_prop(
-                iri=f"MolecularWeight_{gen_id}",
+            ).add_data_prop(
                 rel=f"{onto_spec}#units",
                 value="g/mol",
             )
@@ -342,14 +303,10 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             writer.write_inst(
                 iri=f"StandardEnthalpyOfFormation_{gen_id}",
                 type=f"{onto_spec}#StandardEnthalpyOfFormation",
-            )
-            writer.write_obj_prop(
-                src_iri=out_id,
-                trg_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+            ).add_obj_prop(
+                iri=out_id,
                 rel=f"{onto_spec}#hasStandardEnthalpyOfFormation",
-            )
-            writer.write_data_prop(
-                iri=f"StandardEnthalpyOfFormation_{gen_id}",
+            ).add_data_prop(
                 rel=f"{onto_spec}#value",
                 value=data[ENTH_FORM],
             )
@@ -362,14 +319,10 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         if ENTH_REFTEMP in data:
             writer.write_inst(
                 iri=f"Temperature_{gen_id}", type=f"{onto_spec}#Temperature"
-            )
-            writer.write_obj_prop(
-                src_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                trg_iri=f"Temperature_{gen_id}",
+            ).add_obj_prop(
+                iri=f"StandardEnthalpyOfFormation_{gen_id}",
                 rel=f"{onto_spec}#hasReferenceTemperature",
-            )
-            writer.write_data_prop(
-                iri=f"Temperature_{gen_id}",
+            ).add_data_prop(
                 rel=f"{onto_spec}#value",
                 value=data[ENTH_REFTEMP],
             )
@@ -383,21 +336,17 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             writer.write_inst(
                 iri=f"{data[ENTH_PHASE]}Phase_{gen_id}",
                 type=f"{onto_kin}#{data[ENTH_PHASE]}Phase",
-            )
-            writer.write_obj_prop(
-                src_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                trg_iri=f"{data[ENTH_PHASE]}Phase_{gen_id}",
+            ).add_obj_prop(
+                iri=f"StandardEnthalpyOfFormation_{gen_id}",
                 rel=f"{onto_spec}#hasPhase",
             )
         if ENTH_PROV in data:
-            writer.write_inst(iri=f"Reference_{gen_id}", type=f"{onto_kin}#Reference")
-            writer.write_obj_prop(
-                src_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                trg_iri=f"Reference_{gen_id}",
+            writer.write_inst(
+                iri=f"Reference_{gen_id}", type=f"{onto_kin}#Reference"
+            ).add_obj_prop(
+                iri=f"StandardEnthalpyOfFormation_{gen_id}",
                 rel=f"{onto_spec}#hasProvenance",
-            )
-            writer.write_data_prop(
-                iri=f"Reference_{gen_id}",
+            ).add_data_prop(
                 rel="http://www.w3.org/2000/01/rdf-schema#label",
                 value=data[ENTH_PROV],
             )

@@ -124,10 +124,8 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         writer.write_inst(
             iri=f"{pes_pref}{scan_type}_{calc_id}",
             type=f"{onto_pes}#{scan_type}",
-        )
-        writer.write_obj_prop(
-            src_iri=f"{pes_pref}{data['EntryIRI']}",
-            trg_iri=f"{pes_pref}{scan_type}_{calc_id}",
+        ).add_obj_prop(
+            iri=f"{pes_pref}{data['EntryIRI']}",
             rel=f"{onto_pes}#hasScanCoordinate",
         )
         for atomiri in data[SCAN_COORDINATE_ATOMS_IRIS]:
@@ -135,11 +133,8 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             writer.write_inst(
                 iri=f"{spec_pref}{atomiri}",
                 type=f"{gain_pref}Atom",
-            )
-
-            writer.write_obj_prop(
-                src_iri=f"{pes_pref}{scan_type}_{calc_id}",
-                trg_iri=f"{spec_pref}{atomiri}",
+            ).add_obj_prop(
+                iri=f"{pes_pref}{scan_type}_{calc_id}",
                 rel=f"{onto_pes}#hasScanAtom",
             )
 
@@ -157,49 +152,38 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             writer.write_inst(
                 iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
                 type=f"{onto_pes}#ScanPoint",
-            )
-            writer.write_obj_prop(
-                src_iri=f"{pes_pref}{entryIRI}",
-                trg_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
+            ).add_obj_prop(
+                iri=f"{pes_pref}{entryIRI}",
                 rel=f"{onto_pes}#hasScanPoint",
             )
             writer.write_inst(
                 iri=data[SCAN_POINTS_JOBS][k],
                 type=f"{onto_comp}#{gauss_type}",
-            )
-            writer.write_obj_prop(
-                src_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
-                trg_iri=data[SCAN_POINTS_JOBS][k],
-                rel=f"{onto_pes}#hasCalculation",
-            )
-            writer.write_data_prop(
+            ).add_obj_prop(
                 iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
+                rel=f"{onto_pes}#hasCalculation",
+                store_inst=True,
+            ).add_data_prop(
                 rel=f"{onto_pes}#hasInputAtomIds",
                 value=data[SCAN_ATOM_IDS],
             )
+
             writer.write_inst(
                 iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
                 type=f"{onto_pes}#ScanCoordinateValue",
-            )
-            writer.write_obj_prop(
-                src_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
-                trg_iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
+            ).add_obj_prop(
+                iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
                 rel=f"{onto_pes}#hasScanCoordinateValue",
-            )
-            writer.write_data_prop(
-                iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
+            ).add_data_prop(
                 rel=f"{gain_pref}hasValue",
                 value=data[SCAN_COORDINATE_VALUE][k],
             )
 
             scan_unit = ""
-
             if data[SCAN_COORDINATE_UNIT] == "Angstrom":
                 scan_unit = f"{unit_pref}unit#Angstrom"
-
             elif data[SCAN_COORDINATE_UNIT] == "Degree":
                 scan_unit = f"{unit_pref}unit#DegreeAngle"
-
             if scan_unit:
                 writer.write_obj_prop(
                     src_iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",

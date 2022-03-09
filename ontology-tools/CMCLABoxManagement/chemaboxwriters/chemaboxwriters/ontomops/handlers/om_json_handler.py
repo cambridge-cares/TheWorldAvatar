@@ -18,6 +18,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+Abox_Writer = utilsfunc.Abox_csv_writer
+
 
 class OM_JSON_TO_OM_CSV_Handler(Handler):
     """Handler converting ontomops om_json files to om_csv.
@@ -75,13 +77,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         self, file_path: str, output_file_path: str, *args, **kwargs
     ) -> None:
 
-        onto_mops = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_mops"]
-        mops_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["mops_pref"]
-        rdf_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["rdf_pref"]
-        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
-        uom_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["uom_pref"]
-        unres_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unres_pref"]
-
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
@@ -89,393 +84,361 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         mops_id = data[globals.ENTRY_IRI]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
-            assemblymodel = None
-            query_endpoints = self.endpoints_config.get(abconf.QUERY_SETTINGS_KEY, {})
-            omops_query_endpoint = query_endpoints.get(abconf.OMOPS_QUERY_ENDPOINT_KEY)
-            if omops_query_endpoint is None:
-                logger.warning(
-                    (
-                        "Couldn't query for the assembly model IRI, The query "
-                        "endpoint not specified in the aboxwriters config file."
-                    )
+
+            self._write_initial(writer, gen_id, mops_id, data)
+            self._write_provenance(writer, gen_id, mops_id, data)
+            self._write_mol_weight(writer, gen_id, mops_id, data)
+            self._write_charge(writer, gen_id, mops_id, data)
+            self._write_cavity(writer, gen_id, mops_id, data)
+            asmodel_uuid = self._get_assembly_model_uuid(gen_id, data)
+            self._write_assembly_model(writer, gen_id, asmodel_uuid, mops_id, data)
+            self._write_cbu_gbu(writer, gen_id, asmodel_uuid, mops_id, data)
+
+    def _write_initial(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
+
+        onto_mops = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_mops"]
+        mops_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["mops_pref"]
+        rdf_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["rdf_pref"]
+
+        writer.write_header()
+
+        # Write the main initialization for now.
+        writer.write_imports(
+            name="ABoxOntoMOPs",
+            importing=onto_mops,
+            rel="http://www.w3.org/2002/07/owl#imports",
+        )
+        writer.write_imports(name="ABoxOntoMOPs", importing=mops_pref, rel="base")
+
+        writer.write_inst(
+            iri=f"{mops_pref}{mops_id}",
+            type=f"{onto_mops}#MetalOrganicPolyhedra",
+        ).add_data_prop(  # label for the MOP
+            rel=f"{rdf_pref}#label",
+            value=data["Mops_Label"],
+        ).add_data_prop(  # Chemical formula for the MOP
+            rel=f"{onto_mops}#hasMOPFormula",
+            value=data["Mops_Formula"],
+        ).add_data_prop(
+            rel=f"{onto_mops}#hasCCDCNumber",
+            value=data["Mops_CCDC_Number"],
+        )  # CCDC No. for the MOP
+        #
+
+    def _write_provenance(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
+
+        onto_mops = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_mops"]
+        mops_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["mops_pref"]
+
+        # Write the Provenance of the MOPs.
+        writer.write_inst(
+            iri=f"{mops_pref}Provenance_{gen_id}",
+            type=f"{onto_mops}#Provenance",
+        ).add_obj_prop(  # Connect the Provenance to the MOPs instance.
+            iri=f"{mops_pref}{mops_id}",
+            rel=f"{onto_mops}#hasProvenance",
+        ).add_data_prop(
+            rel=f"{onto_mops}#hasReferenceDOI",
+            value=data["Mops_Reference_DOI"],
+        )
+
+    def _write_mol_weight(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
+
+        mops_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["mops_pref"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        uom_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["uom_pref"]
+
+        # Write the Molecular Weight section for the MOPs.
+        writer.write_inst(
+            iri=f"{mops_pref}MolecularWeight_{gen_id}",
+            type=f"{onto_spec}#MolecularWeight",
+        ).add_obj_prop(
+            iri=f"{mops_pref}{mops_id}",
+            rel=f"{onto_spec}#hasMolecularWeight",
+        )  # Link the Molecular Weight object to the MOPs.
+        writer.write_inst(
+            iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
+            type=f"{uom_pref}Measure",
+        ).add_obj_prop(
+            iri=f"{mops_pref}MolecularWeight_{gen_id}",
+            rel=f"{uom_pref}hasValue",
+        ).add_data_prop(
+            rel=f"{uom_pref}hasNumericalValue",
+            value=data["Mops_Molecular_Weight"],
+        )  # Link the Numerical Value of Molecular Weight to the Measure.
+        writer.write_inst(
+            iri=f"{uom_pref}MolarMassUnit", type=f"{uom_pref}Unit"
+        ).add_obj_prop(
+            iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
+            rel=f"{uom_pref}hasUnit",
+        )
+
+    def _write_charge(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
+
+        mops_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["mops_pref"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        uom_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["uom_pref"]
+        unres_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unres_pref"]
+
+        # Write the Charge section for the MOPs.
+        writer.write_inst(
+            iri=f"{mops_pref}Charge_{gen_id}", type=f"{onto_spec}#Charge"
+        ).add_obj_prop(
+            iri=f"{mops_pref}{mops_id}",
+            rel=f"{onto_spec}#hasCharge",
+        )
+        writer.write_inst(
+            iri=f"{uom_pref}Measure_Charge_{gen_id}",
+            type=f"{uom_pref}Measure",
+        ).add_obj_prop(
+            iri=f"{mops_pref}Charge_{gen_id}",
+            rel=f"{uom_pref}hasValue",
+        ).add_data_prop(
+            rel=f"{uom_pref}hasNumericalValue",
+            value=data["Mops_Charge"],
+        )  # Link the Numerical Value of Charge to the Measure.
+
+        # Take the elementary charge Unit instance from our extension
+        # of the UOM ontology.
+        writer.write_inst(
+            iri=f"{unres_pref}elementary_charge", type=f"{uom_pref}Unit"
+        ).add_obj_prop(
+            iri=f"{uom_pref}Measure_Charge_{gen_id}",
+            rel=f"{uom_pref}hasUnit",
+        )
+
+    def _write_cavity(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
+
+        onto_mops = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_mops"]
+        mops_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["mops_pref"]
+        uom_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["uom_pref"]
+
+        # Write the Cavity section for the MOPs.
+        writer.write_inst(
+            iri=f"{mops_pref}Cavity_{gen_id}", type=f"{onto_mops}#Cavity"
+        ).add_obj_prop(
+            iri=f"{mops_pref}{mops_id}",
+            rel=f"{onto_mops}#hasCavity",
+        )
+        writer.write_inst(
+            iri=f"{mops_pref}Volume_{gen_id}", type=f"{onto_mops}#Volume"
+        ).add_obj_prop(
+            iri=f"{mops_pref}Cavity_{gen_id}",
+            rel=f"{onto_mops}#hasMOPCavityVolume",
+        )  # Link the Volume object to the cavity.
+        writer.write_inst(
+            iri=f"{uom_pref}Measure_Volume_{gen_id}",
+            type=f"{uom_pref}Measure",
+        ).add_obj_prop(
+            iri=f"{mops_pref}Volume_{gen_id}",
+            rel=f"{uom_pref}hasValue",
+        ).add_data_prop(
+            rel=f"{uom_pref}hasNumericalValue",
+            value=data["Mops_CavityVolume"],
+        )  # Link the Numerical Value of Volume to the Measure.
+        writer.write_inst(
+            iri=f"{uom_pref}cubicNanometre", type=f"{uom_pref}Unit"
+        ).add_obj_prop(
+            iri=f"{uom_pref}Measure_Volume_{gen_id}",
+            rel=f"{uom_pref}hasUnit",
+        )
+
+    def _get_assembly_model_uuid(self, gen_id, data) -> str:
+
+        assemblymodel = None
+        query_endpoints = self.endpoints_config.get(abconf.QUERY_SETTINGS_KEY, {})
+        omops_query_endpoint = query_endpoints.get(abconf.OMOPS_QUERY_ENDPOINT_KEY)
+        if omops_query_endpoint is None:
+            logger.warning(
+                (
+                    "Couldn't query for the assembly model IRI, The query "
+                    "endpoint not specified in the aboxwriters config file."
                 )
-            else:
-                search1 = qtmpl.get_assembly_iri(
-                    omops_query_endpoint,
-                    data["Mops_Chemical_Building_Units"][0]["GenericUnitModularity"],
-                    data["Mops_Chemical_Building_Units"][0]["GenericUnitPlanarity"],
-                    data["Mops_Chemical_Building_Units"][0]["GenericUnitNumber"],
-                    data["Mops_Symmetry_Point_Group"],
-                )
-
-                search2 = qtmpl.get_assembly_iri(
-                    omops_query_endpoint,
-                    data["Mops_Chemical_Building_Units"][1]["GenericUnitModularity"],
-                    data["Mops_Chemical_Building_Units"][1]["GenericUnitPlanarity"],
-                    data["Mops_Chemical_Building_Units"][1]["GenericUnitNumber"],
-                    data["Mops_Symmetry_Point_Group"],
-                )
-                if search1 and search2:
-                    assemblymodel = list(set(search1).intersection(search2))[0]
-
-            if assemblymodel is None:
-                asmodel_uuid = gen_id
-            else:
-                asmodel_uuid = assemblymodel.split("_")[-1]
-
-            writer.write_header()
-
-            # Write the main initialization for now.
-            writer.write_imports(
-                name="ABoxOntoMOPs",
-                importing=onto_mops,
-                rel="http://www.w3.org/2002/07/owl#imports",
             )
-            writer.write_imports(name="ABoxOntoMOPs", importing=mops_pref, rel="base")
+        else:
+            search1 = qtmpl.get_assembly_iri(
+                omops_query_endpoint,
+                data["Mops_Chemical_Building_Units"][0]["GenericUnitModularity"],
+                data["Mops_Chemical_Building_Units"][0]["GenericUnitPlanarity"],
+                data["Mops_Chemical_Building_Units"][0]["GenericUnitNumber"],
+                data["Mops_Symmetry_Point_Group"],
+            )
+
+            search2 = qtmpl.get_assembly_iri(
+                omops_query_endpoint,
+                data["Mops_Chemical_Building_Units"][1]["GenericUnitModularity"],
+                data["Mops_Chemical_Building_Units"][1]["GenericUnitPlanarity"],
+                data["Mops_Chemical_Building_Units"][1]["GenericUnitNumber"],
+                data["Mops_Symmetry_Point_Group"],
+            )
+            if search1 and search2:
+                assemblymodel = list(set(search1).intersection(search2))[0]
+
+        if assemblymodel is None:
+            asmodel_uuid = gen_id
+        else:
+            asmodel_uuid = assemblymodel.split("_")[-1]
+
+        return asmodel_uuid
+
+    def _write_assembly_model(
+        self, writer: Abox_Writer, gen_id, asmodel_uuid, mops_id, data
+    ) -> None:
+
+        onto_mops = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_mops"]
+        mops_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["mops_pref"]
+
+        # Write the Assembly Model initialization and shape/symmetry
+        # related instances.
+        writer.write_inst(
+            iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+            type=f"{onto_mops}#AssemblyModel",
+        ).add_obj_prop(
+            iri=f"{mops_pref}{mops_id}",
+            rel=f"{onto_mops}#hasAssemblyModel",
+        ).add_data_prop(
+            rel=f"{onto_mops}#hasSymmetryPointGroup",
+            value=data["Mops_Symmetry_Point_Group"],
+        )  # Write the Symmetry point group for the MOPs.
+        writer.write_inst(
+            iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
+            type=f"{onto_mops}#{data['Mops_Polyhedral_Shape']}",
+        ).add_obj_prop(
+            iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+            rel=f"{onto_mops}#hasPolyhedralShape",
+        ).add_data_prop(
+            rel=f"{onto_mops}#hasSymbol",
+            value=data["Mops_Polyhedral_Shape_Symbol"],
+        )
+
+    def _write_cbu_gbu(
+        self, writer: Abox_Writer, gen_id, asmodel_uuid, mops_id, data
+    ) -> None:
+
+        onto_mops = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_mops"]
+        mops_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["mops_pref"]
+        rdf_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["rdf_pref"]
+        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
+
+        # Write the information about the Chemical and Generic Building units.
+        for i in range(
+            len(data["Mops_Chemical_Building_Units"])
+        ):  # We will loop through all the building units in the JSON.
+
+            cbu_i = data["Mops_Chemical_Building_Units"][i]
+
             writer.write_inst(
+                iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                type=f"{onto_mops}#ChemicalBuildingUnit",
+            ).add_obj_prop(
                 iri=f"{mops_pref}{mops_id}",
-                type=f"{onto_mops}#MetalOrganicPolyhedra",
-            )
+                rel=f"{onto_mops}#hasChemicalBuildingUnit",
+            ).add_data_prop(
+                rel=f"{onto_mops}#hasCBUFormula",
+                value=cbu_i["CBU_Formula"],
+            )  # CBU Formula
+            bind_dir = "BindingDirection"
+            writer.write_inst(
+                iri=f"{mops_pref}{cbu_i[bind_dir]}Binding_{gen_id}",
+                type=f"{onto_mops}#{cbu_i[bind_dir]}Binding",
+            ).add_obj_prop(
+                iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                rel=f"{onto_mops}#hasBindingDirection",
+                store_inst=True,
+            ).add_obj_prop(
+                iri=f"{cbu_i['OntoSpecies_IRI']}",
+                rel=f"{onto_spec}#hasUniqueSpecies",
+                reverse=True,
+            )  # Connect CBU to OntoSpecies entry.
 
-            # Write the properties directly connected to MOPS instance
-            # that then terminate.
-            writer.write_data_prop(
-                iri=f"{mops_pref}{mops_id}",
+            writer.write_inst(
+                iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
+                type=f"{onto_mops}#{cbu_i['Binding_Site']}Site",
+            ).add_obj_prop(
+                iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                rel=f"{onto_mops}#hasBindingSite",
+            ).add_data_prop(
                 rel=f"{rdf_pref}#label",
-                value=data["Mops_Label"],
-            )  # label for the MOP
-            writer.write_data_prop(
-                iri=f"{mops_pref}{mops_id}",
-                rel=f"{onto_mops}#hasMOPFormula",
-                value=data["Mops_Formula"],
-            )  # Chemical formula for the MOP
-            writer.write_data_prop(
-                iri=f"{mops_pref}{mops_id}",
-                rel=f"{onto_mops}#hasCCDCNumber",
-                value=data["Mops_CCDC_Number"],
-            )  # CCDC No. for the MOP
-            #
-            #  XYZ Geometry in string form for the MOP.
-
-            # Write the Provenance of the MOPs.
-            writer.write_inst(
-                iri=f"{mops_pref}Provenance_{gen_id}",
-                type=f"{onto_mops}#Provenance",
-            )  # Initialize the Provenance object for the MOPs.
-            writer.write_obj_prop(
-                src_iri=f"{mops_pref}{mops_id}",
-                trg_iri=f"{mops_pref}Provenance_{gen_id}",
-                rel=f"{onto_mops}#hasProvenance",
-            )  # Connect the Provenance to the MOPs instance.
-            writer.write_data_prop(
-                iri=f"{mops_pref}Provenance_{gen_id}",
-                rel=f"{onto_mops}#hasReferenceDOI",
-                value=data["Mops_Reference_DOI"],
+                value=f"{cbu_i['Binding_Site_Label']}",
+            ).add_data_prop(
+                rel=f"{onto_mops}#hasOuterCoordinationNumber",
+                value=f"{cbu_i['Binding_SiteCoordNumber']}",
             )
 
-            # Write the Molecular Weight section for the MOPs.
             writer.write_inst(
-                iri=f"{mops_pref}MolecularWeight_{gen_id}",
-                type=f"{onto_spec}#MolecularWeight",
-            )  # Initialize the Molecular Weight object for the MOPs.
-            writer.write_obj_prop(
-                src_iri=f"{mops_pref}{mops_id}",
-                trg_iri=f"{mops_pref}MolecularWeight_{gen_id}",
-                rel=f"{onto_spec}#hasMolecularWeight",
-            )  # Link the Molecular Weight object to the MOPs.
+                iri=f"{mops_pref}Core_{gen_id}_{i}",
+                type=f"{onto_mops}#Core",
+            ).add_obj_prop(
+                iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                rel=f"{onto_mops}#hasCore",
+            ).add_data_prop(
+                rel=f"{rdf_pref}#label",
+                value=f"{cbu_i['CoreLabel']}",
+            )  # Attach label to Core.
             writer.write_inst(
-                iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
-                type=f"{uom_pref}Measure",
-            )  # This is the Measure from the Ontology of Units of Measure
-            # that we will use for Molecular Weight.
-            writer.write_obj_prop(
-                src_iri=f"{mops_pref}MolecularWeight_{gen_id}",
-                trg_iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
-                rel=f"{uom_pref}hasValue",
-            )  # Link the Measure to the Molecular Weight instance.
-            writer.write_data_prop(
-                iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
-                rel=f"{uom_pref}hasNumericalValue",
-                value=data["Mops_Molecular_Weight"],
-            )  # Link the Numerical Value of Molecular Weight to the Measure.
-            writer.write_inst(
-                iri=f"{uom_pref}MolarMassUnit", type=f"{uom_pref}Unit"
-            )  # Take the MolarMass Unit instance from the UOM ontology.
-            writer.write_obj_prop(
-                src_iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
-                trg_iri=f"{uom_pref}MolarMassUnit",
-                rel=f"{uom_pref}hasUnit",
-            )
+                iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
+                type=f"{onto_mops}#Substituent",
+            ).add_obj_prop(
+                iri=f"{mops_pref}Core_{gen_id}_{i}",
+                rel=f"{onto_mops}#hasSubstituent",
+            ).add_data_prop(
+                rel=f"{rdf_pref}#label",
+                value=f"{cbu_i['CoreSubstituentLabel']}",
+            )  # Attach label to Core Substituent.
 
-            # Write the Charge section for the MOPs.
             writer.write_inst(
-                iri=f"{mops_pref}Charge_{gen_id}", type=f"{onto_spec}#Charge"
-            )  # Initialize the Charge object for the MOPs.
-            writer.write_obj_prop(
-                src_iri=f"{mops_pref}{mops_id}",
-                trg_iri=f"{mops_pref}Charge_{gen_id}",
-                rel=f"{onto_spec}#hasCharge",
-            )  # Link the Charge object to the MOPs.
+                iri=f"{mops_pref}Spacer_{gen_id}_{i}",
+                type=f"{onto_mops}#Spacer",
+            ).add_obj_prop(
+                iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                rel=f"{onto_mops}#hasSpacer",
+            ).add_data_prop(
+                rel=f"{rdf_pref}#label",
+                value=f"{cbu_i['SpacerLabel']}",
+            )  # Attach label to Spacer.
             writer.write_inst(
-                iri=f"{uom_pref}Measure_Charge_{gen_id}",
-                type=f"{uom_pref}Measure",
-            )  # This is the Measure from the Ontology of Units of Measure
-            # that we will use for Charge.
-            writer.write_obj_prop(
-                src_iri=f"{mops_pref}Charge_{gen_id}",
-                trg_iri=f"{uom_pref}Measure_Charge_{gen_id}",
-                rel=f"{uom_pref}hasValue",
-            )  # Link the Measure to the Charge instance.
-            writer.write_data_prop(
-                iri=f"{uom_pref}Measure_Charge_{gen_id}",
-                rel=f"{uom_pref}hasNumericalValue",
-                value=data["Mops_Charge"],
-            )  # Link the Numerical Value of Charge to the Measure.
-            writer.write_inst(
-                iri=f"{unres_pref}elementary_charge", type=f"{uom_pref}Unit"
-            )  # Take the elementary charge Unit instance from our extension
-            # of the UOM ontology.
-            writer.write_obj_prop(
-                src_iri=f"{uom_pref}Measure_Charge_{gen_id}",
-                trg_iri=f"{unres_pref}elementary_charge",
-                rel=f"{uom_pref}hasUnit",
-            )
+                iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
+                type=f"{onto_mops}#Substituent",
+            ).add_obj_prop(
+                iri=f"{mops_pref}Spacer_{gen_id}_{i}",
+                rel=f"{onto_mops}#hasSubstituent",
+            ).add_data_prop(
+                rel=f"{rdf_pref}#label",
+                value=f"{cbu_i['SpacerSubstituentLabel']}",
+            )  # Attach label to Spacer Substituent.
 
-            # Write the Cavity section for the MOPs.
-            writer.write_inst(
-                iri=f"{mops_pref}Cavity_{gen_id}", type=f"{onto_mops}#Cavity"
-            )  # Initialize the Cavity object for the MOPs.
-            writer.write_obj_prop(
-                src_iri=f"{mops_pref}{mops_id}",
-                trg_iri=f"{mops_pref}Cavity_{gen_id}",
-                rel=f"{onto_mops}#hasCavity",
-            )  # Link the Cavity object to the MOPs.
-            writer.write_inst(
-                iri=f"{mops_pref}Volume_{gen_id}", type=f"{onto_mops}#Volume"
-            )  # Initialize the Volume object for the MOPs.
-            writer.write_obj_prop(
-                src_iri=f"{mops_pref}Cavity_{gen_id}",
-                trg_iri=f"{mops_pref}Volume_{gen_id}",
-                rel=f"{onto_mops}#hasMOPCavityVolume",
-            )  # Link the Volume object to the cavity.
-            writer.write_inst(
-                iri=f"{uom_pref}Measure_Volume_{gen_id}",
-                type=f"{uom_pref}Measure",
-            )  # This is the Measure from the Ontology of Units of Measure
-            # that we will use for Volume.
-            writer.write_obj_prop(
-                src_iri=f"{mops_pref}Volume_{gen_id}",
-                trg_iri=f"{uom_pref}Measure_Volume_{gen_id}",
-                rel=f"{uom_pref}hasValue",
-            )  # Link the Measure to the Volume instance.
-            writer.write_data_prop(
-                iri=f"{uom_pref}Measure_Volume_{gen_id}",
-                rel=f"{uom_pref}hasNumericalValue",
-                value=data["Mops_CavityVolume"],
-            )  # Link the Numerical Value of Volume to the Measure.
-            writer.write_inst(
-                iri=f"{uom_pref}cubicNanometre", type=f"{uom_pref}Unit"
-            )  # Take the Cubic Nanometre Unit instance from the UOM ontology.
-            writer.write_obj_prop(
-                src_iri=f"{uom_pref}Measure_Volume_{gen_id}",
-                trg_iri=f"{uom_pref}cubicNanometre",
-                rel=f"{uom_pref}hasUnit",
-            )
+            gbu = "GenericBuildingUnit"
 
-            # Write the Assembly Model initialization and shape/symmetry
-            # related instances.
             writer.write_inst(
+                iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
+                type=f"{onto_mops}#{gbu}",
+            ).add_obj_prop(
                 iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                type=f"{onto_mops}#AssemblyModel",
-            )  # Initialize the Assembly Model object for the MOPs.
-            writer.write_obj_prop(
-                src_iri=f"{mops_pref}{mops_id}",
-                trg_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                rel=f"{onto_mops}#hasAssemblyModel",
-            )  # Connect the MOPs instance to the Assembly Model instance.
-            writer.write_data_prop(
-                iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                rel=f"{onto_mops}#hasSymmetryPointGroup",
-                value=data["Mops_Symmetry_Point_Group"],
-            )  # Write the Symmetry point group for the MOPs.
+                rel=f"{onto_mops}#has{gbu}",
+            ).add_data_prop(
+                rel=f"{onto_mops}#hasPlanarity",
+                value=f"{cbu_i['GenericUnitPlanarity']}",
+            ).add_data_prop(
+                rel=f"{onto_mops}#hasModularity",
+                value=f"{cbu_i['GenericUnitModularity']}",
+            )  # Modularity of GBU.
             writer.write_inst(
-                iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
-                type=f"{onto_mops}#{data['Mops_Polyhedral_Shape']}",
-            )  # Initialize an instance of Polyhedral Shape that is the given
-            # shape from the JSON file.
+                iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
+                type=f"{onto_mops}#{gbu}Number",
+            ).add_obj_prop(
+                iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+                rel=f"{onto_mops}#has{gbu}Number",
+            ).add_obj_prop(
+                iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
+                rel=f"{onto_mops}#isNumberOf",
+                reverse=True,
+            ).add_data_prop(
+                rel=f"{onto_spec}#value",
+                value=f"{cbu_i['GenericUnitNumber']}",
+            )  # Give the GBU Number its value.
+
             writer.write_obj_prop(
-                src_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                trg_iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
-                rel=f"{onto_mops}#hasPolyhedralShape",
-            )  # Connect the Assembly model to polyhedral shape.
-            writer.write_data_prop(
-                iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
-                rel=f"{onto_mops}#hasSymbol",
-                value=data["Mops_Polyhedral_Shape_Symbol"],
-            )
-
-            # Write the information about the Chemical and Generic Building units.
-            for i in range(
-                len(data["Mops_Chemical_Building_Units"])
-            ):  # We will loop through all the building units in the JSON.
-
-                cbu_i = data["Mops_Chemical_Building_Units"][i]
-
-                writer.write_inst(
-                    iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    type=f"{onto_mops}#ChemicalBuildingUnit",
-                )  # Instantiate the Chemical Building Unit.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}{mops_id}",
-                    trg_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    rel=f"{onto_mops}#hasChemicalBuildingUnit",
-                )  # Connect the CBU instance to the MOPs instance.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    rel=f"{onto_mops}#hasCBUFormula",
-                    value=cbu_i["CBU_Formula"],
-                )  # CBU Formula
-                bind_dir = "BindingDirection"
-                writer.write_inst(
-                    iri=f"{mops_pref}{cbu_i[bind_dir]}Binding_{gen_id}",
-                    type=f"{onto_mops}#{cbu_i[bind_dir]}Binding",
-                )  # Instantiate the binding direction for the CBU
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_iri=f"{mops_pref}{cbu_i[bind_dir]}Binding_{gen_id}",
-                    rel=f"{onto_mops}#hasBindingDirection",
-                )
-                # Connect Binding direction instance to CBU instance.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_iri=f"{cbu_i['OntoSpecies_IRI']}",
-                    rel=f"{onto_spec}#hasUniqueSpecies",
-                )  # Connect CBU to OntoSpecies entry.
-
-                writer.write_inst(
-                    iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
-                    type=f"{onto_mops}#{cbu_i['Binding_Site']}Site",
-                )  # Instantiate the binding site for the CBU.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
-                    rel=f"{onto_mops}#hasBindingSite",
-                )
-                # Connect Binding site instance to CBU instance.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
-                    rel=f"{rdf_pref}#label",
-                    value=f"{cbu_i['Binding_Site_Label']}",
-                )  # label for the Binding Site.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
-                    rel=f"{onto_mops}#hasOuterCoordinationNumber",
-                    value=f"{cbu_i['Binding_SiteCoordNumber']}",
-                )
-
-                writer.write_inst(
-                    iri=f"{mops_pref}Core_{gen_id}_{i}",
-                    type=f"{onto_mops}#Core",
-                )
-                # Instantiate the Core for this CBU.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_iri=f"{mops_pref}Core_{gen_id}_{i}",
-                    rel=f"{onto_mops}#hasCore",
-                )  # Connect the Core instance to the CBU instance.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}Core_{gen_id}_{i}",
-                    rel=f"{rdf_pref}#label",
-                    value=f"{cbu_i['CoreLabel']}",
-                )  # Attach label to Core.
-                writer.write_inst(
-                    iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
-                    type=f"{onto_mops}#Substituent",
-                )  # Instantiate the Core Substituent.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}Core_{gen_id}_{i}",
-                    trg_iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
-                    rel=f"{onto_mops}#hasSubstituent",
-                )  # Connect the Core Substituent to the Core.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
-                    rel=f"{rdf_pref}#label",
-                    value=f"{cbu_i['CoreSubstituentLabel']}",
-                )  # Attach label to Core Substituent.
-
-                writer.write_inst(
-                    iri=f"{mops_pref}Spacer_{gen_id}_{i}",
-                    type=f"{onto_mops}#Spacer",
-                )
-                # Instantiate the Spacer for this CBU.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_iri=f"{mops_pref}Spacer_{gen_id}_{i}",
-                    rel=f"{onto_mops}#hasSpacer",
-                )  # Connect the Spacer instance to the CBU instance.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}Spacer_{gen_id}_{i}",
-                    rel=f"{rdf_pref}#label",
-                    value=f"{cbu_i['SpacerLabel']}",
-                )  # Attach label to Spacer.
-                writer.write_inst(
-                    iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
-                    type=f"{onto_mops}#Substituent",
-                )  # Instantiate the Spacer Substituent.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}Spacer_{gen_id}_{i}",
-                    trg_iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
-                    rel=f"{onto_mops}#hasSubstituent",
-                )  # Connect the Spacer Substituent to the Core.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
-                    rel=f"{rdf_pref}#label",
-                    value=f"{cbu_i['SpacerSubstituentLabel']}",
-                )  # Attach label to Spacer Substituent.
-
-                gbu = "GenericBuildingUnit"
-
-                writer.write_inst(
-                    iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    type=f"{onto_mops}#{gbu}",
-                )  # Instantiate the corresponding Generic Building Unit.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                    trg_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    rel=f"{onto_mops}#has{gbu}",
-                )  # Connect the GBU instance to the Assembly Model instance.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    rel=f"{onto_mops}#hasPlanarity",
-                    value=f"{cbu_i['GenericUnitPlanarity']}",
-                )  # Planarity of GBU.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    rel=f"{onto_mops}#hasModularity",
-                    value=f"{cbu_i['GenericUnitModularity']}",
-                )  # Modularity of GBU.
-                writer.write_inst(
-                    iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
-                    type=f"{onto_mops}#{gbu}Number",
-                )  # Instantiate the corresponding Generic Building Unit Number.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                    trg_iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
-                    rel=f"{onto_mops}#has{gbu}Number",
-                )  # Connect the GBU Number instance to the Assembly Model instance.
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
-                    trg_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    rel=f"{onto_mops}#isNumberOf",
-                )  # Connect the GBU Number to its GBU.
-                writer.write_data_prop(
-                    iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
-                    rel=f"{onto_spec}#value",
-                    value=f"{cbu_i['GenericUnitNumber']}",
-                )  # Give the GBU Number its value.
-
-                writer.write_obj_prop(
-                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    rel=f"{onto_mops}#isFunctioningAs",
-                )  # Connect the CBU to its corresonding GBU
+                src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                trg_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
+                rel=f"{onto_mops}#isFunctioningAs",
+            )  # Connect the CBU to its corresonding GBU
