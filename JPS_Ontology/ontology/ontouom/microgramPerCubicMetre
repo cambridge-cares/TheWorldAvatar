@@ -10,7 +10,6 @@
     <!-- <!ENTITY om      "http://www.wurvoc.org/vocabularies/om-2.0/"> -->
     <!-- <!ENTITY om      "http://www.ontology-of-units-of-measure.org/vocabularies/om-2/"> -->
     <!ENTITY om      "http://www.ontology-of-units-of-measure.org/resource/om-2/">
-    <!ENTITY ontouom      "http://theworldavatar.com/resource/ontouom/">
   ]>
 
   <rdf:RDF
@@ -19,7 +18,6 @@
     xmlns:xsd="&xsd;"
     xmlns:rdfs="&rdfs;"
     xmlns:om="&om;"
-    xmlns:ontouom="&ontouom;"
     xmlns="&om;"
     xml:base="&om;"
   >
@@ -30,7 +28,7 @@
 
   <!-- Micrograms Per Cubic Metre Ontology -->
 
-  <om:UnitDivision rdf:about="&ontouom;microgramPerCubicMetre">
+  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/microgramPerCubicMetre">
     <rdfs:label xml:lang="en">microgram per cubic metre</rdfs:label>
     <rdfs:comment xml:lang="en">Microgram per cubic metre is a unit of (mass) concentration defined as microgram divided by cubic metre.</rdfs:comment>
     <om:longcomment>Microgram per cubic metre is a unit of (mass) concentration defined as microgram divided by cubic metre. It is a derived unit in the International System of Units.</om:longcomment>
@@ -39,7 +37,7 @@
     <om:alternativeSymbol>μg·m-3</om:alternativeSymbol>
     <om:hasNumerator rdf:resource="&om;microgram"/>
     <om:hasDenominator rdf:resource="&om;cubicMetre"/>
-    <om:hasDimension rdf:resource="&ontouom;MassOfSubstanceConcentration-Dimension"/>
+    <om:hasDimension rdf:resource="&om;MassOfSubstanceConcentration-Dimension"/>
   </om:UnitDivision>
 
 </rdf:RDF>

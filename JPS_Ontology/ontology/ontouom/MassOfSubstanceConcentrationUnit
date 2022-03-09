@@ -10,7 +10,6 @@
     <!-- <!ENTITY om      "http://www.wurvoc.org/vocabularies/om-2.0/"> -->
     <!-- <!ENTITY om      "http://www.ontology-of-units-of-measure.org/vocabularies/om-2/"> -->
     <!ENTITY om      "http://www.ontology-of-units-of-measure.org/resource/om-2/">
-    <!ENTITY ontouom      "http://theworldavatar.com/resource/ontouom/">
   ]>
 
   <rdf:RDF
@@ -19,7 +18,6 @@
     xmlns:xsd="&xsd;"
     xmlns:rdfs="&rdfs;"
     xmlns:om="&om;"
-    xmlns:ontouom="&ontouom;"
     xmlns="&om;"
     xml:base="&om;"
   >
@@ -30,7 +28,7 @@
 
   <!-- Mass of Substance Concentration Unit Ontology -->
 
-  <owl:Class rdf:about="&ontouom;MassOfSubstanceConcentrationUnit">
+  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentrationUnit">
     <rdfs:label xml:lang="en">mass of substance concentration unit</rdfs:label>
     <rdfs:subClassOf rdf:resource="&om;Unit"/>
     <owl:equivalentClass>
@@ -38,7 +36,7 @@
         <owl:unionOf rdf:parseType="Collection">
           <owl:Class>
             <owl:oneOf rdf:parseType="Collection">
-              <om:UnitDivision rdf:about="&ontouom;microgramPerCubicMetre"/>
+              <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/microgramPerCubicMetre"/>
               <om:UnitDivision rdf:about="&om;gramPerCubicmetre"/>
               <om:UnitDivision rdf:about="&om;milligramPerCubicmetre"/>
               <om:UnitDivision rdf:about="&om;gramPerCubicCentimetre"/>

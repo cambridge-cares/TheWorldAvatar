@@ -5,12 +5,11 @@
   <!DOCTYPE rdf:RDF [
     <!ENTITY rdf     "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <!ENTITY rdfs    "http://www.w3.org/2000/01/rdf-schema#">
-    <!ENTITY owl     "http://www.w3.org/2002/07/owl#" >
-    <!ENTITY xsd     "http://www.w3.org/2001/XMLSchema#"> 
+    <!ENTITY owl     "http://www.w3.org/2002/07/owl#">
+    <!ENTITY xsd     "http://www.w3.org/2001/XMLSchema#">
     <!-- <!ENTITY om      "http://www.wurvoc.org/vocabularies/om-2.0/"> -->
     <!-- <!ENTITY om      "http://www.ontology-of-units-of-measure.org/vocabularies/om-2/"> -->
     <!ENTITY om      "http://www.ontology-of-units-of-measure.org/resource/om-2/">
-    <!ENTITY ontouom      "http://theworldavatar.com/resource/ontouom/">
   ]>
 
   <rdf:RDF
@@ -19,7 +18,6 @@
     xmlns:xsd="&xsd;"
     xmlns:rdfs="&rdfs;"
     xmlns:om="&om;"
-    xmlns:ontouom="&ontouom;"
     xmlns="&om;"
     xml:base="&om;"
   >
@@ -32,7 +30,7 @@
 
   <!-- Litre Per Day Ontology -->
 
-  <om:UnitDivision rdf:about="&ontouom;litrePerDay">
+  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/litrePerDay">
     <rdfs:label xml:lang="en">litre per day</rdfs:label>
     <om:symbol>l/d</om:symbol>
     <om:alternativeSymbol>l d-1</om:alternativeSymbol>
