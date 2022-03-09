@@ -28,6 +28,7 @@ class Abox_csv_writer:
         self.object_property_field = configs.get("object_property", "Instance")
         self.ontology_field = configs.get("ontology", "Ontology")
         self.default_prefix = configs.get("prefix", "")
+        self._current_inst = None
 
     def __enter__(self):
         self._file_obj = open(self.file_path, "w", newline="").__enter__()
@@ -40,7 +41,7 @@ class Abox_csv_writer:
         self._file_obj.__exit__(exc_type, exc_value, exc_traceback)
         return True
 
-    def write_header(self) -> None:
+    def write_header(self) -> "Abox_csv_writer":
         self._write_row(
             "Source",
             "Type",
@@ -49,6 +50,7 @@ class Abox_csv_writer:
             "Value",
             "Data Type",
         )
+        return self
 
     def _write_row(self, *args: str) -> None:
         content = [args[i] if i < len(args) else "" for i in range(self._num_cols)]
@@ -59,13 +61,52 @@ class Abox_csv_writer:
         name: str,
         importing: str,
         rel: Optional[str] = None,
-    ) -> None:
+    ) -> "Abox_csv_writer":
         if rel is None:
             rel = "http://www.w3.org/2002/07/owl#imports"
         self._write_row(name, self.ontology_field, importing, rel)
 
-    def write_inst(self, iri: str, type: str, relation: str = "") -> None:
+        return self
+
+    def write_inst(
+        self, iri: str, type: str, relation: str = "", store_inst: bool = True
+    ) -> "Abox_csv_writer":
         self._write_row(iri, self.instance_field, type, relation)
+        if store_inst:
+            self._current_inst = iri
+        return self
+
+    def add_obj_prop(
+        self, rel: str, iri: str, store_inst: bool = False, reverse: bool = False
+    ) -> "Abox_csv_writer":
+        if self._current_inst is None:
+            raise app_exceptions.MissingInstance(
+                "No instance created. Cannont add object property."
+            )
+
+        src_iri, trg_iri = iri, self._current_inst
+        if reverse:
+            src_iri, trg_iri = self._current_inst, iri
+        self.write_obj_prop(src_iri=src_iri, rel=rel, trg_iri=trg_iri)
+        if store_inst:
+            self._current_inst = iri
+        return self
+
+    def add_data_prop(
+        self,
+        rel: str,
+        value: str,
+        data_type: Literal["String", "Integer", "Float"] = "String",
+    ) -> "Abox_csv_writer":
+
+        if self._current_inst is None:
+            raise app_exceptions.MissingInstance(
+                "No instance created. Cannont add data property."
+            )
+        self.write_data_prop(
+            iri=self._current_inst, rel=rel, value=value, data_type=data_type
+        )
+        return self
 
     def write_data_prop(
         self,
@@ -73,11 +114,27 @@ class Abox_csv_writer:
         rel: str,
         value: str,
         data_type: Literal["String", "Integer", "Float"] = "String",
-    ) -> None:
+        store_inst: bool = True,
+    ) -> "Abox_csv_writer":
         self._write_row(rel, self.data_property_field, iri, "", value, str(data_type))
 
-    def write_obj_prop(self, src_iri: str, rel: str, trg_iri: str) -> None:
+        if store_inst:
+            self._current_inst = iri
+        return self
+
+    def write_obj_prop(
+        self,
+        src_iri: str,
+        rel: str,
+        trg_iri: str,
+        store_inst: Literal["src", "trg", ""] = "",
+    ) -> "Abox_csv_writer":
         self._write_row(src_iri, self.object_property_field, trg_iri, rel)
+        if store_inst == "src":
+            self._current_inst = src_iri
+        elif store_inst == "trg":
+            self._current_inst = trg_iri
+        return self
 
 
 def config_logging(
