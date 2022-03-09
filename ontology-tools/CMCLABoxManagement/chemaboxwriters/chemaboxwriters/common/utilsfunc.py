@@ -72,7 +72,7 @@ class Abox_csv_writer:
         iri: str,
         rel: str,
         value: str,
-        data_type: Literal["String", "Integer", "Float", ""] = "",
+        data_type: Literal["String", "Integer", "Float"] = "String",
     ) -> None:
         self._write_row(rel, self.data_property_field, iri, "", value, str(data_type))
 
