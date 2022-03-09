@@ -44,3 +44,9 @@ class MissingHandlerConfig(Exception):
     """Raise for missing handler config."""
 
     pass
+
+
+class MissingInstance(Exception):
+    """Missing instance."""
+
+    pass
