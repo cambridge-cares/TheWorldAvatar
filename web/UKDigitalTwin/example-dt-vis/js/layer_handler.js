@@ -150,7 +150,8 @@ class LayerHandler {
 			id: layerName,
 			source: sourceName,
             metadata: {
-                provider: "cmcl"
+                provider: "cmcl",
+                clickable: dataSet['clickable'] != false
             },
             type: 'circle',
 			layout: {
@@ -188,7 +189,8 @@ class LayerHandler {
             id: layerName,
             source: sourceName,
             metadata: {
-                provider: "cmcl"
+                provider: "cmcl",
+                clickable: dataSet['clickable'] != false
             },
             type: 'symbol',
             layout: {
@@ -235,7 +237,8 @@ class LayerHandler {
             id: layerName + "_cluster",
             source: sourceName,
             metadata: {
-                provider: "cmcl"
+                provider: "cmcl",
+                clickable: dataSet['clickable'] != false
             },
             type: 'symbol',
             filter: ['has', 'point_count'],
@@ -277,7 +280,8 @@ class LayerHandler {
 			id: layerName,
 			source: sourceName,
             metadata: {
-                provider: "cmcl"
+                provider: "cmcl",
+                clickable: dataSet['clickable'] != false
             },
 			type: 'fill',
 			layout: {
@@ -317,7 +321,8 @@ class LayerHandler {
             id: layerName,
 			source: sourceName,
             metadata: {
-                provider: "cmcl"
+                provider: "cmcl",
+                clickable: dataSet['clickable'] != false
             },
 			type: 'fill-extrusion',
 			layout: {
@@ -360,7 +365,8 @@ class LayerHandler {
             id: layerName,
 			source: sourceName,
             metadata: {
-                provider: "cmcl"
+                provider: "cmcl",
+                clickable: dataSet['clickable'] != false
             },
 			type: 'line',
 			layout: {
@@ -384,7 +390,8 @@ class LayerHandler {
 			id: layerName + "_clickable",
 			source: sourceName,
             metadata: {
-                provider: "cmcl"
+                provider: "cmcl",
+                clickable: dataSet['clickable'] != false
             },
 			type: 'line',
 			layout: {
@@ -428,7 +435,8 @@ class LayerHandler {
             id: layerName,
             source: sourceName,
             metadata: {
-                provider: "cmcl"
+                provider: "cmcl",
+                clickable: dataSet['clickable'] != false
             },
             type: 'symbol',
             layout: {
@@ -465,7 +473,8 @@ class LayerHandler {
             id: layerName,
 			source: sourceName,
             metadata: {
-                provider: "cmcl"
+                provider: "cmcl",
+                clickable: dataSet['clickable'] != false
             },
 			type: 'raster',
 			layout: {
