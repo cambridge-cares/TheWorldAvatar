@@ -312,6 +312,7 @@ for c in "${CONFIG_DIR}"/*.conf; do (
 
         # Add shape files to .sql file
         mode=d # For the first shp file drop any existing table with the name defined by "${SHP_SCHEMA}.${SHP_TABLE}"
+        add_index_flag="-I" # Only add an index once so remove this flag after the first file
         for shp in "${DATA_DIR}/${DATASET_DIR}"/*.shp; do
           echo "$shp"
           # If "SHP_EPSG_FROM" is empty or set to 0 then try to get the projection from the .shp file
@@ -320,11 +321,12 @@ for c in "${CONFIG_DIR}"/*.conf; do (
             SHP_EPSG_FROM="$(gdalsrsinfo -o epsg "$shp")"
             SHP_EPSG_FROM="${SHP_EPSG_FROM#*:}"
           fi
-          shp2pgsql -${mode} -s "${SHP_EPSG_FROM}" -D -I -S "$shp" "${SHP_SCHEMA}"."${SHP_TABLE}" |
+         shp2pgsql -${mode} -s "${SHP_EPSG_FROM}" -D $add_index_flag -S "$shp" "${SHP_SCHEMA}"."${SHP_TABLE}" |
             ${SHP_SQL_STATEMENT_TRANSFORM} |
             psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$DB" -w
           
           mode=a # Just append the data from subsequent shp files
+          add_index_flag=
         done
 
         if [ -e "${DATA_DIR}/${DATASET_DIR}/${SHP_TABLE}.json" ]; then
