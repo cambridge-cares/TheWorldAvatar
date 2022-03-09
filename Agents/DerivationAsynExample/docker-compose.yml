@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  derivationasynexample:
+    container_name: derivationasynexample
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    image: derivationasynexample:1.0.0
+    build:
+      context: ./
+    volumes:
+      - external_maven_repo:/root/.m2
+      - logs:/root/.jps
+    ports:
+      - "58085:8080"
+
+  blazegraph:
+    container_name: "blazegraph"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    # Add a secret to set the password for BASIC authentication
+    secrets: # username is bg_user
+      - blazegraph_password
+    ports:
+      - "8889:8080"
+    volumes:
+      - blazegraph_data:/data
+
+secrets:
+  blazegraph_password:
+    file: credentials/blazegraph_password
+
+volumes:
+  blazegraph_data:
+    name: "blazegraph_data"
+  external_maven_repo:
+    name: "external_maven_repo"
+  logs:
+    name: "logs"
+  

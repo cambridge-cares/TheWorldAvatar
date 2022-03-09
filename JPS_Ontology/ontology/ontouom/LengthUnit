@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+  <!-- Ontology of units of Measure (OM) -->
+
+  <!DOCTYPE rdf:RDF [
+    <!ENTITY rdf     "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs    "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY owl     "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd     "http://www.w3.org/2001/XMLSchema#"> 
+    <!-- <!ENTITY om      "http://www.wurvoc.org/vocabularies/om-2.0/"> -->
+    <!-- <!ENTITY om      "http://www.ontology-of-units-of-measure.org/vocabularies/om-2/"> -->
+    <!ENTITY om      "http://www.ontology-of-units-of-measure.org/resource/om-2/">
+    <!ENTITY ontouom      "http://theworldavatar.com/resource/ontouom/">
+  ]>
+
+  <rdf:RDF
+    xmlns:rdf="&rdf;"
+    xmlns:owl="&owl;"
+    xmlns:xsd="&xsd;"
+    xmlns:rdfs="&rdfs;"
+    xmlns:om="&om;"
+    xmlns:ontouom="&ontouom;"
+    xmlns="&om;"
+    xml:base="&om;"
+  >
+  
+  <owl:Ontology rdf:about="">
+    <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
+  </owl:Ontology>
+
+  <!-- Water Level Height Units Ontology -->
+
+  <!-- Update List of Length Units (parent class of Height) -->
+
+  <owl:Class rdf:about="&ontouom;LengthUnit">
+    <rdfs:label xml:lang="en">length unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&om;Unit"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:oneOf rdf:parseType="Collection">
+              <om:Unit rdf:about="&om;angstrom"/>
+              <om:Unit rdf:about="&om;astronomicalUnit"/>
+              <om:Unit rdf:about="&om;BirminghamGauge"/>
+              <om:Unit rdf:about="&om;chain"/>
+              <om:Unit rdf:about="&om;cicero"/>
+              <om:Unit rdf:about="&om;fathom-USSurvey"/>
+              <om:Unit rdf:about="&om;fermi"/>
+              <om:Unit rdf:about="&om;foot-International"/>
+              <om:Unit rdf:about="&om;foot-USSurvey"/>
+              <om:Unit rdf:about="&om;FrenchGauge"/>
+              <om:Unit rdf:about="&om;furlong-International"/>
+              <om:Unit rdf:about="&om;inch-International"/>
+              <om:Unit rdf:about="&om;lightYear"/>
+              <om:Unit rdf:about="&om;metre"/>
+              <om:Unit rdf:about="&ontouom;metreUnspecified"/>
+              <om:Unit rdf:about="&ontouom;metreASD"/>
+              <om:Unit rdf:about="&ontouom;metreAOD"/>
+              <om:Unit rdf:about="&ontouom;metreBDAT"/>
+              <om:Unit rdf:about="&om;micron"/>
+              <om:Unit rdf:about="&om;mil-Length"/>
+              <om:Unit rdf:about="&om;mile-Statute"/>
+              <om:Unit rdf:about="&om;mile-USSurvey"/>
+              <om:Unit rdf:about="&om;nauticalMile-International"/>
+              <om:Unit rdf:about="&om;parsec"/>
+              <om:Unit rdf:about="&om;pica-ATA"/>
+              <om:Unit rdf:about="&om;pica-Postscript"/>
+              <om:Unit rdf:about="&om;pica-TeX"/>
+              <om:Unit rdf:about="&om;point-ATA"/>
+              <om:Unit rdf:about="&om;point-Didot"/>
+              <om:Unit rdf:about="&om;point-Postscript"/>
+              <om:Unit rdf:about="&om;point-TeX"/>
+              <om:Unit rdf:about="&om;rod-US"/>
+              <om:Unit rdf:about="&om;solarRadius"/>
+              <om:Unit rdf:about="&om;yard-International"/>
+              <om:PrefixedUnit rdf:about="&om;gigaparsec"/>
+              <om:PrefixedUnit rdf:about="&om;kiloparsec"/>
+              <om:PrefixedUnit rdf:about="&om;megaparsec"/>
+            </owl:oneOf>
+          </owl:Class>
+          <owl:Class rdf:about="&om;PrefixedMetre"/>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>  
+
+</rdf:RDF>

@@ -6,15 +6,29 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
+/**
+ * The AccessAgentCaller class is used to send HTTP requests to the AccessAgent 
+ * to query and update rdf data in triple stores using the methods 
+ * {@link uk.ac.cam.cares.jps.base.query.AccessAgentCaller#queryStore queryStore} 
+ * and {@link uk.ac.cam.cares.jps.base.query.AccessAgentCaller#updateStore updateStore}, 
+ * respectively.
+ * <br>
+ * These methods can also be accessed in the {@link uk.ac.cam.cares.jps.base.agent.JPSAgent} class.
+ * 
+ * @author csl37
+ *
+ */
 public class AccessAgentCaller{
 		
 	/**
@@ -71,7 +85,7 @@ public class AccessAgentCaller{
         JSONObject joparams = (JSONObject) a[1];
         return Http.execute(Http.get(requestUrl, accept, joparams));
     }
-
+	 
 	/**
 	 * Execute a {@link <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a>} on the target resource.
 	 * 
@@ -81,6 +95,17 @@ public class AccessAgentCaller{
 	 * @param sparqlQuery		SPARQL query string
      * @return the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
 	 */
+	public static JSONArray queryStore(String targetResourceID, String sparqlQuery) {
+		//pass the target resource ID directly as the targetUrl
+    	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
+		//Unpack results into JSONArray
+		return new JSONArray(new JSONObject(query(null, targetResourceID, sparqlQuery)).getString("result"));
+	}
+	
+	/**
+	 * @Deprecated Use queryStore instead: results are unpacked into a JSONArray. 
+	 */
+	@Deprecated
 	public static String query(String targetResourceID, String sparqlQuery) {
 		//pass the target resource ID directly as the targetUrl
     	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
@@ -104,16 +129,14 @@ public class AccessAgentCaller{
 
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 		
-        System.out.println("a IS NOT NULL!!!");
         String requestUrl = (String) a[0];
         JSONObject joparams = (JSONObject) a[1];
-        if (joparams == null) {
-            joparams = new JSONObject();
-        }
-        System.out.println("joparams=" + joparams.toString());
-        System.out.println("REQUESTURL=" + requestUrl);
-        joparams.put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery);
-        return Http.execute(Http.get(requestUrl, null, joparams));
+          
+     	JSONObject jobody = new JSONObject();
+     	jobody.put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery);
+     	String contentType = MediaType.APPLICATION_JSON.type;
+     		
+     	return Http.execute(Http.post(requestUrl, jobody.toString(), contentType, null, joparams));		
     }
 
 	/**
@@ -123,6 +146,23 @@ public class AccessAgentCaller{
      * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
      * @param sparqlUpdate		SPARQL update string
      */
+	//Duplication of update below for sake of naming consistency with queryStore
+	public static void updateStore(String targetResourceID, String sparqlUpdate) {
+		//pass the target resource ID directly as the targetUrl
+    	//both datasetUrl and targetUrl are not used by the AccessAgent for updates
+		update(null, targetResourceID, sparqlUpdate);
+    	return;
+	}
+	
+	/**
+	 * @deprecated Use updateStore instead. Deprecated to maintain naming consistency with queryStore.
+     * Execute a {@link <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a>} on the target resource. 
+     * @param targetResourceID	the target namespace or IRI
+     * 							e.g. to access the Ontokin triple store
+     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param sparqlUpdate		SPARQL update string
+     */
+	@Deprecated
 	public static void update(String targetResourceID, String sparqlUpdate) {
 		//pass the target resource ID directly as the targetUrl
     	//both datasetUrl and targetUrl are not used by the AccessAgent for updates
@@ -176,6 +216,10 @@ public class AccessAgentCaller{
 		//	  the targetUrl may optionally request a graph at the datasetUrl
 		// 3) scnearioUrl in the JPS context
 		// 	  in combination with corresponding cases from 1) and 2)
+		//
+		// If no host is provided as part of the datasetUrl (case 2) or targetUrl (case1),
+		// a requestUrl will be constructed using the host stored in JPSConstants
+		
 		String scenarioUrl = JPSContext.getScenarioUrl();			
 		String requestUrl = null;
 		
@@ -221,8 +265,6 @@ public class AccessAgentCaller{
 			joparams.put(JPSConstants.TARGETIRI, cutHashFragment(targetUrl));
 		}
 	
-		requestUrl = ResourcePathConverter.convert(requestUrl);
-	
 		Object[] a = new Object[] {requestUrl, joparams};			
 		return a;
 	}	
@@ -265,6 +307,8 @@ public class AccessAgentCaller{
 	 * Get the base world Access Agent url.
 	 * The scheme, host and port of the target or dataset url are preserved, while
 	 * the path is changed to the Access Agent Path. 
+	 * If no scheme, host or port is provided then url will default to the values 
+	 * provided by JPSConstants e.g. "http://www.theworldavatar.com/access-agent/access"
 	 * @param url
 	 * @return
 	 */
@@ -275,6 +319,16 @@ public class AccessAgentCaller{
 			URI uri = new URI(URLDecoder.decode(url,"UTF-8"));
 			String scheme = uri.getScheme();
 			String authority = uri.getAuthority();
+			
+			//If no scheme is provided then default to HTTP
+			if(scheme == null) {
+				scheme = "http";
+			}
+			//If no authority is given then get the host 
+			if(authority == null) {
+				//TODO this should be done by an "Agent Locator"
+				authority = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
+			}
 			
 			requestUrl = new URI(scheme,authority,JPSConstants.ACCESS_AGENT_PATH,null,null);
 			
