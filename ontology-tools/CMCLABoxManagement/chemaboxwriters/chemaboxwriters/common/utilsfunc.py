@@ -29,6 +29,10 @@ class Abox_csv_writer:
         self.ontology_field = configs.get("ontology", "Ontology")
         self.default_prefix = configs.get("prefix", "")
         self._current_inst = None
+        self._prefixes = {}
+
+    def register_prefix(self, name: str, value: str) -> None:
+        self._prefixes[name] = value
 
     def __enter__(self):
         self._file_obj = open(self.file_path, "w", newline="").__enter__()
@@ -52,10 +56,6 @@ class Abox_csv_writer:
         )
         return self
 
-    def _write_row(self, *args: str) -> None:
-        content = [args[i] if i < len(args) else "" for i in range(self._num_cols)]
-        self.csvwriter.writerow(content)
-
     def write_imports(
         self,
         name: str,
@@ -64,16 +64,54 @@ class Abox_csv_writer:
     ) -> "Abox_csv_writer":
         if rel is None:
             rel = "http://www.w3.org/2002/07/owl#imports"
+
+        name, rel, importing = self._apply_prefixes(name, rel, importing)
         self._write_row(name, self.ontology_field, importing, rel)
 
         return self
 
     def write_inst(
-        self, iri: str, type: str, relation: str = "", store_inst: bool = True
+        self, iri: str, type: str, rel: str = "", store_inst: bool = True
     ) -> "Abox_csv_writer":
-        self._write_row(iri, self.instance_field, type, relation)
+
+        iri, rel, type = self._apply_prefixes(iri, rel, type)
+
+        self._write_row(iri, self.instance_field, type, rel)
         if store_inst:
             self._current_inst = iri
+        return self
+
+    def write_data_prop(
+        self,
+        iri: str,
+        rel: str,
+        value: str,
+        data_type: Literal["String", "Integer", "Float"] = "String",
+        store_inst: bool = True,
+    ) -> "Abox_csv_writer":
+
+        iri, rel = self._apply_prefixes(iri, rel)
+        self._write_row(rel, self.data_property_field, iri, "", value, str(data_type))
+
+        if store_inst:
+            self._current_inst = iri
+        return self
+
+    def write_obj_prop(
+        self,
+        src_iri: str,
+        rel: str,
+        trg_iri: str,
+        store_inst: Literal["src", "trg", ""] = "",
+    ) -> "Abox_csv_writer":
+
+        src_iri, rel, trg_iri = self._apply_prefixes(src_iri, rel, trg_iri)
+
+        self._write_row(src_iri, self.object_property_field, trg_iri, rel)
+        if store_inst == "src":
+            self._current_inst = src_iri
+        elif store_inst == "trg":
+            self._current_inst = trg_iri
         return self
 
     def add_obj_prop(
@@ -87,9 +125,12 @@ class Abox_csv_writer:
         src_iri, trg_iri = iri, self._current_inst
         if reverse:
             src_iri, trg_iri = self._current_inst, iri
-        self.write_obj_prop(src_iri=src_iri, rel=rel, trg_iri=trg_iri)
-        if store_inst:
-            self._current_inst = iri
+
+        store_inst_lit = "src" if store_inst else ""
+
+        self.write_obj_prop(
+            src_iri=src_iri, rel=rel, trg_iri=trg_iri, store_inst=store_inst_lit
+        )
         return self
 
     def add_data_prop(
@@ -108,33 +149,19 @@ class Abox_csv_writer:
         )
         return self
 
-    def write_data_prop(
-        self,
-        iri: str,
-        rel: str,
-        value: str,
-        data_type: Literal["String", "Integer", "Float"] = "String",
-        store_inst: bool = True,
-    ) -> "Abox_csv_writer":
-        self._write_row(rel, self.data_property_field, iri, "", value, str(data_type))
+    def _write_row(self, *args: str) -> None:
+        content = [args[i] if i < len(args) else "" for i in range(self._num_cols)]
+        self.csvwriter.writerow(content)
 
-        if store_inst:
-            self._current_inst = iri
-        return self
-
-    def write_obj_prop(
-        self,
-        src_iri: str,
-        rel: str,
-        trg_iri: str,
-        store_inst: Literal["src", "trg", ""] = "",
-    ) -> "Abox_csv_writer":
-        self._write_row(src_iri, self.object_property_field, trg_iri, rel)
-        if store_inst == "src":
-            self._current_inst = src_iri
-        elif store_inst == "trg":
-            self._current_inst = trg_iri
-        return self
+    def _apply_prefixes(self, *args: str) -> List[str]:
+        items = []
+        for item in args:
+            prefix_name = item.split(":")[0]
+            prefix_value = self._prefixes.get(prefix_name)
+            if prefix_value is not None:
+                item = item.replace(f"{prefix_name}:", prefix_value)
+            items.append(item)
+        return items
 
 
 def config_logging(

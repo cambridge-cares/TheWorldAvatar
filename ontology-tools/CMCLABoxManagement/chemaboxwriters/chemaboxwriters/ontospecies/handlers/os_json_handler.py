@@ -34,7 +34,6 @@ from chemaboxwriters.ontospecies.handlers.qc_json_handler import (
 
 import chemaboxwriters.common.globals as globals
 import chemaboxwriters.common.endpoints_proxy as endp
-import chemaboxwriters.common.aboxconfig as abconf
 from typing import List, Optional, Dict
 from enum import Enum
 from chemaboxwriters.common.handler import Handler
@@ -58,7 +57,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             out_stage=globals.aboxStages.OS_CSV,
             endpoints_proxy=endpoints_proxy,
             required_configs={
-                abconf.WRITERS_PREFIXES_KEY: [
+                "prefixes": [
                     "onto_spec",
                     "gain_pref",
                     "onto_kin",
@@ -102,10 +101,13 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         gen_id = data[globals.ENTRY_UUID]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
-            writer.write_header()
+            if self._required_configs is not None:
+                for prefix_name in self._required_configs["prefixes"]:
+                    prefix_value = self._endpoints_config["prefixes"][prefix_name]
+
+                    writer.register_prefix(name=prefix_name, value=prefix_value)
 
             out_id = data[globals.ENTRY_IRI]
-
             label = utilsfunc.formula_clean_re.sub("", data[EMP_FORMULA])
 
             self._write_prelim(writer, out_id, label)
@@ -118,10 +120,10 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def _write_prelim(self, writer: Abox_Writer, out_id, label):
 
-        spec_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["spec_pref"]
-        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
+        spec_pref = self._endpoints_config["prefixes"]["spec_pref"]
 
-        writer.write_imports(name="ABoxOntoSpecies", importing=onto_spec)
+        writer.write_header()
+        writer.write_imports(name="ABoxOntoSpecies", importing="onto_spec:")
         writer.write_imports(
             name="ABoxOntoSpecies", importing=spec_pref[:-1], rel="base"
         )
@@ -130,8 +132,6 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         ).add_data_prop(rel="http://www.w3.org/2000/01/rdf-schema#label", value=label)
 
     def _write_identifier_geom(self, writer: Abox_Writer, out_id, data):
-
-        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         pubchem_alt_label_value = data.get(PUBCHEM_ALT_LABEL)
         if pubchem_alt_label_value is not None:
@@ -144,47 +144,43 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         if cas_number_value is not None:
             writer.write_data_prop(
                 iri=out_id,
-                rel=f"{onto_spec}#casRegistryID",
+                rel="onto_spec:#casRegistryID",
                 value=cas_number_value,
             )
         writer.write_data_prop(
             iri=out_id,
-            rel=f"{onto_spec}#SMILES",
+            rel="onto_spec:#SMILES",
             value=data[SMILES],
         )
         writer.write_data_prop(
             iri=out_id,
-            rel=f"{onto_spec}#inChI",
+            rel="onto_spec:#inChI",
             value=data[INCHI],
         )
         pubchem_cid_value = data.get(PUBCHEM_CID)
         if pubchem_cid_value is not None:
             writer.write_data_prop(
                 iri=out_id,
-                rel=f"{onto_spec}#pubChemCID",
+                rel="onto_spec:#pubChemCID",
                 value=pubchem_cid_value,
             )
         writer.write_data_prop(
             iri=out_id,
-            rel=f"{onto_spec}#hasAtomicBond",
+            rel="onto_spec:#hasAtomicBond",
             value=data[BOND_STRING],
         )
         writer.write_data_prop(
             iri=out_id,
-            rel=f"{onto_spec}#hasGeometry",
+            rel="onto_spec:#hasGeometry",
             value=data[GEOM_STRING],
         )
         writer.write_data_prop(
             iri=out_id,
-            rel=f"{onto_spec}#spinMultiplicity",
+            rel="onto_spec:#spinMultiplicity",
             value=data[SPIN_MULT],
         )
 
     def _write_atom_info(self, writer: Abox_Writer, gen_id, out_id, data):
-
-        gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
-        table_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["table_pref"]
-        unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         coords = ["X", "Y", "Z"]  # The three cartesian corrdinates.
         atom_counters = {atom_type: 1 for atom_type in set(data[ATOM_TYPES])}
@@ -195,157 +191,147 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             # Now the atoms are written here
             writer.write_inst(
                 iri=f"Atom_{atom_id}",
-                type=f"{gain_pref}Atom",
-            ).add_obj_prop(iri=out_id, rel=f"{gain_pref}hasAtom",).add_obj_prop(
-                iri=f"{table_pref}#{atom_type}",
-                rel=f"{gain_pref}isElement",
+                type="gain_pref:Atom",
+            ).add_obj_prop(iri=out_id, rel="gain_pref:hasAtom",).add_obj_prop(
+                iri=f"table_pref:#{atom_type}",
+                rel="gain_pref:isElement",
                 reverse=True,
             )
             for i in range(3):  # Write the atom coordinates.
                 writer.write_inst(
                     iri=f"AtomCoordinate{coords[i]}_{atom_id}",
-                    type=f"{gain_pref}FloatValue",
+                    type="gain_pref:FloatValue",
                 ).add_obj_prop(
                     iri=f"Atom_{atom_id}",
-                    rel=f"{gain_pref}hasAtomCoordinate{coords[i]}",
+                    rel=f"gain_pref:hasAtomCoordinate{coords[i]}",
                 ).add_data_prop(
-                    rel=f"{gain_pref}hasValue",
+                    rel="gain_pref:hasValue",
                     value=data["Geometry"][k][i],
                 ).add_obj_prop(
-                    iri=f"{unit_pref}unit#Angstrom",
-                    rel=f"{gain_pref}hasUnit",
+                    iri="unit_pref:unit#Angstrom",
+                    rel="gain_pref:hasUnit",
                     reverse=True,
                 )
             atom_counters[atom_type] += 1
 
     def _write_charge_info(self, writer: Abox_Writer, gen_id, out_id, data):
 
-        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
-
         if FORMAL_CHARGE in data:
             charge = data[FORMAL_CHARGE]
 
             writer.write_inst(
-                iri=f"Charge_{gen_id}", type=f"{onto_spec}#Charge"
-            ).add_obj_prop(iri=out_id, rel=f"{onto_spec}#hasCharge",).add_data_prop(
-                rel=f"{onto_spec}#value",
+                iri=f"Charge_{gen_id}", type="onto_spec:#Charge"
+            ).add_obj_prop(iri=out_id, rel="onto_spec:#hasCharge",).add_data_prop(
+                rel="onto_spec:#value",
                 value=charge,
             ).add_data_prop(
-                rel=f"{onto_spec}#units",
+                rel="onto_spec:#units",
                 value="e",
             )
             writer.write_inst(
                 iri=f"MolecularFormula_{gen_id}",
-                type=f"{onto_spec}#MolecularFormula",
+                type="onto_spec:#MolecularFormula",
             ).add_obj_prop(
                 iri=out_id,
-                rel=f"{onto_spec}#hasMolecularFormula",
+                rel="onto_spec:#hasMolecularFormula",
             )
 
     def _write_atoms(self, writer: Abox_Writer, gen_id, out_id, data):
-
-        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
-        onto_kin = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_kin"]
 
         atom_list = data[ATOM_LIST]
         atom_counts = data[ATOM_COUNTS]
         for i in range(len(atom_list)):
             writer.write_inst(
-                iri=f"Element_{atom_list[i]}", type=f"{onto_kin}#Element"
+                iri=f"Element_{atom_list[i]}", type="onto_kin:#Element"
             ).add_obj_prop(
                 iri=f"MolecularFormula_{gen_id}",
-                rel=f"{onto_kin}#hasElement",
+                rel="onto_kin:#hasElement",
             )
             writer.write_inst(
                 iri=f"ElementNumber_{gen_id}_{i + 1}",
-                type=f"{onto_kin}#ElementNumber",
+                type="onto_kin:#ElementNumber",
             ).add_obj_prop(
                 iri=f"MolecularFormula_{gen_id}",
-                rel=f"{onto_kin}#hasElementNumber",
+                rel="onto_kin:#hasElementNumber",
             ).add_data_prop(
-                rel=f"{onto_kin}#hasNumberOfElement",
+                rel="onto_kin:#hasNumberOfElement",
                 value=atom_counts[i],
                 data_type="Integer",
             ).add_obj_prop(
                 iri=f"Element_{atom_list[i]}",
-                rel=f"{onto_kin}#indicatesNumberOf",
+                rel="onto_kin:#indicatesNumberOf",
                 reverse=True,
             )
-        writer.write_inst(iri=out_id, type=f"{onto_spec}#Species")
+        writer.write_inst(iri=out_id, type="onto_spec:#Species")
 
     def _write_molwts(self, writer: Abox_Writer, gen_id, out_id, data):
-
-        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         if MOLWT in data:
             molwt = data[MOLWT]
             writer.write_inst(
                 iri=f"MolecularWeight_{gen_id}",
-                type=f"{onto_spec}#MolecularWeight",
+                type="onto_spec:#MolecularWeight",
             ).add_obj_prop(
                 iri=out_id,
-                rel=f"{onto_spec}#hasMolecularWeight",
+                rel="onto_spec:#hasMolecularWeight",
             ).add_data_prop(
-                rel=f"{onto_spec}#value",
+                rel="onto_spec:#value",
                 value=molwt,
             ).add_data_prop(
-                rel=f"{onto_spec}#units",
+                rel="onto_spec:#units",
                 value="g/mol",
             )
 
     def _write_enth(self, writer: Abox_Writer, gen_id, out_id, data):
 
-        onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
-        onto_kin = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_kin"]
-
         # Write enthalpy of formation data.
         if ENTH_FORM in data:
             writer.write_inst(
                 iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                type=f"{onto_spec}#StandardEnthalpyOfFormation",
+                type="onto_spec:#StandardEnthalpyOfFormation",
             ).add_obj_prop(
                 iri=out_id,
-                rel=f"{onto_spec}#hasStandardEnthalpyOfFormation",
+                rel="onto_spec:#hasStandardEnthalpyOfFormation",
             ).add_data_prop(
-                rel=f"{onto_spec}#value",
+                rel="onto_spec:#value",
                 value=data[ENTH_FORM],
             )
         if ENTH_UNIT in data:
             writer.write_data_prop(
                 iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                rel=f"{onto_spec}#units",
+                rel="onto_spec:#units",
                 value=data[ENTH_UNIT],
             )
         if ENTH_REFTEMP in data:
             writer.write_inst(
-                iri=f"Temperature_{gen_id}", type=f"{onto_spec}#Temperature"
+                iri=f"Temperature_{gen_id}", type="onto_spec:#Temperature"
             ).add_obj_prop(
                 iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                rel=f"{onto_spec}#hasReferenceTemperature",
+                rel="onto_spec:#hasReferenceTemperature",
             ).add_data_prop(
-                rel=f"{onto_spec}#value",
+                rel="onto_spec:#value",
                 value=data[ENTH_REFTEMP],
             )
         if ENTH_REFTEMP_UNIT in data:
             writer.write_data_prop(
                 iri=f"Temperature_{gen_id}",
-                rel=f"{onto_spec}#units",
+                rel="onto_spec:#units",
                 value=data[ENTH_REFTEMP_UNIT],
             )
         if ENTH_PHASE in data:
             writer.write_inst(
                 iri=f"{data[ENTH_PHASE]}Phase_{gen_id}",
-                type=f"{onto_kin}#{data[ENTH_PHASE]}Phase",
+                type=f"onto_kin:#{data[ENTH_PHASE]}Phase",
             ).add_obj_prop(
                 iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                rel=f"{onto_spec}#hasPhase",
+                rel="onto_spec:#hasPhase",
             )
         if ENTH_PROV in data:
             writer.write_inst(
-                iri=f"Reference_{gen_id}", type=f"{onto_kin}#Reference"
+                iri=f"Reference_{gen_id}", type="onto_kin:#Reference"
             ).add_obj_prop(
                 iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                rel=f"{onto_spec}#hasProvenance",
+                rel="onto_spec:#hasProvenance",
             ).add_data_prop(
                 rel="http://www.w3.org/2000/01/rdf-schema#label",
                 value=data[ENTH_PROV],
