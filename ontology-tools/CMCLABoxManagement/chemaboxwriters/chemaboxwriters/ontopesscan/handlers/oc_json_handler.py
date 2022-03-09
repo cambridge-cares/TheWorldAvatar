@@ -75,7 +75,9 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
     ):
         data_out = {}
         data_out[globals.SPECIES_IRI] = os_iris.split(",")
-        data_out[SCAN_COORDINATE_ATOMS_IRIS] = os_atoms_iris.split(",")
+        data_out[SCAN_COORDINATE_ATOMS_IRIS] = [
+            iri.strip() for iri in os_atoms_iris.split(",")
+        ]
         data_out[SCAN_ATOM_IDS] = " ".join(oc_atoms_pos.split(",")[:])
         oc_atoms_pos_ids = [int(at_pos) - 1 for at_pos in oc_atoms_pos.split(",")]
 
