@@ -184,32 +184,6 @@
 			// Add layer(s) for each dataset
 			for(var i = 0; i < groupData.length; i++) {
 				this._layerHandler.addLayer(groupData[i]);
-				
-				// Register mouse interactions if enabled
-				let clickable = groupData[i]["clickable"];
-				if(clickable == null || clickable == true) {
-
-					if(groupData[i]["cluster"] == true) {
-						// If clustering was enabled, register logic for the cluster layer.
-						this._interactionHandler.registerInteractions([
-							groupData[i]["name"] + "_cluster", 
-							groupData[i]["locationType"]
-						]);
-					}
-
-					if(groupData[i]["locationType"] === "line") {
-						// Register interactions slightly differently for line layers
-						this._interactionHandler.registerInteractions([
-							groupData[i]["name"] + "_clickable", 
-							groupData[i]["locationType"]
-						]);
-					} else {
-						this._interactionHandler.registerInteractions([
-							groupData[i]["name"],
-							groupData[i]["locationType"]
-						]);
-					}
-				}
 			}
 
 			// Rebuild the layer selection tree
@@ -282,6 +256,8 @@
 			this._timeseriesHandler,
 			this._layerHandler
 		);
+
+		this._interactionHandler.registerInteractions();
 		
 		console.log("INFO: Map object has been initialised.");
 		return this._map;
