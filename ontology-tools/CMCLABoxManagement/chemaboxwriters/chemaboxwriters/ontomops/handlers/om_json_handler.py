@@ -143,19 +143,16 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 iri=f"{mops_pref}{mops_id}",
                 rel=f"{rdf_pref}#label",
                 value=data["Mops_Label"],
-                data_type="String",
             )  # label for the MOP
             writer.write_data_prop(
                 iri=f"{mops_pref}{mops_id}",
                 rel=f"{onto_mops}#hasMOPFormula",
                 value=data["Mops_Formula"],
-                data_type="String",
             )  # Chemical formula for the MOP
             writer.write_data_prop(
                 iri=f"{mops_pref}{mops_id}",
                 rel=f"{onto_mops}#hasCCDCNumber",
                 value=data["Mops_CCDC_Number"],
-                data_type="String",
             )  # CCDC No. for the MOP
             #
             #  XYZ Geometry in string form for the MOP.
@@ -174,7 +171,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 iri=f"{mops_pref}Provenance_{gen_id}",
                 rel=f"{onto_mops}#hasReferenceDOI",
                 value=data["Mops_Reference_DOI"],
-                data_type="String",
             )
 
             # Write the Molecular Weight section for the MOPs.
@@ -201,7 +197,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
                 rel=f"{uom_pref}hasNumericalValue",
                 value=data["Mops_Molecular_Weight"],
-                data_type="String",
             )  # Link the Numerical Value of Molecular Weight to the Measure.
             writer.write_inst(
                 iri=f"{uom_pref}MolarMassUnit", type=f"{uom_pref}Unit"
@@ -235,7 +230,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 iri=f"{uom_pref}Measure_Charge_{gen_id}",
                 rel=f"{uom_pref}hasNumericalValue",
                 value=data["Mops_Charge"],
-                data_type="String",
             )  # Link the Numerical Value of Charge to the Measure.
             writer.write_inst(
                 iri=f"{unres_pref}elementary_charge", type=f"{uom_pref}Unit"
@@ -278,7 +272,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 iri=f"{uom_pref}Measure_Volume_{gen_id}",
                 rel=f"{uom_pref}hasNumericalValue",
                 value=data["Mops_CavityVolume"],
-                data_type="String",
             )  # Link the Numerical Value of Volume to the Measure.
             writer.write_inst(
                 iri=f"{uom_pref}cubicNanometre", type=f"{uom_pref}Unit"
@@ -304,7 +297,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
                 rel=f"{onto_mops}#hasSymmetryPointGroup",
                 value=data["Mops_Symmetry_Point_Group"],
-                data_type="String",
             )  # Write the Symmetry point group for the MOPs.
             writer.write_inst(
                 iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
@@ -320,7 +312,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
                 rel=f"{onto_mops}#hasSymbol",
                 value=data["Mops_Polyhedral_Shape_Symbol"],
-                data_type="String",
             )
 
             # Write the information about the Chemical and Generic Building units.
@@ -375,13 +366,11 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
                     rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['Binding_Site_Label']}",
-                    data_type="String",
                 )  # label for the Binding Site.
                 writer.write_data_prop(
                     iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
                     rel=f"{onto_mops}#hasOuterCoordinationNumber",
                     value=f"{cbu_i['Binding_SiteCoordNumber']}",
-                    data_type="String",
                 )
 
                 writer.write_inst(
@@ -398,7 +387,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     iri=f"{mops_pref}Core_{gen_id}_{i}",
                     rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['CoreLabel']}",
-                    data_type="String",
                 )  # Attach label to Core.
                 writer.write_inst(
                     iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
@@ -413,7 +401,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
                     rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['CoreSubstituentLabel']}",
-                    data_type="String",
                 )  # Attach label to Core Substituent.
 
                 writer.write_inst(
@@ -430,7 +417,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     iri=f"{mops_pref}Spacer_{gen_id}_{i}",
                     rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['SpacerLabel']}",
-                    data_type="String",
                 )  # Attach label to Spacer.
                 writer.write_inst(
                     iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
@@ -445,7 +431,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
                     rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['SpacerSubstituentLabel']}",
-                    data_type="String",
                 )  # Attach label to Spacer Substituent.
 
                 gbu = "GenericBuildingUnit"
@@ -463,13 +448,11 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
                     rel=f"{onto_mops}#hasPlanarity",
                     value=f"{cbu_i['GenericUnitPlanarity']}",
-                    data_type="String",
                 )  # Planarity of GBU.
                 writer.write_data_prop(
                     iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
                     rel=f"{onto_mops}#hasModularity",
                     value=f"{cbu_i['GenericUnitModularity']}",
-                    data_type="String",
                 )  # Modularity of GBU.
                 writer.write_inst(
                     iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
@@ -489,7 +472,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                     iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
                     rel=f"{onto_spec}#value",
                     value=f"{cbu_i['GenericUnitNumber']}",
-                    data_type="String",
                 )  # Give the GBU Number its value.
 
                 writer.write_obj_prop(

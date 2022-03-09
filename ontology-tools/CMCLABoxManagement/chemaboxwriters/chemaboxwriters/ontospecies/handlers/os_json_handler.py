@@ -121,11 +121,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         spec_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["spec_pref"]
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
-        writer.write_imports(
-            name="ABoxOntoSpecies",
-            importing=onto_spec,
-            rel="http://www.w3.org/2002/07/owl#imports",
-        )
+        writer.write_imports(name="ABoxOntoSpecies", importing=onto_spec)
         writer.write_imports(
             name="ABoxOntoSpecies", importing=spec_pref[:-1], rel="base"
         )
@@ -134,13 +130,11 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             iri=out_id,
             rel="http://purl.org/dc/elements/1.1/identifier",
             value=out_id,
-            data_type="String",
         )
         writer.write_data_prop(
             iri=out_id,
             rel="http://www.w3.org/2000/01/rdf-schema#label",
             value=label,
-            data_type="String",
         )
 
     def _write_identifier_geom(self, writer: Abox_Writer, out_id, data):
@@ -153,7 +147,6 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 iri=out_id,
                 rel="http://www.w3.org/2004/02/skos/core#altLabel",
                 value=pubchem_alt_label_value,
-                data_type="String",
             )
         cas_number_value = data.get(CAS_NUMBER)
         if cas_number_value is not None:
@@ -161,19 +154,16 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 iri=out_id,
                 rel=f"{onto_spec}#casRegistryID",
                 value=cas_number_value,
-                data_type="String",
             )
         writer.write_data_prop(
             iri=out_id,
             rel=f"{onto_spec}#SMILES",
             value=data[SMILES],
-            data_type="String",
         )
         writer.write_data_prop(
             iri=out_id,
             rel=f"{onto_spec}#inChI",
             value=data[INCHI],
-            data_type="String",
         )
         pubchem_cid_value = data.get(PUBCHEM_CID)
         if pubchem_cid_value is not None:
@@ -181,25 +171,21 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 iri=out_id,
                 rel=f"{onto_spec}#pubChemCID",
                 value=pubchem_cid_value,
-                data_type="String",
             )
         writer.write_data_prop(
             iri=out_id,
             rel=f"{onto_spec}#hasAtomicBond",
             value=data[BOND_STRING],
-            data_type="String",
         )
         writer.write_data_prop(
             iri=out_id,
             rel=f"{onto_spec}#hasGeometry",
             value=data[GEOM_STRING],
-            data_type="String",
         )
         writer.write_data_prop(
             iri=out_id,
             rel=f"{onto_spec}#spinMultiplicity",
             value=data[SPIN_MULT],
-            data_type="String",
         )
 
     def _write_atom_info(self, writer: Abox_Writer, gen_id, out_id, data):
@@ -243,7 +229,6 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                     iri=f"AtomCoordinate{coords[i]}_{atom_id}",
                     rel=f"{gain_pref}hasValue",
                     value=data["Geometry"][k][i],
-                    data_type="String",
                 )
                 writer.write_obj_prop(
                     src_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
@@ -269,13 +254,11 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 iri=f"Charge_{gen_id}",
                 rel=f"{onto_spec}#value",
                 value=charge,
-                data_type="String",
             )
             writer.write_data_prop(
                 iri=f"Charge_{gen_id}",
                 rel=f"{onto_spec}#units",
                 value="e",
-                data_type="String",
             )
             writer.write_inst(
                 iri=f"MolecularFormula_{gen_id}",
@@ -342,13 +325,11 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 iri=f"MolecularWeight_{gen_id}",
                 rel=f"{onto_spec}#value",
                 value=molwt,
-                data_type="String",
             )
             writer.write_data_prop(
                 iri=f"MolecularWeight_{gen_id}",
                 rel=f"{onto_spec}#units",
                 value="g/mol",
-                data_type="String",
             )
 
     def _write_enth(self, writer: Abox_Writer, gen_id, out_id, data):
@@ -371,14 +352,12 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 iri=f"StandardEnthalpyOfFormation_{gen_id}",
                 rel=f"{onto_spec}#value",
                 value=data[ENTH_FORM],
-                data_type="String",
             )
         if ENTH_UNIT in data:
             writer.write_data_prop(
                 iri=f"StandardEnthalpyOfFormation_{gen_id}",
                 rel=f"{onto_spec}#units",
                 value=data[ENTH_UNIT],
-                data_type="String",
             )
         if ENTH_REFTEMP in data:
             writer.write_inst(
@@ -393,14 +372,12 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 iri=f"Temperature_{gen_id}",
                 rel=f"{onto_spec}#value",
                 value=data[ENTH_REFTEMP],
-                data_type="String",
             )
         if ENTH_REFTEMP_UNIT in data:
             writer.write_data_prop(
                 iri=f"Temperature_{gen_id}",
                 rel=f"{onto_spec}#units",
                 value=data[ENTH_REFTEMP_UNIT],
-                data_type="String",
             )
         if ENTH_PHASE in data:
             writer.write_inst(
@@ -423,5 +400,4 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 iri=f"Reference_{gen_id}",
                 rel="http://www.w3.org/2000/01/rdf-schema#label",
                 value=data[ENTH_PROV],
-                data_type="String",
             )

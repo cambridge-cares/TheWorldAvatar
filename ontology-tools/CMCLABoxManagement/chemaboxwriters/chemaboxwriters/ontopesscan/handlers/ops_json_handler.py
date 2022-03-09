@@ -176,7 +176,6 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
                 iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
                 rel=f"{onto_pes}#hasInputAtomIds",
                 value=data[SCAN_ATOM_IDS],
-                data_type="String",
             )
             writer.write_inst(
                 iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
@@ -191,7 +190,6 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
                 iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
                 rel=f"{gain_pref}hasValue",
                 value=data[SCAN_COORDINATE_VALUE][k],
-                data_type="String",
             )
 
             scan_unit = ""

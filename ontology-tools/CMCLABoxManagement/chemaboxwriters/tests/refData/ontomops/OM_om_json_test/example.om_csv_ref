@@ -39,7 +39,7 @@ http://www.theworldavatar.com/kb/ontomops/AssemblyModel_testID-111-111-111,Insta
 http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,http://www.theworldavatar.com/kb/ontomops/Tetrahedron_testID-111-111-111,,Tetrahedron,String
 http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#ChemicalBuildingUnit,,,
 http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasChemicalBuildingUnit,,
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCBUFormula,Data Property,http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,,Some_formula,
+http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCBUFormula,Data Property,http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,,Some_formula,String
 http://www.theworldavatar.com/kb/ontomops/DirectBinding_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#DirectBinding,,,
 http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,Instance,http://www.theworldavatar.com/kb/ontomops/DirectBinding_testID-111-111-111,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasBindingDirection,,
 http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,Instance,IRI1,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasUniqueSpecies,,
@@ -70,7 +70,7 @@ http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Pr
 http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,Instance,http://www.theworldavatar.com/kb/ontomops/GenericBuildingUnit_testID-111-111-111_0,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#isFunctioningAs,,
 http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_1,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#ChemicalBuildingUnit,,,
 http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_1,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasChemicalBuildingUnit,,
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCBUFormula,Data Property,http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_1,,Some_formula,
+http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCBUFormula,Data Property,http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_1,,Some_formula,String
 http://www.theworldavatar.com/kb/ontomops/SidewayBinding_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#SidewayBinding,,,
 http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_1,Instance,http://www.theworldavatar.com/kb/ontomops/SidewayBinding_testID-111-111-111,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasBindingDirection,,
 http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_1,Instance,IRI2,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasUniqueSpecies,,
