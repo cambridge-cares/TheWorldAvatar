@@ -70,6 +70,31 @@ class InteractionHandler {
     }
 
     /**
+     * 
+     * @param {*} feature 
+     * @returns 
+     */
+    #isClickable(feature) {
+          // Get the meta data describing this layer
+          let targetLayerName = feature.layer.id;
+          targetLayerName = targetLayerName.replace("_cluster", "");
+          targetLayerName = targetLayerName.replace("_arrows", "");
+          targetLayerName = targetLayerName.replace("_clickable", "");
+          targetLayerName = targetLayerName.replace("_focus", "");
+
+          let setMeta = DT.currentGroupMeta.filter(set => {
+              return (set["name"] === targetLayerName);
+          });
+
+          // Check if it's clickable
+          let clickable = true;
+          if(setMeta.length < 1 || (("clickable" in setMeta[0]) && setMeta[0]["clickable"] === false)) {
+              clickable = false;
+          }
+          return clickable;
+    }
+
+    /**
      * Register default mouse interactions with the input layer.
      * 
      * @param {string[]} layer [layer name, layer type]
@@ -84,9 +109,6 @@ class InteractionHandler {
 
             // Get all visible features under the mouse click
             let features = this._map.queryRenderedFeatures(event.point);
-
-            // Reset the side panel
-            this._panelHandler.setContent("");
 
             // Filter to determine how many non-default, circle/symbol features are present
             let self = this;
@@ -111,12 +133,10 @@ class InteractionHandler {
                 return false;
             });
 
-            console.log(siteFeatures);
-
             if(siteFeatures.length == 1 && siteFeatures[0]["layer"]["id"].endsWith("_cluster")) {
                 // If a cluster feature, let the user pick the leaf feature
                 this.#handleClusterClick(siteFeatures[0], function(newFeature) {
-                    self.mouseClick(newFeature["layer"]["id"].replace("_cluster", ""), newFeature);
+                    self.mouseClick(newFeature);
                 });
             } else {
                 // If more than one, let the use pick
@@ -124,20 +144,19 @@ class InteractionHandler {
                     this.#handleMultipleFeatures(siteFeatures, function(newFeature) {
                         // Trigger on chosen feature
                         if(newFeature != null) {    
-                            self.mouseClick(newFeature["layer"]["id"], newFeature);
+                            self.mouseClick(newFeature);
                         }
                     });
                 } else if(siteFeatures.length == 1) {
-                    self.mouseClick(siteFeatures[0]["layer"]["id"], siteFeatures[0]);
+                    self.mouseClick(siteFeatures[0]);
                 } else {
-                    self.mouseClick(features[0]?.layer?.id, features[0]);
+                    self.mouseClick(features[0]);
                 }
             }
         });
 
         // Mouse enter
         this._map.on("mousemove", (event) => {
-
             let feature = this._map.queryRenderedFeatures(event.point)
                 .find(features => features.layer.metadata?.provider === "cmcl");
 
@@ -150,35 +169,42 @@ class InteractionHandler {
                 lastFeature = null;
             }
 
+            // No feature, bug out
             if (!feature) {
                 this._map.getCanvas().style.cursor = '';
                 this._popup.remove();
                 return;
             }
 
-            if(DT.clickEvents) this._map.getCanvas().style.cursor = 'pointer';
+            // Not a clickable feature, get out
+            if(!this.#isClickable(feature)) {
+                this._map.getCanvas().style.cursor = 'default';
+                this._popup.remove();
+                return;
+            }
+
+            let html = "";
+            let name = feature.properties["displayName"] ?? feature.properties["name"] ?? ("ID " + feature.id);
+            if(name == null) {
+                return;
+            }
+
+            this._map.getCanvas().style.cursor = "pointer";
 
             const layerName = feature.layer.id;
             const layerType = feature.layer.type
 
-            let html;
             switch(layerType) {
-
                 case "line":
                 case "point":
                 case "symbol":
                 case "circle":
-                    if(layerName.endsWith("_arrows")) {
-                        return;
-                    }
-
                     // Get correct co-ords
                     var coordinates = feature.geometry.coordinates.slice();
                     while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
                         coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
                     }
 
-                    html = "";
                     if(layerName.endsWith("_cluster")) {
                         html = "<h3>Multiple features</h3>";
 
@@ -187,9 +213,6 @@ class InteractionHandler {
                         html += "Click to show a list of these features."
                     } else {
                         // Get appropriate description for feature
-                        var name = feature.properties["displayName"];
-                        if(name == null) name = feature.properties["name"];
-                        if(name == null) return;
 
                         // Build HTML for popup
                         html = "<h3>" + name + "</h3>";
@@ -228,8 +251,6 @@ class InteractionHandler {
 
                     // Get appropriate description for layer
                     if(!feature.properties["displayName"] && !feature.properties["name"]) return;
-                    var name = feature.properties["displayName"];
-                    if(name == null) name = feature.properties["name"];
 
                     // Build HTML for popup
                     html = "<b>" + name + "</b></br>";
@@ -379,16 +400,27 @@ class InteractionHandler {
      * @param {String} layerName name of layer containing feature
      * @param {JSONObject} feature selected feature
      */
-    mouseClick(layerName, feature) {
+    mouseClick(feature) {
         if(feature == null) return;
 
+        // Not a clickable feature, get out
+        if(!this.#isClickable(feature)) {
+            this._map.getCanvas().style.cursor = 'default';
+            this._popup.remove();
+            return;
+        }
+
         let self = this;
+        let layerName = feature.layer.id;
+
         if(layerName.endsWith("_cluster")) {
             // If a cluster feature, let the user pick the leaf feature
             this.#handleClusterClick(feature, function(newFeature) {
-                self.mouseClick(layerName.replace("_cluster", ""), newFeature);
+                self.mouseClick(newFeature);
             });
             return;
+        } else if(layerName.endsWith("_arrows")) {
+            layerName = layerName.replace("_arrows", "");
         } 
         
         // Hide the legend

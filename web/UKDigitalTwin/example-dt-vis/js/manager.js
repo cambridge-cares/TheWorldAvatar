@@ -172,6 +172,8 @@
 		var sourcePromises = [];
 
 		var groupData = groupMeta["dataSets"];
+        DT.currentGroupMeta = groupData;
+        
 		var groupDir = groupMeta["thisDirectory"];
 		for(var i = 0; i < groupData.length; i++) {
 			let sourcePromise = this._sourceHandler.addSource(groupDir, groupData[i]);
