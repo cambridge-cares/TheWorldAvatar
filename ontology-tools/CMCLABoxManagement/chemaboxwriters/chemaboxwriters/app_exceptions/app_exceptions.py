@@ -50,3 +50,9 @@ class MissingInstance(Exception):
     """Missing instance."""
 
     pass
+
+
+class MissingOntologyName(Exception):
+    """Missing ontology name."""
+
+    pass

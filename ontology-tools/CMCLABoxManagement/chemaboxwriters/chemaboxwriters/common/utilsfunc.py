@@ -30,20 +30,10 @@ class Abox_csv_writer:
         self.default_prefix = configs.get("prefix", "")
         self._current_inst = None
         self._prefixes = {}
+        self._current_name = None
 
     def register_prefix(self, name: str, value: str) -> None:
         self._prefixes[name] = value
-
-    def __enter__(self):
-        self._file_obj = open(self.file_path, "w", newline="").__enter__()
-        self.csvwriter = csv.writer(
-            self._file_obj, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
-        )
-        return self
-
-    def __exit__(self, exc_type, exc_value, exc_traceback) -> bool:
-        self._file_obj.__exit__(exc_type, exc_value, exc_traceback)
-        return True
 
     def write_header(self) -> "Abox_csv_writer":
         self._write_row(
@@ -61,6 +51,7 @@ class Abox_csv_writer:
         name: str,
         importing: str,
         rel: Optional[str] = None,
+        store_name: bool = True,
     ) -> "Abox_csv_writer":
         if rel is None:
             rel = "http://www.w3.org/2002/07/owl#imports"
@@ -68,6 +59,8 @@ class Abox_csv_writer:
         name, rel, importing = self._apply_prefixes(name, rel, importing)
         self._write_row(name, self.ontology_field, importing, rel)
 
+        if store_name:
+            self._current_name = name
         return self
 
     def write_inst(
@@ -142,11 +135,23 @@ class Abox_csv_writer:
 
         if self._current_inst is None:
             raise app_exceptions.MissingInstance(
-                "No instance created. Cannont add data property."
+                "No instance created. Can not add data property."
             )
         self.write_data_prop(
             iri=self._current_inst, rel=rel, value=value, data_type=data_type
         )
+        return self
+
+    def add_imports(
+        self, importing: str, rel: Optional[str] = None
+    ) -> "Abox_csv_writer":
+
+        if self._current_name is None:
+            raise app_exceptions.MissingOntologyName(
+                "No ontology name defined. Can not add import statement."
+            )
+
+        self.write_imports(name=self._current_name, importing=importing, rel=rel)
         return self
 
     def _write_row(self, *args: str) -> None:
@@ -162,6 +167,17 @@ class Abox_csv_writer:
                 item = item.replace(f"{prefix_name}:", prefix_value)
             items.append(item)
         return items
+
+    def __enter__(self):
+        self._file_obj = open(self.file_path, "w", newline="").__enter__()
+        self.csvwriter = csv.writer(
+            self._file_obj, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+        )
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback) -> bool:
+        self._file_obj.__exit__(exc_type, exc_value, exc_traceback)
+        return True
 
 
 def config_logging(

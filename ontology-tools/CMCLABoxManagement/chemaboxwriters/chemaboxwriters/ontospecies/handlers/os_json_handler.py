@@ -123,10 +123,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         spec_pref = self._endpoints_config["prefixes"]["spec_pref"]
 
         writer.write_header()
-        writer.write_imports(name="ABoxOntoSpecies", importing="onto_spec:")
         writer.write_imports(
-            name="ABoxOntoSpecies", importing=spec_pref[:-1], rel="base"
-        )
+            name="ABoxOntoSpecies", importing="onto_spec:"
+        ).add_imports(importing=spec_pref[:-1], rel="base")
         writer.write_inst(iri=out_id, type="Species").add_data_prop(
             rel="http://purl.org/dc/elements/1.1/identifier", value=out_id
         ).add_data_prop(rel="http://www.w3.org/2000/01/rdf-schema#label", value=label)

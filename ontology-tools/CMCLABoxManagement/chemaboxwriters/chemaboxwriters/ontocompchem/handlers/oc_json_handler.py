@@ -109,8 +109,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         # This is all the initialization part of the ABox
         abox_name = "ABoxOntoCompChem"
         init_mod_iri = f"comp_pref:InitializationModule_{calc_id}"
-        writer.write_imports(name=abox_name, importing=onto_comp)
-        writer.write_imports(name=abox_name, importing=comp_pref[:-1], rel="base")
+        writer.write_imports(name=abox_name, importing=onto_comp).add_imports(
+            importing=comp_pref[:-1], rel="base"
+        )
         writer.write_inst(iri=jobIRI, type=onto_comp + "#G09")
         if spec_IRI:  # If you have the ontospecies IRI, it puts it here.
             # Otherwise, it leaves it out.

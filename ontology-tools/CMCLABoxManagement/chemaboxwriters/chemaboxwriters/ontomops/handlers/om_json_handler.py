@@ -103,12 +103,9 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         writer.write_header()
 
         # Write the main initialization for now.
-        writer.write_imports(
-            name="ABoxOntoMOPs",
-            importing="onto_mops:",
-            rel="http://www.w3.org/2002/07/owl#imports",
+        writer.write_imports(name="ABoxOntoMOPs", importing="onto_mops:").add_imports(
+            importing="mops_pref:", rel="base"
         )
-        writer.write_imports(name="ABoxOntoMOPs", importing="mops_pref:", rel="base")
 
         writer.write_inst(
             iri=f"mops_pref:{mops_id}",
