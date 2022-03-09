@@ -94,11 +94,10 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
 
     def _write_initial(self, writer: Abox_Writer, entryIRI, spec_IRI):
 
-        onto_pes = self._endpoints_config["prefixes"]["onto_pes"]
         pes_pref = self._endpoints_config["prefixes"]["pes_pref"]
 
         abox_name = "ABoxOntoPESSscan"
-        writer.write_imports(name=abox_name, importing=onto_pes)
+        writer.write_imports(name=abox_name, importing="onto_pes:")
         writer.write_imports(name=abox_name, importing=pes_pref[:-1], rel="base")
         writer.write_inst(
             iri=f"pes_pref:{entryIRI}",
