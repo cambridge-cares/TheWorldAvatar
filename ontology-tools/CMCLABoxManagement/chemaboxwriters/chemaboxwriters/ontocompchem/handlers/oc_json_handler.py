@@ -77,25 +77,25 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         calc_id = data[globals.ENTRY_UUID]
         entryIRI = data[globals.ENTRY_IRI]
 
-        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as aboxwriter:
-            aboxwriter.write_header()
+        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
+            writer.write_header()
 
-            self._write_initial(aboxwriter, entryIRI, calc_id, spec_IRI)
-            self._write_mols(aboxwriter, calc_id, data)
-            self._write_level_of_theory(aboxwriter, calc_id, data)
-            self._write_name(aboxwriter, calc_id, data)
-            self._write_frequencies(aboxwriter, entryIRI, calc_id, data)
-            self._write_rotations(aboxwriter, entryIRI, calc_id, data)
-            self._write_geom_type(aboxwriter, entryIRI, calc_id, data)
-            self._write_zpe(aboxwriter, entryIRI, calc_id, data)
-            self._write_scf(aboxwriter, entryIRI, calc_id, data)
-            self._write_occ(aboxwriter, entryIRI, calc_id, data)
-            self._write_virt(aboxwriter, entryIRI, calc_id, data)
-            self._write_geom_opt(aboxwriter, entryIRI, calc_id, data)
-            self._write_atom_info(aboxwriter, calc_id, data)
-            self._write_metadata(aboxwriter, calc_id, data)
+            self._write_initial(writer, entryIRI, calc_id, spec_IRI)
+            self._write_mols(writer, calc_id, data)
+            self._write_level_of_theory(writer, calc_id, data)
+            self._write_name(writer, calc_id, data)
+            self._write_frequencies(writer, entryIRI, calc_id, data)
+            self._write_rotations(writer, entryIRI, calc_id, data)
+            self._write_geom_type(writer, entryIRI, calc_id, data)
+            self._write_zpe(writer, entryIRI, calc_id, data)
+            self._write_scf(writer, entryIRI, calc_id, data)
+            self._write_occ(writer, entryIRI, calc_id, data)
+            self._write_virt(writer, entryIRI, calc_id, data)
+            self._write_geom_opt(writer, entryIRI, calc_id, data)
+            self._write_atom_info(writer, calc_id, data)
+            self._write_metadata(writer, calc_id, data)
 
-    def _write_initial(self, aboxwriter: Abox_Writer, jobIRI, calc_id, spec_IRI):
+    def _write_initial(self, writer: Abox_Writer, jobIRI, calc_id, spec_IRI):
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
@@ -104,50 +104,44 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
 
         # This is all the initialization part of the ABox
-        aboxwriter.write_imports(
-            abox_name="ABoxOntoCompChem",
-            importing=onto_comp,
-            relation="http://www.w3.org/2002/07/owl#imports",
-        )
-        aboxwriter.write_imports(
-            abox_name="ABoxOntoCompChem", importing=comp_pref[:-1], relation="base"
-        )
-        aboxwriter.write_instance(inst_iri=jobIRI, inst_class=onto_comp + "#G09")
+        abox_name = "ABoxOntoCompChem"
+        init_mod_iri = f"{comp_pref}InitializationModule_{calc_id}"
+        writer.write_imports(name=abox_name, importing=onto_comp)
+        writer.write_imports(name=abox_name, importing=comp_pref[:-1], rel="base")
+        writer.write_inst(iri=jobIRI, type=onto_comp + "#G09")
         if spec_IRI:  # If you have the ontospecies IRI, it puts it here.
             # Otherwise, it leaves it out.
-            aboxwriter.write_instance(inst_iri=spec_IRI, inst_class=inst_spec)
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI, trg_inst_iri=spec_IRI, relation=has_spec
-            )
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
-            inst_class=f"{onto_comp}#InitializationModule",
-        )  # Sets up initialization.
-        aboxwriter.write_object_property(
-            src_inst_iri=jobIRI,
-            trg_inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
-            relation=f"{onto_comp}#hasInitialization",
+            writer.write_inst(iri=spec_IRI, type=inst_spec)
+            writer.write_obj_prop(src_iri=jobIRI, trg_iri=spec_IRI, rel=has_spec)
+        # Sets up initialization.
+        writer.write_inst(
+            iri=f"{init_mod_iri}", type=f"{onto_comp}#InitializationModule"
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-            inst_class=f"{gain_pref}SourcePackage",
+        writer.write_obj_prop(
+            src_iri=jobIRI,
+            trg_iri=f"{init_mod_iri}",
+            rel=f"{onto_comp}#hasInitialization",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=jobIRI,
-            trg_inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-            relation=f"{onto_comp}#hasEnvironment",
+        writer.write_inst(
+            iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            type=f"{gain_pref}SourcePackage",
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}MoleculeProperty_{calc_id}",
-            inst_class=f"{gain_pref}MoleculeProperty",
+        writer.write_obj_prop(
+            src_iri=jobIRI,
+            trg_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            rel=f"{onto_comp}#hasEnvironment",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
-            trg_inst_iri=f"{comp_pref}MoleculeProperty_{calc_id}",
-            relation=f"{gain_pref}hasMoleculeProperty",
+        writer.write_inst(
+            iri=f"{comp_pref}MoleculeProperty_{calc_id}",
+            type=f"{gain_pref}MoleculeProperty",
+        )
+        writer.write_obj_prop(
+            src_iri=f"{init_mod_iri}",
+            trg_iri=f"{comp_pref}MoleculeProperty_{calc_id}",
+            rel=f"{gain_pref}hasMoleculeProperty",
         )
 
-    def _write_mols(self, aboxwriter: Abox_Writer, calc_id, data):
+    def _write_mols(self, writer: Abox_Writer, calc_id, data):
         # This section starts the representation of the molecule, namely dividing
         # the species into sub-molecules that contain the different atom types.
         # This will hopefully be changed by an update in OntoCompChem later.
@@ -168,39 +162,37 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             atom = at_count[k][0]
             count = str(float(at_count[k][1]))
 
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
-                inst_class=f"{gain_pref}Molecule",
+            writer.write_inst(
+                iri=f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
+                type=f"{gain_pref}Molecule",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}MoleculeProperty_{calc_id}_{atom}{count}",
-                trg_inst_iri=f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
-                relation=f"{gain_pref}hasMolecule",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}MoleculeProperty_{calc_id}_{atom}{count}",
+                trg_iri=f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
+                rel=f"{gain_pref}hasMolecule",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                inst_class=f"{gain_pref}Atom",
+            writer.write_inst(
+                iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                type=f"{gain_pref}Atom",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
-                trg_inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                relation=f"{gain_pref}hasAtom",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}Molecule_{calc_id}_{atom}{count}",
+                trg_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                rel=f"{gain_pref}hasAtom",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{table_pref}#{atom}", inst_class=f"{table_pref}#Element"
+            writer.write_inst(iri=f"{table_pref}#{atom}", type=f"{table_pref}#Element")
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                trg_iri=f"{table_pref}#{atom}",
+                rel=f"{gain_pref}isElement",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                trg_inst_iri=f"{table_pref}#{atom}",
-                relation=f"{gain_pref}isElement",
-            )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                relation=f"{gain_pref}hasNumberOfAtoms",
+            writer.write_data_prop(
+                iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                rel=f"{gain_pref}hasNumberOfAtoms",
                 value=at_count[k][1],
             )
 
-    def _write_level_of_theory(self, aboxwriter: Abox_Writer, calc_id, data):
+    def _write_level_of_theory(self, writer: Abox_Writer, calc_id, data):
         # This section writes the information related to the level
         # of theory for the ABox (method and basis set).
 
@@ -208,53 +200,53 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
         onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
 
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}LevelOfTheory_{calc_id}",
-            inst_class=f"{onto_comp}#LevelOfTheory",
-        )
+        init_mod_iri = f"{comp_pref}InitializationModule_{calc_id}"
         lvl_theory = "LevelofTheoryParameter"
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}MethodologyFeature_{calc_id}_{lvl_theory}",
-            inst_class=f"{gain_pref}MethodologyFeature",
+        meth_iri = f"{comp_pref}MethodologyFeature_{calc_id}_{lvl_theory}"
+
+        writer.write_inst(
+            iri=f"{comp_pref}LevelOfTheory_{calc_id}",
+            type=f"{onto_comp}#LevelOfTheory",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
-            trg_inst_iri=f"{comp_pref}MethodologyFeature_{calc_id}_{lvl_theory}",
-            relation=f"{gain_pref}hasParameter",
+        writer.write_inst(iri=f"{meth_iri}", type=f"{gain_pref}MethodologyFeature")
+        writer.write_obj_prop(
+            src_iri=f"{init_mod_iri}",
+            trg_iri=f"{meth_iri}",
+            rel=f"{gain_pref}hasParameter",
         )
-        aboxwriter.write_data_property(
-            inst_iri=f"{comp_pref}MethodologyFeature_{calc_id}_{lvl_theory}",
-            relation=f"{onto_comp}#hasLevelOfTheory",
+        writer.write_data_prop(
+            iri=f"{meth_iri}",
+            rel=f"{onto_comp}#hasLevelOfTheory",
             value=data["Method"],
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}BasisSet_{calc_id}", inst_class=f"{gain_pref}BasisSet"
+        writer.write_inst(
+            iri=f"{comp_pref}BasisSet_{calc_id}", type=f"{gain_pref}BasisSet"
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{comp_pref}InitializationModule_{calc_id}",
-            trg_inst_iri=f"{comp_pref}BasisSet_{calc_id}",
-            relation=f"{gain_pref}hasParameter",
+        writer.write_obj_prop(
+            src_iri=f"{init_mod_iri}",
+            trg_iri=f"{comp_pref}BasisSet_{calc_id}",
+            rel=f"{gain_pref}hasParameter",
         )
-        aboxwriter.write_data_property(
-            inst_iri=f"{comp_pref}BasisSet_{calc_id}",
-            relation=f"{gain_pref}hasBasisSet",
+        writer.write_data_prop(
+            iri=f"{comp_pref}BasisSet_{calc_id}",
+            rel=f"{gain_pref}hasBasisSet",
             value=f'"{data["Basis set"]}"',
         )  # Note that the string formatting is used to escape the ',' in basis sets.
 
-    def _write_name(self, aboxwriter: Abox_Writer, calc_id, data):
+    def _write_name(self, writer: Abox_Writer, calc_id, data):
         # This writes the name of the species, taken as the formula,
         # but with extraneous 1s removed.
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
 
-        aboxwriter.write_data_property(
-            inst_iri=f"{comp_pref}MoleculeProperty_{calc_id}",
-            relation=f"{gain_pref}hasName",
+        writer.write_data_prop(
+            iri=f"{comp_pref}MoleculeProperty_{calc_id}",
+            rel=f"{gain_pref}hasName",
             value=utilsfunc.formula_clean_re.sub("", data["Empirical formula"]),
         )
 
-    def _write_frequencies(self, aboxwriter, jobIRI, calc_id, data):
+    def _write_frequencies(self, writer: Abox_Writer, jobIRI, calc_id, data):
         # This section writes the vibrations to the ABox (if they exist).
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
@@ -263,44 +255,44 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "Frequencies" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}VibrationalAnalysis_{calc_id}",
-                inst_class=f"{gain_pref}VibrationalAnalysis",
+            writer.write_inst(
+                iri=f"{comp_pref}VibrationalAnalysis_{calc_id}",
+                type=f"{gain_pref}VibrationalAnalysis",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}VibrationalAnalysis_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}VibrationalAnalysis_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}Frequency_{calc_id}",
-                inst_class=f"{gain_pref}Frequency",
+            writer.write_inst(
+                iri=f"{comp_pref}Frequency_{calc_id}",
+                type=f"{gain_pref}Frequency",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}VibrationalAnalysis_{calc_id}",
-                trg_inst_iri=f"{comp_pref}Frequency_{calc_id}",
-                relation=f"{gain_pref}hasResult",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}VibrationalAnalysis_{calc_id}",
+                trg_iri=f"{comp_pref}Frequency_{calc_id}",
+                rel=f"{gain_pref}hasResult",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}Frequency_{calc_id}",
-                relation=f"{onto_comp}#hasFrequencies",
+            writer.write_data_prop(
+                iri=f"{comp_pref}Frequency_{calc_id}",
+                rel=f"{onto_comp}#hasFrequencies",
                 value=" ".join(str(i) for i in data["Frequencies"]),
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}Frequency_{calc_id}",
-                relation=f"{gain_pref}hasVibrationCount",
+            writer.write_data_prop(
+                iri=f"{comp_pref}Frequency_{calc_id}",
+                rel=f"{gain_pref}hasVibrationCount",
                 value=data["Frequencies number"],
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{gain_pref}cm-1", inst_class=f"{unit_pref}qudt#FrequencyUnit"
+            writer.write_inst(
+                iri=f"{gain_pref}cm-1", type=f"{unit_pref}qudt#FrequencyUnit"
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}Frequency_{calc_id}",
-                trg_inst_iri=f"{gain_pref}cm-1",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}Frequency_{calc_id}",
+                trg_iri=f"{gain_pref}cm-1",
+                rel=f"{gain_pref}hasUnit",
             )
 
-    def _write_rotations(self, aboxwriter, jobIRI, calc_id, data):
+    def _write_rotations(self, writer: Abox_Writer, jobIRI, calc_id, data):
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
@@ -316,70 +308,70 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
             unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
-                inst_class=f"{onto_comp}#RotationalConstants",
+            writer.write_inst(
+                iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                type=f"{onto_comp}#RotationalConstants",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
-                relation=f"{onto_comp}#hasRotationalConstants",
+            writer.write_data_prop(
+                iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                rel=f"{onto_comp}#hasRotationalConstants",
                 value=" ".join(str(i) for i in data["Rotational constants"]),
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
-                relation=f"{onto_comp}#hasRotationalConstantsCount",
+            writer.write_data_prop(
+                iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                rel=f"{onto_comp}#hasRotationalConstantsCount",
                 value=data["Rotational constants number"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}RotationalConstants_{calc_id}",
-                trg_inst_iri=f"{unit_pref}unit#GigaHertz",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}RotationalConstants_{calc_id}",
+                trg_iri=f"{unit_pref}unit#GigaHertz",
+                rel=f"{gain_pref}hasUnit",
             )
 
         if "Rotational symmetry number" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}RotationalSymmetry_{calc_id}",
-                inst_class=f"{onto_comp}#RotationalSymmetry",
+            writer.write_inst(
+                iri=f"{comp_pref}RotationalSymmetry_{calc_id}",
+                type=f"{onto_comp}#RotationalSymmetry",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}RotationalSymmetry_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}RotationalSymmetry_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}RotationalSymmetry_{calc_id}",
-                relation=f"{onto_comp}#hasRotationalSymmetryNumber",
-                value=int(data["Rotational symmetry number"]),
+            writer.write_data_prop(
+                iri=f"{comp_pref}RotationalSymmetry_{calc_id}",
+                rel=f"{onto_comp}#hasRotationalSymmetryNumber",
+                value=str(int(data["Rotational symmetry number"])),
             )
 
-    def _write_geom_type(self, aboxwriter, jobIRI, calc_id, data):
+    def _write_geom_type(self, writer: Abox_Writer, jobIRI, calc_id, data):
         # This section writes the geometry type information.
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
         onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
 
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}GeometryType_{calc_id}",
-            inst_class=f"{onto_comp}#GeometryType",
+        writer.write_inst(
+            iri=f"{comp_pref}GeometryType_{calc_id}",
+            type=f"{onto_comp}#GeometryType",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=jobIRI,
-            trg_inst_iri=f"{comp_pref}GeometryType_{calc_id}",
-            relation=f"{gain_pref}isCalculationOn",
+        writer.write_obj_prop(
+            src_iri=jobIRI,
+            trg_iri=f"{comp_pref}GeometryType_{calc_id}",
+            rel=f"{gain_pref}isCalculationOn",
         )
-        aboxwriter.write_data_property(
-            inst_iri=f"{comp_pref}GeometryType_{calc_id}",
-            relation=f"{onto_comp}#hasGeometryType",
+        writer.write_data_prop(
+            iri=f"{comp_pref}GeometryType_{calc_id}",
+            rel=f"{onto_comp}#hasGeometryType",
             value=data["Geometry type"],
         )
 
-    def _write_zpe(self, aboxwriter, jobIRI, calc_id, data):
+    def _write_zpe(self, writer: Abox_Writer, jobIRI, calc_id, data):
         # This section writes the zero-point energy information (if it exists).
         # Note that this requires a frequency calculation to be computed.
 
@@ -389,65 +381,65 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "Electronic and ZPE energy" in data and "Electronic energy" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}ZeroPointEnergy_{calc_id}",
-                inst_class=f"{onto_comp}#ZeroPointEnergy",
+            writer.write_inst(
+                iri=f"{comp_pref}ZeroPointEnergy_{calc_id}",
+                type=f"{onto_comp}#ZeroPointEnergy",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}ZeroPointEnergy_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}ZeroPointEnergy_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}ZeroPointEnergy_{calc_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
-                relation=f"{gain_pref}hasElectronicEnergy",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}ZeroPointEnergy_{calc_id}",
+                trg_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
+                rel=f"{gain_pref}hasElectronicEnergy",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
+                rel=f"{gain_pref}hasValue",
                 value=data["Electronic and ZPE energy"] - data["Electronic energy"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
-                trg_inst_iri=f"{unit_pref}unit#Hartree",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{calc_id}_ZeroPointEnergy",
+                trg_iri=f"{unit_pref}unit#Hartree",
+                rel=f"{gain_pref}hasUnit",
             )
         elif "Electronic and ZPE energy" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
-                inst_class=f"{onto_comp}#ElectronicAndZPEEnergy",
+            writer.write_inst(
+                iri=f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
+                type=f"{onto_comp}#ElectronicAndZPEEnergy",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
-                relation=f"{gain_pref}hasElectronicEnergy",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}ElectronicAndZPEEnergy_{calc_id}",
+                trg_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
+                rel=f"{gain_pref}hasElectronicEnergy",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
+                rel=f"{gain_pref}hasValue",
                 value=data["Electronic and ZPE energy"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
-                trg_inst_iri=f"{unit_pref}unit#Hartree",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{calc_id}_ElectronicAndZPEEnergy",
+                trg_iri=f"{unit_pref}unit#Hartree",
+                rel=f"{gain_pref}hasUnit",
             )
 
-    def _write_scf(self, aboxwriter, jobIRI, calc_id, data):
+    def _write_scf(self, writer: Abox_Writer, jobIRI, calc_id, data):
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
@@ -456,36 +448,36 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
         if "Electronic energy" in data:
             # This section writes the electronic (SCF) energy information.
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}ScfEnergy_{calc_id}",
-                inst_class=f"{onto_comp}#ScfEnergy",
+            writer.write_inst(
+                iri=f"{comp_pref}ScfEnergy_{calc_id}",
+                type=f"{onto_comp}#ScfEnergy",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}ScfEnergy_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}ScfEnergy_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}ScfEnergy_{calc_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
-                relation=f"{gain_pref}hasElectronicEnergy",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}ScfEnergy_{calc_id}",
+                trg_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
+                rel=f"{gain_pref}hasElectronicEnergy",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
+                rel=f"{gain_pref}hasValue",
                 value=data["Electronic energy"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
-                trg_inst_iri=f"{unit_pref}unit#Hartree",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{calc_id}_ScfEnergy",
+                trg_iri=f"{unit_pref}unit#Hartree",
+                rel=f"{gain_pref}hasUnit",
             )
 
-    def _write_occ(self, aboxwriter, jobIRI, calc_id, data):
+    def _write_occ(self, writer: Abox_Writer, jobIRI, calc_id, data):
         # This section writes the information on the occupied orbitals:
         # HOMO, HOMO-1, HOMO-2 energies.
         # HOMO
@@ -495,96 +487,96 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "HOMO energy" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}HomoEnergy_{calc_id}",
-                inst_class=f"{onto_comp}#HomoEnergy",
+            writer.write_inst(
+                iri=f"{comp_pref}HomoEnergy_{calc_id}",
+                type=f"{onto_comp}#HomoEnergy",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}HomoEnergy_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}HomoEnergy_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}HomoEnergy_{calc_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
-                relation=f"{onto_comp}#hasHomoEnergy",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}HomoEnergy_{calc_id}",
+                trg_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
+                rel=f"{onto_comp}#hasHomoEnergy",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
+                rel=f"{gain_pref}hasValue",
                 value=data["HOMO energy"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
-                trg_inst_iri=f"{unit_pref}unit#Hartree",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{calc_id}_HomoEnergy",
+                trg_iri=f"{unit_pref}unit#Hartree",
+                rel=f"{gain_pref}hasUnit",
             )
         # HOMO-1
         if "HOMO-1 energy" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
-                inst_class=f"{onto_comp}#HomoMinusOneEnergy",
+            writer.write_inst(
+                iri=f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
+                type=f"{onto_comp}#HomoMinusOneEnergy",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
-                relation=f"{onto_comp}#hasHomoMinusOneEnergy",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}HomoMinusOneEnergy_{calc_id}",
+                trg_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
+                rel=f"{onto_comp}#hasHomoMinusOneEnergy",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
+                rel=f"{gain_pref}hasValue",
                 value=data["HOMO-1 energy"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
-                trg_inst_iri=f"{unit_pref}unit#Hartree",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusOneEnergy",
+                trg_iri=f"{unit_pref}unit#Hartree",
+                rel=f"{gain_pref}hasUnit",
             )
         # HOMO-2
         if "HOMO-2 energy" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
-                inst_class=f"{onto_comp}#HomoMinusTwoEnergy",
+            writer.write_inst(
+                iri=f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
+                type=f"{onto_comp}#HomoMinusTwoEnergy",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
-                relation=f"{onto_comp}#hasHomoMinusTwoEnergy",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}HomoMinusTwoEnergy_{calc_id}",
+                trg_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
+                rel=f"{onto_comp}#hasHomoMinusTwoEnergy",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
+                rel=f"{gain_pref}hasValue",
                 value=data["HOMO-2 energy"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
-                trg_inst_iri=f"{unit_pref}unit#Hartree",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{calc_id}_HomoMinusTwoEnergy",
+                trg_iri=f"{unit_pref}unit#Hartree",
+                rel=f"{gain_pref}hasUnit",
             )
 
-    def _write_virt(self, aboxwriter, jobIRI, calc_id, data):
+    def _write_virt(self, writer: Abox_Writer, jobIRI, calc_id, data):
         # This section writes the information on the unoccupied (virtual)
         # orbitals: LUMO, LUMO+1, LUMO+2 energies.
         # LUMO
@@ -595,96 +587,96 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         unit_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["unit_pref"]
 
         if "LUMO energy" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}LumoEnergy_{calc_id}",
-                inst_class=f"{onto_comp}#LumoEnergy",
+            writer.write_inst(
+                iri=f"{comp_pref}LumoEnergy_{calc_id}",
+                type=f"{onto_comp}#LumoEnergy",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}LumoEnergy_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}LumoEnergy_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}LumoEnergy_{calc_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
-                relation=f"{onto_comp}#hasLumoEnergy",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}LumoEnergy_{calc_id}",
+                trg_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
+                rel=f"{onto_comp}#hasLumoEnergy",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
+                rel=f"{gain_pref}hasValue",
                 value=data["LUMO energy"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
-                trg_inst_iri=f"{unit_pref}unit#Hartree",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{calc_id}_LumoEnergy",
+                trg_iri=f"{unit_pref}unit#Hartree",
+                rel=f"{gain_pref}hasUnit",
             )
         # LUMO+1
         if "LUMO+1 energy" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
-                inst_class=f"{onto_comp}#LumoPlusOneEnergy",
+            writer.write_inst(
+                iri=f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
+                type=f"{onto_comp}#LumoPlusOneEnergy",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
-                relation=f"{onto_comp}#hasLumoPlusOneEnergy",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}LumoPlusOneEnergy_{calc_id}",
+                trg_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
+                rel=f"{onto_comp}#hasLumoPlusOneEnergy",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
+                rel=f"{gain_pref}hasValue",
                 value=data["LUMO+1 energy"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
-                trg_inst_iri=f"{unit_pref}unit#Hartree",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusOneEnergy",
+                trg_iri=f"{unit_pref}unit#Hartree",
+                rel=f"{gain_pref}hasUnit",
             )
         # LUMO+2
         if "LUMO+2 energy" in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
-                inst_class=f"{onto_comp}#LumoPlusTwoEnergy",
+            writer.write_inst(
+                iri=f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
+                type=f"{onto_comp}#LumoPlusTwoEnergy",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=jobIRI,
-                trg_inst_iri=f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
-                relation=f"{gain_pref}isCalculationOn",
+            writer.write_obj_prop(
+                src_iri=jobIRI,
+                trg_iri=f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
+                rel=f"{gain_pref}isCalculationOn",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
-                relation=f"{onto_comp}#hasLumoPlusTwoEnergy",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}LumoPlusTwoEnergy_{calc_id}",
+                trg_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
+                rel=f"{onto_comp}#hasLumoPlusTwoEnergy",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
+                rel=f"{gain_pref}hasValue",
                 value=data["LUMO+2 energy"],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
-                trg_inst_iri=f"{unit_pref}unit#Hartree",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{calc_id}_LumoPlusTwoEnergy",
+                trg_iri=f"{unit_pref}unit#Hartree",
+                rel=f"{gain_pref}hasUnit",
             )
 
-    def _write_geom_opt(self, aboxwriter, jobIRI, calc_id, data):
+    def _write_geom_opt(self, writer: Abox_Writer, jobIRI, calc_id, data):
         # This section writes the geometry optimization, spin multiplicity
         # and formal charge information.
 
@@ -692,49 +684,49 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
         onto_comp = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_comp"]
 
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}GeometryOptimization_{calc_id}",
-            inst_class=f"{gain_pref}GeometryOptimization",
+        writer.write_inst(
+            iri=f"{comp_pref}GeometryOptimization_{calc_id}",
+            type=f"{gain_pref}GeometryOptimization",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=jobIRI,
-            trg_inst_iri=f"{comp_pref}GeometryOptimization_{calc_id}",
-            relation=f"{gain_pref}isCalculationOn",
+        writer.write_obj_prop(
+            src_iri=jobIRI,
+            trg_iri=f"{comp_pref}GeometryOptimization_{calc_id}",
+            rel=f"{gain_pref}isCalculationOn",
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}Molecule_{calc_id}", inst_class=f"{gain_pref}Molecule"
+        writer.write_inst(
+            iri=f"{comp_pref}Molecule_{calc_id}", type=f"{gain_pref}Molecule"
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{comp_pref}GeometryOptimization_{calc_id}",
-            trg_inst_iri=f"{comp_pref}Molecule_{calc_id}",
-            relation=f"{gain_pref}hasMolecule",
+        writer.write_obj_prop(
+            src_iri=f"{comp_pref}GeometryOptimization_{calc_id}",
+            trg_iri=f"{comp_pref}Molecule_{calc_id}",
+            rel=f"{gain_pref}hasMolecule",
         )
-        aboxwriter.write_data_property(
-            inst_iri=f"{comp_pref}Molecule_{calc_id}",
-            relation=f"{onto_comp}#hasSpinMultiplicity",
+        writer.write_data_prop(
+            iri=f"{comp_pref}Molecule_{calc_id}",
+            rel=f"{onto_comp}#hasSpinMultiplicity",
             value=data["Spin multiplicity"],
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
-            inst_class=f"{gain_pref}IntegerValue",
+        writer.write_inst(
+            iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
+            type=f"{gain_pref}IntegerValue",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{comp_pref}Molecule_{calc_id}",
-            trg_inst_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
-            relation=f"{gain_pref}hasFormalCharge",
+        writer.write_obj_prop(
+            src_iri=f"{comp_pref}Molecule_{calc_id}",
+            trg_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
+            rel=f"{gain_pref}hasFormalCharge",
         )
-        aboxwriter.write_data_property(
-            inst_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
-            relation=f"{gain_pref}hasValue",
+        writer.write_data_prop(
+            iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
+            rel=f"{gain_pref}hasValue",
             value=data["Formal charge"],
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
-            trg_inst_iri=f"{gain_pref}atomicUnit",
-            relation=f"{gain_pref}hasUnit",
+        writer.write_obj_prop(
+            src_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
+            trg_iri=f"{gain_pref}atomicUnit",
+            rel=f"{gain_pref}hasUnit",
         )
 
-    def _write_atom_info(self, aboxwriter, calc_id, data):
+    def _write_atom_info(self, writer: Abox_Writer, calc_id, data):
         # This section writes the atom coordinates and masses information.
 
         comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
@@ -753,66 +745,64 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             atom = data["Atom types"][k]
             atom_id = f"{calc_id}_{atom}{count}"
 
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}Atom_{atom_id}", inst_class=f"{gain_pref}Atom"
+            writer.write_inst(iri=f"{comp_pref}Atom_{atom_id}", type=f"{gain_pref}Atom")
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}Molecule_{calc_id}",
+                trg_iri=f"{comp_pref}Atom_{atom_id}",
+                rel=f"{gain_pref}hasAtom",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}Molecule_{calc_id}",
-                trg_inst_iri=f"{comp_pref}Atom_{atom_id}",
-                relation=f"{gain_pref}hasAtom",
-            )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}Atom_{atom_id}",
-                trg_inst_iri=f"{table_pref}#{atom}",
-                relation=f"{gain_pref}isElement",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}Atom_{atom_id}",
+                trg_iri=f"{table_pref}#{atom}",
+                rel=f"{gain_pref}isElement",
             )
             for i in range(3):
-                aboxwriter.write_instance(
-                    inst_iri=(
+                writer.write_inst(
+                    iri=(
                         f"{comp_pref}FloatValue_{atom_id}_"
                         f"{coord_string[i]}Coordinate"
                     ),
-                    inst_class=f"{gain_pref}FloatValue",
+                    type=f"{gain_pref}FloatValue",
                 )
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
-                    trg_inst_iri=(
+                writer.write_obj_prop(
+                    src_iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
+                    trg_iri=(
                         f"{comp_pref}FloatValue_{atom_id}_"
                         f"{coord_string[i]}Coordinate"
                     ),
-                    relation=f"{gain_pref}hasAtomCoordinate{coords[i]}",
+                    rel=f"{gain_pref}hasAtomCoordinate{coords[i]}",
                 )
-                aboxwriter.write_data_property(
-                    inst_iri=(
+                writer.write_data_prop(
+                    iri=(
                         f"{comp_pref}FloatValue_{atom_id}_"
                         f"{coord_string[i]}Coordinate"
                     ),
-                    relation=f"{gain_pref}hasValue",
+                    rel=f"{gain_pref}hasValue",
                     value=data["Geometry"][k][i],
                 )
             # Write atom masses.
-            aboxwriter.write_instance(
-                inst_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
-                inst_class=f"{gain_pref}FloatValue",
+            writer.write_inst(
+                iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
+                type=f"{gain_pref}FloatValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}Atom_{atom_id}",
-                trg_inst_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
-                relation=f"{gain_pref}hasMass",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}Atom_{atom_id}",
+                trg_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
+                rel=f"{gain_pref}hasMass",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
+                rel=f"{gain_pref}hasValue",
                 value=data["Atomic masses"][k],
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
-                trg_inst_iri=f"{unit_pref}unit#Dalton",
-                relation=f"{gain_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{comp_pref}FloatValue_{atom_id}_Mass",
+                trg_iri=f"{unit_pref}unit#Dalton",
+                rel=f"{gain_pref}hasUnit",
             )
             count += 1
 
-    def _write_metadata(self, aboxwriter, calc_id, data):
+    def _write_metadata(self, writer: Abox_Writer, calc_id, data):
         # These are the final parts of the ABox with the
         # auxillary info like software used and job run date.
 
@@ -823,45 +813,45 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             "ocompchem_data_pref"
         ]
 
-        aboxwriter.write_data_property(
-            inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-            relation=f"{onto_comp}#hasProgram",
+        writer.write_data_prop(
+            iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            rel=f"{onto_comp}#hasProgram",
             value=data["Program name"],
         )
-        aboxwriter.write_data_property(
-            inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-            relation=f"{onto_comp}#hasProgramVersion",
+        writer.write_data_prop(
+            iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            rel=f"{onto_comp}#hasProgramVersion",
             value=data["Program version"].split("+")[0][-1],
         )
-        aboxwriter.write_data_property(
-            inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-            relation=f"{onto_comp}#hasRunDate",
+        writer.write_data_prop(
+            iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            rel=f"{onto_comp}#hasRunDate",
             value=data["Run date"],
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
-            inst_class=f"{onto_comp}#OutputSource",
+        writer.write_inst(
+            iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
+            type=f"{onto_comp}#OutputSource",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-            trg_inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
-            relation=f"{gain_pref}hasOutputFile",
+        writer.write_obj_prop(
+            src_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            trg_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
+            rel=f"{gain_pref}hasOutputFile",
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
-            inst_class=f"{onto_comp}#OutputSource",
+        writer.write_inst(
+            iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
+            type=f"{onto_comp}#OutputSource",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-            trg_inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
-            relation=f"{gain_pref}hasOutputFile",
+        writer.write_obj_prop(
+            src_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            trg_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
+            rel=f"{gain_pref}hasOutputFile",
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
-            inst_class=f"{onto_comp}#OutputSource",
+        writer.write_inst(
+            iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
+            type=f"{onto_comp}#OutputSource",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
-            trg_inst_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
-            relation=f"{gain_pref}hasOutputFile",
+        writer.write_obj_prop(
+            src_iri=f"{comp_pref}SourcePackage_{calc_id}_EnvironmentModule",
+            trg_iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
+            rel=f"{gain_pref}hasOutputFile",
         )

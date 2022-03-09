@@ -81,14 +81,14 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         calc_id = data[globals.ENTRY_UUID]
         entryIRI = data[globals.ENTRY_IRI]
 
-        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as aboxwriter:
-            aboxwriter.write_header()
+        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
+            writer.write_header()
 
-            self._write_initial(aboxwriter, entryIRI, spec_IRI)
-            self._write_scancoordinate(aboxwriter, calc_id, data)
-            self._write_scanpoints(aboxwriter, entryIRI, calc_id, data)
+            self._write_initial(writer, entryIRI, spec_IRI)
+            self._write_scancoordinate(writer, calc_id, data)
+            self._write_scanpoints(writer, entryIRI, calc_id, data)
 
-    def _write_initial(self, aboxwriter: Abox_Writer, entryIRI, spec_IRI):
+    def _write_initial(self, writer: Abox_Writer, entryIRI, spec_IRI):
 
         onto_pes = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_pes"]
         pes_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["pes_pref"]
@@ -96,25 +96,23 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         abox_name = "ABoxOntoPESSscan"
-        aboxwriter.write_imports(abox_name=abox_name, importing=onto_pes)
-        aboxwriter.write_imports(
-            abox_name=abox_name, importing=pes_pref[:-1], relation="base"
+        writer.write_imports(name=abox_name, importing=onto_pes)
+        writer.write_imports(name=abox_name, importing=pes_pref[:-1], rel="base")
+        writer.write_inst(
+            iri=f"{pes_pref}{entryIRI}",
+            type=f"{onto_pes}#PotentialEnergySurfaceScan",
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{pes_pref}{entryIRI}",
-            inst_class=f"{onto_pes}#PotentialEnergySurfaceScan",
+        writer.write_inst(
+            iri=f"{spec_pref}{spec_IRI[0]}",
+            type=f"{onto_spec}#Species",
         )
-        aboxwriter.write_instance(
-            inst_iri=f"{spec_pref}{spec_IRI[0]}",
-            inst_class=f"{onto_spec}#Species",
-        )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{pes_pref}{entryIRI}",
-            relation=f"{onto_pes}#onSpecies",
-            trg_inst_iri=f"{spec_pref}{spec_IRI[0]}",
+        writer.write_obj_prop(
+            src_iri=f"{pes_pref}{entryIRI}",
+            rel=f"{onto_pes}#onSpecies",
+            trg_iri=f"{spec_pref}{spec_IRI[0]}",
         )
 
-    def _write_scancoordinate(self, aboxwriter: Abox_Writer, calc_id, data):
+    def _write_scancoordinate(self, writer: Abox_Writer, calc_id, data):
 
         onto_pes = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_pes"]
         pes_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["pes_pref"]
@@ -123,29 +121,29 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
 
         scan_type = data[SCAN_COORDINATE_TYPE]
 
-        aboxwriter.write_instance(
-            inst_iri=f"{pes_pref}{scan_type}_{calc_id}",
-            inst_class=f"{onto_pes}#{scan_type}",
+        writer.write_inst(
+            iri=f"{pes_pref}{scan_type}_{calc_id}",
+            type=f"{onto_pes}#{scan_type}",
         )
-        aboxwriter.write_object_property(
-            src_inst_iri=f"{pes_pref}{data['EntryIRI']}",
-            trg_inst_iri=f"{pes_pref}{scan_type}_{calc_id}",
-            relation=f"{onto_pes}#hasScanCoordinate",
+        writer.write_obj_prop(
+            src_iri=f"{pes_pref}{data['EntryIRI']}",
+            trg_iri=f"{pes_pref}{scan_type}_{calc_id}",
+            rel=f"{onto_pes}#hasScanCoordinate",
         )
         for atomiri in data[SCAN_COORDINATE_ATOMS_IRIS]:
 
-            aboxwriter.write_instance(
-                inst_iri=f"{spec_pref}{atomiri}",
-                inst_class=f"{gain_pref}Atom",
+            writer.write_inst(
+                iri=f"{spec_pref}{atomiri}",
+                type=f"{gain_pref}Atom",
             )
 
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{pes_pref}{scan_type}_{calc_id}",
-                trg_inst_iri=f"{spec_pref}{atomiri}",
-                relation=f"{onto_pes}#hasScanAtom",
+            writer.write_obj_prop(
+                src_iri=f"{pes_pref}{scan_type}_{calc_id}",
+                trg_iri=f"{spec_pref}{atomiri}",
+                rel=f"{onto_pes}#hasScanAtom",
             )
 
-    def _write_scanpoints(self, aboxwriter: Abox_Writer, entryIRI, calc_id, data):
+    def _write_scanpoints(self, writer: Abox_Writer, entryIRI, calc_id, data):
 
         onto_pes = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_pes"]
         pes_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["pes_pref"]
@@ -156,42 +154,42 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         for k in range(len(data[SCAN_COORDINATE_VALUE])):
             gauss_type = data[SCAN_POINTS_JOBS][k].split("_")[0][-3:]
 
-            aboxwriter.write_instance(
-                inst_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
-                inst_class=f"{onto_pes}#ScanPoint",
+            writer.write_inst(
+                iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
+                type=f"{onto_pes}#ScanPoint",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{pes_pref}{entryIRI}",
-                trg_inst_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
-                relation=f"{onto_pes}#hasScanPoint",
+            writer.write_obj_prop(
+                src_iri=f"{pes_pref}{entryIRI}",
+                trg_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
+                rel=f"{onto_pes}#hasScanPoint",
             )
-            aboxwriter.write_instance(
-                inst_iri=data[SCAN_POINTS_JOBS][k],
-                inst_class=f"{onto_comp}#{gauss_type}",
+            writer.write_inst(
+                iri=data[SCAN_POINTS_JOBS][k],
+                type=f"{onto_comp}#{gauss_type}",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
-                trg_inst_iri=data[SCAN_POINTS_JOBS][k],
-                relation=f"{onto_pes}#hasCalculation",
+            writer.write_obj_prop(
+                src_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
+                trg_iri=data[SCAN_POINTS_JOBS][k],
+                rel=f"{onto_pes}#hasCalculation",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
-                relation=f"{onto_pes}#hasInputAtomIds",
+            writer.write_data_prop(
+                iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
+                rel=f"{onto_pes}#hasInputAtomIds",
                 value=data[SCAN_ATOM_IDS],
                 data_type="String",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
-                inst_class=f"{onto_pes}#ScanCoordinateValue",
+            writer.write_inst(
+                iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
+                type=f"{onto_pes}#ScanCoordinateValue",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
-                trg_inst_iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
-                relation=f"{onto_pes}#hasScanCoordinateValue",
+            writer.write_obj_prop(
+                src_iri=f"{pes_pref}ScanPoint_{calc_id}_{k + 1}",
+                trg_iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
+                rel=f"{onto_pes}#hasScanCoordinateValue",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
-                relation=f"{gain_pref}hasValue",
+            writer.write_data_prop(
+                iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
+                rel=f"{gain_pref}hasValue",
                 value=data[SCAN_COORDINATE_VALUE][k],
                 data_type="String",
             )
@@ -205,8 +203,8 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
                 scan_unit = f"{unit_pref}unit#DegreeAngle"
 
             if scan_unit:
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
-                    trg_inst_iri=scan_unit,
-                    relation=f"{gain_pref}hasUnit",
+                writer.write_obj_prop(
+                    src_iri=f"{pes_pref}ScanCoordinateValue_{calc_id}_{k + 1}",
+                    trg_iri=scan_unit,
+                    rel=f"{gain_pref}hasUnit",
                 )

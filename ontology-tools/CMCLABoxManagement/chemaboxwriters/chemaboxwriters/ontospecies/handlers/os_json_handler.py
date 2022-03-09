@@ -101,108 +101,108 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
         gen_id = data[globals.ENTRY_UUID]
 
-        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as aboxwriter:
-            aboxwriter.write_header()
+        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
+            writer.write_header()
 
             out_id = data[globals.ENTRY_IRI]
 
             label = utilsfunc.formula_clean_re.sub("", data[EMP_FORMULA])
 
-            self._write_prelim(aboxwriter, out_id, label)
-            self._write_identifier_geom(aboxwriter, out_id, data)
-            self._write_atom_info(aboxwriter, gen_id, out_id, data)
-            self._write_charge_info(aboxwriter, gen_id, out_id, data)
-            self._write_atoms(aboxwriter, gen_id, out_id, data)
-            self._write_molwts(aboxwriter, gen_id, out_id, data)
-            self._write_enth(aboxwriter, gen_id, out_id, data)
+            self._write_prelim(writer, out_id, label)
+            self._write_identifier_geom(writer, out_id, data)
+            self._write_atom_info(writer, gen_id, out_id, data)
+            self._write_charge_info(writer, gen_id, out_id, data)
+            self._write_atoms(writer, gen_id, out_id, data)
+            self._write_molwts(writer, gen_id, out_id, data)
+            self._write_enth(writer, gen_id, out_id, data)
 
-    def _write_prelim(self, aboxwriter: Abox_Writer, out_id, label):
+    def _write_prelim(self, writer: Abox_Writer, out_id, label):
 
         spec_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["spec_pref"]
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
-        aboxwriter.write_imports(
-            abox_name="ABoxOntoSpecies",
+        writer.write_imports(
+            name="ABoxOntoSpecies",
             importing=onto_spec,
-            relation="http://www.w3.org/2002/07/owl#imports",
+            rel="http://www.w3.org/2002/07/owl#imports",
         )
-        aboxwriter.write_imports(
-            abox_name="ABoxOntoSpecies", importing=spec_pref[:-1], relation="base"
+        writer.write_imports(
+            name="ABoxOntoSpecies", importing=spec_pref[:-1], rel="base"
         )
-        aboxwriter.write_instance(inst_iri=out_id, inst_class="Species")
-        aboxwriter.write_data_property(
-            inst_iri=out_id,
-            relation="http://purl.org/dc/elements/1.1/identifier",
+        writer.write_inst(iri=out_id, type="Species")
+        writer.write_data_prop(
+            iri=out_id,
+            rel="http://purl.org/dc/elements/1.1/identifier",
             value=out_id,
             data_type="String",
         )
-        aboxwriter.write_data_property(
-            inst_iri=out_id,
-            relation="http://www.w3.org/2000/01/rdf-schema#label",
+        writer.write_data_prop(
+            iri=out_id,
+            rel="http://www.w3.org/2000/01/rdf-schema#label",
             value=label,
             data_type="String",
         )
 
-    def _write_identifier_geom(self, aboxwriter: Abox_Writer, out_id, data):
+    def _write_identifier_geom(self, writer: Abox_Writer, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         pubchem_alt_label_value = data.get(PUBCHEM_ALT_LABEL)
         if pubchem_alt_label_value is not None:
-            aboxwriter.write_data_property(
-                inst_iri=out_id,
-                relation="http://www.w3.org/2004/02/skos/core#altLabel",
+            writer.write_data_prop(
+                iri=out_id,
+                rel="http://www.w3.org/2004/02/skos/core#altLabel",
                 value=pubchem_alt_label_value,
                 data_type="String",
             )
         cas_number_value = data.get(CAS_NUMBER)
         if cas_number_value is not None:
-            aboxwriter.write_data_property(
-                inst_iri=out_id,
-                relation=f"{onto_spec}#casRegistryID",
+            writer.write_data_prop(
+                iri=out_id,
+                rel=f"{onto_spec}#casRegistryID",
                 value=cas_number_value,
                 data_type="String",
             )
-        aboxwriter.write_data_property(
-            inst_iri=out_id,
-            relation=f"{onto_spec}#SMILES",
+        writer.write_data_prop(
+            iri=out_id,
+            rel=f"{onto_spec}#SMILES",
             value=data[SMILES],
             data_type="String",
         )
-        aboxwriter.write_data_property(
-            inst_iri=out_id,
-            relation=f"{onto_spec}#inChI",
+        writer.write_data_prop(
+            iri=out_id,
+            rel=f"{onto_spec}#inChI",
             value=data[INCHI],
             data_type="String",
         )
         pubchem_cid_value = data.get(PUBCHEM_CID)
         if pubchem_cid_value is not None:
-            aboxwriter.write_data_property(
-                inst_iri=out_id,
-                relation=f"{onto_spec}#pubChemCID",
+            writer.write_data_prop(
+                iri=out_id,
+                rel=f"{onto_spec}#pubChemCID",
                 value=pubchem_cid_value,
                 data_type="String",
             )
-        aboxwriter.write_data_property(
-            inst_iri=out_id,
-            relation=f"{onto_spec}#hasAtomicBond",
+        writer.write_data_prop(
+            iri=out_id,
+            rel=f"{onto_spec}#hasAtomicBond",
             value=data[BOND_STRING],
             data_type="String",
         )
-        aboxwriter.write_data_property(
-            inst_iri=out_id,
-            relation=f"{onto_spec}#hasGeometry",
+        writer.write_data_prop(
+            iri=out_id,
+            rel=f"{onto_spec}#hasGeometry",
             value=data[GEOM_STRING],
             data_type="String",
         )
-        aboxwriter.write_data_property(
-            inst_iri=out_id,
-            relation=f"{onto_spec}#spinMultiplicity",
+        writer.write_data_prop(
+            iri=out_id,
+            rel=f"{onto_spec}#spinMultiplicity",
             value=data[SPIN_MULT],
             data_type="String",
         )
 
-    def _write_atom_info(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
+    def _write_atom_info(self, writer: Abox_Writer, gen_id, out_id, data):
 
         gain_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["gain_pref"]
         table_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["table_pref"]
@@ -215,81 +215,79 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             atom_nr = atom_counters[atom_type]
             atom_id = f"{gen_id}_{atom_type}_{atom_nr}"
             # Now the atoms are written here
-            aboxwriter.write_instance(
-                inst_iri=f"Atom_{atom_id}",
-                inst_class=f"{gain_pref}Atom",
+            writer.write_inst(
+                iri=f"Atom_{atom_id}",
+                type=f"{gain_pref}Atom",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=out_id,
-                trg_inst_iri=f"Atom_{atom_id}",
-                relation=f"{gain_pref}hasAtom",
+            writer.write_obj_prop(
+                src_iri=out_id,
+                trg_iri=f"Atom_{atom_id}",
+                rel=f"{gain_pref}hasAtom",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"Atom_{atom_id}",
-                trg_inst_iri=f"{table_pref}#{atom_type}",
-                relation=f"{gain_pref}isElement",
+            writer.write_obj_prop(
+                src_iri=f"Atom_{atom_id}",
+                trg_iri=f"{table_pref}#{atom_type}",
+                rel=f"{gain_pref}isElement",
             )
             for i in range(3):  # Write the atom coordinates.
-                aboxwriter.write_instance(
-                    inst_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
-                    inst_class=f"{gain_pref}FloatValue",
+                writer.write_inst(
+                    iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                    type=f"{gain_pref}FloatValue",
                 )
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"Atom_{atom_id}",
-                    trg_inst_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
-                    relation=f"{gain_pref}hasAtomCoordinate{coords[i]}",
+                writer.write_obj_prop(
+                    src_iri=f"Atom_{atom_id}",
+                    trg_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                    rel=f"{gain_pref}hasAtomCoordinate{coords[i]}",
                 )
-                aboxwriter.write_data_property(
-                    inst_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
-                    relation=f"{gain_pref}hasValue",
+                writer.write_data_prop(
+                    iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                    rel=f"{gain_pref}hasValue",
                     value=data["Geometry"][k][i],
                     data_type="String",
                 )
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
-                    trg_inst_iri=f"{unit_pref}unit#Angstrom",
-                    relation=f"{gain_pref}hasUnit",
+                writer.write_obj_prop(
+                    src_iri=f"AtomCoordinate{coords[i]}_{atom_id}",
+                    trg_iri=f"{unit_pref}unit#Angstrom",
+                    rel=f"{gain_pref}hasUnit",
                 )
             atom_counters[atom_type] += 1
 
-    def _write_charge_info(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
+    def _write_charge_info(self, writer: Abox_Writer, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         if FORMAL_CHARGE in data:
             charge = data[FORMAL_CHARGE]
 
-            aboxwriter.write_instance(
-                inst_iri=f"Charge_{gen_id}", inst_class=f"{onto_spec}#Charge"
+            writer.write_inst(iri=f"Charge_{gen_id}", type=f"{onto_spec}#Charge")
+            writer.write_obj_prop(
+                src_iri=out_id,
+                trg_iri=f"Charge_{gen_id}",
+                rel=f"{onto_spec}#hasCharge",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=out_id,
-                trg_inst_iri=f"Charge_{gen_id}",
-                relation=f"{onto_spec}#hasCharge",
-            )
-            aboxwriter.write_data_property(
-                inst_iri=f"Charge_{gen_id}",
-                relation=f"{onto_spec}#value",
+            writer.write_data_prop(
+                iri=f"Charge_{gen_id}",
+                rel=f"{onto_spec}#value",
                 value=charge,
                 data_type="String",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"Charge_{gen_id}",
-                relation=f"{onto_spec}#units",
+            writer.write_data_prop(
+                iri=f"Charge_{gen_id}",
+                rel=f"{onto_spec}#units",
                 value="e",
                 data_type="String",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"MolecularFormula_{gen_id}",
-                inst_class=f"{onto_spec}#MolecularFormula",
+            writer.write_inst(
+                iri=f"MolecularFormula_{gen_id}",
+                type=f"{onto_spec}#MolecularFormula",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=out_id,
-                trg_inst_iri=f"MolecularFormula_{gen_id}",
-                relation=f"{onto_spec}#hasMolecularFormula",
+            writer.write_obj_prop(
+                src_iri=out_id,
+                trg_iri=f"MolecularFormula_{gen_id}",
+                rel=f"{onto_spec}#hasMolecularFormula",
             )
 
-    def _write_atoms(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
+    def _write_atoms(self, writer: Abox_Writer, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
         onto_kin = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_kin"]
@@ -297,137 +295,133 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         atom_list = data[ATOM_LIST]
         atom_counts = data[ATOM_COUNTS]
         for i in range(len(atom_list)):
-            aboxwriter.write_instance(
-                inst_iri=f"Element_{atom_list[i]}", inst_class=f"{onto_kin}#Element"
+            writer.write_inst(iri=f"Element_{atom_list[i]}", type=f"{onto_kin}#Element")
+            writer.write_obj_prop(
+                src_iri=f"MolecularFormula_{gen_id}",
+                trg_iri=f"Element_{atom_list[i]}",
+                rel=f"{onto_kin}#hasElement",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"MolecularFormula_{gen_id}",
-                trg_inst_iri=f"Element_{atom_list[i]}",
-                relation=f"{onto_kin}#hasElement",
+            writer.write_inst(
+                iri=f"ElementNumber_{gen_id}_{i + 1}",
+                type=f"{onto_kin}#ElementNumber",
             )
-            aboxwriter.write_instance(
-                inst_iri=f"ElementNumber_{gen_id}_{i + 1}",
-                inst_class=f"{onto_kin}#ElementNumber",
+            writer.write_obj_prop(
+                src_iri=f"MolecularFormula_{gen_id}",
+                trg_iri=f"ElementNumber_{gen_id}_{i + 1}",
+                rel=f"{onto_kin}#hasElementNumber",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"MolecularFormula_{gen_id}",
-                trg_inst_iri=f"ElementNumber_{gen_id}_{i + 1}",
-                relation=f"{onto_kin}#hasElementNumber",
-            )
-            aboxwriter.write_data_property(
-                inst_iri=f"ElementNumber_{gen_id}_{i + 1}",
-                relation=f"{onto_kin}#hasNumberOfElement",
+            writer.write_data_prop(
+                iri=f"ElementNumber_{gen_id}_{i + 1}",
+                rel=f"{onto_kin}#hasNumberOfElement",
                 value=atom_counts[i],
                 data_type="Integer",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"ElementNumber_{gen_id}_{i + 1}",
-                trg_inst_iri=f"Element_{atom_list[i]}",
-                relation=f"{onto_kin}#indicatesNumberOf",
+            writer.write_obj_prop(
+                src_iri=f"ElementNumber_{gen_id}_{i + 1}",
+                trg_iri=f"Element_{atom_list[i]}",
+                rel=f"{onto_kin}#indicatesNumberOf",
             )
-        aboxwriter.write_instance(inst_iri=out_id, inst_class=f"{onto_spec}#Species")
+        writer.write_inst(iri=out_id, type=f"{onto_spec}#Species")
 
-    def _write_molwts(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
+    def _write_molwts(self, writer: Abox_Writer, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
 
         if MOLWT in data:
             molwt = data[MOLWT]
-            aboxwriter.write_instance(
-                inst_iri=f"MolecularWeight_{gen_id}",
-                inst_class=f"{onto_spec}#MolecularWeight",
+            writer.write_inst(
+                iri=f"MolecularWeight_{gen_id}",
+                type=f"{onto_spec}#MolecularWeight",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=out_id,
-                trg_inst_iri=f"MolecularWeight_{gen_id}",
-                relation=f"{onto_spec}#hasMolecularWeight",
+            writer.write_obj_prop(
+                src_iri=out_id,
+                trg_iri=f"MolecularWeight_{gen_id}",
+                rel=f"{onto_spec}#hasMolecularWeight",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"MolecularWeight_{gen_id}",
-                relation=f"{onto_spec}#value",
+            writer.write_data_prop(
+                iri=f"MolecularWeight_{gen_id}",
+                rel=f"{onto_spec}#value",
                 value=molwt,
                 data_type="String",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"MolecularWeight_{gen_id}",
-                relation=f"{onto_spec}#units",
+            writer.write_data_prop(
+                iri=f"MolecularWeight_{gen_id}",
+                rel=f"{onto_spec}#units",
                 value="g/mol",
                 data_type="String",
             )
 
-    def _write_enth(self, aboxwriter: Abox_Writer, gen_id, out_id, data):
+    def _write_enth(self, writer: Abox_Writer, gen_id, out_id, data):
 
         onto_spec = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_spec"]
         onto_kin = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["onto_kin"]
 
         # Write enthalpy of formation data.
         if ENTH_FORM in data:
-            aboxwriter.write_instance(
-                inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                inst_class=f"{onto_spec}#StandardEnthalpyOfFormation",
+            writer.write_inst(
+                iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                type=f"{onto_spec}#StandardEnthalpyOfFormation",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=out_id,
-                trg_inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                relation=f"{onto_spec}#hasStandardEnthalpyOfFormation",
+            writer.write_obj_prop(
+                src_iri=out_id,
+                trg_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                rel=f"{onto_spec}#hasStandardEnthalpyOfFormation",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                relation=f"{onto_spec}#value",
+            writer.write_data_prop(
+                iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                rel=f"{onto_spec}#value",
                 value=data[ENTH_FORM],
                 data_type="String",
             )
         if ENTH_UNIT in data:
-            aboxwriter.write_data_property(
-                inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                relation=f"{onto_spec}#units",
+            writer.write_data_prop(
+                iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                rel=f"{onto_spec}#units",
                 value=data[ENTH_UNIT],
                 data_type="String",
             )
         if ENTH_REFTEMP in data:
-            aboxwriter.write_instance(
-                inst_iri=f"Temperature_{gen_id}", inst_class=f"{onto_spec}#Temperature"
+            writer.write_inst(
+                iri=f"Temperature_{gen_id}", type=f"{onto_spec}#Temperature"
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                trg_inst_iri=f"Temperature_{gen_id}",
-                relation=f"{onto_spec}#hasReferenceTemperature",
+            writer.write_obj_prop(
+                src_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                trg_iri=f"Temperature_{gen_id}",
+                rel=f"{onto_spec}#hasReferenceTemperature",
             )
-            aboxwriter.write_data_property(
-                inst_iri=f"Temperature_{gen_id}",
-                relation=f"{onto_spec}#value",
+            writer.write_data_prop(
+                iri=f"Temperature_{gen_id}",
+                rel=f"{onto_spec}#value",
                 value=data[ENTH_REFTEMP],
                 data_type="String",
             )
         if ENTH_REFTEMP_UNIT in data:
-            aboxwriter.write_data_property(
-                inst_iri=f"Temperature_{gen_id}",
-                relation=f"{onto_spec}#units",
+            writer.write_data_prop(
+                iri=f"Temperature_{gen_id}",
+                rel=f"{onto_spec}#units",
                 value=data[ENTH_REFTEMP_UNIT],
                 data_type="String",
             )
         if ENTH_PHASE in data:
-            aboxwriter.write_instance(
-                inst_iri=f"{data[ENTH_PHASE]}Phase_{gen_id}",
-                inst_class=f"{onto_kin}#{data[ENTH_PHASE]}Phase",
+            writer.write_inst(
+                iri=f"{data[ENTH_PHASE]}Phase_{gen_id}",
+                type=f"{onto_kin}#{data[ENTH_PHASE]}Phase",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                trg_inst_iri=f"{data[ENTH_PHASE]}Phase_{gen_id}",
-                relation=f"{onto_spec}#hasPhase",
+            writer.write_obj_prop(
+                src_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                trg_iri=f"{data[ENTH_PHASE]}Phase_{gen_id}",
+                rel=f"{onto_spec}#hasPhase",
             )
         if ENTH_PROV in data:
-            aboxwriter.write_instance(
-                inst_iri=f"Reference_{gen_id}", inst_class=f"{onto_kin}#Reference"
+            writer.write_inst(iri=f"Reference_{gen_id}", type=f"{onto_kin}#Reference")
+            writer.write_obj_prop(
+                src_iri=f"StandardEnthalpyOfFormation_{gen_id}",
+                trg_iri=f"Reference_{gen_id}",
+                rel=f"{onto_spec}#hasProvenance",
             )
-            aboxwriter.write_object_property(
-                src_inst_iri=f"StandardEnthalpyOfFormation_{gen_id}",
-                trg_inst_iri=f"Reference_{gen_id}",
-                relation=f"{onto_spec}#hasProvenance",
-            )
-            aboxwriter.write_data_property(
-                inst_iri=f"Reference_{gen_id}",
-                relation="http://www.w3.org/2000/01/rdf-schema#label",
+            writer.write_data_prop(
+                iri=f"Reference_{gen_id}",
+                rel="http://www.w3.org/2000/01/rdf-schema#label",
                 value=data[ENTH_PROV],
                 data_type="String",
             )

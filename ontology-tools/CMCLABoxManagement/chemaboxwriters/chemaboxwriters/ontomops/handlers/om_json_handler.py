@@ -88,7 +88,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         gen_id = data[globals.ENTRY_UUID]
         mops_id = data[globals.ENTRY_IRI]
 
-        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as aboxwriter:
+        with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
             assemblymodel = None
             query_endpoints = self.endpoints_config.get(abconf.QUERY_SETTINGS_KEY, {})
             omops_query_endpoint = query_endpoints.get(abconf.OMOPS_QUERY_ENDPOINT_KEY)
@@ -123,39 +123,37 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             else:
                 asmodel_uuid = assemblymodel.split("_")[-1]
 
-            aboxwriter.write_header()
+            writer.write_header()
 
             # Write the main initialization for now.
-            aboxwriter.write_imports(
-                abox_name="ABoxOntoMOPs",
+            writer.write_imports(
+                name="ABoxOntoMOPs",
                 importing=onto_mops,
-                relation="http://www.w3.org/2002/07/owl#imports",
+                rel="http://www.w3.org/2002/07/owl#imports",
             )
-            aboxwriter.write_imports(
-                abox_name="ABoxOntoMOPs", importing=mops_pref, relation="base"
-            )
-            aboxwriter.write_instance(
-                inst_iri=f"{mops_pref}{mops_id}",
-                inst_class=f"{onto_mops}#MetalOrganicPolyhedra",
+            writer.write_imports(name="ABoxOntoMOPs", importing=mops_pref, rel="base")
+            writer.write_inst(
+                iri=f"{mops_pref}{mops_id}",
+                type=f"{onto_mops}#MetalOrganicPolyhedra",
             )
 
             # Write the properties directly connected to MOPS instance
             # that then terminate.
-            aboxwriter.write_data_property(
-                inst_iri=f"{mops_pref}{mops_id}",
-                relation=f"{rdf_pref}#label",
+            writer.write_data_prop(
+                iri=f"{mops_pref}{mops_id}",
+                rel=f"{rdf_pref}#label",
                 value=data["Mops_Label"],
                 data_type="String",
             )  # label for the MOP
-            aboxwriter.write_data_property(
-                inst_iri=f"{mops_pref}{mops_id}",
-                relation=f"{onto_mops}#hasMOPFormula",
+            writer.write_data_prop(
+                iri=f"{mops_pref}{mops_id}",
+                rel=f"{onto_mops}#hasMOPFormula",
                 value=data["Mops_Formula"],
                 data_type="String",
             )  # Chemical formula for the MOP
-            aboxwriter.write_data_property(
-                inst_iri=f"{mops_pref}{mops_id}",
-                relation=f"{onto_mops}#hasCCDCNumber",
+            writer.write_data_prop(
+                iri=f"{mops_pref}{mops_id}",
+                rel=f"{onto_mops}#hasCCDCNumber",
                 value=data["Mops_CCDC_Number"],
                 data_type="String",
             )  # CCDC No. for the MOP
@@ -163,164 +161,164 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             #  XYZ Geometry in string form for the MOP.
 
             # Write the Provenance of the MOPs.
-            aboxwriter.write_instance(
-                inst_iri=f"{mops_pref}Provenance_{gen_id}",
-                inst_class=f"{onto_mops}#Provenance",
+            writer.write_inst(
+                iri=f"{mops_pref}Provenance_{gen_id}",
+                type=f"{onto_mops}#Provenance",
             )  # Initialize the Provenance object for the MOPs.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}{mops_id}",
-                trg_inst_iri=f"{mops_pref}Provenance_{gen_id}",
-                relation=f"{onto_mops}#hasProvenance",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}{mops_id}",
+                trg_iri=f"{mops_pref}Provenance_{gen_id}",
+                rel=f"{onto_mops}#hasProvenance",
             )  # Connect the Provenance to the MOPs instance.
-            aboxwriter.write_data_property(
-                inst_iri=f"{mops_pref}Provenance_{gen_id}",
-                relation=f"{onto_mops}#hasReferenceDOI",
+            writer.write_data_prop(
+                iri=f"{mops_pref}Provenance_{gen_id}",
+                rel=f"{onto_mops}#hasReferenceDOI",
                 value=data["Mops_Reference_DOI"],
                 data_type="String",
             )
 
             # Write the Molecular Weight section for the MOPs.
-            aboxwriter.write_instance(
-                inst_iri=f"{mops_pref}MolecularWeight_{gen_id}",
-                inst_class=f"{onto_spec}#MolecularWeight",
+            writer.write_inst(
+                iri=f"{mops_pref}MolecularWeight_{gen_id}",
+                type=f"{onto_spec}#MolecularWeight",
             )  # Initialize the Molecular Weight object for the MOPs.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}{mops_id}",
-                trg_inst_iri=f"{mops_pref}MolecularWeight_{gen_id}",
-                relation=f"{onto_spec}#hasMolecularWeight",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}{mops_id}",
+                trg_iri=f"{mops_pref}MolecularWeight_{gen_id}",
+                rel=f"{onto_spec}#hasMolecularWeight",
             )  # Link the Molecular Weight object to the MOPs.
-            aboxwriter.write_instance(
-                inst_iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
-                inst_class=f"{uom_pref}Measure",
+            writer.write_inst(
+                iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
+                type=f"{uom_pref}Measure",
             )  # This is the Measure from the Ontology of Units of Measure
             # that we will use for Molecular Weight.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}MolecularWeight_{gen_id}",
-                trg_inst_iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
-                relation=f"{uom_pref}hasValue",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}MolecularWeight_{gen_id}",
+                trg_iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
+                rel=f"{uom_pref}hasValue",
             )  # Link the Measure to the Molecular Weight instance.
-            aboxwriter.write_data_property(
-                inst_iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
-                relation=f"{uom_pref}hasNumericalValue",
+            writer.write_data_prop(
+                iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
+                rel=f"{uom_pref}hasNumericalValue",
                 value=data["Mops_Molecular_Weight"],
                 data_type="String",
             )  # Link the Numerical Value of Molecular Weight to the Measure.
-            aboxwriter.write_instance(
-                inst_iri=f"{uom_pref}MolarMassUnit", inst_class=f"{uom_pref}Unit"
+            writer.write_inst(
+                iri=f"{uom_pref}MolarMassUnit", type=f"{uom_pref}Unit"
             )  # Take the MolarMass Unit instance from the UOM ontology.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
-                trg_inst_iri=f"{uom_pref}MolarMassUnit",
-                relation=f"{uom_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{uom_pref}Measure_MolecularWeight_{gen_id}",
+                trg_iri=f"{uom_pref}MolarMassUnit",
+                rel=f"{uom_pref}hasUnit",
             )
 
             # Write the Charge section for the MOPs.
-            aboxwriter.write_instance(
-                inst_iri=f"{mops_pref}Charge_{gen_id}", inst_class=f"{onto_spec}#Charge"
+            writer.write_inst(
+                iri=f"{mops_pref}Charge_{gen_id}", type=f"{onto_spec}#Charge"
             )  # Initialize the Charge object for the MOPs.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}{mops_id}",
-                trg_inst_iri=f"{mops_pref}Charge_{gen_id}",
-                relation=f"{onto_spec}#hasCharge",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}{mops_id}",
+                trg_iri=f"{mops_pref}Charge_{gen_id}",
+                rel=f"{onto_spec}#hasCharge",
             )  # Link the Charge object to the MOPs.
-            aboxwriter.write_instance(
-                inst_iri=f"{uom_pref}Measure_Charge_{gen_id}",
-                inst_class=f"{uom_pref}Measure",
+            writer.write_inst(
+                iri=f"{uom_pref}Measure_Charge_{gen_id}",
+                type=f"{uom_pref}Measure",
             )  # This is the Measure from the Ontology of Units of Measure
             # that we will use for Charge.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}Charge_{gen_id}",
-                trg_inst_iri=f"{uom_pref}Measure_Charge_{gen_id}",
-                relation=f"{uom_pref}hasValue",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}Charge_{gen_id}",
+                trg_iri=f"{uom_pref}Measure_Charge_{gen_id}",
+                rel=f"{uom_pref}hasValue",
             )  # Link the Measure to the Charge instance.
-            aboxwriter.write_data_property(
-                inst_iri=f"{uom_pref}Measure_Charge_{gen_id}",
-                relation=f"{uom_pref}hasNumericalValue",
+            writer.write_data_prop(
+                iri=f"{uom_pref}Measure_Charge_{gen_id}",
+                rel=f"{uom_pref}hasNumericalValue",
                 value=data["Mops_Charge"],
                 data_type="String",
             )  # Link the Numerical Value of Charge to the Measure.
-            aboxwriter.write_instance(
-                inst_iri=f"{unres_pref}elementary_charge", inst_class=f"{uom_pref}Unit"
+            writer.write_inst(
+                iri=f"{unres_pref}elementary_charge", type=f"{uom_pref}Unit"
             )  # Take the elementary charge Unit instance from our extension
             # of the UOM ontology.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{uom_pref}Measure_Charge_{gen_id}",
-                trg_inst_iri=f"{unres_pref}elementary_charge",
-                relation=f"{uom_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{uom_pref}Measure_Charge_{gen_id}",
+                trg_iri=f"{unres_pref}elementary_charge",
+                rel=f"{uom_pref}hasUnit",
             )
 
             # Write the Cavity section for the MOPs.
-            aboxwriter.write_instance(
-                inst_iri=f"{mops_pref}Cavity_{gen_id}", inst_class=f"{onto_mops}#Cavity"
+            writer.write_inst(
+                iri=f"{mops_pref}Cavity_{gen_id}", type=f"{onto_mops}#Cavity"
             )  # Initialize the Cavity object for the MOPs.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}{mops_id}",
-                trg_inst_iri=f"{mops_pref}Cavity_{gen_id}",
-                relation=f"{onto_mops}#hasCavity",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}{mops_id}",
+                trg_iri=f"{mops_pref}Cavity_{gen_id}",
+                rel=f"{onto_mops}#hasCavity",
             )  # Link the Cavity object to the MOPs.
-            aboxwriter.write_instance(
-                inst_iri=f"{mops_pref}Volume_{gen_id}", inst_class=f"{onto_mops}#Volume"
+            writer.write_inst(
+                iri=f"{mops_pref}Volume_{gen_id}", type=f"{onto_mops}#Volume"
             )  # Initialize the Volume object for the MOPs.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}Cavity_{gen_id}",
-                trg_inst_iri=f"{mops_pref}Volume_{gen_id}",
-                relation=f"{onto_mops}#hasMOPCavityVolume",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}Cavity_{gen_id}",
+                trg_iri=f"{mops_pref}Volume_{gen_id}",
+                rel=f"{onto_mops}#hasMOPCavityVolume",
             )  # Link the Volume object to the cavity.
-            aboxwriter.write_instance(
-                inst_iri=f"{uom_pref}Measure_Volume_{gen_id}",
-                inst_class=f"{uom_pref}Measure",
+            writer.write_inst(
+                iri=f"{uom_pref}Measure_Volume_{gen_id}",
+                type=f"{uom_pref}Measure",
             )  # This is the Measure from the Ontology of Units of Measure
             # that we will use for Volume.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}Volume_{gen_id}",
-                trg_inst_iri=f"{uom_pref}Measure_Volume_{gen_id}",
-                relation=f"{uom_pref}hasValue",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}Volume_{gen_id}",
+                trg_iri=f"{uom_pref}Measure_Volume_{gen_id}",
+                rel=f"{uom_pref}hasValue",
             )  # Link the Measure to the Volume instance.
-            aboxwriter.write_data_property(
-                inst_iri=f"{uom_pref}Measure_Volume_{gen_id}",
-                relation=f"{uom_pref}hasNumericalValue",
+            writer.write_data_prop(
+                iri=f"{uom_pref}Measure_Volume_{gen_id}",
+                rel=f"{uom_pref}hasNumericalValue",
                 value=data["Mops_CavityVolume"],
                 data_type="String",
             )  # Link the Numerical Value of Volume to the Measure.
-            aboxwriter.write_instance(
-                inst_iri=f"{uom_pref}cubicNanometre", inst_class=f"{uom_pref}Unit"
+            writer.write_inst(
+                iri=f"{uom_pref}cubicNanometre", type=f"{uom_pref}Unit"
             )  # Take the Cubic Nanometre Unit instance from the UOM ontology.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{uom_pref}Measure_Volume_{gen_id}",
-                trg_inst_iri=f"{uom_pref}cubicNanometre",
-                relation=f"{uom_pref}hasUnit",
+            writer.write_obj_prop(
+                src_iri=f"{uom_pref}Measure_Volume_{gen_id}",
+                trg_iri=f"{uom_pref}cubicNanometre",
+                rel=f"{uom_pref}hasUnit",
             )
 
             # Write the Assembly Model initialization and shape/symmetry
             # related instances.
-            aboxwriter.write_instance(
-                inst_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                inst_class=f"{onto_mops}#AssemblyModel",
+            writer.write_inst(
+                iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+                type=f"{onto_mops}#AssemblyModel",
             )  # Initialize the Assembly Model object for the MOPs.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}{mops_id}",
-                trg_inst_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                relation=f"{onto_mops}#hasAssemblyModel",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}{mops_id}",
+                trg_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+                rel=f"{onto_mops}#hasAssemblyModel",
             )  # Connect the MOPs instance to the Assembly Model instance.
-            aboxwriter.write_data_property(
-                inst_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                relation=f"{onto_mops}#hasSymmetryPointGroup",
+            writer.write_data_prop(
+                iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+                rel=f"{onto_mops}#hasSymmetryPointGroup",
                 value=data["Mops_Symmetry_Point_Group"],
                 data_type="String",
             )  # Write the Symmetry point group for the MOPs.
-            aboxwriter.write_instance(
-                inst_iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
-                inst_class=f"{onto_mops}#{data['Mops_Polyhedral_Shape']}",
+            writer.write_inst(
+                iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
+                type=f"{onto_mops}#{data['Mops_Polyhedral_Shape']}",
             )  # Initialize an instance of Polyhedral Shape that is the given
             # shape from the JSON file.
-            aboxwriter.write_object_property(
-                src_inst_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                trg_inst_iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
-                relation=f"{onto_mops}#hasPolyhedralShape",
+            writer.write_obj_prop(
+                src_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+                trg_iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
+                rel=f"{onto_mops}#hasPolyhedralShape",
             )  # Connect the Assembly model to polyhedral shape.
-            aboxwriter.write_data_property(
-                inst_iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
-                relation=f"{onto_mops}#hasSymbol",
+            writer.write_data_prop(
+                iri=f"{mops_pref}{data['Mops_Polyhedral_Shape']}_{gen_id}",
+                rel=f"{onto_mops}#hasSymbol",
                 value=data["Mops_Polyhedral_Shape_Symbol"],
                 data_type="String",
             )
@@ -332,170 +330,170 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
 
                 cbu_i = data["Mops_Chemical_Building_Units"][i]
 
-                aboxwriter.write_instance(
-                    inst_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    inst_class=f"{onto_mops}#ChemicalBuildingUnit",
+                writer.write_inst(
+                    iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                    type=f"{onto_mops}#ChemicalBuildingUnit",
                 )  # Instantiate the Chemical Building Unit.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}{mops_id}",
-                    trg_inst_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    relation=f"{onto_mops}#hasChemicalBuildingUnit",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}{mops_id}",
+                    trg_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                    rel=f"{onto_mops}#hasChemicalBuildingUnit",
                 )  # Connect the CBU instance to the MOPs instance.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    relation=f"{onto_mops}#hasCBUFormula",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                    rel=f"{onto_mops}#hasCBUFormula",
                     value=cbu_i["CBU_Formula"],
                 )  # CBU Formula
                 bind_dir = "BindingDirection"
-                aboxwriter.write_instance(
-                    inst_iri=f"{mops_pref}{cbu_i[bind_dir]}Binding_{gen_id}",
-                    inst_class=f"{onto_mops}#{cbu_i[bind_dir]}Binding",
+                writer.write_inst(
+                    iri=f"{mops_pref}{cbu_i[bind_dir]}Binding_{gen_id}",
+                    type=f"{onto_mops}#{cbu_i[bind_dir]}Binding",
                 )  # Instantiate the binding direction for the CBU
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_inst_iri=f"{mops_pref}{cbu_i[bind_dir]}Binding_{gen_id}",
-                    relation=f"{onto_mops}#hasBindingDirection",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                    trg_iri=f"{mops_pref}{cbu_i[bind_dir]}Binding_{gen_id}",
+                    rel=f"{onto_mops}#hasBindingDirection",
                 )
                 # Connect Binding direction instance to CBU instance.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_inst_iri=f"{cbu_i['OntoSpecies_IRI']}",
-                    relation=f"{onto_spec}#hasUniqueSpecies",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                    trg_iri=f"{cbu_i['OntoSpecies_IRI']}",
+                    rel=f"{onto_spec}#hasUniqueSpecies",
                 )  # Connect CBU to OntoSpecies entry.
 
-                aboxwriter.write_instance(
-                    inst_iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
-                    inst_class=f"{onto_mops}#{cbu_i['Binding_Site']}Site",
+                writer.write_inst(
+                    iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
+                    type=f"{onto_mops}#{cbu_i['Binding_Site']}Site",
                 )  # Instantiate the binding site for the CBU.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_inst_iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
-                    relation=f"{onto_mops}#hasBindingSite",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                    trg_iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
+                    rel=f"{onto_mops}#hasBindingSite",
                 )
                 # Connect Binding site instance to CBU instance.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
-                    relation=f"{rdf_pref}#label",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
+                    rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['Binding_Site_Label']}",
                     data_type="String",
                 )  # label for the Binding Site.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
-                    relation=f"{onto_mops}#hasOuterCoordinationNumber",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}{cbu_i['Binding_Site']}Site_{gen_id}",
+                    rel=f"{onto_mops}#hasOuterCoordinationNumber",
                     value=f"{cbu_i['Binding_SiteCoordNumber']}",
                     data_type="String",
                 )
 
-                aboxwriter.write_instance(
-                    inst_iri=f"{mops_pref}Core_{gen_id}_{i}",
-                    inst_class=f"{onto_mops}#Core",
+                writer.write_inst(
+                    iri=f"{mops_pref}Core_{gen_id}_{i}",
+                    type=f"{onto_mops}#Core",
                 )
                 # Instantiate the Core for this CBU.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_inst_iri=f"{mops_pref}Core_{gen_id}_{i}",
-                    relation=f"{onto_mops}#hasCore",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                    trg_iri=f"{mops_pref}Core_{gen_id}_{i}",
+                    rel=f"{onto_mops}#hasCore",
                 )  # Connect the Core instance to the CBU instance.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}Core_{gen_id}_{i}",
-                    relation=f"{rdf_pref}#label",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}Core_{gen_id}_{i}",
+                    rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['CoreLabel']}",
                     data_type="String",
                 )  # Attach label to Core.
-                aboxwriter.write_instance(
-                    inst_iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
-                    inst_class=f"{onto_mops}#Substituent",
+                writer.write_inst(
+                    iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
+                    type=f"{onto_mops}#Substituent",
                 )  # Instantiate the Core Substituent.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}Core_{gen_id}_{i}",
-                    trg_inst_iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
-                    relation=f"{onto_mops}#hasSubstituent",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}Core_{gen_id}_{i}",
+                    trg_iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
+                    rel=f"{onto_mops}#hasSubstituent",
                 )  # Connect the Core Substituent to the Core.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
-                    relation=f"{rdf_pref}#label",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}Substituent_Core_{gen_id}_{i}",
+                    rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['CoreSubstituentLabel']}",
                     data_type="String",
                 )  # Attach label to Core Substituent.
 
-                aboxwriter.write_instance(
-                    inst_iri=f"{mops_pref}Spacer_{gen_id}_{i}",
-                    inst_class=f"{onto_mops}#Spacer",
+                writer.write_inst(
+                    iri=f"{mops_pref}Spacer_{gen_id}_{i}",
+                    type=f"{onto_mops}#Spacer",
                 )
                 # Instantiate the Spacer for this CBU.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_inst_iri=f"{mops_pref}Spacer_{gen_id}_{i}",
-                    relation=f"{onto_mops}#hasSpacer",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                    trg_iri=f"{mops_pref}Spacer_{gen_id}_{i}",
+                    rel=f"{onto_mops}#hasSpacer",
                 )  # Connect the Spacer instance to the CBU instance.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}Spacer_{gen_id}_{i}",
-                    relation=f"{rdf_pref}#label",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}Spacer_{gen_id}_{i}",
+                    rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['SpacerLabel']}",
                     data_type="String",
                 )  # Attach label to Spacer.
-                aboxwriter.write_instance(
-                    inst_iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
-                    inst_class=f"{onto_mops}#Substituent",
+                writer.write_inst(
+                    iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
+                    type=f"{onto_mops}#Substituent",
                 )  # Instantiate the Spacer Substituent.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}Spacer_{gen_id}_{i}",
-                    trg_inst_iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
-                    relation=f"{onto_mops}#hasSubstituent",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}Spacer_{gen_id}_{i}",
+                    trg_iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
+                    rel=f"{onto_mops}#hasSubstituent",
                 )  # Connect the Spacer Substituent to the Core.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
-                    relation=f"{rdf_pref}#label",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}Substituent_Spacer_{gen_id}_{i}",
+                    rel=f"{rdf_pref}#label",
                     value=f"{cbu_i['SpacerSubstituentLabel']}",
                     data_type="String",
                 )  # Attach label to Spacer Substituent.
 
                 gbu = "GenericBuildingUnit"
 
-                aboxwriter.write_instance(
-                    inst_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    inst_class=f"{onto_mops}#{gbu}",
+                writer.write_inst(
+                    iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
+                    type=f"{onto_mops}#{gbu}",
                 )  # Instantiate the corresponding Generic Building Unit.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                    trg_inst_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    relation=f"{onto_mops}#has{gbu}",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+                    trg_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
+                    rel=f"{onto_mops}#has{gbu}",
                 )  # Connect the GBU instance to the Assembly Model instance.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    relation=f"{onto_mops}#hasPlanarity",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
+                    rel=f"{onto_mops}#hasPlanarity",
                     value=f"{cbu_i['GenericUnitPlanarity']}",
                     data_type="String",
                 )  # Planarity of GBU.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    relation=f"{onto_mops}#hasModularity",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
+                    rel=f"{onto_mops}#hasModularity",
                     value=f"{cbu_i['GenericUnitModularity']}",
                     data_type="String",
                 )  # Modularity of GBU.
-                aboxwriter.write_instance(
-                    inst_iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
-                    inst_class=f"{onto_mops}#{gbu}Number",
+                writer.write_inst(
+                    iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
+                    type=f"{onto_mops}#{gbu}Number",
                 )  # Instantiate the corresponding Generic Building Unit Number.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
-                    trg_inst_iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
-                    relation=f"{onto_mops}#has{gbu}Number",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}AssemblyModel_{asmodel_uuid}",
+                    trg_iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
+                    rel=f"{onto_mops}#has{gbu}Number",
                 )  # Connect the GBU Number instance to the Assembly Model instance.
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
-                    trg_inst_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    relation=f"{onto_mops}#isNumberOf",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
+                    trg_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
+                    rel=f"{onto_mops}#isNumberOf",
                 )  # Connect the GBU Number to its GBU.
-                aboxwriter.write_data_property(
-                    inst_iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
-                    relation=f"{onto_spec}#value",
+                writer.write_data_prop(
+                    iri=f"{mops_pref}{gbu}Number_{asmodel_uuid}_{i}",
+                    rel=f"{onto_spec}#value",
                     value=f"{cbu_i['GenericUnitNumber']}",
                     data_type="String",
                 )  # Give the GBU Number its value.
 
-                aboxwriter.write_object_property(
-                    src_inst_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
-                    trg_inst_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
-                    relation=f"{onto_mops}#isFunctioningAs",
+                writer.write_obj_prop(
+                    src_iri=f"{mops_pref}ChemicalBuildingUnit_{gen_id}_{i}",
+                    trg_iri=f"{mops_pref}{gbu}_{asmodel_uuid}_{i}",
+                    rel=f"{onto_mops}#isFunctioningAs",
                 )  # Connect the CBU to its corresonding GBU

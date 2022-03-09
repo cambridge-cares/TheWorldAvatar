@@ -56,36 +56,28 @@ class Abox_csv_writer:
 
     def write_imports(
         self,
-        abox_name: str,
+        name: str,
         importing: str,
-        relation: Optional[str] = None,
+        rel: Optional[str] = None,
     ) -> None:
-        if relation is None:
-            relation = "http://www.w3.org/2002/07/owl#imports"
-        self._write_row(abox_name, self.ontology_field, importing, relation)
+        if rel is None:
+            rel = "http://www.w3.org/2002/07/owl#imports"
+        self._write_row(name, self.ontology_field, importing, rel)
 
-    def write_instance(
-        self, inst_iri: str, inst_class: str, relation: str = ""
-    ) -> None:
-        self._write_row(inst_iri, self.instance_field, inst_class, relation)
+    def write_inst(self, iri: str, type: str, relation: str = "") -> None:
+        self._write_row(iri, self.instance_field, type, relation)
 
-    def write_data_property(
+    def write_data_prop(
         self,
-        inst_iri: str,
-        relation: str,
+        iri: str,
+        rel: str,
         value: str,
         data_type: Literal["String", "Integer", "Float", ""] = "",
     ) -> None:
-        self._write_row(
-            relation, self.data_property_field, inst_iri, "", value, str(data_type)
-        )
+        self._write_row(rel, self.data_property_field, iri, "", value, str(data_type))
 
-    def write_object_property(
-        self, src_inst_iri: str, relation: str, trg_inst_iri: str
-    ) -> None:
-        self._write_row(
-            src_inst_iri, self.object_property_field, trg_inst_iri, relation
-        )
+    def write_obj_prop(self, src_iri: str, rel: str, trg_iri: str) -> None:
+        self._write_row(src_iri, self.object_property_field, trg_iri, rel)
 
 
 def config_logging(
