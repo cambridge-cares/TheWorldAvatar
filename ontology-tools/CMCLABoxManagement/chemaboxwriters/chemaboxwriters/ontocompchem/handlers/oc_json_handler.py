@@ -190,6 +190,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 iri=f"{comp_pref}Atom_{calc_id}_{atom}{count}",
                 rel=f"{gain_pref}hasNumberOfAtoms",
                 value=at_count[k][1],
+                data_type="Integer",
             )
 
     def _write_level_of_theory(self, writer: Abox_Writer, calc_id, data):
@@ -719,6 +720,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
             rel=f"{gain_pref}hasValue",
             value=data["Formal charge"],
+            data_type="Integer",
         )
         writer.write_obj_prop(
             src_iri=f"{comp_pref}IntegerValue_{calc_id}_FormalCharge",
