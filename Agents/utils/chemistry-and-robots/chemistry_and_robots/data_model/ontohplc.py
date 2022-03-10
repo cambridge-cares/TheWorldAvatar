@@ -18,6 +18,9 @@ DBPEDIA_WIKICATFILENAMEEXTENSIONS = 'http://dbpedia.org/class/yago/WikicatFilena
 ONTOHPLC_CHARACTERISES = ONTOHPLC + 'characterises'
 TXTFILE_EXTENSION = 'txt'
 XLSFILE_EXTENSION = 'xls'
+ONTOHPLC_LASTLOCALMODIFIEDAT = ONTOHPLC + 'lastLocalModifiedAt'
+ONTOHPLC_LASTUPLOADEDAT = ONTOHPLC + 'lastUploadedAt'
+MAPPING_FILENAMEEXTENSION = {DBPEDIA_XLSFILE:XLSFILE_EXTENSION, DBPEDIA_TXTFILE:TXTFILE_EXTENSION}
 
 class PeakArea(OM_Quantity):
     clz: str = ONTOHPLC_PEAKAREA
@@ -41,6 +44,8 @@ class HPLCReport(BaseOntology):
     hasReportPath: str
     records: List[ChromatogramPoint]
     generatedFor: ChemicalSolution
+    lastLocalModifiedAt: float
+    lastUploadedAt: float
 
 class InternalStandard(OntoCAPE_PhaseComponent):
     clz: str = ONTOHPLC_INTERNALSTANDARD

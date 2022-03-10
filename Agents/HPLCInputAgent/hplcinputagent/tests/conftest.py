@@ -27,6 +27,7 @@ FS_ROUTE = "FileServer/upload"
 
 def pytest_sessionstart(session):
     """ This will run before all the tests"""
+    # TODO remove HPLC TXT and XLS files as well
     if os.path.exists(SECRETS_FILE_PATH):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
@@ -34,6 +35,7 @@ def pytest_sessionstart(session):
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
+    # TODO remove HPLC TXT and XLS files as well
     if os.path.exists(SECRETS_FILE_PATH):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
@@ -57,8 +59,8 @@ def get_service_url(session_scoped_container_getter):
     return _get_service_url
 
 @pytest.fixture(scope="session")
-def get_service_auth_file_path():
-    def _get_service_auth_file_path(service_name):
+def get_service_auth():
+    def _get_service_auth(service_name):
         password_file = os.path.join(SECRETS_PATH,service_name+'_passwd.txt')
         user_file = os.path.join(SECRETS_PATH,service_name+'_user.txt')
 
@@ -72,19 +74,17 @@ def get_service_auth_file_path():
             with open(password_file) as f:
                 password = f.read().strip()
 
-        with open(SECRETS_FILE_PATH, 'w') as f:
-            f.write(f"{username}:{password}")
+        return username, password
 
-        return SECRETS_FILE_PATH
-
-    return _get_service_auth_file_path
+    return _get_service_auth
 
 @pytest.fixture(scope="session")
-def initialise_triples(get_service_url):
+def initialise_triples(get_service_url, get_service_auth):
     # Create SparqlClient for testing
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
     file_service_url = get_service_url(FS_SERVICE, url_route=FS_ROUTE)
     sparql_client = ChemistryAndRobotsSparqlClient(sparql_endpoint, sparql_endpoint)
+    fs_user, fs_pwd = get_service_auth(FS_SERVICE)
 
     # Upload the example triples for testing
     for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl', 'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl']:
@@ -95,7 +95,7 @@ def initialise_triples(get_service_url):
         sparql_client.uploadOntology(filePath)
         os.remove(filePath)
 
-    yield sparql_client, sparql_endpoint, file_service_url
+    yield sparql_client, sparql_endpoint, file_service_url, fs_user, fs_pwd
 
     # Clear logger at the end of the test
     clear_loggers()
