@@ -177,6 +177,82 @@ def instantiate_timeseries(query_endpoint, update_endpoint, generatorIRI, genera
     print("Time series triples via Java TimeSeriesClient successfully instantiated.")
 
 
+def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorIRI, generator_name=''):
+    """
+        Instantiates all relevant triples for time series storage in KG and initialises RDB tables for generator.
+        (raises exception if time series association is already initialised)
+
+        Arguments:
+            query_endpoint - SPARQL Query endpoint for knowledge graph.
+            update_endpoint - SPARQL Update endpoint for knowledge graph.
+            generatorIRI - full gas generator IRI incl. namespace (without trailing '<' or '>').
+            generator_name - gas generator name (optional).
+    """
+    if generator_name != '':
+        print("Instantiate time series association for: " + generator_name)
+    else:
+        print("Instantiate time series association.")
+
+    # Create UUIDs for IntakenGas, VolumetricpowerRate, and Measure instances
+    gas = 'GasAmount_' + str(uuid.uuid4())
+    quantity = 'Quantity_' + str(uuid.uuid4())
+    measurement = 'Measurement_' + str(uuid.uuid4())
+
+    # Ensure that newly created IRIs are not already present in knowledge graph --> if so, re-create
+    # !! ASSUMED TO BE UNNECESSARY DUE TO random UUID --> currently left out due to long query times !!
+    #
+    # gases_existing = kg.get_instantiated_gas_amounts(query_endpoint)
+    # while any(existing.endswith(gas) for existing in gases_existing):
+    #     gas = 'GasAmount_' + str(uuid.uuid4())
+    #
+    # quantities_existing = kg.get_instantiated_quantities(query_endpoint)
+    # while any(existing.endswith(quantity) for existing in quantities_existing):
+    #     quantity = 'Quantity_' + str(uuid.uuid4())
+    #
+    # measurements_existing = kg.get_instantiated_measurements(query_endpoint)
+    # while any(existing.endswith(measurement) for existing in measurements_existing):
+    #     measurement = 'Measurement_' + str(uuid.uuid4())
+    
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
+
+    # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
+    query = kg.create_sparql_prefix('ontoenergysystem') + \
+            kg.create_sparql_prefix('ontoenergysystem_kb') + \
+            kg.create_sparql_prefix('om') + \
+            kg.create_sparql_prefix('rdf') + \
+            '''INSERT DATA { \
+            <%s> ontoenergysystem:hasTaken ontoenergysystem_kb:%s . \
+            ontoenergysystem_kb:%s rdf:type ontoenergysystem:IntakenGas . \
+            ontoenergysystem_kb:%s rdf:type om:VolumetricpowerRate; \
+                     om:hasPhenomenon ontoenergysystem_kb:%s; \
+                     om:hasValue ontoenergysystem_kb:%s . \
+            ontoenergysystem_kb:%s rdf:type om:Measure; \
+                     om:hasUnit om:cubicMetrePerSecond-Time. }''' % (
+                generatorIRI, gas, gas, quantity, gas, measurement, measurement)
+
+    KGClient.executeUpdate(query)
+    print("Time series triples independent of Java TimeSeriesClient successfully instantiated.")
+
+    # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+    # Retrieve Java classes for time entries (Instant) and data (Double) - to get class simply via Java's
+    # ".class" does not work as this command also exists in Python
+    Instant = jpsBaseLibView.java.time.Instant
+    instant_class = Instant.now().getClass()
+    double_class = jpsBaseLibView.java.lang.Double.TYPE
+
+    # Derive MeasurementIRI to which time series is actually connected to
+    measurement_iri = kg.PREFIXES['ontoenergysystem_kb'] + measurement
+    print("Measurement IRI for actual time series: ", measurement_iri)
+
+    # Initialise time series in both KG and RDB using TimeSeriesClass
+    TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
+    TSClient.initTimeSeries([measurement_iri], [double_class], kg.FORMAT)
+
+    print("Time series triples via Java TimeSeriesClient successfully instantiated.")
+
+
+
 def add_time_series(instance_IRI, timestamps, values, units): 
     """
         Directly adds time series information. 
@@ -501,38 +577,39 @@ def update_triple_store():
         powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
         powerplants_instantiated = {k.upper(): v for k, v in powerplants.items()}
 
-    """
-    # Assimilate power data for instantiated gas powerplants
-    for gt in powerplants_instantiated:
+    
+    # Assimilate power data for instantiated  powerplants
+    for pp in powerplants_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
-        if kg.get_measurementIRI(kg.QUERY_ENDPOINT, powerplants_instantiated[gt]) is None:
-            print("No instantiated timeseries detected for: ", gt)
-            instantiate_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, powerplants_instantiated[gt], gt)
+        if kg.get_measurementIRI(kg.QUERY_ENDPOINT, powerplants_instantiated[pp]) is None:
+            print("No instantiated timeseries detected for: ", pp)
+            instantiate_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, powerplants_instantiated[pp], pp)
         else:
             print("Instantiated time series detected!")
 
         # Retrieve power time series data for respective powerplant from overall DataFrame
-        new_data = powerplant_power_data[powerplant_power_data['powerplanteic'] == gt][['time', 'power']]
+        new_data = powerplant_power_data[powerplant_power_data['powerplanteic'] == pp][['time', 'power']]
+        print("New PowerPlant Data: ", new_data)
 
         # Add time series data using Java TimeSeriesClient
-        add_time_series_data(powerplants_instantiated[gt], new_data, gt)
-    """
+        ### add_time_series_data(powerplants_instantiated[pp], new_data, pp)
+    
     #Loop for powerplants (which we have data)
-    daily_loop = check_df(powerplant_power_data, 48)
-    placement = 0
-    while(daily_loop):
-        dfSlice, placement, daily_loop = take_day(powerplant_power_data, placement, 48)
-        """
-        print("placement")
-        print(placement)
-        print("daily_loop")
-        print(daily_loop)
-        print("SLICE")
-        print(dfSlice)
-        print(kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['powerplanteic'].iloc[0])
-        """
-        #Add daily slice (dfSlice) here. 
-        add_time_series((kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['powerplanteic'].iloc[0]), dfSlice['time'], dfSlice['power'], units)
+    # daily_loop = check_df(powerplant_power_data, 48)
+    # placement = 0
+    # while(daily_loop):
+    #     dfSlice, placement, daily_loop = take_day(powerplant_power_data, placement, 48)
+    #     """
+    #     print("placement")
+    #     print(placement)
+    #     print("daily_loop")
+    #     print(daily_loop)
+    #     print("SLICE")
+    #     print(dfSlice)
+    #     print(kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['powerplanteic'].iloc[0])
+    #     """
+    #     #Add daily slice (dfSlice) here. 
+    #     add_time_series((kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['powerplanteic'].iloc[0]), dfSlice['time'], dfSlice['power'], units)
     #Now do the same for generators. 
     # Retrieve all generators with available power data (generator names are capitalised)
     generators_with_data = generator_power_data['generatoreic'].unique()
@@ -554,8 +631,7 @@ def update_triple_store():
         generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
         generators_instantiated = {k.upper(): v for k, v in generators.items()}
 
-    """
-    # Assimilate power data for instantiated gas generators
+    # Assimilate power data for instantiated generators
     for gt in generators_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
         if kg.get_measurementIRI(kg.QUERY_ENDPOINT, generators_instantiated[gt]) is None:
@@ -566,30 +642,31 @@ def update_triple_store():
 
         # Retrieve power time series data for respective generator from overall DataFrame
         new_data = generator_power_data[generator_power_data['generatoreic'] == gt][['time', 'power']]
+        print("New Generator Data: ", new_data)
 
         # Add time series data using Java TimeSeriesClient
-        add_time_series_data(generators_instantiated[gt], new_data, gt)
-    """
+        ### add_time_series_data(generators_instantiated[gt], new_data, gt)
+    
     #Loop for generators (for which we have data)
-    daily_loop = check_df(generator_power_data, 48)
-    placement = 0
-    while(daily_loop):
-        dfSlice, placement, daily_loop = take_day(generator_power_data, placement, 48)
-        """
-        print("placement")
-        print(placement)
-        print("daily_loop")
-        print(daily_loop)
-        print("SLICE")
-        print(dfSlice)
-        if placement == 192:
-            for w in dfSlice['time']:
-                print(w)
-            print("MAINTEST")
-            print(dfSlice['generatoreic'].iloc[0])
-        """
-        #Add daily slice (dfSlice) here. 
-        add_time_series((kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['generatoreic'].iloc[0]), dfSlice['time'], dfSlice['power'], units)
+    # daily_loop = check_df(generator_power_data, 48)
+    # placement = 0
+    # while(daily_loop):
+    #     dfSlice, placement, daily_loop = take_day(generator_power_data, placement, 48)
+    #     """
+    #     print("placement")
+    #     print(placement)
+    #     print("daily_loop")
+    #     print(daily_loop)
+    #     print("SLICE")
+    #     print(dfSlice)
+    #     if placement == 192:
+    #         for w in dfSlice['time']:
+    #             print(w)
+    #         print("MAINTEST")
+    #         print(dfSlice['generatoreic'].iloc[0])
+    #     """
+    #     #Add daily slice (dfSlice) here. 
+    #     add_time_series((kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['generatoreic'].iloc[0]), dfSlice['time'], dfSlice['power'], units)
     
     print("Time series data successfully added.\n")
 

@@ -409,14 +409,14 @@ def get_instantiated_measurements(endpoint):
 
 def get_measurementIRI(endpoint, instance_IRI):
     """
-        Retrieves gas flow MeasurementIRI for generator, which is actually connected to time series.
+        Retrieves power MeasurementIRI for generator, which is actually connected to time series.
 
         Arguments:
             endpoint - SPARQL Query endpoint for knowledge graph.
-            generatorIRI - full gas generator IRI incl. namespace (without trailing '<' or '>').
+            generatorIRI - full generator IRI incl. namespace (without trailing '<' or '>').
 
         Returns:
-            Full gas flow MeasurementIRI incl. namespace (without trailing '<' or '>').
+            Full power MeasurementIRI incl. namespace (without trailing '<' or '>').
     """
 
     # Initialise SPARQL query variable
@@ -426,19 +426,18 @@ def get_measurementIRI(endpoint, instance_IRI):
     KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-
-    query = create_sparql_prefix('comp') + \
+    query = create_sparql_prefix('ontopowsys') + \
+            create_sparql_prefix('ontoenergysystem') + \
             create_sparql_prefix('om') + \
-            create_sparql_prefix('rdf') + \
             create_sparql_prefix('ts') + \
+            create_sparql_prefix('rdf') + \
             '''SELECT ?%s \
-            WHERE { <%s> comp:hasTaken ?gas . \
-                    ?gas rdf:type comp:IntakenGas; \
-                         ^om:hasPhenomenon/om:hasValue ?%s. \
-                    ?%s ts:hasTimeSeries ?ts }''' % (var, instance_IRI, var, var)
+            WHERE { <%s> ontopowsys:hasActivePowerGenerated ?pg . \
+                    ?pg rdf:type ontopowsys:ActivePowerGenerated . \
+                    ?pg ts:hasTimeSeries ?ts }''' % (var, instance_IRI)
 
     response = KGClient.execute(query)
-
+    print("Query Line Print: ", query)
     # Convert JSONArray String back to list
     response = json.loads(response)
 
