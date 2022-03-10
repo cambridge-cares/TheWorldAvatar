@@ -1,9 +1,12 @@
 # NOTE courtesy of Daniel (dln22), this file is adapted from https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_uploader/tests/conftest.py
 from testcontainers.core.container import DockerContainer
 from pathlib import Path
+from rdflib import Graph
 import logging
+import pkgutil
 import pytest
 import time
+import uuid
 import os
 
 logging.getLogger("py4j").setLevel(logging.INFO)
@@ -84,9 +87,13 @@ def initialise_triples(get_service_url):
     sparql_client = ChemistryAndRobotsSparqlClient(sparql_endpoint, sparql_endpoint)
 
     # Upload the example triples for testing
-    pathlist = Path(str(Path(__file__).absolute().parent.parent)+'/chemistry_and_robots/resources/').glob('**/*.ttl')
-    for path in pathlist:
-        sparql_client.uploadOntology(str(path))
+    for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl', 'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl']:
+        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
+        g = Graph().parse(data=data)
+        filePath = f'{str(uuid.uuid4())}.ttl'
+        g.serialize(filePath, format='ttl')
+        sparql_client.uploadOntology(filePath)
+        os.remove(filePath)
 
     yield sparql_client, sparql_endpoint, file_service_url
 

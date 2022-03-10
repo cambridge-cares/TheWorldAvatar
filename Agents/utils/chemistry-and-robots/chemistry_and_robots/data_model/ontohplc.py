@@ -16,6 +16,8 @@ DBPEDIA_TXTFILE = 'http://dbpedia.org/resource/Text_file'
 # DBPEDIA_XLSFILE, DBPEDIA_CSVFILE, and DBPEDIA_TXTFILE all have rdf:type DBPEDIA_WIKICATFILENAMEEXTENSIONS
 DBPEDIA_WIKICATFILENAMEEXTENSIONS = 'http://dbpedia.org/class/yago/WikicatFilenameExtensions'
 ONTOHPLC_CHARACTERISES = ONTOHPLC + 'characterises'
+TXTFILE_EXTENSION = 'txt'
+XLSFILE_EXTENSION = 'xls'
 
 class PeakArea(OM_Quantity):
     clz: str = ONTOHPLC_PEAKAREA

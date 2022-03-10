@@ -1,5 +1,5 @@
 from pathlib import Path
-import datetime
+from datetime import datetime
 import requests
 from requests import status_codes
 import glob
@@ -14,7 +14,7 @@ from hplcinputagent.conf import *
 class HPLCInputAgent(AsyncAgent):
     # TODO consider making __init__ of AsyncAgent to accept **kwargs
     def __init__(self, hplc_digital_twin: str, hplc_report_periodic_timescale: str, file_server_upload: str,
-        agent_iri: str, time_interval: int, derivation_instance_base_url: str, kg_url: str, kg_user: str = None, kg_password: str = None, app: Flask = ..., flask_config: FlaskConfig = ..., logger_name: str = "dev"
+        agent_iri: str, time_interval: int, derivation_instance_base_url: str, kg_url: str, kg_user: str = None, kg_password: str = None, app: Flask = Flask(__name__), flask_config: FlaskConfig = FlaskConfig(), logger_name: str = "dev"
     ):
         self.hplc_digital_twin = hplc_digital_twin
         self.hplc_report_periodic_timescale = hplc_report_periodic_timescale
@@ -26,9 +26,16 @@ class HPLCInputAgent(AsyncAgent):
 
         # Get the local report folder path of the HPLC
         hplc_dir, file_extension = self.sparql_client.get_hplc_local_report_folder_path(self.hplc_digital_twin)
+        if file_extension == DBPEDIA_TXTFILE:
+            f_e = TXTFILE_EXTENSION
+        elif file_extension == DBPEDIA_XLSFILE:
+            f_e = XLSFILE_EXTENSION
+        else:
+            raise NotImplementedError("HPLC report with (%s) as filename extension is NOT supported yet." % (file_extension))
 
         # Searches hplc directory for new generated reports
-        hplc_files = glob.glob(hplc_dir + "\**\*." + file_extension, recursive=True)
+        # NOTE "\**\*." should be used when deploying it on windows machine, "/**/*." is currently used for testing purpose
+        hplc_files = glob.glob(hplc_dir + "/**/*." + f_e, recursive=True)
 
         # Loop through to get the time when the HPLC report was generated
         hplc_times = [os.path.getmtime(one_file) for one_file in hplc_files]
@@ -59,9 +66,9 @@ class HPLCInputAgent(AsyncAgent):
             This method starts the periodical job to monitor the HPLC local report folder.
         """
         self.scheduler.init_app(self.app)
-        self.scheduler.add_job(id='monitor_local_report_foler', func=self.monitor_local_report_folder, trigger='interval', seconds=self.time_interval)
+        self.scheduler.add_job(id='monitor_local_report_foler', func=self.monitor_local_report_folder, trigger='interval', seconds=self.hplc_report_periodic_timescale)
         self.scheduler.start()
-        self.logger.info("Monitor local report folder job is started with a time interval of %d seconds." % (self.time_interval))
+        self.logger.info("Monitor local report folder job is started with a time interval of %d seconds." % (self.hplc_report_periodic_timescale))
 
 # Show an instructional message at the HPLCInputAgent servlet root
 def default():
