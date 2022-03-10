@@ -8,7 +8,7 @@
             "cluster": true,
             "clusterRadius": 30,
             "clusterProperties": {
-                "icon-image": ["string", "alpha-empty"],
+                "icon-image": ["string", "terminal-empty"],
                 "text-color": ["string", "#0050bf"]
             },            
             "metaFiles": ["terminals-meta.json"],
@@ -22,9 +22,9 @@
             "cluster": true,
             "clusterRadius": 30,
             "clusterProperties": {
-                "icon-image": ["string", "beta-empty"],
+                "icon-image": ["string", "offtake-empty"],
                 "text-color": ["string", "#bc0000"],
-                "terminalCount": ["+", ["get", "terminalCount", ["properties"]]]
+                "terminalCount": ["+", ["get", "offtakeCount", ["properties"]]]
             },
             "metaFiles": ["offtakes-meta.json"]
         },
@@ -36,7 +36,7 @@
             "cluster": true,
             "clusterRadius": 30,
             "clusterProperties": {
-                "icon-image": ["string", "gamma-empty"],
+                "icon-image": ["string", "pipe-empty"],
                 "text-color": ["string", "#00dd4a"]
             },
 			"metaFiles": ["pipes-meta.json"]
