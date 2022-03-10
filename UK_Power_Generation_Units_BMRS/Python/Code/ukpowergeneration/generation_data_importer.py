@@ -194,7 +194,7 @@ def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorI
         print("Instantiate time series association.")
 
     # Create UUIDs for IntakenGas, VolumetricpowerRate, and Measure instances
-    gas = 'GasAmount_' + str(uuid.uuid4())
+    generator = generator_name
     quantity = 'Quantity_' + str(uuid.uuid4())
     measurement = 'Measurement_' + str(uuid.uuid4())
 
@@ -229,7 +229,7 @@ def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorI
                      om:hasValue ontoenergysystem_kb:%s . \
             ontoenergysystem_kb:%s rdf:type om:Measure; \
                      om:hasUnit om:cubicMetrePerSecond-Time. }''' % (
-                generatorIRI, gas, gas, quantity, gas, measurement, measurement)
+                generatorIRI, generator, generator, quantity, generator, measurement, measurement)
 
     KGClient.executeUpdate(query)
     print("Time series triples independent of Java TimeSeriesClient successfully instantiated.")
