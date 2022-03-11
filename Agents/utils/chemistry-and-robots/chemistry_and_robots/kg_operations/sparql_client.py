@@ -1545,6 +1545,31 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return hplc_report_instance
 
+    def get_hplc_job_given_hplc_report_iri(self, hplc_report_iri: str) -> HPLCJob:
+        hplc_report_instance = self.get_existing_hplc_report(trimIRI(hplc_report_iri))
+        return self.get_hplc_job_given_hplc_report_instance(hplc_report_instance)
+
+    def get_hplc_job_given_hplc_report_instance(self, hplc_report_instance: HPLCReport) -> HPLCJob:
+
+
+        hplc_method_instance = self.get_hplc_method_given_hplc_report(hplc_report_instance.instance_iri)
+        # hplc_job_instance = HPLCJob(
+        #     instance_iri=,
+        #     hasReport=hplc_report_instance,
+        #     characterises=,
+        #     usesMethod=hplc_method_instance
+        # )
+        return 
+
+    def get_hplc_job(self, hplc_job_iri: str) -> HPLCJob:
+        # hplc_job_instance = HPLCJob(
+        #     instance_iri=hplc_job_iri,
+        #     hasReport=,
+        #     characterises=,
+        #     usesMethod=
+        # )
+        return 
+
     #######################################################
     ## Some utility functions handling the list and dict ##
     #######################################################
