@@ -27,7 +27,7 @@ Each derivation has an asynchronous agent associated with it that keeps monitori
 
 A more visual illustration can be found below:
 
-![Alt text](DerivationAsynExample.png?raw=true)
+![Alt text](DerivationAsynExample.svg?raw=true)
 
 ### Pure inputs
 The pure inputs of the first (upstream) derivation in the chain are instances of `UpperLimit` (20), `LowerLimit` (3), and `NumberOfPoints` (6), with the value in brackets as their own default value in this example. Upon initialisation, the following triples are created in blazegraph:
