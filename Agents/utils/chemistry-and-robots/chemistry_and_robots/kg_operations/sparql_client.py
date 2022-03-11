@@ -1239,10 +1239,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             return response[0]['report_dir'], response[0]['report_extension']
 
-    def write_hplc_report_path_to_kg(self, hplc_report_iri: str, report_path: str, timestamp_last_modified: float, timestamp_upload: float):
+    def write_hplc_report_path_to_kg(self, hplc_report_iri: str, remote_report_path: str, local_file_path: str, timestamp_last_modified: float, timestamp_upload: float):
         # TODO "%s"^^xsd:string needs to be changed to <%s> once the PR on returning the full URL of the uploaded file is completed
-        update = PREFIX_XSD + """INSERT DATA {<%s> a <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
-            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, report_path,
+        update = PREFIX_XSD + """INSERT DATA {<%s> a <%s>; <%s> "%s"^^xsd:string; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
+            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_report_path, ONTOHPLC_LOCALREPORTFILE, local_file_path,
             ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
         self.performUpdate(update)
 
@@ -1511,9 +1511,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_existing_hplc_report(self, hplc_report_iri: str) -> HPLCReport:
         hplc_report_iri = trimIRI(hplc_report_iri)
-        query = """SELECT ?chemical_solution ?report_path ?lastLocalModifiedAt ?lastUploadedAt ?vial
-                   WHERE {<%s> <%s> ?chemical_solution; <%s> ?report_path; <%s> ?lastLocalModifiedAt; <%s> ?lastUploadedAt. ?chemical_solution <%s> ?vial.}""" % (
-                       hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_HASREPORTPATH, ONTOHPLC_LASTLOCALMODIFIEDAT, ONTOHPLC_LASTUPLOADEDAT, ONTOVAPOURTEC_FILLS)
+        query = """SELECT ?chemical_solution ?report_path ?local_report_file ?lastLocalModifiedAt ?lastUploadedAt ?vial
+                   WHERE {<%s> <%s> ?chemical_solution; <%s> ?report_path; <%s> ?local_report_file; <%s> ?lastLocalModifiedAt; <%s> ?lastUploadedAt. ?chemical_solution <%s> ?vial.}""" % (
+                       hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_HASREPORTPATH, ONTOHPLC_LOCALREPORTFILE, ONTOHPLC_LASTLOCALMODIFIEDAT, ONTOHPLC_LASTUPLOADEDAT, ONTOVAPOURTEC_FILLS)
         response = self.performQuery(query)
         if len(response) > 1:
             raise Exception("Multiple instances of ChemicalSolution or HPLCReport path identified for HPLCReport <%s>: %s" % (
@@ -1524,6 +1524,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             chem_sol_iri = response[0]['chemical_solution']
             hplc_report_path = response[0]['report_path']
+            local_report_file = response[0]['local_report_file']
             lastLocalModifiedAt =  response[0]['lastLocalModifiedAt']
             lastUploadedAt = response[0]['lastUploadedAt']
             chem_sol_vial = response[0]['vial']
@@ -1531,6 +1532,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         hplc_report_instance = HPLCReport(
             instance_iri=hplc_report_iri,
             hasReportPath=hplc_report_path,
+            localReportFile=local_report_file,
             lastLocalModifiedAt=lastLocalModifiedAt,
             lastUploadedAt=lastUploadedAt,
             records=self.get_chromatogram_point_of_hplc_report(hplc_report_iri),

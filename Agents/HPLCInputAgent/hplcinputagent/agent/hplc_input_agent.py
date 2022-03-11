@@ -53,7 +53,6 @@ class HPLCInputAgent(AsyncAgent):
                     hplc_report_path, timestamp_last_modified, self.hplc_dir, self.hplc_digital_twin, timestamp_last_check, self.file_server_upload))
             with open(hplc_report_path, 'rb') as file_obj:
                 files = {'file': file_obj}
-                # TODO parameterise authorisation
                 timestamp_upload, response = datetime.now().timestamp(), requests.post(self.file_server_upload, auth=self.auth, files=files)
                 self.logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> with a response statue code %s at %f" % (
                     hplc_report_path, self.file_server_upload, response.status_code, timestamp_upload))
@@ -62,10 +61,10 @@ class HPLCInputAgent(AsyncAgent):
                 if (response.status_code == status_codes.codes.OK):
                     remote_file_path = response.headers['file']
                     self.logger.info("The remote file path of the new uploaded HPLCReport is: <%s>" % remote_file_path)
-                    # TODO maybe also write when the report was generated and when uploaded?
                     hplc_report_iri = initialiseInstanceIRI(getNameSpace(self.hplc_digital_twin), ONTOHPLC_HPLCREPORT)
                     self.logger.info("The initialised HPLCReport IRI is: <%s>" % hplc_report_iri)
-                    self.sparql_client.write_hplc_report_path_to_kg(hplc_report_iri, remote_file_path, timestamp_last_modified, timestamp_upload)
+                    self.sparql_client.write_hplc_report_path_to_kg(hplc_report_iri=hplc_report_iri, remote_report_path=remote_file_path,
+                        local_file_path=hplc_report_path, timestamp_last_modified=timestamp_last_modified, timestamp_upload=timestamp_upload)
                 else:
                     # TODO need to think a way to inform the post proc agent about the failure of uploading the file
                     raise Exception("File %s upload failed with code %d" % (hplc_report_path, response.status_code))

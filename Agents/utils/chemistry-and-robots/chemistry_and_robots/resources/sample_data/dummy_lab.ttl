@@ -94,6 +94,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     ontohplc:lastLocalModifiedAt "123"^^xsd:double;
     ontohplc:lastUploadedAt "125"^^xsd:double;
     ontohplc:hasReportPath "placeholder_path"^^xsd:string; # TODO this should be changed to an iri once the PR on returning the full URL of uploaded file is done
+    ontohplc:localReportFile "placeholder_file_name"^^xsd:string;
     ontohplc:records :ChromatogramPoint_Dummy_1;
     ontohplc:records :ChromatogramPoint_Dummy_2;
     ontohplc:records :ChromatogramPoint_Dummy_3;

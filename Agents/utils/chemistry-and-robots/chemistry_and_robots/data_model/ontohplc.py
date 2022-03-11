@@ -21,6 +21,7 @@ XLSFILE_EXTENSION = 'xls'
 ONTOHPLC_LASTLOCALMODIFIEDAT = ONTOHPLC + 'lastLocalModifiedAt'
 ONTOHPLC_LASTUPLOADEDAT = ONTOHPLC + 'lastUploadedAt'
 MAPPING_FILENAMEEXTENSION = {DBPEDIA_XLSFILE:XLSFILE_EXTENSION, DBPEDIA_TXTFILE:TXTFILE_EXTENSION}
+ONTOHPLC_LOCALREPORTFILE = ONTOHPLC + 'localReportFile'
 
 class PeakArea(OM_Quantity):
     clz: str = ONTOHPLC_PEAKAREA
@@ -44,6 +45,7 @@ class HPLCReport(BaseOntology):
     hasReportPath: str
     records: List[ChromatogramPoint]
     generatedFor: ChemicalSolution
+    localReportFile: str
     lastLocalModifiedAt: float
     lastUploadedAt: float
 

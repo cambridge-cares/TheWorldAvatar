@@ -384,6 +384,7 @@ def test_get_existing_hplc_report(initialise_triples):
     assert all(pt in list_chrom_pts for pt in hplc_report.records)
     assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI.value
     assert hplc_report.hasReportPath is not None
+    assert hplc_report.localReportFile is not None
     assert hplc_report.lastLocalModifiedAt > 0
     assert hplc_report.lastUploadedAt > 0
 
