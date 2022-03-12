@@ -15,6 +15,7 @@
 @prefix ontohplc:        <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
 @prefix ontobpr:        <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
 @prefix ontolab:        <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#> .
+@prefix ontouom:        <http://theworldavatar.com/resource/ontouom/> .
 @prefix :                <http://example.com/blazegraph/namespace/testlab/dummy_lab/> .
 
 @prefix exp1:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
@@ -122,58 +123,234 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :ChromatogramPoint_Dummy_1
     a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea "3000"^^xsd:double;
-    ontohplc:atRetentionTIme "0.55"^^xsd:double;
+    ontohplc:hasPeakArea :PeakArea_CP_D1;
+    ontohplc:atRetentionTime :RetentionTime_CP_D1;
     ontohplc:indicatesComponent SinglePhase:PhaseComponent_1_exp1_oc;
+.
+
+:PeakArea_CP_D1
+    a ontohplc:PeakArea;
+    om:hasValue :V_PA_CP_D1;
+.
+
+:V_PA_CP_D1
+    a om:Measure;
+    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasNumericalValue "3000"^^xsd:double;
+.
+
+:RetentionTime_CP_D1
+    a ontohplc:RetentionTime;
+    om:hasValue :V_RT_CP_D1;
+.
+
+:V_RT_CP_D1
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "0.55"^^xsd:double;
 .
 
 :ChromatogramPoint_Dummy_2
     a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea "3400"^^xsd:double;
-    ontohplc:atRetentionTIme "2.55"^^xsd:double;
+    ontohplc:hasPeakArea :PeakArea_CP_D2;
+    ontohplc:atRetentionTime :RetentionTime_CP_D2;
     ontohplc:indicatesComponent SinglePhase:PhaseComponent_2_exp1_oc;
+.
+
+:PeakArea_CP_D2
+    a ontohplc:PeakArea;
+    om:hasValue :V_PA_CP_D2;
+.
+
+:V_PA_CP_D2
+    a om:Measure;
+    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasNumericalValue "3400"^^xsd:double;
+.
+
+:RetentionTime_CP_D2
+    a ontohplc:RetentionTime;
+    om:hasValue :V_RT_CP_D2;
+.
+
+:V_RT_CP_D2
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "2.55"^^xsd:double;
 .
 
 :ChromatogramPoint_Dummy_3
     a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea "15000"^^xsd:double;
-    ontohplc:atRetentionTIme "1.55"^^xsd:double;
+    ontohplc:hasPeakArea :PeakArea_CP_D3;
+    ontohplc:atRetentionTime :RetentionTime_CP_D3;
     ontohplc:indicatesComponent SinglePhase:PhaseComponent_3_exp1_oc;
+.
+
+:PeakArea_CP_D3
+    a ontohplc:PeakArea;
+    om:hasValue :V_PA_CP_D3;
+.
+
+:V_PA_CP_D3
+    a om:Measure;
+    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasNumericalValue "15000"^^xsd:double;
+.
+
+:RetentionTime_CP_D3
+    a ontohplc:RetentionTime;
+    om:hasValue :V_RT_CP_D3;
+.
+
+:V_RT_CP_D3
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "1.55"^^xsd:double;
 .
 
 :ChromatogramPoint_Dummy_4
     a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea "20"^^xsd:double;
-    ontohplc:atRetentionTIme "4.55"^^xsd:double;
+    ontohplc:hasPeakArea :PeakArea_CP_D4;
+    ontohplc:atRetentionTime :RetentionTime_CP_D4;
     ontohplc:indicatesComponent SinglePhase:PhaseComponent_4_exp1_oc;
+.
+
+:PeakArea_CP_D4
+    a ontohplc:PeakArea;
+    om:hasValue :V_PA_CP_D4;
+.
+
+:V_PA_CP_D4
+    a om:Measure;
+    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasNumericalValue "20"^^xsd:double;
+.
+
+:RetentionTime_CP_D4
+    a ontohplc:RetentionTime;
+    om:hasValue :V_RT_CP_D4;
+.
+
+:V_RT_CP_D4
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "4.55"^^xsd:double;
 .
 
 :ChromatogramPoint_Dummy_5
     a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea "900"^^xsd:double;
-    ontohplc:atRetentionTIme "5.55"^^xsd:double;
+    ontohplc:hasPeakArea :PeakArea_CP_D5;
+    ontohplc:atRetentionTime :RetentionTime_CP_D5;
     ontohplc:indicatesComponent SinglePhase:PhaseComponent_5_exp1_oc;
+.
+
+:PeakArea_CP_D5
+    a ontohplc:PeakArea;
+    om:hasValue :V_PA_CP_D5;
+.
+
+:V_PA_CP_D5
+    a om:Measure;
+    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasNumericalValue "900"^^xsd:double;
+.
+
+:RetentionTime_CP_D5
+    a ontohplc:RetentionTime;
+    om:hasValue :V_RT_CP_D5;
+.
+
+:V_RT_CP_D5
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "5.55"^^xsd:double;
 .
 
 :ChromatogramPoint_Dummy_6
     a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea "150"^^xsd:double;
-    ontohplc:atRetentionTIme "6.55"^^xsd:double;
+    ontohplc:hasPeakArea :PeakArea_CP_D6;
+    ontohplc:atRetentionTime :RetentionTime_CP_D6;
     ontohplc:indicatesComponent SinglePhase:PhaseComponent_6_exp1_oc;
+.
+
+:PeakArea_CP_D6
+    a ontohplc:PeakArea;
+    om:hasValue :V_PA_CP_D6;
+.
+
+:V_PA_CP_D6
+    a om:Measure;
+    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasNumericalValue "150"^^xsd:double;
+.
+
+:RetentionTime_CP_D6
+    a ontohplc:RetentionTime;
+    om:hasValue :V_RT_CP_D6;
+.
+
+:V_RT_CP_D6
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "6.55"^^xsd:double;
 .
 
 :ChromatogramPoint_Dummy_7
     a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea "100"^^xsd:double;
-    ontohplc:atRetentionTIme "7.55"^^xsd:double;
+    ontohplc:hasPeakArea :PeakArea_CP_D7;
+    ontohplc:atRetentionTime :RetentionTime_CP_D7;
     ontohplc:indicatesComponent SinglePhase:PhaseComponent_7_exp1_oc;
+.
+
+:PeakArea_CP_D7
+    a ontohplc:PeakArea;
+    om:hasValue :V_PA_CP_D7;
+.
+
+:V_PA_CP_D7
+    a om:Measure;
+    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasNumericalValue "100"^^xsd:double;
+.
+
+:RetentionTime_CP_D7
+    a ontohplc:RetentionTime;
+    om:hasValue :V_RT_CP_D7;
+.
+
+:V_RT_CP_D7
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "7.55"^^xsd:double;
 .
 
 :ChromatogramPoint_Dummy_8
     a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea "120"^^xsd:double;
-    ontohplc:atRetentionTIme "3.55"^^xsd:double;
+    ontohplc:hasPeakArea :PeakArea_CP_D8;
+    ontohplc:atRetentionTime :RetentionTime_CP_D8;
     ontohplc:indicatesComponent SinglePhase:PhaseComponent_IS_exp1_oc;
+.
+
+:PeakArea_CP_D8
+    a ontohplc:PeakArea;
+    om:hasValue :V_PA_CP_D8;
+.
+
+:V_PA_CP_D8
+    a om:Measure;
+    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasNumericalValue "120"^^xsd:double;
+.
+
+:RetentionTime_CP_D8
+    a ontohplc:RetentionTime;
+    om:hasValue :V_RT_CP_D8;
+.
+
+:V_RT_CP_D8
+    a om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "3.55"^^xsd:double;
 .
 
 :HPLCMethod_Dummy

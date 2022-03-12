@@ -1461,7 +1461,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_chromatogram_point_of_hplc_report(self, hplc_report_iri: str) -> List[ChromatogramPoint]:
         hplc_report_iri = trimIRI(hplc_report_iri)
-        query = PREFIX_RDF+"""SELECT ?pt ?phase_component ?chemical_species ?conc ?conc_type ?conc_value
+        query = PREFIX_RDF+"""SELECT ?pt ?phase_component ?chemical_species ?conc ?conc_type
                    ?conc_value ?conc_unit ?conc_num_val ?area ?area_value ?area_unit ?area_num_val
                    ?rt ?rt_value ?rt_unit ?rt_num_val
                    WHERE {
@@ -1473,7 +1473,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                        ?area <%s> ?area_value. ?area_value <%s> ?area_unit; <%s> ?area_num_val.
                        ?rt <%s> ?rt_value. ?rt_value <%s> ?rt_unit; <%s> ?rt_num_val.
                    }""" % (
-                       hplc_report_iri, ONTOHPLC_RECORDS, ONTOHPLC_INDICATESCOMPONENT, ONTOHPLC_HASPEAKAREA, ONTOHPLC_HASRETENTIONTIME,
+                       hplc_report_iri, ONTOHPLC_RECORDS, ONTOHPLC_INDICATESCOMPONENT, ONTOHPLC_HASPEAKAREA, ONTOHPLC_ATRETENTIONTIME,
                        ONTOCAPE_REPRESENTSOCCURENCEOF, ONTOCAPE_HASPROPERTY, ONTOCAPE_HASVALUE, ONTOCAPE_HASUNITOFMEASURE, ONTOCAPE_NUMERICALVALUE,
                        OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE
                    )

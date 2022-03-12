@@ -162,6 +162,7 @@ def initialise_triples(initialise_triple_store):
 
         # Retrieve SPARQL endpoint
         endpoint = get_endpoint(container)
+        print(endpoint)
 
         # Create SparqlClient for testing
         sparql_client = ChemistryAndRobotsSparqlClient(endpoint, endpoint)
@@ -565,12 +566,13 @@ def test_get_hplc_method_given_hplc_report(initialise_triples):
 def test_get_chromatogram_point_of_hplc_report(initialise_triples):
     sparql_client = initialise_triples
     list_chrom_pts = sparql_client.get_chromatogram_point_of_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    assert len(list_chrom_pts) == len(TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value)
     for pt in list_chrom_pts:
         assert pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value
         assert pt.indicatesComponent.instance_iri is not None
         assert pt.indicatesComponent.representsOccurenceOf is not None
         assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
-        assert pt.indicatesComponent.hasProperty.hasValue.numericalValue > 0
+        assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
         assert pt.atRetentionTime.hasValue.hasNumericalValue > 0
         assert pt.atRetentionTime.hasValue.hasUnit is not None
         assert pt.hasPeakArea.hasValue.hasNumericalValue > 0
@@ -579,6 +581,7 @@ def test_get_chromatogram_point_of_hplc_report(initialise_triples):
 def test_get_existing_hplc_report(initialise_triples):
     sparql_client = initialise_triples
     list_chrom_pts = sparql_client.get_chromatogram_point_of_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    assert len(list_chrom_pts) == len(TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value)
     assert all(pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value for pt in list_chrom_pts)
     hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
     assert all(pt in list_chrom_pts for pt in hplc_report.records)
