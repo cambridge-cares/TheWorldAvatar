@@ -115,11 +115,11 @@ def convert_csv_to_triple_dfs(csvName):
     #CSV Locations
     #\Dropbox (Cambridge CARES)\CoMo shared\wx243\UK_Digital_Twin\OWL File\PowerPlant
     #Simplified Data Link
-    #plantfilelocation = 'https://www.dropbox.com/s/arwtg13rjj8ajoi/powerplanttriple%20-%20Simple.csv?dl=1'
-    #genfilelocation = 'https://www.dropbox.com/s/a24f76icghonsf9/generatortriple%20-%20Simple.csv?dl=1'
+    plantfilelocation = 'https://www.dropbox.com/s/arwtg13rjj8ajoi/powerplanttriple%20-%20Simple.csv?dl=1'
+    genfilelocation = 'https://www.dropbox.com/s/a24f76icghonsf9/generatortriple%20-%20Simple.csv?dl=1'
     #Standardised Day Link
-    plantfilelocation = 'https://www.dropbox.com/s/iwx5ukrzy4agxdx/powerplanttriple%20-%20All.csv?dl=1'
-    genfilelocation = 'https://www.dropbox.com/s/aj9zlr91yuzqctp/generatortriple%20-%20All.csv?dl=1'
+    # plantfilelocation = 'https://www.dropbox.com/s/iwx5ukrzy4agxdx/powerplanttriple%20-%20All.csv?dl=1'
+    # genfilelocation = 'https://www.dropbox.com/s/aj9zlr91yuzqctp/generatortriple%20-%20All.csv?dl=1'
     
     #Read csv
     data = pd.read_csv(csvName) #Dataframe including DUKES stations. 

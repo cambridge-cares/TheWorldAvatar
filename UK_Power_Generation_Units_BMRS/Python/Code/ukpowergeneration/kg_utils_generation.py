@@ -255,11 +255,11 @@ def get_instantiated_generators(endpoint):
     KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-    query = create_sparql_prefix('ontopowsys') + \
+    query = create_sparql_prefix('ontoenergysystem') + \
             create_sparql_prefix('rdf') + \
             create_sparql_prefix('rdfs') + \
             'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
-            'WHERE { ?' + var1 + ' rdf:type ontopowsys:PowerGenerator; \
+            'WHERE { ?' + var1 + ' rdf:type ontoenergysystem:PowerGenerator; \
                                    rdfs:label ?' + var2 + '. }'
 
     response = KGClient.execute(query)
@@ -432,9 +432,9 @@ def get_measurementIRI(endpoint, instance_IRI):
             create_sparql_prefix('ts') + \
             create_sparql_prefix('rdf') + \
             '''SELECT ?%s \
-            WHERE { <%s> ontopowsys:hasActivePowerGenerated ?pg . \
-                    ?pg rdf:type ontopowsys:ActivePowerGenerated . \
-                    ?pg ts:hasTimeSeries ?ts }''' % (var, instance_IRI)
+            WHERE { <%s> ontopowsys:hasActivePowerGenerated ?%s . \
+                    ?%s rdf:type ontopowsys:GeneratedActivePower ; \
+                        ts:hasTimeSeries ?ts }''' % (var, instance_IRI, var, var)
 
     response = KGClient.execute(query)
     print("Query Line Print: ", query)

@@ -30,6 +30,9 @@ import kg_utils_generation as kg
 # get the BMRS API Dataframe generating and CSV writing script. 
 from ScriptMapQuery import BMRS_API_Input_JA_7 as bmrs
 
+units = "http://www.ontology-of-units-of-measure.org/resource/om-2/megawatt"
+powerplant_class_prefix = 'PowerPlant_'
+powerGenerator_class_prefix = 'PowerGenerator_'
 
 def instantiate_generator(query_endpoint, update_endpoint, generator_name):
     """
@@ -102,7 +105,7 @@ def instantiate_powerplant(query_endpoint, update_endpoint, powerplant_name):
         KGClient.executeUpdate(query)
 
 
-def instantiate_timeseries(query_endpoint, update_endpoint, generatorIRI, generator_name=''):
+def instantiate_powerplant_timeseries(query_endpoint, update_endpoint, powerplantIRI, powerplant_name=''):
     """
         Instantiates all relevant triples for time series storage in KG and initialises RDB tables for generator.
         (raises exception if time series association is already initialised)
@@ -113,15 +116,19 @@ def instantiate_timeseries(query_endpoint, update_endpoint, generatorIRI, genera
             generatorIRI - full gas generator IRI incl. namespace (without trailing '<' or '>').
             generator_name - gas generator name (optional).
     """
-    if generator_name != '':
-        print("Instantiate time series association for: " + generator_name)
+    if powerplant_name != '':
+        print("Instantiate time series association for: " + powerplant_name)
     else:
         print("Instantiate time series association.")
 
     # Create UUIDs for IntakenGas, VolumetricpowerRate, and Measure instances
-    gas = 'GasAmount_' + str(uuid.uuid4())
-    quantity = 'Quantity_' + str(uuid.uuid4())
+    powerplant = "PowerPlant" + "_" + powerplant_name
+
+    # quantity = 'Quantity_' + str(uuid.uuid4())
     measurement = 'Measurement_' + str(uuid.uuid4())
+    # Derive MeasurementIRI to which time series is actually connected to
+    measurement_iri = kg.PREFIXES['ontoenergysystem_kb'] + measurement
+    print("Measurement IRI for actual time series: ", measurement_iri)
 
     # Ensure that newly created IRIs are not already present in knowledge graph --> if so, re-create
     # !! ASSUMED TO BE UNNECESSARY DUE TO random UUID --> currently left out due to long query times !!
@@ -141,20 +148,14 @@ def instantiate_timeseries(query_endpoint, update_endpoint, generatorIRI, genera
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
 
-    # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-    query = kg.create_sparql_prefix('ontoenergysystem') + \
-            kg.create_sparql_prefix('ontoenergysystem_kb') + \
+    query = kg.create_sparql_prefix('ontopowsys') + \
+            kg.create_sparql_prefix('ontoenergysystem') + \
             kg.create_sparql_prefix('om') + \
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
-            <%s> ontoenergysystem:hasTaken ontoenergysystem_kb:%s . \
-            ontoenergysystem_kb:%s rdf:type ontoenergysystem:IntakenGas . \
-            ontoenergysystem_kb:%s rdf:type om:VolumetricpowerRate; \
-                     om:hasPhenomenon ontoenergysystem_kb:%s; \
-                     om:hasValue ontoenergysystem_kb:%s . \
-            ontoenergysystem_kb:%s rdf:type om:Measure; \
-                     om:hasUnit om:cubicMetrePerSecond-Time. }''' % (
-                generatorIRI, gas, gas, quantity, gas, measurement, measurement)
+            <%s> ontopowsys:hasActivePowerGenerated <%s> . \
+            <%s> rdf:type ontopowsys:GeneratedActivePower ; \
+                 om:hasUnit <%s> . }''' % (powerplantIRI, measurement_iri, measurement_iri, units)
 
     KGClient.executeUpdate(query)
     print("Time series triples independent of Java TimeSeriesClient successfully instantiated.")
@@ -165,10 +166,6 @@ def instantiate_timeseries(query_endpoint, update_endpoint, generatorIRI, genera
     Instant = jpsBaseLibView.java.time.Instant
     instant_class = Instant.now().getClass()
     double_class = jpsBaseLibView.java.lang.Double.TYPE
-
-    # Derive MeasurementIRI to which time series is actually connected to
-    measurement_iri = kg.PREFIXES['ontoenergysystem_kb'] + measurement
-    print("Measurement IRI for actual time series: ", measurement_iri)
 
     # Initialise time series in both KG and RDB using TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
@@ -193,10 +190,12 @@ def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorI
     else:
         print("Instantiate time series association.")
 
-    # Create UUIDs for IntakenGas, VolumetricpowerRate, and Measure instances
+    # Create UUIDs for the measured power contributed by the generator
     generator = generator_name
-    quantity = 'Quantity_' + str(uuid.uuid4())
     measurement = 'Measurement_' + str(uuid.uuid4())
+    # Derive MeasurementIRI to which time series is actually connected to
+    measurement_iri = kg.PREFIXES['ontoenergysystem_kb'] + measurement
+    print("Measurement IRI for actual time series: ", measurement_iri)
 
     # Ensure that newly created IRIs are not already present in knowledge graph --> if so, re-create
     # !! ASSUMED TO BE UNNECESSARY DUE TO random UUID --> currently left out due to long query times !!
@@ -217,19 +216,14 @@ def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorI
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
 
     # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-    query = kg.create_sparql_prefix('ontoenergysystem') + \
-            kg.create_sparql_prefix('ontoenergysystem_kb') + \
+    query = kg.create_sparql_prefix('ontopowsys') + \
+            kg.create_sparql_prefix('ontoenergysystem') + \
             kg.create_sparql_prefix('om') + \
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
-            <%s> ontoenergysystem:hasTaken ontoenergysystem_kb:%s . \
-            ontoenergysystem_kb:%s rdf:type ontoenergysystem:IntakenGas . \
-            ontoenergysystem_kb:%s rdf:type om:VolumetricpowerRate; \
-                     om:hasPhenomenon ontoenergysystem_kb:%s; \
-                     om:hasValue ontoenergysystem_kb:%s . \
-            ontoenergysystem_kb:%s rdf:type om:Measure; \
-                     om:hasUnit om:cubicMetrePerSecond-Time. }''' % (
-                generatorIRI, generator, generator, quantity, generator, measurement, measurement)
+            <%s> ontopowsys:hasActivePowerGenerated <%s> . \
+            <%s> rdf:type ontopowsys:GeneratedActivePower ; \
+                 om:hasUnit <%s> . }''' % (generatorIRI, measurement_iri, measurement_iri, units)
 
     KGClient.executeUpdate(query)
     print("Time series triples independent of Java TimeSeriesClient successfully instantiated.")
@@ -240,10 +234,6 @@ def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorI
     Instant = jpsBaseLibView.java.time.Instant
     instant_class = Instant.now().getClass()
     double_class = jpsBaseLibView.java.lang.Double.TYPE
-
-    # Derive MeasurementIRI to which time series is actually connected to
-    measurement_iri = kg.PREFIXES['ontoenergysystem_kb'] + measurement
-    print("Measurement IRI for actual time series: ", measurement_iri)
 
     # Initialise time series in both KG and RDB using TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
@@ -282,7 +272,7 @@ def add_time_series(instance_IRI, timestamps, values, units):
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
             <%s> ontopowsys:hasActivePowerGenerated <%s> . \
-            <%s> rdf:type ontopowsys:ActivePowerGenerated . \
+            <%s> rdf:type ontopowsys:GeneratedActivePower . \
             <%s> om:hasUnit <%s> . }''' % (instance_IRI, activepowergenerated_IRI, activepowergenerated_IRI, activepowergenerated_IRI, units)
     ###
 
@@ -400,10 +390,10 @@ def get_power_data_from_api():
     #Or just paste it below directly#
     #Key = '' #####NEED THIS#####
     AutoFile = 'Input-Template-Auto.csv'
-    powerplant_df, generator_df = bmrs.Auto_Call(Key, AutoFile)
+    # powerplant_df, generator_df = bmrs.Auto_Call(Key, AutoFile)
     #Read the Input-Template.csv file from a URL. 
     #Simplified Data Link
-    #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
+    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
     #Standardised Day Link
     #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
     
@@ -486,11 +476,27 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
 
     # Extract data to create Java TimeSeries object
     measurementIRI = kg.get_measurementIRI(kg.QUERY_ENDPOINT, assetIRI)
-    times = list(power_data['time'].values)
-    powers = list(power_data['power'].values)
+    variables = measurementIRI
+    times = power_data['time']
+    powers = power_data['power']
+    #Reformat times. 
+    times = times.values.reshape(-1,).tolist()
 
+    #Reformat variables (or just a single variable), could already be in this form. 
+    if type(variables) == str:
+        a = measurementIRI #a is just a temporary variable for this. 
+        variables = []
+        variables.append(a)
+    
+    #Reformat values. 
+    values = powers.values.reshape(-1,).tolist() #tolist is noted in some older posts online to convert to float, but it does not seem to here, so conversion from float64 (numpy) to float. 
+    a = [] #a is just a temporary variable for this. 
+    for value in values:
+        a.append(float(value))
+    values = []
+    values.append(a)
     # Create Java TimeSeries object
-    timeseries = jpsBaseLibView.TimeSeries(times, [measurementIRI], [powers])
+    timeseries = jpsBaseLibView.TimeSeries(times, variables, values)
 
     # Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
     # Retrieve Java class for time entries (Instant) - to get class simply via Java's
@@ -502,7 +508,6 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
     TSClient.addTimeSeriesData(timeseries)
     print("Time series data added successfully for: " + asset_name + ").\n")
-
 
 def check_df(df, periods):
     #Checks if there exists data in a dataframe. 
@@ -543,9 +548,6 @@ def update_triple_store():
 
     # Read properties file incl. SPARQL endpoints
     kg.read_properties_file(kg.PROPERTIES_FILE)
-    print("Connected to KG SPARQL endpoints:")
-    print("Queries: ", kg.QUERY_ENDPOINT)
-    print("Updates: ", kg.UPDATE_ENDPOINT)
 
     # Get the power data from National Grid csv as DataFrame
     #####Note that there are two now#####
@@ -562,7 +564,7 @@ def update_triple_store():
 
     # Retrieve all instantiated powerplants in KG
     powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
-    powerplants_instantiated = {k.upper(): v for k, v in powerplants.items()}
+    powerplants_instantiated = {powerplant_class_prefix + k: v for k, v in powerplants.items()}
 
     # Potentially create new powerplant instances for powerplants with available power data,
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
@@ -575,49 +577,25 @@ def update_triple_store():
     # Retrieve update of instantiated powerplants in KG (in case any new powerplants were added)
     if new_powerplants:
         powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
-        powerplants_instantiated = {k.upper(): v for k, v in powerplants.items()}
-
-    
+        powerplants_instantiated = {powerplant_class_prefix + k: v for k, v in powerplants.items()}
     # Assimilate power data for instantiated  powerplants
     for pp in powerplants_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
         if kg.get_measurementIRI(kg.QUERY_ENDPOINT, powerplants_instantiated[pp]) is None:
             print("No instantiated timeseries detected for: ", pp)
-            instantiate_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, powerplants_instantiated[pp], pp)
+            instantiate_powerplant_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, powerplants_instantiated[pp], pp)
         else:
             print("Instantiated time series detected!")
-
         # Retrieve power time series data for respective powerplant from overall DataFrame
         new_data = powerplant_power_data[powerplant_power_data['powerplanteic'] == pp][['time', 'power']]
-        print("New PowerPlant Data: ", new_data)
-
         # Add time series data using Java TimeSeriesClient
-        ### add_time_series_data(powerplants_instantiated[pp], new_data, pp)
-    
-    #Loop for powerplants (which we have data)
-    # daily_loop = check_df(powerplant_power_data, 48)
-    # placement = 0
-    # while(daily_loop):
-    #     dfSlice, placement, daily_loop = take_day(powerplant_power_data, placement, 48)
-    #     """
-    #     print("placement")
-    #     print(placement)
-    #     print("daily_loop")
-    #     print(daily_loop)
-    #     print("SLICE")
-    #     print(dfSlice)
-    #     print(kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['powerplanteic'].iloc[0])
-    #     """
-    #     #Add daily slice (dfSlice) here. 
-    #     add_time_series((kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['powerplanteic'].iloc[0]), dfSlice['time'], dfSlice['power'], units)
-    #Now do the same for generators. 
+        add_time_series_data(powerplants_instantiated[pp], new_data, pp)
+
     # Retrieve all generators with available power data (generator names are capitalised)
     generators_with_data = generator_power_data['generatoreic'].unique()
-
     # Retrieve all instantiated generators in KG
     generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
-    generators_instantiated = {k.upper(): v for k, v in generators.items()}
-
+    generators_instantiated = {powerGenerator_class_prefix + k: v for k, v in generators.items()}
     # Potentially create new generator instances for generators with available power data,
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
     new_generators = False
@@ -629,23 +607,20 @@ def update_triple_store():
     # Retrieve update of instantiated generators in KG (in case any new generators were added)
     if new_generators:
         generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
-        generators_instantiated = {k.upper(): v for k, v in generators.items()}
+        generators_instantiated = {powerGenerator_class_prefix + k: v for k, v in generators.items()}
 
     # Assimilate power data for instantiated generators
     for gt in generators_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
         if kg.get_measurementIRI(kg.QUERY_ENDPOINT, generators_instantiated[gt]) is None:
             print("No instantiated timeseries detected for: ", gt)
-            instantiate_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, generators_instantiated[gt], gt)
+            instantiate_generator_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, generators_instantiated[gt], gt)
         else:
             print("Instantiated time series detected!")
-
         # Retrieve power time series data for respective generator from overall DataFrame
         new_data = generator_power_data[generator_power_data['generatoreic'] == gt][['time', 'power']]
-        print("New Generator Data: ", new_data)
-
         # Add time series data using Java TimeSeriesClient
-        ### add_time_series_data(generators_instantiated[gt], new_data, gt)
+        add_time_series_data(generators_instantiated[gt], new_data, gt)
     
     #Loop for generators (for which we have data)
     # daily_loop = check_df(generator_power_data, 48)
