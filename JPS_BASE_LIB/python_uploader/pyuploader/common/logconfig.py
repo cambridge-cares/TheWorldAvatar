@@ -1,9 +1,12 @@
 import logging
 import os
+from typing import Optional
 
-logging.getLogger('py4j').propagate = False
+def config_logging(
+    log_file_dir: Optional[str],
+    log_file_name: str,
+    no_file_logging: bool) -> None:
 
-def config_logging(log_file_dir, log_file_name, no_file_logging):
     if log_file_dir is None: log_file_dir = os.getcwd()
     log_file = os.path.join(log_file_dir, log_file_name)
 

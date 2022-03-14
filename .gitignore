@@ -33,6 +33,7 @@ target/
 
 # Python:
 __pycache__/
+site-packages/
 *.py[cod]
 *$py.class
 *.pkl

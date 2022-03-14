@@ -1,8 +1,7 @@
 from chemutils.obabelutils.obconverter import obConvert
 from chemutils.obabelutils.obutils import obGetMolBonds
-from chemutils.xyzutils.xyztools import xyzToAtomsPositions
 from compchemparser.helpers.utils import get_xyz_from_parsed_json
-from chemaboxwriters.common.randomidgenerator import get_random_id
+from chemaboxwriters.common.utilsfunc import get_random_id
 from chemaboxwriters.common import PREFIXES
 from compchemparser.parsers.ccgaussian_parser import ATOM_MASSES, \
                                                      FORMAL_CHARGE, \
@@ -16,7 +15,8 @@ import pubchempy as pcp
 from collections import Counter
 import json
 import re
-import chemaboxwriters.common.commonvars as commonv
+import time
+import chemaboxwriters.common.globals as globals
 
 cas_re = re.compile('\d{2,7}-\d\d-\d')
 
@@ -25,17 +25,27 @@ INCHI='InChi'
 SMILES='Smiles'
 GEOM_STRING='GeometryString'
 BOND_STRING='BondString'
-ATOMS_CAN_POSITIONS='AtomsCanonicalPositions'
 PUBCHEM_ALT_LABEL='PubchemAlternativeLabel'
 CAS_NUMBER='CAS'
 PUBCHEM_CID='PubchemCID'
 ATOM_LIST='AtomsList'
 ATOM_COUNTS='AtomsCounts'
+ENTH_FORM='StandardEnthalpyOfFormation'
+ENTH_UNIT='StandardEnthalpyOfFormationUnit'
+ENTH_PHASE='StandardEnthalpyOfFormationPhase'
+ENTH_REFTEMP='ReferenceTemperature'
+ENTH_REFTEMP_UNIT='ReferenceTemperatureUnit'
+ENTH_PROV='StandardEnthalpyofFormationProvenance'
 
 spec_pref = PREFIXES["spec_pref"]
 
-def os_jsonwriter(data, random_id=""):
-    data = json.loads(data)
+def os_jsonwriter(file_path, random_id="",
+            spec_pref = PREFIXES["spec_pref"],
+            hf=None, hf_unit=None, hf_phase=None,
+            hfTref=None, hfTref_unit=None, hf_prov=None):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
 
     data_out = {}
     xyz = get_xyz_from_parsed_json(data)
@@ -47,6 +57,13 @@ def os_jsonwriter(data, random_id=""):
     data_out[ATOM_TYPES] = data[ATOM_TYPES]
     data_out[GEOM] = data[GEOM]
     data_out[SPIN_MULT] = data[SPIN_MULT]
+
+    if hf: data_out[ENTH_FORM] = hf
+    if hf_unit: data_out[ENTH_UNIT] = hf_unit
+    if hf_phase: data_out[ENTH_PHASE] = hf_phase
+    if hfTref: data_out[ENTH_REFTEMP] = hfTref
+    if hfTref_unit: data_out[ENTH_REFTEMP_UNIT] = hfTref_unit
+    if hf_prov: data_out[ENTH_PROV] = hf_prov
 
     if ATOM_MASSES not in data.keys():
         data_out[MOLWT] = get_molwt_from_atom_types(data_out[ATOM_TYPES])
@@ -66,19 +83,22 @@ def os_jsonwriter(data, random_id=""):
                       +str(bond['order']) for bond in bonds_info]
     data_out[BOND_STRING] = ' '.join(bonds_info_line)
     # add atoms positions!
-    data_out[ATOMS_CAN_POSITIONS] = xyzToAtomsPositions(xyz)
 
     alt_labels = None
     casid = None
     cid = None
 
-    pubchem_compound = pcp.get_compounds(data_out[INCHI], 'inchi')
-    if pubchem_compound:
-        cid = pubchem_compound[0].cid
-        if pubchem_compound[0].synonyms:
-            alt_labels = pubchem_compound[0].synonyms[0]
-            casid = get_substructure_cas(pubchem_compound[0].synonyms)
-            if casid: casid= casid[0]
+    try:
+        pubchem_compound = pcp.get_compounds(data_out[INCHI], 'inchi')
+        time.sleep(5) #We will wait for 5 seconds to try and avoid hitting PubChem's limit.
+        if pubchem_compound:
+            cid = pubchem_compound[0].cid
+            if pubchem_compound[0].synonyms:
+                alt_labels = pubchem_compound[0].synonyms[0]
+                casid = get_substructure_cas(pubchem_compound[0].synonyms)
+                if casid: casid= casid[0]
+    except pcp.BadRequestError:
+        print("Issue with PubChem request")
 
     data_out[PUBCHEM_ALT_LABEL] = alt_labels
     data_out[CAS_NUMBER] = casid
@@ -91,8 +111,8 @@ def os_jsonwriter(data, random_id=""):
     if not random_id:
         random_id = get_random_id()
 
-    data_out[commonv.ENTRY_UUID] = random_id
-    data_out[commonv.ENTRY_IRI] = spec_pref +'Species_'+random_id
+    data_out[globals.ENTRY_UUID] = random_id
+    data_out[globals.ENTRY_IRI] = spec_pref +'Species_'+random_id
 
     return [json.dumps(data_out)]
 
