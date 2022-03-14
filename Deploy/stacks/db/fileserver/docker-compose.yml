@@ -15,7 +15,6 @@ services:
       - file_server:/app/fs_root
       - external_maven_repo:/root/.m2
 
-
 volumes:
   external_maven_repo:
   file_server:
