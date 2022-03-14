@@ -1,8 +1,21 @@
-<web-app 
-    xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-    version="3.0">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+
+    <servlet>
+        <servlet-name>FileServer</servlet-name>
+        <servlet-class>com.cmclinnovations.fileserver.FileServer</servlet-class>
+        <multipart-config>
+            <location>/app/fs_root/</location>
+            <!-- These values are set through Maven filtering -->
+            <max-file-size>${max-file-size}</max-file-size>
+            <max-request-size>${max-request-size}</max-request-size>
+            <file-size-threshold>${file-size-threshold}</file-size-threshold>
+        </multipart-config>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>FileServer</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
 
     <security-constraint>
         <web-resource-collection>

@@ -20,6 +20,11 @@ WORKDIR /root/build
 # Copy in source files ./m2 directory and credentials
 COPY ./fileserver .
 
+# Allow the overriding of the "multipart-config" settings for the servlet
+ARG MAX_FILE_SIZE
+ARG MAX_REQUEST_SIZE
+ARG FILE_SIZE_THRESHOLD
+
 RUN --mount=type=cache,target=/root/.m2/repository mvn package -P $mvn_profile
 #==================================================================================================
 

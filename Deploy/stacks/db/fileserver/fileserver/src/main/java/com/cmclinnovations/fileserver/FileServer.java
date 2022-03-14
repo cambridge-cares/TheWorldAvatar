@@ -7,8 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,24 +19,12 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Owen Parry {@literal <oparry@cmclinnovations.com>}
  */
-@WebServlet(name = "FileServer", urlPatterns = {FileServer.DELETE_URL_PATTERN, FileServer.DOWNLOAD_URL_PATTERN, FileServer.UPLOAD_URL_PATTERN, FileServer.UPLOAD_URL_PATTERN + "/"})
-@MultipartConfig(
-fileSizeThreshold = FileServer.ONE_MB_IN_B,
-location = "/app/fs_root/",
-maxFileSize = FileServer.ONE_HUNDRED_MB_IN_B,
-maxRequestSize = FileServer.ONE_GB_IN_B
-)
 public class FileServer extends HttpServlet {
 
     // URL Patterns
     static final String DELETE_URL_PATTERN = "/delete/*";
     static final String DOWNLOAD_URL_PATTERN = "/download/*";
     static final String UPLOAD_URL_PATTERN = "/upload";
-
-    // Some constants to set size limits
-    static final int ONE_MB_IN_B = 1024 * 1024;
-    static final int ONE_HUNDRED_MB_IN_B = 100 * ONE_MB_IN_B;
-    static final int ONE_GB_IN_B = 1000 * ONE_MB_IN_B;
 
     // Content type prefixes
     private static final String MULTIPART_FORM_TYPE_PREFIX = "multipart/form-data";

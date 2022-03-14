@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cmclinnovations</groupId>
@@ -14,7 +12,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-
+        <!-- Set default values used in the multipart-config of the servlet in the web.xml file-->
+        <max-file-size>104857600</max-file-size>
+        <max-request-size>1073741824</max-request-size>
+        <file-size-threshold>0</file-size-threshold>
     </properties>
 
     <!-- Parent POM -->
@@ -45,6 +46,44 @@
             <properties>
                 <!-- Set property to download production logging config -->
                 <log.artifact>java-logging-prod</log.artifact>
+            </properties>
+        </profile>
+
+        <!-- Profiles to override the "multipart-config" settings if the environment variables are specified -->
+        <profile>
+            <id>MAX_FILE_SIZE-specified</id>
+            <activation>
+                <property>
+                    <name>env.MAX_FILE_SIZE</name>
+                    <value></value>
+                </property>
+            </activation>
+            <properties>
+                <max-file-size>${env.MAX_FILE_SIZE}</max-file-size>
+            </properties>
+        </profile>
+        <profile>
+            <id>MAX_REQUEST_SIZE-specified</id>
+            <activation>
+                <property>
+                    <name>env.MAX_REQUEST_SIZE</name>
+                    <value></value>
+                </property>
+            </activation>
+            <properties>
+                <max-request-size>${env.MAX_REQUEST_SIZE}</max-request-size>
+            </properties>
+        </profile>
+        <profile>
+            <id>FILE_SIZE_THRESHOLD-specified</id>
+            <activation>
+                <property>
+                    <name>env.FILE_SIZE_THRESHOLD</name>
+                    <value></value>
+                </property>
+            </activation>
+            <properties>
+                <file-size-threshold>${env.FILE_SIZE_THRESHOLD}</file-size-threshold>
             </properties>
         </profile>
     </profiles>
@@ -83,6 +122,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <!-- Ensure that the web.xml file has the property references replaced with values -->
+                            <filtering>true</filtering>
+                            <directory>${basedir}/WEB-INF</directory>
+                            <includes>
+                                <include>**/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
                 <!-- Version, configuration, and executions should be pulled from the
                 parent POM unless overridden here. -->
             </plugin>
