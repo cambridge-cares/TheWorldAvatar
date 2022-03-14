@@ -10,7 +10,6 @@
     <!-- <!ENTITY om      "http://www.wurvoc.org/vocabularies/om-2.0/"> -->
     <!-- <!ENTITY om      "http://www.ontology-of-units-of-measure.org/vocabularies/om-2/"> -->
     <!ENTITY om      "http://www.ontology-of-units-of-measure.org/resource/om-2/">
-    <!ENTITY ontouom      "http://theworldavatar.com/resource/ontouom/">
   ]>
 
   <rdf:RDF
@@ -19,7 +18,6 @@
     xmlns:xsd="&xsd;"
     xmlns:rdfs="&rdfs;"
     xmlns:om="&om;"
-    xmlns:ontouom="&ontouom;"
     xmlns="&om;"
     xml:base="&om;"
   >
@@ -32,7 +30,7 @@
 
   <!-- Metre Above Ordnance Datum Ontology -->
 
-  <om:Unit rdf:about="&ontouom;metreAOD">
+  <om:Unit rdf:about="http://theworldavatar.com/resource/ontouom/metreAOD">
     <rdfs:label xml:lang="en">metre AOD</rdfs:label>
     <rdfs:comment xml:lang="en">Meters relative to the Ordnance Survey datum (i.e. mean sea level at the UK Ordnance datum at Newlyn, Cornwall)</rdfs:comment>
     <om:symbol>mAOD</om:symbol>
