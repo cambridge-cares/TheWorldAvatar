@@ -12,10 +12,10 @@ from requests import status_codes
 
 
 # Port must match the one specified in docker-compose.yml
-server_URL = 'http://localhost:58090/FileServer/'
-upload_URL = server_URL+'upload'
-download_URL = server_URL+'download/'
-delete_URL = server_URL+'delete/'
+server_URL = 'http://localhost:49086/FileServer/'
+upload_URL = server_URL
+download_URL = server_URL
+delete_URL = server_URL
 
 # Default credentials for authentication. If you supply a different password via a secret, modify 'fs_pass' on the next line accordingly
 auth=('fs_user', 'fs_pass')
@@ -27,24 +27,22 @@ log_fpath  = os.path.join(base_dir,'dummy.log')
 text_fpath = os.path.join(base_dir,'dummy.txt')
 
 # Remote sub-directory used for some uploads
-remote_subdir = 'my_namespace'
+remote_subdir = 'my_namespace/'
 
 # Path used to download a file and compare it to the original that was uploaded
 downloaded_txt_fpath  = os.path.join(base_dir,'downloaded_dummy.txt')
 
-
 # Test multi-file upload
 with open(owl_fpath,'rb') as file_obj1, open(log_fpath,'rb') as file_obj2, open(text_fpath,'rb') as file_obj3:
-    # Set the subdirectory in which to store files (optional header)
-    headers= {'subDir': remote_subdir}
-    print("Uploading multiple files to subdir [%s]" % headers['subDir'])
+    # Set the subdirectory in which to store files
+    print("Uploading multiple files to subdir [%s]" % remote_subdir)
 
     # Aggregrate file objects in a dict
     # Key names can be anything - but whatever is set will be re-used in the response to return actual filenames
     files = {'file1': file_obj1,'file2': file_obj2,'file3': file_obj3}
 
     # Post request
-    response = requests.post(upload_URL, auth=auth, headers=headers, files=files)
+    response = requests.post(upload_URL+remote_subdir, auth=auth, files=files)
     # Extract actual filenames from the response
     if (response.status_code == status_codes.codes.OK):
         for key in files.keys():
@@ -65,23 +63,32 @@ with open(text_fpath,'rb') as file_obj:
     else:
         print("  ERROR: File upload failed with code %d " % response.status_code)
 
-
 # Test single file upload with nested sub-dir
 with open(text_fpath,'rb') as file_obj:
-    nested_subdir="%s/group1" % remote_subdir
+    nested_subdir="%sgroup1/" % remote_subdir
     print("\nUploading single file to nested subdir (%s)" % nested_subdir)
-    response = requests.post(upload_URL, auth=auth, headers= {'subDir': nested_subdir}, files={'file':file_obj})
+    response = requests.post(upload_URL+nested_subdir, auth=auth, files={'file':file_obj})
     if (response.status_code == status_codes.codes.OK):
         for key in files.keys():
             print(" %s uploaded with filename [%s]" % (key,response.headers[key]))
     else:
         print("  ERROR: File upload failed with code %d " % response.status_code)
 
+# Test single file upload with rename
+with open(text_fpath,'rb') as file_obj:
+    nested_subdir="%ssmarty.txt" % remote_subdir
+    print("\nUploading single file with explicit name (%s)" % nested_subdir)
+    response = requests.post(upload_URL+nested_subdir, auth=auth, files={'file':file_obj})
+    if (response.status_code == status_codes.codes.OK):
+        for key in files.keys():
+            print(" %s uploaded with filename [%s]" % (key,response.headers[key]))
+    else:
+        print("  ERROR: File upload failed with code %d " % response.status_code)
 
 # Test single file download
 if text_remote_upload_path is not None:
     print("\nRe-downloading file")
-    response = requests.get(download_URL+text_remote_upload_path, auth=auth)
+    response = requests.get(text_remote_upload_path, auth=auth)
     if (response.status_code == status_codes.codes.OK):
         with open(downloaded_txt_fpath, 'wb') as file_obj:
             for chunk in response.iter_content(chunk_size=128):
@@ -96,7 +103,7 @@ if text_remote_upload_path is not None:
 # Test delete file
 if text_remote_upload_path is not None:
     print("\nTesting file deletion")
-    response = requests.delete(delete_URL+text_remote_upload_path, auth=auth)
+    response = requests.delete(text_remote_upload_path, auth=auth)
     if (response.status_code == status_codes.codes.OK):
         print(" Deleted "+text_remote_upload_path)
     else:
@@ -104,35 +111,44 @@ if text_remote_upload_path is not None:
 
     # Try GET deleted file (should fail)
     print("\nAttempting to GET the deleted file")
-    response = requests.get(download_URL+text_remote_upload_path, auth=auth)
+    response = requests.get(text_remote_upload_path, auth=auth)
     if (response.status_code != status_codes.codes.not_found):
         print("  ERROR: GET deleted file: expected status code %d, but got %d" % (status_codes.codes.not_found,response.status_code) )
     else:
-        print("  Fails, as expected")
+        print("  Fails, as expected with message:\n%s" % response.text)
 
+# Test delete folder
+if text_remote_upload_path is not None:
+    print("\nTesting file deletion")
+    response = requests.delete(delete_URL+remote_subdir, auth=auth)
+    if (response.status_code == status_codes.codes.OK):
+        print(" Deleted "+remote_subdir)
+    else:
+        print("  ERROR: Folder deletion failed with code %d " % response.status_code)
+    
+    # Try GET deleted file (should fail)
+    print("\nAttempting to GET a deleted file")
+    response = requests.get(download_URL+owl_fpath, auth=auth)
+    if (response.status_code != status_codes.codes.not_found):
+        print("  ERROR: GET deleted file: expected status code %d, but got %d" % (status_codes.codes.not_found,response.status_code) )
+    else:
+        print("  Fails, as expected with message:\n%s" % response.text)
 
-# Try GET from upload URL (should fail)
-print("\nAttempting GET from upload URL")
+# Try GET non-existant file (should fail)
+print("\nAttempting GET non-existant file")
 response = requests.get(upload_URL, auth=auth)
-if (response.status_code != status_codes.codes.bad_request):
-    print("  ERROR: GET from upload URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
+if (response.status_code != status_codes.codes.not_found):
+    print("  ERROR: GET non-existant file: expected status code %d, but got %d" % (status_codes.codes.not_found ,response.status_code) )
 else:
-    print("  Rejected, as expected")
+    print("  Rejected, as expected with message:\n%s" % response.text)
 
 
-# Try POST to download URL (should fail)
-print("\nAttempting POST to download URL")
+# Try POST without a file attached (should fail)
+print("\nAttempting POST without a file attached")
 fname="my_namespace/dummy.owl"
 response = requests.post(download_URL+fname, auth=auth)
 if (response.status_code != status_codes.codes.bad_request):
-    print("  ERROR: POST to download URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
+    print("  ERROR: POST without a file attached: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
 else:
-    print("  Rejected, as expected")
+    print("  Rejected, as expected with message:\n%s" % response.text)
 
-# Try an empty file request
-print("\nTesting empty file request")
-response = requests.post(upload_URL, auth=auth, files={})
-if (response.status_code != status_codes.codes.bad_request):
-    print("  ERROR: Empty file request: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
-else:
-    print("  Rejected, as expected")

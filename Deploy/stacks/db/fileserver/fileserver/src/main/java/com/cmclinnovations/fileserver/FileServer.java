@@ -1,16 +1,23 @@
 package com.cmclinnovations.fileserver;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,25 +28,31 @@ import org.apache.logging.log4j.Logger;
  */
 public class FileServer extends HttpServlet {
 
-    // URL Patterns
-    static final String DELETE_URL_PATTERN = "/delete/*";
-    static final String DOWNLOAD_URL_PATTERN = "/download/*";
-    static final String UPLOAD_URL_PATTERN = "/upload";
-
     // Content type prefixes
     private static final String MULTIPART_FORM_TYPE_PREFIX = "multipart/form-data";
     private static final String MULTIPART_MIXED_TYPE_PREFIX = "multipart/mixed";
 
     private static final Logger LOGGER = LogManager.getLogger(FileServer.class);
 
-    private synchronized String writeFilePart(Part filePart, String subDirStr_in) {
-        String fNameRequested = filePart.getSubmittedFileName();
-        String subDirStr = subDirStr_in == null ? "." : subDirStr_in;
+    private synchronized String writeFilePart(Part filePart, String pathStrIn) throws IOException {
+        String fNameRequested;
+        Path subDir = Paths.get(pathStrIn);
+        if (pathStrIn.isBlank() || pathStrIn.endsWith("/") || Files.isDirectory(subDir)) {
+            // Path provided was a directory so just use the name attached to the file part
+            fNameRequested = filePart.getSubmittedFileName();
+        } else {
+            // Path provided was not a directory so use it instead of the name attached to
+            // the file part
+            fNameRequested = subDir.getFileName().toString();
+            subDir = subDir.getParent();
+        }
 
         String fName = fNameRequested;
-        Path destPath = Paths.get(subDirStr).resolve(fName);
 
-        // If requested filename exists, append a suffix generated from the current sytem time
+        Path destPath = subDir.resolve(fName);
+
+        // If requested filename exists, append a suffix generated from the current
+        // sytem time
         if (Files.exists(destPath)) {
             String fNameBase = FilenameUtils.getBaseName(fNameRequested);
             String ext = FilenameUtils.getExtension(fNameRequested);
@@ -47,30 +60,31 @@ public class FileServer extends HttpServlet {
 
             // Append suffix, allowing for paths with no extension
             fName = (ext.length() > 0) ? fNameBase + "_" + suffix + "." + ext : fNameBase + suffix;
-            destPath = Paths.get(subDirStr).resolve(fName);
+            destPath = subDir.resolve(fName);
         }
 
         try {
             // Create the subdirectory, if necessary
-            File subDir = new File(subDirStr);
-            if (!subDir.exists()) {
-                //LOGGER.info("Creating subdirectory " + subDirStr);
-                boolean dirCreated = subDir.mkdirs();
-                if (!dirCreated) {
-                    LOGGER.error("Failed to created sub-directory " + subDirStr);
-                    return null;
+            if (!Files.exists(subDir)) {
+                // LOGGER.info("Creating subdirectory " + subDirStr);
+                try {
+                    Files.createDirectories(subDir);
+                } catch (IOException ex) {
+                    String errorMessage = "Failed to created sub-directory '" + subDir + "'.";
+                    throw new IOException(errorMessage, ex);
                 }
             }
 
             // Write the file
             filePart.write(destPath.toString());
         } catch (IOException ex) {
-            LOGGER.error("writeFilePart: IOException when trying to write file " + destPath, ex);
-            return null;
+            String errorMessage = "writeFilePart: IOException when trying to write file '" + subDir + "'.";
+            throw new IOException(errorMessage, ex);
         }
 
         /*
-         * Wait for a millisecond to ensure the next call of this function never generates the same
+         * Wait for a millisecond to ensure the next call of this function never
+         * generates the same
          * fallback suffix.
          */
         try {
@@ -82,103 +96,135 @@ public class FileServer extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Reject DELETE requests to anything but the delete URL
-        String servletPath = request.getServletPath();
-        final String deleteURLPrefix = DELETE_URL_PATTERN.substring(0, DELETE_URL_PATTERN.length() - 2);
-        if (!request.getServletPath().startsWith(deleteURLPrefix)) {
-            LOGGER.error("Rejecting DELETE request to " + servletPath);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        logRequest(request);
 
         // Extract the path following the servlet URL, minus the leading slash
-        String fPath = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
+        Path path = Paths.get(extractPath(request.getPathInfo()));
 
-        LOGGER.info("Received request to DELETE file " + fPath);
-        boolean fileDeleted = false;
-        try {
-            fileDeleted = Files.deleteIfExists(Paths.get(fPath));
-            if (!fileDeleted) {
-                LOGGER.error("No file found at " + fPath);
+        if (!Files.exists(path)) {
+            respondWithError(response, HttpServletResponse.SC_NOT_FOUND,
+                    "No file or directory found at '" + path + "'.");
+        } else if (Files.isRegularFile(path)) {
+            LOGGER.info("Received request to DELETE file '{}'.", path);
+            try {
+                boolean fileDeleted = Files.deleteIfExists(path);
+                if (!fileDeleted) {
+                    respondWithError(response, HttpServletResponse.SC_NOT_FOUND,
+                            "No file found at '" + path + "'.");
+                } else {
+                    LOGGER.info("Deleted file at '{}'.", path);
+                    response.setStatus(HttpServletResponse.SC_OK);
+                }
+            } catch (IOException ex) {
+                respondWithError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "IOException thrown while trying to delete file '" + path + "'.");
             }
-        } catch (IOException ex) {
-            LOGGER.error("IOException while trying to delete file " + fPath, ex);
-        }
-
-        if (fileDeleted) {
-            LOGGER.info("Deleted file at " + fPath);
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else if (Files.isDirectory(path)) {
+            LOGGER.info("Received request to DELETE directory '{}'.", path);
+            try {
+                FileUtils.deleteDirectory(path.toFile());
+                LOGGER.info("Deleted directory at '{}'.", path);
+                response.setStatus(HttpServletResponse.SC_OK);
+            } catch (IOException ex) {
+                respondWithError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "IOException thrown while trying to delete directory '" + path + "'.");
+            }
         }
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        // Reject GET requests to anything but the download URL
-        String servletPath = request.getServletPath();
-        final String downloadURLPrefix = DOWNLOAD_URL_PATTERN.substring(0, DOWNLOAD_URL_PATTERN.length() - 2);
-        if (!request.getServletPath().startsWith(downloadURLPrefix)) {
-            LOGGER.error("Rejecting GET request to " + servletPath);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        logRequest(request);
 
         // Extract the path following the servlet URL, minus the leading slash
-        String fPath = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
+        Path fPath = Paths.get(extractPath(request.getPathInfo()));
 
         LOGGER.info("Received a request to GET file " + fPath);
-        File file = new File(fPath);
-        if (file.exists()) {
-            response.setHeader("Content-Type", getServletContext().getMimeType(fPath));
-            response.setHeader("Content-Length", String.valueOf(file.length()));
-            response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
-            Files.copy(file.toPath(), response.getOutputStream());
+        if (Files.isRegularFile(fPath)) {
+            response.setHeader("Content-Type", getServletContext().getMimeType(fPath.toString()));
+            response.setHeader("Content-Length", String.valueOf(Files.size(fPath)));
+            response.setHeader("Content-Disposition", "inline; filename=\"" + fPath.getFileName() + "\"");
+            Files.copy(fPath, response.getOutputStream());
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else if (Files.isDirectory(fPath)) {
+            respondWithError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "The path '" + fPath + "' points to a directory not a file.");
         } else {
-            LOGGER.error("No file found at " + fPath);
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            respondWithError(response, HttpServletResponse.SC_NOT_FOUND,
+                    "No file found at '" + fPath + "'.");
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        // Reject POST requests to anything but the upload URL
-        String servletPath = request.getServletPath();
-        if (!request.getServletPath().startsWith(UPLOAD_URL_PATTERN)) {
-            LOGGER.error("Rejecting POST request to " + servletPath);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        logRequest(request);
 
         // Reject requests with the wrong Content-Type
         String contentType = request.getContentType();
-        if (contentType == null || !contentType.startsWith(MULTIPART_FORM_TYPE_PREFIX) && !contentType.contentEquals(MULTIPART_MIXED_TYPE_PREFIX)) {
-            LOGGER.error("Rejecting POST request with invalid content type " + ((contentType == null) ? "NULL" : contentType));
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        if (contentType == null || !contentType.startsWith(MULTIPART_FORM_TYPE_PREFIX)
+                && !contentType.contentEquals(MULTIPART_MIXED_TYPE_PREFIX)) {
+            respondWithError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "Rejecting POST request with invalid content type '" + contentType + "'.");
             return;
         }
 
         // Extract subdirectory from header (null if none was supplied)
-        String subDir = request.getHeader("subDir");
+        String subDir = extractPath(request.getPathInfo());
+
+        if (!subDir.isBlank() && !subDir.endsWith("/") && request.getParts().size() > 1) {
+            respondWithError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "Rejecting POST request with explicit filename when multiple files specified.");
+            return;
+        }
 
         // Initially set success status code, overwrite later if there's an error
         response.setStatus(HttpServletResponse.SC_OK);
 
+        URL serverURL = new URL(request.getScheme(), request.getServerName(), request.getServerPort(),
+                request.getContextPath());
         request.getParts().stream()
-        .filter(part -> part.getSize() > 0)
-        .takeWhile(part -> response.getStatus() == HttpServletResponse.SC_OK)
-        .forEach(part -> {
-            String fPathWritten = writeFilePart(part, subDir);
-
-            // If writing failed, set error code (breaks stream forEach)
-            if (fPathWritten == null) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            } else {
-                LOGGER.info("Wrote file to path " + fPathWritten);
-                response.setHeader(part.getName(), fPathWritten);
-            }
-        });
+                .filter(part -> part.getSize() > 0)
+                .takeWhile(part -> response.getStatus() == HttpServletResponse.SC_OK)
+                .forEach(part -> {
+                    try {
+                        String fileNameWritten = writeFilePart(part, subDir);
+                        LOGGER.info("Wrote file to path '{}'.", fileNameWritten);
+                        response.setHeader(part.getName(), serverURL + "/" + fileNameWritten);
+                    } catch (IOException ex) {
+                        // If writing failed, set error code (breaks stream forEach)
+                        respondWithError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                "Failed to write part '" + part.getName() + "' .");
+                    }
+                });
     }
+
+    private void logRequest(HttpServletRequest request) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("{} request URI = '{}'\n\theaders = '{}'", request.getMethod(), request.getRequestURI(),
+                    Collections.list(request.getHeaderNames()).stream()
+                            .collect(Collectors.toMap(Function.identity(), request::getHeader)).entrySet().stream()
+                            .map(e -> e.getKey() + " = " + e.getValue())
+                            .collect(Collectors.joining("\n\t\t")));
+        }
+    }
+
+    private String extractPath(String pathInfo) throws UnsupportedEncodingException {
+        return URLDecoder.decode(
+                (null == pathInfo) ? "" : pathInfo.replaceFirst("^/", ""),
+                "UTF-8");
+    }
+
+    private void respondWithError(HttpServletResponse response, int errorStatus, String errorMessage) {
+        LOGGER.error(errorMessage);
+        try {
+            response.sendError(errorStatus, errorMessage);
+        } catch (IOException ex) {
+            response.setStatus(errorStatus);
+        }
+    }
+
 }
