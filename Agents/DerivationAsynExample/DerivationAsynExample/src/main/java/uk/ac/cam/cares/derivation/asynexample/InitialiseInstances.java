@@ -105,10 +105,10 @@ public class InitialiseInstances extends JPSAgent {
 		LOGGER.info("Created Difference instance <" + difference + ">");
 		
 		// create chain of derivation
-		String rng_dev = devClient.createAsynDerivation(Arrays.asList(listOfRandomPoints), Config.agentIriRNG, Arrays.asList(upperLimit,lowerLimit,numOfPoints));
-		String max_dev = devClient.createAsynDerivation(Arrays.asList(maxValue), Config.agentIriMaxValue, Arrays.asList(listOfRandomPoints));
-		String min_dev = devClient.createAsynDerivation(Arrays.asList(minValue), Config.agentIriMinValue, Arrays.asList(listOfRandomPoints));
-		String diff_dev = devClient.createAsynDerivation(Arrays.asList(difference), Config.agentIriDifference, Arrays.asList(maxValue,minValue));
+		String rng_dev = devClient.createAsyncDerivation(Arrays.asList(listOfRandomPoints), Config.agentIriRNG, Arrays.asList(upperLimit,lowerLimit,numOfPoints), true);
+		String max_dev = devClient.createAsyncDerivation(Arrays.asList(maxValue), Config.agentIriMaxValue, Arrays.asList(listOfRandomPoints), true);
+		String min_dev = devClient.createAsyncDerivation(Arrays.asList(minValue), Config.agentIriMinValue, Arrays.asList(listOfRandomPoints), true);
+		String diff_dev = devClient.createAsyncDerivation(Arrays.asList(difference), Config.agentIriDifference, Arrays.asList(maxValue,minValue), true);
 		
 		// check all connections between the derived quantities
 		// as the validate method traverse down, checking difference derivation checks all other derivations in the chain

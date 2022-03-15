@@ -32,11 +32,10 @@ The agent is reachable at "access-agent/access" on localhost port 48080.
 The integration tests are designed to test the AccessAgentCaller class together with the AccessAgent, StoreRouter and the RemoteStoreClient and FileBasedStoreClient.
 
 Requirements to run the AccessAgentRemoteStoreIntegrationTest:
-1. 	AccessAgent running on Docker
+1. 	Build and deploy the AccessAgent container locally with 'url.storerouter.endpoint=http://host.docker.internal:39889/blazegraph/namespace/kb/sparql' in main/resource/accessagent.properties
+2.  Ensure the exposed port for the AccessAgent matches the 'accessagentHost' variable in AccessAgentRemoteStoreIntegrationTest (currently 48080)
 2.	Comment out the "\@Disabled" annotation applied to the AccessAgentRemoteStoreIntegrationTest class
-3.	Pull access to the CMCL Docker image registry (https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry)
-4.	Internet connection to the OntoKGRouter triple store (currently at `http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql`)
-5. 	OntoKGROuter is expected to contain routing to endpoint `http://172.17.0.1:39888/blazegraph/namespace/kb/sparql` for the resource "teststorelocal"
+3.	Pull access to the CMCL Docker image registry (https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry) is required to deploy test containers
 
 To run the test from the command line
 ```

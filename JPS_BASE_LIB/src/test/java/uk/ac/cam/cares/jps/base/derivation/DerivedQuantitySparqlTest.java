@@ -12,6 +12,8 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,6 +25,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * createDerivedQuantity, createDerivedQuantityWithTimeSeries, updateTimestamp, addTimeinstance
  * are already tested in DerivedQuantityClientTest
  * @author Kok Foong Lee
+ * @author Jiaru Bai
  *
  */
 public class DerivedQuantitySparqlTest {
@@ -52,6 +55,20 @@ public class DerivedQuantitySparqlTest {
     private List<String> agentIRIList = Arrays.asList(derivedAgentIRI,derivedAgentIRI2);
     private List<String> agentURLList = Arrays.asList(derivedAgentURL,derivedAgentURL2);
     
+	private String p_agent = "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#";
+	private String hasOperation = p_agent + "hasOperation";
+	private String hasInput = p_agent + "hasInput";
+	private String hasMandatoryPart = p_agent + "hasMandatoryPart";
+	private String hasType = p_agent + "hasType";
+	private String derivedAgentOperation = "http://derivedagent1/Operation";
+	private String derivedAgentInputMsgCont = "http://derivedagent1/MsgContInput";
+	private String derivedAgentMsgPart1 = "http://derivedagent1/InputMsgPart1";
+	private String derivedAgentMsgPart2 = "http://derivedagent1/InputMsgPart2";
+	private String input1RdfType = "http://input1/rdftype";
+	private String input2RdfType = "http://input2/rdftype";
+	private String input1ParentRdfType = "http://input1/parent_rdftype";
+	private String input2ParentRdfType = "http://input2/parent_rdftype";
+
 	@Before
     public void initialiseSparqlClient() {
         OntModel kb = ModelFactory.createOntologyModel();
@@ -277,6 +294,62 @@ public class DerivedQuantitySparqlTest {
 	}
 	
 	@Test
+	public void testCreateDerivationAsyncForUpdate() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		boolean forUpdate = true;
+		Resource derivationType = ResourceFactory.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+
+		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
+		Assert.assertEquals(derivationType, testKG.getIndividual(derivationIRI).getRDFType());
+
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
+				ResourceFactory.createResource(derivedAgentIRI)));
+
+		for (String entity : entities) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivationIRI)));
+		}
+
+		for (String input : inputs) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+
+		Assert.assertEquals(StatusType.REQUESTED, devClient.getStatusType(derivationIRI));
+	}
+
+	@Test
+	public void testCreateDerivationAsyncForMarkup() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		boolean forUpdate = false;
+		Resource derivationType = ResourceFactory.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+
+		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
+		Assert.assertEquals(derivationType, testKG.getIndividual(derivationIRI).getRDFType());
+
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
+				ResourceFactory.createResource(derivedAgentIRI)));
+
+		for (String entity : entities) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivationIRI)));
+		}
+
+		for (String input : inputs) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+
+		Assert.assertEquals(StatusType.NOSTATUS, devClient.getStatusType(derivationIRI));
+	}
+
+	@Test
 	public void testBulkCreateDerivationsWithTimeSeries() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
@@ -306,6 +379,125 @@ public class DerivedQuantitySparqlTest {
 		}
 	}
 	
+	@Test
+	public void testGetInputsMapToAgent() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// add triples about agent
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation), ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput), ResourceFactory.createResource(derivedAgentInputMsgCont));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input1));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input2));
+		
+		// create asynchronous derivation
+		boolean forUpdate = true;
+		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
+		JSONObject mappedInputs = devClient.getInputsMapToAgent(derivationIRI, derivedAgentIRI);
+		Assert.assertEquals(input1, mappedInputs.getString(input1));
+		Assert.assertEquals(input2, mappedInputs.getString(input2));
+	}
+
+	@Test
+	public void testGetInputsMapToAgent_RdfType_RdfsSubClassOf() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// add triples about agent
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation), ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput), ResourceFactory.createResource(derivedAgentInputMsgCont));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input1ParentRdfType));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input2ParentRdfType));
+		
+		// add triples about rdf:type and rdfs:subClassOf properties
+		testKG.add(ResourceFactory.createResource(input1), RDF.type, ResourceFactory.createResource(input1RdfType));
+		testKG.add(ResourceFactory.createResource(input1RdfType), RDFS.subClassOf, ResourceFactory.createResource(input1ParentRdfType));
+		testKG.add(ResourceFactory.createResource(input2), RDF.type, ResourceFactory.createResource(input2RdfType));
+		testKG.add(ResourceFactory.createResource(input2RdfType), RDFS.subClassOf, ResourceFactory.createResource(input2ParentRdfType));
+
+		// create asynchronous derivation
+		boolean forUpdate = true;
+		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
+		JSONObject mappedInputs = devClient.getInputsMapToAgent(derivationIRI, derivedAgentIRI);
+		Assert.assertEquals(input1, mappedInputs.getString(input1ParentRdfType));
+		Assert.assertEquals(input2, mappedInputs.getString(input2ParentRdfType));
+	}
+
+	@Test
+	public void testGetInputsMapToAgent_RdfType() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// add triples about agent
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation), ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput), ResourceFactory.createResource(derivedAgentInputMsgCont));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input1RdfType));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input2RdfType));
+		
+		// add triples about rdf:type and rdfs:subClassOf properties
+		testKG.add(ResourceFactory.createResource(input1), RDF.type, ResourceFactory.createResource(input1RdfType));
+		testKG.add(ResourceFactory.createResource(input2), RDF.type, ResourceFactory.createResource(input2RdfType));
+
+		// create asynchronous derivation
+		boolean forUpdate = true;
+		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
+		JSONObject mappedInputs = devClient.getInputsMapToAgent(derivationIRI, derivedAgentIRI);
+		Assert.assertEquals(input1, mappedInputs.getString(input1RdfType));
+		Assert.assertEquals(input2, mappedInputs.getString(input2RdfType));
+	}
+
+	@Test
+	public void testGetInputsMapToAgent_RdfsSubClassOf() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// add triples about agent
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation), ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput), ResourceFactory.createResource(derivedAgentInputMsgCont));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input1ParentRdfType));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input2ParentRdfType));
+		
+		// add triples about rdf:type and rdfs:subClassOf properties
+		testKG.add(ResourceFactory.createResource(input1), RDFS.subClassOf, ResourceFactory.createResource(input1ParentRdfType));
+		testKG.add(ResourceFactory.createResource(input2), RDFS.subClassOf, ResourceFactory.createResource(input2ParentRdfType));
+
+		// create asynchronous derivation
+		boolean forUpdate = true;
+		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
+		JSONObject mappedInputs = devClient.getInputsMapToAgent(derivationIRI, derivedAgentIRI);
+		Assert.assertEquals(input1, mappedInputs.getString(input1ParentRdfType));
+		Assert.assertEquals(input2, mappedInputs.getString(input2ParentRdfType));
+	}
+
+	@Test
+	public void testRetrieveMatchingInstances() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// create first asynchronous derivation1
+		boolean forUpdate = true;
+		String derivationIRI = devClient.createDerivationAsync(Arrays.asList(entity1, entity2, entity3), derivedAgentIRI, inputs, forUpdate);
+
+		// add triples about agent2 that monitors the derivation2 which is one derivation downstream compared to the derivation1
+		// agent2 takes some entities from the output of the derivation1 as inputs
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI2), ResourceFactory.createProperty(hasOperation), ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput), ResourceFactory.createResource(derivedAgentInputMsgCont));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont), ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input1ParentRdfType));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input2ParentRdfType));
+		
+		// add triples about rdf:type and rdfs:subClassOf properties
+		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(input1RdfType));
+		testKG.add(ResourceFactory.createResource(input1RdfType), RDFS.subClassOf, ResourceFactory.createResource(input1ParentRdfType));
+		testKG.add(ResourceFactory.createResource(entity2), RDF.type, ResourceFactory.createResource(input2RdfType));
+		testKG.add(ResourceFactory.createResource(input2RdfType), RDFS.subClassOf, ResourceFactory.createResource(input2ParentRdfType));
+
+		// now we retrieve the output instances of the derivation1 that matches the input of derivation2 (OntoAgent I/O of agent2)
+		List<String> mappedInstances = devClient.retrieveMatchingInstances(derivationIRI, derivedAgentIRI2);
+		// the mappedInstances should be [entity1, entity2]
+		mappedInstances.removeAll(Arrays.asList(entity1, entity2));
+		Assert.assertTrue(mappedInstances.isEmpty());
+	}
+
 	@Test
 	public void testGetDerivations() {
 		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
