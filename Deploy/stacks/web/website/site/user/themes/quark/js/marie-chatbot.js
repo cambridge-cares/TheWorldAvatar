@@ -62,7 +62,7 @@ var scriptDir = scriptURL.substring(0, scriptURL.lastIndexOf("/") + 1);
 var imageDir = "/user/images/";
 
 // Location of the chatbot itself
-// var botURL = "/marie/request/";
+var botURL = "/marie/request/";
 let url = botURL + "chemistry_chatbot/query?type=" + type;
 
 
