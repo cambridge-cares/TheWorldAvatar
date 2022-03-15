@@ -130,21 +130,6 @@ def instantiate_powerplant_timeseries(query_endpoint, update_endpoint, powerplan
     # Derive MeasurementIRI to which time series is actually connected to
     measurement_iri = kg.PREFIXES['ontoenergysystem_kb'] + measurement
     print("Measurement IRI for actual time series: ", measurement_iri)
-
-    # Ensure that newly created IRIs are not already present in knowledge graph --> if so, re-create
-    # !! ASSUMED TO BE UNNECESSARY DUE TO random UUID --> currently left out due to long query times !!
-    #
-    # gases_existing = kg.get_instantiated_gas_amounts(query_endpoint)
-    # while any(existing.endswith(gas) for existing in gases_existing):
-    #     gas = 'GasAmount_' + str(uuid.uuid4())
-    #
-    # quantities_existing = kg.get_instantiated_quantities(query_endpoint)
-    # while any(existing.endswith(quantity) for existing in quantities_existing):
-    #     quantity = 'Quantity_' + str(uuid.uuid4())
-    #
-    # measurements_existing = kg.get_instantiated_measurements(query_endpoint)
-    # while any(existing.endswith(measurement) for existing in measurements_existing):
-    #     measurement = 'Measurement_' + str(uuid.uuid4())
     
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
@@ -197,21 +182,6 @@ def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorI
     # Derive MeasurementIRI to which time series is actually connected to
     measurement_iri = kg.PREFIXES['ontoenergysystem_kb'] + measurement
     print("Measurement IRI for actual time series: ", measurement_iri)
-
-    # Ensure that newly created IRIs are not already present in knowledge graph --> if so, re-create
-    # !! ASSUMED TO BE UNNECESSARY DUE TO random UUID --> currently left out due to long query times !!
-    #
-    # gases_existing = kg.get_instantiated_gas_amounts(query_endpoint)
-    # while any(existing.endswith(gas) for existing in gases_existing):
-    #     gas = 'GasAmount_' + str(uuid.uuid4())
-    #
-    # quantities_existing = kg.get_instantiated_quantities(query_endpoint)
-    # while any(existing.endswith(quantity) for existing in quantities_existing):
-    #     quantity = 'Quantity_' + str(uuid.uuid4())
-    #
-    # measurements_existing = kg.get_instantiated_measurements(query_endpoint)
-    # while any(existing.endswith(measurement) for existing in measurements_existing):
-    #     measurement = 'Measurement_' + str(uuid.uuid4())
     
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
@@ -282,25 +252,13 @@ def add_time_series(instance_IRI, timestamps, values, units):
             <%s> om:hasUnit <%s> . }''' % (instance_IRI, activepowergenerated_IRI, activepowergenerated_IRI, activepowergenerated_IRI, units)
     ###
 
-    #print('insert query:', query)
-
     KGClient.executeUpdate(query)
-    #print("Triples independent of Java TimeSeriesClient successfully instantiated.")
+    print("Triples independent of Java TimeSeriesClient successfully instantiated.")
 
     # 2) Add actual time series data
     # Create Java TimeSeries object with data to attach
     times = timestamps
     variables = dataIRIs #Could just be a single variable in the current application. 
-    
-    #######
-    #Currently have the information in a different format (eg. dataframes, string), need to have it in the below format. 
-    #Array(list) of Timestamps
-    #times = ['2021-12-09T00:00:00Z', '2021-12-09T00:30:00Z', '2021-12-09T01:00:00Z', '2021-12-09T01:30:00Z', '2021-12-09T02:00:00Z', '2021-12-09T02:30:00Z', '2021-12-09T03:00:00Z', '2021-12-09T03:30:00Z', '2021-12-09T04:00:00Z', '2021-12-09T04:30:00Z', '2021-12-09T05:00:00Z', '2021-12-09T05:30:00Z', '2021-12-09T06:00:00Z', '2021-12-09T06:30:00Z', '2021-12-09T07:00:00Z', '2021-12-09T07:30:00Z', '2021-12-09T08:00:00Z', '2021-12-09T08:30:00Z', '2021-12-09T09:00:00Z', '2021-12-09T09:30:00Z', '2021-12-09T10:00:00Z', '2021-12-09T10:30:00Z', '2021-12-09T11:00:00Z', '2021-12-09T11:30:00Z', '2021-12-09T12:00:00Z', '2021-12-09T12:30:00Z', '2021-12-09T13:00:00Z', '2021-12-09T13:30:00Z', '2021-12-09T14:00:00Z', '2021-12-09T14:30:00Z', '2021-12-09T15:00:00Z', '2021-12-09T15:30:00Z', '2021-12-09T16:00:00Z', '2021-12-09T16:30:00Z', '2021-12-09T17:00:00Z', '2021-12-09T17:30:00Z', '2021-12-09T18:00:00Z', '2021-12-09T18:30:00Z', '2021-12-09T19:00:00Z', '2021-12-09T19:30:00Z', '2021-12-09T20:00:00Z', '2021-12-09T20:30:00Z', '2021-12-09T21:00:00Z', '2021-12-09T21:30:00Z', '2021-12-09T22:00:00Z', '2021-12-09T22:30:00Z', '2021-12-09T23:00:00Z', '2021-12-09T23:30:00Z']
-    #Single element array(list) with string
-    #variables = ['http://www.theworldavatar.com/kb/ontoenergysystem/ActivePowerGenerated_ad7e55af-0c71-4adf-9d7f-39ba9ce18ffd']
-    #Array(list) containing a single, other array(list) of power values
-    #values = [[848.186, 983.106, 992.36, 994.12, 885.554, 993.444, 976.76, 978.47, 953.792, 870.35, 990.672, 1049.056, 1370.106, 1706.562, 1938.362, 1973.972, 1977.078, 1976.586, 1975.902, 1976.792, 1976.412, 1975.942, 1976.336, 1976.588, 1884.476, 1846.298, 1805.98, 1863.346, 1881.686, 1926.882, 1967.512, 1969.906, 1971.362, 1970.718, 1971.742, 1968.02, 1965.662, 1968.954, 1962.82, 1960.606, 1877.356, 1670.484, 1080.696, 656.936, 179.12, 0, 0, 0]]
-    #dataIRIs = variables
     
     #Reformat times. 
     times = times.values.reshape(-1,).tolist()
@@ -318,38 +276,7 @@ def add_time_series(instance_IRI, timestamps, values, units):
         a.append(float(value))
     values = []
     values.append(a)
-    """
-    print("COMPARE:")
-    print("Code Version:")
-    print(values)
-    values1 = [[848.186, 983.106, 992.36, 994.12, 885.554, 993.444, 976.76, 978.47, 953.792, 870.35, 990.672, 1049.056, 1370.106, 1706.562, 1938.362, 1973.972, 1977.078, 1976.586, 1975.902, 1976.792, 1976.412, 1975.942, 1976.336, 1976.588, 1884.476, 1846.298, 1805.98, 1863.346, 1881.686, 1926.882, 1967.512, 1969.906, 1971.362, 1970.718, 1971.742, 1968.02, 1965.662, 1968.954, 1962.82, 1960.606, 1877.356, 1670.484, 1080.696, 656.936, 179.12, 0, 0, 0]]
-    print("Hard Coded Version:")
-    print(values1)
-    print("Compare Overall:")
-    print(values == values1)
-    print(values[0] == values1[0])
-    print(type(values) == type(values1))
-    print(type(values[0]) == type(values1[0]))
-    print("Compare Parts:")
-    print(type(values[0][0]))
-    print(type(values1[0][0]))
-    for i in range(0,47):
-        print(type(values1[0][i]))
-        print(type(values[0][i]))
-        print(type(values[0][i]) == type(values1[0][i]))
-    """
-    #######
-    """
-    print('---times starts---')
-    print(times)
-    print('---times ends---')
-    print('---variables starts---')
-    print(variables)
-    print('---variables ends---')
-    print('---values starts---')
-    print(values)
-    print('---values ends---')
-    """
+
     # 3) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
     # Initialise time series in both KG and RDB using TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
@@ -360,8 +287,10 @@ def add_time_series(instance_IRI, timestamps, values, units):
 
     # Add data
     TSClient.addTimeSeriesData(timeseries)
-    #print("Time series data successfully added.\n") #Note that this would run for each upload, so if you are uploading multiple times it is reccomended to have the comment in location after this function is called (however many times). 
-
+    #print("Time series data successfully added.\n")
+    # #Note that this would run for each upload, so if you are uploading
+    # multiple times it is reccomended to have the comment in location
+    # after this function is called (however many times).
 
 def get_power_data_from_api():
     """
@@ -371,26 +300,9 @@ def get_power_data_from_api():
             DataFrame with gas power rate data and columns 'generator', 'time', 'power'.
             (all generator names are capitalised for naming consistency reasons)
     """
-
-    # Get current UK timezone to properly convert reported local times into UTC
-    # (i.e. account for daylight saving time)
-    #tz = pytz.timezone('Europe/London')
-    #####DO THIS LATER#####
-
     print("Querying API")
-    #url = "https://mip-prd-web.azurewebsites.net/InstantaneousViewFileDownload/DownloadFile"
-    #filename = wget.download(url)
-    #Run the Query Script. If the inputs are valid it will update the CSV. 
-    #csvName = 'Input-Template.csv'
-    #Key = ''
-    #Year = 2021 #This should be a week ago. 
-    #Month = 11 #This should be a week ago. 
-    #Day = 14 #This should be a week ago. 
-    #Period = 24 #Note this doesn't matter if Search is 2, as it goes from 1 - 48 regardless. 
-    #Search = 2 #This script have multiple run options, for a day we want '2'. 
 
-    #####BACK LATER#####
-    #Local Key#
+    #Local Key
     with open("LocalOnlyBMRSKey.txt", "r") as keyFile:
         Key = keyFile.readline()
     #Or just paste it below directly#
@@ -404,68 +316,7 @@ def get_power_data_from_api():
     #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
     
     #Note, will want to call the overall funtion, rather than convert_csv_to_triple_dfs longer term. 
-
-    # print("PowerPlants Dataframe: ")
-    # print(powerplant_df)
-    # print("Generators Dataframe: ")
-    # print(generator_df)
-    #####BACK LATER#####
     print("Finished preparing dataframes.")
-
-    # 2D array of data (triples [generatorName, time, power])
-    #data = []
-
-    #print("Reading power data CSV...")
-    #data = pd.read_csv(csvName) #Dataframe including DUKES stations. 
-    #These should both be EIC of (station or generator), time, power.  
-    #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs(csvName)
-    
-    '''
-    with open(filename, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-
-        currentRow = -1
-        generatorStartLine = 9999
-        generatorEndLine = 9999
-
-        for row in reader:
-            currentRow = currentRow + 1
-
-            if "generator Totals" in row[0]:
-                generatorStartLine = currentRow
-                print("generator data starts on CSV row", currentRow)
-            elif "Total System Supply" in row[0]:
-                generatorEndLine = currentRow
-                print("generator data ends on CSV row", currentRow)
-
-            if (currentRow > generatorStartLine) and (currentRow < generatorEndLine):
-                # Parse the CSV rows
-                generatorName = row[0]
-
-                # Times from CSV file are in local UK time
-                dateTimeObj = datetime.datetime.strptime(row[3], "%d/%m/%Y %H:%M:%S")
-                # is_dst=False is used to determine correct timezone in the ambiguous period
-                # at the end of daylight saving time
-                dateTimeObjUTC = tz.localize(dateTimeObj, False).astimezone(pytz.utc)
-                dateTimeStr = dateTimeObjUTC.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-                powerValue = row[2]
-                data.append([generatorName, dateTimeStr, powerValue])
-    '''
-
-    #print("Finished reading power data CSV, removing file...\n")
-    #print("Finished reading power data CSV")
-    #os.remove(filename)
-
-    '''
-    # Create DataFrame
-    df = pd.DataFrame(data, columns=['generator', 'time', 'power'])
-    # Convert power from MCM/Day to M^3/S
-    df['power'] = (df['power'].astype(float) * 1000000) / (24 * 60 * 60)
-    # Capitalise generator names (for consistent comparisons by name)
-    df['generator'] = df['generator'].str.upper()
-    '''
-    
     return powerplant_df, generator_df
 
 
@@ -488,12 +339,8 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
         return
     times = power_data['time']
     powers = power_data['power']
-    print('times:', times)
-    print('power:', powers)
-    print('variables:', variables)
     #Reformat times. 
     times = times.values.reshape(-1,).tolist()
-    print('times processed:', times)
     #Reformat variables (or just a single variable), could already be in this form. 
     if type(variables) == str:
         a = measurementIRI #a is just a temporary variable for this. 
@@ -567,14 +414,8 @@ def update_triple_store():
     kg.read_properties_file(kg.PROPERTIES_FILE)
 
     # Get the power data from National Grid csv as DataFrame
-    #####Note that there are two now#####
-    #power_data = get_power_data_from_api()
-    #THIS IS THE BIG, IMPORTANT QUERY CALL. 
     powerplant_power_data, generator_power_data = get_power_data_from_api()
 
-    #BMRS uses MW
-    units = "http://www.ontology-of-units-of-measure.org/resource/om-2/megawatt"
-    
     #Now do the same for powerplants as will be done for generators. 
     # Retrieve all powerplants with available power data (powerplant names are capitalised)
     powerplants_with_data = powerplant_power_data['powerplanteic'].unique()
@@ -640,30 +481,7 @@ def update_triple_store():
             add_time_series_data(generators_instantiated[gt], new_data, gt)
         else:
             print("Instantiated time series detected!")
-    
-    #Loop for generators (for which we have data)
-    # daily_loop = check_df(generator_power_data, 48)
-    # placement = 0
-    # while(daily_loop):
-    #     dfSlice, placement, daily_loop = take_day(generator_power_data, placement, 48)
-    #     """
-    #     print("placement")
-    #     print(placement)
-    #     print("daily_loop")
-    #     print(daily_loop)
-    #     print("SLICE")
-    #     print(dfSlice)
-    #     if placement == 192:
-    #         for w in dfSlice['time']:
-    #             print(w)
-    #         print("MAINTEST")
-    #         print(dfSlice['generatoreic'].iloc[0])
-    #     """
-    #     #Add daily slice (dfSlice) here. 
-    #     add_time_series((kg.PREFIXES['ontoenergysystem_kb'] + dfSlice['generatoreic'].iloc[0]), dfSlice['time'], dfSlice['power'], units)
-    
     print("Time series data successfully added.\n")
-
 
 def continuous_update():
     """
