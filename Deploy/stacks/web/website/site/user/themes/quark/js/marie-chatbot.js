@@ -61,10 +61,14 @@ var scriptURL = document.currentScript.src;
 var scriptDir = scriptURL.substring(0, scriptURL.lastIndexOf("/") + 1);
 var imageDir = "/user/images/";
 
+
+// Type variable was missing, have added with value when last present.
+// Needs checking to see if this was supposed to be dynamic - Michael
+let type = "worldavatar";
+
 // Location of the chatbot itself
 var botURL = "/marie/request/";
 let url = botURL + "chemistry_chatbot/query?type=" + type;
-
 
 
 // Hide the results row by default
@@ -276,7 +280,7 @@ function processChatbotResults(jsonData) {
 
 
     if (Array.isArray(jsonData)) {
-        console.log('The object is identified as an Array', jsonData);
+        //console.log('The object is identified as an Array', jsonData);
 		try {
             // JSON array
             chatbotResults = parseJSONArray(jsonData);
@@ -353,29 +357,62 @@ function parseJSONObject(jsonResults) {
  Parses the input JSON Array into a HTML table.
 */
 function parseJSONArray(jsonResults) {
-	// JSON values (map of column names to value array)
-	let valueSet = {};
-	valueSet["Result"] = [];
+	let forTable = {};
+	forTable["Result"] = [];
+	
+	parseResult(jsonResults, forTable);
+	return toTable(forTable);
+}
 
-	let index = 1;
-    console.log('The type of json results', typeof(jsonResults));
-	jsonResults.forEach((item) => {
-		// Store result index
-		valueSet["Result"].push(index);
-		index++;
+/**
+*
+*/
+function parseResult(jsonResult, forTable) {
+	if(Array.isArray(jsonResult)) {
+		jsonResult.forEach((result) => {
+			parseResult(result, forTable);
+		});
+	
+	} else if(jsonResult["result"]) {
+		parseResult(jsonResult["result"], forTable);
+		
+	} else if(jsonResult["multiple_results"]) {
+		let results = jsonResult["multiple_results"];
+		results.forEach((result) => {
+			parseResult(results, forTable);
+		});
+		
+	} else {
+		forTable["Result"].push(forTable["Result"].length + 1);
 
-		Object.keys(item).forEach((key) => {
-			// Store value
-			let values = valueSet[key];
-			if (values == null) {
-				values = [];
-				valueSet[key] = values;
+		Object.keys(jsonResult).forEach((key) => {
+			if (!forTable[key]) {
+				forTable[key] = [];
 			}
-			values.push(item[key]);
+			forTable[key].push(parseValue(jsonResult[key]));
 		})
-	});
+	}
+}
 
-	return toTable(valueSet);
+/**
+*	Parses a JSON value into a reasonable string for display.
+*/
+function parseValue(value) {
+	if(Object.keys(value).length === 2 && value["value"] && value["unit"]) {
+		
+		let actualValues = value["value"];
+		let valueString = actualValues;
+		if(Array.isArray(actualValues)) {
+			valueString = actualValues.join("<br/>");
+		}
+		
+		return valueString + "<br/>" + "[" + value["unit"] + "]";
+	}
+	
+	if(Array.isArray(value)) {
+		return value.join("<br/>");
+	}
+	return value;
 }
 
 /*
