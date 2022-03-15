@@ -41,6 +41,18 @@ slug: marie
 
 ### Example Questions
 
+<button type="submit" class="accordion">Questions answered by agents</button>
+<div class="accordion-panel">
+	To query computational quantum-related data about molecules.
+	<ul style="margin-left: 20px;">
+		<li><div class="sample-question">What is the heat capacity of methane</div></li>
+		<li><div class="sample-question">Show the power conversion efficiency of TiO2</div></li>
+		<li><div class="sample-question">c3h8's enthalpy at 181.09 fahrenheit</div></li>
+		<li><div class="sample-question">Molecular oxygen's entropy at 13.61 K and 101325 pascals</div></li>
+		<li><div class="sample-question">Power conversion efficiency of OPF with donor of ozone</div></li>
+	</ul>
+</div>
+
 <button type="submit" class="accordion">General Computational Quantum Chemistry</button>
 <div class="accordion-panel">
 	To query computational quantum-related data about molecules.
