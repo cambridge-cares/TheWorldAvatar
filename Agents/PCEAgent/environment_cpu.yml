@@ -27,5 +27,5 @@ dependencies:
     - parameterized==0.8.1
     - dill==0.3.3
     - pandas==1.1.0
-    - flask==1.1.2
+    - flask==2.0.1
     - gunicorn==20.0.4
