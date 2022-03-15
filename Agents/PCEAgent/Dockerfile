@@ -12,7 +12,7 @@ FROM maven:3.6-openjdk-11-slim as dependency_fetcher
 ARG repo_url="https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/"
 ARG group_id="uk.ac.cam.cares.jps.agent.oscml"
 ARG artifact_fmt="zip"
-ARG artifact_version="1.0.0-SNAPSHOT"
+ARG artifact_version="1.0.0"
 # artifact_id has to be declared here so that the globally-defined value is available in this stage
 ARG artifact_id
 
@@ -21,7 +21,7 @@ ADD retrieved_models /root
 
 # Populate settings templates with credentials, repo name
 WORKDIR /root/.m2
-# (Note that | rather than / is used as the sed delimiter, since encrypted passwords can contain the former, but not the latter
+# (Note that | rather than / is used as the sed delimiter, since encrypted passwords can contain the latter, but not the former)
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
 RUN sed -i "s|REPO_URL|${repo_url}|g;s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
@@ -56,13 +56,10 @@ RUN apt-get update && apt-get -y install cron
 ADD ./cronconfig /etc/cron.d/cronconfig
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/cron.d/cronconfig
-# Give execution rights to the script
-RUN chmod 0744 /app/delete_logs.sh
 # Apply cron job
 RUN crontab /etc/cron.d/cronconfig
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
-
 
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app
@@ -77,6 +74,9 @@ COPY ./delete_logs.sh /app/.
 COPY ./app_entry_point.sh /app/.
 COPY ./install_script.sh /app/.
 COPY --from=dependency_fetcher /root/${artifact_id} ./retrieved_models/${artifact_id}
+
+# Give execution rights to the script
+RUN chmod 0744 /app/delete_logs.sh
 
 #------------------------------------
 # conda setup
