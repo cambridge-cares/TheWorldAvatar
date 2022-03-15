@@ -16,8 +16,7 @@ setup(
     include_package_data= True,
     entry_points={
         'console_scripts': [
-            'fs_upload = pyuploader.fs_driver:start',
-            'ts_upload = pyuploader.ts_driver:start'
+            'upload = pyuploader.driver:start',
         ]
     }
 )
