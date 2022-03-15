@@ -49,6 +49,12 @@ public class WriteOutputs {
     }
     
 	public static void main(String[] args) {
+		if (Boolean.parseBoolean(System.getenv("SKIP_RIVER"))) {
+			LOGGER.info("SKIP_RIVER is set to true, this code will not write any outputs");
+			new File(Config.outputdir).mkdirs(); // make an empty directory to simplify Argo workflow
+			System.exit(0);
+		}
+		
 		// input needs to be a valid date
         LocalDate date;
 		
