@@ -1,6 +1,7 @@
 import pytest
 import time
 import os
+import pyuploader.uploaders as uploaders
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
@@ -83,7 +84,7 @@ def write_service_url_to_file(get_service_url):
 @pytest.fixture(scope="session")
 def create_large_file():
     def _create_large_file(uploader_type):
-        if uploader_type == 'ts_uploader':
+        if uploader_type == uploaders.TS_UPLOADER:
             large_file_path = create_large_owl_file()
         else:
             large_file_path = create_large_txt_file()
