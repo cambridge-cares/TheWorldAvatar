@@ -1,6 +1,6 @@
 configobj
 pandas
-py4jps==1.0.14
+py4jps
 pytz
 tqdm
 numpy

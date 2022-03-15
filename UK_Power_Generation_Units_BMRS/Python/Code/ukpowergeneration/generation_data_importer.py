@@ -22,6 +22,7 @@ import traceback
 #import wget
 import csv
 import pandas as pd
+import py4j.protocol as pyprotocol
 
 # get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
 from jpsSingletons import jpsBaseLibView
@@ -227,20 +228,25 @@ def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorI
 
     KGClient.executeUpdate(query)
     print("Time series triples independent of Java TimeSeriesClient successfully instantiated.")
-
+    print('measurement_iri 1:', measurement_iri)
     # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
     # Retrieve Java classes for time entries (Instant) and data (Double) - to get class simply via Java's
     # ".class" does not work as this command also exists in Python
     Instant = jpsBaseLibView.java.time.Instant
     instant_class = Instant.now().getClass()
     double_class = jpsBaseLibView.java.lang.Double.TYPE
-
+    print('measurement_iri 2:', measurement_iri)
     # Initialise time series in both KG and RDB using TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
-    TSClient.initTimeSeries([measurement_iri], [double_class], kg.FORMAT)
-
-    print("Time series triples via Java TimeSeriesClient successfully instantiated.")
-
+    print('measurement_iri 3:', measurement_iri)
+    try:
+        TSClient.initTimeSeries([measurement_iri], [double_class], kg.FORMAT)
+        print("Time series has been  successfully initialised.")
+    except pyprotocol.Py4JJavaError as err:
+        print("Could not initialise a time-series for the following generator:"+generator_name+" that has\n' \
+        'the following measurement IRI:" + generatorIRI)
+        print('The error message is:', str(err.java_exception))
+        print("Time series triples via Java TimeSeriesClient successfully instantiated.")
 
 
 def add_time_series(instance_IRI, timestamps, values, units): 
@@ -390,10 +396,10 @@ def get_power_data_from_api():
     #Or just paste it below directly#
     #Key = '' #####NEED THIS#####
     AutoFile = 'Input-Template-Auto.csv'
-    # powerplant_df, generator_df = bmrs.Auto_Call(Key, AutoFile)
+    powerplant_df, generator_df = bmrs.Auto_Call(Key, AutoFile)
     #Read the Input-Template.csv file from a URL. 
     #Simplified Data Link
-    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
+    # powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/o6b0m1qozb356u6/Input-Template%20-%20Simple.csv?dl=1')
     #Standardised Day Link
     #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/qi3no1kbwr4idus/Input-Template%20-%20All.csv?dl=1')
     
@@ -477,11 +483,17 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
     # Extract data to create Java TimeSeries object
     measurementIRI = kg.get_measurementIRI(kg.QUERY_ENDPOINT, assetIRI)
     variables = measurementIRI
+    if variables is None:
+        print('Time series could not be created for the following asset:', assetIRI)
+        return
     times = power_data['time']
     powers = power_data['power']
+    print('times:', times)
+    print('power:', powers)
+    print('variables:', variables)
     #Reformat times. 
     times = times.values.reshape(-1,).tolist()
-
+    print('times processed:', times)
     #Reformat variables (or just a single variable), could already be in this form. 
     if type(variables) == str:
         a = measurementIRI #a is just a temporary variable for this. 
@@ -506,7 +518,12 @@ def add_time_series_data(assetIRI, power_data, asset_name=''):
 
     # Add time series data to existing time series association in KG using TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
-    TSClient.addTimeSeriesData(timeseries)
+    try:
+        TSClient.addTimeSeriesData(timeseries)
+    except pyprotocol.Py4JJavaError as err:
+        print("Could not add a time-series to the following asset:"+asset_name+" that has\n' \
+        'the following measurement IRI:"+ assetIRI)
+        print('The error message is:', str(err.java_exception))
     print("Time series data added successfully for: " + asset_name + ").\n")
 
 def check_df(df, periods):
@@ -612,15 +629,17 @@ def update_triple_store():
     # Assimilate power data for instantiated generators
     for gt in generators_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
-        if kg.get_measurementIRI(kg.QUERY_ENDPOINT, generators_instantiated[gt]) is None:
+        if (kg.get_measurementIRI(kg.QUERY_ENDPOINT, generators_instantiated[gt]) is None) and (gt != ""):
             print("No instantiated timeseries detected for: ", gt)
+            print('gt:', gt)
+            print('generators_instantiated[gt]:', generators_instantiated[gt])
             instantiate_generator_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, generators_instantiated[gt], gt)
+            # Retrieve power time series data for respective generator from overall DataFrame
+            new_data = generator_power_data[generator_power_data['generatoreic'] == gt][['time', 'power']]
+            # Add time series data using Java TimeSeriesClient
+            add_time_series_data(generators_instantiated[gt], new_data, gt)
         else:
             print("Instantiated time series detected!")
-        # Retrieve power time series data for respective generator from overall DataFrame
-        new_data = generator_power_data[generator_power_data['generatoreic'] == gt][['time', 'power']]
-        # Add time series data using Java TimeSeriesClient
-        add_time_series_data(generators_instantiated[gt], new_data, gt)
     
     #Loop for generators (for which we have data)
     # daily_loop = check_df(generator_power_data, 48)
