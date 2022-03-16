@@ -14,9 +14,9 @@ geo:		http://www.opengis.net/ont/geosparql#
 [MappingDeclaration] @collection [[
 mappingId	crop-map-cells
 target		:cropmap/cell/{id} a geo:Feature ;
-                :id {id}^^xsd:int ;
+                :hasID {id}^^xsd:int ;
                 geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral .
-source		SELECT gid AS id, ST_ASTEXT(geom) wkt
+source		SELECT cromeid AS id, ST_ASTEXT(geom) wkt
             FROM "cropmap"
 ]]
 
