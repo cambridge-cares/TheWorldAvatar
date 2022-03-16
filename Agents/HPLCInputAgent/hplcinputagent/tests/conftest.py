@@ -23,7 +23,7 @@ HPLC_XLS_REPORT_FILE = os.path.join(THIS_DIR, 'hplc_xls_file')
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
 FS_SERVICE = "fileserver"
-FS_ROUTE = "FileServer/upload"
+FS_ROUTE = "FileServer/"
 
 def pytest_sessionstart(session):
     """ This will run before all the tests"""

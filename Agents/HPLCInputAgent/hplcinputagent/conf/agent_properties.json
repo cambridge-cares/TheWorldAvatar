@@ -4,10 +4,7 @@
         "SPARQL_UPDATE_ENDPOINT": "http://kg.cmclinnovations.com:81/blazegraph/namespace/testontolab/sparql",
         "KG_USERNAME": null,
         "KG_PASSWORD": null,
-        "FILE_SERVER_URL": "http://localhost:xxxx/FileServer/",
-        "FILE_SERVER_UPLOAD": "http://localhost:xxxx/FileServer/upload",
-        "FILE_SERVER_DOWNLOAD": "http://localhost:xxxx/FileServer/download/",
-        "FILE_SERVER_DELETE": "http://localhost:xxxx/FileServer/delete/"
+        "FILE_SERVER_URL": "http://localhost:xxxx/FileServer/"
     },
     "ONTOAGENT": {
         "ONTOAGENT_SERVICE": "http://www.theworldavatar.com/resource/agents/Service__HPLCInput#Service"

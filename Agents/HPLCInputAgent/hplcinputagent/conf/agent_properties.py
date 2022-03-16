@@ -23,9 +23,6 @@ class HPLCInputAgentConfig(object):
 
         # File server URL and upload path
         self.FILE_SERVER_URL = agent_properties['KNOWLEDGE_GRAPH']['FILE_SERVER_URL']
-        self.FILE_SERVER_UPLOAD = agent_properties['KNOWLEDGE_GRAPH']['FILE_SERVER_UPLOAD']
-        self.FILE_SERVER_DOWNLOAD = agent_properties['KNOWLEDGE_GRAPH']['FILE_SERVER_DOWNLOAD']
-        self.FILE_SERVER_DELETE = agent_properties['KNOWLEDGE_GRAPH']['FILE_SERVER_DELETE']
 
         # Periodic timescale for monitoring Derivation (seconds)
         self.DERIVATION_PERIODIC_TIMESCALE = agent_properties['DERIVATION_CLIENT']['PERIODIC_TIMESCALE']

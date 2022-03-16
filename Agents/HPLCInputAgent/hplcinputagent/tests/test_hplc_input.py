@@ -21,7 +21,7 @@ def test_hplc_input_agent(initialise_triples):
 
     hplc_input_agent = HPLCInputAgent(
         hplc_digital_twin=HPLC_DIGITAL_TWIN, hplc_report_periodic_timescale=HPLC_REPORT_PERIODIC_TIMESCALE,
-        file_server_upload=file_service_url, fs_user=fs_user, fs_pwd=fs_pwd,
+        fs_url=file_service_url, fs_user=fs_user, fs_pwd=fs_pwd,
         agent_iri=HPLC_ONTOAGENT_SERVICE, time_interval=DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL, kg_url=sparql_endpoint, logger_name='dev'
     )

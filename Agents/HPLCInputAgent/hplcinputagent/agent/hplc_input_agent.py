@@ -14,13 +14,13 @@ from hplcinputagent.conf import *
 
 class HPLCInputAgent(AsyncAgent):
     # TODO consider making __init__ of AsyncAgent to accept **kwargs
-    def __init__(self, hplc_digital_twin: str, hplc_report_periodic_timescale: str, file_server_upload: str, fs_user: str, fs_pwd: str,
+    def __init__(self, hplc_digital_twin: str, hplc_report_periodic_timescale: str, fs_url: str, fs_user: str, fs_pwd: str,
         agent_iri: str, time_interval: int, derivation_instance_base_url: str, kg_url: str, kg_user: str = None, kg_password: str = None, app: Flask = Flask(__name__), flask_config: FlaskConfig = FlaskConfig(), logger_name: str = "dev"
     ):
         self.hplc_digital_twin = hplc_digital_twin
         self.hplc_report_periodic_timescale = hplc_report_periodic_timescale
-        self.file_server_upload = file_server_upload
-        self.auth = (fs_user, fs_pwd)
+        self.fs_url = fs_url
+        self.fs_auth = (fs_user, fs_pwd)
         super().__init__(agent_iri, time_interval, derivation_instance_base_url, kg_url, kg_user, kg_password, app, flask_config, logger_name)
 
     def monitor_local_report_folder(self):
@@ -50,12 +50,12 @@ class HPLCInputAgent(AsyncAgent):
             timestamp_last_modified = self.dct_files_check.get(hplc_report_path)
             if timestamp_last_modified < timestamp_last_check:
                 raise Exception("HPLC report (%s, last modified at %f) is generated at the local folder (%s) of HPLC <%s> before the last check %f but not uploaded to fileserver %s" % (
-                    hplc_report_path, timestamp_last_modified, self.hplc_dir, self.hplc_digital_twin, timestamp_last_check, self.file_server_upload))
+                    hplc_report_path, timestamp_last_modified, self.hplc_dir, self.hplc_digital_twin, timestamp_last_check, self.fs_url))
             with open(hplc_report_path, 'rb') as file_obj:
                 files = {'file': file_obj}
-                timestamp_upload, response = datetime.now().timestamp(), requests.post(self.file_server_upload, auth=self.auth, files=files)
+                timestamp_upload, response = datetime.now().timestamp(), requests.post(self.fs_url, auth=self.fs_auth, files=files)
                 self.logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> with a response statue code %s at %f" % (
-                    hplc_report_path, self.file_server_upload, response.status_code, timestamp_upload))
+                    hplc_report_path, self.fs_url, response.status_code, timestamp_upload))
 
                 # If the upload succeeded, write the remote file path to KG
                 if (response.status_code == status_codes.codes.OK):
