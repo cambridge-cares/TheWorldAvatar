@@ -71,9 +71,9 @@ def start() -> None:
 
         uploader = uploader_factory.get_uploader(
             uploader_type=args["--uploader_type"],
-            default_url=args['--url'],
-            default_auth_file = args['--auth-file'],
-            default_no_auth=args['--no-auth'],
+            url=args['--url'],
+            auth_file = args['--auth-file'],
+            no_auth=args['--no-auth'],
             subdirs = args['--subdirs'],
             )
 
