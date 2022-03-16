@@ -4,6 +4,7 @@
 from lib2to3.pgen2.pgen import ParserGenerator
 from typing import Tuple
 from urllib import response
+from numpy import trim_zeros
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
 import pandas as pd
@@ -225,7 +226,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             This method retrieves information given a list of instance iri of OntoRxn:ReactionExperiment.
 
             Arguments:
-                rxnexp_iris - iri of OntoRxn:ReactionExperiment instance
+                rxnexp_iris - iri of OntoRxn:ReactionExperiment instance, can be either str of one instance, or a list of instances
         """
 
         # TODO implement logic of querying information for OntoRxn:ReactionExperiment (most importantly parsing InputChemical and OutputChemical)
@@ -341,7 +342,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_rdf_type_of_rxn_exp(self, rxnexp_iri: str) -> str:
         rxnexp_iri = trimIRI(rxnexp_iri)
-        query = PREFIX_RDF + """SELECT ?type WHERE { <%s> rdf:type ?type. filter(?type in (<%s>, <%s>)) }""" % (rxnexp_iri, ONTORXN_REACTIONEXPERIMENT, ONTORXN_REACTIONVARIATION)
+        query = PREFIX_RDF + """SELECT ?type WHERE { VALUES ?type {<%s> <%s>}. <%s> rdf:type ?type. }""" % (ONTORXN_REACTIONEXPERIMENT, ONTORXN_REACTIONVARIATION, rxnexp_iri)
         response = self.performQuery(query)
         if len(response) > 1:
             raise Exception("Multiple rdf:type identified for reaction experiment <%s>: %s" % (rxnexp_iri, str(response)))
@@ -1365,7 +1366,106 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
         return hplc_method
 
-    def process_raw_hplc_report(self, hplc_report_iri: str) -> HPLCReport:
+    def get_species_molar_mass_kilogrampermole(self, species_iri: str) -> float:
+        """This method returns the molecular weight of the given OntoSpecies:Species iri in the unit of kg/mol."""
+        species_iri = trimIRI(species_iri)
+        query = """SELECT ?unit ?value WHERE { <%s> <%s> ?mw. ?mw <%s> ?unit; <%s> ?value. }""" % (
+            species_iri, ONTOSPECIES_HASMOLECULARWEIGHT, ONTOSPECIES_UNITS, ONTOSPECIES_VALUE)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple records of MolecularWeight were identified for OntoSpecies:Species <%s>: %s" % (species_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No record of MolecularWeight was identified for OntoSpecies:Species <%s>" % (species_iri))
+        else:
+            if response[0]['unit'] == 'g/mol':
+                return float(response[0]['value']) / 1000
+            elif response[0]['unit'] == 'kg/mol':
+                return float(response[0]['value'])
+            else:
+                raise NotImplementedError("Record of MolecularWeight in unit of <%s> is NOT yet supported for OntoSpecies:Species <%s>" % (
+                    response[0]['unit'], species_iri))
+
+    # TODO replace this with the proper representation of the species density - at given temperature, what's the density of the given species
+    def get_species_density(self, species_iri: str) -> Tuple[float, str]:
+        PLACEHOLDER_HASDENSITY = 'http://www.placeholder.com/for_density/hasDensity'
+        species_iri = trimIRI(species_iri)
+        query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?density. ?density <%s> ?unit; <%s> ?value. }""" % (
+            species_iri, PLACEHOLDER_HASDENSITY, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple records of Density were identified for OntoSpecies:Species <%s>: %s" % (species_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No record of Density was identified for OntoSpecies:Species <%s>" % (species_iri))
+        else:
+            return float(response[0]['value']), response[0]['unit']
+
+    # TODO replace this with the proper representation of the material cost - with the given vendor, what's the cost of the given chemical
+    def get_species_material_cost(self, species_iri: str) -> Tuple[float, str]:
+        PLACEHOLDER_HASMATERIALCOST = 'http://www.placeholder.com/for_density/hasMaterialCost'
+        species_iri = trimIRI(species_iri)
+        query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?cost. ?cost <%s> ?unit; <%s> ?value. }""" % (
+            species_iri, PLACEHOLDER_HASMATERIALCOST, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple records of MaterialCost were identified for OntoSpecies:Species <%s>: %s" % (species_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No record of MaterialCost was identified for OntoSpecies:Species <%s>" % (species_iri))
+        else:
+            return float(response[0]['value']), response[0]['unit']
+
+    # TODO replace this with the proper representation of the eco score - not sure if this is an "intrinsic" property of a given chemical
+    def get_species_eco_score(self, species_iri: str) -> Tuple[float, str]:
+        PLACEHOLDER_HASECOSCORE = 'http://www.placeholder.com/for_density/hasEcoScore'
+        species_iri = trimIRI(species_iri)
+        query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?ecoscore. ?ecoscore <%s> ?unit; <%s> ?value. }""" % (
+            species_iri, PLACEHOLDER_HASECOSCORE, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple records of EcoScore were identified for OntoSpecies:Species <%s>: %s" % (species_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No record of EcoScore was identified for OntoSpecies:Species <%s>" % (species_iri))
+        else:
+            return float(response[0]['value']), response[0]['unit']
+
+    def get_reactor_volume_given_reactor(self, reactor_iri: str) -> Tuple[float, str]:
+        reactor_iri = trimIRI(reactor_iri)
+        query = """SELECT ?unit ?value WHERE { <%s> <%s>/<%s> ?measure. ?measure <%s> ?unit; <%s> ?value. }""" % (
+            reactor_iri, ONTOVAPOURTEC_HASREACTORVOLUME, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple records of ReactorVolume were identified for VapourtecR4Reactor <%s>: %s" % (reactor_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No record of ReactorVolume was identified for VapourtecR4Reactor <%s>" % (reactor_iri))
+        else:
+            return float(response[0]['value']), response[0]['unit']
+
+    def get_rxn_exp_associated_with_hplc_report(self, hplc_report_iri: str) -> ReactionExperiment:
+        hplc_report_iri = trimIRI(hplc_report_iri)
+        query = """SELECT ?rxn_exp WHERE { ?hplc_job <%s> <%s>; <%s> ?rxn_exp. }""" % (ONTOHPLC_HASREPORT, hplc_report_iri, ONTOHPLC_CHARACTERISES)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple records of ReactionExperiment were identified for HPLCReport <%s>: %s" % (hplc_report_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No record of ReactionExperiment was identified for HPLCReport <%s>" % (hplc_report_iri))
+        else:
+            rxn_exp_iri = response[0]['rxn_exp']
+
+        return self.getReactionExperiment(rxn_exp_iri)[0]
+
+    def get_internal_standard_associated_with_hplc_report(self, hplc_report_iri: str) -> InternalStandard:
+        hplc_report_iri = trimIRI(hplc_report_iri)
+        query = """SELECT ?hplc_method WHERE { ?hplc_job <%s> <%s>; <%s> ?hplc_method. }""" % (ONTOHPLC_HASREPORT, hplc_report_iri, ONTOHPLC_USESMETHOD)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple records of HPLEMethod were identified for HPLCReport <%s>: %s" % (hplc_report_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No record of HPLCMethod was identified for HPLCReport <%s>" % (hplc_report_iri))
+        else:
+            hplc_method_iri = response[0]['hplc_method']
+
+        return self.get_internal_standard(hplc_method_iri)
+
+    def process_raw_hplc_report(self, hplc_report_iri: str, internal_standard_run_conc_moleperlitre: float) -> HPLCReport:
         """Here we can assume that the required information are already provided by the previous agents."""
         hplc_report_path, hplc_report_extension = self.get_raw_hplc_report_path_and_extension(hplc_report_iri)
         # TODO test if need to download the file from here? or can be processed directly?
@@ -1550,25 +1650,49 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         return self.get_hplc_job_given_hplc_report_instance(hplc_report_instance)
 
     def get_hplc_job_given_hplc_report_instance(self, hplc_report_instance: HPLCReport) -> HPLCJob:
-
+        query = """SELECT ?hplc_job ?rxn_exp WHERE {?hplc_job <%s> <%s>; <%s> ?rxn_exp.}""" % (
+            ONTOHPLC_HASREPORT, hplc_report_instance.instance_iri, ONTOHPLC_CHARACTERISES)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple instances of HPLCJob/ReactionExperiment is associated with the given HPLCReport <%s>: %s" % (
+                hplc_report_instance.instance_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No records of HPLCJob/ReactionExperiment were found with the given HPLCReport instance <%s>" % hplc_report_instance.instance_iri)
+        else:
+            hplc_job_iri = response[0]['hplc_job']
+            rxn_exp_iri = response[0]['rxn_exp']
 
         hplc_method_instance = self.get_hplc_method_given_hplc_report(hplc_report_instance.instance_iri)
-        # hplc_job_instance = HPLCJob(
-        #     instance_iri=,
-        #     hasReport=hplc_report_instance,
-        #     characterises=,
-        #     usesMethod=hplc_method_instance
-        # )
-        return 
+        hplc_job_instance = HPLCJob(
+            instance_iri=hplc_job_iri,
+            hasReport=hplc_report_instance,
+            characterises=self.getReactionExperiment(rxn_exp_iri)[0],
+            usesMethod=hplc_method_instance
+        )
+        return hplc_job_instance
 
     def get_hplc_job(self, hplc_job_iri: str) -> HPLCJob:
-        # hplc_job_instance = HPLCJob(
-        #     instance_iri=hplc_job_iri,
-        #     hasReport=,
-        #     characterises=,
-        #     usesMethod=
-        # )
-        return 
+        hplc_job_iri = trimIRI(hplc_job_iri)
+        query = """SELECT ?hplc_report ?rxn_exp ?hplc_method WHERE {<%s> <%s> ?hplc_report; <%s> ?rxn_exp; <%s> ?hplc_method.}""" % (
+            hplc_job_iri, ONTOHPLC_HASREPORT, ONTOHPLC_CHARACTERISES, ONTOHPLC_USESMETHOD)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple instances of HPLCReport/ReactionExperiment/HPLCMethod is associated with the given HPLCJob <%s>: %s" % (
+                hplc_job_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("No records of HPLCJob/ReactionExperiment/HPLCMethod were found with the given HPLCJob instance <%s>" % hplc_job_iri)
+        else:
+            hplc_report_iri = response[0]['hplc_report']
+            rxn_exp_iri = response[0]['rxn_exp']
+            hplc_method_iri = response[0]['hplc_method']
+
+        hplc_job_instance = HPLCJob(
+            instance_iri=hplc_job_iri,
+            hasReport=self.get_existing_hplc_report(hplc_report_iri),
+            characterises=self.getReactionExperiment(rxn_exp_iri)[0],
+            usesMethod=self.get_hplc_method(hplc_method_iri)
+        )
+        return hplc_job_instance
 
     #######################################################
     ## Some utility functions handling the list and dict ##

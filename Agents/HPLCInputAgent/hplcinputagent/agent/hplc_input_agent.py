@@ -65,6 +65,7 @@ class HPLCInputAgent(AsyncAgent):
                     self.logger.info("The initialised HPLCReport IRI is: <%s>" % hplc_report_iri)
                     self.sparql_client.write_hplc_report_path_to_kg(hplc_report_iri=hplc_report_iri, remote_report_path=remote_file_path,
                         local_file_path=hplc_report_path, timestamp_last_modified=timestamp_last_modified, timestamp_upload=timestamp_upload)
+                        # TODO also write HPLCJob etc? i.e. making the connection between the HPLCReport and HPLCJob?
                 else:
                     # TODO need to think a way to inform the post proc agent about the failure of uploading the file
                     raise Exception("File %s upload failed with code %d" % (hplc_report_path, response.status_code))

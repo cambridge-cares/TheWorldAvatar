@@ -92,6 +92,36 @@ class TargetIRIs(Enum):
     LIST_RXN_EXP_3_INPUT_CHEMICAL_IRI = [EXP_3_BASE_IRI + 'InputChemical_1', EXP_3_BASE_IRI + 'InputChemical_2', EXP_3_BASE_IRI + 'InputChemical_3']
     LIST_RXN_EXP_4_INPUT_CHEMICAL_IRI = [EXP_4_BASE_IRI + 'InputChemical_1', EXP_4_BASE_IRI + 'InputChemical_2', EXP_4_BASE_IRI + 'InputChemical_3']
     LIST_RXN_EXP_5_INPUT_CHEMICAL_IRI = [EXP_5_BASE_IRI + 'InputChemical_1', EXP_5_BASE_IRI + 'InputChemical_2', EXP_5_BASE_IRI + 'InputChemical_3']
+    LIST_RXN_EXP_1_OUTPUT_CHEMICAL_IRI = [EXP_1_BASE_IRI + 'OutputChemical_4']
+    LIST_RXN_EXP_2_OUTPUT_CHEMICAL_IRI = [EXP_2_BASE_IRI + 'OutputChemical_4']
+    LIST_RXN_EXP_3_OUTPUT_CHEMICAL_IRI = [EXP_3_BASE_IRI + 'OutputChemical_4']
+    LIST_RXN_EXP_4_OUTPUT_CHEMICAL_IRI = [EXP_4_BASE_IRI + 'OutputChemical_4']
+    LIST_RXN_EXP_5_OUTPUT_CHEMICAL_IRI = [EXP_5_BASE_IRI + 'OutputChemical_4']
+
+    RXNEXP_TYPE_DICT = {EXAMPLE_RXN_EXP_1_IRI:onto.ONTORXN_REACTIONEXPERIMENT,EXAMPLE_RXN_EXP_2_IRI:onto.ONTORXN_REACTIONEXPERIMENT,
+        EXAMPLE_RXN_EXP_3_IRI:onto.ONTORXN_REACTIONEXPERIMENT,EXAMPLE_RXN_EXP_4_IRI:onto.ONTORXN_REACTIONEXPERIMENT,
+        EXAMPLE_RXN_EXP_5_IRI:onto.ONTORXN_REACTIONEXPERIMENT,NEW_RXN_EXP_1_IRI:onto.ONTORXN_REACTIONVARIATION,
+        NEW_RXN_EXP_2_IRI:onto.ONTORXN_REACTIONVARIATION,NEW_RXN_EXP_3_IRI:onto.ONTORXN_REACTIONVARIATION}
+    RXNEXP_REACTION_CONDITION_DICT = {EXAMPLE_RXN_EXP_1_IRI:EXAMPLE_RXN_EXP_1_REACTION_CONDITION_IRI_LIST,EXAMPLE_RXN_EXP_2_IRI:EXAMPLE_RXN_EXP_2_REACTION_CONDITION_IRI_LIST,
+        EXAMPLE_RXN_EXP_3_IRI:EXAMPLE_RXN_EXP_3_REACTION_CONDITION_IRI_LIST,EXAMPLE_RXN_EXP_4_IRI:EXAMPLE_RXN_EXP_4_REACTION_CONDITION_IRI_LIST,
+        EXAMPLE_RXN_EXP_5_IRI:EXAMPLE_RXN_EXP_5_REACTION_CONDITION_IRI_LIST,NEW_RXN_EXP_1_IRI:NEW_RXN_EXP_1_REACTION_CONDITION_IRI_LIST,
+        NEW_RXN_EXP_2_IRI:NEW_RXN_EXP_2_REACTION_CONDITION_IRI_LIST,NEW_RXN_EXP_3_IRI:NEW_RXN_EXP_3_REACTION_CONDITION_IRI_LIST}
+    RXNEXP_PERFORMANCE_INDICATOR_DICT = {EXAMPLE_RXN_EXP_1_IRI:EXAMPLE_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST,EXAMPLE_RXN_EXP_2_IRI:EXAMPLE_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST,
+        EXAMPLE_RXN_EXP_3_IRI:EXAMPLE_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST,EXAMPLE_RXN_EXP_4_IRI:EXAMPLE_RXN_EXP_4_PERFORMANCE_INDICATOR_IRI_LIST,
+        EXAMPLE_RXN_EXP_5_IRI:EXAMPLE_RXN_EXP_5_PERFORMANCE_INDICATOR_IRI_LIST}
+    RXNEXP_INPUT_CHEMICAL_DICT = {EXAMPLE_RXN_EXP_1_IRI:LIST_RXN_EXP_1_INPUT_CHEMICAL_IRI,EXAMPLE_RXN_EXP_2_IRI:LIST_RXN_EXP_2_INPUT_CHEMICAL_IRI,
+        EXAMPLE_RXN_EXP_3_IRI:LIST_RXN_EXP_3_INPUT_CHEMICAL_IRI,EXAMPLE_RXN_EXP_4_IRI:LIST_RXN_EXP_4_INPUT_CHEMICAL_IRI,
+        EXAMPLE_RXN_EXP_5_IRI:LIST_RXN_EXP_5_INPUT_CHEMICAL_IRI}
+    RXNEXP_OUTPUT_CHEMICAL_DICT = {EXAMPLE_RXN_EXP_1_IRI:LIST_RXN_EXP_1_OUTPUT_CHEMICAL_IRI,EXAMPLE_RXN_EXP_2_IRI:LIST_RXN_EXP_2_OUTPUT_CHEMICAL_IRI,
+        EXAMPLE_RXN_EXP_3_IRI:LIST_RXN_EXP_3_OUTPUT_CHEMICAL_IRI,EXAMPLE_RXN_EXP_4_IRI:LIST_RXN_EXP_4_OUTPUT_CHEMICAL_IRI,
+        EXAMPLE_RXN_EXP_5_IRI:LIST_RXN_EXP_5_OUTPUT_CHEMICAL_IRI}
+    RXNEXP_REACTOR_ASSIGNED_DICT = {EXAMPLE_RXN_EXP_1_IRI:VAPOURTECR4REACTOR_DUMMY_IRI,EXAMPLE_RXN_EXP_2_IRI:VAPOURTECR4REACTOR_DUMMY_IRI,
+        EXAMPLE_RXN_EXP_3_IRI:VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI,EXAMPLE_RXN_EXP_4_IRI:VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI,
+        EXAMPLE_RXN_EXP_5_IRI:VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI}
+    RXNEXP_CHEMICAL_REACTION_IRI_DICT = {EXAMPLE_RXN_EXP_1_IRI:CHEMICAL_REACTION_IRI,EXAMPLE_RXN_EXP_2_IRI:CHEMICAL_REACTION_IRI,
+        EXAMPLE_RXN_EXP_3_IRI:CHEMICAL_REACTION_IRI,EXAMPLE_RXN_EXP_4_IRI:CHEMICAL_REACTION_IRI,
+        EXAMPLE_RXN_EXP_5_IRI:CHEMICAL_REACTION_IRI}
+
     LIST_EXAMPLE_RXN_EXP = [EXAMPLE_RXN_EXP_1_IRI, EXAMPLE_RXN_EXP_2_IRI, EXAMPLE_RXN_EXP_3_IRI, EXAMPLE_RXN_EXP_4_IRI, EXAMPLE_RXN_EXP_5_IRI]
     LIST_RXN_EXP_ASSIGNEDTO_VAPR4_DUMMY = [EXAMPLE_RXN_EXP_1_IRI, EXAMPLE_RXN_EXP_2_IRI]
     # LIST_VAPR4_DUMMY_CONDUCTED_RXN_EXP = [EXAMPLE_RXN_EXP_1_IRI, EXAMPLE_RXN_EXP_2_IRI]
@@ -117,7 +147,8 @@ class TargetIRIs(Enum):
     PHASECOMPONENT_INTERNAL_STANDARD_IRI = 'https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_InternalStandard'
     ONTOSPECIES_INTERNAL_STANDARD_IRI = 'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'
     MOLARITY_INTERNAL_STANDARD = 0.02
-    HPLCReport_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCReport_Dummy'
+    HPLCREPORT_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCReport_Dummy'
+    HPLCJOB_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCJob_Dummy'
     CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI = DUMMY_LAB_BASE_IRI + 'ChemicalSolution_For_OutputChemical_4'
     CHROMATOGRAMPOINT_1_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_1'
     CHROMATOGRAMPOINT_2_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_2'
@@ -137,6 +168,7 @@ class TargetIRIs(Enum):
     DOE_SYS_RES_2_IRI = DOE_BASE_IRI + 'SystemResponse_2'
     DOE_SYS_RES_IRI_LIST = [DOE_SYS_RES_1_IRI, DOE_SYS_RES_2_IRI]
     DOE_HIST_DATA_IRI = DOE_BASE_IRI + 'HistoricalData_1'
+    DOE_HIST_DATE_REFERTO_IRI = LIST_EXAMPLE_RXN_EXP
     DOE_NEW_EXP_IRI = DOE_BASE_IRI + 'ReactionExperiment_new'
     DOE_CONT_VAR_1_IRI = DOE_BASE_IRI + 'ContinuousVariable_1'
     DOE_CONT_VAR_2_IRI = DOE_BASE_IRI + 'ContinuousVariable_2'
@@ -294,20 +326,68 @@ def test_get_rdf_type_of_rxn_exp(initialise_triples, rxnexp_iri, expected_rxn_ty
     rxn_type = sparql_client.get_rdf_type_of_rxn_exp(rxnexp_iri)
     assert rxn_type == expected_rxn_type
 
-# def test_getReactionExperiment(initialise_triples):
-#     sparql_client = initialise_triples
-#     sparql_client = ChemistryAndRobotsSparqlClient()
-#     pass
+@pytest.mark.parametrize(
+    "rxnexp_iris,rxn_type,rxnexp_condition,rxnexp_perfind,input_chem,output_chem,reactor_assigned,chem_rxn",
+    [# here we are testing that the function should work wether the passed in iri is already a list or not
+        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        ([TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value], TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        ([TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value], TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        (TargetIRIs.LIST_EXAMPLE_RXN_EXP.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        # TODO (TargetIRIs.NEW_RXN_EXP_1_IRI.value, []),
+        # TODO (TargetIRIs.NEW_RXN_EXP_2_IRI.value, []),
+        # TODO (TargetIRIs.NEW_RXN_EXP_3_IRI.value, []),
+    ],
+)
+def test_getReactionExperiment(initialise_triples, rxnexp_iris, rxn_type, rxnexp_condition, rxnexp_perfind, input_chem, output_chem, reactor_assigned, chem_rxn):
+    sparql_client = initialise_triples
+    rxn_exp_list = sparql_client.getReactionExperiment(rxnexp_iris)
+    length = len(rxnexp_iris) if isinstance(rxnexp_iris, list) else 1
+    assert len(rxn_exp_list) == length
+    for exp in rxn_exp_list:
+        assert exp.clz == rxn_type.get(exp.instance_iri)
+        assert len(exp.hasReactionCondition) == len(rxnexp_condition.get(exp.instance_iri))
+        assert len(exp.hasPerformanceIndicator) == len(rxnexp_perfind.get(exp.instance_iri))
+        assert len(exp.hasInputChemical) == len(input_chem.get(exp.instance_iri))
+        assert len(exp.hasOutputChemical) == len(output_chem.get(exp.instance_iri))
+        assert all(con in [c.instance_iri for c in exp.hasReactionCondition] for con in rxnexp_condition.get(exp.instance_iri))
+        assert all(pre in [pi.instance_iri for pi in exp.hasPerformanceIndicator] for pre in rxnexp_perfind.get(exp.instance_iri))
+        assert all(inp in [ic.instance_iri for ic in exp.hasInputChemical] for inp in input_chem.get(exp.instance_iri))
+        assert all(out in [oc.instance_iri for oc in exp.hasOutputChemical] for out in output_chem.get(exp.instance_iri))
+        assert exp.isAssignedTo == reactor_assigned.get(exp.instance_iri)
+        assert exp.isOccurenceOf.instance_iri == chem_rxn.get(exp.instance_iri)
 
-# def test_getNewExperimentFromDoE(initialise_triples):
-#     sparql_client = initialise_triples
-#     sparql_client = ChemistryAndRobotsSparqlClient()
-#     pass
+def test_getNewExperimentFromDoE(initialise_triples):
+    sparql_client = initialise_triples
+    new_exp_iri = sparql_client.getNewExperimentFromDoE(TargetIRIs.DOE_IRI.value)
+    assert new_exp_iri == TargetIRIs.DOE_NEW_EXP_IRI.value
 
-# def test_getDoEHistoricalData(initialise_triples):
-#     sparql_client = initialise_triples
-#     sparql_client = ChemistryAndRobotsSparqlClient()
-#     pass
+def test_getDoEHistoricalData(initialise_triples):
+    sparql_client = initialise_triples
+    # sparql_client = ChemistryAndRobotsSparqlClient()
+    hist_data_instance = sparql_client.getDoEHistoricalData(TargetIRIs.DOE_HIST_DATA_IRI.value)
+    assert isinstance(hist_data_instance, onto.HistoricalData)
+    assert len(hist_data_instance.refersTo) == len(TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
+    assert all(iri in [h.instance_iri for h in hist_data_instance.refersTo] for iri in TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
 
 #############################################
 ## sparql_client.py functions to be tested ##
@@ -333,7 +413,13 @@ def test_get_rdf_type_of_rxn_exp(initialise_triples, rxnexp_iri, expected_rxn_ty
 
 # get_hplc_local_report_folder_path
 # get_matching_species_from_hplc_results
-
+# get_species_molar_mass_kilogrampermole
+# get_species_density
+# get_species_material_cost
+# get_species_eco_score
+# get_reactor_volume_given_reactor
+# get_rxn_exp_associated_with_hplc_report
+# get_internal_standard_associated_with_hplc_report
 
 def test_get_all_autosampler_with_fill(initialise_triples):
     sparql_client = initialise_triples
@@ -556,7 +642,7 @@ def test_get_hplc_method(initialise_triples):
 
 def test_get_hplc_method_given_hplc_report(initialise_triples):
     sparql_client = initialise_triples
-    hplc_method = sparql_client.get_hplc_method_given_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    hplc_method = sparql_client.get_hplc_method_given_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
     internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
     assert hplc_method.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
     assert hplc_method.usesInternalStandard == internal_standard
@@ -565,7 +651,7 @@ def test_get_hplc_method_given_hplc_report(initialise_triples):
 
 def test_get_chromatogram_point_of_hplc_report(initialise_triples):
     sparql_client = initialise_triples
-    list_chrom_pts = sparql_client.get_chromatogram_point_of_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    list_chrom_pts = sparql_client.get_chromatogram_point_of_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
     assert len(list_chrom_pts) == len(TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value)
     for pt in list_chrom_pts:
         assert pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value
@@ -580,10 +666,10 @@ def test_get_chromatogram_point_of_hplc_report(initialise_triples):
 
 def test_get_existing_hplc_report(initialise_triples):
     sparql_client = initialise_triples
-    list_chrom_pts = sparql_client.get_chromatogram_point_of_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    list_chrom_pts = sparql_client.get_chromatogram_point_of_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
     assert len(list_chrom_pts) == len(TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value)
     assert all(pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value for pt in list_chrom_pts)
-    hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCReport_DUMMY_IRI.value)
+    hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
     assert all(pt in list_chrom_pts for pt in hplc_report.records)
     assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI.value
     assert hplc_report.hasReportPath is not None
@@ -596,13 +682,29 @@ def test_process_raw_hplc_report(initialise_triples):
     pass
 
 def test_get_hplc_job_given_hplc_report_instance(initialise_triples):
-    pass
+    sparql_client = initialise_triples
+    hplc_report_instance = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
+    hplc_job_instance = sparql_client.get_hplc_job_given_hplc_report_instance(hplc_report_instance)
+    assert hplc_job_instance.instance_iri == TargetIRIs.HPLCJOB_DUMMY_IRI.value
+    assert hplc_job_instance.characterises.instance_iri == TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value
+    assert hplc_job_instance.usesMethod.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
+    assert hplc_job_instance.hasReport == hplc_report_instance
 
 def test_get_hplc_job_given_hplc_report_iri(initialise_triples):
-    pass
+    sparql_client = initialise_triples
+    hplc_job_instance = sparql_client.get_hplc_job_given_hplc_report_iri(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
+    assert hplc_job_instance.instance_iri == TargetIRIs.HPLCJOB_DUMMY_IRI.value
+    assert hplc_job_instance.characterises.instance_iri == TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value
+    assert hplc_job_instance.usesMethod.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
+    assert hplc_job_instance.hasReport == sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
 
 def test_get_hplc_job(initialise_triples):
-    pass
+    sparql_client = initialise_triples
+    hplc_job_instance = sparql_client.get_hplc_job(TargetIRIs.HPLCJOB_DUMMY_IRI.value)
+    assert hplc_job_instance.instance_iri == TargetIRIs.HPLCJOB_DUMMY_IRI.value
+    assert hplc_job_instance.characterises.instance_iri == TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value
+    assert hplc_job_instance.usesMethod.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
+    assert hplc_job_instance.hasReport.instance_iri == TargetIRIs.HPLCREPORT_DUMMY_IRI.value
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer

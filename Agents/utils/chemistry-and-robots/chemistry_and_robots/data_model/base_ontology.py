@@ -17,6 +17,26 @@ ONTODERIVATION_HASSTATUS = ONTODERIVATION + 'hasStatus'
 DOEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__DoE#Service'
 EXEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service'
 OM_MINUTETIME = UNITS_OF_MEASURE + 'minute-Time'
+OM_MASS = UNITS_OF_MEASURE + 'Mass'
+OM_DENSITY = UNITS_OF_MEASURE + 'Density'
+OM_SPECIFICAMOUNTOFMONEY = UNITS_OF_MEASURE + 'SpecificAmountOfMoney'
+OM_AMOUNTOFSUBSTANCE = UNITS_OF_MEASURE + 'AmountOfSubstance'
+OM_MOLE = UNITS_OF_MEASURE + 'mole'
+OM_MOLEPERLITRE = UNITS_OF_MEASURE + 'molePerLitre'
+OM_LITRE = UNITS_OF_MEASURE + 'litre'
+OM_KILOGRAMPERLITRE = UNITS_OF_MEASURE + 'kilogramPerLitre'
+OM_KILOGRAM = UNITS_OF_MEASURE + 'kilogram'
+OM_KILOGRAMPERMOLE = UNITS_OF_MEASURE + 'kilogramPerMole'
+OM_MILLILITRE = UNITS_OF_MEASURE + 'millilitre'
+ONTOUOM_GRAMPERMOLE = ONTOUOM + 'gramPerMole' # TODO add this to OM TBox
+ONTOSPECIES_HASMOLECULARWEIGHT = ONTOSPECIES + 'hasMolecularWeight'
+ONTOSPECIES_UNITS = ONTOSPECIES + 'units'
+ONTOSPECIES_VALUE = ONTOSPECIES + 'value'
+ONTOUOM_POUNDSTERLINGPERLITRE = ONTOUOM + 'pound_sterling_per_litre'
+OM_ONE = UNITS_OF_MEASURE + 'one'
+OM_DEGREECELSIUS = UNITS_OF_MEASURE + 'degreeCelsius'
+OM_DEGREEFAHRENHEIT = UNITS_OF_MEASURE + 'degreeFahrenheit'
+OM_KELVIN = UNITS_OF_MEASURE + 'kelvin'
 
 class InstanceIRIInitialisationError(Exception):
     instance_iri_missing = """IRI of instance_iri is missing, please put it as pyasyncagent.data_model.utils.INSTANCE_IRI_TO_BE_INITIALISED \
@@ -152,3 +172,15 @@ class OM_Duration(OM_Quantity):
 
 class OM_QuantityOfDimensionOne(OM_Quantity):
     clz: str = OM_QUANTITYOFDIMENSIONONE
+
+class OM_Mass(OM_Quantity):
+    clz: str = OM_MASS
+
+class OM_Density(OM_Quantity):
+    clz: str = OM_DENSITY
+
+class OM_SpecificAmountOfMoney(OM_Quantity):
+    clz: str = OM_SPECIFICAMOUNTOFMONEY
+
+class OM_AmountOfSubstance(OM_Quantity):
+    clz: str = OM_AMOUNTOFSUBSTANCE

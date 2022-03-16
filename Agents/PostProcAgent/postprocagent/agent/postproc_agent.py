@@ -8,6 +8,7 @@ from pyasyncagent import AsyncAgent
 
 from postprocagent.kg_operations import *
 from postprocagent.data_model import *
+import postprocagent.hypo_rxn as hypo
 from postprocagent.conf import *
 
 from chemistry_and_robots.hardware import hplc
@@ -18,16 +19,40 @@ class PostProcAgent(AsyncAgent):
         self.sparql_client = ChemistryAndRobotsSparqlClient(
             self.kgUrl, self.kgUrl
         )
-        # Check if the input is in correct format, and return ontohplc.HPLCReport instance
-        hplc_report_instance = self.collectInputsInformation(agentInputs)
-        self.logger.info("Collected inputs from the knowledge graph: ")
-        self.logger.info(json.dumps(hplc_report_instance.dict()))
+        # Get the HPLCReport iri from the agent inputs
+        hplc_report_iri = self.collectInputsInformation(agentInputs)
 
-        # calculate yield
-        
-        return 
+        # Retrieve the ReactionExperiment instance that the is HPLCReport is generated for
+        rxn_exp_instance = self.sparql_client.get_rxn_exp_associated_with_hplc_report(hplc_report_iri)
+        # Retrieve the InternalStandard instance that was used by the HPLCMethod
+        internal_standard_instance = self.sparql_client.get_internal_standard_associated_with_hplc_report(hplc_report_iri)
 
-    def collectInputsInformation(self, agent_inputs) -> HPLCReport:
+        # Construct an instance of HypoReactor given the ReactionExperiment information, get the value of internal_standard_run_conc_moleperlitre
+        hypo_reactor, internal_standard_run_conc_moleperlitre = hypo.construct_hypo_reactor(self.sparql_client, rxn_exp_instance, internal_standard_instance)
+
+        # TODO Process the raw hplc report and generate an instance of HPLCReport
+        hplc_report_instance = self.sparql_client.process_raw_hplc_report(hplc_report_iri=hplc_report_iri,
+            internal_standard_run_conc_moleperlitre=internal_standard_run_conc_moleperlitre)
+
+        # TODO Construct an instance of HypoEndStream given the processed HPLCReport instance and instance of HypoReactor
+        hypo_end_stream = hypo.construct_hypo_end_stream(self.sparql_client, hplc_report_instance, hypo_reactor)
+
+        # TODO Calculate each PerformanceIndicator
+        pi_yield = hypo.calculate_yield(hypo_reactor, hypo_end_stream)
+        pi_conversion = hypo.calculate_conversion(hypo_reactor, hypo_end_stream)
+        pi_eco_score = hypo.calculate_eco_score(hypo_reactor, hypo_end_stream)
+        pi_e_factor = hypo.calculate_enviromental_factor(hypo_reactor, hypo_end_stream)
+        pi_spy = hypo.calculate_space_time_yield(hypo_reactor, hypo_end_stream)
+        pi_cost = hypo.calculate_run_material_cost(hypo_reactor, hypo_end_stream)
+
+        # TODO Write the generated OutputChemical triples and PerformanceIndicator triples back to KG
+
+        # Generate a list of PerformanceIndicator iri as agent output (new derived IRI)
+        lst_performance_indicator_iri = [pi_yield.instance_iri, pi_conversion.instance_iri, pi_eco_score.instance_iri,
+            pi_e_factor.instance_iri, pi_spy.instance_iri, pi_cost.instance_iri]
+        return lst_performance_indicator_iri
+
+    def collectInputsInformation(self, agent_inputs) -> str:
         """
             This function checks the agent input against the I/O signature as declared in the PostProc Agent OntoAgent instance and collects information.
         """
@@ -38,17 +63,10 @@ class PostProcAgent(AsyncAgent):
                                 }"""
         # If the input JSON string is missing mandatory keys, raise error with "exception_string"
         if ONTOHPLC_HPLCREPORT in agent_inputs:
-            try:
-                # Get the information from OntoHPLC:HPLCReport instance
-                hplc_report_instance = self.sparql_client.process_raw_hplc_report(agent_inputs[ONTOHPLC_HPLCREPORT])
-            except ValueError:
-                self.logger.error("Unable to interpret hplc report ('%s') as an IRI." % agent_inputs[ONTOHPLC_HPLCREPORT])
-                raise Exception("Unable to interpret hplc report ('%s') as an IRI." % agent_inputs[ONTOHPLC_HPLCREPORT])
+            return agent_inputs[ONTOHPLC_HPLCREPORT]
         else:
             self.logger.error('OntoHPLC:HPLCReport instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
             raise Exception('OntoHPLC:HPLCReport instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
-
-        return hplc_report_instance
 
 def default():
     """

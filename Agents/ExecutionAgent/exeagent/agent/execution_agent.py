@@ -66,6 +66,7 @@ class ExecutionAgent(AsyncAgent):
         # self.logger.info(f"The generated new HPLC report (raw data) is hosted at: <{hplc_report.instance_iri}>.")
         # TODO make the connection between HPLCReport and HPLCJob here?
         # TODO where do we generate the instance of HPLCJob?
+        # TODO query the HPLC instance so that to make the link between the HPLCReport and HPLCJob hence ReactionExperiment?
         # <hplc> <hasJob> <hplc_job>
         # <hplc_job> <characterises> <rxnexp>
         # <hplc_job> <usesMethod> <hplc_method> # these hplc_method should pre-exist, we only need to attach to it # maybe also can check what HPLCMethod was used for previous rxnexp?
