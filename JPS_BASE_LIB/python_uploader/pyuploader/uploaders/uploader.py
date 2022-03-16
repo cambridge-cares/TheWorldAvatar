@@ -2,6 +2,7 @@ import pyuploader.common.utils as utils
 import pyuploader.common.logconfig as logconfig
 import pyuploader.errorhandling.appexceptions as appexcept
 from typing import Callable, Dict, Tuple, Optional
+from abc import ABC, abstractmethod
 import pathlib
 import logging
 import textwrap
@@ -11,18 +12,16 @@ logger = logging.getLogger(__name__)
 BASE_URL_ENV_VAR_KEY = 'url_file'
 BASE_AUTH_ENV_VAR_KEY = 'auth_file'
 
-class Uploader:
-
+class Uploader(ABC):
+    """Abstract uploader class."""
     def __init__(
         self,
-        upload_file_func: Callable,
         uploader_name: str = 'uploader',
         supported_file_ext: str = 'all',
         default_url: Optional[str] = None,
         default_auth_file: Optional[str] = None,
         default_no_auth: bool = False):
 
-        self.upload_file_func = upload_file_func
         self.env_vars: Dict[str,str] = {BASE_URL_ENV_VAR_KEY: '',
                                         BASE_AUTH_ENV_VAR_KEY: ''}
 
@@ -46,19 +45,6 @@ class Uploader:
     def get_auth_env_var_value(self) -> str:
         return self.env_vars[BASE_AUTH_ENV_VAR_KEY]
 
-    def set_logging(self,
-        log_file_dir: Optional[str] = None,
-        log_file_name: Optional[str]= None,
-        no_file_logging: bool = False):
-
-        if log_file_name is None:
-            log_file_name = self.uploader_name.replace(' ', '_') + '.log'
-
-        logconfig.config_logging(
-            log_file_dir,
-            log_file_name,
-            no_file_logging)
-
     def upload(self,
         file_ext: str,
         file_or_dir: str,
@@ -66,8 +52,7 @@ class Uploader:
         auth_file: Optional[str] = None,
         no_auth: Optional[bool] = None,
         dry_run: bool = False,
-        subdirs: Optional[str]=None,
-        *args, **kwargs) -> Dict[str,str]:
+        **kwargs) -> Dict[str,str]:
 
         if dry_run:
             logger.info(f"#######################")
@@ -104,7 +89,7 @@ class Uploader:
                 logger.info(f"Uploading file: {basenf} to the {self.uploader_name}.")
                 if not dry_run:
                     try:
-                        location = self._upload_file(url, auth, f, subdirs, *args, **kwargs)
+                        location = self._upload_file(url, auth, f, **kwargs)
                     except Exception as e:
                         raise appexcept.FileUploadError(textwrap.dedent("""
                             Error: Failed to upload file: #f#
@@ -123,14 +108,15 @@ class Uploader:
         logger.info(f"---------------------------------------------------------------------------")
         return file_locations
 
+
+    @abstractmethod
     def _upload_file(self,
         url: str,
         auth: Tuple[str,str],
         file_path: str,
-        subdirs: Optional[str]=None,
-        *args, **kwargs) -> str:
-        location = self.upload_file_func(url, auth, file_path, subdirs, *args, **kwargs)
-        return location
+        **kwargs) -> str:
+
+        pass
 
     def _get_url(self) -> str:
         logger.info(f"Reading the {self.uploader_name} specs file path from the environment variables.")
