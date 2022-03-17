@@ -46,4 +46,4 @@ Once these are run, you should see a new docker container running. To see this, 
 If everything worked you should now have a webpage running and visualising the data. 
 
 Also: 
-The 'mapping' folder is not run as part of the main program(s), and its functionally seperate. 
+The 'mapping' folder is not run as part of the main program(s), and its functionally seperate. The readme within details its use. 
