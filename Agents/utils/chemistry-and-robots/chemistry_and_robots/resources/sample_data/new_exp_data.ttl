@@ -3,261 +3,318 @@
 @prefix ns3: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_43fcea98-3e86-4f7b-b3fd-a4ac9a92fff9> a ns1:Measure ;
-    ns1:hasNumericalValue 5.098264e+00 ;
-    ns1:hasUnit ns1:minute-Time .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_5d2afe38-73fc-4115-9aab-89d1d1cf5f9d> a ns1:Measure ;
-    ns1:hasNumericalValue 4.117812e+01 ;
-    ns1:hasUnit ns1:degreeCelsius .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_5e80460c-2188-4dd6-9d08-65f0e3e9f2f4> a ns1:Measure ;
-    ns1:hasNumericalValue 1.212809e-01 ;
-    ns1:hasUnit ns1:one .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_957ce958-fc8c-4c02-8a5e-243354d23a7f> a ns1:Measure ;
-    ns1:hasNumericalValue 6e+00 ;
-    ns1:hasUnit ns1:bar .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_acc94b08-3517-4c69-a854-86c6317abc78> a ns1:Measure ;
-    ns1:hasNumericalValue 5e+00 ;
-    ns1:hasUnit ns1:millilitre .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_ddabc71f-856a-4b11-91b1-0c52e4aef13f> a ns1:Measure ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_02c2c471-cf86-4b6c-b41a-aa8cde84b457> a ns1:Measure ;
     ns1:hasNumericalValue 1e+00 ;
     ns1:hasUnit ns1:one .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_fd679454-1026-408e-9511-0f5561de5692> a ns1:Measure ;
-    ns1:hasNumericalValue 8.979525e+00 ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_07d73e67-a930-42df-a475-2d1c3ac2d19f> a ns1:Measure ;
+    ns1:hasNumericalValue 6.309849e+00 ;
+    ns1:hasUnit ns1:minute-Time .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_596b84d2-03d7-4715-9f00-56c45017cd19> a ns1:Measure ;
+    ns1:hasNumericalValue 5e+00 ;
+    ns1:hasUnit ns1:millilitre .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_740fa259-0149-4f49-99e7-95fbcff8c7e7> a ns1:Measure ;
+    ns1:hasNumericalValue 7.476995e+00 ;
     ns1:hasUnit ns1:one .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_bb968e8d-88ff-4414-b50b-e81c605bdc4a> a ns2:ReactionPressure ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_957ce958-fc8c-4c02-8a5e-243354d23a7f> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_a7974834-3f69-4004-9831-15bf4c559b5e> a ns1:Measure ;
+    ns1:hasNumericalValue 1.475794e-01 ;
+    ns1:hasUnit ns1:one .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_7e613593-b975-441a-91ee-679db689f59a> a ns2:ReactionScale ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_acc94b08-3517-4c69-a854-86c6317abc78> ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_db866035-fa8c-405e-9cd3-f7fe542a2eb3> a ns1:Measure ;
+    ns1:hasNumericalValue 6e+00 ;
+    ns1:hasUnit ns1:bar .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_dce31f1f-6891-4b81-9a41-09163060eb6e> a ns1:Measure ;
+    ns1:hasNumericalValue 5.816855e+01 ;
+    ns1:hasUnit ns1:degreeCelsius .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_a75c05d9-e6c5-4710-8618-cfada4d27ad3> a ns2:ReactionPressure ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_db866035-fa8c-405e-9cd3-f7fe542a2eb3> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_12f103bd-5831-4538-80f1-e9f1b67ccf3b> a ns2:ReactionScale ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_596b84d2-03d7-4715-9f00-56c45017cd19> ;
     ns2:indicatesUsageOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_b4bf163d-ab88-4366-b3a7-9c742431771f> a ns2:ReactionTemperature ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_5d2afe38-73fc-4115-9aab-89d1d1cf5f9d> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_ccb93a20-fea9-4179-a3c2-067e31989adf> a ns2:ReactionTemperature ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_dce31f1f-6891-4b81-9a41-09163060eb6e> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_18f228d4-cb92-419c-adc0-3473b7bce9c4> a ns2:ResidenceTime ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_43fcea98-3e86-4f7b-b3fd-a4ac9a92fff9> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_f228988f-7b01-4776-84c0-8cf41bb57176> a ns2:ResidenceTime ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_07d73e67-a930-42df-a475-2d1c3ac2d19f> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_6d9cf3bc-c3ab-4672-ad61-2026b4624674> a ns2:RunMaterialCost ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_9e97205c-7b59-497c-b5bc-187c212e53c4> a ns2:RunMaterialCost ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> ns2:hasVariation <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> ns2:hasVariation <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_02534f87-2a52-4a56-b67a-a3ff458bc4e3> a ns2:StoichiometryRatio ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_ddabc71f-856a-4b11-91b1-0c52e4aef13f> ;
-    ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_33e875fb-40f4-4223-9384-d79fec4c1bf1> a ns2:StoichiometryRatio ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_5e80460c-2188-4dd6-9d08-65f0e3e9f2f4> ;
-    ns3:positionalID 3 ;
-    ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_a4e20579-c83e-49a0-ba3a-e4c92b78f2af> a ns2:StoichiometryRatio ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_fd679454-1026-408e-9511-0f5561de5692> ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_866bfdf2-0d32-40da-8fcb-f89669cf1d31> a ns2:StoichiometryRatio ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_740fa259-0149-4f49-99e7-95fbcff8c7e7> ;
     ns3:positionalID 2 ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_641d6c0d-6d17-433a-9765-5ee9af030161> a ns2:Yield ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_8ae63d49-d3e5-469c-a85a-e7799ddf1807> a ns2:StoichiometryRatio ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_02c2c471-cf86-4b6c-b41a-aa8cde84b457> ;
+    ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1> a ns2:ReactionVariation ;
-    ns2:isOccurenceOf <https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1>;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_c242fa46-e60c-481c-8dc2-741f69386f25> a ns2:StoichiometryRatio ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_a7974834-3f69-4004-9831-15bf4c559b5e> ;
+    ns3:positionalID 3 ;
+    ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_7d236fe9-89ce-4fc1-b12e-e427b73b9bba> a ns2:Yield ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Conversion_967deb19-b7bc-4b5b-a236-13df15a0d2ea> a ns2:Conversion ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EcoScore_ed7d5c04-3388-4b34-9795-0685e2ece916> a ns2:EcoScore ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EnvironmentalFactor_a03c52ca-9404-4b71-9ef3-ba19e78c23a0> a ns2:EnvironmentalFactor ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/SpaceTimeYield_0d5b724a-d31a-4200-af31-ae574d14be50> a ns2:SpaceTimeYield ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> a ns2:ReactionVariation ;
+    ns2:hasConversion <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Conversion_967deb19-b7bc-4b5b-a236-13df15a0d2ea> ;
+    ns2:hasEcoScore <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EcoScore_ed7d5c04-3388-4b34-9795-0685e2ece916> ;
+    ns2:hasEnvironmentalFactor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EnvironmentalFactor_a03c52ca-9404-4b71-9ef3-ba19e78c23a0> ;
     ns2:hasInputChemical <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> ;
-    ns2:hasResTime <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_18f228d4-cb92-419c-adc0-3473b7bce9c4> ;
-    ns2:hasRunMaterialCost <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_6d9cf3bc-c3ab-4672-ad61-2026b4624674> ;
-    ns2:hasRxnPressure <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_bb968e8d-88ff-4414-b50b-e81c605bdc4a> ;
-    ns2:hasRxnScale <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_7e613593-b975-441a-91ee-679db689f59a> ;
-    ns2:hasRxnTemperature <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_b4bf163d-ab88-4366-b3a7-9c742431771f> ;
-    ns2:hasStoichiometryRatio <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_02534f87-2a52-4a56-b67a-a3ff458bc4e3>,
-        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_33e875fb-40f4-4223-9384-d79fec4c1bf1>,
-        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_a4e20579-c83e-49a0-ba3a-e4c92b78f2af> ;
-    ns2:hasYield <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_641d6c0d-6d17-433a-9765-5ee9af030161> ;
+    ns2:hasPerformanceIndicator <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Conversion_967deb19-b7bc-4b5b-a236-13df15a0d2ea>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EcoScore_ed7d5c04-3388-4b34-9795-0685e2ece916>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EnvironmentalFactor_a03c52ca-9404-4b71-9ef3-ba19e78c23a0>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/SpaceTimeYield_0d5b724a-d31a-4200-af31-ae574d14be50> ;
+    ns2:hasResTime <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_f228988f-7b01-4776-84c0-8cf41bb57176> ;
+    ns2:hasRunMaterialCost <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_9e97205c-7b59-497c-b5bc-187c212e53c4> ;
+    ns2:hasRxnPressure <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_a75c05d9-e6c5-4710-8618-cfada4d27ad3> ;
+    ns2:hasRxnScale <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_12f103bd-5831-4538-80f1-e9f1b67ccf3b> ;
+    ns2:hasRxnTemperature <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_ccb93a20-fea9-4179-a3c2-067e31989adf> ;
+    ns2:hasSpaceTimeYield <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/SpaceTimeYield_0d5b724a-d31a-4200-af31-ae574d14be50> ;
+    ns2:hasStoichiometryRatio <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_866bfdf2-0d32-40da-8fcb-f89669cf1d31>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_8ae63d49-d3e5-469c-a85a-e7799ddf1807>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_c242fa46-e60c-481c-8dc2-741f69386f25> ;
+    ns2:hasYield <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_7d236fe9-89ce-4fc1-b12e-e427b73b9bba> ;
     ns2:isVariationOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_161bd371-fde7-459d-9f86-7784f354b9b6> a ns1:Measure ;
-    ns1:hasNumericalValue 6e+00 ;
-    ns1:hasUnit ns1:bar .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_2e95d17c-48a9-4cf4-98a8-820e4cdeb674> a ns1:Measure ;
+    ns1:hasNumericalValue 5.132136e+01 ;
+    ns1:hasUnit ns1:degreeCelsius .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_3f80d283-4215-479d-85ea-41387cfcb485> a ns1:Measure ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_37d9d2de-f8b6-419a-8ca0-890cb41fbc6c> a ns1:Measure ;
+    ns1:hasNumericalValue 7.10592e+00 ;
+    ns1:hasUnit ns1:minute-Time .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_3d89e7e7-f7a4-45ff-b4aa-6c982ff28cf7> a ns1:Measure ;
+    ns1:hasNumericalValue 7.197204e+00 ;
+    ns1:hasUnit ns1:one .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_90891b5e-2a35-4847-a39d-fbec6064c2d5> a ns1:Measure ;
+    ns1:hasNumericalValue 1.602595e-01 ;
+    ns1:hasUnit ns1:one .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_b8517bf9-6de4-4312-804e-90f6fa9ffd93> a ns1:Measure ;
     ns1:hasNumericalValue 5e+00 ;
     ns1:hasUnit ns1:millilitre .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_8259605a-086b-44cf-85af-c186782a1801> a ns1:Measure ;
-    ns1:hasNumericalValue 4.313181e+00 ;
-    ns1:hasUnit ns1:one .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_eace1d6e-3405-4584-907e-4bd0c3a37e48> a ns1:Measure ;
+    ns1:hasNumericalValue 6e+00 ;
+    ns1:hasUnit ns1:bar .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_bb26b355-c69c-420c-9a0e-60275c739e9c> a ns1:Measure ;
-    ns1:hasNumericalValue 5.001809e+00 ;
-    ns1:hasUnit ns1:minute-Time .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_d436526c-e266-44dd-a9f4-cd34b7d0eb01> a ns1:Measure ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_f2fbbd93-35b7-47d3-8bd6-446bac0b470b> a ns1:Measure ;
     ns1:hasNumericalValue 1e+00 ;
     ns1:hasUnit ns1:one .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_dc8b9a28-eff1-4b45-a968-a595076be4e0> a ns1:Measure ;
-    ns1:hasNumericalValue 4.404403e+01 ;
-    ns1:hasUnit ns1:degreeCelsius .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_06f24390-c46f-4a82-b998-d52f6b03701d> a ns2:ReactionPressure ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_eace1d6e-3405-4584-907e-4bd0c3a37e48> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_f3adc516-e4f1-4685-99e9-c8089dc57c4e> a ns1:Measure ;
-    ns1:hasNumericalValue 1.724202e-01 ;
-    ns1:hasUnit ns1:one .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_8539dc02-87f5-4152-bfca-58a9ffa634d8> a ns2:ReactionPressure ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_161bd371-fde7-459d-9f86-7784f354b9b6> .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_050ee154-f905-465b-8118-c5508f17fc8d> a ns2:ReactionScale ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_3f80d283-4215-479d-85ea-41387cfcb485> ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_340aac69-106c-4894-94b9-a7c489b5c597> a ns2:ReactionScale ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_b8517bf9-6de4-4312-804e-90f6fa9ffd93> ;
     ns2:indicatesUsageOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_87270a68-5219-4d45-b536-78b256812afb> a ns2:ReactionTemperature ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_dc8b9a28-eff1-4b45-a968-a595076be4e0> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_9809328d-1e34-4b5f-87aa-67e4accb75bd> a ns2:ReactionTemperature ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_2e95d17c-48a9-4cf4-98a8-820e4cdeb674> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_411ae2bc-0f06-4214-93b9-3dbed9bebb8b> a ns2:ResidenceTime ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_bb26b355-c69c-420c-9a0e-60275c739e9c> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_e8c453af-4dca-4e0b-8137-a073e1ab0d82> a ns2:ResidenceTime ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_37d9d2de-f8b6-419a-8ca0-890cb41fbc6c> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_13b54f63-8850-49b9-8520-85eb28f78621> a ns2:RunMaterialCost ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_f075631a-5721-4224-b786-7ce00761f743> a ns2:RunMaterialCost ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> ns2:hasVariation <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> ns2:hasVariation <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_51a8cd91-5ae2-48f1-ac2c-c375a6ae4e1f> a ns2:StoichiometryRatio ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_f3adc516-e4f1-4685-99e9-c8089dc57c4e> ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_4f55a3ff-3a06-4749-8775-52d7673497c7> a ns2:StoichiometryRatio ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_90891b5e-2a35-4847-a39d-fbec6064c2d5> ;
     ns3:positionalID 3 ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_5a97cb98-08e2-4a5c-a811-057d4be8272e> a ns2:StoichiometryRatio ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_d436526c-e266-44dd-a9f4-cd34b7d0eb01> ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_58691e29-9d69-41ad-ab5f-8fd9b35f5e0c> a ns2:StoichiometryRatio ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_f2fbbd93-35b7-47d3-8bd6-446bac0b470b> ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_a12eed60-b735-4520-a6ee-c2c4928e2a22> a ns2:StoichiometryRatio ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_8259605a-086b-44cf-85af-c186782a1801> ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_6a845185-032d-41d8-86ff-6a9952418063> a ns2:StoichiometryRatio ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_3d89e7e7-f7a4-45ff-b4aa-6c982ff28cf7> ;
     ns3:positionalID 2 ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_ad5ff13e-1fec-4cae-ad19-10da534d785a> a ns2:Yield ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_38c71d2a-4497-4d6e-bb5e-e219b268a834> a ns2:Yield ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a> a ns2:ReactionVariation ;
-    ns2:isOccurenceOf <https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1>;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Conversion_6d64895f-3600-444b-972a-c5e8a0683f05> a ns2:Conversion ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EcoScore_967aca85-cfbc-40d5-8443-9a5d7d38dd81> a ns2:EcoScore ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EnvironmentalFactor_8d611396-9126-4415-97b0-5f7f869fab38> a ns2:EnvironmentalFactor ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/SpaceTimeYield_501ee5ab-8d6e-402f-86d7-3082bcff606e> a ns2:SpaceTimeYield ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> a ns2:ReactionVariation ;
+    ns2:hasConversion <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Conversion_6d64895f-3600-444b-972a-c5e8a0683f05> ;
+    ns2:hasEcoScore <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EcoScore_967aca85-cfbc-40d5-8443-9a5d7d38dd81> ;
+    ns2:hasEnvironmentalFactor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EnvironmentalFactor_8d611396-9126-4415-97b0-5f7f869fab38> ;
     ns2:hasInputChemical <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> ;
-    ns2:hasResTime <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_411ae2bc-0f06-4214-93b9-3dbed9bebb8b> ;
-    ns2:hasRunMaterialCost <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_13b54f63-8850-49b9-8520-85eb28f78621> ;
-    ns2:hasRxnPressure <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_8539dc02-87f5-4152-bfca-58a9ffa634d8> ;
-    ns2:hasRxnScale <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_050ee154-f905-465b-8118-c5508f17fc8d> ;
-    ns2:hasRxnTemperature <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_87270a68-5219-4d45-b536-78b256812afb> ;
-    ns2:hasStoichiometryRatio <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_51a8cd91-5ae2-48f1-ac2c-c375a6ae4e1f>,
-        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_5a97cb98-08e2-4a5c-a811-057d4be8272e>,
-        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_a12eed60-b735-4520-a6ee-c2c4928e2a22> ;
-    ns2:hasYield <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_ad5ff13e-1fec-4cae-ad19-10da534d785a> ;
+    ns2:hasPerformanceIndicator <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Conversion_6d64895f-3600-444b-972a-c5e8a0683f05>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EcoScore_967aca85-cfbc-40d5-8443-9a5d7d38dd81>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EnvironmentalFactor_8d611396-9126-4415-97b0-5f7f869fab38>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/SpaceTimeYield_501ee5ab-8d6e-402f-86d7-3082bcff606e> ;
+    ns2:hasResTime <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_e8c453af-4dca-4e0b-8137-a073e1ab0d82> ;
+    ns2:hasRunMaterialCost <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_f075631a-5721-4224-b786-7ce00761f743> ;
+    ns2:hasRxnPressure <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_06f24390-c46f-4a82-b998-d52f6b03701d> ;
+    ns2:hasRxnScale <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_340aac69-106c-4894-94b9-a7c489b5c597> ;
+    ns2:hasRxnTemperature <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_9809328d-1e34-4b5f-87aa-67e4accb75bd> ;
+    ns2:hasSpaceTimeYield <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/SpaceTimeYield_501ee5ab-8d6e-402f-86d7-3082bcff606e> ;
+    ns2:hasStoichiometryRatio <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_4f55a3ff-3a06-4749-8775-52d7673497c7>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_58691e29-9d69-41ad-ab5f-8fd9b35f5e0c>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_6a845185-032d-41d8-86ff-6a9952418063> ;
+    ns2:hasYield <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_38c71d2a-4497-4d6e-bb5e-e219b268a834> ;
     ns2:isVariationOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_0045b454-6e8e-49a6-b498-05b375759eab> a ns1:Measure ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_03a6b288-6bbc-4f4d-bb9c-2eecc2ad19da> a ns1:Measure ;
     ns1:hasNumericalValue 6e+00 ;
     ns1:hasUnit ns1:bar .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_0a7dc52a-a7c2-4d7a-8548-0023f8caa482> a ns1:Measure ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_04daf6e1-2fe9-48cc-8096-ec383adf2bf3> a ns1:Measure ;
     ns1:hasNumericalValue 1e+00 ;
     ns1:hasUnit ns1:one .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_58fc6c1b-2768-4be1-bf3f-51b4610c9ffe> a ns1:Measure ;
-    ns1:hasNumericalValue 5.615076e+00 ;
-    ns1:hasUnit ns1:minute-Time .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_75972f4e-8d5e-419c-98aa-63d4965bc2e6> a ns1:Measure ;
-    ns1:hasNumericalValue 5.422e+01 ;
-    ns1:hasUnit ns1:degreeCelsius .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_c15c3f67-d74f-45e7-a4e9-549107ea4e59> a ns1:Measure ;
-    ns1:hasNumericalValue 1.826075e-01 ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_686ffd08-02bb-4c8f-86bc-72433bd6ce1a> a ns1:Measure ;
+    ns1:hasNumericalValue 8.01044e+00 ;
     ns1:hasUnit ns1:one .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_e6468d49-5705-42e8-b746-ec57e2f02225> a ns1:Measure ;
-    ns1:hasNumericalValue 7.923095e+00 ;
-    ns1:hasUnit ns1:one .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_f2fff642-5700-4363-86a2-ebf5c4159897> a ns1:Measure ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_9054ddbe-c176-493a-b5f1-149e8a2068b1> a ns1:Measure ;
     ns1:hasNumericalValue 5e+00 ;
     ns1:hasUnit ns1:millilitre .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_ac7596f8-d019-44fc-8425-b13cd9879544> a ns2:ReactionPressure ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_0045b454-6e8e-49a6-b498-05b375759eab> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_9479bc7e-a5f1-474d-bbd2-0c9d65bb24c3> a ns1:Measure ;
+    ns1:hasNumericalValue 1.165234e+01 ;
+    ns1:hasUnit ns1:minute-Time .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_fc835b10-5fc6-4f64-9ee2-b0670530aa9d> a ns2:ReactionScale ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_f2fff642-5700-4363-86a2-ebf5c4159897> ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_ba9b84eb-0605-4d4e-83eb-74c3a706bc6f> a ns1:Measure ;
+    ns1:hasNumericalValue 4.009793e+01 ;
+    ns1:hasUnit ns1:degreeCelsius .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_c89f50e2-1909-4e9c-a456-83c894af387f> a ns1:Measure ;
+    ns1:hasNumericalValue 1.01825e-01 ;
+    ns1:hasUnit ns1:one .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_b57d5d10-70bc-43c5-9424-f493aeda7967> a ns2:ReactionPressure ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_03a6b288-6bbc-4f4d-bb9c-2eecc2ad19da> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_2845e69e-1441-4758-9803-f038744cea8a> a ns2:ReactionScale ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_9054ddbe-c176-493a-b5f1-149e8a2068b1> ;
     ns2:indicatesUsageOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_7597aec8-5e3d-4420-8183-f7a749426460> a ns2:ReactionTemperature ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_75972f4e-8d5e-419c-98aa-63d4965bc2e6> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_867f1bd9-0c7b-41d1-adc6-44738631a568> a ns2:ReactionTemperature ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_ba9b84eb-0605-4d4e-83eb-74c3a706bc6f> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_b9aee20c-6a69-41c6-baa5-febf7e659dae> a ns2:ResidenceTime ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_58fc6c1b-2768-4be1-bf3f-51b4610c9ffe> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_6e59352a-5296-4d13-8df9-2839b1f66eef> a ns2:ResidenceTime ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_9479bc7e-a5f1-474d-bbd2-0c9d65bb24c3> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_43ab4389-7a40-40cf-a1ab-5e2a4281111d> a ns2:RunMaterialCost ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_967051c0-422e-48cd-baae-afa74f8f0557> a ns2:RunMaterialCost ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> ns2:hasVariation <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> ns2:hasVariation <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_71769386-5710-4892-987c-7f498823686f> a ns2:StoichiometryRatio ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_0a7dc52a-a7c2-4d7a-8548-0023f8caa482> ;
-    ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_76fab058-0878-47c1-b1c8-9c4aa83f8ddf> a ns2:StoichiometryRatio ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_e6468d49-5705-42e8-b746-ec57e2f02225> ;
-    ns3:positionalID 2 ;
-    ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2> .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_cf7e1f83-1066-43b8-ad45-8a4cff66883e> a ns2:StoichiometryRatio ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> ;
-    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_c15c3f67-d74f-45e7-a4e9-549107ea4e59> ;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_3712c062-8b67-4a82-82d9-166ff34909ba> a ns2:StoichiometryRatio ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_c89f50e2-1909-4e9c-a456-83c894af387f> ;
     ns3:positionalID 3 ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_8fea2b58-2693-4bfe-b539-81fb35f50e81> a ns2:Yield ;
-    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> .
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_9968472e-74b9-4925-b5cc-63220f4be1a9> a ns2:StoichiometryRatio ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_04daf6e1-2fe9-48cc-8096-ec383adf2bf3> ;
+    ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c> a ns2:ReactionVariation ;
-    ns2:isOccurenceOf <https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1>;
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_fb5fecbb-3de2-4d98-b96c-38a3d033ca2d> a ns2:StoichiometryRatio ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
+    ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_686ffd08-02bb-4c8f-86bc-72433bd6ce1a> ;
+    ns3:positionalID 2 ;
+    ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_d1a24199-40af-4ade-ab39-99e324f12ceb> a ns2:Yield ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Conversion_aaa4ac45-4cc8-4f03-b63e-7f416c2008ae> a ns2:Conversion ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EcoScore_c6b4f897-ea3e-4aa7-b46d-89dbdd1288f5> a ns2:EcoScore ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EnvironmentalFactor_73c41c3c-3b59-4ea8-85ea-6d7e3ae76f12> a ns2:EnvironmentalFactor ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/SpaceTimeYield_4021bb12-fd78-4c97-a065-2ad6693f71a8> a ns2:SpaceTimeYield ;
+    ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> .
+
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> a ns2:ReactionVariation ;
+    ns2:hasConversion <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Conversion_aaa4ac45-4cc8-4f03-b63e-7f416c2008ae> ;
+    ns2:hasEcoScore <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EcoScore_c6b4f897-ea3e-4aa7-b46d-89dbdd1288f5> ;
+    ns2:hasEnvironmentalFactor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EnvironmentalFactor_73c41c3c-3b59-4ea8-85ea-6d7e3ae76f12> ;
     ns2:hasInputChemical <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2>,
         <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> ;
-    ns2:hasResTime <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_b9aee20c-6a69-41c6-baa5-febf7e659dae> ;
-    ns2:hasRunMaterialCost <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_43ab4389-7a40-40cf-a1ab-5e2a4281111d> ;
-    ns2:hasRxnPressure <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_ac7596f8-d019-44fc-8425-b13cd9879544> ;
-    ns2:hasRxnScale <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_fc835b10-5fc6-4f64-9ee2-b0670530aa9d> ;
-    ns2:hasRxnTemperature <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_7597aec8-5e3d-4420-8183-f7a749426460> ;
-    ns2:hasStoichiometryRatio <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_71769386-5710-4892-987c-7f498823686f>,
-        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_76fab058-0878-47c1-b1c8-9c4aa83f8ddf>,
-        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_cf7e1f83-1066-43b8-ad45-8a4cff66883e> ;
-    ns2:hasYield <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_8fea2b58-2693-4bfe-b539-81fb35f50e81> ;
+    ns2:hasPerformanceIndicator <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Conversion_aaa4ac45-4cc8-4f03-b63e-7f416c2008ae>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EcoScore_c6b4f897-ea3e-4aa7-b46d-89dbdd1288f5>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/EnvironmentalFactor_73c41c3c-3b59-4ea8-85ea-6d7e3ae76f12>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/SpaceTimeYield_4021bb12-fd78-4c97-a065-2ad6693f71a8> ;
+    ns2:hasResTime <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ResidenceTime_6e59352a-5296-4d13-8df9-2839b1f66eef> ;
+    ns2:hasRunMaterialCost <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RunMaterialCost_967051c0-422e-48cd-baae-afa74f8f0557> ;
+    ns2:hasRxnPressure <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionPressure_b57d5d10-70bc-43c5-9424-f493aeda7967> ;
+    ns2:hasRxnScale <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_2845e69e-1441-4758-9803-f038744cea8a> ;
+    ns2:hasRxnTemperature <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_867f1bd9-0c7b-41d1-adc6-44738631a568> ;
+    ns2:hasSpaceTimeYield <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/SpaceTimeYield_4021bb12-fd78-4c97-a065-2ad6693f71a8> ;
+    ns2:hasStoichiometryRatio <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_3712c062-8b67-4a82-82d9-166ff34909ba>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_9968472e-74b9-4925-b5cc-63220f4be1a9>,
+        <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_fb5fecbb-3de2-4d98-b96c-38a3d033ca2d> ;
+    ns2:hasYield <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Yield_d1a24199-40af-4ade-ab39-99e324f12ceb> ;
     ns2:isVariationOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> .
 

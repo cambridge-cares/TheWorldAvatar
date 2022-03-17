@@ -39,9 +39,9 @@ class TargetIRIs(Enum):
     EXAMPLE_RXN_EXP_3_IRI = EXP_3_BASE_IRI + 'RxnExp_1'
     EXAMPLE_RXN_EXP_4_IRI = EXP_4_BASE_IRI + 'RxnExp_1'
     EXAMPLE_RXN_EXP_5_IRI = EXP_5_BASE_IRI + 'RxnExp_1'
-    NEW_RXN_EXP_1_IRI = EXP_1_BASE_IRI + 'ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1'
-    NEW_RXN_EXP_2_IRI = EXP_1_BASE_IRI + 'ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a'
-    NEW_RXN_EXP_3_IRI = EXP_1_BASE_IRI + 'ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c'
+    NEW_RXN_EXP_1_IRI = EXP_1_BASE_IRI + 'ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70'
+    NEW_RXN_EXP_2_IRI = EXP_1_BASE_IRI + 'ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8'
+    NEW_RXN_EXP_3_IRI = EXP_1_BASE_IRI + 'ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf'
     EXAMPLE_RXN_EXP_1_REACTION_CONDITION_IRI_LIST = [EXP_1_BASE_IRI+'ResidenceTime_1',EXP_1_BASE_IRI+'RxnTemperature_1',EXP_1_BASE_IRI+'RxnPressure_1',
         EXP_1_BASE_IRI+'StoiRatio_1',EXP_1_BASE_IRI+'StoiRatio_2',EXP_1_BASE_IRI+'StoiRatio_3',EXP_1_BASE_IRI+'RxnScale_1']
     EXAMPLE_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST = [EXP_1_BASE_IRI+'Yield_1',EXP_1_BASE_IRI+'RunMaterialCost_1']
@@ -57,27 +57,46 @@ class TargetIRIs(Enum):
     EXAMPLE_RXN_EXP_5_REACTION_CONDITION_IRI_LIST = [EXP_5_BASE_IRI+'ResidenceTime_1',EXP_5_BASE_IRI+'RxnTemperature_1',EXP_5_BASE_IRI+'RxnPressure_1',
         EXP_5_BASE_IRI+'StoiRatio_1',EXP_5_BASE_IRI+'StoiRatio_2',EXP_5_BASE_IRI+'StoiRatio_3',EXP_5_BASE_IRI+'RxnScale_1']
     EXAMPLE_RXN_EXP_5_PERFORMANCE_INDICATOR_IRI_LIST = [EXP_5_BASE_IRI+'Yield_1',EXP_5_BASE_IRI+'RunMaterialCost_1']
-    NEW_RXN_EXP_1_REACTION_CONDITION_IRI_LIST = [EXP_1_BASE_IRI+'ResidenceTime_18f228d4-cb92-419c-adc0-3473b7bce9c4',
-        EXP_1_BASE_IRI+'ReactionPressure_bb968e8d-88ff-4414-b50b-e81c605bdc4a',
-        EXP_1_BASE_IRI+'ReactionScale_7e613593-b975-441a-91ee-679db689f59a',
-        EXP_1_BASE_IRI+'ReactionTemperature_b4bf163d-ab88-4366-b3a7-9c742431771f',
-        EXP_1_BASE_IRI+'StoichiometryRatio_02534f87-2a52-4a56-b67a-a3ff458bc4e3',
-        EXP_1_BASE_IRI+'StoichiometryRatio_33e875fb-40f4-4223-9384-d79fec4c1bf1',
-        EXP_1_BASE_IRI+'StoichiometryRatio_a4e20579-c83e-49a0-ba3a-e4c92b78f2af']
-    NEW_RXN_EXP_2_REACTION_CONDITION_IRI_LIST = [EXP_1_BASE_IRI+'ResidenceTime_411ae2bc-0f06-4214-93b9-3dbed9bebb8b',
-        EXP_1_BASE_IRI+'ReactionPressure_8539dc02-87f5-4152-bfca-58a9ffa634d8',
-        EXP_1_BASE_IRI+'ReactionScale_050ee154-f905-465b-8118-c5508f17fc8d',
-        EXP_1_BASE_IRI+'ReactionTemperature_87270a68-5219-4d45-b536-78b256812afb',
-        EXP_1_BASE_IRI+'StoichiometryRatio_51a8cd91-5ae2-48f1-ac2c-c375a6ae4e1f',
-        EXP_1_BASE_IRI+'StoichiometryRatio_5a97cb98-08e2-4a5c-a811-057d4be8272e',
-        EXP_1_BASE_IRI+'StoichiometryRatio_a12eed60-b735-4520-a6ee-c2c4928e2a22']
-    NEW_RXN_EXP_3_REACTION_CONDITION_IRI_LIST = [EXP_1_BASE_IRI+'ResidenceTime_b9aee20c-6a69-41c6-baa5-febf7e659dae',
-        EXP_1_BASE_IRI+'ReactionPressure_ac7596f8-d019-44fc-8425-b13cd9879544',
-        EXP_1_BASE_IRI+'ReactionScale_fc835b10-5fc6-4f64-9ee2-b0670530aa9d',
-        EXP_1_BASE_IRI+'ReactionTemperature_7597aec8-5e3d-4420-8183-f7a749426460',
-        EXP_1_BASE_IRI+'StoichiometryRatio_71769386-5710-4892-987c-7f498823686f',
-        EXP_1_BASE_IRI+'StoichiometryRatio_76fab058-0878-47c1-b1c8-9c4aa83f8ddf',
-        EXP_1_BASE_IRI+'StoichiometryRatio_cf7e1f83-1066-43b8-ad45-8a4cff66883e']
+    NEW_RXN_EXP_1_REACTION_CONDITION_IRI_LIST = [EXP_1_BASE_IRI+'ResidenceTime_f228988f-7b01-4776-84c0-8cf41bb57176',
+        EXP_1_BASE_IRI+'ReactionPressure_a75c05d9-e6c5-4710-8618-cfada4d27ad3',
+        EXP_1_BASE_IRI+'ReactionScale_12f103bd-5831-4538-80f1-e9f1b67ccf3b',
+        EXP_1_BASE_IRI+'ReactionTemperature_ccb93a20-fea9-4179-a3c2-067e31989adf',
+        EXP_1_BASE_IRI+'StoichiometryRatio_866bfdf2-0d32-40da-8fcb-f89669cf1d31',
+        EXP_1_BASE_IRI+'StoichiometryRatio_8ae63d49-d3e5-469c-a85a-e7799ddf1807',
+        EXP_1_BASE_IRI+'StoichiometryRatio_c242fa46-e60c-481c-8dc2-741f69386f25']
+    NEW_RXN_EXP_2_REACTION_CONDITION_IRI_LIST = [EXP_1_BASE_IRI+'ResidenceTime_e8c453af-4dca-4e0b-8137-a073e1ab0d82',
+        EXP_1_BASE_IRI+'ReactionPressure_06f24390-c46f-4a82-b998-d52f6b03701d',
+        EXP_1_BASE_IRI+'ReactionScale_340aac69-106c-4894-94b9-a7c489b5c597',
+        EXP_1_BASE_IRI+'ReactionTemperature_9809328d-1e34-4b5f-87aa-67e4accb75bd',
+        EXP_1_BASE_IRI+'StoichiometryRatio_4f55a3ff-3a06-4749-8775-52d7673497c7',
+        EXP_1_BASE_IRI+'StoichiometryRatio_58691e29-9d69-41ad-ab5f-8fd9b35f5e0c',
+        EXP_1_BASE_IRI+'StoichiometryRatio_6a845185-032d-41d8-86ff-6a9952418063']
+    NEW_RXN_EXP_3_REACTION_CONDITION_IRI_LIST = [EXP_1_BASE_IRI+'ResidenceTime_6e59352a-5296-4d13-8df9-2839b1f66eef',
+        EXP_1_BASE_IRI+'ReactionPressure_b57d5d10-70bc-43c5-9424-f493aeda7967',
+        EXP_1_BASE_IRI+'ReactionScale_2845e69e-1441-4758-9803-f038744cea8a',
+        EXP_1_BASE_IRI+'ReactionTemperature_867f1bd9-0c7b-41d1-adc6-44738631a568',
+        EXP_1_BASE_IRI+'StoichiometryRatio_3712c062-8b67-4a82-82d9-166ff34909ba',
+        EXP_1_BASE_IRI+'StoichiometryRatio_9968472e-74b9-4925-b5cc-63220f4be1a9',
+        EXP_1_BASE_IRI+'StoichiometryRatio_fb5fecbb-3de2-4d98-b96c-38a3d033ca2d']
+    NEW_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST = [EXP_1_BASE_IRI+'Conversion_967deb19-b7bc-4b5b-a236-13df15a0d2ea',
+        EXP_1_BASE_IRI+'EcoScore_ed7d5c04-3388-4b34-9795-0685e2ece916',
+        EXP_1_BASE_IRI+'EnvironmentalFactor_a03c52ca-9404-4b71-9ef3-ba19e78c23a0',
+        EXP_1_BASE_IRI+'SpaceTimeYield_0d5b724a-d31a-4200-af31-ae574d14be50',
+        EXP_1_BASE_IRI+'RunMaterialCost_9e97205c-7b59-497c-b5bc-187c212e53c4',
+        EXP_1_BASE_IRI+'Yield_7d236fe9-89ce-4fc1-b12e-e427b73b9bba']
+    NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST = [EXP_1_BASE_IRI+'Conversion_6d64895f-3600-444b-972a-c5e8a0683f05',
+        EXP_1_BASE_IRI+'EcoScore_967aca85-cfbc-40d5-8443-9a5d7d38dd81',
+        EXP_1_BASE_IRI+'EnvironmentalFactor_8d611396-9126-4415-97b0-5f7f869fab38',
+        EXP_1_BASE_IRI+'SpaceTimeYield_501ee5ab-8d6e-402f-86d7-3082bcff606e',
+        EXP_1_BASE_IRI+'RunMaterialCost_f075631a-5721-4224-b786-7ce00761f743',
+        EXP_1_BASE_IRI+'Yield_38c71d2a-4497-4d6e-bb5e-e219b268a834']
+    NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST = [EXP_1_BASE_IRI+'Conversion_aaa4ac45-4cc8-4f03-b63e-7f416c2008ae',
+        EXP_1_BASE_IRI+'EcoScore_c6b4f897-ea3e-4aa7-b46d-89dbdd1288f5',
+        EXP_1_BASE_IRI+'EnvironmentalFactor_73c41c3c-3b59-4ea8-85ea-6d7e3ae76f12',
+        EXP_1_BASE_IRI+'SpaceTimeYield_4021bb12-fd78-4c97-a065-2ad6693f71a8',
+        EXP_1_BASE_IRI+'RunMaterialCost_967051c0-422e-48cd-baae-afa74f8f0557',
+        EXP_1_BASE_IRI+'Yield_d1a24199-40af-4ade-ab39-99e324f12ceb']
+
     CHEMICAL_REACTION_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/'
     CHEMICAL_REACTION_IRI = CHEMICAL_REACTION_BASE_IRI + 'ChemRxn_1'
     REACTANT_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_1': 'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
@@ -298,23 +317,32 @@ def test_getExpReactionCondition(initialise_triples, rxnexp_iri, rxnexp_conditio
             assert con.indicateUsageOf is not None
 
 @pytest.mark.parametrize(
-    "rxnexp_iri,rxnexp_pref_indicator_iri",
+    "rxnexp_iri,rxnexp_pref_indicator_iri,rxn_type",
     [# here we are testing that the function should work wether the passed in iri is already a list or not
-        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_4_PERFORMANCE_INDICATOR_IRI_LIST.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_5_PERFORMANCE_INDICATOR_IRI_LIST.value),
-        # TODO add cases for ReactionVariations
+        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_4_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_5_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.NEW_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONVARIATION),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONVARIATION),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONVARIATION),
     ],
 )
-def test_getExpPerformanceIndicator(initialise_triples, rxnexp_iri, rxnexp_pref_indicator_iri):
+def test_getExpPerformanceIndicator(initialise_triples, rxnexp_iri, rxnexp_pref_indicator_iri, rxn_type):
     sparql_client = initialise_triples
     perf_ind_list = sparql_client.getExpPerformanceIndicator(rxnexp_iri)
     assert len(rxnexp_pref_indicator_iri) == len(perf_ind_list)
     for ind in perf_ind_list:
-        assert all([isinstance(ind, onto.PerformanceIndicator), ind.clz is not None, isinstance(ind.objPropWithExp, list),
-            ind.hasValue.hasUnit is not None, ind.hasValue.hasNumericalValue is not None, ind.instance_iri in rxnexp_pref_indicator_iri])
+        assert all([isinstance(ind, onto.PerformanceIndicator), ind.clz is not None, isinstance(ind.objPropWithExp, list), ind.instance_iri in rxnexp_pref_indicator_iri])
+    if rxn_type == onto.ONTORXN_REACTIONEXPERIMENT:
+        for ind in perf_ind_list:
+            assert all([ind.hasValue.hasUnit is not None, ind.hasValue.hasNumericalValue is not None])
+    elif rxn_type == onto.ONTORXN_REACTIONVARIATION:
+        for ind in perf_ind_list:
+            assert all([ind.hasValue is None])
+    else:
+        assert False
 
 @pytest.mark.parametrize(
     "rxnexp_iri,expected_rxn_type",
@@ -621,39 +649,42 @@ def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_e
     assert all(item in prior_rxn_exp for item in [*rxn_exp_queue])
 
 @pytest.mark.parametrize(
-    "rxn_exp_iri,chem_rxn_iri,reactant,product,catalyst,solvent",
+    "rxn_exp_iri,rxn_type,chem_rxn_iri,reactant,product,catalyst,solvent",
     [
-        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, onto.ONTORXN_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, onto.ONTORXN_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, onto.ONTORXN_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
     ],
 )
-def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, chem_rxn_iri, reactant, product, catalyst, solvent):
+def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_rxn_iri, reactant, product, catalyst, solvent):
     sparql_client = initialise_triples
-    chem_rxn = sparql_client.get_chemical_reaction(rxn_exp_iri)
-    print(chem_rxn)
-    print(chem_rxn.instance_iri)
+    if rxn_type == onto.ONTORXN_REACTIONEXPERIMENT:
+        chem_rxn = sparql_client.get_chemical_reaction(rxn_exp_iri)
+    elif rxn_type == onto.ONTORXN_REACTIONVARIATION:
+        chem_rxn = sparql_client.get_chemical_reaction_of_rxn_variation(rxn_exp_iri)
+    else:
+        assert False
     assert chem_rxn.instance_iri == chem_rxn_iri
     dict_reactant = {reactant.instance_iri:reactant.hasUniqueSpecies for reactant in chem_rxn.hasReactant}
     assert dict_reactant == reactant

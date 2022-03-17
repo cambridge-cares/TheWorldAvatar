@@ -304,6 +304,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             return [list(r.values())[0] for r in response][0]
 
+    def get_chemical_reaction_of_rxn_variation(self, rxn_variation_iri: str) -> OntoCAPE_ChemicalReaction:
+        rxn_variation_iri = trimIRI(rxn_variation_iri)
+        reference_reaction_exp = self.get_rxn_exp_iri_given_rxn_variation(rxn_variation_iri)
+        return self.get_chemical_reaction(reference_reaction_exp)
+
     def get_chemical_reaction(self, rxnexp_iri: str) -> OntoCAPE_ChemicalReaction:
         rxnexp_iri = trimIRI(rxnexp_iri)
         query = PREFIX_RDF + """SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
