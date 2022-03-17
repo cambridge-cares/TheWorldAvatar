@@ -7,22 +7,28 @@ from typing import Optional
 def get_uploader(
     uploader_type: str,
     subdirs: Optional[str] = None,
-    default_url: Optional[str] = None,
-    default_auth_file: Optional[str] = None,
-    default_no_auth: bool = False) -> Uploader:
+    url: Optional[str] = None,
+    auth_file: Optional[str] = None,
+    no_auth: bool = False,
+    url_env_var: Optional[str] = None,
+    auth_file_env_var: Optional[str] = None) -> Uploader:
 
     if uploader_type == fs_uploader.FS_UPLOADER:
         uploader = fs_uploader.get_file_server_uploader(
-            default_url=default_url,
-            default_auth_file=default_auth_file,
-            default_no_auth=default_no_auth,
-            subdirs=subdirs
+            url=url,
+            auth_file=auth_file,
+            no_auth=no_auth,
+            subdirs=subdirs,
+            url_env_var=url_env_var,
+            auth_file_env_var=auth_file_env_var
             )
     elif uploader_type == ts_uploader.TS_UPLOADER:
         uploader = ts_uploader.get_triple_store_uploader(
-            default_url=default_url,
-            default_auth_file=default_auth_file,
-            default_no_auth=default_no_auth
+            url=url,
+            auth_file=auth_file,
+            no_auth=no_auth,
+            url_env_var=url_env_var,
+            auth_file_env_var=auth_file_env_var
             )
     else:
         raise appexcept.NotSupportedUploader(f"Error: Selected uploader type {uploader_type} is not supported.")

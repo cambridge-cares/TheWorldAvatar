@@ -1,6 +1,7 @@
 from pyuploader.common.gateways import jpsBaseLibGW
 from pyuploader.uploaders.uploader import Uploader
-from typing import Tuple, Optional
+import functools as functools
+from typing import Tuple, Optional, Callable
 
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()
 jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
@@ -15,48 +16,48 @@ class Triple_Store_Uploader(Uploader):
     def __init__(
         self,
         uploader_name: str = TS_UPLOADER,
-        supported_file_ext: str = 'owl',
-        default_url: Optional[str] = None,
-        default_auth_file: Optional[str] = None,
-        default_no_auth: bool = False):
+        url: Optional[str] = None,
+        auth_file: Optional[str] = None,
+        no_auth: bool = False,
+        url_env_var: Optional[str] = None,
+        auth_file_env_var: Optional[str] = None):
 
         super().__init__(
             uploader_name=uploader_name,
-            supported_file_ext=supported_file_ext,
-            default_url=default_url,
-            default_auth_file=default_auth_file,
-            default_no_auth=default_no_auth)
+            supported_file_ext='owl',
+            url=url,
+            auth_file=auth_file,
+            no_auth=no_auth,
+            url_env_var=url_env_var if url_env_var is not None else TS_URL_ENV_VAR_VALUE,
+            auth_file_env_var=auth_file_env_var if auth_file_env_var is not None else TS_AUTH_ENV_VAR_VALUE)
 
-    def _upload_file(
-        self,
-        url: str,
-        auth: Tuple[str,str],
-        file_path: str,
-        **kwargs) -> str:
 
-        client = jpsBaseLib_view.RemoteStoreClient(url, url, auth[0], auth[1])
+    def _get_upload_client(self, url: str, auth: Tuple[str, str]) -> Callable[[str], str]:
+        client = jpsBaseLib_view.RemoteStoreClient(
+                url, url, auth[0], auth[1])
+        return functools.partial(self.__upload_wrapper, client, url)
+
+    @staticmethod
+    def __upload_wrapper(client: Callable, url: str, file_path: str)->str:
         rdfFile = jpsBaseLib_view.java.io.File(file_path)
         client.uploadRDFFile(rdfFile)
-
         return url
 
 def get_triple_store_uploader(
         uploader_name: str = 'triple store',
-        supported_file_ext: str='owl',
-        default_url: Optional[str] = None,
-        default_auth_file: Optional[str] = None,
-        default_no_auth: bool = False
-        ) -> Uploader:
+        url: Optional[str] = None,
+        auth_file: Optional[str] = None,
+        no_auth: bool = False,
+        url_env_var: Optional[str] = None,
+        auth_file_env_var: Optional[str] = None) -> Uploader:
 
     ts_uploader = Triple_Store_Uploader(
         uploader_name=uploader_name,
-        supported_file_ext=supported_file_ext,
-        default_url = default_url,
-        default_auth_file = default_auth_file,
-        default_no_auth=default_no_auth
+        url = url,
+        auth_file = auth_file,
+        no_auth=no_auth,
+        url_env_var = url_env_var,
+        auth_file_env_var = auth_file_env_var
         )
-
-    ts_uploader.set_url_env_var_value(TS_URL_ENV_VAR_VALUE)
-    ts_uploader.set_auth_env_var_value(TS_AUTH_ENV_VAR_VALUE)
 
     return ts_uploader

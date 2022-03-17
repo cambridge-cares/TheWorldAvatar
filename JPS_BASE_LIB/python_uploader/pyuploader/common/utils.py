@@ -23,17 +23,15 @@ def get_credentials_from_str(auth_str: str) -> Tuple[str, str]:
     auth_parts = auth_str.split(":")
     if len(auth_parts) > 2:
         raise ValueError("Wrong authorisation string format.")
+
     return (auth_parts[0], auth_parts[1])
 
 
 def get_credentials_from_file(auth_file_path: str) -> Tuple[str, str]:
 
-    auth_file_content = read_file_content(auth_file_path)
+    auth_str = read_file_content(auth_file_path)
 
-    auth_parts = auth_file_content.split(":")
-    if len(auth_parts) > 2:
-        raise appexcept.WrongSecretsFormatError("Wrong authorisation string format.")
-    return (auth_parts[0], auth_parts[1])
+    return get_credentials_from_str(auth_str=auth_str)
 
 
 def read_file_content(file_path: str) -> str:

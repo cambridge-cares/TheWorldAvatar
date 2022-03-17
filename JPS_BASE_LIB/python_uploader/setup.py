@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyuploader',
-    version='1.0.8',
+    version='1.1.0',
     author='Daniel Nurkowski',
     author_email='danieln@cmclinnovations.com',
     license='MIT',
@@ -16,7 +16,7 @@ setup(
     include_package_data= True,
     entry_points={
         'console_scripts': [
-            'upload = pyuploader.driver:start',
+            'pyuploader = pyuploader.driver:start',
         ]
     }
 )

@@ -1,6 +1,8 @@
 from pyuploader.uploaders.uploader import Uploader
+import pyuploader.common.utils as utils
+import functools as functools
 import requests
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Callable
 
 FS_URL_ENV_VAR_VALUE = 'KG_FILE_SERVER_SPECS'
 FS_AUTH_ENV_VAR_VALUE = 'KG_FILE_SERVER_SECRETS'
@@ -14,39 +16,31 @@ class File_Server_Uploader(Uploader):
         uploader_name: str = FS_UPLOADER,
         subdirs: Optional[str] = None,
         supported_file_ext: str = 'all',
-        default_url: Optional[str] = None,
-        default_auth_file: Optional[str] = None,
-        default_no_auth: bool = False):
+        url: Optional[str] = None,
+        auth_file: Optional[str] = None,
+        no_auth: bool = False,
+        url_env_var: Optional[str] = None,
+        auth_file_env_var: Optional[str] = None):
 
         super().__init__(
             uploader_name=uploader_name,
             supported_file_ext=supported_file_ext,
-            default_url=default_url,
-            default_auth_file=default_auth_file,
-            default_no_auth=default_no_auth)
+            url=url,
+            auth_file=auth_file,
+            no_auth=no_auth,
+            subdirs=subdirs,
+            url_env_var=url_env_var if url_env_var is not None else FS_URL_ENV_VAR_VALUE,
+            auth_file_env_var=auth_file_env_var if auth_file_env_var is not None else FS_AUTH_ENV_VAR_VALUE)
 
-        self.subdirs = subdirs
 
+    def _get_upload_client(self, url: str, auth: Tuple[str,str])->Callable[[str], str]:
+        return functools.partial(self.__upload_wrapper, url, auth)
 
-    def _upload_file(
-        self,
-        url: str,
-        auth: Tuple[str,str],
-        file_path: str,
-        **kwargs) -> str:
-
-        headers = {}
-        subdirs: Optional[str] = kwargs.get('subdirs')
-        if subdirs is None:
-            subdirs = self.subdirs
-        if subdirs is not None:
-            if not subdirs.endswith('/'): subdirs = f"{subdirs}/"
-            headers = {'subDir': subdirs}
-
+    @staticmethod
+    def __upload_wrapper(url: str, auth: Tuple[str,str], file_path: str)->str:
         with open(file_path,'rb') as file_obj:
             response = requests.post(url= url,
                                     auth= auth,
-                                    headers= headers,
                                     files= {'file': file_obj})
             response.raise_for_status()
         return response.headers.pop('file', url)
@@ -55,21 +49,22 @@ def get_file_server_uploader(
         uploader_name: str = 'file server',
         subdirs: Optional[str] = None,
         supported_file_ext: str='all',
-        default_url: Optional[str] = None,
-        default_auth_file: Optional[str] = None,
-        default_no_auth: bool = False
+        url: Optional[str] = None,
+        auth_file: Optional[str] = None,
+        no_auth: bool = False,
+        url_env_var: Optional[str] = None,
+        auth_file_env_var: Optional[str] = None
         ) -> Uploader:
 
     fs_uploader = File_Server_Uploader(
         uploader_name=uploader_name,
         subdirs=subdirs,
         supported_file_ext=supported_file_ext,
-        default_url = default_url,
-        default_auth_file = default_auth_file,
-        default_no_auth = default_no_auth
+        url = url,
+        auth_file = auth_file,
+        no_auth = no_auth,
+        url_env_var = url_env_var,
+        auth_file_env_var = auth_file_env_var
     )
-
-    fs_uploader.set_url_env_var_value(FS_URL_ENV_VAR_VALUE)
-    fs_uploader.set_auth_env_var_value(FS_AUTH_ENV_VAR_VALUE)
 
     return fs_uploader

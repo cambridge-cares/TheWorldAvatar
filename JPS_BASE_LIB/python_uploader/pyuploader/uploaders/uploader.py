@@ -1,7 +1,6 @@
 import pyuploader.common.utils as utils
-import pyuploader.common.logconfig as logconfig
 import pyuploader.errorhandling.appexceptions as appexcept
-from typing import Callable, Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, Callable
 from abc import ABC, abstractmethod
 import pathlib
 import logging
@@ -18,39 +17,57 @@ class Uploader(ABC):
         self,
         uploader_name: str = 'uploader',
         supported_file_ext: str = 'all',
-        default_url: Optional[str] = None,
-        default_auth_file: Optional[str] = None,
-        default_no_auth: bool = False):
-
-        self.env_vars: Dict[str,str] = {BASE_URL_ENV_VAR_KEY: '',
-                                        BASE_AUTH_ENV_VAR_KEY: ''}
+        url: Optional[str] = None,
+        auth_file: Optional[str] = None,
+        no_auth: bool = False,
+        subdirs: Optional[str] = None,
+        url_env_var: str = '',
+        auth_file_env_var: str = ''):
 
         self.uploader_name = uploader_name
-        self.supported_file_ext = supported_file_ext
-        self.default_url = default_url
-        self.default_auth_file = default_auth_file
-        self.default_no_auth = default_no_auth
+        self._supported_file_ext = supported_file_ext
+
+        self._env_vars: Dict[str,str] = {BASE_URL_ENV_VAR_KEY: url_env_var,
+                                         BASE_AUTH_ENV_VAR_KEY: auth_file_env_var}
+
+        url = url if url is not None else self._get_url()
+        if not url.endswith('/'): url = f"{url}/"
+
+        if subdirs is not None:
+            if not subdirs.endswith('/'): subdirs = f"{subdirs}/"
+            url = f"{url}{subdirs}"
+
+        auth = ('','')
+        if no_auth is False:
+            auth = self._get_auth(auth_file=auth_file)
+
+        self._upload_client: Callable[[str], str] =  self._get_upload_client(url=url, auth=auth)
+
+
+    @abstractmethod
+    def _get_upload_client(self, url: str, auth: Tuple[str,str])->Callable[[str],str]:
+        """Abstract method for setting up the upload client function. The function
+           should accept a single str argument, which is a filepath and return the
+           file location on a server after the upload."""
+        pass
 
     def set_url_env_var_value(self,
         url_env_var_value: str) -> None:
-        self.env_vars[BASE_URL_ENV_VAR_KEY] = url_env_var_value
+        self._env_vars[BASE_URL_ENV_VAR_KEY] = url_env_var_value
 
     def set_auth_env_var_value(self,
         auth_env_var_value: str) -> None:
-        self.env_vars[BASE_AUTH_ENV_VAR_KEY] = auth_env_var_value
+        self._env_vars[BASE_AUTH_ENV_VAR_KEY] = auth_env_var_value
 
     def get_url_env_var_value(self) -> str:
-        return self.env_vars[BASE_URL_ENV_VAR_KEY]
+        return self._env_vars[BASE_URL_ENV_VAR_KEY]
 
     def get_auth_env_var_value(self) -> str:
-        return self.env_vars[BASE_AUTH_ENV_VAR_KEY]
+        return self._env_vars[BASE_AUTH_ENV_VAR_KEY]
 
     def upload(self,
         file_ext: str,
         file_or_dir: str,
-        url: Optional[str] = None,
-        auth_file: Optional[str] = None,
-        no_auth: Optional[bool] = None,
         dry_run: bool = False,
         **kwargs) -> Dict[str,str]:
 
@@ -60,22 +77,10 @@ class Uploader(ABC):
             logger.info(f"#######################")
             logger.info(f"")
 
-        # url and auth details
-        #-------------------------------------------
-        if url is None: url= self.default_url
-        if url is None: url= self._get_url()
-
-        auth: Tuple[str,str] = ('','')
-        if no_auth is None: no_auth = self.default_no_auth
-        if not no_auth:
-            if auth_file is None: auth_file= self.default_auth_file
-            auth = self._get_auth(auth_file)
-        #-------------------------------------------
-
-        if self.supported_file_ext != 'all':
+        if self._supported_file_ext != 'all':
             for file_ext_i in file_ext.split(','):
-                if file_ext_i.strip() != self.supported_file_ext:
-                    raise NotImplementedError(f"Only {self.supported_file_ext} files are currently supported.")
+                if file_ext_i.strip() != self._supported_file_ext:
+                    raise NotImplementedError(f"Only {self._supported_file_ext} files are currently supported.")
         files = utils.get_files_by_extensions(file_or_dir,file_ext)
 
         file_locations: Dict[str,str] = {}
@@ -89,7 +94,7 @@ class Uploader(ABC):
                 logger.info(f"Uploading file: {basenf} to the {self.uploader_name}.")
                 if not dry_run:
                     try:
-                        location = self._upload_file(url, auth, f, **kwargs)
+                        location = self._upload_client(f)
                     except Exception as e:
                         raise appexcept.FileUploadError(textwrap.dedent("""
                             Error: Failed to upload file: #f#
@@ -109,18 +114,9 @@ class Uploader(ABC):
         return file_locations
 
 
-    @abstractmethod
-    def _upload_file(self,
-        url: str,
-        auth: Tuple[str,str],
-        file_path: str,
-        **kwargs) -> str:
-
-        pass
-
     def _get_url(self) -> str:
         logger.info(f"Reading the {self.uploader_name} specs file path from the environment variables.")
-        url_file = utils.get_env_var_value(self.env_vars[BASE_URL_ENV_VAR_KEY])
+        url_file = utils.get_env_var_value(self._env_vars[BASE_URL_ENV_VAR_KEY])
         logger.info(f"Reading the {self.uploader_name} url from the specs file.")
         try:
             url = utils.read_file_content(url_file)
@@ -129,12 +125,12 @@ class Uploader(ABC):
         return url
 
     def _get_auth(self,
-            auth_file: Optional[str]) -> Tuple[str,str]:
+            auth_file: Optional[str]) -> Tuple[str, str]:
 
         if auth_file is None:
             logger.info(f"Reading the {self.uploader_name} secrets file path from environment variables.")
             logger.info(f"Reading the {self.uploader_name} auth from the secrets file.")
-            auth_file = utils.get_env_var_value(self.env_vars[BASE_AUTH_ENV_VAR_KEY])
+            auth_file = utils.get_env_var_value(self._env_vars[BASE_AUTH_ENV_VAR_KEY])
 
         try:
             auth = utils.get_credentials_from_file(auth_file)

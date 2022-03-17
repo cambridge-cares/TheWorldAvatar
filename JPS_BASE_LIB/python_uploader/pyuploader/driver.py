@@ -4,7 +4,7 @@ import pyuploader.uploaders.uploader_factory as uploader_factory
 import pyuploader.common.logconfig as logconfig
 from typing import Dict
 import logging
-import sys
+
 
 logger = logging.getLogger(__name__)
 
@@ -55,13 +55,10 @@ def start() -> None:
     try:
         args = docopt.docopt(__doc__)
     except docopt.DocoptExit: #type: ignore
-        print(sys.argv)
         raise docopt.DocoptExit('Error: pyuploader called with wrong arguments.') #type: ignore
 
     try:
-
         _process_args(args=args)
-
 
         logconfig.config_logging(
             log_file_dir=args['--log-file-dir'],
@@ -71,9 +68,9 @@ def start() -> None:
 
         uploader = uploader_factory.get_uploader(
             uploader_type=args["--uploader_type"],
-            default_url=args['--url'],
-            default_auth_file = args['--auth-file'],
-            default_no_auth=args['--no-auth'],
+            url=args['--url'],
+            auth_file = args['--auth-file'],
+            no_auth=args['--no-auth'],
             subdirs = args['--subdirs'],
             )
 
@@ -82,6 +79,9 @@ def start() -> None:
             file_ext = args['--file-ext'],
             dry_run = args['--dry-run']
         )
+
+        logger.info("Uploader finished successfully.")
+
     except Exception as e:
         logger.error(
             (
