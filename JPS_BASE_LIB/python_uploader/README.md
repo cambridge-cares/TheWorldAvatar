@@ -134,11 +134,16 @@ The `pyuploader.get_uploader` is a factory function for creating file or triple 
 #------------------------------------------------
 # SIGNATURE
 def get_uploader(
-    uploader_type: str,                      # pass either pyuploader.FS_UPLOADER or pyuploader.TS_UPLOADER
-    default_url: Optional[str] = None,       # optional
-    default_auth_file: Optional[str] = None, # optional
-    default_no_auth: bool = False,           # optional
-    subdirs: Optional[str] = None,           # optional, pyuploader.FS_UPLOADER only
+    uploader_type: str,                     # pass either pyuploader.FS_UPLOADER
+                                            # or pyuploader.TS_UPLOADER
+    url: Optional[str] = None,              # optional
+    auth_file: Optional[str] = None,        # optional
+    no_auth: bool = False,                  # optional
+    subdirs: Optional[str] = None,          # optional, pyuploader.FS_UPLOADER only
+    url_env_var: Optional[str] = None,      # optional, name of the env variable that stores the uploader
+                                            # url, if not provided, defaults will be used
+    auth_file_env_var: Optional[str] = None # optional, name of the env variable that stores the uploader
+                                            # auth file path, if not provided, defaults will be used
     ) -> Uploader:
 
     ...
