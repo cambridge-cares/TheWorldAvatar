@@ -10,7 +10,5 @@ const EXAMPLE_ICONS = [
     "img/icons/terminal.png",
     "img/icons/terminal-empty.png",
     "img/icons/offtake.png",
-    "img/icons/offtake-empty.png",
-    "img/icons/pipe.png",
-    "img/icons/pipe-empty.png"
+    "img/icons/offtake-empty.png"
 ];
