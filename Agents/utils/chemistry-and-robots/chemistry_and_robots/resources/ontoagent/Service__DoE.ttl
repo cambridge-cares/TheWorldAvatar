@@ -19,10 +19,7 @@
 
 :MessageContent_input
     rdf:type ontoagent:MessageContent;
-    ontoagent:hasMandatoryPart :MessagePart_stra;
-    ontoagent:hasMandatoryPart :MessagePart_domain;
-    ontoagent:hasMandatoryPart :MessagePart_response;
-    ontoagent:hasMandatoryPart :MessagePart_histdata;
+    ontoagent:hasMandatoryPart :MessagePart_doe;
 .
 
 :MessageContent_output
@@ -30,32 +27,11 @@
     ontoagent:hasMandatoryPart :MessagePart_rxnexp;
 .
 
-:MessagePart_stra
+:MessagePart_doe
     rdf:type ontoagent:MessagePart;
     ontoagent:isArray "false"^^xsd:boolean;
-    ontoagent:hasType ontodoe:Strategy;
-    ontoagent:hasName "strategy"^^xsd:string;
-.
-
-:MessagePart_domain
-    rdf:type ontoagent:MessagePart;
-    ontoagent:isArray "false"^^xsd:boolean;
-    ontoagent:hasType ontodoe:Domain;
-    ontoagent:hasName "domain"^^xsd:string;
-.
-
-:MessagePart_response
-    rdf:type ontoagent:MessagePart;
-    ontoagent:isArray "true"^^xsd:boolean;
-    ontoagent:hasType ontodoe:SystemResponse;
-    ontoagent:hasName "systemResponse"^^xsd:string;
-.
-
-:MessagePart_histdata
-    rdf:type ontoagent:MessagePart;
-    ontoagent:isArray "false"^^xsd:boolean;
-    ontoagent:hasType ontodoe:HistoricalData;
-    ontoagent:hasName "historicalData"^^xsd:string;
+    ontoagent:hasType ontodoe:DesignOfExperiment;
+    ontoagent:hasName "designOfExperiment"^^xsd:string;
 .
 
 :MessagePart_rxnexp

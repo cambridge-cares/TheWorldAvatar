@@ -163,6 +163,7 @@ class TargetIRIs(Enum):
     DOE_BASE_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_1/'
     DOE_IRI = DOE_BASE_IRI + 'DoE_1'
     DOE_STRATEGY_IRI = DOE_BASE_IRI + 'Strategy_1'
+    DOE_TSEMO_STRATEGY_IRI = DOE_STRATEGY_IRI
     DOE_DOMAIN_IRI = DOE_BASE_IRI + 'Domain_1'
     DOE_SYS_RES_1_IRI = DOE_BASE_IRI + 'SystemResponse_1'
     DOE_SYS_RES_2_IRI = DOE_BASE_IRI + 'SystemResponse_2'
@@ -175,6 +176,7 @@ class TargetIRIs(Enum):
     DOE_CONT_VAR_3_IRI = DOE_BASE_IRI + 'ContinuousVariable_3'
     DOE_CONT_VAR_4_IRI = DOE_BASE_IRI + 'ContinuousVariable_4'
     DOE_CONT_VAR_IRI_LIST = [DOE_CONT_VAR_1_IRI, DOE_CONT_VAR_2_IRI, DOE_CONT_VAR_3_IRI, DOE_CONT_VAR_4_IRI]
+    DOE_SYS_RES_MAXIMISE_DICT = {DOE_SYS_RES_1_IRI:True, DOE_SYS_RES_2_IRI:False}
 
 # The (scope="module") is added to make the initialisation only run once for the whole python module so it saves time
 @pytest.fixture(scope="module")
@@ -241,20 +243,25 @@ def test_getSystemResponses(initialise_triples, sys_res_iri, maximise):
     if isinstance(sys_res_iri, list):
         assert all(m == dct_m.get(s) for s, m in zip(sys_res_iri, maximise))
 
-# TODO this should be done together when testing the DoEAgent
-# TODO remember to also optimise the sparql query function itself
-# def test_getTSEMOSettings(initialise_triples):
-#     sparql_client = initialise_triples
-#     sparql_client = ChemistryAndRobotsSparqlClient()
-#     tsemo = sparql_client.getTSEMOSettings()
-#     pass
+def test_getTSEMOSettings(initialise_triples):
+    sparql_client = initialise_triples
+    tsemo = sparql_client.getTSEMOSettings(TargetIRIs.DOE_TSEMO_STRATEGY_IRI.value)
+    assert tsemo.instance_iri == TargetIRIs.DOE_TSEMO_STRATEGY_IRI.value
+    assert isinstance(tsemo, onto.TSEMO)
+    assert tsemo.nRetries is not None
+    assert tsemo.nSpectralPoints is not None
+    assert tsemo.nGenerations is not None
+    assert tsemo.populationSize is not None
 
-# TODO this should be done together when testing the DoEAgent
-# TODO remember to also optimise the sparql query function itself
-# def test_getDoEStrategy(initialise_triples):
-#     sparql_client = initialise_triples
-#     sparql_client = ChemistryAndRobotsSparqlClient()
-#     pass
+def test_getDoEStrategy(initialise_triples):
+    sparql_client = initialise_triples
+    strategy = sparql_client.getDoEStrategy(TargetIRIs.DOE_TSEMO_STRATEGY_IRI.value)
+    assert strategy.instance_iri == TargetIRIs.DOE_TSEMO_STRATEGY_IRI.value
+    assert isinstance(strategy, onto.TSEMO)
+    assert strategy.nRetries is not None
+    assert strategy.nSpectralPoints is not None
+    assert strategy.nGenerations is not None
+    assert strategy.populationSize is not None
 
 def test_getDoEDomain(initialise_triples):
     sparql_client = initialise_triples
@@ -388,6 +395,28 @@ def test_getDoEHistoricalData(initialise_triples):
     assert isinstance(hist_data_instance, onto.HistoricalData)
     assert len(hist_data_instance.refersTo) == len(TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
     assert all(iri in [h.instance_iri for h in hist_data_instance.refersTo] for iri in TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
+
+def test_get_doe_instance(initialise_triples):
+    sparql_client = initialise_triples
+    doe_instance = sparql_client.get_doe_instance(TargetIRIs.DOE_IRI.value)
+    # Check Domain
+    assert doe_instance.hasDomain.instance_iri == TargetIRIs.DOE_DOMAIN_IRI.value
+    lst_var = [v.instance_iri for v in doe_instance.hasDomain.hasDesignVariable]
+    assert len(lst_var) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
+    assert all(var in lst_var for var in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
+    assert all(all([isinstance(var, onto.ContinuousVariable), var.refersTo is not None, var.upperLimit > var.lowerLimit]) for var in doe_instance.hasDomain.hasDesignVariable)
+    # Check SystemResponse
+    assert all(all([isinstance(r, onto.SystemResponse), r.refersTo is not None]) for r in doe_instance.hasSystemResponse)
+    dct_m = {s.instance_iri:s.maximise for s in doe_instance.hasSystemResponse}
+    assert all([int(TargetIRIs.DOE_SYS_RES_MAXIMISE_DICT.value[s]) == int(dct_m.get(s)) for s in TargetIRIs.DOE_SYS_RES_MAXIMISE_DICT.value])
+    # Check Strategy
+    strategy = doe_instance.usesStrategy
+    assert strategy.instance_iri == TargetIRIs.DOE_STRATEGY_IRI.value
+    assert isinstance(strategy, onto.TSEMO)
+    assert strategy.nRetries is not None
+    assert strategy.nSpectralPoints is not None
+    assert strategy.nGenerations is not None
+    assert strategy.populationSize is not None
 
 #############################################
 ## sparql_client.py functions to be tested ##

@@ -1,10 +1,7 @@
 # The purpose of this module is to provide utility functions
 # to interact with the knowledge graph
 #============================================================
-from lib2to3.pgen2.pgen import ParserGenerator
 from typing import Tuple
-from urllib import response
-from numpy import trim_zeros
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
 import pandas as pd
@@ -68,40 +65,67 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Perform SPARQL Update
         self.performUpdate(update)
 
-    def getDoEInstanceIRI(self, strategy_instance: Strategy, domain_instance: Domain, system_response_instance: List[SystemResponse], historical_data_instance: HistoricalData) -> str:
-        """
-            This method retrieves the instance of OntoDoE:DesignOfExperiment given instance of OntoDoE:Strategy, OntoDoE:Domain, OntoDoE:SystemResponse, and OntoDoE:HistoricalData.
-
-            Arguments:
-                doe_instance - instance of dataclass OntoDoE.DesignOfExperiment
-        """
-
-        # Prepare query string, start with strategy and domain, then iterate over a list of system responses, finally historical data
-        query = """SELECT ?doe_instance \
-                WHERE { \
-                ?doe_instance <%s> <%s> ; \
-                    <%s> <%s> ; """ % (ONTODOE_USESSTRATEGY, strategy_instance.instance_iri, ONTODOE_HASDOMAIN, domain_instance.instance_iri)
-
-        for sysres in system_response_instance:
-            query = query + """<%s> <%s> ; """ % (ONTODOE_HASSYSTEMRESPONSE, sysres.instance_iri)
-        query = query + """<%s> <%s> . }""" % (ONTODOE_UTILISESHISTORICALDATA, historical_data_instance.instance_iri)
-        # Perform query
-        response = self.performQuery(query)
-        if (len(response) == 0 ):
-            raise Exception("""Unable to identify the OntoDoE:DesignOfExperiment instance given input: \
-                OntoDoE:Strategy <%s>; \
-                OntoDoE:Domain <%s>; \
-                OntoDoE:SystemResponse <%s>; \
-                OntoDoE:HistoricalData <%s>.""" % (strategy_instance.instance_iri, domain_instance.instance_iri, ">, <".join([sysres.instance_iri for sysres in system_response_instance]), historical_data_instance.instance_iri))
-        elif (len(response) > 1):
-            raise Exception("""Unable to uniquely identify the OntoDoE:DesignOfExperiment instance given input: \
-                OntoDoE:Strategy <%s>; \
-                OntoDoE:Domain <%s>; \
-                OntoDoE:SystemResponse <%s>; \
-                OntoDoE:HistoricalData <%s>. \
-                The list of identified OntoDoE:DesignOfExperiment instances are: <%s>.""" % (strategy_instance.instance_iri, domain_instance.instance_iri, ">, <".join([sysres.instance_iri for sysres in system_response_instance]), historical_data_instance.instance_iri, ">, <".join([list(r.values())[0] for r in response])))
+    def get_doe_instance(self, doe_iri) -> DesignOfExperiment:
+        doe_iri = trimIRI(doe_iri)
+        query_1 = """SELECT ?strategy ?domain ?hist_data WHERE { <%s> <%s> ?strategy; <%s> ?domain; <%s> ?hist_data. }""" % (
+            doe_iri, ONTODOE_USESSTRATEGY, ONTODOE_HASDOMAIN, ONTODOE_UTILISESHISTORICALDATA)
+        response_1 = self.performQuery(query_1)
+        if len(response_1) > 1:
+            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is associated with multiple entries of OntoDoE:Strategy/Domain/HistoricalData: %s" % (
+                doe_iri, str(response_1)))
+        elif len(response_1) < 1:
+            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is NOT associated with any entries of OntoDoE:Strategy/Domain/HistoricalData" % (doe_iri))
         else:
-            return response[0]['doe_instance']
+            r = response_1[0]
+
+        query_2 = """SELECT ?sys_res WHERE { <%s> <%s> ?sys_res. }""" % (doe_iri, ONTODOE_HASSYSTEMRESPONSE)
+        response_2 = self.performQuery(query_2)
+
+        doe_instance = DesignOfExperiment(
+            instance_iri=doe_iri,
+            usesStrategy=self.getDoEStrategy(r['strategy']),
+            hasDomain=self.getDoEDomain(r['domain']),
+            hasSystemResponse=self.getSystemResponses([list(res.values())[0] for res in response_2]),
+            utilisesHistoricalData=self.getDoEHistoricalData(r['hist_data']),
+            proposesNewExperiment=None
+        ) # TODO initialisation of ReactionExperiment is omitted here
+        return doe_instance
+
+    # # TODO delete this function
+    # def getDoEInstanceIRI(self, strategy_instance: Strategy, domain_instance: Domain, system_response_instance: List[SystemResponse], historical_data_instance: HistoricalData) -> str:
+    #     """
+    #         This method retrieves the instance of OntoDoE:DesignOfExperiment given instance of OntoDoE:Strategy, OntoDoE:Domain, OntoDoE:SystemResponse, and OntoDoE:HistoricalData.
+
+    #         Arguments:
+    #             doe_instance - instance of dataclass OntoDoE.DesignOfExperiment
+    #     """
+
+    #     # Prepare query string, start with strategy and domain, then iterate over a list of system responses, finally historical data
+    #     query = """SELECT ?doe_instance \
+    #             WHERE { \
+    #             ?doe_instance <%s> <%s> ; \
+    #                 <%s> <%s> ; """ % (ONTODOE_USESSTRATEGY, strategy_instance.instance_iri, ONTODOE_HASDOMAIN, domain_instance.instance_iri)
+
+    #     for sysres in system_response_instance:
+    #         query = query + """<%s> <%s> ; """ % (ONTODOE_HASSYSTEMRESPONSE, sysres.instance_iri)
+    #     query = query + """<%s> <%s> . }""" % (ONTODOE_UTILISESHISTORICALDATA, historical_data_instance.instance_iri)
+    #     # Perform query
+    #     response = self.performQuery(query)
+    #     if (len(response) == 0 ):
+    #         raise Exception("""Unable to identify the OntoDoE:DesignOfExperiment instance given input: \
+    #             OntoDoE:Strategy <%s>; \
+    #             OntoDoE:Domain <%s>; \
+    #             OntoDoE:SystemResponse <%s>; \
+    #             OntoDoE:HistoricalData <%s>.""" % (strategy_instance.instance_iri, domain_instance.instance_iri, ">, <".join([sysres.instance_iri for sysres in system_response_instance]), historical_data_instance.instance_iri))
+    #     elif (len(response) > 1):
+    #         raise Exception("""Unable to uniquely identify the OntoDoE:DesignOfExperiment instance given input: \
+    #             OntoDoE:Strategy <%s>; \
+    #             OntoDoE:Domain <%s>; \
+    #             OntoDoE:SystemResponse <%s>; \
+    #             OntoDoE:HistoricalData <%s>. \
+    #             The list of identified OntoDoE:DesignOfExperiment instances are: <%s>.""" % (strategy_instance.instance_iri, domain_instance.instance_iri, ">, <".join([sysres.instance_iri for sysres in system_response_instance]), historical_data_instance.instance_iri, ">, <".join([list(r.values())[0] for r in response])))
+    #     else:
+    #         return response[0]['doe_instance']
 
     def getDoEDomain(self, domain_iri: str) -> Domain:
         """
@@ -764,15 +788,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             raise Exception("Strategy Instance <%s> should only have one rdf:type." % (strategy_iri))
         res = [list(r.values())[0] for r in response]
 
-        if (getShortName(res[0]) == TSEMO.__name__):
+        if (res[0] == ONTODOE_TSEMO):
             tsemo_instance = self.getTSEMOSettings(strategy_iri)
             return tsemo_instance
-        elif (getShortName(res[0]) == LHS.__name__):
+        elif (res[0] == ONTODOE_LHS):
             # TODO implement handling for LHS
-            raise Exception("LHS as a OntoDoE:Strategy is not yet supported.")
+            raise NotImplementedError("LHS as a OntoDoE:Strategy is not yet supported.")
         else:
             # TODO implement handling for other DoE strategy
-            raise Exception("<%s> as a OntoDoE:Strategy is not yet supported." % (getShortName(res[0])))
+            raise NotImplementedError("<%s> as a OntoDoE:Strategy is not yet supported." % (res[0]))
 
     def getTSEMOSettings(self, tsemo_iri: str) -> TSEMO:
         """
