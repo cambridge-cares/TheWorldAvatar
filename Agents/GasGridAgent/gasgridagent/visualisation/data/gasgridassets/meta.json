@@ -32,14 +32,7 @@
             "name": "pipes",
             "dataType": "geojson",
             "dataLocation": "pipes.geojson",
-            "locationType": "symbol",
-            "cluster": true,
-            "clusterRadius": 30,
-            "clusterProperties": {
-                "icon-image": ["string", "pipe-empty"],
-                "text-color": ["string", "#00dd4a"]
-            },
-			"metaFiles": ["pipes-meta.json"]
+            "locationType": "line"
         }
     ]
 }
