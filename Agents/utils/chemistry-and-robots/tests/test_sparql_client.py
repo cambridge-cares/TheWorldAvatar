@@ -305,6 +305,7 @@ def test_getExpReactionCondition(initialise_triples, rxnexp_iri, rxnexp_conditio
         (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_4_PERFORMANCE_INDICATOR_IRI_LIST.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_5_PERFORMANCE_INDICATOR_IRI_LIST.value),
+        # TODO add cases for ReactionVariations
     ],
 )
 def test_getExpPerformanceIndicator(initialise_triples, rxnexp_iri, rxnexp_pref_indicator_iri):
@@ -360,9 +361,9 @@ def test_get_rdf_type_of_rxn_exp(initialise_triples, rxnexp_iri, expected_rxn_ty
         (TargetIRIs.LIST_EXAMPLE_RXN_EXP.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
             TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
             TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
-        # TODO (TargetIRIs.NEW_RXN_EXP_1_IRI.value, []),
-        # TODO (TargetIRIs.NEW_RXN_EXP_2_IRI.value, []),
-        # TODO (TargetIRIs.NEW_RXN_EXP_3_IRI.value, []),
+        # TODO (TargetIRIs.NEW_RXN_EXP_1_IRI.value, []),isVariationOf
+        # TODO (TargetIRIs.NEW_RXN_EXP_2_IRI.value, []),isVariationOf
+        # TODO (TargetIRIs.NEW_RXN_EXP_3_IRI.value, []),isVariationOf
     ],
 )
 def test_getReactionExperiment(initialise_triples, rxnexp_iris, rxn_type, rxnexp_condition, rxnexp_perfind, input_chem, output_chem, reactor_assigned, chem_rxn):
@@ -417,6 +418,20 @@ def test_get_doe_instance(initialise_triples):
     assert strategy.nSpectralPoints is not None
     assert strategy.nGenerations is not None
     assert strategy.populationSize is not None
+
+@pytest.mark.parametrize(
+    "rxn_variation_iri,expected_rxn_rxp_iri",
+    [# here we are testing that the function should work wether the passed in iri is already a list or not
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value),
+    ],
+)
+def test_get_rxn_exp_iri_given_rxn_variation(initialise_triples, rxn_variation_iri, expected_rxn_rxp_iri):
+    sparql_client = initialise_triples
+    # sparql_client = ChemistryAndRobotsSparqlClient()
+    rxn_exp_iri = sparql_client.get_rxn_exp_iri_given_rxn_variation(rxn_variation_iri)
+    assert rxn_exp_iri == expected_rxn_rxp_iri
 
 #############################################
 ## sparql_client.py functions to be tested ##

@@ -276,6 +276,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     )
                 )
             elif rdf_type_rxn == ONTORXN_REACTIONVARIATION:
+                reference_reaction_exp = self.get_rxn_exp_iri_given_rxn_variation(exp_iri)
                 list_exp.append(
                     ReactionVariation(
                         instance_iri=exp_iri,
@@ -285,10 +286,23 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         hasInputChemical=self.get_input_chemical_of_rxn_exp(exp_iri),
                         hasOutputChemical=self.get_output_chemical_of_rxn_exp(exp_iri),
                         isAssignedTo=self.get_r4_reactor_rxn_exp_assigned_to(exp_iri),
-                        isOccurenceOf=self.get_chemical_reaction(exp_iri)
+                        isOccurenceOf=self.get_chemical_reaction(reference_reaction_exp),
+                        isVariationOf=self.getReactionExperiment(reference_reaction_exp)[0]
                     )
                 )
         return list_exp
+
+    def get_rxn_exp_iri_given_rxn_variation(self, rxn_variation_iri: str) -> str:
+        rxn_variation_iri = trimIRI(rxn_variation_iri)
+        query = """SELECT ?rxn_exp WHERE { <%s> <%s> ?rxn_exp. }""" % (rxn_variation_iri, ONTORXN_ISVARIATIONOF)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("OntoRxn:ReactionVariation instance <%s> is found to be variation of multiple instance of OntoRxn:ReactionExperiment: %s" % (
+                rxn_variation_iri, str(response)))
+        elif len(response) < 1:
+            raise Exception("OntoRxn:ReactionVariation instance <%s> is NOT found to be variation of any instance of OntoRxn:ReactionExperiment" % rxn_variation_iri)
+        else:
+            return [list(r.values())[0] for r in response][0]
 
     def get_chemical_reaction(self, rxnexp_iri: str) -> OntoCAPE_ChemicalReaction:
         rxnexp_iri = trimIRI(rxnexp_iri)
@@ -675,43 +689,50 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         rxnexp_iri = trimIRI(rxnexp_iri)
 
         # Construct query string
-        query = PREFIX_RDFS + \
-                PREFIX_RDF + \
-                PREFIX_XSD + \
-                PREFIX_OWL + \
-                """SELECT DISTINCT ?condition ?clz ?measure ?val ?unit ?o ?id ?multi ?usage \
-                WHERE { \
-                ?subo rdfs:subPropertyOf* <%s> . \
-                <%s> ?subo ?condition . \
-                ?condition <%s> ?measure . \
-                ?measure <%s> ?unit; \
-                        <%s> ?val . \
-                <%s> ?o ?condition . \
-                ?condition rdf:type ?clz . \
-                FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <%s>) . \
-                OPTIONAL {?condition <%s> ?id .} \
-                OPTIONAL {?condition <%s> ?multi .} \
-                OPTIONAL {?condition <%s> ?usage .} \
-                }""" % (ONTORXN_HASREACTIONCONDITION, rxnexp_iri, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, 
-                rxnexp_iri, ONTORXN_REACTIONCONDITION, ONTODOE_POSITIONALID, ONTORXN_INDICATESMULTIPLICITYOF, ONTORXN_INDICATESUSAGEOF)
+        query = PREFIX_RDFS + PREFIX_RDF + PREFIX_XSD + PREFIX_OWL + """SELECT DISTINCT ?condition ?subo ?clz ?measure ?val ?unit ?id ?multi ?usage \
+                WHERE { ?subo rdfs:subPropertyOf* <%s> . <%s> ?subo ?condition .
+                ?condition rdf:type ?clz . FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <%s>) .
+                ?condition <%s> ?measure . ?measure <%s> ?unit; <%s> ?val .
+                OPTIONAL {?condition <%s> ?id .} .
+                OPTIONAL {?condition <%s> ?multi .} .
+                OPTIONAL {?condition <%s> ?usage .} .
+                }""" % (ONTORXN_HASREACTIONCONDITION, rxnexp_iri, ONTORXN_REACTIONCONDITION,
+                OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, ONTODOE_POSITIONALID, ONTORXN_INDICATESMULTIPLICITYOF, ONTORXN_INDICATESUSAGEOF)
 
         # Perform SPARQL query
         response = self.performQuery(query)
 
         # Populate the list of ReactionCondition based on query results
         list_con = []
-        for res in response:
+
+        unique_reaction_condition = self.get_unique_values_in_list_of_dict(response, 'condition')
+        dct_unique_rc = {rc:self.get_sublist_in_list_of_dict_matching_key_value(response, 'condition', rc) for rc in unique_reaction_condition}
+        for rc in unique_reaction_condition:
+            _info = dct_unique_rc[rc]
+            __clz = list(set([d['clz'] for d in _info]))
+            if len(__clz) == 1:
+                _clz = __clz[0]
+            else:
+                raise Exception("The rdf:type of ReactionCondition <%s> is not uniquely identified: %s" % (rc, __clz))
+            _subo = list(set([d['subo'] for d in _info]))
+            _id = list(set([d['id'] for d in _info if 'id' in d]))
+            _measure = list(set([d['measure'] for d in _info if 'measure' in d]))
+            _unit = list(set([d['unit'] for d in _info if 'unit' in d]))
+            _val = list(set([d['val'] for d in _info if 'val' in d]))
+            _multi = list(set([d['multi'] for d in _info if 'multi' in d]))
+            _usage = list(set([d['usage'] for d in _info if 'usage' in d]))
+
             rxn_condition = ReactionCondition(
-                instance_iri=res['condition'],
-                clz=res['clz'],
-                objPropWithExp=res['o'] if isinstance(res['o'], list) else [res['o']],
-                hasValue=OM_Measure(instance_iri=res['measure'],hasUnit=res['unit'],hasNumericalValue=res['val']),
-                positionalID=res['id'] if 'id' in res else None,
-                indicatesMultiplicityOf=res['multi'] if 'multi' in res else None,
-                indicateUsageOf=res['usage'] if 'usage' in res else None
+                instance_iri=rc,
+                clz=_clz,
+                objPropWithExp=_subo,
+                hasValue=OM_Measure(instance_iri=_measure[0],hasUnit=_unit[0],hasNumericalValue=_val[0]) if len(_measure) == 1 else None,
+                positionalID=_id[0] if len(_id) == 1 else None,
+                indicatesMultiplicityOf=_multi[0] if len(_multi) == 1 else None,
+                indicateUsageOf=_usage[0] if len(_usage) == 1 else None
             )
             list_con.append(rxn_condition)
-        
+
         return list_con
 
     def getExpPerformanceIndicator(self, rxnexp_iri: str) -> List[PerformanceIndicator]:
@@ -726,39 +747,41 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         rxnexp_iri = trimIRI(rxnexp_iri)
 
         # Construct query string
-        query = PREFIX_RDFS + \
-                PREFIX_RDF + \
-                PREFIX_XSD + \
-                PREFIX_OWL + \
-                """SELECT DISTINCT ?perf ?clz ?measure ?val ?unit ?o ?id \
-                WHERE { \
-                ?subo rdfs:subPropertyOf* <%s> . \
-                <%s> ?subo ?perf . \
-                ?perf <%s> ?measure . \
-                ?measure <%s> ?unit; \
-                        <%s> ?val . \
-                <%s> ?o ?perf . \
-                ?perf rdf:type ?clz . \
-                FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <%s>) . \
-                OPTIONAL {?perf <%s> ?id .} \
-                }""" % (ONTORXN_HASPERFORMANCEINDICATOR, rxnexp_iri, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, 
-                rxnexp_iri, ONTORXN_PERFORMANCEINDICATOR, ONTODOE_POSITIONALID)
-        
+        query = PREFIX_RDFS + PREFIX_RDF + PREFIX_XSD + PREFIX_OWL + """SELECT DISTINCT ?perf ?subo ?clz ?measure ?val ?unit ?id
+                WHERE { ?subo rdfs:subPropertyOf* <%s> . <%s> ?subo ?perf .
+                ?perf rdf:type ?clz . FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <%s>) .
+                OPTIONAL {?perf <%s> ?id .} .
+                OPTIONAL {?perf <%s> ?measure . ?measure <%s> ?unit; <%s> ?val .} .
+                }""" % (ONTORXN_HASPERFORMANCEINDICATOR, rxnexp_iri, ONTORXN_PERFORMANCEINDICATOR, ONTODOE_POSITIONALID,
+                OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
         # Perform SPARQL query
         response = self.performQuery(query)
 
         # Populate the list of PerformanceIndicator based on query results
         list_perf = []
-        for res in response:
+        unique_performance_indicator = self.get_unique_values_in_list_of_dict(response, 'perf')
+        dct_unique_pi = {pi:self.get_sublist_in_list_of_dict_matching_key_value(response, 'perf', pi) for pi in unique_performance_indicator}
+        for pi in unique_performance_indicator:
+            _info = dct_unique_pi[pi]
+            __clz = list(set([d['clz'] for d in _info]))
+            if len(__clz) == 1:
+                _clz = __clz[0]
+            else:
+                raise Exception("The rdf:type of PerformanceIndicator <%s> is not uniquely identified: %s" % (pi, __clz))
+            _subo = list(set([d['subo'] for d in _info]))
+            _id = list(set([d['id'] for d in _info if 'id' in d]))
+            _measure = list(set([d['measure'] for d in _info if 'measure' in d]))
+            _unit = list(set([d['unit'] for d in _info if 'unit' in d]))
+            _val = list(set([d['val'] for d in _info if 'val' in d]))
             perf_indicator = PerformanceIndicator(
-                instance_iri=res['perf'],
-                clz=res['clz'],
-                objPropWithExp=res['o'] if isinstance(res['o'], list) else [res['o']],
-                hasValue=OM_Measure(instance_iri=res['measure'],hasUnit=res['unit'],hasNumericalValue=res['val']),
-                positionalID=res['id'] if 'id' in res else None
+                instance_iri=pi,
+                clz=_clz,
+                objPropWithExp=_subo,
+                hasValue=OM_Measure(instance_iri=_measure[0],hasUnit=_unit[0],hasNumericalValue=_val[0]) if len(_measure) == 1 else None,
+                positionalID=_id[0] if len(_id) == 1 else None
             )
             list_perf.append(perf_indicator)
-        
+
         return list_perf
 
     def getDoEStrategy(self, strategy_iri: str) -> Strategy:
