@@ -20,13 +20,8 @@ class DoEAgent(AsyncAgent):
                 agentInputs - URL-decoded input JSON string
                                 an example is:
                                 {
-                                    "agent_input": {
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy": "https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1",
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Domain": "https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1",
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse": 
-                                        ["https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_1", "https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_2"],
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData": "https://www.example.com/triplestore/ontodoe/DoE_1/HistoricalData_1"
-                                    }
+                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#DesignOfExperiment":
+                                    "https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1"
                                 }
         """
         # Load string to JSON object (python dict)
@@ -60,65 +55,18 @@ class DoEAgent(AsyncAgent):
         """
         self.logger.info("Checking arguments...")
         exception_string = """Inputs are not provided in correct form. An example is: 
-                                {
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy": "https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1",
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Domain": "https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1",
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse": 
-                                        ["https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_1", "https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_2"],
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData": "https://www.example.com/triplestore/ontodoe/DoE_1/HistoricalData_1"
-                                }"""
+            {"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#DesignOfExperiment": "https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1"}"""
         # If the input JSON string is missing ontology concept keys, raise error with "exception_string"
-        if ONTODOE_STRATEGY in agent_inputs:
+        if ONTODOE_DESIGNOFEXPERIMENT in agent_inputs:
             try:
                 # Get the information from OntoDoE:Strategy instance
-                strategy_instance = self.sparql_client.getDoEStrategy(agent_inputs[ONTODOE_STRATEGY])
+                doe_instance = self.sparql_client.get_doe_instance(agent_inputs[ONTODOE_DESIGNOFEXPERIMENT])
             except ValueError:
-                self.logger.error("Unable to interpret strategy ('%s') as an IRI." % agent_inputs[ONTODOE_STRATEGY])
-                raise Exception("Unable to interpret strategy ('%s') as an IRI." % agent_inputs[ONTODOE_STRATEGY])
+                self.logger.error("Unable to interpret design of experiment ('%s') as an IRI." % agent_inputs[ONTODOE_DESIGNOFEXPERIMENT])
+                raise Exception("Unable to interpret design of experiment ('%s') as an IRI." % agent_inputs[ONTODOE_DESIGNOFEXPERIMENT])
         else:
-            self.logger.error('OntoDoE:Strategy instance might be missing. Received inputs: ' + agent_inputs + exception_string)
-            raise Exception('OntoDoE:Strategy instance might be missing. Received inputs: ' + agent_inputs + exception_string)
-
-        if ONTODOE_DOMAIN in agent_inputs:
-            try:
-                domain_instance = self.sparql_client.getDoEDomain(agent_inputs[ONTODOE_DOMAIN])
-            except ValueError:
-                self.logger.error("Unable to interpret domain ('%s') as an IRI." % agent_inputs[ONTODOE_DOMAIN])
-                raise Exception("Unable to interpret domain ('%s') as an IRI." % agent_inputs[ONTODOE_DOMAIN])
-        else:
-            self.logger.error('OntoDoE:Domain instance might be missing. Received inputs: ' + agent_inputs + exception_string)
-            raise Exception('OntoDoE:Domain instance might be missing. Received inputs: ' + agent_inputs + exception_string)
-
-        if ONTODOE_SYSTEMRESPONSE in agent_inputs:
-            try:
-                system_response_instance = self.sparql_client.getSystemResponses(agent_inputs[ONTODOE_SYSTEMRESPONSE])
-            except ValueError:
-                self.logger.error("Unable to interpret systemResponse ('%s') as an IRI." % agent_inputs[ONTODOE_SYSTEMRESPONSE])
-                raise Exception("Unable to interpret systemResponse ('%s') as an IRI." % agent_inputs[ONTODOE_SYSTEMRESPONSE])
-        else:
-            self.logger.error('OntoDoE:SystemResponse instances might be missing. Received inputs: ' + agent_inputs + exception_string)
-            raise Exception('OntoDoE:SystemResponse instances might be missing. Received inputs: ' + agent_inputs + exception_string)
-
-        if ONTODOE_HISTORICALDATA in agent_inputs:
-            try:
-                historical_data_instance = self.sparql_client.getDoEHistoricalData(agent_inputs[ONTODOE_HISTORICALDATA])
-            except ValueError:
-                self.logger.error("Unable to interpret historicalData ('%s') as an IRI." % agent_inputs[ONTODOE_HISTORICALDATA])
-                raise Exception("Unable to interpret historicalData ('%s') as an IRI." % agent_inputs[ONTODOE_HISTORICALDATA])
-        else:
-            self.logger.error('OntoDoE:HistoricalData instance might be missing. Received inputs: ' + agent_inputs + exception_string)
-            raise Exception('OntoDoE:HistoricalData instance might be missing. Received inputs: ' + agent_inputs + exception_string)
-
-        # Get the OntoDoE:DesignOfExperiment instances given the inputs, i.e. all the inputs should belong to the same OntoDoE:DesignOfExperiment instance
-        doe_instance_iri = self.sparql_client.getDoEInstanceIRI(strategy_instance, domain_instance, system_response_instance, historical_data_instance)
-
-        doe_instance = DesignOfExperiment(
-            instance_iri=doe_instance_iri,
-            usesStrategy=strategy_instance,
-            hasDomain=domain_instance,
-            hasSystemResponse=system_response_instance,
-            utilisesHistoricalData=historical_data_instance,
-            proposesNewExperiment=None) # TODO initialisation of ReactionExperiment is omitted here
+            self.logger.error('OntoDoE:DesignOfExperiment instance might be missing. Received inputs: ' + agent_inputs + exception_string)
+            raise Exception('OntoDoE:DesignOfExperiment instance might be missing. Received inputs: ' + agent_inputs + exception_string)
 
         return doe_instance
 
