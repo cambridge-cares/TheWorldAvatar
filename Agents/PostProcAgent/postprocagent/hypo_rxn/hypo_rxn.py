@@ -17,6 +17,8 @@ class HypoStreamSpecies(pydantic.BaseModel):
     _is_catalyst: bool = False
     _is_internal_standard: bool = False
     _is_solvent: bool = False
+    _is_target_product: bool = False
+    _is_impurity: bool = False
 
     class Config:
         underscore_attrs_are_private = True
@@ -45,6 +47,10 @@ class HypoStreamSpecies(pydantic.BaseModel):
             __pydantic_self__._is_internal_standard = True
         elif __pydantic_self__.def_role == ONTORXN_SOLVENT:
             __pydantic_self__._is_solvent = True
+        elif __pydantic_self__.def_role == ONTORXN_TARGETPRODUCT:
+            __pydantic_self__._is_target_product = True
+        elif __pydantic_self__.def_role == ONTORXN_IMPURITY:
+            __pydantic_self__._is_impurity = True
         else:
             raise Exception("Role type <%s> NOT supported for Species <%s>." % (__pydantic_self__.def_role, __pydantic_self__.species_iri))
 
@@ -98,9 +104,5 @@ class HypoReactor(pydantic.BaseModel):
                 __pydantic_self__.rxn_exp_iri, __pydantic_self__))
 
 class HypoEndStream(pydantic.BaseModel):
-    # total_run_volume: 
-    # internal_standard: HypoInternalStandard
-    # product: HypoSolute
-    # impurity: Optional[List[HypoSolute]]
-    # un_reacted: Optional[List[HypoSolute]]
-    pass
+    total_run_volume: utils.DimensionalQuantity
+    component: List[HypoStreamSpecies]

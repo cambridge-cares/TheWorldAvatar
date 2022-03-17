@@ -32,11 +32,13 @@ ONTOUOM_GRAMPERMOLE = ONTOUOM + 'gramPerMole' # TODO add this to OM TBox
 ONTOSPECIES_HASMOLECULARWEIGHT = ONTOSPECIES + 'hasMolecularWeight'
 ONTOSPECIES_UNITS = ONTOSPECIES + 'units'
 ONTOSPECIES_VALUE = ONTOSPECIES + 'value'
-ONTOUOM_POUNDSTERLINGPERLITRE = ONTOUOM + 'pound_sterling_per_litre'
+ONTOUOM_POUNDSTERLINGPERLITRE = ONTOUOM + 'pound_sterling_per_litre' # TODO OntoRxn:RunMaterialCost should have the unit of OM_POUNDSTERLING
 OM_ONE = UNITS_OF_MEASURE + 'one'
 OM_DEGREECELSIUS = UNITS_OF_MEASURE + 'degreeCelsius'
 OM_DEGREEFAHRENHEIT = UNITS_OF_MEASURE + 'degreeFahrenheit'
 OM_KELVIN = UNITS_OF_MEASURE + 'kelvin'
+ONTOUOM_KILOGRAMPERLITREPERMINUTE = ONTOUOM + 'kilogram_per_litre_per_minute'
+OM_POUNDSTERLING = UNITS_OF_MEASURE + 'poundSterling'
 
 class InstanceIRIInitialisationError(Exception):
     instance_iri_missing = """IRI of instance_iri is missing, please put it as pyasyncagent.data_model.utils.INSTANCE_IRI_TO_BE_INITIALISED \

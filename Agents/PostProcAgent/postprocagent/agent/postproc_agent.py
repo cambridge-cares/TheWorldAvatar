@@ -4,7 +4,8 @@ import json
 import time
 import os
 
-from pyasyncagent import AsyncAgent
+from pyasyncagent import AsyncAgent, FlaskConfig
+from flask import Flask
 
 from postprocagent.kg_operations import *
 from postprocagent.data_model import *
@@ -14,6 +15,13 @@ from postprocagent.conf import *
 from chemistry_and_robots.hardware import hplc
 
 class PostProcAgent(AsyncAgent):
+    def __init__(self, fs_url: str, fs_user: str, fs_pwd: str,
+        agent_iri: str, time_interval: int, derivation_instance_base_url: str, kg_url: str, kg_user: str = None, kg_password: str = None, app: Flask = Flask(__name__), flask_config: FlaskConfig = FlaskConfig(), logger_name: str = "dev"
+    ):
+        self.fs_url = fs_url
+        self.fs_auth = (fs_user, fs_pwd)
+        super().__init__(agent_iri, time_interval, derivation_instance_base_url, kg_url, kg_user, kg_password, app, flask_config, logger_name)
+
     def setupJob(self, agentInputs) -> list:
         # Create sparql_client
         self.sparql_client = ChemistryAndRobotsSparqlClient(
@@ -28,14 +36,14 @@ class PostProcAgent(AsyncAgent):
         internal_standard_instance = self.sparql_client.get_internal_standard_associated_with_hplc_report(hplc_report_iri)
 
         # Construct an instance of HypoReactor given the ReactionExperiment information, get the value of internal_standard_run_conc_moleperlitre
-        hypo_reactor, internal_standard_run_conc_moleperlitre = hypo.construct_hypo_reactor(self.sparql_client, rxn_exp_instance, internal_standard_instance)
+        hypo_reactor, internal_standard_run_conc_moleperlitre, species_role_dct = hypo.construct_hypo_reactor(self.sparql_client, rxn_exp_instance, internal_standard_instance)
 
         # TODO Process the raw hplc report and generate an instance of HPLCReport
         hplc_report_instance = self.sparql_client.process_raw_hplc_report(hplc_report_iri=hplc_report_iri,
-            internal_standard_run_conc_moleperlitre=internal_standard_run_conc_moleperlitre)
+            internal_standard_run_conc_moleperlitre=internal_standard_run_conc_moleperlitre, fs_auth=self.fs_auth)
 
         # TODO Construct an instance of HypoEndStream given the processed HPLCReport instance and instance of HypoReactor
-        hypo_end_stream = hypo.construct_hypo_end_stream(self.sparql_client, hplc_report_instance, hypo_reactor)
+        hypo_end_stream = hypo.construct_hypo_end_stream(self.sparql_client, hplc_report_instance, hypo_reactor, species_role_dct)
 
         # TODO Calculate each PerformanceIndicator
         pi_yield = hypo.calculate_yield(hypo_reactor, hypo_end_stream)

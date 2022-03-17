@@ -9,6 +9,8 @@ from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
 import pandas as pd
 import collections
+import requests
+from requests import status_codes
 import json
 import time
 import uuid
@@ -1465,46 +1467,68 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return self.get_internal_standard(hplc_method_iri)
 
-    def process_raw_hplc_report(self, hplc_report_iri: str, internal_standard_run_conc_moleperlitre: float) -> HPLCReport:
+    def process_raw_hplc_report(self, hplc_report_iri: str, internal_standard_species: str, internal_standard_run_conc_moleperlitre: float, fs_auth) -> HPLCReport:
         """Here we can assume that the required information are already provided by the previous agents."""
-        hplc_report_path, hplc_report_extension = self.get_raw_hplc_report_path_and_extension(hplc_report_iri)
+        remote_hplc_report_path, hplc_report_extension = self.get_raw_hplc_report_path_and_extension(hplc_report_iri)
         # TODO test if need to download the file from here? or can be processed directly?
+        if hplc_report_extension == DBPEDIA_XLSFILE:
+            _ext = XLSFILE_EXTENSION
+        elif hplc_report_extension == DBPEDIA_TXTFILE:
+            _ext = TXTFILE_EXTENSION
+        else:
+            raise Exception("Processing raw HPLC report with a file extension <%s> is NOT yet supported, associated HPLCReport iri <%s>, remote file path <%s>" % (
+                hplc_report_extension, hplc_report_iri, remote_hplc_report_path))
+        temp_local_file_path = f'{str(uuid.uuid4())}.'+_ext
+        self.download_remote_raw_hplc_report(remote_hplc_report_path, temp_local_file_path, fs_auth)
+
         # retrieve a list of points
-        list_points = hplc.read_raw_hplc_report_file(hplc_report_iri=hplc_report_iri, file_path=hplc_report_path, filename_extension=hplc_report_extension)
+        list_points = hplc.read_raw_hplc_report_file(hplc_report_iri=hplc_report_iri, file_path=temp_local_file_path, filename_extension=hplc_report_extension)
 
         # get the instance of HPLCMethod
         hplc_method = self.get_hplc_method_given_hplc_report(hplc_report_iri)
+        # create a dict for response factor
+        dct_response_factor = {rf.refersToSpecies:rf.hasValue.hasNumericalValue for rf in hplc_method.hasResponseFactor}
 
         # map them to chromatogram point (qury phase component based on hplc method, and hplc)
         list_concentration = []
         list_phase_component = []
         list_chrom_pts= []
-        for pt in list_points:
-            # generate phase component
-            ontospecies_species = self.get_matching_species_from_hplc_results(pt.get(ONTOHPLC_RETENTIONTIME), hplc_method)
+        dct_points = {self.get_matching_species_from_hplc_results(pt.get(ONTOHPLC_RETENTIONTIME), hplc_method):pt for pt in list_points}
+        try:
+            internal_standard_peak_area = dct_points[internal_standard_species][ONTOHPLC_PEAKAREA].hasNumericalValue
+        except KeyError:
+            raise Exception("InternalStandard <%s> is NOT identified in the end stream associated with HPLCReport <%s>" % (internal_standard_species, hplc_report_iri))
+
+        for pt in dct_points:
+            # calculate concentration based on the peak area and response factor
+            try:
+                conc_num_val = dct_points[pt][ONTOHPLC_PEAKAREA].hasNumericalValue / internal_standard_peak_area * internal_standard_run_conc_moleperlitre / dct_response_factor[pt]
+            except KeyError:
+                raise Exception("ResponseFactor of Species <%s> is not presented in the HPLCMethod <%s>: %s" % (pt, hplc_method.instance_iri, str(hplc_method)))
             concentration = OntoCAPE_Molarity(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(hplc_report_iri),
                 hasValue=OntoCAPE_ScalarValue(
                     instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                     namespace_for_init=getNameSpace(hplc_report_iri),
-                    # hasUnitOfMeasure=, # TODO
-                    # numericalValue= # TODO
+                    hasUnitOfMeasure=OM_MOLEPERLITRE,
+                    numericalValue=conc_num_val
                 )
             )
+            # generate phase component
             phase_component = OntoCAPE_PhaseComponent(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(hplc_report_iri),
                 hasProperty=concentration,
-                representsOccurenceOf=ontospecies_species
+                representsOccurenceOf=pt
             )
 
             chrom_pt = ChromatogramPoint(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(hplc_report_iri),
                 indicatesComponent=phase_component,
-                hasPeakArea=pt.get(ONTOHPLC_PEAKAREA),
-                atRetentionTime=pt.get(ONTOHPLC_RETENTIONTIME)
+                hasPeakArea=dct_points[pt][ONTOHPLC_PEAKAREA],
+                atRetentionTime=dct_points[pt][ONTOHPLC_RETENTIONTIME]
             )
             list_concentration.append(concentration)
             list_phase_component.append(phase_component)
@@ -1551,7 +1575,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # generate hplc report instance
         hplc_report_instance = HPLCReport(
             instance_iri=hplc_report_iri,
-            hasReportPath=hplc_report_path,
+            hasReportPath=remote_hplc_report_path,
             records=list_chrom_pts,
             generatedFor=chemical_solution
         )
@@ -1693,6 +1717,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             usesMethod=self.get_hplc_method(hplc_method_iri)
         )
         return hplc_job_instance
+
+    def download_remote_raw_hplc_report(self, remote_file_path, downloaded_file_path, auth):
+        response = requests.get(remote_file_path, auth=auth)
+        if (response.status_code == status_codes.codes.OK):
+            with open(downloaded_file_path, 'wb') as file_obj:
+                for chunk in response.iter_content(chunk_size=128):
+                    file_obj.write(chunk)
+        else:
+            raise Exception("ERROR: File <%s> download failed with code %d " % (remote_file_path, response.status_code))
 
     #######################################################
     ## Some utility functions handling the list and dict ##

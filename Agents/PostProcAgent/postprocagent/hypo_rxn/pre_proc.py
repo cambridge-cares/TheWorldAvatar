@@ -1,6 +1,7 @@
 from typing import Tuple
+
+from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
 from postprocagent.hypo_rxn.hypo_rxn import *
-from pyasyncagent.kg_operations import PySparqlClient
 
 def calc_run_mol_n_volume_of_other_solute(
     input_chemical: str, species: str, eq_ratio: float,
@@ -12,10 +13,40 @@ def calc_run_mol_n_volume_of_other_solute(
     _run_volume = _run_mol / utils.unit_conversion_dq(pump_conc, utils.UNIFIED_CONCENTRATION_UNIT).hasNumericalValue
     utils.deep_update(dct_run_volume, {input_chemical:utils.DimensionalQuantity(hasUnit=utils.UNIFIED_VOLUME_UNIT, hasNumericalValue=_run_volume)})
 
-def construct_hypo_end_stream(sparql_client: PySparqlClient, hplc_report_instance: HPLCReport, hypo_reactor: HypoReactor) -> HypoEndStream:
-    pass
+def construct_hypo_end_stream(sparql_client: ChemistryAndRobotsSparqlClient, hplc_report_instance: HPLCReport, hypo_reactor: HypoReactor, species_role_dct: dict) -> HypoEndStream:
+    lst_end_stream_comp = []
+    for pt in hplc_report_instance.records:
+        _species_iri = pt.indicatesComponent.representsOccurenceOf
+        try:
+            _def_role = species_role_dct[_species_iri]
+        except KeyError:
+            raise Exception("Species <%s> identified from the HPLC report <%s> is NOT represented in the recording of ReactionExperiment <%s>" % (
+                _species_iri, hplc_report_instance.instance_iri, hypo_reactor.rxn_exp_iri))
+        _mw = sparql_client.get_species_molar_mass_kilogrampermole(_species_iri)
+        _density, _density_unit = sparql_client.get_species_density(_species_iri)
+        _cost, _cost_unit = sparql_client.get_species_material_cost(_species_iri)
+        _es, _es_unit = sparql_client.get_species_eco_score(_species_iri)
+        _sp_run_conc, _sp_run_conc_unit = pt.indicatesComponent.hasProperty.hasValue.numericalValue, pt.indicatesComponent.hasProperty.hasValue.hasUnitOfMeasure
+        _sp_run_mol = utils.unit_conversion_return_value(_sp_run_conc, _sp_run_conc_unit,
+            utils.UNIFIED_CONCENTRATION_UNIT) / utils.unit_conversion_return_value_dq(hypo_reactor.total_run_volume, utils.UNIFIED_VOLUME_UNIT)
+        end_stream_comp = HypoStreamSpecies(
+            species_iri=_species_iri,
+            def_role=_def_role,
+            def_molar_mass=utils.unit_conversion(_mw, OM_KILOGRAMPERMOLE, utils.UNIFIED_MOLAR_MASS_UNIT),
+            def_density=utils.unit_conversion(_density, _density_unit, utils.UNIFIED_DENSITY_UNIT),
+            def_cost=utils.unit_conversion(_cost, _cost_unit, utils.UNIFIED_COST_UNIT),
+            def_eco_score=utils.unit_conversion(_es, _es_unit, utils.UNIFIED_ECOSCORE_UNIT),
+            run_conc=utils.unit_conversion(_sp_run_conc, _sp_run_conc_unit, utils.UNIFIED_CONCENTRATION_UNIT),
+            run_mol=utils.DimensionalQuantity(hasUnit=utils.UNIFIED_MOLE_UNIT,hasNumericalValue=_sp_run_mol)
+        )
+        lst_end_stream_comp.append(end_stream_comp)
+    hypo_end_stream = HypoEndStream(
+        total_run_volume=utils.unit_conversion_dq(hypo_reactor.total_run_volume, utils.UNIFIED_VOLUME_UNIT),
+        component=lst_end_stream_comp
+    )
+    return hypo_end_stream
 
-def construct_hypo_reactor(sparql_client: PySparqlClient, rxn_exp_instance: ReactionExperiment, internal_standard_instance: InternalStandard) -> Tuple[HypoReactor, float]:
+def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_exp_instance: ReactionExperiment, internal_standard_instance: InternalStandard) -> Tuple[HypoReactor, float, dict]:
     # Construct a dict of run volume from each pump (start with ReactionScale for the reference pump) {InputChemical:DimensionalQuantity(concentration)}
     _run_volume_dct = {con.indicateUsageOf:utils.DimensionalQuantity(hasUnit=con.hasValue.hasUnit,
         hasNumericalValue=con.hasValue.hasNumericalValue) for con in rxn_exp_instance.hasReactionCondition if con.indicateUsageOf is not None}
@@ -160,8 +191,7 @@ def construct_hypo_reactor(sparql_client: PySparqlClient, rxn_exp_instance: Reac
                 def_cost=utils.unit_conversion(_cost, _cost_unit, utils.UNIFIED_COST_UNIT),
                 def_eco_score=utils.unit_conversion(_es, _es_unit, utils.UNIFIED_ECOSCORE_UNIT),
                 run_conc=utils.DimensionalQuantity(hasUnit=utils.UNIFIED_CONCENTRATION_UNIT,hasNumericalValue=_sp_run_conc),
-                run_mol=utils.DimensionalQuantity(hasUnit=run_mol_dct[ic][_species_iri].hasUnit,hasNumericalValue=run_mol_dct[ic][_species_iri].hasNumericalValue),
-                is_solvent=True
+                run_mol=utils.DimensionalQuantity(hasUnit=run_mol_dct[ic][_species_iri].hasUnit,hasNumericalValue=run_mol_dct[ic][_species_iri].hasNumericalValue)
             )
             if species_role_dct[_species_iri] == ONTORXN_SOLVENT:
                 lst_solvent.append(hypo_species)
@@ -221,4 +251,4 @@ def construct_hypo_reactor(sparql_client: PySparqlClient, rxn_exp_instance: Reac
         raise Exception("No appearance of InternalStandard in the given reaction: %s" % (str(rxn_exp_instance)))
     else:
         internal_standard_run_conc_moleperlitre = list(_dct_IS_run_conc_moleperlitre.values())[0]
-    return hypo_reactor, internal_standard_run_conc_moleperlitre
+    return hypo_reactor, internal_standard_run_conc_moleperlitre, species_role_dct
