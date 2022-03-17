@@ -75,7 +75,8 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
     # Get the first ReactionExperiment in the historical data 
     # The new created ReactionVariation instances <isVariationOf> this ReactionExperiment
     # Most of the information from this ReactionExperiment will be copied to the new created ReactionVariation instance
-    first_rxn_exp = doe.utilisesHistoricalData.refersTo[0]
+    # NOTE the ReactionVariation MUST and ONLY <isVariationOf> instance of ReactionExperiment, otherwise it will create huge overhead in recursive querying function getReactionExperiment
+    first_rxn_exp = [rxn_exp for rxn_exp in doe.utilisesHistoricalData.refersTo if rxn_exp.clz == ONTORXN_REACTIONVARIATION][0]
 
     # Iterate over the new suggested experiments to create each of them
     # NOTE below design works for multiple (>1) experiments
@@ -148,6 +149,21 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
                 positionalID=first_rxn_exp_perf.positionalID
             )
 
+            # Add created instance to list
+            list_perf.append(perf)
+
+        # TODO revisit this design when closing the loop
+        # Generate all the rest PerformanceIndicator placeholders that not presented in the first_rxn_exp
+        lst_other_perf = [p for p in AVAILABLE_PERFORMANCE_INDICATOR_LIST if p not in [pi.clz for pi in first_rxn_exp.hasPerformanceIndicator]]
+        for o_p in lst_other_perf:
+            perf = PerformanceIndicator(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(first_rxn_exp.instance_iri),
+                clz=o_p,
+                objPropWithExp=OBJECT_RELATIONSHIP_PERFORMANCE_INDICATOR_RXN_EXP_DICT[o_p],
+                hasValue=None,
+                positionalID=None
+            )
             # Add created instance to list
             list_perf.append(perf)
 
