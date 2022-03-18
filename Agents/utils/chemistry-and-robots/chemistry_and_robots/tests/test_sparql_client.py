@@ -1,5 +1,3 @@
-from chemistry_and_robots.hardware import hplc
-from testcontainers.core.container import DockerContainer
 from rdflib import Graph
 from pathlib import Path
 from enum import Enum
@@ -11,10 +9,13 @@ import uuid
 import os
 
 logging.getLogger("py4j").setLevel(logging.INFO)
-logger = logging.getLogger('test_sparql_client')
 
-from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
+import requests
+from requests import status_codes
+
 import chemistry_and_robots.data_model as onto
+
+pytest_plugins = ["docker_compose"]
 
 class TargetIRIs(Enum):
     DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
@@ -197,38 +198,26 @@ class TargetIRIs(Enum):
     DOE_CONT_VAR_IRI_LIST = [DOE_CONT_VAR_1_IRI, DOE_CONT_VAR_2_IRI, DOE_CONT_VAR_3_IRI, DOE_CONT_VAR_4_IRI]
     DOE_SYS_RES_MAXIMISE_DICT = {DOE_SYS_RES_1_IRI:True, DOE_SYS_RES_2_IRI:False}
 
-# The (scope="module") is added to make the initialisation only run once for the whole python module so it saves time
-@pytest.fixture(scope="module")
-def initialise_triple_store():
-    # NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-    # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-    blazegraph = DockerContainer('docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
-    blazegraph.with_exposed_ports(9999) # the port is set as 9999 to match with the value set in the docker image
-    yield blazegraph
+# ----------------------------------------------------------------------------------
+# Test cases for sparql_client 
+# ----------------------------------------------------------------------------------
 
-# The (scope="module") is added to make the initialisation only run once for the whole python module so it saves time
-@pytest.fixture(scope="module")
-def initialise_triples(initialise_triple_store):
-    with initialise_triple_store as container:
-        # Wait some arbitrary time until container is reachable
-        time.sleep(3)
-
-        # Retrieve SPARQL endpoint
-        endpoint = get_endpoint(container)
-        print(endpoint)
-
-        # Create SparqlClient for testing
-        sparql_client = ChemistryAndRobotsSparqlClient(endpoint, endpoint)
-
-        # Upload the example triples for testing
-        pathlist = Path(str(Path(__file__).absolute().parent.parent)+'/chemistry_and_robots/resources/').glob('**/*.ttl')
-        for path in pathlist:
-            sparql_client.uploadOntology(str(path))
-
-        yield sparql_client
-
-        # Clear logger at the end of the test
-        clear_loggers()
+def test_(initialise_files):
+    fs_url, fs_auth = initialise_files
+    xls_pathlist = Path(str(Path(__file__).absolute().parent.parent)+'/resources/').glob('**/*.xls')
+    txt_pathlist = Path(str(Path(__file__).absolute().parent.parent)+'/resources/').glob('**/*.txt')
+    pathlist = [f for f in xls_pathlist] + [f for f in txt_pathlist]
+    lst_fpath = []
+    for fpath in pathlist:
+        with open(str(fpath), 'rb') as file_obj:
+            files = {'file': file_obj}
+            remote_fpath = requests.post(fs_url, files=files, auth=fs_auth)
+            lst_fpath.append(remote_fpath)
+    print('=========================================================================================')
+    print(fs_url)
+    print(fs_auth)
+    print(pathlist)
+    print(lst_fpath)
 
 def test_amount_of_triples_none_zero(initialise_triples):
     sparql_client = initialise_triples
@@ -780,22 +769,3 @@ def test_get_hplc_job(initialise_triples):
     assert hplc_job_instance.characterises.instance_iri == TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value
     assert hplc_job_instance.usesMethod.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
     assert hplc_job_instance.hasReport.instance_iri == TargetIRIs.HPLCREPORT_DUMMY_IRI.value
-
-def get_endpoint(docker_container):
-    # Retrieve SPARQL endpoint for temporary testcontainer
-    # endpoint acts as both Query and Update endpoint
-    endpoint = 'http://' + docker_container.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
-               + docker_container.get_exposed_port(9999)
-    # 'kb' is default namespace in Blazegraph
-    endpoint += '/blazegraph/namespace/kb/sparql'
-    return endpoint
-
-# method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
-def clear_loggers():
-    """Remove handlers from all loggers"""
-    import logging
-    loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
-    for logger in loggers:
-        handlers = getattr(logger, 'handlers', [])
-        for handler in handlers:
-            logger.removeHandler(handler)
