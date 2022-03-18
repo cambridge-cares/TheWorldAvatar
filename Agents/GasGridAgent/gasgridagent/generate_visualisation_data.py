@@ -12,6 +12,7 @@ import os.path
 # Get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module to access
 # the TimeSeriesClient in the JPB_BASE_LIB
 from jpsSingletons import jpsBaseLibView
+import output_pipe_locations as pipe
 
 # Specify plotting properties for GeoJSON features
 geojson_attributes = { 'displayName': '',
@@ -385,6 +386,7 @@ def generate_all_visualisation_data():
     terminals = get_all_terminals(KGClient)
     # Retrieve all geocoordinates of terminals for GeoJSON output
     terminal_coordinates = get_all_terminal_geodata(KGClient)
+    print('terminal_coordinates:', terminal_coordinates)
     generate_terminal_visualisation_data(terminals, terminal_coordinates, KGClient, TSClient, Instant)
 
     # Get all offtakes of interest
@@ -503,72 +505,18 @@ def generate_pipeline_visualisation_data(pipes, pipe_coordinates, KGClient):
     """Queries pipeline coordinates and metadata from the knowledge graph and
     saves results in a geojson file and a json file respectively.
     """
-
-    # Initialise a dictionary for geoJSON outputs
-    geojson = geojson_initialise_dict()
-    # Initialise an array for metadata outputs
-    metadata = []
-    feature_id = 0
-
-    # Iterate over all pipelines
-    for pipe, iri in pipes.items():
-        feature_id += 1
-        # Update GeoJSON properties
-        geojson_attributes['description'] = str(pipe)
-        geojson_attributes['displayName'] = pipe
-        # Append results to overall GeoJSON FeatureCollection
-        if pipe.lower() in pipe_coordinates:
-            geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, pipe_coordinates[pipe.lower()]))
-        # Retrieve pipeline metadata
-        lon, lat = get_pipeline_metadata(iri, KGClient)
-        if lon == None and lat == None:
-            print('The following pipe is not represented in the knowledge graph with coordinates:', iri)
-        else:
-            metadata.append(put_metadata_in_json(feature_id, lon, lat))
-
-    # Write GeoJSON dictionary formatted to file
-    file_name = os.path.join(kg_utils.OUTPUT_DIR, 'gasgridassets', 'pipes.geojson')
-    with open(file_name, 'w') as f:
-        json.dump(geojson, indent=4, fp=f)
-    file_name = os.path.join(kg_utils.OUTPUT_DIR, 'gasgridassets', 'pipes-meta.json')
-    with open(file_name, 'w') as f:
-        json.dump(metadata, indent=4, fp=f)
-
-
-def generate_pipes_visualisation_data(pipes, pipe_coordinates, KGClient, TSClient):
-    """Queries pipe coordinates and metadata from the knowledge graph and
-    saves results in a geojson file and a json file respectively.
-    """
-    # Initialise a dictionary for geoJSON outputs
-    geojson = geojson_initialise_dict()
-    # Initialise an array for metadata outputs
-    metadata = []
-    feature_id = 0
-
-    # Iterate over all pipes
-    for pipe, iri in pipes.items():
-        feature_id += 1
-        # Update GeoJSON properties
-        geojson_attributes['description'] = str(pipe)
-        geojson_attributes['displayName'] = pipe
-        # Append results to overall GeoJSON FeatureCollection
-        if pipe.lower() in pipe_coordinates:
-            print('terminal_coordinates[terminal.lower()]:', pipe_coordinates[pipe.lower()])
-            geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, pipe_coordinates[pipe.lower()]))
-        # Retrieve pipe metadata
-        lon, lat = get_pipeline_metadata(iri, KGClient)
-        if lon == None and lat == None:
-            print('The following pipe is not represented in the knowledge graph with coordinates:', iri)
-        else:
-            metadata.append(put_metadata_in_json(feature_id, lon, lat))
-
-    # Write GeoJSON dictionary formatted to file
-    file_name = os.path.join(kg_utils.OUTPUT_DIR, 'gasgridassets', 'pipes.geojson')
-    with open(file_name, 'w') as f:
-        json.dump(geojson, indent=4, fp=f)
-    file_name = os.path.join(kg_utils.OUTPUT_DIR, 'gasgridassets', 'pipes-meta.json')
-    with open(file_name, 'w') as f:
-        json.dump(metadata, indent=4, fp=f)
+    try:
+        pipe.outputPipes()
+    except:
+        sender = jpsBaseLibView.EmailSender()
+        sender.sendEmail(
+            "GasGridAgent - Exception when outputting pipe locations.",
+            """
+                The 'output_pipe_locations.py' script of the GasGridAgent has encountered an Exception. This script will continue to execute daily, as the issue may be temporary.
+                \n\n
+                It is recommended that a developer logs into the relevant VM and checks the logs for the gas-grid-agent Docker container.
+            """
+        )
 
 if __name__ == '__main__':
     """

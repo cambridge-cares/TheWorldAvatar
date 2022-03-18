@@ -26,7 +26,7 @@ import pandas as pd
 from jpsSingletons import jpsBaseLibView
 # get settings and functions from kg_utils module
 import kg_utils_dtvf as kg
-
+import input_flow_data as flow_data
 
 def instantiate_terminal_locations(query_endpoint, update_endpoint, terminal_name, terminal_location):
     """

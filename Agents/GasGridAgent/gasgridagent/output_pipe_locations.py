@@ -24,6 +24,9 @@ import os
 import numpy as np 
 import pandas as pd
 
+import json
+import re
+
 from tqdm import tqdm
 from datetime import datetime as dt
 
@@ -69,7 +72,7 @@ def outputPipes():
     kg.read_properties_file(kg.PROPERTIES_FILE)
 
     # Set URLs to KG SPARQL endpoints (and update properties file accordingly)
-    kg.setKGEndpoints(kg.PROPERTIES_FILE)
+    # kg.setKGEndpoints(kg.PROPERTIES_FILE)
 
     # Get the KG endpoint
     print("Getting Gas Pipe locations from endpoint at:", kg.QUERY_ENDPOINT)
@@ -139,8 +142,9 @@ def outputPipes():
             feature_start = """{ 
 				"type": "Feature", 
 				"properties": {
-					"name": "%s" ,
-					"stroke":"#000000"
+					"name": "%s",
+					"stroke": "#000000",
+                    "line-color": "#808080"
 					},
 				"id": %s,
 				"geometry": { 
@@ -177,23 +181,24 @@ def outputPipes():
         outputDirectory = "."
 
     # Output the GeoJSON file
+    file_name = os.path.join(kg.OUTPUT_DIR, 'gasgridassets', 'pipes.geojson')
     print("Writing GeoJSON file...")
-    geojson_written = open(outputDirectory + '/pipes.geojson','w')
+    geojson_written = open(file_name,'w')
     geojson_written.write(geojson_file)
     geojson_written.close()
-    print("GeoJSON file written to:", outputDirectory + '/pipes.geojson')
+    print("GeoJSON file written to:", file_name.replace('\\', '/'))
 
-
-# ===== ENTRY POINT ====
-try:
-    outputPipes()
-except:
-    sender = jpsBaseLibView.EmailSender()
-    sender.sendEmail(
-        "GasGridAgent - Exception when outputting pipe locations.",
-        """
-            The 'output_pipe_locations.py' script of the GasGridAgent has encountered an Exception. This script will continue to execute daily, as the issue may be temporary.
-            \n\n
-            It is recommended that a developer logs into the relevant VM and checks the logs for the gas-grid-agent Docker container.
-        """
-    )
+if __name__ == '__main__':
+    # ===== ENTRY POINT ====
+    try:
+        outputPipes()
+    except:
+        sender = jpsBaseLibView.EmailSender()
+        sender.sendEmail(
+            "GasGridAgent - Exception when outputting pipe locations.",
+            """
+                The 'output_pipe_locations.py' script of the GasGridAgent has encountered an Exception. This script will continue to execute daily, as the issue may be temporary.
+                \n\n
+                It is recommended that a developer logs into the relevant VM and checks the logs for the gas-grid-agent Docker container.
+            """
+        )
