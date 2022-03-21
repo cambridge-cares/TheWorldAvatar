@@ -104,7 +104,10 @@ class LabEquipment(Saref_Device):
     # TODO add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
 
 class PreparationMethod(BaseOntology):
-    pass
+    clz: str = ONTOLAB_PREPARATIONMETHOD
+
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        raise NotImplementedError("create_instance_for_kg for OntoLab:PreparationMethod is NOT yet implemented.")
 
 class OntoCAPE_MaterialAmount(BaseOntology):
     clz: str = ONTOCAPE_MATERIALAMOUNT
@@ -120,3 +123,19 @@ class ChemicalSolution(OntoCAPE_MaterialAmount):
     # NOTE which defeats the whole point of making them separate
     fills: str
     isPreparedBy: Optional[PreparationMethod] = None
+
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        # <chemical_solution> <rdf:type> <ChemicalSolution>
+        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
+
+        # <chemical_solution> <fills> <vial>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_FILLS), URIRef(self.fills)))
+
+        # <chemical_solution> <refersToMaterial> <material>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_REFERSTOMATERIAL), URIRef(self.refersToMaterial.instance_iri)))
+        g = self.refersToMaterial.create_instance_for_kg(g)
+
+        if self.isPreparedBy is not None:
+            g = self.isPreparedBy.create_instance_for_kg(g)
+
+        return g

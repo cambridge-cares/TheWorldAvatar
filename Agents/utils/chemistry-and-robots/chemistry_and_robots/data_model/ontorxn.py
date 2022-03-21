@@ -50,9 +50,26 @@ class OntoCAPE_ScalarValue(BaseOntology):
     hasUnitOfMeasure: str
     numericalValue: float
 
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        # <scalar_value> <rdf:type> <OntoCAPE:ScalarValue>
+        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
+        # <scalar_value> <hasUnitOfMeasure> <unit>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_HASUNITOFMEASURE), URIRef(self.hasUnitOfMeasure)))
+        # <scalar_value> <numericalValue> <num>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_NUMERICALVALUE), Literal(self.numericalValue)))
+        return g
+
 class OntoCAPE_PhaseComponentConcentration(BaseOntology):
     clz: str = ONTOCAPE_PHASECOMPONENTCONCENTRATION
     hasValue: OntoCAPE_ScalarValue
+
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        # <phase_component_conc> <rdf:type> <OntoCAPE:PhaseComponentConcentration>
+        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
+        # <phase_component_conc> <hasValue> <scalar_value>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_HASVALUE), URIRef(self.hasValue.instance_iri)))
+        g = self.hasValue.create_instance_for_kg(g)
+        return g
 
 class OntoCAPE_VolumeBasedConcentration(OntoCAPE_PhaseComponentConcentration):
     clz: str = ONTOCAPE_VOLUMEBASEDCONCENTRATION
@@ -64,13 +81,37 @@ class OntoCAPE_Composition(BaseOntology):
     clz: str = ONTOCAPE_COMPOSITION
     comprisesDirectly: List[OntoCAPE_PhaseComponentConcentration]
 
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        # <composition> <rdf:type> <OntoCAPE:Composition>
+        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
+        # <composition> <comprisesDirectly> <OntoCAPE:PhaseComponentConcentration>
+        for pc_conc in self.comprisesDirectly:
+            g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_COMPRISESDIRECTLY), URIRef(pc_conc.instance_iri)))
+            g = pc_conc.create_instance_for_kg(g)
+        return g
+
 class OntoCAPE_PhaseComponent(BaseOntology):
     clz: str = ONTOCAPE_PHASECOMPONENT
     hasProperty: OntoCAPE_PhaseComponentConcentration
     representsOccurenceOf: str # NOTE here it should be pointing to OntoCAPE_ChemicalSpecie, but we simplified to use str for its IRI
 
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        # <phase_component> <rdf:type> <OntoCAPE:PhaseComponent>
+        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
+        # <phase_component> <hasProperty> <OntoCAPE:PhaseComponentConcentration>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_HASPROPERTY), URIRef(self.hasProperty.instance_iri)))
+        g = self.hasProperty.create_instance_for_kg(g)
+        # <phase_component> <representsOccurenceOf> <species>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_REPRESENTSOCCURENCEOF), URIRef(self.representsOccurenceOf)))
+        return g
+
 class OntoCAPE_StateOfAggregation(BaseOntology):
     clz: str = ONTOCAPE_STATEOFAGGREGATION
+
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        # <state_of_aggregation> <rdf:type> <OntoCAPE:StateOfAggregation>
+        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
+        return g
 
 OntoCAPE_liquid = OntoCAPE_StateOfAggregation(instance_iri=ONTOCAPE_LIQUID)
 
@@ -85,9 +126,45 @@ class OntoCAPE_SinglePhase(BaseOntology):
     def _exclude_keys_for_compare_(self, *keys_to_exclude) -> Dict[str, Any]:
         return super()._exclude_keys_for_compare_('representsThermodynamicBehaviorOf', *keys_to_exclude)
 
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        # <single_phase> <rdf:type> <OntoCAPE:SinglePhase>
+        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
+
+        # <single_phase> <hasStateOfAggregation> <state_of_aggregation>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_HASSTATEOFAGGREGATION), URIRef(self.hasStateOfAggregation.instance_iri)))
+        g = self.hasStateOfAggregation.create_instance_for_kg(g)
+
+        # <single_phase> <isComposedOfSubsystem> <phase_component>
+        for pc in self.isComposedOfSubsystem:
+            g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_ISCOMPOSEDOFSUBSYSTEM), URIRef(pc.instance_iri)))
+            g = pc.create_instance_for_kg(g)
+
+        # <single_phase> <has_composition> <composition>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_HAS_COMPOSITION), URIRef(self.has_composition.instance_iri)))
+        g = self.has_composition.create_instance_for_kg(g)
+
+        # <single_phase> <representsThermodynamicBehaviorOf> <material>
+        if isinstance(self.representsThermodynamicBehaviorOf, OntoCAPE_Material):
+            g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_REPRESENTSTHERMODYNAMICBEHAVIOROF), URIRef(self.representsThermodynamicBehaviorOf.instance_iri)))
+        else:
+            g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_REPRESENTSTHERMODYNAMICBEHAVIOROF), URIRef(self.representsThermodynamicBehaviorOf)))
+
+        # TODO add triples related to has_physical_context after it's been implemented
+
+        return g
+
 class OntoCAPE_Material(BaseOntology):
     thermodynamicBehaviour: OntoCAPE_SinglePhase
     clz: str = ONTOCAPE_MATERIAL
+
+    def create_instance_for_kg(self, g: Graph) -> Graph:
+        # <material> <rdf:type> <OntoCAPE:Material>
+        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
+        # <material> <thermodynamicBehaviour> <single_phase>
+        g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_THERMODYNAMICBEHAVIOR), URIRef(self.thermodynamicBehaviour.instance_iri)))
+        g = self.thermodynamicBehaviour.create_instance_for_kg(g)
+
+        return g
 
 class InputChemical(OntoCAPE_Material):
     clz: str = ONTORXN_INPUTCHEMICAL
