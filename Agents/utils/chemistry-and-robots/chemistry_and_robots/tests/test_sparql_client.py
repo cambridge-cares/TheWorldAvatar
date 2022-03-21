@@ -1,8 +1,11 @@
+from chemistry_and_robots.kg_operations import ChemistryAndRobotsSparqlClient
+import chemistry_and_robots.tests.conftest as conftest
 from rdflib import Graph
 from pathlib import Path
 from enum import Enum
 import logging
 import pkgutil
+import filecmp
 import pytest
 import time
 import uuid
@@ -17,6 +20,13 @@ import chemistry_and_robots.data_model as onto
 
 pytest_plugins = ["docker_compose"]
 
+HPLC_XLS_REPORT_FILE = os.path.join(conftest.SAMPLE_DATA_DIR,'raw_hplc_report_xls.xls')
+HPLC_TXT_REPORT_FILE = os.path.join(conftest.SAMPLE_DATA_DIR,'raw_hplc_report_txt.txt')
+# NOTE The filename extensions for below two files are omitted here on purpose
+# NOTE These extensions are to be obtained by sparql query during test
+DOWNLOADED_XLS_FILE_PATH = os.path.join(conftest.DOWNLOADED_DIR,f'{str(uuid.uuid4())}.')
+DOWNLOADED_TXT_FILE_PATH = os.path.join(conftest.DOWNLOADED_DIR,f'{str(uuid.uuid4())}.')
+
 class TargetIRIs(Enum):
     DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
     AUTOMATEDRXNPLATFORM_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'AutomatedRxnPlatform_Dummy'
@@ -24,7 +34,9 @@ class TargetIRIs(Enum):
     HPLC_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLC_Dummy'
     BPR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'BPR_Dummy'
     VAPOURTECR4REACTOR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Dummy'
+    VAPOURTECR4REACTOR_DUMMY_VOLUME = 10
     VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Another_Dummy'
+    VAPOURTECR4REACTOR_ANOTHER_DUMMY_VOLUME = 10
     VAPOURTECR2PUMP_1_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR2_1_Dummy'
     VAPOURTECR2PUMP_2_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR2_2_Dummy'
     VAPOURTECR2PUMP_3_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR2_3_Dummy'
@@ -169,6 +181,9 @@ class TargetIRIs(Enum):
     MOLARITY_INTERNAL_STANDARD = 0.02
     HPLCREPORT_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCReport_Dummy'
     HPLCJOB_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCJob_Dummy'
+    HPLC_LOCAL_FOLDER_PATH = '/home/jb2197/CHEM32/**/'
+    HPLCREPORT_DUMMY_REMOTE_PATH = 'placeholder_path'
+    HPLCREPORT_DUMMY_LOCAL_PATH = 'placeholder_file_name'
     CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI = DUMMY_LAB_BASE_IRI + 'ChemicalSolution_For_OutputChemical_4'
     CHROMATOGRAMPOINT_1_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_1'
     CHROMATOGRAMPOINT_2_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_2'
@@ -198,27 +213,15 @@ class TargetIRIs(Enum):
     DOE_CONT_VAR_IRI_LIST = [DOE_CONT_VAR_1_IRI, DOE_CONT_VAR_2_IRI, DOE_CONT_VAR_3_IRI, DOE_CONT_VAR_4_IRI]
     DOE_SYS_RES_MAXIMISE_DICT = {DOE_SYS_RES_1_IRI:True, DOE_SYS_RES_2_IRI:False}
 
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
+    HPLC_1_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_1'
+    HPLC_2_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_2'
+    CHEMICAL_SOLUTION_1_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_1_1'
+    CHEMICAL_SOLUTION_2_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_2_1'
+
 # ----------------------------------------------------------------------------------
 # Test cases for sparql_client 
 # ----------------------------------------------------------------------------------
-
-def test_(initialise_files):
-    fs_url, fs_auth = initialise_files
-    xls_pathlist = Path(str(Path(__file__).absolute().parent.parent)+'/resources/').glob('**/*.xls')
-    txt_pathlist = Path(str(Path(__file__).absolute().parent.parent)+'/resources/').glob('**/*.txt')
-    pathlist = [f for f in xls_pathlist] + [f for f in txt_pathlist]
-    lst_fpath = []
-    for fpath in pathlist:
-        with open(str(fpath), 'rb') as file_obj:
-            files = {'file': file_obj}
-            remote_fpath = requests.post(fs_url, files=files, auth=fs_auth)
-            lst_fpath.append(remote_fpath)
-    print('=========================================================================================')
-    print(fs_url)
-    print(fs_auth)
-    print(pathlist)
-    print(lst_fpath)
-
 def test_amount_of_triples_none_zero(initialise_triples):
     sparql_client = initialise_triples
     assert sparql_client.getAmountOfTriples() != 0
@@ -408,7 +411,6 @@ def test_getNewExperimentFromDoE(initialise_triples):
 
 def test_getDoEHistoricalData(initialise_triples):
     sparql_client = initialise_triples
-    # sparql_client = ChemistryAndRobotsSparqlClient()
     hist_data_instance = sparql_client.getDoEHistoricalData(TargetIRIs.DOE_HIST_DATA_IRI.value)
     assert isinstance(hist_data_instance, onto.HistoricalData)
     assert len(hist_data_instance.refersTo) == len(TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
@@ -446,41 +448,8 @@ def test_get_doe_instance(initialise_triples):
 )
 def test_get_rxn_exp_iri_given_rxn_variation(initialise_triples, rxn_variation_iri, expected_rxn_rxp_iri):
     sparql_client = initialise_triples
-    # sparql_client = ChemistryAndRobotsSparqlClient()
     rxn_exp_iri = sparql_client.get_rxn_exp_iri_given_rxn_variation(rxn_variation_iri)
     assert rxn_exp_iri == expected_rxn_rxp_iri
-
-#############################################
-## sparql_client.py functions to be tested ##
-#############################################
-# def test_(initialise_triples):
-#     sparql_client = initialise_triples
-#     sparql_client = ChemistryAndRobotsSparqlClient()
-#     pass
-
-# get_output_chemical_of_rxn_exp
-# get_ontocape_material
-# get_autosampler_from_vapourtec_rs400
-# sort_r2_pumps_in_vapourtec_rs400
-# get_rxn_con_or_perf_ind
-
-# get_r4_reactor_rxn_exp_assigned_to
-
-# updateNewExperimentInKG
-# create_equip_settings_for_rs400_from_rxn_exp
-# get_autosampler_site_given_input_chemical
-# write_equip_settings_to_kg
-# write_hplc_report_path_to_kg
-
-# get_hplc_local_report_folder_path
-# get_matching_species_from_hplc_results
-# get_species_molar_mass_kilogrampermole
-# get_species_density
-# get_species_material_cost
-# get_species_eco_score
-# get_reactor_volume_given_reactor
-# get_rxn_exp_associated_with_hplc_report
-# get_internal_standard_associated_with_hplc_report
 
 def test_get_all_autosampler_with_fill(initialise_triples):
     sparql_client = initialise_triples
@@ -684,10 +653,6 @@ def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_r
     dict_solvent = {solvent.instance_iri:solvent.hasUniqueSpecies for solvent in chem_rxn.hasSolvent}
     assert dict_solvent == solvent
 
-def test_get_raw_hplc_report_path_and_extension():
-    # TODO implement this test case once the file server is working
-    pass
-
 def test_get_internal_standard(initialise_triples):
     sparql_client = initialise_triples
     internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
@@ -741,10 +706,6 @@ def test_get_existing_hplc_report(initialise_triples):
     assert hplc_report.lastLocalModifiedAt > 0
     assert hplc_report.lastUploadedAt > 0
 
-def test_process_raw_hplc_report(initialise_triples):
-    # TODO implement this test case once the file server is sorted
-    pass
-
 def test_get_hplc_job_given_hplc_report_instance(initialise_triples):
     sparql_client = initialise_triples
     hplc_report_instance = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
@@ -769,3 +730,144 @@ def test_get_hplc_job(initialise_triples):
     assert hplc_job_instance.characterises.instance_iri == TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value
     assert hplc_job_instance.usesMethod.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
     assert hplc_job_instance.hasReport.instance_iri == TargetIRIs.HPLCREPORT_DUMMY_IRI.value
+
+@pytest.mark.parametrize(
+    "hplc_digital_twin,hplc_remote_file_path,expected_rxn_exp",
+    [
+        (TargetIRIs.HPLC_1_POST_PROC_IRI.value, 'placeholder_1', TargetIRIs.NEW_RXN_EXP_1_IRI.value),
+        (TargetIRIs.HPLC_2_POST_PROC_IRI.value, 'placeholder_2', TargetIRIs.NEW_RXN_EXP_2_IRI.value),
+    ],
+)
+def test_identify_rxn_exp_when_uploading_hplc_report(initialise_triples, hplc_digital_twin, hplc_remote_file_path, expected_rxn_exp):
+    sparql_client = initialise_triples
+    rxn_exp = sparql_client.identify_rxn_exp_when_uploading_hplc_report(hplc_digital_twin, hplc_remote_file_path)
+    assert rxn_exp == expected_rxn_exp
+
+@pytest.mark.parametrize(
+    "hplc_iri,expected_local_folder_path,expected_file_extension",
+    [
+        (TargetIRIs.HPLC_DUMMY_IRI.value, TargetIRIs.HPLC_LOCAL_FOLDER_PATH.value, onto.XLSFILE_EXTENSION),
+        (TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.HPLC_LOCAL_FOLDER_PATH.value, onto.XLSFILE_EXTENSION),
+        (TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.HPLC_LOCAL_FOLDER_PATH.value, onto.TXTFILE_EXTENSION),
+    ],
+)
+def test_get_hplc_local_report_folder_path_n_file_extension(initialise_triples, hplc_iri, expected_local_folder_path, expected_file_extension):
+    sparql_client = initialise_triples
+    local_folder_path, file_extension = sparql_client.get_hplc_local_report_folder_path_n_file_extension(hplc_iri)
+    assert (local_folder_path, file_extension) == (expected_local_folder_path, expected_file_extension)
+
+@pytest.mark.parametrize(
+    "local_file_path,downloaded_file_path,hplc_digital_twin,chemical_solution_iri,internal_standard_species,internal_standard_run_conc",
+    [
+        (HPLC_XLS_REPORT_FILE, DOWNLOADED_XLS_FILE_PATH, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value),
+        (HPLC_TXT_REPORT_FILE, DOWNLOADED_TXT_FILE_PATH, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value),
+    ],
+)
+def test_upload_download_process_raw_hplc_report(initialise_triples, local_file_path, downloaded_file_path, hplc_digital_twin, chemical_solution_iri, internal_standard_species, internal_standard_run_conc):
+    """This is an integration test of five methods that are called by different agents: upload_raw_hplc_report_to_fs_kg, get_raw_hplc_report_remote_path_and_extension,
+    download_remote_raw_hplc_report, connect_hplc_report_with_chemical_solution, and process_raw_hplc_report."""
+    sparql_client = initialise_triples
+    timestamp_last_modified = os.path.getmtime(local_file_path)
+
+    # First upload and download the report (as part of HPLCInput Agent), make sure the content is the same
+    hplc_report_iri = sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=local_file_path,
+        timestamp_last_modified=timestamp_last_modified, hplc_digital_twin=hplc_digital_twin)
+    remote_file_path, file_extension = sparql_client.get_raw_hplc_report_remote_path_and_extension(hplc_report_iri)
+    full_downloaded_path = downloaded_file_path + file_extension
+    sparql_client.download_remote_raw_hplc_report(remote_file_path=remote_file_path, downloaded_file_path=full_downloaded_path)
+    assert filecmp.cmp(local_file_path,full_downloaded_path)
+
+    # Second make the connection between HPLCReport and ChemicalSolution (as part of Execution Agent)
+    sparql_client.connect_hplc_report_with_chemical_solution(hplc_report_iri, chemical_solution_iri)
+
+    # Third process the raw report (as part of PostProc Agent)
+    hplc_report_instance = sparql_client.process_raw_hplc_report(hplc_report_iri, internal_standard_species, internal_standard_run_conc)
+    assert hplc_report_instance.instance_iri == hplc_report_iri
+    assert hplc_report_instance.hasReportPath == remote_file_path
+    assert hplc_report_instance.localReportFile == local_file_path
+    assert round(hplc_report_instance.lastLocalModifiedAt, 5) == round(timestamp_last_modified, 5)
+    assert hplc_report_instance.lastUploadedAt > hplc_report_instance.lastLocalModifiedAt
+    list_chrom_pts = hplc_report_instance.records
+    for pt in list_chrom_pts:
+        assert pt.instance_iri.startswith(pt.namespace_for_init)
+        assert pt.indicatesComponent.instance_iri is not None
+        assert pt.indicatesComponent.representsOccurenceOf is not None
+        assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
+        assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
+        assert pt.atRetentionTime.hasValue.hasNumericalValue > 0
+        assert pt.atRetentionTime.hasValue.hasUnit is not None
+        assert pt.hasPeakArea.hasValue.hasNumericalValue > 0
+        assert pt.hasPeakArea.hasValue.hasUnit is not None
+    dct_phase_comp = {pt.indicatesComponent.instance_iri:pt.indicatesComponent for pt in list_chrom_pts}
+    chemical_solution_instance = hplc_report_instance.generatedFor
+    assert chemical_solution_instance.instance_iri == chemical_solution_iri
+    dct_phase_comp_chemical_solution = {pc.instance_iri:pc for pc in chemical_solution_instance.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
+    assert len(dct_phase_comp) == len(dct_phase_comp_chemical_solution)
+    assert all([dct_phase_comp[pc] == dct_phase_comp_chemical_solution[pc] for pc in dct_phase_comp])
+    dct_conc_phase_comp = {pc.hasProperty.instance_iri:pc.hasProperty for pc in chemical_solution_instance.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
+    dct_conc_composition = {conc.instance_iri:conc for conc in chemical_solution_instance.refersToMaterial.thermodynamicBehaviour.has_composition.comprisesDirectly}
+    assert len(dct_conc_phase_comp) == len(dct_conc_composition)
+    assert all([dct_conc_phase_comp[conc] == dct_conc_composition[conc] for conc in dct_conc_phase_comp])
+
+@pytest.mark.parametrize(
+    "reactor_iri,reactor_volume,reactor_volume_unit",
+    [
+        (TargetIRIs.VAPOURTECR4REACTOR_DUMMY_IRI.value, TargetIRIs.VAPOURTECR4REACTOR_DUMMY_VOLUME.value, onto.OM_MILLILITRE),
+        (TargetIRIs.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI.value, TargetIRIs.VAPOURTECR4REACTOR_ANOTHER_DUMMY_VOLUME.value, onto.OM_MILLILITRE),
+    ],
+)
+def test_get_reactor_volume_given_reactor(initialise_triples, reactor_iri, reactor_volume, reactor_volume_unit):
+    sparql_client = initialise_triples
+    assert sparql_client.get_reactor_volume_given_reactor(reactor_iri) == (reactor_volume, reactor_volume_unit)
+
+def test_get_rxn_exp_associated_with_hplc_report(initialise_triples):
+    sparql_client = initialise_triples
+    rxn_exp = sparql_client.get_rxn_exp_associated_with_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
+    expected_rxn_exp = sparql_client.getReactionExperiment(TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value)[0]
+    assert rxn_exp == expected_rxn_exp
+
+def test_get_internal_standard_associated_with_hplc_report(initialise_triples):
+    sparql_client = initialise_triples
+    internal_standard = sparql_client.get_internal_standard_associated_with_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
+    expected_internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
+    assert internal_standard == expected_internal_standard
+
+@pytest.mark.parametrize(
+    "hplc_digital_twin,hplc_local_file,expected_remote_path",
+    [
+        (TargetIRIs.HPLC_DUMMY_IRI.value, TargetIRIs.HPLCREPORT_DUMMY_LOCAL_PATH.value, TargetIRIs.HPLCREPORT_DUMMY_REMOTE_PATH.value),
+    ],
+)
+def test_get_remote_hplc_report_path_given_local_file(initialise_triples, hplc_digital_twin, hplc_local_file, expected_remote_path):
+    sparql_client = initialise_triples
+    remote_path = sparql_client.get_remote_hplc_report_path_given_local_file(hplc_digital_twin, hplc_local_file)
+    assert remote_path == expected_remote_path
+
+#############################################
+## sparql_client.py functions to be tested ##
+#############################################
+# def test_(initialise_triples):
+#     sparql_client = initialise_triples
+#     sparql_client = ChemistryAndRobotsSparqlClient()
+#     pass
+
+# get_output_chemical_of_rxn_exp
+# get_ontocape_material
+# get_autosampler_from_vapourtec_rs400
+# sort_r2_pumps_in_vapourtec_rs400
+# get_rxn_con_or_perf_ind
+
+# get_r4_reactor_rxn_exp_assigned_to
+
+# updateNewExperimentInKG
+# create_equip_settings_for_rs400_from_rxn_exp
+# get_autosampler_site_given_input_chemical
+# write_equip_settings_to_kg
+
+# get_species_molar_mass_kilogrampermole
+# get_matching_species_from_hplc_results
+
+# get_species_density
+# get_species_material_cost
+# get_species_eco_score
+# identify_hplc_method_when_uploading_hplc_report

@@ -8,11 +8,11 @@ RETENTION_TIME_MATCH_THRESHOLD = 0.15
 
 def read_raw_hplc_report_file(hplc_report_iri: str, file_path: str, filename_extension: str) -> list:
     """This method extracts the chromatogram points from the given raw HPLC report."""
-    if filename_extension == DBPEDIA_XLSFILE:
+    if filename_extension == XLSFILE_EXTENSION:
         # TODO this is a shortcut that we hardcoded the sheet_name and columns
         retention_time = np.array(pd.read_excel(file_path, sheet_name='IntResults1', usecols="E"))
         peak_area = np.array(pd.read_excel(file_path, sheet_name='IntResults1', usecols="F"))
-    elif filename_extension == DBPEDIA_TXTFILE:
+    elif filename_extension == TXTFILE_EXTENSION:
         # TODO this is also a shortcut that hardcodes the required information to process the raw report
         start_mark = "Peak#"
         end_mark = "[Compound Results(AD2)]"

@@ -1,6 +1,7 @@
 # The purpose of this module is to provide utility functions
 # to interact with the knowledge graph
 #============================================================
+from datetime import datetime
 from typing import Tuple
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
@@ -24,6 +25,13 @@ logger = logging.getLogger('chemistry_and_robots_sparql_client')
 logging.getLogger('py4j').setLevel(logging.INFO)
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
+    # TODO consider where to put the fileserver bit? part of PySparqlClient? or make use of pyuploader? (need to verify the version requirement for py4jps)
+    def __init__(self, query_endpoint, update_endpoint, kg_user=None, kg_password=None, fs_url=None, fs_user=None, fs_pwd=None) -> None:
+        super().__init__(query_endpoint, update_endpoint, kg_user, kg_password)
+        # Also initialise the fileserver URL and auth info
+        self.fs_url = fs_url
+        self.fs_auth = (fs_user, fs_pwd)
+
     def updateNewExperimentInKG(self, doe: DesignOfExperiment, newExp: List[ReactionExperiment]):
         """
             This method is used to populate the suggested new experiments back to the knowledge graph.
@@ -1283,7 +1291,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         rxn_exp_queue = {res['rxn']:res['timestamp'] for res in response}
         return rxn_exp_queue
 
-    def get_hplc_local_report_folder_path(self, hplc_iri: str):
+    def get_hplc_local_report_folder_path_n_file_extension(self, hplc_iri: str) -> Tuple[str, str]:
         hplc_iri = trimIRI(hplc_iri)
         query = """SELECT ?report_dir ?report_extension WHERE { <%s> <%s> ?report_dir; <%s> ?report_extension. }""" % (hplc_iri, ONTOHPLC_LOCALREPORTDIRECTORY, ONTOHPLC_REPORTEXTENSION)
         response = self.performQuery(query)
@@ -1292,18 +1300,72 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         elif len(response) < 1:
             raise Exception("No report folders found for given instance of HPLC <%s>." % (hplc_iri))
         else:
-            return response[0]['report_dir'], response[0]['report_extension']
+            try:
+                file_extension = MAPPING_FILENAMEEXTENSION.get(response[0]['report_extension'])
+            except:
+                raise NotImplementedError("Handling HPLC local report with (%s) as filename extension is NOT supported yet." % (response[0]['report_extension']))
+            return response[0]['report_dir'], file_extension
 
-    def write_hplc_report_path_to_kg(self, hplc_report_iri: str, remote_report_path: str, local_file_path: str, timestamp_last_modified: float, timestamp_upload: float):
-        # TODO "%s"^^xsd:string needs to be changed to <%s> once the PR on returning the full URL of the uploaded file is completed
-        update = PREFIX_XSD + """INSERT DATA {<%s> a <%s>; <%s> "%s"^^xsd:string; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
-            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_report_path, ONTOHPLC_LOCALREPORTFILE, local_file_path,
-            ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
-        self.performUpdate(update)
+    def upload_raw_hplc_report_to_fs_kg(self, local_file_path, timestamp_last_modified, hplc_digital_twin) -> str:
+        if self.fs_url is None or self.fs_auth is None:
+            raise Exception("Fileserver URL and auth are not provided correctly.")
+        with open(local_file_path, 'rb') as file_obj:
+            files = {'file': file_obj}
+            timestamp_upload, response = datetime.now().timestamp(), requests.post(self.fs_url, auth=self.fs_auth, files=files)
+            logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> with a response statue code %s at %f" % (
+                    local_file_path, self.fs_url, response.status_code, timestamp_upload))
 
-    def get_raw_hplc_report_path_and_extension(self, hplc_report_iri: str) -> Tuple[str, str]:
+            # If the upload succeeded, write the remote file path to KG
+            if (response.status_code == status_codes.codes.OK):
+                remote_file_path = response.headers['file']
+                logger.info("The remote file path of the new uploaded HPLCReport is: <%s>" % remote_file_path)
+                hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
+                hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
+                logger.info("The initialised HPLCReport IRI is: <%s>; the initialised HPLCJob IRI is: <%s>" % (hplc_report_iri, hplc_job_iri))
+
+                rxn_exp_iri = self.identify_rxn_exp_when_uploading_hplc_report(hplc_digital_twin, remote_file_path)
+                logger.info("The identified ReactionExperiment for HPLCReport <%s> (remote path: %s) is: <%s>" % (hplc_report_iri, remote_file_path, rxn_exp_iri))
+
+                # TODO
+                hplc_method_iri = self.identify_hplc_method_when_uploading_hplc_report()
+                logger.info("The HPLCReport <%s> (remote path: %s) was generated using HPLCMethod <%s>" % (hplc_report_iri, remote_file_path, hplc_method_iri))
+
+                update = PREFIX_XSD + """INSERT DATA {<%s> <%s> <%s>.
+                    <%s> a <%s>; <%s> <%s>; <%s> <%s>; <%s> <%s>.
+                    <%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
+                    hplc_digital_twin, ONTOHPLC_HASJOB, hplc_job_iri,
+                    hplc_job_iri, ONTOHPLC_HPLCJOB, ONTOHPLC_CHARACTERISES, rxn_exp_iri, ONTOHPLC_USESMETHOD, hplc_method_iri, ONTOHPLC_HASREPORT, hplc_report_iri,
+                    hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_file_path, ONTOHPLC_LOCALREPORTFILE, local_file_path,
+                    ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
+                self.performUpdate(update)
+
+                return hplc_report_iri
+            else:
+                # TODO need to think a way to inform the post proc agent about the failure of uploading the file
+                raise Exception("HPLC raw report (%s) upload failed with code %d" % (local_file_path, response.status_code))
+
+    def identify_rxn_exp_when_uploading_hplc_report(self, hplc_digital_twin: str, hplc_remote_file_path: str) -> str:
+        hplc_digital_twin = trimIRI(hplc_digital_twin)
+        query = """SELECT DISTINCT ?rxn_exp WHERE {<%s> ^<%s>/<%s>+/<%s>/<%s> ?rxn_exp.}""" % (
+            hplc_digital_twin, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOLAB_ISSPECIFIEDBY, ONTOLAB_WASGENERATEDFOR)
+        response = self.performQuery(query)
+        rxn_exp = [list(res.values())[0] for res in response]
+        if len(rxn_exp) > 1:
+            raise Exception("Multiple instances of ReactionExperiment is identified to be associated with HPLC <%s> when uploading HPLCReport <%s>: %s" % (
+                hplc_digital_twin, hplc_remote_file_path, str(response)))
+        elif len(rxn_exp) < 1:
+            raise Exception("No instance of ReactionExperiment is identified to be associated with HPLC <%s> when uploading HPLCReport <%s>" % (
+                hplc_digital_twin, hplc_remote_file_path))
+        else:
+            return rxn_exp[0]
+
+    # TODO implement queries to find the correct HPLCMethod
+    def identify_hplc_method_when_uploading_hplc_report(self):
+        return "http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy"
+
+    def get_raw_hplc_report_remote_path_and_extension(self, hplc_report_iri: str) -> Tuple[str, str]:
         hplc_report_iri = trimIRI(hplc_report_iri)
-        query = """SELECT ?path ?extension WHERE {<%s> <%s> ?path . ?hplc <%s>/<%s> <%s> . ?hplc <%s> ?extension .}""" % (
+        query = """SELECT ?remote_path ?extension WHERE {<%s> <%s> ?remote_path . ?hplc <%s>/<%s> <%s> . ?hplc <%s> ?extension .}""" % (
             hplc_report_iri, ONTOHPLC_HASREPORTPATH, ONTOHPLC_HASJOB, ONTOHPLC_HASREPORT, hplc_report_iri, ONTOHPLC_REPORTEXTENSION)
         response = self.performQuery(query)
         if len(response) > 1:
@@ -1311,8 +1373,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         elif len(response) < 1:
             raise Exception("No raw HPLC report found for <%s>" % hplc_report_iri)
         else:
-            res = response[0]
-        return res['path'], res['extension']
+            remote_file_path = response[0]['remote_path']
+            try:
+                file_extension = MAPPING_FILENAMEEXTENSION.get(response[0]['extension'])
+            except:
+                raise NotImplementedError("Retrieving raw HPLC report with a file extension <%s> is NOT yet supported, associated HPLCReport iri <%s>, remote file path <%s>" % (
+                    response[0]['extension'], hplc_report_iri, remote_file_path))
+        return remote_file_path, file_extension
 
     def get_matching_species_from_hplc_results(self, retention_time: RetentionTime, hplc_method: HPLCMethod) -> str:
         # TODO here we took a shortcut, but in theory unit should also be checked - unit conversion is a generic problem that needs to be solved...
@@ -1519,19 +1586,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return self.get_internal_standard(hplc_method_iri)
 
-    def process_raw_hplc_report(self, hplc_report_iri: str, internal_standard_species: str, internal_standard_run_conc_moleperlitre: float, fs_auth) -> HPLCReport:
+    def process_raw_hplc_report(self, hplc_report_iri: str, internal_standard_species: str, internal_standard_run_conc_moleperlitre: float) -> HPLCReport:
         """Here we can assume that the required information are already provided by the previous agents."""
-        remote_hplc_report_path, hplc_report_extension = self.get_raw_hplc_report_path_and_extension(hplc_report_iri)
+        remote_hplc_report_path, hplc_report_extension = self.get_raw_hplc_report_remote_path_and_extension(hplc_report_iri)
         # TODO test if need to download the file from here? or can be processed directly?
-        if hplc_report_extension == DBPEDIA_XLSFILE:
-            _ext = XLSFILE_EXTENSION
-        elif hplc_report_extension == DBPEDIA_TXTFILE:
-            _ext = TXTFILE_EXTENSION
-        else:
-            raise Exception("Processing raw HPLC report with a file extension <%s> is NOT yet supported, associated HPLCReport iri <%s>, remote file path <%s>" % (
-                hplc_report_extension, hplc_report_iri, remote_hplc_report_path))
-        temp_local_file_path = f'{str(uuid.uuid4())}.'+_ext
-        self.download_remote_raw_hplc_report(remote_hplc_report_path, temp_local_file_path, fs_auth)
+        temp_local_file_path = f'{str(uuid.uuid4())}.'+hplc_report_extension
+        self.download_remote_raw_hplc_report(remote_hplc_report_path, temp_local_file_path)
 
         # retrieve a list of points
         list_points = hplc.read_raw_hplc_report_file(hplc_report_iri=hplc_report_iri, file_path=temp_local_file_path, filename_extension=hplc_report_extension)
@@ -1547,14 +1607,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         list_chrom_pts= []
         dct_points = {self.get_matching_species_from_hplc_results(pt.get(ONTOHPLC_RETENTIONTIME), hplc_method):pt for pt in list_points}
         try:
-            internal_standard_peak_area = dct_points[internal_standard_species][ONTOHPLC_PEAKAREA].hasNumericalValue
+            internal_standard_peak_area = dct_points[internal_standard_species][ONTOHPLC_PEAKAREA].hasValue.hasNumericalValue
         except KeyError:
             raise Exception("InternalStandard <%s> is NOT identified in the end stream associated with HPLCReport <%s>" % (internal_standard_species, hplc_report_iri))
 
         for pt in dct_points:
             # calculate concentration based on the peak area and response factor
             try:
-                conc_num_val = dct_points[pt][ONTOHPLC_PEAKAREA].hasNumericalValue / internal_standard_peak_area * internal_standard_run_conc_moleperlitre / dct_response_factor[pt]
+                conc_num_val = dct_points[pt][ONTOHPLC_PEAKAREA].hasValue.hasNumericalValue / internal_standard_peak_area * internal_standard_run_conc_moleperlitre / dct_response_factor[pt]
             except KeyError:
                 raise Exception("ResponseFactor of Species <%s> is not presented in the HPLCMethod <%s>: %s" % (pt, hplc_method.instance_iri, str(hplc_method)))
             concentration = OntoCAPE_Molarity(
@@ -1608,15 +1668,19 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
 
         # create chemical solution instance
-        chem_sol_response = self.performQuery("""SELECT ?sol ?vial WHERE{<%s> <%s> ?sol. ?sol <%s> ?vial.}""" % (
-            hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOVAPOURTEC_FILLS))
-        if len(chem_sol_response) > 1:
-            raise Exception("Multiple instances of ChemicalSolution identified for HPLCReport <%s>: %s" % (hplc_report_iri, str(chem_sol_response)))
-        elif len(chem_sol_response) < 1:
+        _response = self.performQuery("""SELECT ?sol ?local_report_file ?last_local_modification ?last_upload ?vial
+            WHERE{<%s> <%s> ?sol; <%s> ?local_report_file; <%s> ?last_local_modification; <%s> ?last_upload.
+            ?sol <%s> ?vial.}""" % (hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_LOCALREPORTFILE, ONTOHPLC_LASTLOCALMODIFIEDAT, ONTOHPLC_LASTUPLOADEDAT, ONTOVAPOURTEC_FILLS))
+        if len(_response) > 1:
+            raise Exception("Multiple instances of ChemicalSolution identified for HPLCReport <%s>: %s" % (hplc_report_iri, str(_response)))
+        elif len(_response) < 1:
             raise Exception("No instance of ChemicalSolution identified for HPLCReport <%s>" % hplc_report_iri)
         else:
-            chem_sol_iri = chem_sol_response[0]['sol']
-            chem_sol_vial = chem_sol_response[0]['vial']
+            chem_sol_iri = _response[0]['sol']
+            chem_sol_vial = _response[0]['vial']
+            local_report_file = _response[0]['local_report_file']
+            last_local_modified = _response[0]['last_local_modification']
+            last_upload = _response[0]['last_upload']
 
         chemical_solution = ChemicalSolution(
             instance_iri=chem_sol_iri,
@@ -1629,9 +1693,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             instance_iri=hplc_report_iri,
             hasReportPath=remote_hplc_report_path,
             records=list_chrom_pts,
-            generatedFor=chemical_solution
+            generatedFor=chemical_solution,
+            localReportFile=local_report_file,
+            lastLocalModifiedAt=last_local_modified,
+            lastUploadedAt=last_upload
         )
 
+        # Remove downloaded temporary file
+        os.remove(temp_local_file_path)
         # TODO think about when do we write these triples (generated ones for CHromatogramPoint and ChemicalSolution) back to the knowledge graph
         return hplc_report_instance
 
@@ -1770,14 +1839,34 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
         return hplc_job_instance
 
-    def download_remote_raw_hplc_report(self, remote_file_path, downloaded_file_path, auth):
-        response = requests.get(remote_file_path, auth=auth)
+    def download_remote_raw_hplc_report(self, remote_file_path, downloaded_file_path):
+        response = requests.get(remote_file_path, auth=self.fs_auth)
         if (response.status_code == status_codes.codes.OK):
             with open(downloaded_file_path, 'wb') as file_obj:
                 for chunk in response.iter_content(chunk_size=128):
                     file_obj.write(chunk)
         else:
             raise Exception("ERROR: File <%s> download failed with code %d " % (remote_file_path, response.status_code))
+
+    def connect_hplc_report_with_chemical_solution(self, hplc_report_iri: str, chemical_solution_iri: str):
+        hplc_report_iri = trimIRI(hplc_report_iri)
+        chemical_solution_iri = trimIRI(chemical_solution_iri)
+        update = """INSERT DATA {<%s> <%s> <%s>.}""" % (hplc_report_iri, ONTOHPLC_GENERATEDFOR, chemical_solution_iri)
+        self.performUpdate(update)
+        logger.info("HPLCReport <%s> is connected to ChemicalSolution <%s>" % (hplc_report_iri, chemical_solution_iri))
+
+    def get_remote_hplc_report_path_given_local_file(self, hplc_digital_twin: str, hplc_local_file: str) -> str:
+        hplc_digital_twin = trimIRI(hplc_digital_twin)
+        query = PREFIX_XSD+"""SELECT ?remote_path WHERE {<%s> <%s>/<%s> ?hplc_report. ?hplc_report <%s> "%s"^^xsd:string; <%s> ?remote_path.}""" % (
+            hplc_digital_twin, ONTOHPLC_HASJOB, ONTOHPLC_HASREPORT, ONTOHPLC_LOCALREPORTFILE, hplc_local_file, ONTOHPLC_HASREPORTPATH)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple records of HPLCReport remote path identified for local file '%s' of HPLC <%s>: %s" % (
+                hplc_local_file, hplc_digital_twin, str(response)))
+        elif len(response) < 1:
+            raise Exception("No record of HPLCReport remote path identified for local file '%s' of HPLC <%s>" % (hplc_local_file, hplc_digital_twin))
+        else:
+            return response[0]['remote_path']
 
     #######################################################
     ## Some utility functions handling the list and dict ##
