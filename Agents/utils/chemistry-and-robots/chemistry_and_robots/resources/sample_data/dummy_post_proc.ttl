@@ -31,6 +31,12 @@
 
 # NOTE: all information in this file are simplified for the test cases
 
+##########################################################################
+## Dummy declaration states that the reactions are assigned to reactors ##
+##########################################################################
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ontorxn:isAssignedTo :VapourtecR4_1.
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ontorxn:isAssignedTo :VapourtecR4_2.
+
 ###################################################
 ## Placeholder instances of PerformanceIndicator ##
 ###################################################
@@ -72,7 +78,19 @@
 
 :VapourtecR4_1
     a ontovapourtec:VapourtecR4Reactor;
+    ontovapourtec:hasReactorVolume :VapourtecR4_1_ReactorVolume;
     ontolab:isSpecifiedBy :ReactorSettings_1;
+.
+
+:VapourtecR4_1_ReactorVolume
+    a om:Volume;
+    om:hasValue :VapR4_1_ReactorVolume_Value;
+.
+
+:VapR4_1_ReactorVolume_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "10"^^xsd:double;
 .
 
 :ReactorSettings_1
@@ -126,7 +144,19 @@
 
 :VapourtecR4_2
     a ontovapourtec:VapourtecR4Reactor;
+    ontovapourtec:hasReactorVolume :VapourtecR4_2_ReactorVolume;
     ontolab:isSpecifiedBy :ReactorSettings_2;
+.
+
+:VapourtecR4_2_ReactorVolume
+    a om:Volume;
+    om:hasValue :VapR4_2_ReactorVolume_Value;
+.
+
+:VapR4_2_ReactorVolume_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "10"^^xsd:double;
 .
 
 :ReactorSettings_2

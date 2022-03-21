@@ -3,14 +3,11 @@
 #============================================================
 from datetime import datetime
 from typing import Tuple
-from rdflib import Graph, URIRef, Namespace, Literal, BNode
-from rdflib.namespace import RDF
-import pandas as pd
+from rdflib import Graph
+from pathlib import Path
 import collections
 import requests
 from requests import status_codes
-import json
-import time
 import uuid
 import os
 
@@ -1589,8 +1586,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def process_raw_hplc_report(self, hplc_report_iri: str, internal_standard_species: str, internal_standard_run_conc_moleperlitre: float) -> HPLCReport:
         """Here we can assume that the required information are already provided by the previous agents."""
         remote_hplc_report_path, hplc_report_extension = self.get_raw_hplc_report_remote_path_and_extension(hplc_report_iri)
-        # TODO test if need to download the file from here? or can be processed directly?
-        temp_local_file_path = f'{str(uuid.uuid4())}.'+hplc_report_extension
+
+        temp_local_file_path = os.path.join(str(Path(__file__).absolute().parent),f'{str(uuid.uuid4())}.'+hplc_report_extension)
         self.download_remote_raw_hplc_report(remote_hplc_report_path, temp_local_file_path)
 
         # retrieve a list of points
@@ -1867,6 +1864,32 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             raise Exception("No record of HPLCReport remote path identified for local file '%s' of HPLC <%s>" % (hplc_local_file, hplc_digital_twin))
         else:
             return response[0]['remote_path']
+
+    def write_performance_indicator_back_to_kg(self, lst_performance_indicator: List[PerformanceIndicator]):
+        filePath = f'{str(uuid.uuid4())}.ttl'
+        g = Graph()
+        for pi in lst_performance_indicator:
+            g = pi.create_instance_for_kg(g)
+        g.serialize(filePath, format='ttl')
+        self.uploadOntology(filePath)
+        # Delete generated Turtle file
+        os.remove(filePath)
+
+    def write_output_chemical_of_chem_sol_back_to_kg(self, chemical_solution: ChemicalSolution, rxn_exp_iri: str):
+        filePath = f'{str(uuid.uuid4())}.ttl'
+        g = Graph()
+        # NOTE we do NOT call create_instance_for_kg for chemical_solution here
+        # NOTE as the triples about the chemical_solution itself (and vial) should already be in the KG
+        # <chemical_solution> <refersToMaterial> <output_chemical>
+        g.add((URIRef(chemical_solution.instance_iri), URIRef(ONTOCAPE_REFERSTOMATERIAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
+        # Also add triples related to the OutputChemical
+        g = chemical_solution.refersToMaterial.create_instance_for_kg(g)
+        # <rxn_exp_iri> <hasOutputChemical> <output_chemical>
+        g.add((URIRef(rxn_exp_iri), URIRef(ONTORXN_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
+        g.serialize(filePath, format='ttl')
+        self.uploadOntology(filePath)
+        # Delete generated Turtle file
+        os.remove(filePath)
 
     #######################################################
     ## Some utility functions handling the list and dict ##

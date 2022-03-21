@@ -55,6 +55,3 @@ def read_raw_hplc_report_file(hplc_report_iri: str, file_path: str, filename_ext
         list_point.append({ONTOHPLC_RETENTIONTIME:rt_instance, ONTOHPLC_PEAKAREA: pa_instance})
 
     return list_point
-
-def calculate_component_concentration():
-    pass
