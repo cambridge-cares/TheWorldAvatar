@@ -17,11 +17,12 @@ class HPLCInputAgent(AsyncAgent):
     def __init__(self, hplc_digital_twin: str, hplc_report_periodic_timescale: str, fs_url: str, fs_user: str, fs_pwd: str,
         agent_iri: str, time_interval: int, derivation_instance_base_url: str, kg_url: str, kg_user: str = None, kg_password: str = None, app: Flask = Flask(__name__), flask_config: FlaskConfig = FlaskConfig(), logger_name: str = "dev"
     ):
+        super().__init__(agent_iri, time_interval, derivation_instance_base_url, kg_url, kg_user, kg_password, app, flask_config, logger_name)
         self.hplc_digital_twin = hplc_digital_twin
         self.hplc_report_periodic_timescale = hplc_report_periodic_timescale
         self.fs_url = fs_url
-        self.fs_auth = (fs_user, fs_pwd)
-        super().__init__(agent_iri, time_interval, derivation_instance_base_url, kg_url, kg_user, kg_password, app, flask_config, logger_name)
+        self.fs_user = fs_user
+        self.fs_pwd = fs_pwd
 
     def monitor_local_report_folder(self):
         # NOTE assumptions here:
@@ -51,27 +52,12 @@ class HPLCInputAgent(AsyncAgent):
             if timestamp_last_modified < timestamp_last_check:
                 raise Exception("HPLC report (%s, last modified at %f) is generated at the local folder (%s) of HPLC <%s> before the last check %f but not uploaded to fileserver %s" % (
                     hplc_report_path, timestamp_last_modified, self.hplc_dir, self.hplc_digital_twin, timestamp_last_check, self.fs_url))
-            with open(hplc_report_path, 'rb') as file_obj:
-                files = {'file': file_obj}
-                timestamp_upload, response = datetime.now().timestamp(), requests.post(self.fs_url, auth=self.fs_auth, files=files)
-                self.logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> with a response statue code %s at %f" % (
-                    hplc_report_path, self.fs_url, response.status_code, timestamp_upload))
-
-                # If the upload succeeded, write the remote file path to KG
-                if (response.status_code == status_codes.codes.OK):
-                    remote_file_path = response.headers['file']
-                    self.logger.info("The remote file path of the new uploaded HPLCReport is: <%s>" % remote_file_path)
-                    hplc_report_iri = initialiseInstanceIRI(getNameSpace(self.hplc_digital_twin), ONTOHPLC_HPLCREPORT)
-                    self.logger.info("The initialised HPLCReport IRI is: <%s>" % hplc_report_iri)
-                    self.sparql_client.write_hplc_report_path_to_kg(hplc_report_iri=hplc_report_iri, remote_report_path=remote_file_path,
-                        local_file_path=hplc_report_path, timestamp_last_modified=timestamp_last_modified, timestamp_upload=timestamp_upload)
-                        # TODO also write HPLCJob etc? i.e. making the connection between the HPLCReport and HPLCJob?
-                else:
-                    # TODO need to think a way to inform the post proc agent about the failure of uploading the file
-                    raise Exception("File %s upload failed with code %d" % (hplc_report_path, response.status_code))
+            hplc_report_iri = self.sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=hplc_report_path,
+                timestamp_last_modified=timestamp_last_modified, hplc_digital_twin=self.hplc_digital_twin)
+            self.logger.info("Uploaded HPLCReport iri is: <%s>" % (hplc_report_iri))
 
     def get_list_of_hplc_files(self, log=True):
-        self.timestamp_check, self.lst_files_check = datetime.now().timestamp(), glob.glob(self.hplc_dir + "*." + self.f_e, recursive=True)
+        self.timestamp_check, self.lst_files_check = datetime.now().timestamp(), glob.glob(self.hplc_dir + "*." + self.file_extension, recursive=True)
         if log:
             self.logger.info(
                 """The list of HPLC report files found at local report directory (%s) of HPLC <%s> at timestamp %f: %s""" % (
@@ -93,18 +79,14 @@ class HPLCInputAgent(AsyncAgent):
         """
             This method starts the periodical job to monitor the HPLC local report folder.
         """
-        self.scheduler.init_app(self.app)
+        self.scheduler.init_app(self.app) # TODO this should be part of AsyncAgent
         self.scheduler.add_job(id='monitor_local_report_foler', func=self.monitor_local_report_folder, trigger='interval', seconds=self.hplc_report_periodic_timescale)
 
         # Initialise the sparql_client
-        self.sparql_client = ChemistryAndRobotsSparqlClient(self.kgUrl, self.kgUrl)
+        self.sparql_client = ChemistryAndRobotsSparqlClient(self.kgUrl, self.kgUrl, fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_pwd)
 
         # Get the local report folder path of the HPLC
-        self.hplc_dir, file_extension = self.sparql_client.get_hplc_local_report_folder_path(self.hplc_digital_twin)
-        try:
-            self.f_e = MAPPING_FILENAMEEXTENSION.get(file_extension)
-        except KeyError:
-            raise NotImplementedError("HPLC report with (%s) as filename extension is NOT supported yet." % (file_extension))
+        self.hplc_dir, self.file_extension = self.sparql_client.get_hplc_local_report_folder_path_n_file_extension(self.hplc_digital_twin)
 
         # NOTE It is assumed that all existing files before the agent got spun up will not be uploaded to the KG
         self.logger.info("Checking the files already exist before starting monitoring the new files...")
