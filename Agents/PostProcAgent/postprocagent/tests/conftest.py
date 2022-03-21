@@ -18,8 +18,8 @@ SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
-HPLC_REPORT_XLS_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt.txt'
-HPLC_REPORT_TXT_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls.xls'
+HPLC_REPORT_XLS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls.xls'
+HPLC_REPORT_TXT_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt.txt'
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
@@ -27,6 +27,9 @@ FS_SERVICE = "fileserver"
 FS_ROUTE = "FileServer/"
 
 DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
+EXP_1_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/'
+NEW_RXN_EXP_1_IRI = EXP_1_BASE_IRI + 'ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70'
+NEW_RXN_EXP_2_IRI = EXP_1_BASE_IRI + 'ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8'
 HPLC_DIGITAL_TWIN_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_1'
 HPLC_DIGITAL_TWIN_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_2'
 CHEMICAL_SOLUTION_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_1_1'
@@ -133,35 +136,13 @@ def initialise_triples(get_service_url, get_service_auth):
         os.mkdir(DOWNLOADED_DIR)
 
     # Upload the example triples for testing
-    for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl', 'sample_data/dummy_lab.ttl',
-        'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
+    for f in ['ontoagent/Service__PostProc.ttl', 'sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl',
+        'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
         filePath = generate_random_download_path('ttl')
         g.serialize(filePath, format='ttl')
         sparql_client.uploadOntology(filePath)
-
-    # # Upload two sample HPLC reports to be used for test
-    # for f in ['sample_data/raw_hplc_report_txt.txt', 'sample_data/raw_hplc_report_xls.xls']:
-    #     if f.endswith('.xls'):
-    #         local_file_path = HPLC_REPORT_XLS_PATH
-    #         hplc_digital_twin = HPLC_DIGITAL_TWIN_1
-    #         chemical_solution_iri = CHEMICAL_SOLUTION_1
-    #     elif f.endswith('.txt'):
-    #         local_file_path = HPLC_REPORT_TXT_PATH
-    #         hplc_digital_twin = HPLC_DIGITAL_TWIN_2
-    #         chemical_solution_iri = CHEMICAL_SOLUTION_2
-
-    #     data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f)
-    #     with open(local_file_path, 'wb') as file_obj:
-    #         file_obj.write(data)
-    #     timestamp_last_modified = os.path.getmtime(local_file_path)
-    #     hplc_report_iri = sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=local_file_path,
-    #         timestamp_last_modified=timestamp_last_modified, hplc_digital_twin=hplc_digital_twin)
-
-    #     # Make the connection between HPLCReport and ChemicalSolution
-    #     # In normal operation, this should be done as part of Execution Agent
-    #     sparql_client.connect_hplc_report_with_chemical_solution(hplc_report_iri, chemical_solution_iri)
 
     # Initialise PostProcAgent
     post_proc_agent = PostProcAgent(
@@ -181,12 +162,8 @@ def retrieve_hplc_report():
     def _retrieve_hplc_report(report_path_in_pkg):
         if report_path_in_pkg.endswith('.xls'):
             local_file_path = generate_random_download_path('xls')
-            # hplc_digital_twin = HPLC_DIGITAL_TWIN_1
-            # chemical_solution_iri = CHEMICAL_SOLUTION_1
         elif report_path_in_pkg.endswith('.txt'):
             local_file_path = generate_random_download_path('txt')
-            # hplc_digital_twin = HPLC_DIGITAL_TWIN_2
-            # chemical_solution_iri = CHEMICAL_SOLUTION_2
         else:
             raise NotImplementedError("Handling HPLC raw report (%s) in the chemistry_and_robots package is NOT yet supported due to its file extension." % 
                 report_path_in_pkg)
@@ -194,12 +171,6 @@ def retrieve_hplc_report():
         with open(local_file_path, 'wb') as file_obj:
             file_obj.write(data)
         timestamp_last_modified = os.path.getmtime(local_file_path)
-        # hplc_report_iri = sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=local_file_path,
-        #     timestamp_last_modified=timestamp_last_modified, hplc_digital_twin=hplc_digital_twin)
-
-        # # Make the connection between HPLCReport and ChemicalSolution
-        # # In normal operation, this should be done as part of Execution Agent
-        # sparql_client.connect_hplc_report_with_chemical_solution(hplc_report_iri, chemical_solution_iri)
 
         return local_file_path, timestamp_last_modified
     return _retrieve_hplc_report

@@ -1,9 +1,3 @@
-from pathlib import Path
-from typing import List
-import json
-import time
-import os
-
 from pyasyncagent import AsyncAgent, FlaskConfig
 from flask import Flask
 
@@ -11,8 +5,6 @@ from postprocagent.kg_operations import *
 from postprocagent.data_model import *
 import postprocagent.hypo_rxn as hypo
 from postprocagent.conf import *
-
-from chemistry_and_robots.hardware import hplc
 
 class PostProcAgent(AsyncAgent):
     def __init__(self, fs_url: str, fs_user: str, fs_pwd: str,
@@ -39,14 +31,14 @@ class PostProcAgent(AsyncAgent):
         # Construct an instance of HypoReactor given the ReactionExperiment information, get the value of internal_standard_run_conc_moleperlitre
         hypo_reactor, internal_standard_run_conc_moleperlitre, species_role_dct = hypo.construct_hypo_reactor(self.sparql_client, rxn_exp_instance, internal_standard_instance)
 
-        # TODO Process the raw hplc report and generate an instance of HPLCReport
+        # Process the raw hplc report and generate an instance of HPLCReport
         hplc_report_instance = self.sparql_client.process_raw_hplc_report(hplc_report_iri=hplc_report_iri, internal_standard_species=internal_standard_instance.representsOccurenceOf,
             internal_standard_run_conc_moleperlitre=internal_standard_run_conc_moleperlitre)
 
-        # TODO Construct an instance of HypoEndStream given the processed HPLCReport instance and instance of HypoReactor
+        # Construct an instance of HypoEndStream given the processed HPLCReport instance and instance of HypoReactor
         hypo_end_stream = hypo.construct_hypo_end_stream(self.sparql_client, hplc_report_instance, hypo_reactor, species_role_dct)
 
-        # TODO Calculate each PerformanceIndicator
+        # Calculate each PerformanceIndicator
         pi_yield = hypo.calculate_performance_indicator(
             hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
             rxn_exp_instance=rxn_exp_instance, target_clz=ONTORXN_YIELD, expected_amount=1
@@ -72,12 +64,13 @@ class PostProcAgent(AsyncAgent):
             rxn_exp_instance=rxn_exp_instance, target_clz=ONTORXN_RUNMATERIALCOST, expected_amount=1
         )[0]
 
-        # TODO Write the generated OutputChemical triples and PerformanceIndicator triples back to KG
+        # Write the generated OutputChemical triples and PerformanceIndicator triples back to KG
+        lst_performance_indicator = [pi_yield, pi_conversion, pi_eco_score, pi_e_factor, pi_sty, pi_cost]
+        self.sparql_client.write_performance_indicator_back_to_kg(lst_performance_indicator)
+        self.sparql_client.write_output_chemical_of_chem_sol_back_to_kg(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri)
 
-        # Generate a list of PerformanceIndicator iri as agent output (new derived IRI)
-        lst_performance_indicator_iri = [pi_yield.instance_iri, pi_conversion.instance_iri, pi_eco_score.instance_iri,
-            pi_e_factor.instance_iri, pi_sty.instance_iri, pi_cost.instance_iri]
-        return lst_performance_indicator_iri
+        # Return a list of PerformanceIndicator iri as agent output (new derived IRI)
+        return [pi.instance_iri for pi in lst_performance_indicator]
 
     def collectInputsInformation(self, agent_inputs) -> str:
         """

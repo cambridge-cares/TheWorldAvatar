@@ -20,7 +20,7 @@ def calculate_performance_indicator(
         elif target_clz == ONTORXN_CONVERSION:
             pi = calculate_conversion(hypo_reactor, hypo_end_stream, ph_pi)
         elif target_clz == ONTORXN_ECOSCORE:
-            calculate_eco_score(hypo_reactor, hypo_end_stream, ph_pi)
+            pi = calculate_eco_score(hypo_reactor, hypo_end_stream, ph_pi)
         elif target_clz == ONTORXN_ENVIRONMENTALFACTOR:
             pi = calculate_enviromental_factor(hypo_reactor, hypo_end_stream, ph_pi)
         elif target_clz == ONTORXN_SPACETIMEYIELD:
@@ -78,7 +78,7 @@ def calculate_eco_score(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStrea
     residence_time = utils.unit_conversion_return_value_dq(hypo_reactor.residence_time, utils.UNIFIED_TIME_UNIT)
     reactor_temperature = utils.unit_conversion_return_value_dq(hypo_reactor.reactor_temperature, OM_DEGREECELSIUS)
     time_temperature_eco_score = TIME_TEMPERATURE_ECO_SCORE_FACTOR * residence_time * (
-        (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS)^2 / abs(reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS))
+        (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) * (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) / abs(reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS))
     total_run_eco_score = retrieve_total_run_eco_score(hypo_reactor)
     _eco_score = ECO_SCORE_BASE_VALUE - time_temperature_eco_score - total_run_eco_score
 
