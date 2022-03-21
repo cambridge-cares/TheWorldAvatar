@@ -4,7 +4,37 @@ TIME_TEMPERATURE_ECO_SCORE_FACTOR = 0.002
 AMBIENT_TEMPERATURE_DEGREECELSIUS = 25
 ECO_SCORE_BASE_VALUE = 100
 
-def calculate_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream) -> PerformanceIndicator:
+def calculate_performance_indicator(
+    hypo_reactor: HypoReactor,
+    hypo_end_stream: HypoEndStream,
+    rxn_exp_instance: ReactionExperiment,
+    target_clz: str,
+    expected_amount: int
+) -> List[PerformanceIndicator]:
+
+    lst_placeholder = locate_placeholder_performance_indicator(rxn_exp_instance, target_clz, expected_amount)
+    lst_pi = []
+    for ph_pi in lst_placeholder:
+        if target_clz == ONTORXN_YIELD:
+            pi = calculate_yield(hypo_reactor, hypo_end_stream, ph_pi)
+        elif target_clz == ONTORXN_CONVERSION:
+            pi = calculate_conversion(hypo_reactor, hypo_end_stream, ph_pi)
+        elif target_clz == ONTORXN_ECOSCORE:
+            calculate_eco_score(hypo_reactor, hypo_end_stream, ph_pi)
+        elif target_clz == ONTORXN_ENVIRONMENTALFACTOR:
+            pi = calculate_enviromental_factor(hypo_reactor, hypo_end_stream, ph_pi)
+        elif target_clz == ONTORXN_SPACETIMEYIELD:
+            pi = calculate_space_time_yield(hypo_reactor, hypo_end_stream, ph_pi)
+        elif target_clz == ONTORXN_RUNMATERIALCOST:
+            pi = calculate_run_material_cost(hypo_reactor, hypo_end_stream, ph_pi)
+        else:
+            raise NotImplementedError("Requested target clz <%s> as PerformanceIndicator is NOT yet supported when post-processing ReactionExperiment: %s." % (
+                target_clz, str(rxn_exp_instance)))
+        lst_pi.append(pi)
+
+    return lst_pi
+
+def calculate_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
     yield_limiting_species = retrieve_yield_limiting_species(hypo_reactor)
     target_product_species = retrieve_product_species(hypo_end_stream)
 
@@ -13,22 +43,11 @@ def calculate_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream) -
 
     _yield = prod_run_conc / yield_limiting_conc
 
-    # pi_yield = PerformanceIndicator(
-    #     instance_iri=,
-    #     clz=ONTORXN_YIELD,
-    #     namespace_for_init=,
-    #     objPropWithExp=[],
-    #     hasValue=OM_Measure(
-    #         instance_iri=,
-    #         hasUnit=OM_ONE,
-    #         hasNumericalValue=_yield
-    #     ),
-    #     positionalID= # TODO generated value by DoE Agent?
-    # )
+    pi_yield = create_performance_indicator_instance(placeholder_perf_ind, _yield, OM_ONE)
 
-    return #pi_yield
+    return pi_yield
 
-def calculate_conversion(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream) -> PerformanceIndicator:
+def calculate_conversion(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
     # NOTE here the conversion is calculated based on the yield limiting species
     yield_limiting_species = retrieve_yield_limiting_species(hypo_reactor)
     _species_in_end_stream = [species for species in hypo_end_stream.component if species.species_iri == yield_limiting_species.species_iri][0]
@@ -38,22 +57,11 @@ def calculate_conversion(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStre
 
     _conversion = 1 - unreacted_conc / yield_limiting_conc
 
-    # pi_conversion = PerformanceIndicator(
-    #     instance_iri=,
-    #     clz=ONTORXN_CONVERSION,
-    #     namespace_for_init=,
-    #     objPropWithExp=,
-    #     hasValue=OM_Measure(
-    #         instance_iri=,
-    #         hasUnit=OM_ONE,
-    #         hasNumericalValue=_conversion
-    #     ),
-    #     positionalID= # TODO generated value by DoE Agent?
-    # )
+    pi_conversion = create_performance_indicator_instance(placeholder_perf_ind, _conversion, OM_ONE)
 
-    return #pi_conversion
+    return pi_conversion
 
-def calculate_space_time_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream) -> PerformanceIndicator:
+def calculate_space_time_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
     target_product_species = retrieve_product_species(hypo_end_stream)
 
     prod_run_mass = utils.unit_conversion_return_value_dq(target_product_species._run_mass, utils.UNIFIED_MASS_UNIT)
@@ -62,22 +70,11 @@ def calculate_space_time_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoE
 
     _sty = prod_run_mass / residence_time / reactor_volume
 
-    # pi_sty = PerformanceIndicator(
-    #     instance_iri=,
-    #     clz=ONTORXN_SPACETIMEYIELD,
-    #     namespace_for_init=,
-    #     objPropWithExp=,
-    #     hasValue=OM_Measure(
-    #         instance_iri=,
-    #         hasUnit=utils.UNIFIED_SPACETIMEYIELD_UNIT,
-    #         hasNumericalValue=_sty
-    #     ),
-    #     positionalID= # TODO generated value by DoE Agent?
-    # )
+    pi_sty = create_performance_indicator_instance(placeholder_perf_ind, _sty, utils.UNIFIED_SPACETIMEYIELD_UNIT)
 
-    return #pi_sty
+    return pi_sty
 
-def calculate_eco_score(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream) -> PerformanceIndicator:
+def calculate_eco_score(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
     residence_time = utils.unit_conversion_return_value_dq(hypo_reactor.residence_time, utils.UNIFIED_TIME_UNIT)
     reactor_temperature = utils.unit_conversion_return_value_dq(hypo_reactor.reactor_temperature, OM_DEGREECELSIUS)
     time_temperature_eco_score = TIME_TEMPERATURE_ECO_SCORE_FACTOR * residence_time * (
@@ -85,22 +82,11 @@ def calculate_eco_score(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStrea
     total_run_eco_score = retrieve_total_run_eco_score(hypo_reactor)
     _eco_score = ECO_SCORE_BASE_VALUE - time_temperature_eco_score - total_run_eco_score
 
-    # pi_eco_score = PerformanceIndicator(
-    #     instance_iri=,
-    #     clz=ONTORXN_ECOSCORE,
-    #     namespace_for_init=,
-    #     objPropWithExp=,
-    #     hasValue=OM_Measure(
-    #         instance_iri=,
-    #         hasUnit=utils.UNIFIED_ECOSCORE_UNIT,
-    #         hasNumericalValue=_eco_score
-    #     ),
-    #     positionalID= # TODO generated value by DoE Agent?
-    # )
+    pi_eco_score = create_performance_indicator_instance(placeholder_perf_ind, _eco_score, utils.UNIFIED_ECOSCORE_UNIT)
 
-    return #pi_eco_score
+    return pi_eco_score
 
-def calculate_enviromental_factor(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream) -> PerformanceIndicator:
+def calculate_enviromental_factor(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
     target_product_species = retrieve_product_species(hypo_end_stream)
     all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
@@ -111,22 +97,11 @@ def calculate_enviromental_factor(hypo_reactor: HypoReactor, hypo_end_stream: Hy
 
     _e_factor = prod_run_mass / (total_reac_n_solvent_run_mass - prod_run_mass)
 
-    # pi_e_factor = PerformanceIndicator(
-    #     instance_iri=,
-    #     clz=ONTORXN_ENVIRONMENTALFACTOR,
-    #     namespace_for_init=,
-    #     objPropWithExp=,
-    #     hasValue=OM_Measure(
-    #         instance_iri=,
-    #         hasUnit=utils.UNIFIED_ENVIRONMENTFACTOR_UNIT,
-    #         hasNumericalValue=_e_factor
-    #     ),
-    #     positionalID= # TODO generated value by DoE Agent?
-    # )
+    pi_e_factor = create_performance_indicator_instance(placeholder_perf_ind, _e_factor, utils.UNIFIED_ENVIRONMENTFACTOR_UNIT)
 
-    return #pi_e_factor
+    return pi_e_factor
 
-def calculate_run_material_cost(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream) -> PerformanceIndicator:
+def calculate_run_material_cost(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
     all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
     reactant_and_solvent = all_reactant + all_solvent
@@ -134,20 +109,35 @@ def calculate_run_material_cost(hypo_reactor: HypoReactor, hypo_end_stream: Hypo
     # NOTE therefore the unit conversion is omitted
     _run_material_cost = sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_and_solvent])
 
-    # pi_run_material_cost = PerformanceIndicator(
-    #     instance_iri=,
-    #     clz=ONTORXN_RUNMATERIALCOST,
-    #     namespace_for_init=,
-    #     objPropWithExp=,
-    #     hasValue=OM_Measure(
-    #         instance_iri=,
-    #         hasUnit=utils.UNIFIED_RUN_MATERIAL_COST_UNIT,
-    #         hasNumericalValue=_run_material_cost
-    #     ),
-    #     positionalID= # TODO generated value by DoE Agent?
-    # )
+    pi_run_material_cost = create_performance_indicator_instance(placeholder_perf_ind, _run_material_cost, utils.UNIFIED_RUN_MATERIAL_COST_UNIT)
 
-    return #pi_run_material_cost
+    return pi_run_material_cost
+
+def locate_placeholder_performance_indicator(rxn_exp_instance: ReactionExperiment, target_clz: str, expected_amount: int = None) -> PerformanceIndicator:
+    lst_target = [pi for pi in rxn_exp_instance.hasPerformanceIndicator if pi.clz == target_clz]
+    if expected_amount is None:
+        return lst_target
+    else:
+        if len(lst_target) == expected_amount:
+            return lst_target
+        else:
+            raise Exception("Identified amount of target PerformanceIndicator with a clz <%s> does NOT match the expected value (%d) in ReactionExperiment: %s" % (
+                target_clz, expected_amount, str(rxn_exp_instance)))
+
+def create_performance_indicator_instance(placeholder_instance: PerformanceIndicator, numerical_value, unit: str) -> PerformanceIndicator:
+    performance_indicator_instance = PerformanceIndicator(
+        instance_iri=placeholder_instance.instance_iri,
+        clz=placeholder_instance.clz,
+        objPropWithExp=placeholder_instance.objPropWithExp,
+        hasValue=OM_Measure(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=getNameSpace(placeholder_instance.instance_iri),
+            hasUnit=unit,
+            hasNumericalValue=numerical_value
+        ),
+        positionalID=placeholder_instance.positionalID
+    )
+    return performance_indicator_instance
 
 def retrieve_yield_limiting_species(hypo_reactor: HypoReactor) -> HypoStreamSpecies:
     all_inlet_stream = hypo_reactor.inlet_run_stream

@@ -1,10 +1,9 @@
 # NOTE courtesy of Daniel (dln22), this file is adapted from https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_uploader/tests/conftest.py
-from testcontainers.core.container import DockerContainer
-from pathlib import Path
 from rdflib import Graph
 import logging
 import pkgutil
 import pytest
+import shutil
 import time
 import uuid
 import os
@@ -12,34 +11,69 @@ import os
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
+from postprocagent.agent import *
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
-HPLC_TXT_REPORT_FILE = os.path.join(THIS_DIR, 'hplc_txt_file')
-HPLC_XLS_REPORT_FILE = os.path.join(THIS_DIR, 'hplc_xls_file')
+DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
+HPLC_REPORT_XLS_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt.txt'
+HPLC_REPORT_TXT_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls.xls'
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
 FS_SERVICE = "fileserver"
 FS_ROUTE = "FileServer/"
 
+DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
+HPLC_DIGITAL_TWIN_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_1'
+HPLC_DIGITAL_TWIN_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_2'
+CHEMICAL_SOLUTION_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_1_1'
+CHEMICAL_SOLUTION_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_2_1'
+PLACEHOLDER_PERFORMANCE_INDICATOR_LIST_1 = [
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_yield_1',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_conversion_1',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_eco_score_1',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_e_factor_1',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_sty_1',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_cost_1'
+]
+PLACEHOLDER_PERFORMANCE_INDICATOR_LIST_2 = [
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_yield_2',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_conversion_2',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_eco_score_2',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_e_factor_2',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_sty_2',
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_cost_2'
+]
+
+POSTPROC_ONTOAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__PostProc#Service'
+DERIVATION_PERIODIC_TIMESCALE = 20
+DERIVATION_INSTANCE_BASE_URL = 'http://localhost:8080/ontolab/'
+
+class FlaskConfigTest(FlaskConfig):
+    # NOTE this to prevent below Exception when instantiating the HPLCInputAgent in the second-fourth test cases:
+    # "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
+    SCHEDULER_API_ENABLED = False
+
 def pytest_sessionstart(session):
     """ This will run before all the tests"""
-    # TODO remove HPLC TXT and XLS files as well
     if os.path.exists(SECRETS_FILE_PATH):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
+    if os.path.exists(DOWNLOADED_DIR):
+        shutil.rmtree(DOWNLOADED_DIR)
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
-    # TODO remove HPLC TXT and XLS files as well
     if os.path.exists(SECRETS_FILE_PATH):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
+    if os.path.exists(DOWNLOADED_DIR):
+        shutil.rmtree(DOWNLOADED_DIR)
 
 # ----------------------------------------------------------------------------------
 # Session-scoped test fixtures
@@ -80,26 +114,98 @@ def get_service_auth():
 
 @pytest.fixture(scope="session")
 def initialise_triples(get_service_url, get_service_auth):
-    # Create SparqlClient for testing
+    # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
-    file_service_url = get_service_url(FS_SERVICE, url_route=FS_ROUTE)
-    sparql_client = ChemistryAndRobotsSparqlClient(sparql_endpoint, sparql_endpoint)
+    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
+
+    # Retrieve endpoint and auth for file server
+    fs_url = get_service_url(FS_SERVICE, url_route=FS_ROUTE)
     fs_user, fs_pwd = get_service_auth(FS_SERVICE)
 
+    # Create SparqlClient for testing
+    sparql_client = ChemistryAndRobotsSparqlClient(sparql_endpoint, sparql_endpoint,
+        kg_user=sparql_user, kg_password=sparql_pwd,
+        fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd
+    )
+
+    # Create folder for downloaded files
+    if not os.path.exists(DOWNLOADED_DIR):
+        os.mkdir(DOWNLOADED_DIR)
+
     # Upload the example triples for testing
-    for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl', 'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl']:
+    for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl', 'sample_data/dummy_lab.ttl',
+        'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
-        filePath = f'{str(uuid.uuid4())}.ttl'
+        filePath = generate_random_download_path('ttl')
         g.serialize(filePath, format='ttl')
-        print(f)
         sparql_client.uploadOntology(filePath)
-        os.remove(filePath)
 
-    yield sparql_client, sparql_endpoint, file_service_url, fs_user, fs_pwd
+    # # Upload two sample HPLC reports to be used for test
+    # for f in ['sample_data/raw_hplc_report_txt.txt', 'sample_data/raw_hplc_report_xls.xls']:
+    #     if f.endswith('.xls'):
+    #         local_file_path = HPLC_REPORT_XLS_PATH
+    #         hplc_digital_twin = HPLC_DIGITAL_TWIN_1
+    #         chemical_solution_iri = CHEMICAL_SOLUTION_1
+    #     elif f.endswith('.txt'):
+    #         local_file_path = HPLC_REPORT_TXT_PATH
+    #         hplc_digital_twin = HPLC_DIGITAL_TWIN_2
+    #         chemical_solution_iri = CHEMICAL_SOLUTION_2
+
+    #     data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f)
+    #     with open(local_file_path, 'wb') as file_obj:
+    #         file_obj.write(data)
+    #     timestamp_last_modified = os.path.getmtime(local_file_path)
+    #     hplc_report_iri = sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=local_file_path,
+    #         timestamp_last_modified=timestamp_last_modified, hplc_digital_twin=hplc_digital_twin)
+
+    #     # Make the connection between HPLCReport and ChemicalSolution
+    #     # In normal operation, this should be done as part of Execution Agent
+    #     sparql_client.connect_hplc_report_with_chemical_solution(hplc_report_iri, chemical_solution_iri)
+
+    # Initialise PostProcAgent
+    post_proc_agent = PostProcAgent(
+        fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd,
+        agent_iri=POSTPROC_ONTOAGENT_SERVICE, time_interval=DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL, kg_url=sparql_endpoint, logger_name='dev',
+        flask_config=FlaskConfigTest() # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
+    )
+
+    yield sparql_client, post_proc_agent
 
     # Clear logger at the end of the test
     clear_loggers()
+
+@pytest.fixture(scope="session")
+def retrieve_hplc_report():
+    def _retrieve_hplc_report(report_path_in_pkg):
+        if report_path_in_pkg.endswith('.xls'):
+            local_file_path = generate_random_download_path('xls')
+            # hplc_digital_twin = HPLC_DIGITAL_TWIN_1
+            # chemical_solution_iri = CHEMICAL_SOLUTION_1
+        elif report_path_in_pkg.endswith('.txt'):
+            local_file_path = generate_random_download_path('txt')
+            # hplc_digital_twin = HPLC_DIGITAL_TWIN_2
+            # chemical_solution_iri = CHEMICAL_SOLUTION_2
+        else:
+            raise NotImplementedError("Handling HPLC raw report (%s) in the chemistry_and_robots package is NOT yet supported due to its file extension." % 
+                report_path_in_pkg)
+        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+report_path_in_pkg)
+        with open(local_file_path, 'wb') as file_obj:
+            file_obj.write(data)
+        timestamp_last_modified = os.path.getmtime(local_file_path)
+        # hplc_report_iri = sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=local_file_path,
+        #     timestamp_last_modified=timestamp_last_modified, hplc_digital_twin=hplc_digital_twin)
+
+        # # Make the connection between HPLCReport and ChemicalSolution
+        # # In normal operation, this should be done as part of Execution Agent
+        # sparql_client.connect_hplc_report_with_chemical_solution(hplc_report_iri, chemical_solution_iri)
+
+        return local_file_path, timestamp_last_modified
+    return _retrieve_hplc_report
+
+def generate_random_download_path(filename_extension):
+    return os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+filename_extension)
 
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
 def clear_loggers():
