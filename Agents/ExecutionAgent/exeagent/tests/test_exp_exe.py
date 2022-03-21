@@ -104,7 +104,7 @@ def test_exp_exe(initialise_agent, derivation_input, derivation_output):
                         WHERE { <%s> <%s>/<%s>/<%s> ?time .}""" % (derivation_iri, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION)
     while currentTimestamp_derivation == 0:
         time.sleep(20)
-        currentTimestamp_derivation = sparql_client.performQuery(query_timestamp)[0]['time']
+        currentTimestamp_derivation = int(sparql_client.performQuery(query_timestamp)[0]['time'])
 
     # Wait some arbitrary time until the cleaning up is done by the derivation client
     time.sleep(20)
