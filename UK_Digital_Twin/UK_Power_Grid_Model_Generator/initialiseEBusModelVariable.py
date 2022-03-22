@@ -45,3 +45,7 @@ class initialiseEBusModelVariable(object):
         EBus_Model_instance.PD_INPUT = round((float(EBus['v_TotalELecConsumption']) * 1000 / (24 * 365)), 3) 
           
         return EBus_Model_instance
+if __name__ == '__main__':
+    num = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-010_Scotland.owl#EBus-010_Scotland'
+    a = int((num.split('#EBus-')[1]).split('_')[0])
+    print(int(a))

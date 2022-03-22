@@ -1,11 +1,16 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 25 Oct 2021          #
+# Last Update Date: 17 March 2022        #
 ##########################################
 
 """This module declare the properties of generating UK power grid model A-boxes"""
 
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
+
+from pypower import idx_bus
+from pypower import idx_brch
+from pypower import idx_gen 
+import collections
 
 valueKey = "value_"
 
@@ -45,6 +50,32 @@ class UKEbusModel:
     """Data file header"""
     headerBusModel = ["Bus", "Type", "Pd", "Gd", "Gs", "Bs", "area", "Vm", "Va", "basekV", "zone", "Vmax", "Vmin\n"]
     
+    # Map with the bus indices of the pypower package
+    
+    """The dictionary index key for PF analysis """
+   # INPUT_VARIABLE = ["BUS", "TYPE", "PD_INPUT", "GD_INPUT", "GS", "BS", "AREA", "VM_INPUT", "VA_INPUT", "BASEKV", "ZONE", "VMAX", "VMIN"]
+    OUTPUT_VARIABLE = ["VM_OUTPUT", "VA_OUTPUT", "PDGEN", "GDGEN", "PD_OUTPUT", "GD_OUTPUT"]
+    
+    # Map keys with the bus indices of the pypower package (keys are the attribute named defined in UK digital twin and the value is the index used in the pyPower)
+    INPUT_VARIABLE = collections.OrderedDict()
+    INPUT_VARIABLE["BUS"] =  idx_bus.BUS_I 
+    INPUT_VARIABLE["TYPE"] =  idx_bus.BUS_TYPE 
+    INPUT_VARIABLE["PD_INPUT"] =  idx_bus.PD 
+    INPUT_VARIABLE["GD_INPUT"] =  idx_bus.QD 
+    INPUT_VARIABLE["GS"] =  idx_bus.GS
+    INPUT_VARIABLE["BS"] =  idx_bus.BS
+    INPUT_VARIABLE["AREA"] =  idx_bus.BUS_AREA
+    INPUT_VARIABLE["VM_INPUT"] =  idx_bus.VM
+    INPUT_VARIABLE["VA_INPUT"] =  idx_bus.VA
+    INPUT_VARIABLE["BASEKV"] =  idx_bus.BASE_KV
+    INPUT_VARIABLE["ZONE"] =  idx_bus.ZONE
+    INPUT_VARIABLE["VMAX"] =  idx_bus.VMAX
+    INPUT_VARIABLE["VMIN"] =  idx_bus.VMIN
+    
+    INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
+    
+    # {"BUS":"BUS_I", "TYPE": "BUS_TYPE", "PD_INPUT": "PD", "GD_INPUT": "QD", "GS": "GS", "BS": "BS", "AREA": "BUS_AREA", "VM_INPUT": "VM", "VA_INPUT": "VA", "BASEKV": "BASE_KV", "ZONE": "ZONE", "VMAX":"VMAX", "VMIN": "VMIN" }
+    
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\Sleepycat_EBus"
@@ -53,26 +84,35 @@ class UKEbusModel:
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
         self.location = Location
-        self.BUS = None
-        self.TYPE = 1
-        self.PD_INPUT = None
-        self.GD_INPUT = 0
+        
+        # Model input
+        self.INPUT_VARIABLE_KEYS[0] = None # BUS
+        self.INPUT_VARIABLE_KEYS[1] = 1 # TYPE
+        self.INPUT_VARIABLE_KEYS[2] = None # PD_INPUT
+        self.INPUT_VARIABLE_KEYS[3] = 0 # GD_INPUT
+        self.INPUT_VARIABLE_KEYS[4] = 0 # GS
+        self.INPUT_VARIABLE_KEYS[5] = 0 # BS
+        self.INPUT_VARIABLE_KEYS[6] = 1 # AREA 
+        self.INPUT_VARIABLE_KEYS[7] = 1 # VM_INPUT
+        self.INPUT_VARIABLE_KEYS[8] = 0 # VA_INPUT            
+        self.INPUT_VARIABLE_KEYS[9] = 400 # BASEKV
+        self.INPUT_VARIABLE_KEYS[10] = 1 # ZONE
+        self.INPUT_VARIABLE_KEYS[11] = 1.05 # VMAX
+        self.INPUT_VARIABLE_KEYS[12] = 0.95 # VMIN
+        
+        # Model output
         self.PD_OUTPUT = None
         self.GD_OUTPUT = None
-        self.GS = 0
-        self.BS = 0
-        self.AREA = 1       
-        self.VM_INPUT = 1
-        self.VA_INPUT = 0
         self.VM_OUTPUT = None
-        self.VA_OUTPUT = None        
-        self.BASEKV = 400
-        self.ZONE = 1
-        self.VMAX = 1.05
-        self.VMIN = 0.95
+        self.VA_OUTPUT = None  
         self.PDGEN = None
         self.GDGEN = None
         
+        
+        
+    def __dir__(self):
+        return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}
+         
 
 class UKElineModel:
     
@@ -101,6 +141,28 @@ class UKElineModel:
     """Data file header"""
     # headerBranchModel = ["Bus1", "Bus2", "R", "X", "B", "RateA", "RateB", "RateC", "ratio", "angle", "status", "angmin", "angmax\n"]
     
+    """The INPUT_VARIABLE and OUTPUT_VARIABLE index key for PF analysis """    
+    # INPUT_VARIABLE = ["FROMBUS", "TOBUS", "R", "X", "B", "RateA", "RateB", "RateC", "RATIO", "ANGLE", "STATUS", "ANGMIN", "ANGMAX"]
+    OUTPUT_VARIABLE = ["FROMBUSINJECTION_P", "FROMBUSINJECTION_Q", "TOBUSINJECTION_P", "TOBUSINJECTION_Q", "LOSS_P", "LOSS_Q"]
+    
+    """Mapping the index key from PyPower"""
+    INPUT_VARIABLE = collections.OrderedDict()
+    INPUT_VARIABLE["FROMBUS"] =  idx_brch.F_BUS 
+    INPUT_VARIABLE["TOBUS"] =  idx_brch.T_BUS 
+    INPUT_VARIABLE["R"] =  idx_brch.BR_R 
+    INPUT_VARIABLE["X"] =  idx_brch.BR_X 
+    INPUT_VARIABLE["B"] =  idx_brch.BR_B
+    INPUT_VARIABLE["RateA"] =  idx_brch.RATE_A
+    INPUT_VARIABLE["RateB"] =  idx_brch.RATE_B
+    INPUT_VARIABLE["RateC"] =  idx_brch.RATE_C
+    INPUT_VARIABLE["RATIO"] =  idx_brch.TAP
+    INPUT_VARIABLE["ANGLE"] =  idx_brch.SHIFT
+    INPUT_VARIABLE["STATUS"] =  idx_brch.BR_STATUS
+    INPUT_VARIABLE["ANGMIN"] =  idx_brch.ANGMIN
+    INPUT_VARIABLE["ANGMAX"] =  idx_brch.ANGMAX
+    
+    INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
+    
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, initialiserMethod = 'defaultBranchInitialiser', Location = 'http://dbpedia.org/resource/United_Kingdom'):
         
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\"
@@ -117,21 +179,33 @@ class UKElineModel:
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
         self.location =  Location
-        self.FROMBUS = None
-        self.TOBUS = None
-        self.R = None
-        self.X = None
-        self.B = None
-        self.RateA = None
-        self.RateB = 0
-        self.RateC = 0
-        self.RATIO = 1
-        self.ANGLE = 0
-        self.STATUS = 1
-        self.ANGMIN = -360
-        self.ANGMAX = 360
-
         
+        ## Attributes ##
+        # model input
+        self.INPUT_VARIABLE_KEYS[0] = None # FROMBUS
+        self.INPUT_VARIABLE_KEYS[1] = None # TOBUS
+        self.INPUT_VARIABLE_KEYS[2] = None # R
+        self.INPUT_VARIABLE_KEYS[3] = None # X
+        self.INPUT_VARIABLE_KEYS[4] = None # B
+        self.INPUT_VARIABLE_KEYS[5] = None # RateA
+        self.INPUT_VARIABLE_KEYS[6] = 0 # RateB
+        self.INPUT_VARIABLE_KEYS[7] = 0 # RateC
+        self.INPUT_VARIABLE_KEYS[8] = 1 # RATIO
+        self.INPUT_VARIABLE_KEYS[9] = 0 # ANGLE
+        self.INPUT_VARIABLE_KEYS[10] = 1 # STATUS
+        self.INPUT_VARIABLE_KEYS[11] = -360 # ANGMIN
+        self.INPUT_VARIABLE_KEYS[12] = 360 # ANGMAX
+        
+        # The PF analysis output
+        self.FROMBUSINJECTION_P = None
+        self.FROMBUSINJECTION_Q = None
+        self.TOBUSINJECTION_P = None
+        self.TOBUSINJECTION_Q = None
+        self.LOSS_P = None
+        self.LOSS_Q = None
+    
+    def __dir__(self):
+        return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}       
 
 class UKEGenModel:
     
@@ -164,6 +238,37 @@ class UKEGenModel:
     RAMP_QKey = "Ramp_q_"
     APFKey = "APF_"
     
+    """The INPUT_VARIABLE and OUTPUT_VARIABLE index key for PF analysis """   
+    # INPUT_VARIABLE = ["BUS", "PG_INPUT", "QG_INPUT", "QMAX", "QMIN", "VG", "MBASE", "STATUS", "PMAX", "PMIN", "PC1", "PC2", "QC1MIN", "QC1MAX", "QC2MIN", "QC2MAX", "RAMP_AGC", \
+    #                   "RAMP_10", "RAMP_30", "RAMP_Q", "APF"]
+    
+    OUTPUT_VARIABLE = ["PG_OUTPUT", "QG_OUTPUT"]
+    
+    """Mapping the index key from PyPower"""
+    INPUT_VARIABLE = collections.OrderedDict()
+    INPUT_VARIABLE["BUS"] =  idx_gen.GEN_BUS 
+    INPUT_VARIABLE["PG_INPUT"] =  idx_gen.PG
+    INPUT_VARIABLE["QG_INPUT"] =  idx_gen.QG 
+    INPUT_VARIABLE["QMAX"] =  idx_gen.QMAX 
+    INPUT_VARIABLE["QMIN"] =  idx_gen.QMIN
+    INPUT_VARIABLE["VG"] =  idx_gen.VG
+    INPUT_VARIABLE["MBASE"] =  idx_gen.MBASE
+    INPUT_VARIABLE["STATUS"] =  idx_gen.GEN_STATUS
+    INPUT_VARIABLE["PMAX"] =  idx_gen.PMAX
+    INPUT_VARIABLE["PMIN"] =  idx_gen.PMIN
+    INPUT_VARIABLE["PC1"] =  idx_gen.PC1
+    INPUT_VARIABLE["PC2"] =  idx_gen.PC2
+    INPUT_VARIABLE["QC1MIN"] =  idx_gen.QC1MIN    
+    INPUT_VARIABLE["QC1MAX"] =  idx_gen.QC1MAX
+    INPUT_VARIABLE["QC2MIN"] =  idx_gen.QC2MIN
+    INPUT_VARIABLE["QC2MAX"] =  idx_gen.QC2MAX
+    INPUT_VARIABLE["RAMP_AGC"] =  idx_gen.RAMP_AGC
+    INPUT_VARIABLE["RAMP_10"] =  idx_gen.RAMP_10
+    INPUT_VARIABLE["RAMP_30"] =  idx_gen.RAMP_30
+    INPUT_VARIABLE["RAMP_Q"] =  idx_gen.RAMP_Q
+    INPUT_VARIABLE["APF"] =  idx_gen.APF
+    
+    INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
     
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\"
@@ -172,29 +277,36 @@ class UKEGenModel:
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
         self.location = Location
-        self.BUS = None
-        self.PG_INPUT = None
-        self.QG_INPUT = 0
+        
+        # Model input
+        self.INPUT_VARIABLE_KEYS[0] = None # BUS
+        self.INPUT_VARIABLE_KEYS[1] = None # PG_INPUT
+        self.INPUT_VARIABLE_KEYS[2] = 0 # QG_INPUT
+        self.INPUT_VARIABLE_KEYS[3] = None # QMAX
+        self.INPUT_VARIABLE_KEYS[4] = None # QMIN
+        self.INPUT_VARIABLE_KEYS[5] = 1 # VG
+        self.INPUT_VARIABLE_KEYS[6] = 100 # MBASE
+        self.INPUT_VARIABLE_KEYS[7] = 1 # STATUS
+        self.INPUT_VARIABLE_KEYS[8] = None # PMAX
+        self.INPUT_VARIABLE_KEYS[9] = None # PMIN
+        self.INPUT_VARIABLE_KEYS[10] = 0 # PC1
+        self.INPUT_VARIABLE_KEYS[11] = 0 # PC2
+        self.INPUT_VARIABLE_KEYS[12] = 0 # QC1MIN
+        self.INPUT_VARIABLE_KEYS[13] = 0 # QC1MAX
+        self.INPUT_VARIABLE_KEYS[14] = 0 # QC2MIN
+        self.INPUT_VARIABLE_KEYS[15] = 0 # QC2MAX
+        self.INPUT_VARIABLE_KEYS[16] = 0 # RAMP_AGC
+        self.INPUT_VARIABLE_KEYS[17] = 0 # RAMP_10
+        self.INPUT_VARIABLE_KEYS[18] = 0 # RAMP_30
+        self.INPUT_VARIABLE_KEYS[19] = 0 # RAMP_Q
+        self.INPUT_VARIABLE_KEYS[20] = 0 # APF
+        
+        # Model output
         self.PG_OUTPUT = None
         self.QG_OUTPUT = None
-        self.QMAX = None
-        self.QMIN = None
-        self.VG = 1
-        self.MBASE = 100
-        self.STATUS = 1
-        self.PMAX = None
-        self.PMIN = None
-        self.PC1 = 0
-        self.PC2 = 0
-        self.QC1MIN = 0
-        self.QC1MAX = 0
-        self.QC2MIN = 0
-        self.QC2MAX = 0
-        self.RAMP_AGC = 0
-        self.RAMP_10 = 0
-        self.RAMP_30 = 0
-        self.RAMP_Q = 0
-        self.APF = 0
+        
+    def __dir__(self):
+        return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}
     
     
 class UKEGenModel_CostFunc(UKEGenModel): 

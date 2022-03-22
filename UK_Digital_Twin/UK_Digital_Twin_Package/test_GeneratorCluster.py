@@ -170,11 +170,11 @@ if __name__ == '__main__':
     aggragatedBusList = [[8, 'E12000001']]
     
     # ONS
-    res1 = closestBus_withinMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
-    print(res1, len(res1))
+    # res1 = closestBus_withinMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
+    # print(len(res1))
     
     # Shapely
-    # res2 = closestBus_shapelyMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
-    # print(res2, len(res2))
+    res2 = closestBus_shapelyMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
+    print(res2, len(res2))
     
     

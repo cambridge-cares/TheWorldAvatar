@@ -288,6 +288,6 @@ def demandAndCapacityRatioCalculator(EGenInfo, numOfBus, numOfBranch, startTime_
     return demand_capa_ratio
 
 if __name__ == '__main__':    
-    # createModel_EGen('default', False, 2019, "2017-01-31", 10, 14, 50, 2, 3, None, True) 
-    createModel_EGen('default', False, 2019, "2017-01-31", 29, 99, 50, 2, 3, None, True)
+    createModel_EGen('default', False, 2019, "2017-01-31", 10, 14, 50, 2, 3, None, True) 
+    # createModel_EGen('default', False, 2019, "2017-01-31", 29, 99, 50, 2, 3, None, True)
     print('Terminated')

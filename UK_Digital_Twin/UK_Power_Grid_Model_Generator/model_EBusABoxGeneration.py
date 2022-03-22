@@ -234,7 +234,7 @@ def addUpConsumptionForAggregatedBus(EBus_Load_List):
     return EBus_Load_List
 
 if __name__ == '__main__':    
-    # createModel_EBus('default', False, 2019, 10, 14, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", None, True)  
+    createModel_EBus('default', False, 2019, 10, 14, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", None, True)  
     # createModel_EBus('default', False, 2019, 29, 99, "2017-01-31", "closestDemandLoad", "preSpecified", None, True)  
-    createModel_EBus('default', False, 2019, 29, 99, "2017-01-31", "regionalDemandLoad", "preSpecified", None, True)           
+    #createModel_EBus('default', False, 2019, 29, 99, "2017-01-31", "regionalDemandLoad", "preSpecified", None, True)           
     print('*****************Terminated*****************')

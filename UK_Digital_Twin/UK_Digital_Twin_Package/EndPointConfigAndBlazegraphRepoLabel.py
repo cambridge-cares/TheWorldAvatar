@@ -51,10 +51,17 @@ lookupTable = {
 
 """UK digital twin in Blazegraph"""
 ukdigitaltwin = {
-    'lable': 'ukdigitaltwin',
-    'endpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql",
-    'queryendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql",
-    'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"}
+    'lable': 'ukdigitaltwin_test1',
+    'endpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql",
+    'queryendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql",
+    'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"}
+
+# # The original one 
+# ukdigitaltwin = {
+#     'lable': 'ukdigitaltwin',
+#     'endpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql",
+#     'queryendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql",
+#     'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"}
 
 """ONS in Blazegraph"""
 ONS = {

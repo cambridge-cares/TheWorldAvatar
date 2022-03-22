@@ -511,15 +511,13 @@ if __name__ == '__main__':
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
     ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
     
-    # res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin")
+    res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin_test1")
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
     # res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res, a = queryELineTopologicalInformation(29, 99, 'ukdigitaltwin', None, False)
-    res, a = queryELineTopologicalInformation(10, 14, 'ukdigitaltwin', None, False)
+    # res, a = queryELineTopologicalInformation(10, 14, 'ukdigitaltwin', None, False)
     # res = branchGeometryQueryCreator('10', ['275kV', '400kV'])
-    # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
-    # print (res[0])
     # SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     # res = queryDigitalTwinLocation(None, SleepycatStoragePath, True)
     # res = queryEBusandRegionalDemand(10, None, False, "ukdigitaltwin")

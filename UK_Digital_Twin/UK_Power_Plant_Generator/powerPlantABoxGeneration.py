@@ -175,7 +175,7 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             graph.set((graph.identifier, RDFS.label, Literal('UK Digital Twin - Energy System - Power Plant - ' + plantname)))
             
             # Add rdf.type
-            graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoeip_powerplant.PowerPlant.iri)))
+            graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontoenergysystem + 'PowerPlant')))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoecape_technical_system.TechnicalSystem.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontopowsys_PowSysRealization + planttype)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontoenergysystem + 'Asset'))) # The power plant is specifically declared as an asset  

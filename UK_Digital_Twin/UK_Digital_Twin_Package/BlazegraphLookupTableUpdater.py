@@ -92,11 +92,19 @@ def deleteLookUpTable_withoutResources(endpoint_iri, queryendpoint_iri, updateen
    
         
 if __name__ == '__main__': 
-    endpoint_iri = "http://statistics.data.gov.uk/sparql.json"
-    queryendpoint_iri = "http://statistics.data.gov.uk/sparql.json"
-    updateendpoint_iri = "http://statistics.data.gov.uk/sparql.json"
+    # endpoint_iri = "http://statistics.data.gov.uk/sparql.json"
+    # queryendpoint_iri = "http://statistics.data.gov.uk/sparql.json"
+    # updateendpoint_iri = "http://statistics.data.gov.uk/sparql.json"
     # queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin"
     # updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"
-    label = "ons"
+    # label = "ons"
     # deleteLookUpTable_withoutResources(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label)
+    
+    endpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
+    queryendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
+    updateendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
+    # queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin"
+    # updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"
+    label = "ukdigitaltwin_test1"
+    
     updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, True,False)
