@@ -8,27 +8,34 @@ def calc_run_mol_n_volume_of_other_solute(
     ref_solute_run_mol: utils.DimensionalQuantity, pump_conc: utils.DimensionalQuantity,
     dct_run_mol: dict, dct_run_volume: dict
 ):
+    """This method calculates the run mol and run volume of any solute that are NOT in the reference pump."""
     _run_mol = eq_ratio * utils.unit_conversion_dq(ref_solute_run_mol, utils.UNIFIED_MOLE_UNIT).hasNumericalValue
     utils.deep_update(dct_run_mol, {input_chemical:{species:utils.DimensionalQuantity(hasUnit=utils.UNIFIED_MOLE_UNIT, hasNumericalValue=_run_mol)}})
     _run_volume = _run_mol / utils.unit_conversion_dq(pump_conc, utils.UNIFIED_CONCENTRATION_UNIT).hasNumericalValue
     utils.deep_update(dct_run_volume, {input_chemical:utils.DimensionalQuantity(hasUnit=utils.UNIFIED_VOLUME_UNIT, hasNumericalValue=_run_volume)})
 
 def construct_hypo_end_stream(sparql_client: ChemistryAndRobotsSparqlClient, hplc_report_instance: HPLCReport, hypo_reactor: HypoReactor, species_role_dct: dict) -> HypoEndStream:
+    """This method constructs an instance of HypoEndStream given the information about HPLCReport, HypoReactor, and the role of each species in the reaction."""
     lst_end_stream_comp = []
+    # Iterate over the list of ChromatogramPoint and create instance of HypoStreamSpecies for each of them
     for pt in hplc_report_instance.records:
+        # First determine the role of chemical species in the reaction
         _species_iri = pt.indicatesComponent.representsOccurenceOf
         try:
             _def_role = species_role_dct[_species_iri]
         except KeyError:
             raise Exception("Species <%s> identified from the HPLC report <%s> is NOT represented in the recording of ReactionExperiment <%s>" % (
                 _species_iri, hplc_report_instance.instance_iri, hypo_reactor.rxn_exp_iri))
+        # Second query a list of "intrinsic" information related to the chemical species
         _mw = sparql_client.get_species_molar_mass_kilogrampermole(_species_iri)
         _density, _density_unit = sparql_client.get_species_density(_species_iri)
         _cost, _cost_unit = sparql_client.get_species_material_cost(_species_iri)
         _es, _es_unit = sparql_client.get_species_eco_score(_species_iri)
+        # Third compute a list of information that derived from the "intrinsic" information
         _sp_run_conc, _sp_run_conc_unit = pt.indicatesComponent.hasProperty.hasValue.numericalValue, pt.indicatesComponent.hasProperty.hasValue.hasUnitOfMeasure
         _sp_run_mol = utils.unit_conversion_return_value(_sp_run_conc, _sp_run_conc_unit,
             utils.UNIFIED_CONCENTRATION_UNIT) / utils.unit_conversion_return_value_dq(hypo_reactor.total_run_volume, utils.UNIFIED_VOLUME_UNIT)
+        # Fourth create the instance of HypoStreamSpecies based on the collected information
         end_stream_comp = HypoStreamSpecies(
             species_iri=_species_iri,
             def_role=_def_role,
@@ -40,6 +47,7 @@ def construct_hypo_end_stream(sparql_client: ChemistryAndRobotsSparqlClient, hpl
             run_mol=utils.DimensionalQuantity(hasUnit=utils.UNIFIED_MOLE_UNIT,hasNumericalValue=_sp_run_mol)
         )
         lst_end_stream_comp.append(end_stream_comp)
+    # Assemble the instance of HypoEndStream given all complete list of species
     hypo_end_stream = HypoEndStream(
         total_run_volume=utils.unit_conversion_dq(hypo_reactor.total_run_volume, utils.UNIFIED_VOLUME_UNIT),
         component=lst_end_stream_comp
@@ -47,9 +55,11 @@ def construct_hypo_end_stream(sparql_client: ChemistryAndRobotsSparqlClient, hpl
     return hypo_end_stream
 
 def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_exp_instance: ReactionExperiment, internal_standard_instance: InternalStandard) -> Tuple[HypoReactor, float, dict]:
-    # Construct a dict of run volume from each pump (start with ReactionScale for the reference pump) {InputChemical:DimensionalQuantity(concentration)}
+    """This method construct the instance of HypoReactor given the instance of ReactionExperiment and InternalStandard."""
+    # Construct a dict of run volume from each pump (start with ReactionScale for the reference pump) in the format of {InputChemical:DimensionalQuantity(concentration)}
     _run_volume_dct = {con.indicateUsageOf:utils.DimensionalQuantity(hasUnit=con.hasValue.hasUnit,
         hasNumericalValue=con.hasValue.hasNumericalValue) for con in rxn_exp_instance.hasReactionCondition if con.indicateUsageOf is not None}
+    # Make sure only one InputChemical is identified as the reference pump
     if len(_run_volume_dct) > 1:
         raise Exception("Multiple ReactionScale conditions were found in the ReactionExperiment instance: %s" % str(rxn_exp_instance))
     elif len(_run_volume_dct) < 1:
@@ -120,7 +130,7 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
 
     # Calculate the run mol of reactant in the reference pump (reference InputChemical)
     # Get the unit for run mol correct
-    run_mol_dct = {} # {InputChemical:{Species:DimensionalQuantity(mol)}}
+    run_mol_dct = {} # this dict will be populated in the format of {InputChemical:{Species:DimensionalQuantity(mol)}}
     # 1. First put the run mol of reactant in the reference pump
     try:
         _temp_value = utils.unit_conversion_return_value(species_pump_conc_dct[reference_input_chemical][ONTOKIN_REACTANT][reference_solute].hasNumericalValue,
@@ -213,6 +223,7 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
         )
         lst_inlet_stream.append(hypo_pump_inlet)
 
+    # Collect information on reactor volume and residence time
     _reactor_vol, _reactor_vol_unit = sparql_client.get_reactor_volume_given_reactor(rxn_exp_instance.isAssignedTo)
     _res_time_con = [con for con in rxn_exp_instance.hasReactionCondition if con.clz == ONTORXN_RESIDENCETIME]
     if len(_res_time_con) > 1:
@@ -224,7 +235,7 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
         _res_time = _res_time_con[0].hasValue.hasNumericalValue
         _res_time_unit = _res_time_con[0].hasValue.hasUnit
 
-    # NOTE here we assume the ReactionTemperature is the actual temperature within the reactor, ideally we will use the actual data collected from sensors if possible
+    # NOTE TODO here we assume the ReactionTemperature is the actual temperature within the reactor, ideally we will use the actual data collected from sensors if possible
     _rxn_temp_con = [con for con in rxn_exp_instance.hasReactionCondition if con.clz == ONTORXN_REACTIONTEMPERATURE]
     if len(_rxn_temp_con) > 1:
         raise Exception("More than ONE instance of OntoRxn:ReactionTemperature identified as ReactionCondition within ReactionExperiment instance <%s>: %s" % (
@@ -245,10 +256,12 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
         total_run_volume=utils.unit_conversion_dq(total_run_volume, utils.UNIFIED_VOLUME_UNIT)
     )
 
+    # Make sure there is only one instance of run concentration for InternalStandard
     if len(_dct_IS_run_conc_moleperlitre) > 1:
         raise Exception("Multiple appearances of InternalStandard (%s) in the given reaction: %s" % (str(_dct_IS_run_conc_moleperlitre), str(rxn_exp_instance)))
     elif len(_dct_IS_run_conc_moleperlitre) < 1:
         raise Exception("No appearance of InternalStandard in the given reaction: %s" % (str(rxn_exp_instance)))
     else:
         internal_standard_run_conc_moleperlitre = list(_dct_IS_run_conc_moleperlitre.values())[0]
+
     return hypo_reactor, internal_standard_run_conc_moleperlitre, species_role_dct

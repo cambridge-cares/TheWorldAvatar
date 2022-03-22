@@ -11,30 +11,38 @@ def calculate_performance_indicator(
     target_clz: str,
     expected_amount: int
 ) -> List[PerformanceIndicator]:
+    """
+        This method calculates the value of performance indicator and returns an instance of PerformanceIndicator.
+        Arguments:
+            hypo_reactor - instance of HypoReactor
+            hypo_end_stream - instance of HypoEndStream
+            rxn_exp_instance - instance of ontorxn.ReactionExperiment from chemistry_and_robots package
+            target_clz - class iri of the target PerformanceIndicator
+            expected_amount - expected amount of appearances of the target class in the PerformanceIndicator of ontorxn.ReactionExperiment
+    """
 
+    # Locate the placeholder instance of the PerformanceIndicator in the given ReactionExperiment instance
+    # NOTE that the length of the list should match the amount of expected_amount, an exception will be throw if not meet the condition
     lst_placeholder = locate_placeholder_performance_indicator(rxn_exp_instance, target_clz, expected_amount)
-    lst_pi = []
-    for ph_pi in lst_placeholder:
-        if target_clz == ONTORXN_YIELD:
-            pi = calculate_yield(hypo_reactor, hypo_end_stream, ph_pi)
-        elif target_clz == ONTORXN_CONVERSION:
-            pi = calculate_conversion(hypo_reactor, hypo_end_stream, ph_pi)
-        elif target_clz == ONTORXN_ECOSCORE:
-            pi = calculate_eco_score(hypo_reactor, hypo_end_stream, ph_pi)
-        elif target_clz == ONTORXN_ENVIRONMENTALFACTOR:
-            pi = calculate_enviromental_factor(hypo_reactor, hypo_end_stream, ph_pi)
-        elif target_clz == ONTORXN_SPACETIMEYIELD:
-            pi = calculate_space_time_yield(hypo_reactor, hypo_end_stream, ph_pi)
-        elif target_clz == ONTORXN_RUNMATERIALCOST:
-            pi = calculate_run_material_cost(hypo_reactor, hypo_end_stream, ph_pi)
-        else:
-            raise NotImplementedError("Requested target clz <%s> as PerformanceIndicator is NOT yet supported when post-processing ReactionExperiment: %s." % (
-                target_clz, str(rxn_exp_instance)))
-        lst_pi.append(pi)
-
-    return lst_pi
+    # Create and return the list of PerformanceIndicator instances depends on target_clz
+    if target_clz == ONTORXN_YIELD:
+        return [calculate_yield(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
+    elif target_clz == ONTORXN_CONVERSION:
+        return [calculate_conversion(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
+    elif target_clz == ONTORXN_ECOSCORE:
+        return [calculate_eco_score(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
+    elif target_clz == ONTORXN_ENVIRONMENTALFACTOR:
+        return [calculate_enviromental_factor(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
+    elif target_clz == ONTORXN_SPACETIMEYIELD:
+        return [calculate_space_time_yield(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
+    elif target_clz == ONTORXN_RUNMATERIALCOST:
+        return [calculate_run_material_cost(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
+    else:
+        raise NotImplementedError("Requested target clz <%s> as PerformanceIndicator is NOT yet supported when post-processing ReactionExperiment: %s." % (
+            target_clz, str(rxn_exp_instance)))
 
 def calculate_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
+    """This method calculates the reaction yield based on the non-catalyst yield limiting reactant (the one with the lowest run concentration)."""
     yield_limiting_species = retrieve_yield_limiting_species(hypo_reactor)
     target_product_species = retrieve_product_species(hypo_end_stream)
 
@@ -48,6 +56,7 @@ def calculate_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, p
     return pi_yield
 
 def calculate_conversion(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
+    """This method calculates the reaction conversion based on the non-catalyst yield limiting reactant (the one with the lowest run concentration)."""
     # NOTE here the conversion is calculated based on the yield limiting species
     yield_limiting_species = retrieve_yield_limiting_species(hypo_reactor)
     _species_in_end_stream = [species for species in hypo_end_stream.component if species.species_iri == yield_limiting_species.species_iri][0]
@@ -62,6 +71,7 @@ def calculate_conversion(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStre
     return pi_conversion
 
 def calculate_space_time_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
+    """This method calculates the reaction space time yield, which commonly has (kg per litre per minute) as its unit."""
     target_product_species = retrieve_product_species(hypo_end_stream)
 
     prod_run_mass = utils.unit_conversion_return_value_dq(target_product_species._run_mass, utils.UNIFIED_MASS_UNIT)
@@ -75,6 +85,7 @@ def calculate_space_time_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoE
     return pi_sty
 
 def calculate_eco_score(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
+    """This method calculates the reaction eco score."""
     residence_time = utils.unit_conversion_return_value_dq(hypo_reactor.residence_time, utils.UNIFIED_TIME_UNIT)
     reactor_temperature = utils.unit_conversion_return_value_dq(hypo_reactor.reactor_temperature, OM_DEGREECELSIUS)
     time_temperature_eco_score = TIME_TEMPERATURE_ECO_SCORE_FACTOR * residence_time * (
@@ -87,6 +98,7 @@ def calculate_eco_score(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStrea
     return pi_eco_score
 
 def calculate_enviromental_factor(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
+    """This method calculates the reaction environmental factor."""
     target_product_species = retrieve_product_species(hypo_end_stream)
     all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
@@ -102,6 +114,7 @@ def calculate_enviromental_factor(hypo_reactor: HypoReactor, hypo_end_stream: Hy
     return pi_e_factor
 
 def calculate_run_material_cost(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, placeholder_perf_ind: PerformanceIndicator) -> PerformanceIndicator:
+    """This method calculates the reaction material cost for a single run, which commonly has (pound sterling) as its unit."""
     all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
     reactant_and_solvent = all_reactant + all_solvent
@@ -114,6 +127,7 @@ def calculate_run_material_cost(hypo_reactor: HypoReactor, hypo_end_stream: Hypo
     return pi_run_material_cost
 
 def locate_placeholder_performance_indicator(rxn_exp_instance: ReactionExperiment, target_clz: str, expected_amount: int = None) -> PerformanceIndicator:
+    """This method locates the placeholder PerformanceIndicator instance that already created in the ReactionExperiment instance."""
     lst_target = [pi for pi in rxn_exp_instance.hasPerformanceIndicator if pi.clz == target_clz]
     if expected_amount is None:
         return lst_target
@@ -125,6 +139,7 @@ def locate_placeholder_performance_indicator(rxn_exp_instance: ReactionExperimen
                 target_clz, expected_amount, str(rxn_exp_instance)))
 
 def create_performance_indicator_instance(placeholder_instance: PerformanceIndicator, numerical_value, unit: str) -> PerformanceIndicator:
+    """This method creates the instance of PerformanceIndicator given the placeholder instance and the computed value to be used for OM_Measure."""
     performance_indicator_instance = PerformanceIndicator(
         instance_iri=placeholder_instance.instance_iri,
         clz=placeholder_instance.clz,
@@ -140,6 +155,7 @@ def create_performance_indicator_instance(placeholder_instance: PerformanceIndic
     return performance_indicator_instance
 
 def retrieve_yield_limiting_species(hypo_reactor: HypoReactor) -> HypoStreamSpecies:
+    """This method retrieves the yield limiting reactant given the instance of HypoReactor."""
     all_inlet_stream = hypo_reactor.inlet_run_stream
     all_reactant_species = {r.species_iri:r for reac in all_inlet_stream for r in reac.solute if r._is_reactant}
     all_reactant_conc = {all_reactant_species[s].species_iri:all_reactant_species[s].run_conc for s in all_reactant_species}
@@ -153,6 +169,7 @@ def retrieve_yield_limiting_species(hypo_reactor: HypoReactor) -> HypoStreamSpec
     return all_reactant_species[yield_limiting_species_iri]
 
 def retrieve_product_species(hypo_end_stream: HypoEndStream) -> HypoStreamSpecies:
+    """This method retrieves the product species given the instance of HypoEndStream."""
     all_target_product = [comp for comp in hypo_end_stream.component if comp._is_target_product]
 
     if len(all_target_product) > 1:
@@ -164,6 +181,7 @@ def retrieve_product_species(hypo_end_stream: HypoEndStream) -> HypoStreamSpecie
     return target_product
 
 def retrieve_total_run_eco_score(hypo_reactor: HypoReactor):
+    """This method retrieves tht total run eco score given the instance of HypoReactor."""
     all_solute = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute]
     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
     all_species = all_solute + all_solvent

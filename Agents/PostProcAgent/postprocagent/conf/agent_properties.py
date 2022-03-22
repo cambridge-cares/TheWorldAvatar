@@ -41,6 +41,11 @@ class PostProcAgentConfig(object):
         self.DERIVATION_INSTANCE_BASE_URL = agent_properties['DERIVATION_CLIENT']['DERIVATION_INSTANCE_BASE_URL']
 
     def read_credential(self, relevant_path):
+        """
+            This methods reads the credential information given the relevant file path.
+            Arguments:
+                relevant_path - relevant path of the credential file
+        """
         full_path = os.path.join(CONF_FOLDER_PATH,relevant_path)
         try:
             cred = Path(full_path).read_text()

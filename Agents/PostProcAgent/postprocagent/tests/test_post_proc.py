@@ -2,7 +2,6 @@ import postprocagent.tests.conftest as conftest
 import logging
 import pytest
 import time
-import os
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
@@ -22,6 +21,7 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
     res = sparql_client.getAmountOfTriples()
     assert res > 0
 
+    # Start the agent to monitor the derivations
     post_proc_agent.start_monitoring_derivations()
 
     # Upload HPLC report to file server
@@ -48,8 +48,8 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
         # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
         post_proc_agent.derivationClient.updateTimestamp(input)
 
-    # Update the asynchronous derivation, it will be marked as "PendingUpdate"
-    # The actual update will be handled by monitorDerivation method periodically run by DoE agent
+    # Update the asynchronous derivation, it will be marked as "Requested"
+    # The actual update will be handled by monitorDerivation method periodically run by PostProc agent
     post_proc_agent.derivationClient.updateDerivationAsyn(derivation_iri)
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
@@ -71,7 +71,7 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
     # Check the new generated instance NewExperiment is different from the original one provided in the example
     assert all([iri not in derivation_outputs for iri in new_derived_iri])
 
-    # Reload the ReactionExperiment instance and check all its information are parsed correctly
+    # Reload the ReactionExperiment instance and check all its information (OutputChemical and PerformanceIndicator) are uploaded and parsed correctly
     reload_rxn_rxp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
     reload_pi_lst = [pi.instance_iri for pi in reload_rxn_rxp_instance.hasPerformanceIndicator]
     assert all([iri in reload_pi_lst for iri in new_derived_iri])

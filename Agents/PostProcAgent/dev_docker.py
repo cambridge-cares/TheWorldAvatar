@@ -11,8 +11,7 @@ import os
 ###############################################################
 ### !!! Do NOT run this script before reading README.md !!! ###
 ###############################################################
-# Hardcode the IRI to be used for the example
-# Developers should upload the files containing these triples to the endpoints following the instructions in the README.md
+# Use the same IRIs that are used in the integration test
 chemical_solution_iri = conftest.CHEMICAL_SOLUTION_1
 hplc_digital_twin = conftest.HPLC_DIGITAL_TWIN_1
 hplc_report_xls_path_in_pkg = conftest.HPLC_REPORT_XLS_PATH_IN_PKG
@@ -22,7 +21,7 @@ derivation_outputs = conftest.PLACEHOLDER_PERFORMANCE_INDICATOR_LIST_1
 def exampleEntryPoint():
     """
         !!! Do NOT run this script before reading README.md !!!
-        As the monitorDerivations() is set to be running periodically once the DoE agent is deployed,
+        As the monitorDerivations() is set to be running periodically once the PostProc agent is deployed,
         this function serve as an example that creats a working case once the developer has confirmed
         there are no valuable data in the knowledge graph endpoints specified in the conf,
         i.e. this script deletes ALL existing triples and upload example triples to the endpoint, it
@@ -51,6 +50,7 @@ def exampleEntryPoint():
         example_sparql_client.uploadOntology(filePath)
         os.remove(filePath)
 
+    # Instantiate PostProc Agent
     post_proc_agent = PostProcAgent(
         fs_url=config.FILESERVER_URL, fs_user=config.FS_USERNAME, fs_pwd=config.FS_PASSWORD,
         agent_iri=config.ONTOAGENT_SERVICE, time_interval=config.PERIODIC_TIMESCALE,
@@ -90,8 +90,8 @@ def exampleEntryPoint():
         # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
         post_proc_agent.derivationClient.updateTimestamp(input)
 
-    # Update the asynchronous derivation, it will be marked as "PendingUpdate"
-    # The actual update will be handled by monitorDerivation method periodically run by DoE agent
+    # Update the asynchronous derivation, it will be marked as "Requested"
+    # The actual update will be handled by monitorDerivation method periodically run by PostProc agent
     post_proc_agent.derivationClient.updateDerivationAsyn(derivation_iri)
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
@@ -111,10 +111,10 @@ def exampleEntryPoint():
     response = example_sparql_client.performQuery(query_new_derived_iri)
     new_derived_iri = [list(r.values())[0] for r in response]
 
-    # Check the new generated instance NewExperiment is different from the original one provided in the example
+    # Check the new populated instances of PerformanceIndicators are different from the original derivation outputs
     assert all([iri not in derivation_outputs for iri in new_derived_iri])
 
-    # Reload the ReactionExperiment instance and check all its information are parsed correctly
+    # Reload the ReactionExperiment instance and check all its information (OutputChemical and PerformanceIndicator) are uploaded and parsed correctly
     reload_rxn_rxp_instance = example_sparql_client.getReactionExperiment(rxn_exp_iri)[0]
     reload_pi_lst = [pi.instance_iri for pi in reload_rxn_rxp_instance.hasPerformanceIndicator]
     assert all([iri in reload_pi_lst for iri in new_derived_iri])
@@ -136,6 +136,7 @@ def exampleEntryPoint():
         assert all([conc in reload_phase_comp_conc_lst for conc in reload_conc_lst])
         assert all([conc in reload_conc_lst for conc in reload_phase_comp_conc_lst])
 
+    # If all previous codes are executed without error, we can assume that the update was successful
     return "All checks passed."
 
 if __name__ == '__main__':

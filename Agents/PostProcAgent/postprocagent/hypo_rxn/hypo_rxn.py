@@ -54,22 +54,6 @@ class HypoStreamSpecies(pydantic.BaseModel):
         else:
             raise Exception("Role type <%s> NOT supported for Species <%s>." % (__pydantic_self__.def_role, __pydantic_self__.species_iri))
 
-# class HypoSolute(HypoStreamSpecies):
-#     is_reactant: bool
-#     is_catalyst: bool
-#     is_internal_standard: bool
-
-#     def __init__(__pydantic_self__, **data: Any) -> None:
-#         super().__init__(**data)
-#         lst = [__pydantic_self__.is_reactant, __pydantic_self__.is_catalyst, __pydantic_self__.is_internal_standard]
-#         if lst.count(True) > 1:
-#             raise Exception("The HypoSolute is not initialised correctly: %s" % str(__pydantic_self__))
-#         elif lst.count(True) < 1:
-#             raise Exception("The HypoSolute is not initialised correctly: %s" % str(__pydantic_self__))
-
-# class HypoSolvent(HypoStreamSpecies):
-#     is_solvent: bool = True
-
 class HypoPumpRunStream(pydantic.BaseModel):
     is_ref_pump: bool
     inlet_iri: str

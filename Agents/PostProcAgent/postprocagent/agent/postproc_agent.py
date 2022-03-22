@@ -9,7 +9,9 @@ from postprocagent.conf import *
 
 class PostProcAgent(AsyncAgent):
     def __init__(self, fs_url: str, fs_user: str, fs_pwd: str,
-        agent_iri: str, time_interval: int, derivation_instance_base_url: str, kg_url: str, kg_user: str = None, kg_password: str = None, app: Flask = Flask(__name__), flask_config: FlaskConfig = FlaskConfig(), logger_name: str = "dev"
+        agent_iri: str, time_interval: int, derivation_instance_base_url: str,
+        kg_url: str, kg_user: str = None, kg_password: str = None,
+        app: Flask = Flask(__name__), flask_config: FlaskConfig = FlaskConfig(), logger_name: str = "dev"
     ):
         super().__init__(agent_iri, time_interval, derivation_instance_base_url, kg_url, kg_user, kg_password, app, flask_config, logger_name)
         self.fs_url = fs_url
@@ -17,6 +19,7 @@ class PostProcAgent(AsyncAgent):
         self.fs_pwd = fs_pwd
 
     def setupJob(self, agentInputs) -> list:
+        """This method takes iri of OntoHPLC:HPLCReport and generates a list of iris of OntoRxn:PerformanceIndicator."""
         # Create sparql_client
         self.sparql_client = ChemistryAndRobotsSparqlClient(
             self.kgUrl, self.kgUrl, kg_user=self.kgUser, kg_password=self.kgPassword, fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_pwd
@@ -24,15 +27,15 @@ class PostProcAgent(AsyncAgent):
         # Get the HPLCReport iri from the agent inputs
         hplc_report_iri = self.collectInputsInformation(agentInputs)
 
-        # Retrieve the ReactionExperiment instance that the is HPLCReport is generated for
+        # Retrieve the ReactionExperiment instance that the HPLCReport is generated for
         rxn_exp_instance = self.sparql_client.get_rxn_exp_associated_with_hplc_report(hplc_report_iri)
-        # Retrieve the InternalStandard instance that was used by the HPLCMethod
+        # Retrieve the InternalStandard instance that was used by the HPLCMethod linked to the HPLCReport via HPLCJob
         internal_standard_instance = self.sparql_client.get_internal_standard_associated_with_hplc_report(hplc_report_iri)
 
         # Construct an instance of HypoReactor given the ReactionExperiment information, get the value of internal_standard_run_conc_moleperlitre
         hypo_reactor, internal_standard_run_conc_moleperlitre, species_role_dct = hypo.construct_hypo_reactor(self.sparql_client, rxn_exp_instance, internal_standard_instance)
 
-        # Process the raw hplc report and generate an instance of HPLCReport
+        # Process the raw hplc report and generate an instance of HPLCReport with its complete information
         hplc_report_instance = self.sparql_client.process_raw_hplc_report(hplc_report_iri=hplc_report_iri, internal_standard_species=internal_standard_instance.representsOccurenceOf,
             internal_standard_run_conc_moleperlitre=internal_standard_run_conc_moleperlitre, temp_local_folder=str(Path(__file__).absolute().parent))
 
@@ -40,33 +43,15 @@ class PostProcAgent(AsyncAgent):
         hypo_end_stream = hypo.construct_hypo_end_stream(self.sparql_client, hplc_report_instance, hypo_reactor, species_role_dct)
 
         # Calculate each PerformanceIndicator
-        pi_yield = hypo.calculate_performance_indicator(
-            hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
-            rxn_exp_instance=rxn_exp_instance, target_clz=ONTORXN_YIELD, expected_amount=1
-        )[0]
-        pi_conversion = hypo.calculate_performance_indicator(
-            hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
-            rxn_exp_instance=rxn_exp_instance, target_clz=ONTORXN_CONVERSION, expected_amount=1
-        )[0]
-        pi_eco_score = hypo.calculate_performance_indicator(
-            hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
-            rxn_exp_instance=rxn_exp_instance, target_clz=ONTORXN_ECOSCORE, expected_amount=1
-        )[0]
-        pi_e_factor = hypo.calculate_performance_indicator(
-            hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
-            rxn_exp_instance=rxn_exp_instance, target_clz=ONTORXN_ENVIRONMENTALFACTOR, expected_amount=1
-        )[0]
-        pi_sty = hypo.calculate_performance_indicator(
-            hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
-            rxn_exp_instance=rxn_exp_instance, target_clz=ONTORXN_SPACETIMEYIELD, expected_amount=1
-        )[0]
-        pi_cost = hypo.calculate_performance_indicator(
-            hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
-            rxn_exp_instance=rxn_exp_instance, target_clz=ONTORXN_RUNMATERIALCOST, expected_amount=1
-        )[0]
+        lst_performance_indicator = []
+        for perf_clz in [ONTORXN_YIELD, ONTORXN_CONVERSION, ONTORXN_ECOSCORE, ONTORXN_ENVIRONMENTALFACTOR, ONTORXN_SPACETIMEYIELD, ONTORXN_RUNMATERIALCOST]:
+            pi = hypo.calculate_performance_indicator(
+                hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
+                rxn_exp_instance=rxn_exp_instance, target_clz=perf_clz, expected_amount=1
+            )[0] # [0] is used here to simplify the implementation as we know there will be only one performance indicator for such clz type
+            lst_performance_indicator.append(pi)
 
         # Write the generated OutputChemical triples and PerformanceIndicator triples back to KG
-        lst_performance_indicator = [pi_yield, pi_conversion, pi_eco_score, pi_e_factor, pi_sty, pi_cost]
         self.sparql_client.write_performance_indicator_back_to_kg(lst_performance_indicator)
         self.sparql_client.write_output_chemical_of_chem_sol_back_to_kg(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri)
 

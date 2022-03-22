@@ -82,6 +82,8 @@ def pytest_sessionfinish(session):
 # Session-scoped test fixtures
 # ----------------------------------------------------------------------------------
 
+# NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
+# For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 @pytest.fixture(scope="session")
 def get_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
