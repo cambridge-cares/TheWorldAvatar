@@ -1,4 +1,5 @@
-from postprocagent.agent import *
+from postprocagent.agent import PostProcAgent, PostProcAgentConfig, default
+from pathlib import Path
 
 import logging
 
@@ -6,12 +7,14 @@ import logging
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
-    postproc_agent_config = PostProcAgentConfig(str(Path(__file__).absolute().parent) + '/conf/agent_properties.json')
+    config = PostProcAgentConfig(str(Path(__file__).absolute().parent) + '/conf/agent_properties.json')
 
-    app = PostProcAgent(postproc_agent_config.ONTOAGENT_SERVICE,
-        postproc_agent_config.PERIODIC_TIMESCALE,
-        postproc_agent_config.DERIVATION_INSTANCE_BASE_URL,
-        postproc_agent_config.SPARQL_QUERY_ENDPOINT,
+    app = PostProcAgent(
+        fs_url=config.FILESERVER_URL, fs_user=config.FS_USERNAME, fs_pwd=config.FS_PASSWORD,
+        agent_iri=config.ONTOAGENT_SERVICE, time_interval=config.PERIODIC_TIMESCALE,
+        derivation_instance_base_url=config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=config.SPARQL_QUERY_ENDPOINT,
+        kg_user=config.KG_USERNAME, kg_password=config.KG_PASSWORD,
         logger_name='prod'
     )
     app.add_url_pattern('/', 'root', default, methods=['GET'])

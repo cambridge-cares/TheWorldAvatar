@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  example:
+    image: postproc_agent:1.0.0
+    container_name: postproc_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - 7000:5000
+    # NOTE: if you would like to access triple store and file server deployed at localhost when testing the deployment on docker
+    # NOTE: presumably with dev_docker.py, please comment out the ports mapping (the above two lines)
+    # NOTE: and use below network_mode line instead
+    # https://forums.docker.com/t/docker-errors-invalidargument-host-network-mode-is-incompatible-with-port-bindings/103492/11
+    # network_mode: host

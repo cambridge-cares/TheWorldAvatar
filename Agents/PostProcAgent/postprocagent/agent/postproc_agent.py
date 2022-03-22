@@ -1,5 +1,6 @@
 from pyasyncagent import AsyncAgent, FlaskConfig
 from flask import Flask
+from pathlib import Path
 
 from postprocagent.kg_operations import *
 from postprocagent.data_model import *
@@ -10,15 +11,15 @@ class PostProcAgent(AsyncAgent):
     def __init__(self, fs_url: str, fs_user: str, fs_pwd: str,
         agent_iri: str, time_interval: int, derivation_instance_base_url: str, kg_url: str, kg_user: str = None, kg_password: str = None, app: Flask = Flask(__name__), flask_config: FlaskConfig = FlaskConfig(), logger_name: str = "dev"
     ):
+        super().__init__(agent_iri, time_interval, derivation_instance_base_url, kg_url, kg_user, kg_password, app, flask_config, logger_name)
         self.fs_url = fs_url
         self.fs_user = fs_user
         self.fs_pwd = fs_pwd
-        super().__init__(agent_iri, time_interval, derivation_instance_base_url, kg_url, kg_user, kg_password, app, flask_config, logger_name)
 
     def setupJob(self, agentInputs) -> list:
         # Create sparql_client
         self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUrl, fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_pwd
+            self.kgUrl, self.kgUrl, kg_user=self.kgUser, kg_password=self.kgPassword, fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_pwd
         )
         # Get the HPLCReport iri from the agent inputs
         hplc_report_iri = self.collectInputsInformation(agentInputs)
@@ -33,7 +34,7 @@ class PostProcAgent(AsyncAgent):
 
         # Process the raw hplc report and generate an instance of HPLCReport
         hplc_report_instance = self.sparql_client.process_raw_hplc_report(hplc_report_iri=hplc_report_iri, internal_standard_species=internal_standard_instance.representsOccurenceOf,
-            internal_standard_run_conc_moleperlitre=internal_standard_run_conc_moleperlitre)
+            internal_standard_run_conc_moleperlitre=internal_standard_run_conc_moleperlitre, temp_local_folder=str(Path(__file__).absolute().parent))
 
         # Construct an instance of HypoEndStream given the processed HPLCReport instance and instance of HypoReactor
         hypo_end_stream = hypo.construct_hypo_end_stream(self.sparql_client, hplc_report_instance, hypo_reactor, species_role_dct)
