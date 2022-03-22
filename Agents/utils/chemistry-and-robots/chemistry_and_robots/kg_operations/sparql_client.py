@@ -1583,11 +1583,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return self.get_internal_standard(hplc_method_iri)
 
-    def process_raw_hplc_report(self, hplc_report_iri: str, internal_standard_species: str, internal_standard_run_conc_moleperlitre: float) -> HPLCReport:
+    def process_raw_hplc_report(self, hplc_report_iri: str, internal_standard_species: str, internal_standard_run_conc_moleperlitre: float, temp_local_folder: str=None) -> HPLCReport:
         """Here we can assume that the required information are already provided by the previous agents."""
         remote_hplc_report_path, hplc_report_extension = self.get_raw_hplc_report_remote_path_and_extension(hplc_report_iri)
 
-        temp_local_file_path = os.path.join(str(Path(__file__).absolute().parent),f'{str(uuid.uuid4())}.'+hplc_report_extension)
+        if temp_local_folder is None: temp_local_folder = str(Path(__file__).absolute().parent)
+        temp_local_file_path = os.path.join(temp_local_folder,f'{str(uuid.uuid4())}.'+hplc_report_extension)
         self.download_remote_raw_hplc_report(remote_hplc_report_path, temp_local_file_path)
 
         # retrieve a list of points
