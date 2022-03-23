@@ -3,7 +3,6 @@ from collections import OrderedDict
 from typing import Dict, List, Optional, Any
 from chemaboxwriters.common.handler import Handler
 from enum import Enum
-import chemaboxwriters.common.endpoints_proxy as endp
 import chemaboxwriters.common.aboxconfig as abconf
 import logging
 
@@ -28,10 +27,15 @@ class Pipeline:
     def get_handler_by_name(self, handler_name) -> Optional[Handler]:
         return self._handlers.get(handler_name)
 
+    def get_handler_by_in_stage(self, in_stage: Enum) -> Optional[Handler]:
+        for handler in self._handlers.values():
+            if handler._in_stage == in_stage:
+                return handler
+
+
     def add_handler(
         self,
         handler: Handler,
-        silent: bool = False,
     ) -> Any:
 
         if self.get_handler_by_name(handler.name) is not None:
@@ -55,19 +59,6 @@ class Pipeline:
             if handler.written_files:
                 _written_files.extend(handler.written_files)
         return _written_files
-
-    def set_handlers_kwargs(self, handlers_kwargs: Dict) -> None:
-        for handler_name, handler_kwargs in handlers_kwargs.items():
-            handler = self.get_handler_by_name(handler_name)
-            if handler is not None:
-                handler.set_handle_input_kwargs(handler_kwargs=handler_kwargs)
-            else:
-                logger.warning(
-                    (
-                        f"Could not set handler_kwargs for the {handler_name} handler. "
-                        "Handler does not exist."
-                    )
-                )
 
     def clean_written_files(self) -> None:
         for handler in self._handlers.values():
@@ -106,59 +97,54 @@ class Pipeline:
                     file_server_uploads=self._file_server_uploads,
                 )
 
-    def info(self) -> None:
+    def __str__(self) -> None:
         print(f"============== Information on {self.name} pipeline ==============")
         print("")
         print("Registered handlers:")
         for handler in self._handlers.values():
-            handler.info()
+            handler.__str__()
         print("")
         print("=================================================================")
 
-    def check_handlers_config(self, input_type: Optional[Enum] = None) -> None:
+    def set_handlers_parameters(self, handlers_params_config: Dict) -> None:
+        for handler_name, params_config in handlers_params_config.items():
+            handler = self.get_handler_by_name(handler_name)
+            if handler is None:
+                continue
+            for param_name, param_value in params_config.items():
+                handler.set_handler_parameter_value(name=param_name, value=param_value)
+
+    def check_handlers_configs(self, input_type: Optional[Enum] = None) -> None:
         if input_type is None:
             for handler in self._handlers.values():
-                handler.check_required_endpoints_config()
-                handler.check_handler_kwargs()
+                handler.check_configs()
         else:
             for handler in self._handlers.values():
                 if handler._in_stage == input_type:
-                    handler.check_required_endpoints_config()
-                    handler.check_handler_kwargs()
+                    handler.check_configs()
                     input_type = handler._out_stage
 
     def configure_from_file(self, config_file: str) -> None:
-        pipeline_config = abconf.read_config_file(config_file=config_file)
-        if pipeline_config:
-            self.configure_from_dict(config=pipeline_config)
+        config_dict = abconf.read_config_file(config_file=config_file)
+        if config_dict:
+            self.configure_from_dict(config_dict=config_dict)
 
-    def configure_from_dict(self, config: Dict) -> None:
-        pipeline_config, handlers_config = abconf.get_pipeline_handler_configs(
-            pipeline_name=self.name, config=config
-        )
-        for handler_name, handler in self._handlers.items():
-            if handler_name.lower() in handlers_config:
-                handlers_config_to_use = handlers_config[handler_name.lower()]
-            else:
-                handlers_config_to_use = pipeline_config
-
-            handlers_kwargs = handlers_config_to_use.pop(abconf.HANDLER_KWARGS, {})
-            handler.set_endpoints_config(handlers_config_to_use)
-            handler.set_handle_input_kwargs(handler_kwargs=handlers_kwargs)
+    def configure_from_dict(self, config_dict: Dict) -> None:
+        abconf.cascade_configs(configs=config_dict)
+        pipeline_configs = config_dict.get(self.name)
+        if pipeline_configs is not None:
+            for handler in self._handlers.values():
+                handler_configs = pipeline_configs.get(handler.name.lower())
+                handler_configs = (
+                    handler_configs if handler_configs is not None else pipeline_configs
+                )
+                handler.configure_from_dict(config_dict=handler_configs)
 
 
-def get_pipeline(
-    name: str = "",
-    handlers: Optional[List[Handler]] = None,
-    endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-) -> Pipeline:
-
-    if endpoints_proxy is None:
-        endpoints_proxy = endp.get_endpoints_proxy()
+def get_pipeline(name: str = "", handlers: Optional[List[Handler]] = None) -> Pipeline:
 
     pipeline = Pipeline(name=name)
     if handlers is not None:
         for handler in handlers:
-            handler.set_endpoints_proxy(endpoints_proxy=endpoints_proxy)
             pipeline.add_handler(handler=handler)
     return pipeline
