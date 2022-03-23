@@ -1,12 +1,10 @@
 from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
-import chemaboxwriters.common.endpoints_proxy as abconf
 import chemaboxwriters.common.globals as globals
 import chemaboxwriters.common.handlers as hnds
 from chemaboxwriters.ontopesscan.handlers import (
     OC_JSON_TO_OPS_JSON_Handler,
     OPS_JSON_TO_OPS_CSV_Handler,
 )
-from typing import Optional, Dict
 
 import logging
 
@@ -15,9 +13,7 @@ logger = logging.getLogger(__name__)
 OPS_PIPELINE = "opsscan"
 
 
-def assemble_ops_pipeline(
-    endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
-) -> Pipeline:
+def assemble_ops_pipeline() -> Pipeline:
 
     handlers = [
         OC_JSON_TO_OPS_JSON_Handler(),
@@ -29,9 +25,5 @@ def assemble_ops_pipeline(
         ),
     ]
 
-    pipeline = get_pipeline(
-        name=OPS_PIPELINE,
-        handlers=handlers,
-        endpoints_proxy=endpoints_proxy,
-    )
+    pipeline = get_pipeline(name=OPS_PIPELINE, handlers=handlers)
     return pipeline

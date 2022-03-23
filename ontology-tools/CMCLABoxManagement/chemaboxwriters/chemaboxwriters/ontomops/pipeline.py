@@ -1,12 +1,10 @@
 from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
 import chemaboxwriters.common.handlers as hnds
-import chemaboxwriters.common.endpoints_proxy as abconf
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.ontomops.handlers import (
     OMINP_JSON_TO_OM_JSON_Handler,
     OM_JSON_TO_OM_CSV_Handler,
 )
-from typing import Optional, Dict
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,9 +12,7 @@ logger = logging.getLogger(__name__)
 OMOPS_PIPELINE = "omops"
 
 
-def assemble_omops_pipeline(
-    endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
-) -> Pipeline:
+def assemble_omops_pipeline() -> Pipeline:
 
     handlers = [
         OMINP_JSON_TO_OM_JSON_Handler(),
@@ -31,6 +27,5 @@ def assemble_omops_pipeline(
     pipeline = get_pipeline(
         name=OMOPS_PIPELINE,
         handlers=handlers,
-        endpoints_proxy=endpoints_proxy,
     )
     return pipeline
