@@ -23,4 +23,8 @@ RUN pip install -r requirements.txt
 # copy the content of the local src directory to the working directory
 COPY ./ .
 
+#required pre-downloads
+RUN python -m nltk.downloader stopwords
+RUN python -m nltk.downloader wordnet
+
 ENTRYPOINT ["python",  "./flaskapp/wsgi.py"]
