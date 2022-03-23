@@ -56,3 +56,33 @@ class MissingOntologyName(Exception):
     """Missing ontology name."""
 
     pass
+
+
+class StoreClientUpdateEndpointNotSetError(Exception):
+    "Update endpoint not set."
+
+    pass
+
+
+class MissingQueryEndpoint(Exception):
+    "Missing query endpoint."
+
+    pass
+
+
+class WrongHandlerArgType(Exception):
+    "Wrong handler argument type."
+
+    pass
+
+
+class MissingUploadEndpoint(Exception):
+    "Missing upload endpoint."
+
+    pass
+
+
+class MissingUploadEndpointAuthorisation(Exception):
+    "Missing upload endpoint authorisation."
+
+    pass
