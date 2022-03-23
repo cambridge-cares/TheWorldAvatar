@@ -1,6 +1,5 @@
 import pytest
 
-
 def pytest_addoption(parser):
     parser.addoption("--clean-tests", action="store", default=True)
 
