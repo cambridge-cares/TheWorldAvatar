@@ -90,10 +90,10 @@ def start():
         )
 
         if args["--info"]:
-            pipeline.info()  # type: ignore
+            pipeline.__str__()  # type: ignore
             return
 
-        pipeline.check_handlers_config(
+        pipeline.check_handlers_configs(
             input_type=utilsfunc.stage_name_to_enum(args["--inp-file-type"])
         )
 
