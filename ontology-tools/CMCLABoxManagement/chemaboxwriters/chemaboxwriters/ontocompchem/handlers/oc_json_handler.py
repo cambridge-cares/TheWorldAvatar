@@ -4,10 +4,21 @@ from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.globals import aboxStages
 from typing import List, Optional, Dict
-import chemaboxwriters.common.endpoints_proxy as endp
 from enum import Enum
 
 Abox_Writer = utilsfunc.Abox_csv_writer
+
+
+HANDLER_PREFIXES = {
+    "comp_pref": {"required": True},
+    "ocompchem_data_pref": {"required": True},
+    "onto_comp": {"required": True},
+    "inst_spec": {"required": True},
+    "has_spec": {"required": True},
+    "gain_pref": {"required": True},
+    "table_pref": {"required": True},
+    "unit_pref": {"required": True},
+}
 
 
 class OC_JSON_TO_OC_CSV_Handler(Handler):
@@ -16,27 +27,12 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
     Outputs: List of owl file paths
     """
 
-    def __init__(
-        self,
-        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__(
             name="OC_JSON_TO_OC_CSV",
             in_stage=aboxStages.OC_JSON,
             out_stage=aboxStages.OC_CSV,
-            endpoints_proxy=endpoints_proxy,
-            required_configs={
-                "prefixes": [
-                    "comp_pref",
-                    "ocompchem_data_pref",
-                    "onto_comp",
-                    "inst_spec",
-                    "has_spec",
-                    "gain_pref",
-                    "table_pref",
-                    "unit_pref",
-                ]
-            },
+            prefixes=HANDLER_PREFIXES,
         )
 
     def _handle_input(
@@ -47,7 +43,6 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
-        **handler_kwargs,
     ) -> List[str]:
 
         outputs: List[str] = []
@@ -60,14 +55,11 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             self._oc_csvwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **handler_kwargs,
             )
             outputs.append(out_file_path)
         return outputs
 
-    def _oc_csvwriter(
-        self, file_path: str, output_file_path: str, *args, **kwargs
-    ) -> None:
+    def _oc_csvwriter(self, file_path: str, output_file_path: str) -> None:
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
@@ -77,11 +69,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         entryIRI = data[globals.ENTRY_IRI]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
-            if self._required_configs is not None:
-                for prefix_name in self._required_configs["prefixes"]:
-                    prefix_value = self._endpoints_config["prefixes"][prefix_name]
-
-                    writer.register_prefix(name=prefix_name, value=prefix_value)
+            for prefix_name in self._handler_prefixes:
+                prefix_value = self.get_handler_prefix_value(name=prefix_name)
+                writer.register_prefix(name=prefix_name, value=prefix_value)
 
             writer.write_header()
 
@@ -101,23 +91,18 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
     def _write_initial(self, writer: Abox_Writer, jobIRI, calc_id, spec_IRI):
 
-        comp_pref = self._endpoints_config["prefixes"]["comp_pref"]
-        onto_comp = self._endpoints_config["prefixes"]["onto_comp"]
-        inst_spec = self._endpoints_config["prefixes"]["inst_spec"]
-        has_spec = self._endpoints_config["prefixes"]["has_spec"]
-
         # This is all the initialization part of the ABox
         abox_name = "ABoxOntoCompChem"
         init_mod_iri = f"comp_pref:InitializationModule_{calc_id}"
-        writer.write_imports(name=abox_name, importing=onto_comp).add_imports(
-            importing=comp_pref[:-1], rel="base"
+        writer.write_imports(name=abox_name, importing="onto_comp:").add_imports(
+            importing="comp_pref_no_slash:", rel="base"
         )
-        writer.write_inst(iri=jobIRI, type=onto_comp + "#G09")
+        writer.write_inst(iri=jobIRI, type="onto_comp:" + "#G09")
         if spec_IRI:  # If you have the ontospecies IRI, it puts it here.
             # Otherwise, it leaves it out.
-            writer.write_inst(iri=spec_IRI, type=inst_spec).add_obj_prop(
+            writer.write_inst(iri=spec_IRI, type="inst_spec:").add_obj_prop(
                 iri=jobIRI,
-                rel=has_spec,
+                rel="has_spec:",
             )
         # Sets up initialization.
         writer.write_inst(
@@ -505,8 +490,6 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
     def _write_metadata(self, writer: Abox_Writer, calc_id, data):
         # These are the final parts of the ABox with the
         # auxillary info like software used and job run date.
-        ocompchem_data_pref = self._endpoints_config["prefixes"]["ocompchem_data_pref"]
-
         writer.write_data_prop(
             iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",
             rel="onto_comp:#hasProgram",
@@ -519,21 +502,21 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             value=data["Run date"],
         )
         writer.write_inst(
-            iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.g09",
+            iri=f"ocompchem_data_pref:OutputSource_{calc_id}.g09",
             type="onto_comp:#OutputSource",
         ).add_obj_prop(
             iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",
             rel="gain_pref:hasOutputFile",
         )
         writer.write_inst(
-            iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.xml",
+            iri=f"ocompchem_data_pref:OutputSource_{calc_id}.xml",
             type="onto_comp:#OutputSource",
         ).add_obj_prop(
             iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",
             rel="gain_pref:hasOutputFile",
         )
         writer.write_inst(
-            iri=f"{ocompchem_data_pref}OutputSource_{calc_id}.png",
+            iri=f"ocompchem_data_pref:OutputSource_{calc_id}.png",
             type="onto_comp:#OutputSource",
         ).add_obj_prop(
             iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",

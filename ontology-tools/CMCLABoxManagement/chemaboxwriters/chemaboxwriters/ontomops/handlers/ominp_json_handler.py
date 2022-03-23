@@ -2,10 +2,18 @@ import json
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import chemaboxwriters.common.globals as globals
-import chemaboxwriters.common.endpoints_proxy as endp
-import chemaboxwriters.common.aboxconfig as abconf
+import os
 from typing import List, Optional, Dict
 from enum import Enum
+
+
+HANDLER_PREFIXES = {
+    "omops_entry_prefix": {"required": True},
+}
+
+HANDLER_PARAMETERS = {
+    "random_id": {"required": False},
+}
 
 
 class OMINP_JSON_TO_OM_JSON_Handler(Handler):
@@ -14,17 +22,13 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
     Outputs: List of om_json file paths
     """
 
-    def __init__(
-        self,
-        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__(
             name="OMINP_JSON_TO_OM_JSON",
             in_stage=globals.aboxStages.OMINP_JSON,
             out_stage=globals.aboxStages.OM_JSON,
-            endpoints_proxy=endpoints_proxy,
-            required_configs={abconf.WRITERS_PREFIXES_KEY: ["omops_entry_prefix"]},
-            supported_handler_kwargs=["random_id"],
+            prefixes=HANDLER_PREFIXES,
+            handler_params=HANDLER_PARAMETERS,
         )
 
     def _handle_input(
@@ -54,11 +58,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
                 file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
-            self.om_jsonwriter(
-                file_path=json_file_path,
-                output_file_path=out_file_path,
-                **self._handler_kwargs
-            )
+            self.om_jsonwriter(file_path=json_file_path, output_file_path=out_file_path)
             outputs.append(out_file_path)
         return outputs
 
@@ -67,18 +67,15 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         file_path: str,
         output_file_path: str,
         random_id: str = "",
-        *args,
-        **kwargs
     ) -> None:
 
-        omops_entry_prefix = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY][
-            "omops_entry_prefix"
-        ]
+        omops_entry_prefix = self.get_handler_prefix_value(name="omops_entry_prefix")
+        random_id = self.get_handler_parameter_value(name="random_id")
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
-        if not random_id:
+        if random_id is None:
             random_id = utilsfunc.get_random_id()
 
         data[globals.ENTRY_UUID] = random_id
@@ -94,6 +91,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
                 data = json.load(file_handle)
                 xyz_file = data.get("Mops_XYZ_coordinates_file")
                 if xyz_file is not None:
+                    xyz_file = os.path.abspath(xyz_file)
                     if xyz_file not in xyz_file_paths:
                         xyz_file_paths.append(xyz_file)
 

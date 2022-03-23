@@ -9,7 +9,6 @@ import numpy as np
 import chemaboxwriters.common.globals as globals
 from compchemparser.parsers.ccgaussian_parser import GEOM
 from chemaboxwriters.common.handler import Handler
-import chemaboxwriters.common.endpoints_proxy as endp
 from typing import List, Optional, Dict
 from enum import Enum
 
@@ -21,23 +20,26 @@ SCAN_POINTS_JOBS = "ScanPointsJobs"
 SCAN_ATOM_IDS = "ScanAtomIDs"
 
 
+HANDLER_PARAMETERS = {
+    "os_iris": {"required": True},
+    "os_atoms_iris": {"required": True},
+    "oc_atoms_pos": {"required": True},
+    "random_id": {"required": False},
+}
+
+
 class OC_JSON_TO_OPS_JSON_Handler(Handler):
     """Handler converting oc_json files to ops_json.
     Inputs: List of oc_json file paths
     Outputs: List of ops_json file paths
     """
 
-    def __init__(
-        self,
-        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__(
             name="OC_JSON_TO_OPS_JSON",
             in_stage=globals.aboxStages.OC_JSON,
             out_stage=globals.aboxStages.OPS_JSON,
-            endpoints_proxy=endpoints_proxy,
-            required_handler_kwargs=["os_iris", "os_atoms_iris", "oc_atoms_pos"],
-            supported_handler_kwargs=["random_id"],
+            handler_params=HANDLER_PARAMETERS,
         )
 
     def _handle_input(
@@ -56,23 +58,17 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
             file_extension=self._out_stage.name.lower(),
             out_dir=out_dir,
         )
-        self._ops_jsonwriter(
-            file_paths=inputs, output_file_path=out_file_path, **self._handler_kwargs
-        )
+        self._ops_jsonwriter(file_paths=inputs, output_file_path=out_file_path)
         outputs.append(out_file_path)
         return outputs
 
-    @staticmethod
-    def _ops_jsonwriter(
-        file_paths: List[str],
-        output_file_path: str,
-        os_iris: str,
-        os_atoms_iris: str,
-        oc_atoms_pos: str,
-        random_id: str = "",
-        *args,
-        **kwargs
-    ):
+    def _ops_jsonwriter(self, file_paths: List[str], output_file_path: str):
+
+        random_id = self.get_handler_parameter_value(name="random_id")
+        os_iris = self.get_handler_parameter_value(name="os_iris")
+        os_atoms_iris = self.get_handler_parameter_value(name="os_atoms_iris")
+        oc_atoms_pos = self.get_handler_parameter_value(name="oc_atoms_pos")
+
         data_out = {}
         data_out[globals.SPECIES_IRI] = os_iris.split(",")
         data_out[SCAN_COORDINATE_ATOMS_IRIS] = [

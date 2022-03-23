@@ -11,7 +11,7 @@ import chemaboxwriters.common.globals as globals
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.handler import Handler
 from typing import List, Optional, Dict
-import chemaboxwriters.common.endpoints_proxy as endp
+import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from enum import Enum
 import logging
 
@@ -20,31 +20,29 @@ logger = logging.getLogger(__name__)
 Abox_Writer = utilsfunc.Abox_csv_writer
 
 
+HANDLER_PREFIXES = {
+    "onto_spec": {"required": True},
+    "onto_mops": {"required": True},
+    "mops_pref": {"required": True},
+    "rdf_pref": {"required": True},
+    "uom_pref": {"required": True},
+    "unres_pref": {"required": True},
+}
+
+
 class OM_JSON_TO_OM_CSV_Handler(Handler):
     """Handler converting ontomops om_json files to om_csv.
     Inputs: List of om_json file paths
     Outputs: List of om_csv file paths
     """
 
-    def __init__(
-        self,
-        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-    ) -> None:
+    def __init__(self) -> None:
+
         super().__init__(
             name="OM_JSON_TO_OM_CSV",
             in_stage=globals.aboxStages.OM_JSON,
             out_stage=globals.aboxStages.OM_CSV,
-            endpoints_proxy=endpoints_proxy,
-            required_configs={
-                "prefixes": [
-                    "onto_spec",
-                    "onto_mops",
-                    "mops_pref",
-                    "rdf_pref",
-                    "uom_pref",
-                    "unres_pref",
-                ]
-            },
+            prefixes=HANDLER_PREFIXES,
         )
 
     def _handle_input(
@@ -67,14 +65,11 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             self._om_csvwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **self._handler_kwargs,
             )
             outputs.append(out_file_path)
         return outputs
 
-    def _om_csvwriter(
-        self, file_path: str, output_file_path: str, *args, **kwargs
-    ) -> None:
+    def _om_csvwriter(self, file_path: str, output_file_path) -> None:
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
@@ -83,11 +78,9 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         mops_id = data[globals.ENTRY_IRI]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
-            if self._required_configs is not None:
-                for prefix_name in self._required_configs["prefixes"]:
-                    prefix_value = self._endpoints_config["prefixes"][prefix_name]
-
-                    writer.register_prefix(name=prefix_name, value=prefix_value)
+            for prefix_name in self._handler_prefixes:
+                prefix_value = self.get_handler_prefix_value(name=prefix_name)
+                writer.register_prefix(name=prefix_name, value=prefix_value)
 
             self._write_initial(writer, gen_id, mops_id, data)
             self._write_provenance(writer, gen_id, mops_id, data)
@@ -227,33 +220,40 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
     def _get_assembly_model_uuid(self, gen_id, data) -> str:
 
         assemblymodel = None
-        query_endpoints = self.endpoints_config.get("query_settings", {})
-        omops_query_endpoint = query_endpoints.get("omops_query_endpoint")
-        if omops_query_endpoint is None:
-            logger.warning(
-                (
-                    "Couldn't query for the assembly model IRI, The query "
-                    "endpoint not specified in the aboxwriters config file."
+        if self._remote_store_client is not None:
+            search = []
+            try:
+                store_client = self._remote_store_client.get_store_client(
+                    endpoint_prefix="omops",
                 )
-            )
-        else:
-            search1 = qtmpl.get_assembly_iri(
-                omops_query_endpoint,
-                data["Mops_Chemical_Building_Units"][0]["GenericUnitModularity"],
-                data["Mops_Chemical_Building_Units"][0]["GenericUnitPlanarity"],
-                data["Mops_Chemical_Building_Units"][0]["GenericUnitNumber"],
-                data["Mops_Symmetry_Point_Group"],
-            )
+                for i in range(2):
+                    result = qtmpl.get_assembly_iri(
+                        modularity=data["Mops_Chemical_Building_Units"][i][
+                            "GenericUnitModularity"
+                        ],
+                        planarity=data["Mops_Chemical_Building_Units"][i][
+                            "GenericUnitPlanarity"
+                        ],
+                        gbu_number=data["Mops_Chemical_Building_Units"][i][
+                            "GenericUnitNumber"
+                        ],
+                        symmetry=data["Mops_Symmetry_Point_Group"],
+                        store_client=store_client,
+                    )
+                    search.append(result)
+                if all(search):
+                    assemblymodel = list(set(search[0]).intersection(search[1]))[0]
+            except app_exceptions.MissingQueryEndpoint:
+                logger.warning(
+                    (
+                        "Couldn't query for the assembly model IRI, The query "
+                        "endpoint not specified in the aboxwriters config file."
+                    )
+                )
+            except Exception as ec:
+                logger.exception(ec)
 
-            search2 = qtmpl.get_assembly_iri(
-                omops_query_endpoint,
-                data["Mops_Chemical_Building_Units"][1]["GenericUnitModularity"],
-                data["Mops_Chemical_Building_Units"][1]["GenericUnitPlanarity"],
-                data["Mops_Chemical_Building_Units"][1]["GenericUnitNumber"],
-                data["Mops_Symmetry_Point_Group"],
-            )
-            if search1 and search2:
-                assemblymodel = list(set(search1).intersection(search2))[0]
+
 
         if assemblymodel is None:
             asmodel_uuid = gen_id

@@ -4,7 +4,6 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 import entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF as entityrdfizer
 from typing import List, Optional, Dict
 from enum import Enum
-import chemaboxwriters.common.endpoints_proxy as abconf
 from chemaboxwriters.common.globals import aboxStages
 import json
 
@@ -17,15 +16,11 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
     Outputs: List of parsed json file paths
     """
 
-    def __init__(
-        self,
-        endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__(
             name="QC_LOG_TO_QC_JSON",
             in_stage=aboxStages.QC_LOG,
             out_stage=aboxStages.QC_JSON,
-            endpoints_proxy=endpoints_proxy,
         )
 
     def _handle_input(
@@ -36,7 +31,6 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
-        **handler_kwargs,
     ) -> List[str]:
 
         outputs: List[str] = []
@@ -58,7 +52,7 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
                 )
                 cclog_dict_data = json.loads(cclog_parsed_job)
                 if cclog_upload_loc is not None:
-                    cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc
+                    cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc['location']
                 utilsfunc.write_dict_to_file(
                     dict_data=cclog_dict_data,
                     dest_path=out_file_path,
@@ -78,14 +72,12 @@ class CSV_TO_OWL_Handler(Handler):
         name: str,
         in_stage: Enum,
         out_stage: Enum,
-        endpoints_proxy: Optional[abconf.Endpoints_proxy] = None,
     ) -> None:
 
         super().__init__(
             name=name,
             in_stage=in_stage,
             out_stage=out_stage,
-            endpoints_proxy=endpoints_proxy,
         )
 
     def _handle_input(

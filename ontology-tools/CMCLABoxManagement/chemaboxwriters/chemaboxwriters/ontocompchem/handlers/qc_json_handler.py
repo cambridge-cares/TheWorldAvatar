@@ -1,20 +1,28 @@
 import chemaboxwriters.kgoperations.querytemplates as querytemplates
 import chemutils.obabelutils.obconverter as obconverter
+import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from compchemparser.helpers.utils import get_xyz_from_parsed_json
-from chemaboxwriters.common.utilsfunc import get_random_id
-import json
 import chemaboxwriters.common.globals as globals
 from compchemparser.parsers.ccgaussian_parser import PROGRAM_NAME, PROGRAM_VERSION
-from chemaboxwriters.common.globals import aboxStages
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
+import chemaboxwriters.kgoperations.remotestore_client as rsc
 from enum import Enum
+import json
 from typing import List, Optional, Dict
-import chemaboxwriters.common.endpoints_proxy as endp
-import chemaboxwriters.common.aboxconfig as abconf
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+HANDLER_PREFIXES = {
+    "comp_pref": {"required": True},
+}
+
+HANDLER_PARAMETERS = {
+    "random_id": {"required": False},
+    "ontospecies_IRI": {"required": False},
+}
 
 
 class QC_JSON_TO_OC_JSON_Handler(Handler):
@@ -23,17 +31,13 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
     Outputs: List of oc_json file paths
     """
 
-    def __init__(
-        self,
-        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__(
             name="QC_JSON_TO_OC_JSON",
-            in_stage=aboxStages.QC_JSON,
-            out_stage=aboxStages.OC_JSON,
-            endpoints_proxy=endpoints_proxy,
-            required_configs={abconf.WRITERS_PREFIXES_KEY: ["comp_pref"]},
-            supported_handler_kwargs=["random_id", "ontospecies_IRI"],
+            in_stage=globals.aboxStages.QC_JSON,
+            out_stage=globals.aboxStages.OC_JSON,
+            prefixes=HANDLER_PREFIXES,
+            handler_params=HANDLER_PARAMETERS,
         )
 
     def _handle_input(
@@ -54,9 +58,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
                 out_dir=out_dir,
             )
             self._oc_jsonwriter(
-                file_path=json_file_path,
-                output_file_path=out_file_path,
-                **self._handler_kwargs
+                file_path=json_file_path, output_file_path=out_file_path
             )
             outputs.append(out_file_path)
         return outputs
@@ -65,36 +67,51 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         self,
         file_path: str,
         output_file_path: str,
-        random_id: str = "",
-        ontospecies_IRI: Optional[str] = None,
-        *args,
-        **kwargs
     ) -> None:
+
+        random_id = self.get_handler_parameter_value(name="random_id")
+        ontospecies_IRI = self.get_handler_parameter_value(name="ontospecies_IRI")
+        comp_pref = self.get_handler_prefix_value(name="comp_pref")
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
-        comp_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["comp_pref"]
-
         xyz = get_xyz_from_parsed_json(data)
         inchi = obconverter.obConvert(xyz, "xyz", "inchi")
-        query_endpoints = self.endpoints_config.get(abconf.QUERY_SETTINGS_KEY, {})
-        ospecies_query_endpoint = query_endpoints.get(
-            abconf.OSPECIES_QUERY_ENDPOINT_KEY
-        )
-        if ospecies_query_endpoint is None:
-            logger.warning(
-                (
-                    "Couldn't query for the ontospecies IRI, The query "
-                    "endpoint not specified in the aboxwriters config file."
+
+        if self._remote_store_client is not None and ontospecies_IRI is None:
+            try:
+                store_client = self._remote_store_client.get_store_client(
+                    endpoint_prefix="ospecies",
+                    store_client_class=rsc.SPARQLWrapperRemoteStoreClient,
                 )
-            )
-        if ontospecies_IRI is None and ospecies_query_endpoint is not None:
-            ontospecies_IRI = querytemplates.get_species_iri(
-                inchi=inchi, query_endpoint=ospecies_query_endpoint
-            )
+                ontospecies_IRI = querytemplates.get_species_iri(
+                    inchi=inchi, store_client=store_client
+                )
+            except app_exceptions.MissingQueryEndpoint:
+                logger.warning(
+                    (
+                        "Couldn't query for the ontospecies IRI, The query "
+                        "endpoint not specified in the aboxwriters config file."
+                    )
+                )
+        # query_endpoints = self.endpoints_config.get(abconf.QUERY_SETTINGS_KEY, {})
+        # ospecies_query_endpoint = query_endpoints.get(
+        #    abconf.OSPECIES_QUERY_ENDPOINT_KEY
+        # )
+        # if ospecies_query_endpoint is None:
+        #    logger.warning(
+        #        (
+        #            "Couldn't query for the ontospecies IRI, The query "
+        #            "endpoint not specified in the aboxwriters config file."
+        #        )
+        #    )
+        # if ontospecies_IRI is None and ospecies_query_endpoint is not None:
+        #    ontospecies_IRI = querytemplates.get_species_iri(
+        #        inchi=inchi, query_endpoint=ospecies_query_endpoint
+        #    )
         if not random_id:
-            random_id = get_random_id()
+            random_id = utilsfunc.get_random_id()
 
         # at the moment we only support gaussian
         jobType = ""

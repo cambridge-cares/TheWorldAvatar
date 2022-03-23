@@ -10,12 +10,20 @@ from chemaboxwriters.ontopesscan.handlers.oc_json_handler import (
     SCAN_POINTS_JOBS,
     SCAN_ATOM_IDS,
 )
-import chemaboxwriters.common.endpoints_proxy as endp
 from typing import List, Optional, Dict
 from enum import Enum
 
 
 Abox_Writer = utilsfunc.Abox_csv_writer
+
+HANDLER_PREFIXES = {
+    "spec_pref": {"required": True},
+    "pes_pref": {"required": True},
+    "gain_pref": {"required": True},
+    "unit_pref": {"required": True},
+    "onto_spec": {"required": True},
+    "onto_pes": {"required": True},
+}
 
 
 class OPS_JSON_TO_OPS_CSV_Handler(Handler):
@@ -24,26 +32,12 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
     Outputs: List of ops_csv file paths
     """
 
-    def __init__(
-        self,
-        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__(
             name="OPS_JSON_TO_OPS_CSV",
             in_stage=globals.aboxStages.OPS_JSON,
             out_stage=globals.aboxStages.OPS_CSV,
-            endpoints_proxy=endpoints_proxy,
-            required_configs={
-                "prefixes": [
-                    "spec_pref",
-                    "pes_pref",
-                    "gain_pref",
-                    "unit_pref",
-                    "onto_spec",
-                    "onto_comp",
-                    "onto_pes",
-                ]
-            },
+            prefixes=HANDLER_PREFIXES,
         )
 
     def _handle_input(
@@ -64,14 +58,12 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
                 out_dir=out_dir,
             )
             self._ops_csvwriter(
-                file_path=json_file_path,
-                output_file_path=out_file_path,
-                **self._handler_kwargs,
+                file_path=json_file_path, output_file_path=out_file_path
             )
             outputs.append(out_file_path)
         return outputs
 
-    def _ops_csvwriter(self, file_path: str, output_file_path: str, **handler_kwargs):
+    def _ops_csvwriter(self, file_path: str, output_file_path: str):
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
@@ -81,11 +73,9 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         entryIRI = data[globals.ENTRY_IRI]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
-            if self._required_configs is not None:
-                for prefix_name in self._required_configs["prefixes"]:
-                    prefix_value = self._endpoints_config["prefixes"][prefix_name]
-
-                    writer.register_prefix(name=prefix_name, value=prefix_value)
+            for prefix_name in self._handler_prefixes:
+                prefix_value = self.get_handler_prefix_value(name=prefix_name)
+                writer.register_prefix(name=prefix_name, value=prefix_value)
 
             writer.write_header()
             self._write_initial(writer, entryIRI, spec_IRI)
@@ -94,11 +84,9 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
 
     def _write_initial(self, writer: Abox_Writer, entryIRI, spec_IRI):
 
-        pes_pref = self._endpoints_config["prefixes"]["pes_pref"]
-
         abox_name = "ABoxOntoPESSscan"
         writer.write_imports(name=abox_name, importing="onto_pes:").add_imports(
-            importing=pes_pref[:-1], rel="base"
+            importing="pes_pref_no_slash:", rel="base"
         )
         writer.write_inst(
             iri=f"pes_pref:{entryIRI}",

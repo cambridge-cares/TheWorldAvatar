@@ -33,12 +33,20 @@ from chemaboxwriters.ontospecies.handlers.qc_json_handler import (
 )
 
 import chemaboxwriters.common.globals as globals
-import chemaboxwriters.common.endpoints_proxy as endp
 from typing import List, Optional, Dict
 from enum import Enum
 from chemaboxwriters.common.handler import Handler
 
 Abox_Writer = utilsfunc.Abox_csv_writer
+
+HANDLER_PREFIXES = {
+    "onto_spec": {"required": True},
+    "gain_pref": {"required": True},
+    "onto_kin": {"required": True},
+    "table_pref": {"required": True},
+    "unit_pref": {"required": True},
+    "spec_pref": {"required": True},
+}
 
 
 class OS_JSON_TO_OS_CSV_Handler(Handler):
@@ -47,25 +55,12 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
     Outputs: List of os_csv file paths
     """
 
-    def __init__(
-        self,
-        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__(
             name="OS_JSON_TO_OS_CSV",
             in_stage=globals.aboxStages.OS_JSON,
             out_stage=globals.aboxStages.OS_CSV,
-            endpoints_proxy=endpoints_proxy,
-            required_configs={
-                "prefixes": [
-                    "onto_spec",
-                    "gain_pref",
-                    "onto_kin",
-                    "table_pref",
-                    "unit_pref",
-                    "spec_pref",
-                ]
-            },
+            prefixes=HANDLER_PREFIXES,
         )
 
     def _handle_input(
@@ -85,15 +80,11 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
-            self._os_csvwriter(
-                file_path=json_file_path,
-                output_file_path=out_file_path,
-                **self._handler_kwargs,
-            )
+            self._os_csvwriter(file_path=json_file_path, output_file_path=out_file_path)
             outputs.append(out_file_path)
         return outputs
 
-    def _os_csvwriter(self, file_path: str, output_file_path: str, *args, **kwargs):
+    def _os_csvwriter(self, file_path: str, output_file_path: str):
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
@@ -101,11 +92,9 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         gen_id = data[globals.ENTRY_UUID]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
-            if self._required_configs is not None:
-                for prefix_name in self._required_configs["prefixes"]:
-                    prefix_value = self._endpoints_config["prefixes"][prefix_name]
-
-                    writer.register_prefix(name=prefix_name, value=prefix_value)
+            for prefix_name in self._handler_prefixes:
+                prefix_value = self.get_handler_prefix_value(name=prefix_name)
+                writer.register_prefix(name=prefix_name, value=prefix_value)
 
             out_id = data[globals.ENTRY_IRI]
             label = utilsfunc.formula_clean_re.sub("", data[EMP_FORMULA])
@@ -119,13 +108,10 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             self._write_enth(writer, gen_id, out_id, data)
 
     def _write_prelim(self, writer: Abox_Writer, out_id, label):
-
-        spec_pref = self._endpoints_config["prefixes"]["spec_pref"]
-
         writer.write_header()
         writer.write_imports(
             name="ABoxOntoSpecies", importing="onto_spec:"
-        ).add_imports(importing=spec_pref[:-1], rel="base")
+        ).add_imports(importing="spec_pref_no_slash:", rel="base")
         writer.write_inst(iri=out_id, type="Species").add_data_prop(
             rel="http://purl.org/dc/elements/1.1/identifier", value=out_id
         ).add_data_prop(rel="http://www.w3.org/2000/01/rdf-schema#label", value=label)

@@ -18,8 +18,6 @@ import re
 import time
 import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common.handler import Handler
-import chemaboxwriters.common.endpoints_proxy as endp
-import chemaboxwriters.common.aboxconfig as abconf
 from enum import Enum
 from typing import List, Optional, Dict
 
@@ -44,31 +42,34 @@ ENTH_REFTEMP_UNIT = "ReferenceTemperatureUnit"
 ENTH_PROV = "StandardEnthalpyofFormationProvenance"
 
 
+HANDLER_PREFIXES = {
+    "spec_pref": {"required": True},
+}
+
+HANDLER_PARAMETERS = {
+    "random_id": {"required": False},
+    "enth_of_form": {"required": False},
+    "enth_of_form_unit": {"required": False},
+    "enth_of_form_phase": {"required": False},
+    "enth_of_form_ref_temp": {"required": False},
+    "enth_of_form_ref_temp_unit": {"required": False},
+    "enth_of_form_provenance": {"required": False},
+}
+
+
 class QC_JSON_TO_OS_JSON_Handler(Handler):
     """Handler converting qc_json files to os_json.
     Inputs: List of qc_json file paths
     Outputs: List of os_json file paths
     """
 
-    def __init__(
-        self,
-        endpoints_proxy: Optional[endp.Endpoints_proxy] = None,
-    ) -> None:
+    def __init__(self) -> None:
         super().__init__(
             name="QC_JSON_TO_OS_JSON",
             in_stage=globals.aboxStages.QC_JSON,
             out_stage=globals.aboxStages.OS_JSON,
-            endpoints_proxy=endpoints_proxy,
-            required_configs={abconf.WRITERS_PREFIXES_KEY: ["spec_pref"]},
-            supported_handler_kwargs=[
-                "random_id",
-                "enth_of_form",
-                "enth_of_form_unit",
-                "enth_of_form_phase",
-                "enth_of_form_ref_temp",
-                "enth_of_form_ref_temp_unit",
-                "enth_of_form_provenance",
-            ],
+            prefixes=HANDLER_PREFIXES,
+            handler_params=HANDLER_PARAMETERS,
         )
 
     def _handle_input(
@@ -91,27 +92,27 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             self._os_jsonwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                **self._handler_kwargs,
             )
             outputs.append(out_file_path)
         return outputs
 
-    def _os_jsonwriter(
-        self,
-        file_path: str,
-        output_file_path: str,
-        random_id: str = "",
-        enth_of_form: Optional[str] = None,
-        enth_of_form_unit: Optional[str] = None,
-        enth_of_form_phase: Optional[str] = None,
-        enth_of_form_ref_temp: Optional[str] = None,
-        enth_of_form_ref_temp_unit: Optional[str] = None,
-        enth_of_form_provenance: Optional[str] = None,
-        *args,
-        **kwargs,
-    ) -> None:
+    def _os_jsonwriter(self, file_path: str, output_file_path: str) -> None:
 
-        spec_pref = self._endpoints_config[abconf.WRITERS_PREFIXES_KEY]["spec_pref"]
+        spec_pref = self.get_handler_prefix_value(name="spec_pref")
+
+        random_id = self.get_handler_parameter_value(name="random_id")
+        enth_of_form = self.get_handler_parameter_value(name="enth_of_form")
+        enth_of_form_unit = self.get_handler_parameter_value(name="enth_of_form_unit")
+        enth_of_form_phase = self.get_handler_parameter_value(name="enth_of_form_phase")
+        enth_of_form_ref_temp = self.get_handler_parameter_value(
+            name="enth_of_form_ref_temp"
+        )
+        enth_of_form_ref_temp_unit = self.get_handler_parameter_value(
+            name="enth_of_form_ref_temp_unit"
+        )
+        enth_of_form_provenance = self.get_handler_parameter_value(
+            name="enth_of_form_provenance"
+        )
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
