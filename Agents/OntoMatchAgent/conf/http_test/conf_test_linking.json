@@ -3,12 +3,12 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./data/power_plant_DEU/kwl.pkl",
-	"tgt": "./data/power_plant_DEU/gppd_DEU.pkl"
+	"src": "./data/power_plant_DEU/kwl.ttl",
+	"tgt": "./data/power_plant_DEU/gppd_DEU.ttl"
 },
 "pre_processing":{
 	"http": true,
-	"add_knowledge": null
+	"add_knowledge": "ontomatch.knowledge.geoNames"
 },
 "blocking":{
 	"name": "TokenBasedPairIterator",
@@ -44,10 +44,14 @@
 "matching":{
 	"name": "instancematching.InstanceMatcherWithAutoCalibration",
 	"model_specific": {
-		"symmetric": true
+		"perfect": false,
+		"symmetric": true,
+		"delta": 0.025,
+		"purge_alpha": 0.5,
+		"purge_majority": 0.5
 	}
 },
 "post_processing":{
-	"dump": "./scores",
-	"evaluation_file": "./data/power_plant_DEU/matches_power_plant_DEU.csv"}
+	"link_file": "../tmp/linked_power_plants.owl"
+}
 }
