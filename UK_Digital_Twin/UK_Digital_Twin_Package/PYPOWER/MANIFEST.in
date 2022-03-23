@@ -1,0 +1,6 @@
+include *.cfg
+include *.ini
+include *.rst
+include LICENSE
+include pypower/t/*.mat
+recursive-include doc *
