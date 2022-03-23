@@ -36,7 +36,7 @@ _aboxStages = []
 for tag, stages in _aboxStagesMap.items():
     for stage in stages:
         _aboxStages.append(f"{tag}_{stage}")
-_aboxStages.append(f"NOT_DEFINED")
+_aboxStages.append("NOT_DEFINED")
 
 aboxStages = Enum("aboxStages", _aboxStages)
 
