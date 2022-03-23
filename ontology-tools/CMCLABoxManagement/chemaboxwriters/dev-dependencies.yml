@@ -6,4 +6,5 @@ dependencies:
     - pytest
     - pytest-html
     - pytest-mock
+    - pytest-docker-compose
     - -e .
