@@ -14,7 +14,7 @@ setup(
         "py4jps>=1.0.7, <=1.0.14",
         "pubchempy",
         "entityrdfizer",
-        "pyuploader",
+        "pyuploader==1.1.0",
         "SPARQLWrapper",
         "PyYAML",
     ],
