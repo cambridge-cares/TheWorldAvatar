@@ -39,8 +39,8 @@ kg_query_endpoints:
     opsscan: http://localhost:48083/blazegraph/namespace/opsscan/sparql/
 prefixes:
     # these configs define any prefixes to be used when writing the aboxes
-    # the settings are then passed to the relevant handlers. Since most
-    # these prefixes are required in all csv to owl handlers, I decided to
+    # the settings are then passed to the relevant handlers. Since most of
+    # these prefixes are required in all csv handlers, I decided to
     # define them once in the global space.
     #
     # TWA ontology prefixes - needed for object and data properties
@@ -100,12 +100,6 @@ ocompchem:
                 - qc_log
     # handler 2
     qc_json_to_oc_json:
-        # this passes extra parameters to the handler
-        # run "aboxwriter <pipeline_name> --info" to check
-        # supported parameters
-        handler_kwargs:
-            random_id: testID-111-111-111
-            ontospecies_IRI: test_species_iri
     # handler 3
     oc_csv_to_oc_owl:
         triple_store_upload_settings:
@@ -123,8 +117,6 @@ ospecies:
     # SELECTED OSPECIES HANDLERS
     #-----------------------------------------
     qc_json_to_os_json:
-        handler_kwargs:
-            random_id: testID-111-111-111
     os_csv_to_os_owl:
         triple_store_upload_settings:
             upload_file_types:
@@ -142,8 +134,6 @@ omops:
         file_server_upload_settings:
             upload_file_types:
                 - ominp_xyz
-        handler_kwargs:
-            random_id: testID-111-111-111
     om_csv_to_om_owl:
         triple_store_upload_settings:
             upload_file_types:
@@ -159,11 +149,12 @@ opsscan:
     # SELECTED OPSSCAN HANDLERS
     #-----------------------------------------
     oc_json_to_ops_json:
-        handler_kwargs:
-            os_iris: Species_11-111-111
-            os_atoms_iris: Atom_11-11-111_C1,Atom_11-11-111_C2
-            oc_atoms_pos: 1,2
-            random_id: OPStestID-111-111-11
+      # example handler parameters for a bond scan
+      handler_kwargs:
+          os_iris: Species_11-111-111
+          os_atoms_iris: Atom_11-11-111_C1,Atom_11-11-111_C2
+          oc_atoms_pos: 1,2
+          random_id: OPStestID-111-111-11
     ops_csv_to_ops_owl:
         triple_store_upload_settings:
             upload_file_types:

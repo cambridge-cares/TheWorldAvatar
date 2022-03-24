@@ -14,8 +14,8 @@ All of the listed abox writers were built in a modular fashion as an input proce
 
 Running any of the supported abox writers results in the following steps:
 1. assemble the pipeline
-2. configure the pipeline handlers
-3. check the inputs and pass it to a handler that supports it
+2. configure and check the pipeline handlers
+3. check and pass the inputs to the first handler that supports them
 4. handler: receives the inputs
 5. handler: if configured, uploads the inputs to the specified endpoints
 6. handler: handles the inputs and produces the outputs
@@ -29,36 +29,37 @@ The ontospecies abox writer creates and uploads the ontospecies aboxes. The writ
 - QC_LOG_TO_QC_JSON
   - input type: QC_LOG - the quantum calculation log files (currently only Gaussian G03, G06, G09, G16 are supported)
   - output type: QC_JSON - a generic quantum calculations json file
-  - handler_configs: None - this lists the handler configs that can be set in the config file
+  - prefixes: None - this lists defined handler prefixes
+  - handler_kwargs: None - this lists supported handler parameters (optional and required)
 - QC_JSON_TO_OS_JSON
   - input type: QC_JSON
   - output type: OS_JSON - an intermediate ontospecies meta json file
-  - handler_configs:
-    - prefixes:
-      - spec_pref (str) REQUIRED - prefix used to set the ontospecies IRI (ontospecies_IRI = spec_pref + "Species_" + random_id)
-    - handler_kwargs:
-      - random_id (str) OPTIONAL - random id used in all the ontospecies instances, if not provided, randomly generated as uuid
-      - enth_of_form (str) OPTIONAL - enthalpy of formation value, not included in the abox if omitted
-      - enth_of_form_unit (str) OPTIONAL - enthalpy of formation unit, not included in the abox if omitted
-      - enth_of_form_phase (str) OPTIONAL - phase that the enthalpy of formation entry corresponds to, not included in the abox if omitted
-      - enth_of_form_ref_temp (str) OPTIONAL - enthalpy of formation reference temperature, not included in the abox if omitted
-      - enth_of_form_ref_temp_unit (str) OPTIONAL - enthalpy of formation reference temperature unit, not included in the abox if omitted
-      - enth_of_form_provenance (str) OPTIONAL - enthalpy of formation provencance, not included in the abox if omitted
+  - prefixes:
+    - spec_pref (str) REQUIRED - prefix used to set the ontospecies IRI (ontospecies_IRI = spec_pref + "Species_" + random_id)
+  - handler_kwargs:
+    - random_id (str) OPTIONAL - random id used in all ontospecies instances, if not provided, randomly generated
+    - enth_of_form (str) OPTIONAL - enthalpy of formation value, not included in the abox if omitted
+    - enth_of_form_unit (str) OPTIONAL - enthalpy of formation unit, not included in the abox if omitted
+    - enth_of_form_phase (str) OPTIONAL - phase that the enthalpy of formation entry corresponds to, not included in the abox if omitted
+    - enth_of_form_ref_temp (str) OPTIONAL - enthalpy of formation reference temperature, not included in the abox if omitted
+    - enth_of_form_ref_temp_unit (str) OPTIONAL - enthalpy of formation reference temperature unit, not included in the abox if omitted
+    - enth_of_form_provenance (str) OPTIONAL - enthalpy of formation provencance, not included in the abox if omitted
 - OS_JSON_TO_OS_CSV
   - input type: OS_JSON
   - output type: OS_CSV - an intermediate ontospecies csv file
-  - handler_configs:
-    - prefixes:
-      - spec_pref (str) REQUIRED
-      - onto_spec (str) REQUIRED - OntoSpecies ontology prefix
-      - gain_pref (str) REQUIRED - Gainesville Core ontology prefix
-      - onto_kin  (str) REQUIRED - OntoKin ontology prefix
-      - table_pref (str) REQUIRED - PeriodicTable ontology prefix
-      - unit_pref (str) REQUIRED - QUDT ontology prefix
+  - prefixes:
+    - spec_pref (str) REQUIRED
+    - onto_spec (str) REQUIRED - OntoSpecies ontology prefix
+    - gain_pref (str) REQUIRED - Gainesville Core ontology prefix
+    - onto_kin  (str) REQUIRED - OntoKin ontology prefix
+    - table_pref (str) REQUIRED - PeriodicTable ontology prefix
+    - unit_pref (str) REQUIRED - QUDT ontology prefix
+  - handler_kwargs: None
 - OS_CSV_TO_OS_OWL
   - input type: OS_CSV
   - output type: OS_OWL - the ontospecies owl file
-  - handler_configs: None
+  - prefixes: None
+  - handler_kwargs: None
 
 
 <a>
@@ -74,29 +75,29 @@ The ontocompchem abox writer creates and uploads the ontocompchem aboxes. The wr
 - QC_JSON_TO_OC_JSON
   - input type: QC_JSON
   - output type: OC_JSON - an intermediate ontocompchem meta json file
-  - handler_configs:
-    - prefixes:
-      - comp_pref (str) REQUIRED - prefix used to set the ontocompchem IRI (ontocompchem_IRI = comp_pref + jobType + "_" + random_id), where the jobType is any of the following values: G03, G06, G09, G16 or Gxx
-    - handler_kwargs:
-      - random_id (str) OPTIONAL
-      - ontospecies_IRI (str) OPTIONAL - IRI of an ontospecies entry to link to. If not provied a query based on inchi will be made to find the ontospecies IRI. If that fails, the ontospecies link is not included in the ontocompchem abox
+  - prefixes:
+    - comp_pref (str) REQUIRED - prefix used to set the ontocompchem IRI (ontocompchem_IRI = comp_pref + jobType + "_" + random_id), where the jobType is any of the following values: G03, G06, G09, G16 or Gxx
+  - handler_kwargs:
+    - random_id (str) OPTIONAL
+    - ontospecies_IRI (str) OPTIONAL - IRI of an ontospecies entry to link to. If not provied a query based on inchi will be made to find the ontospecies IRI. If that fails, the ontospecies link is not included in the ontocompchem abox
 - OC_JSON_TO_OC_CSV
   - input type: OC_JSON
   - output type: OC_CSV - an intermediate ontocompchem csv file
-  - handler_configs:
-    - prefixes:
-      - comp_pref (str) REQUIRED
-      - gain_pref (str) REQUIRED
-      - table_pref (str) REQUIRED
-      - unit_pref (str) REQUIRED
-      - onto_comp (str) REQUIRED
-      - ocompchem_data_pref (str) REQUIRED
-      - inst_spec (str) REQUIRED
-      - has_spec (str) REQUIRED
+  - prefixes:
+    - comp_pref (str) REQUIRED
+    - gain_pref (str) REQUIRED
+    - table_pref (str) REQUIRED
+    - unit_pref (str) REQUIRED
+    - onto_comp (str) REQUIRED
+    - ocompchem_data_pref (str) REQUIRED
+    - inst_spec (str) REQUIRED
+    - has_spec (str) REQUIRED
+  - handler_kwargs: None
 - OC_CSV_TO_OC_OWL
   - input type: OC_CSV
   - output type: OC_OWL - the ontocompchem owl file
-  - handler_configs: None
+  - prefixes: None
+  - handler_kwargs: None
 <a>
   <center>
     <img src="ocompchem.svg" width="600">
@@ -111,28 +112,29 @@ The ontopesscan abox writer creates and uploads the ontopesscan aboxes. The writ
 - OC_JSON_TO_OPS_JSON
   - input type: OC_JSON
   - output type: OPS_JSON - an intermediate ontopesscan json file
-  - handler_configs:
-    - handler_kwargs:
-      - random_id (str) OPTIONAL
-      - os_iris (str) REQUIRED - ontospecies IRI that the scan is about
-      - os_atoms_iris (str) REQUIRED - ontospecies atoms IRIs defining the scan coordinate (two IRIs - bond scan, three IRIs - angle scan and four IRIs - dihedral angle scan, note that atoms order matters)
-      - oc_atoms_pos (str) REQUIRED - atoms indices (starting from one) in the ontocompchem entries corresponding to the indicated ontospecies atoms, e.g. for the bond scan jobs between the ontospecies "atom1_iri,atom2_iri" this input should provide these atoms positions in the ontocompchem jobs reference frame, e.g. "3,4" in case "atom1_iri,atom2_iri" where located at position 3 and 4
+  - prefixes: None
+  - handler_kwargs:
+    - random_id (str) OPTIONAL
+    - os_iris (str) REQUIRED - ontospecies IRI that the scan is about
+    - os_atoms_iris (str) REQUIRED - ontospecies atoms IRIs defining the scan coordinate (two IRIs - bond scan, three IRIs - angle scan and four IRIs - dihedral angle scan, note that atoms order matters)
+    - oc_atoms_pos (str) REQUIRED - atoms indices (starting from one) in the ontocompchem entries corresponding to the indicated ontospecies atoms, e.g. for the bond scan jobs between the ontospecies "atom1_iri,atom2_iri" this input should provide these atoms positions in the ontocompchem jobs reference frame, e.g. "3,4" in case "atom1_iri,atom2_iri" where located at position 3 and 4
 - OPS_JSON_TO_OPS_CSV
   - input type: OPS_JSON
   - output type: OPS_CSV - an intermediate ontopesscan csv file
-  - handler_configs:
-    - prefixes:
-      - spec_pref (str) REQUIRED
-      - pes_pref (str) REQUIRED
-      - gain_pref (str) REQUIRED
-      - unit_pref (str) REQUIRED
-      - onto_spec (str) REQUIRED
-      - onto_comp (str) REQUIRED
-      - onto_pes (str) REQUIRED
+  - prefixes:
+    - spec_pref (str) REQUIRED
+    - pes_pref (str) REQUIRED
+    - gain_pref (str) REQUIRED
+    - unit_pref (str) REQUIRED
+    - onto_spec (str) REQUIRED
+    - onto_comp (str) REQUIRED
+    - onto_pes (str) REQUIRED
+  - handler_kwargs: None
 - OPS_CSV_TO_OPS_OWL
   - input type: OPS_CSV
   - output type: OPS_OWL - the ontopesscan owl file
-  - handler_configs: None
+  - prefixes: None
+  - handler_kwargs: None
 
 <a>
   <center>
@@ -153,26 +155,26 @@ The ontomops abox writer creates and uploads the ontomops aboxes. The writer is 
 - OMINP_JSON_TO_OM_JSON
   - input type: OMINP_JSON - an ontomops input json file
   - output type: OM_JSON - an intermediate ontomops json file
-  - handler_configs:
-    - prefixes:
-      - onto_spec (str) REQUIRED
-      - onto_mops (str) REQUIRED
-      - mops_pref (str) REQUIRED
-      - rdf_pref (str) REQUIRED
-      - uom_pref (str) REQUIRED
-      - unres_pref (str) REQUIRED
+  - prefixes:
+    - onto_spec (str) REQUIRED
+    - onto_mops (str) REQUIRED
+    - mops_pref (str) REQUIRED
+    - rdf_pref (str) REQUIRED
+    - uom_pref (str) REQUIRED
+    - unres_pref (str) REQUIRED
+  - handler_kwargs: None
 - OM_JSON_TO_OM_CSV
   - input type: OM_JSON - an intermediate ontomops json file
   - output type: OM_CSV - an intermediate ontomops csv file
-  - handler_configs
-    - prefixes:
-      - omops_entry_prefix (str) REQUIRED
+  - prefixes:
+    - omops_entry_prefix (str) REQUIRED
   - handler_kwarg:
     - random_id (str) OPTIONAL
 - OM_CSV_TO_OM_OWL
   - input type: OM_CSV - an intermediate ontomops csv file
   - output type: OM_OWL - the ontomops owl file
-  - handler_configs: None
+  - prefixes: None
+  - handler_kwargs: None
 
 <a>
   <center>
@@ -219,15 +221,15 @@ If you wish to see the install script help text, simply run `install_script_cond
 
 # Configuration
 
-Prior to running any abox creation and upload it is necessary to configure appropriate upload and query endpoints. This is done via the config yml file. The config yml file path can be then either passed as an argument during the `chemaboxwriters` call or set via the `ABOXWRITERS_CONFIG_FILE` environment variable. An example config file can be found in the `chemaboxwriters` repository and is also presented below.
+Prior to running any abox creation and upload it is necessary to configure appropriate upload and query endpoints. This is done via the config yml file. The config file also allows to define any optional or required handler parameters. An example config file can be found in the `chemaboxwriters` repository and is also presented below.
 
 ```yml
 # ------------------------------------------------------------------------------
 # This is the aboxwriters config file used to specify all the writers settings.
 # The settings can be specified at three different levels of granularity:
 #
-# - global settings  - any settings defined here would apply to all
-#                       pipelines handlers
+# - global settings   - any settings defined here would apply to all
+#                       pipelines handlers, unless overwritten
 # - pipeline settings - any settings defined here would apply to all
 #                       handlers for the selected pipeline and would
 #                       overwrite any global settings
@@ -237,33 +239,35 @@ Prior to running any abox creation and upload it is necessary to configure appro
 # ------------------------------------------------------------------------------
 # GLOBAL
 # ------------------------------------------------------------------------------
-upload_settings:
-    triple_store_sparql_endpoint: default_triple_store_sparql_endpoint
-    #triple_store_secrets_file: default_triple_store_secrets_file
-    triple_store_no_auth: False # if True, no athorisation is made and the
-    #                            # triple store secrets file is not needed
-    file_server_upload_endpoint: default_file_server_upload_endpoint
-    #file_server_secrets_file: default_file_server_secrets_file
-    file_server_subdir: default_file_server_subdir
-    file_server_no_auth: False # if True, no athorisation is made and the
-    #                           # file server secrets file is not needed
-    # These settings define which files would be uploaded to the file server and
-    # or to the triple store by indicating the stages they belong to. These are
-    # global settings which would propagate to all defined pipelines and
-    # their handlers unless overwritten.
-    #
-    # upload_to_file_server:
-    #     - test_stage1
-    # upload_to_triple_store:
-    #     - test_stage2
-query_settings:
-    ospecies_query_endpoint: ospecies_query_endpoint
-    omops_query_endpoint: omops_query_endpoint
-    ocompchem_query_endpoint: ocompchem_query_endpoint
-    opsscan_query_endpoint: opsscan_query_endpoint
+file_server_upload_settings:
+    # file server upload url
+    url: http://localhost:48086/FileServer/
+    # file server secrets file
+    auth_file: dummy_fileserver_secrets_file
+    # if True, auth_file input is not needed
+    no_auth: False
+    # directory on the file server where all files should go
+    subdirs: dummy_subdir1/subdir2
+triple_store_upload_settings:
+    # triple store sparql upload endpoint
+    url: http://localhost:48083/blazegraph/namespace/kb/sparql/
+    auth_file: dummy_blazegraph-geo_secrets_file
+    no_auth: False
+kg_query_endpoints:
+    # define any sparql query endpoints for the given prefixes
+    # these are used in some handlers to query KG for extra information
+    # e.g. when creating the ontocompchem abox, a query is made based on
+    # the species inchi string to try to find the corresponding ontospecies
+    # entry
+    ospecies: http://localhost:48083/blazegraph/namespace/ospecies/sparql/
+    omops: http://localhost:48083/blazegraph/namespace/omops/sparql/
+    ocompchem: http://localhost:48083/blazegraph/namespace/ocompchem/sparql/
+    opsscan: http://localhost:48083/blazegraph/namespace/opsscan/sparql/
 prefixes:
     # these configs define any prefixes to be used when writing the aboxes
-    # the settings are then passed to the relevant handlers.
+    # the settings are then passed to the relevant handlers. Since most of
+    # these prefixes are required in all csv handlers, I decided to
+    # define them once in the global space.
     #
     # TWA ontology prefixes - needed for object and data properties
     onto_comp: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"
@@ -273,9 +277,12 @@ prefixes:
     onto_kin: "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"
     # used to create iris of instances
     spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
+    spec_pref_no_slash: "http://www.theworldavatar.com/kb/ontospecies"
     mops_pref: "http://www.theworldavatar.com/kb/ontomops/"
     comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
+    comp_pref_no_slash: "http://www.theworldavatar.com/kb/ontocompchem"
     pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/"
+    pes_pref_no_slash: "http://www.theworldavatar.com/kb/ontopesscan"
     # used to create iris of instances of any reference files
     # so far only defined for ontocompchem to reference associated log files
     ocompchem_data_pref: "http://www.theworldavatar.com/data/ontocompchem/"
@@ -289,17 +296,6 @@ prefixes:
     uom_pref: "http://www.ontology-of-units-of-measure.org/resource/om-2/"
     unres_pref: "http://theworldavatar.com/resource/ontouom/"
     omops_entry_prefix: "MetalOrganicPolyhedra_"
-
-#
-# these setting can be used to pass extra named arguments to all the handlers.
-# please note that not all handlers may support the extra arguments. It is usually
-# better to set the handler_kwargs at individual handler level
-#
-# handler_kwargs:
-#   arg1_name: arg1_value
-#   arg2_name: arg2_value
-#   arg3_name: arg3_value
-#   ...
 # ------------------------------------------------------------------------------
 # PIPELINES
 # ------------------------------------------------------------------------------
@@ -308,74 +304,87 @@ prefixes:
 #-----------------------------------------
 ocompchem:
     # these options would overwrite any global settings above
-    upload_settings:
-        file_server_subdir: ontocompchem
-        triple_store_sparql_endpoint: ontocompchem
+    file_server_upload_settings:
+        # this will overwrite the global "dummy_subdir1/subdir2" subdirs
+        # all other properties will be inherited
+        subdirs: ocompchem
+    triple_store_upload_settings:
+        # this will overwrite the global triple store upload url
+        # all other properties will be inherited
+        url: http://localhost:48083/blazegraph/namespace/ocompchem/sparql/
     #-----------------------------------------
-    # OCOMPCHEM HANDLERS
+    # SELECTED OCOMPCHEM HANDLERS
     #-----------------------------------------
     # these options define any handler specific settings and would overwrite
     # any pipeline and global settings
-    handlers:
-        qc_log_to_qc_json:
-            upload_settings:
-                upload_to_file_server:
-                    - qc_log
-        oc_csv_to_oc_owl:
-            upload_settings:
-                upload_to_triple_store:
-                    - oc_owl
+    #
+    # handler 1
+    qc_log_to_qc_json: # handler name, non-case specific
+        file_server_upload_settings:
+            # this defines which types of files should be uploaded to the file server
+            upload_file_types:
+                - qc_log
+    # handler 2
+    qc_json_to_oc_json:
+    # handler 3
+    oc_csv_to_oc_owl:
+        triple_store_upload_settings:
+            # this defines which types of files should be uploaded to the file server
+            upload_file_types:
+                - oc_owl
 # OSPECIES
 #-----------------------------------------
 ospecies:
-    upload_settings:
-        file_server_subdir: ospecies
-        triple_store_sparql_endpoint: ospecies
+    file_server_upload_settings:
+        subdirs: ospecies
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/ospecies/sparql/
     #-----------------------------------------
-    # OSPECIES HANDLERS
+    # SELECTED OSPECIES HANDLERS
     #-----------------------------------------
-    handlers:
-        os_csv_to_os_owl:
-            upload_settings:
-                upload_to_triple_store:
-                    - os_owl
+    qc_json_to_os_json:
+    os_csv_to_os_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - os_owl
 # OMOPS
-#-----------------------------------------
 omops:
-    upload_settings:
-        file_server_subdir: omops
-        triple_store_sparql_endpoint: omops
+    file_server_upload_settings:
+        subdirs: omops
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/omops/sparql/
     #-----------------------------------------
-    # OMOPS HANDLERS
+    # SELECTED OMOPS HANDLERS
     #-----------------------------------------
-    handlers:
-        ominp_json_to_om_json:
-            upload_settings:
-                upload_to_file_server:
-                    - ominp_xyz
-        om_csv_to_om_owl:
-            upload_settings:
-                upload_to_triple_store:
-                    - om_owl
+    ominp_json_to_om_json:
+        file_server_upload_settings:
+            upload_file_types:
+                - ominp_xyz
+    om_csv_to_om_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - om_owl
 # OPSSCAN
 #-----------------------------------------
 opsscan:
-    upload_settings:
-        file_server_subdir: opsscan
-        triple_store_sparql_endpoint: opsscan
+    file_server_upload_settings:
+        subdirs: opsscan
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/opsscan/sparql/
     #-----------------------------------------
-    # OPSSCAN HANDLERS
+    # SELECTED OPSSCAN HANDLERS
     #-----------------------------------------
-    handlers:
-        oc_json_to_ops_json:
-            handler_kwargs:
-                os_iris: "dummy_iri1"
-                os_atoms_iris: "dummy_atom1_iri, dummy_atom2_iri"
-                oc_atoms_pos: "1,3"
-        ops_csv_to_ops_owl:
-            upload_settings:
-                upload_to_triple_store:
-                    - ops_owl
+    oc_json_to_ops_json:
+      # example handler parameters for a bond scan
+      handler_kwargs:
+          os_iris: Species_11-111-111
+          os_atoms_iris: Atom_11-11-111_C1,Atom_11-11-111_C2
+          oc_atoms_pos: 1,2
+          random_id: OPStestID-111-111-11
+    ops_csv_to_ops_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - ops_owl
 ```
 
 # Command line interface #
@@ -537,7 +546,7 @@ aboxwriter ocompchem --file-or-dir source_dir
 aboxwriter <awriter> --file-or-dir file.file_ext --dry-run FALSE
 
 ```
-7. Running the `opsscan` abox writer in a non `dry-run` mode on directory with `oc_json` files containing processed scan jobs on a particular chemical species. In case of the `oc_json` type input, three additional `handler_kwargs` are required for the `oc_json_to_ops_json` handler. These are `os_iris`, `os_atoms_iris` and `oc_atoms_ids`. For a simple ethanol C1-C2 scan, the `os_iris` must be set to the iri of the ethanol in ontospecies triple store, the `os_atoms_iris` must be set to the ethanol C1 and C2 atoms iris in the ontospecies triple store and `oc_atoms_ids` must be set to the C1 and C2 atoms indices according to the order used in the quantum calculation job. If, e.g. the atom C1 and C2 order was 2 and 3 in the log file the `oc_atoms_ids` must be set to "2,3". Note that it would be assumed that the scan points defined in all oc_json files belong to the same scan.
+7. Running the `opsscan` abox writer in a non `dry-run` mode on a directory with `oc_json` files containing scan jobs. In case of the `oc_json` type input, three additional `handler_kwargs` are required for the `oc_json_to_ops_json` handler. These are `os_iris`, `os_atoms_iris` and `oc_atoms_ids`. For a simple ethanol C1-C2 scan, the `os_iris` must be set to the iri of the ethanol in ontospecies triple store, the `os_atoms_iris` must be set to the ethanol C1 and C2 atoms iris in the ontospecies triple store and `oc_atoms_ids` must be set to the C1 and C2 atoms indices according to the order used in the quantum calculation job. If, e.g. the atom C1 and C2 order was 2 and 3 in the log file the `oc_atoms_ids` must be set to "2,3". Note that it would be assumed that the scan points defined in all oc_json files belong to the same scan.
 
 ```bash
 aboxwriter opsscan --file-or-dir my_scan_dir --config-file config_file --dry-run FALSE
