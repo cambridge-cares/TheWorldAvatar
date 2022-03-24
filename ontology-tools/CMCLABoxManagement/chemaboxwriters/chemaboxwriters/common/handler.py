@@ -76,6 +76,8 @@ class Handler_Parameters:
                     )
 
                 )
+    def info(self)->None:
+        print(pformat(self._parameters))
 
 class Handler(ABC):
     """
@@ -225,21 +227,21 @@ class Handler(ABC):
                 uploads=triple_store_uploads,
             )
 
-    def __str__(self) -> None:
+    def info(self) -> None:
         print("----------------------------------------------------------------------")
         print(f"handler: {self.name}")
         print(f"in_stages: {self._in_stage}")
         print(f"out_stage: {self._out_stage}")
         print("prefixes:")
-        print(pformat(self._handler_prefixes))
+        print(pformat(self._handler_prefixes.info()))
         print("handler_kwargs:")
-        print(pformat(self._handler_params))
+        print(pformat(self._handler_params.info()))
         if self._file_server_uploader is not None:
-            self._file_server_uploader.__str__()
+            self._file_server_uploader.info()
         if self._triple_store_uploader is not None:
-            self._triple_store_uploader.__str__()
+            self._triple_store_uploader.info()
         if self._remote_store_client is not None:
-            self._remote_store_client.__str__()
+            self._remote_store_client.info()
 
     def clean_written_files(self) -> None:
         self.written_files = []

@@ -73,7 +73,7 @@ class RemoteStoreClientContainer:
             for prefix, url in query_endpoints.items():
                 self.register_query_endpoint(prefix, url)
 
-    def __str__(self) -> None:
+    def info(self) -> None:
         print("--------------------------------------------------")
         print("remote_store_client")
         print("query_endpoints:")
@@ -89,6 +89,7 @@ class RemoteStoreClientContainer:
         query_str: str,
         store_client_class: TRemoteStoreClient = JPSRemoteStoreClient,
     ) -> List[Dict[str, Any]]:
+
         client = self.get_store_client(
             endpoint_prefix, store_client_class=store_client_class
         )
@@ -116,6 +117,7 @@ class RemoteStoreClientContainer:
                 endpoint_url, store_client_class=store_client_class
             )
         return self.store_clients[endpoint_prefix][store_client_class.__name__]
+
 
     def _create_store_client(
         self, endpoint_url: str, store_client_class: TRemoteStoreClient

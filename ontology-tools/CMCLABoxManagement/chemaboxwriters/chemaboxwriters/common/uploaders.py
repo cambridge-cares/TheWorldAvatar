@@ -34,7 +34,7 @@ class UploaderClient:
             subdirs=self._subdirs,
         )
 
-    def __str__(self) -> None:
+    def info(self) -> None:
         print("--------------------------------------------------")
         print(f"{self._uploader_type} upload client")
         print(f"url: {self._url}")

@@ -90,18 +90,17 @@ def start():
         )
 
         if args["--info"]:
-            pipeline.__str__()  # type: ignore
+            pipeline.info()  # type: ignore
             return
 
-        pipeline.check_handlers_configs(
-            input_type=utilsfunc.stage_name_to_enum(args["--inp-file-type"])
-        )
 
         if args["--file-or-dir"] is None:
             logger.warning("""Missing --file-or-dir argument. Nothing to process.""")
             return
 
-        pipeline
+        pipeline.check_handlers_configs(
+            input_type=utilsfunc.stage_name_to_enum(args["--inp-file-type"])
+        )
 
         write_abox(
             pipeline=pipeline,  # type: ignore

@@ -97,12 +97,12 @@ class Pipeline:
                     file_server_uploads=self._file_server_uploads,
                 )
 
-    def __str__(self) -> None:
+    def info(self) -> None:
         print(f"============== Information on {self.name} pipeline ==============")
         print("")
         print("Registered handlers:")
         for handler in self._handlers.values():
-            handler.__str__()
+            handler.info()
         print("")
         print("=================================================================")
 
