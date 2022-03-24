@@ -7,7 +7,7 @@ from chemaboxwriters.kgoperations.remotestore_client import RemoteStoreClientCon
 from typing import Optional, Dict
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-TEST_CONFIG_FILES = os.path.join(THIS_DIR, "..", "refData", "test_config_files")
+TEST_CONFIG_FILES = os.path.join(THIS_DIR, "test_config_files")
 TEST_RESULTS = "test_results"
 
 
@@ -26,21 +26,26 @@ def test_abox_writer_cascade(endpoints_config_file: str):
 
     config_file = os.path.join(TEST_CONFIG_FILES, endpoints_config_file)
 
-    test_config = abconf.read_config_file(config_file=config_file)
-    test_results = test_config.pop("test_results")
+    test_results = abconf.read_config_file(config_file=config_file)
+    ref_results = test_results.pop("test_results")
 
-    abconf.cascade_configs(configs=test_config)
+    abconf.cascade_configs(configs=test_results)
 
-    for key, value in test_config.items():
-        assert key in test_results
-        assert value == test_results[key]
-
+    _compare_config_items(config_item1=test_results, config_item2=ref_results)
     print("")
 
     print("========================================================")
     print()
     print()
 
+
+def _compare_config_items(config_item1, config_item2)->None:
+    if isinstance(config_item1, dict):
+        for key, value in config_item1.items():
+            assert key in config_item2
+            _compare_config_items(value, config_item2[key])
+    else:
+        assert config_item1 == config_item2
 
 @pytest.mark.parametrize(
     "endpoints_config_file",
@@ -90,12 +95,12 @@ def test_abox_writer_handlers_setup(endpoints_config_file: str):
             )
 
             check_prefixes_configs(
-                handler_prefixes=handler._handler_prefixes,
+                handler_prefixes=handler._handler_prefixes._parameters,
                 configs=handler_configs,
             )
 
             check_handler_kwargs_configs(
-                handler_kwargs=handler._handler_params,
+                handler_kwargs=handler._handler_params._parameters,
                 configs=handler_configs,
             )
 
@@ -120,7 +125,7 @@ def check_uploader_connection_configs(
         assert uploader._url == uploader_configs[abconf.URL_ENDPOINT_KEY]
 
     if abconf.AUTH_FILE_KEY in uploader_configs:
-        assert uploader._auth_file == uploader_configs[abconf.AUTH_FILE_KEY]
+        assert uploader._auth_file == os.path.abspath(uploader_configs[abconf.AUTH_FILE_KEY])
 
     if abconf.NO_AUTH_KEY in uploader_configs:
         assert uploader._no_auth == uploader_configs[abconf.NO_AUTH_KEY]
