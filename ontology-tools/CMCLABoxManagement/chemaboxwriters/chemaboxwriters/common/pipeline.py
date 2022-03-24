@@ -112,7 +112,7 @@ class Pipeline:
             if handler is None:
                 continue
             for param_name, param_value in params_config.items():
-                handler.set_handler_parameter_value(name=param_name, value=param_value)
+                handler.set_parameter_value(name=param_name, value=param_value)
 
     def check_handlers_configs(self, input_type: Optional[Enum] = None) -> None:
         if input_type is None:
