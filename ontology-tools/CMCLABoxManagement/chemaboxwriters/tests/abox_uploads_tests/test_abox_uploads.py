@@ -28,42 +28,6 @@ class DummyPubchemComp:
         self.cid = cid
         self.synonyms = synonyms
 
-
-def compare_results(pipeline, regenerate_result, regenerate_all_results, file_exts):
-
-    files_to_check_content = []
-    files_to_check_existance = []
-
-    for file in pipeline.written_files:
-        check_content = False
-        for fileExt in file_exts:
-            match = re.search(f"\.{fileExt}$", file)
-            if match is not None:
-                check_content = True
-                break
-
-        if check_content:
-            files_to_check_content.append(file)
-        else:
-            files_to_check_existance.append(file)
-
-    if regenerate_result or regenerate_all_results:
-        for file in files_to_check_content:
-            shutil.copy2(file, file + "_ref")
-
-    for file in files_to_check_content:
-        targetFile = readFile(file).split("\n")
-        refFile = readFile(file + "_ref").split("\n")
-
-        for tarLine, refLine in zip(targetFile, refFile):
-            assert tarLine == refLine
-
-        assert len(targetFile) == len(refFile)
-
-    for file in files_to_check_existance:
-        assert fileExists(file) is True
-
-
 def check_uploads(pipeline: Pipeline, inp_file_type, fs_num_uploads, ts_num_uploads)->None:
 
     fs_uploads = pipeline._file_server_uploads
@@ -107,8 +71,8 @@ def _construct_full_url(upload_configs: Dict)->str:
         url = f"{url}{subdirs}"
     return url
 
-def cleanup_test_data(writtenFiles: List[str]) -> None:
 
+def cleanup_test_data(writtenFiles: List[str]) -> None:
     for file in writtenFiles:
         os.remove(file)
 
