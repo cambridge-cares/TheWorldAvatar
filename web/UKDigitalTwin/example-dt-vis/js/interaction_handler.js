@@ -70,45 +70,51 @@ class InteractionHandler {
     }
 
     /**
+     * 
+     * @param {*} feature 
+     * @returns 
+     */
+    #isClickable(feature) {
+          // Get the meta data describing this layer
+          let targetLayerName = feature.layer.id;
+          targetLayerName = targetLayerName.replace("_cluster", "");
+          targetLayerName = targetLayerName.replace("_arrows", "");
+          targetLayerName = targetLayerName.replace("_clickable", "");
+          targetLayerName = targetLayerName.replace("_focus", "");
+
+          let setMeta = DT.currentGroupMeta.filter(set => {
+              return (set["name"] === targetLayerName);
+          });
+
+          // Check if it's clickable
+          let clickable = true;
+          if(setMeta.length < 1 || (("clickable" in setMeta[0]) && setMeta[0]["clickable"] === false)) {
+              clickable = false;
+          }
+          return clickable;
+    }
+
+    /**
      * Register default mouse interactions with the input layer.
      * 
      * @param {string[]} layer [layer name, layer type]
      */
-    registerInteractions(layer) {
-        let layerName = layer[0];
-        let layerType = layer[1];
-        let sourceName = this._map.getLayer(layerName).source;
+    registerInteractions() {
 
         var lastFeature = null;
 
         // Mouse click
-        this._map.on("click", layerName, (event) => {
+        this._map.on("click", (event) => {
             if(!DT.clickEvents) return;
-            if(layerName.endsWith("_arrows")) {
-                return;
-            }
-
-             // Fudge to ensure that only one click per 500ms
-            let thisClick = Date.now();
-            if(this._lastClick != null) {
-                if(Math.abs(thisClick - this._lastClick) < 500) {
-                    return;
-                }
-            }
-            this._lastClick = thisClick;
 
             // Get all visible features under the mouse click
             let features = this._map.queryRenderedFeatures(event.point);
-            let feature = features[0];
-
-            // Reset the side panel
-            this._panelHandler.setContent("");
 
             // Filter to determine how many non-default, circle/symbol features are present
             let self = this;
             let siteFeatures = features.filter(feature => {
                 let featureLayer = feature["layer"]["id"];
-                
+
                 // Filter out layers of specific types
                 if(featureLayer.includes("_clickable")) return false;
                 if(featureLayer.includes("_arrows")) return false;
@@ -122,55 +128,83 @@ class InteractionHandler {
 
                 let layer = self._map.getLayer(featureLayer);
                 if(layer["type"] !== "circle" && layer["type"] !== "symbol") return false;
+                if(layer["metadata"] && !layer["metadata"]["clickable"]) return false;
                 if(layer["metadata"] && layer["metadata"]["provider"] === "cmcl") return true;
                 return false;
             });
 
-            if(siteFeatures.length == 1 && layerName.endsWith("_cluster")) {
+            if(siteFeatures.length == 1 && siteFeatures[0]["layer"]["id"].endsWith("_cluster")) {
                 // If a cluster feature, let the user pick the leaf feature
                 this.#handleClusterClick(siteFeatures[0], function(newFeature) {
-                    self.mouseClick(layerName.replace("_cluster", ""), newFeature);
+                    self.mouseClick(newFeature);
                 });
             } else {
                 // If more than one, let the use pick
                 if(siteFeatures.length > 1) {
-                    feature = this.#handleMultipleFeatures(siteFeatures, function(newFeature) {
+                    this.#handleMultipleFeatures(siteFeatures, function(newFeature) {
                         // Trigger on chosen feature
                         if(newFeature != null) {    
-                            self.mouseClick(newFeature["layer"]["id"], newFeature);
+                            self.mouseClick(newFeature);
                         }
                     });
+                } else if(siteFeatures.length == 1) {
+                    self.mouseClick(siteFeatures[0]);
                 } else {
-                    self.mouseClick(layerName, feature);
+                    self.mouseClick(features[0]);
                 }
             }
         });
 
-        // Interactions per layer type
-        switch(layerType) {
+        // Mouse enter
+        this._map.on("mousemove", (event) => {
+            let feature = this._map.queryRenderedFeatures(event.point)
+                .find(features => features.layer.metadata?.provider === "cmcl");
 
-            case "line":
-            case "point":
-            case "symbol":
-                // Mouse enter
-                this._map.on("mouseenter", layerName, (event) => {
-                    if(layerName.endsWith("_arrows")) {
-                        return;
-                    }
+            // Remove old feature's hover state
+            if (lastFeature != null && (!feature || feature.id != lastFeature.id)) {
+                this._map.setFeatureState(
+                    { source: lastFeature.layer.source, id: lastFeature.id },
+                    { hover: false }
+                );
+                lastFeature = null;
+            }
 
-                    let feature = this._map.queryRenderedFeatures(event.point)[0];
-                    if(feature == null || feature.geometry == null) return;
+            // No feature, bug out
+            if (!feature) {
+                this._map.getCanvas().style.cursor = '';
+                this._popup.remove();
+                return;
+            }
 
-                    // Change cursor
-                    if(DT.clickEvents) this._map.getCanvas().style.cursor = 'pointer';
+            // Not a clickable feature, get out
+            if(!this.#isClickable(feature)) {
+                this._map.getCanvas().style.cursor = 'default';
+                this._popup.remove();
+                return;
+            }
 
+            let html = "";
+            let name = feature.properties["displayName"] ?? feature.properties["name"] ?? ("ID " + feature.id);
+            if(name == null) {
+                return;
+            }
+
+            this._map.getCanvas().style.cursor = "pointer";
+
+            const layerName = feature.layer.id;
+            const layerType = feature.layer.type
+
+            switch(layerType) {
+                case "line":
+                case "point":
+                case "symbol":
+                case "circle":
                     // Get correct co-ords
                     var coordinates = feature.geometry.coordinates.slice();
                     while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
                         coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
                     }
 
-                    let html = "";
                     if(layerName.endsWith("_cluster")) {
                         html = "<h3>Multiple features</h3>";
 
@@ -179,9 +213,6 @@ class InteractionHandler {
                         html += "Click to show a list of these features."
                     } else {
                         // Get appropriate description for feature
-                        var name = feature.properties["displayName"];
-                        if(name == null) name = feature.properties["name"];
-                        if(name == null) return;
 
                         // Build HTML for popup
                         html = "<h3>" + name + "</h3>";
@@ -200,91 +231,43 @@ class InteractionHandler {
                         // let popupLoc = centroid["geometry"]["coordinates"];
                         this._popup.setLngLat(event.lngLat).setHTML(html).addTo(this._map);
                     }
-                });
 
-                // Mouse exit
-                this._map.on("mouseleave", layerName, (event) => {
-                    this._map.getCanvas().style.cursor = '';
-                    this._popup.remove();
-                });
-                break;
+                    break;
 
                 case "fill":
                 case "extrusion":
+                case "fill-extrusion":
                 case "polygon":
-                    var lastFeature = null;
+                    if(layerName.endsWith("_arrows")) {
+                        return;
+                    }
 
-                    // Mouse enter
-                    this._map.on("mouseenter", layerName, (event) => {
-                        // Change cursor
-                        if(!DT.clickEvents) return;
-                        if(layerName.endsWith("_arrows")) {
-                            return;
-                        }
-                        this._map.getCanvas().style.cursor = 'pointer';
-                    });
+                    lastFeature = feature;
 
-                    // When the user moves their mouse over the fill area
-                    this._map.on('mousemove', layerName, (e) => {
-                        if(layerName.endsWith("_arrows")) {
-                            return;
-                        }
+                    this._map.setFeatureState(
+                        { source: feature.layer.source, id: feature.id },
+                        { hover: true }
+                    );
 
-                        var thisFeature = this._map.queryRenderedFeatures(e.point)[0];
+                    // Get appropriate description for layer
+                    if(!feature.properties["displayName"] && !feature.properties["name"]) return;
 
-                        if(lastFeature == null || thisFeature.id != lastFeature.id) {
-                            lastFeature = thisFeature;
+                    // Build HTML for popup
+                    html = "<b>" + name + "</b></br>";
+                    if(feature.properties["description"]) {
+                        html += feature.properties["description"] + "</br></br>"
+                    }
 
-                            // Remove old feature's hover state
-                            if (this._hoveredStateId !== null) {
-                                this._map.setFeatureState(
-                                    { source: sourceName, id: this._hoveredStateId },
-                                    { hover: false }
-                                );
-                            }
-                            
-                            // Set hover state for this feature
-                            this._hoveredStateId = e.features[0].id;
-                            this._map.setFeatureState(
-                                { source: sourceName, id: this._hoveredStateId },
-                                { hover: true }
-                            );
+                    // Get coords for the center of the polygon
+                    var center = turf.centroid(feature)["geometry"]["coordinates"];
+                    this._popup.setLngLat(center).setHTML(html).addTo(this._map);
 
-                            // Get appropriate description for layer
-                            if(!thisFeature.properties["displayName"] && !thisFeature.properties["name"]) return;
-                            var name = thisFeature.properties["displayName"];
-                            if(name == null) name = thisFeature.properties["name"];
-
-                            // Build HTML for popup
-                            var html = "<b>" + name + "</b></br>";
-                            if(thisFeature.properties["description"]) {
-                                html += thisFeature.properties["description"] + "</br></br>"
-                            }
-
-                            // Get coords for the center of the polygon
-                            var center = turf.centroid(thisFeature)["geometry"]["coordinates"];
-                            this._popup.setLngLat(center).setHTML(html).addTo(this._map);
-                        }
-                    });
-
-                    // Mouse exit
-                    this._map.on("mouseleave", layerName, (event) => {
-                        this._map.getCanvas().style.cursor = '';
-                        this._popup.remove();
-                        lastFeature = null;
-
-                        if (this._hoveredStateId !== null) {
-                            this._map.setFeatureState(
-                                { source: sourceName, id: this._hoveredStateId },
-                                { hover: false }
-                            );
-                        }
-                        this._hoveredStateId = null;
-                    });
                 break;
-        } 
 
-        console.log("INFO: Interactions for layer '" + layerName + "' have been registered.");
+            }
+        });
+
+        console.log("INFO: Interactions have been registered.");
     }
 
     /**
@@ -417,16 +400,27 @@ class InteractionHandler {
      * @param {String} layerName name of layer containing feature
      * @param {JSONObject} feature selected feature
      */
-    mouseClick(layerName, feature) {
+    mouseClick(feature) {
         if(feature == null) return;
 
+        // Not a clickable feature, get out
+        if(!this.#isClickable(feature)) {
+            this._map.getCanvas().style.cursor = 'default';
+            this._popup.remove();
+            return;
+        }
+
         let self = this;
+        let layerName = feature.layer.id;
+
         if(layerName.endsWith("_cluster")) {
             // If a cluster feature, let the user pick the leaf feature
             this.#handleClusterClick(feature, function(newFeature) {
-                self.mouseClick(layerName.replace("_cluster", ""), newFeature);
+                self.mouseClick(newFeature);
             });
             return;
+        } else if(layerName.endsWith("_arrows")) {
+            layerName = layerName.replace("_arrows", "");
         } 
         
         // Hide the legend
