@@ -7,24 +7,17 @@ logger = logging.getLogger(__name__)
 FILE_SERVER = "file server"
 TRIPLE_STORE = "triple store"
 
-FS_UPLOAD_SETTINGS_KEY = "file_server_upload_settings"
-TS_UPLOAD_SETTINGS_KEY = "triple_store_upload_settings"
 QUERY_SETTINGS_KEY = "kg_query_endpoints"
 WRITERS_PREFIXES_KEY = "prefixes"
 HANDLER_KWARGS = "handler_kwargs"
 
-
+FS_UPLOAD_SETTINGS_KEY = "file_server_upload_settings"
+TS_UPLOAD_SETTINGS_KEY = "triple_store_upload_settings"
 URL_ENDPOINT_KEY = "url"
 AUTH_FILE_KEY = "auth_file"
 NO_AUTH_KEY = "no_auth"
 FS_SUBDIRS_KEY = "subdirs"
 UPL_FILE_TYPES = "upload_file_types"
-
-DEFAULT_CONFIG_KEYS = [
-    URL_ENDPOINT_KEY,
-    AUTH_FILE_KEY,
-    NO_AUTH_KEY,
-]
 
 CONFIG_GROUPS = [
     FS_UPLOAD_SETTINGS_KEY,
