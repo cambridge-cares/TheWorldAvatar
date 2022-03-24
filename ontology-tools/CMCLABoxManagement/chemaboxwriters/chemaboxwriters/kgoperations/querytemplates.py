@@ -3,7 +3,7 @@ import chemaboxwriters.kgoperations.remotestore_client as rsc
 # from py4j.java_gateway import Py4JJavaError
 import logging
 import re
-from typing import Optional
+from typing import Optional, List, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -55,53 +55,40 @@ def get_species_iri(
     return speciesIRI
 
 
-def get_assemblyModel(modularity, planarity, gbu_number, symmetry):
+def get_assemblyModel(gbu_properties: List[Dict], mops_symmetry: str):
     # queries the assembly model of a particular MOP.
-    queryStr = """
+
+    queryStr_part1 = """
     PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
     PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
     PREFIX Measure: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
-    SELECT ?AssemblyModel ?NumberValue ?Planarity ?Modularity ?Symmetry
+    SELECT ?AssemblyModel
     WHERE
     {
-    ?mopIRI OntoMOPs:hasMOPFormula ?MOPFormula .
-    ?mopIRI OntoMOPs:hasProvenance ?Provenance .
-    ?Provenance OntoMOPs:hasReferenceDOI ?MOPReference .
     ?mopIRI OntoMOPs:hasAssemblyModel ?AssemblyModel .
-    ?AssemblyModel OntoMOPs:hasSymmetryPointGroup ?Symmetry .
-    ?AssemblyModel OntoMOPs:hasGenericBuildingUnitNumber ?GBUNumber .
-    ?GBUNumber OntoMOPs:isNumberOf ?GBU .
-    ?GBU OntoMOPs:hasPlanarity ?Planarity .
-    ?GBU OntoMOPs:hasModularity ?Modularity .
-    ?GBUNumber OntoSpecies:value ?NumberValue .
-    FILTER ((?Modularity) = "#MODULARITY") .
-    FILTER ((?Planarity) = "#PLANARITY") .
-    FILTER ((?NumberValue) = "#NUMBER") .
-    FILTER ((?Symmetry) = "#SYMMETRY") .
-    }"""
-    queryStr = queryStr.replace("#MODULARITY", str(modularity))
-    queryStr = queryStr.replace("#PLANARITY", str(planarity))
-    queryStr = queryStr.replace("#NUMBER", str(gbu_number))
-    queryStr = queryStr.replace("#SYMMETRY", str(symmetry))
+    ?AssemblyModel OntoMOPs:hasSymmetryPointGroup "#Symmetry#" .
+    """.replace("#Symmetry#", str(mops_symmetry))
+
+    queryStr_part2 = ''
+
+    for i in range(len(gbu_properties)):
+        planarity_i = gbu_properties[i]['planarity']
+        modularity_i = gbu_properties[i]['modularity']
+        gbu_number_i = gbu_properties[i]['gbu_number']
+
+        queryStr_part2 = queryStr_part2 + """
+            ?AssemblyModel OntoMOPs:hasGenericBuildingUnitNumber ?#GBUNumber# .
+            ?#GBUNumber# OntoMOPs:isNumberOf ?#GBU# .
+            ?#GBU# OntoMOPs:hasPlanarity "#Planarity#" .
+            ?#GBU# OntoMOPs:hasModularity "#Modularity#" .
+            ?#GBUNumber# OntoSpecies:value "#NumberValue#" .
+            """.replace("#GBUNumber#", f"GBUNumber_{i}") \
+               .replace("#GBU#", f"GBU_{i}") \
+               .replace("#Planarity#", planarity_i) \
+               .replace("#Modularity#", modularity_i) \
+               .replace("#NumberValue#", gbu_number_i)
+
+    queryStr = f"{queryStr_part1}\n{queryStr_part2}}}"
     return queryStr
-
-
-def get_assembly_iri(
-    modularity: str,
-    planarity: str,
-    gbu_number: str,
-    symmetry: str,
-    store_client: rsc.RemoteStoreClient,
-):
-
-    target = []
-    results = store_client.execute_query(
-        query_str=get_assemblyModel(modularity, planarity, gbu_number, symmetry)
-    )
-    if results:
-        for k in range(len(results)):
-            if "AssemblyModel" in results[k].keys():
-                target.append(results[k]["AssemblyModel"])
-    return target
