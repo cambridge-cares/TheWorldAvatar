@@ -405,32 +405,3 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 trg_iri=f"mops_pref:{gbu}_{asmodel_uuid}_{i}",
                 rel="onto_mops:#isFunctioningAs",
             )  # Connect the CBU to its corresonding GBU
-
-
-handler = OM_JSON_TO_OM_CSV_Handler()
-query_endpoints = {
-    "omops": "http://theworldavatar.com/blazegraph/namespace/omops/sparql/",
-
-}
-handler._configure_remote_store_client_from_dict(query_endpoints)
-
-gbu_properties = [
-    {'modularity': "2",
-        'planarity': "linear",
-        'gbu_number': "10",
-    },
-    {'modularity': "2",
-        'planarity': "linear",
-        'gbu_number': "10",
-    },
-]
-
-response = handler.do_remote_store_query(
-    endpoint_prefix="omops",
-    query_str=qtmpl.get_assemblyModel(
-        gbu_properties=gbu_properties,
-        mops_symmetry = "Td"
-    )
-)
-if response:
-    assemblymodel = response[0]['AssemblyModel']
