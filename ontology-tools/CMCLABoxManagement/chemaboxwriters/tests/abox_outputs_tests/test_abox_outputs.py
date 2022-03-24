@@ -276,7 +276,6 @@ def test_omops_abox_writer(
     inp_file_or_dir,
     inp_file_type,
     regenerate_result,
-    mocker,
     clean_tests,
     regenerate_all_results=False,
 ):
@@ -287,10 +286,6 @@ def test_omops_abox_writer(
     print()
 
     inp_file_or_dir = os.path.join(OMOPS_REF_DIR, inp_file_or_dir)
-    #mocker.patch(
-    #    "chemaboxwriters.ontomops.handlers.om_json_handler.qtmpl.get_assembly_iri",
-    #    return_value=[],
-    #)
 
     pipeline = asp.assemble_pipeline(
         pipeline_type=OMOPS_PIPELINE, config_file=ABOX_CONFIG_FILE
