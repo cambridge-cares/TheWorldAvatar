@@ -19,7 +19,7 @@ class RemoteStoreClient(ABC):
         pass
 
     @abstractmethod
-    def execute_query(self, query_str: str) -> List[Dict[str, Any]]:
+    def execute_query(self, query_str: str) -> List:
         pass
 
 
@@ -28,7 +28,7 @@ class JPSRemoteStoreClient(RemoteStoreClient):
 
         return jpsBaseLib_view.RemoteStoreClient(endpoint_url)
 
-    def execute_query(self, query_str: str) -> List[Dict[str, Any]]:
+    def execute_query(self, query_str: str) -> List:
         response = self._store_client.executeQuery(query_str)
         return json.loads(str(response))
 
@@ -39,11 +39,27 @@ class SPARQLWrapperRemoteStoreClient(RemoteStoreClient):
         store_client.setReturnFormat(JSON)
         return store_client
 
-    def execute_query(self, query_str: str) -> List[Dict[str, Any]]:
+    def execute_query(self, query_str: str) -> List:
         self._store_client.setQuery(query_str)
         response = self._store_client.queryAndConvert()
-        return response
 
+        return self._sparql_wrapper_jps_client_response_adapter(
+                    response=response
+                )
+
+    def _sparql_wrapper_jps_client_response_adapter(
+        self,
+        response: Dict
+        )->List:
+
+        results = []
+        results_dict= {}
+        for result_item in response['results']['bindings']:
+            for key, item in result_item.items():
+                results_dict.update({key: item['value']})
+        if results_dict:
+            results.append(results_dict)
+        return results
 
 TRemoteStoreClient = Type[RemoteStoreClient]
 
