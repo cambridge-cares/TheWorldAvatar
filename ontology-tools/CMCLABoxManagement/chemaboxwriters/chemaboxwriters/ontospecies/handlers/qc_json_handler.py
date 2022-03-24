@@ -98,19 +98,19 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
 
     def _os_jsonwriter(self, file_path: str, output_file_path: str) -> None:
 
-        spec_pref = self.get_handler_prefix_value(name="spec_pref")
+        spec_pref = self.get_prefix_value(name="spec_pref")
 
-        random_id = self.get_handler_parameter_value(name="random_id")
-        enth_of_form = self.get_handler_parameter_value(name="enth_of_form")
-        enth_of_form_unit = self.get_handler_parameter_value(name="enth_of_form_unit")
-        enth_of_form_phase = self.get_handler_parameter_value(name="enth_of_form_phase")
-        enth_of_form_ref_temp = self.get_handler_parameter_value(
+        random_id = self.get_parameter_value(name="random_id")
+        enth_of_form = self.get_parameter_value(name="enth_of_form")
+        enth_of_form_unit = self.get_parameter_value(name="enth_of_form_unit")
+        enth_of_form_phase = self.get_parameter_value(name="enth_of_form_phase")
+        enth_of_form_ref_temp = self.get_parameter_value(
             name="enth_of_form_ref_temp"
         )
-        enth_of_form_ref_temp_unit = self.get_handler_parameter_value(
+        enth_of_form_ref_temp_unit = self.get_parameter_value(
             name="enth_of_form_ref_temp_unit"
         )
-        enth_of_form_provenance = self.get_handler_parameter_value(
+        enth_of_form_provenance = self.get_parameter_value(
             name="enth_of_form_provenance"
         )
 
@@ -128,18 +128,20 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         data_out[GEOM] = data[GEOM]
         data_out[SPIN_MULT] = data[SPIN_MULT]
 
-        if enth_of_form:
+        if enth_of_form is not None:
             data_out[ENTH_FORM] = enth_of_form
-        if enth_of_form_unit:
+        if enth_of_form_unit is not None:
             data_out[ENTH_UNIT] = enth_of_form_unit
-        if enth_of_form_phase:
+        if enth_of_form_phase is not None:
             data_out[ENTH_PHASE] = enth_of_form_phase
-        if enth_of_form_ref_temp:
+        if enth_of_form_ref_temp is not None:
             data_out[ENTH_REFTEMP] = enth_of_form_ref_temp
-        if enth_of_form_ref_temp_unit:
+        if enth_of_form_ref_temp_unit is not None:
             data_out[ENTH_REFTEMP_UNIT] = enth_of_form_ref_temp_unit
-        if enth_of_form_provenance:
+        if enth_of_form_provenance is not None:
             data_out[ENTH_PROV] = enth_of_form_provenance
+        if spec_pref is None:
+            spec_pref = ''
 
         if ATOM_MASSES not in data.keys():
             data_out[MOLWT] = get_molwt_from_atom_types(data_out[ATOM_TYPES])
@@ -192,7 +194,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             random_id = utilsfunc.get_random_id()
 
         data_out[globals.ENTRY_UUID] = random_id
-        data_out[globals.ENTRY_IRI] = spec_pref + "Species_" + random_id
+        data_out[globals.ENTRY_IRI] = f"{spec_pref}Species_{random_id}"
 
         utilsfunc.write_dict_to_file(dict_data=data_out, dest_path=output_file_path)
 

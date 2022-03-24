@@ -69,9 +69,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         entryIRI = data[globals.ENTRY_IRI]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
-            for prefix_name in self._handler_prefixes:
-                prefix_value = self.get_handler_prefix_value(name=prefix_name)
-                writer.register_prefix(name=prefix_name, value=prefix_value)
+            for prefix_name in self._handler_prefixes._parameters:
+                prefix_value = self.get_prefix_value(name=prefix_name)
+                if prefix_value is not None:
+                    writer.register_prefix(name=prefix_name, value=prefix_value)
 
             writer.write_header()
 

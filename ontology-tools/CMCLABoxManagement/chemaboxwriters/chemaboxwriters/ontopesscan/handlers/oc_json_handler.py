@@ -64,10 +64,19 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
 
     def _ops_jsonwriter(self, file_paths: List[str], output_file_path: str):
 
-        random_id = self.get_handler_parameter_value(name="random_id")
-        os_iris = self.get_handler_parameter_value(name="os_iris")
-        os_atoms_iris = self.get_handler_parameter_value(name="os_atoms_iris")
-        oc_atoms_pos = self.get_handler_parameter_value(name="oc_atoms_pos")
+        random_id = self.get_parameter_value(name="random_id")
+        os_iris = self.get_parameter_value(name="os_iris")
+        os_atoms_iris = self.get_parameter_value(name="os_atoms_iris")
+        oc_atoms_pos = self.get_parameter_value(name="oc_atoms_pos")
+
+        if os_iris is None:
+            os_iris = ''
+
+        if os_atoms_iris is None:
+            os_atoms_iris = ''
+
+        if oc_atoms_pos is None:
+            oc_atoms_pos = ''
 
         data_out = {}
         data_out[globals.SPECIES_IRI] = os_iris.split(",")
@@ -91,7 +100,7 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
         if not random_id:
             random_id = utilsfunc.get_random_id()
         data_out[globals.ENTRY_UUID] = random_id
-        data_out[globals.ENTRY_IRI] = "PotentialEnergySurfaceScan_" + random_id
+        data_out[globals.ENTRY_IRI] = f"PotentialEnergySurfaceScan_{random_id}"
 
         scanCoordinateValue = []
         ontoCompChemJobs = []

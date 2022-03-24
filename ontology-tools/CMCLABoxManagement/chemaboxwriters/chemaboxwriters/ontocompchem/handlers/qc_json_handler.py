@@ -69,9 +69,15 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         output_file_path: str,
     ) -> None:
 
-        random_id = self.get_handler_parameter_value(name="random_id")
-        ontospecies_IRI = self.get_handler_parameter_value(name="ontospecies_IRI")
-        comp_pref = self.get_handler_prefix_value(name="comp_pref")
+        random_id = self.get_parameter_value(name="random_id")
+        ontospecies_IRI = self.get_parameter_value(name="ontospecies_IRI")
+        comp_pref = self.get_prefix_value(name="comp_pref")
+
+        if random_id is None:
+            random_id = utilsfunc.get_random_id()
+
+        if comp_pref is None:
+            comp_pref = ''
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
@@ -79,39 +85,14 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         xyz = get_xyz_from_parsed_json(data)
         inchi = obconverter.obConvert(xyz, "xyz", "inchi")
 
-        if self._remote_store_client is not None and ontospecies_IRI is None:
-            try:
-                store_client = self._remote_store_client.get_store_client(
-                    endpoint_prefix="ospecies",
-                    store_client_class=rsc.SPARQLWrapperRemoteStoreClient,
-                )
-                ontospecies_IRI = querytemplates.get_species_iri(
-                    inchi=inchi, store_client=store_client
-                )
-            except app_exceptions.MissingQueryEndpoint:
-                logger.warning(
-                    (
-                        "Couldn't query for the ontospecies IRI, The query "
-                        "endpoint not specified in the aboxwriters config file."
-                    )
-                )
-        # query_endpoints = self.endpoints_config.get(abconf.QUERY_SETTINGS_KEY, {})
-        # ospecies_query_endpoint = query_endpoints.get(
-        #    abconf.OSPECIES_QUERY_ENDPOINT_KEY
-        # )
-        # if ospecies_query_endpoint is None:
-        #    logger.warning(
-        #        (
-        #            "Couldn't query for the ontospecies IRI, The query "
-        #            "endpoint not specified in the aboxwriters config file."
-        #        )
-        #    )
-        # if ontospecies_IRI is None and ospecies_query_endpoint is not None:
-        #    ontospecies_IRI = querytemplates.get_species_iri(
-        #        inchi=inchi, query_endpoint=ospecies_query_endpoint
-        #    )
-        if not random_id:
-            random_id = utilsfunc.get_random_id()
+        if ontospecies_IRI is None:
+            response = self.do_remote_store_query(
+                endpoint_prefix="ospecies",
+                store_client_class=rsc.SPARQLWrapperRemoteStoreClient,
+                query_str=querytemplates.spec_inchi_query(inchi)
+            )
+            if response:
+                ontospecies_IRI = response[0]['speciesIRI']
 
         # at the moment we only support gaussian
         jobType = ""
@@ -121,7 +102,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             else:
                 jobType = "Gxx"
         data[globals.SPECIES_IRI] = ontospecies_IRI
-        data[globals.ENTRY_IRI] = comp_pref + jobType + "_" + random_id
+        data[globals.ENTRY_IRI] = f"{comp_pref}{jobType}_{random_id}"
         data[globals.ENTRY_UUID] = random_id
 
         utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
