@@ -253,6 +253,9 @@ class CesiumWrapper {
             return [{
                 id: feature.id._id,
                 layer: this.getLayer(feature.id.dataSource.name),
+                geometry: {
+                    coordinates: []
+                },
                 properties: feature.id.properties
             }];
         } else {
@@ -264,6 +267,10 @@ class CesiumWrapper {
         let dataSource = this.getSource(featureSpecification.source)[0];
         let entity = dataSource?.entities.getById(featureSpecification.id);
         if (entity != null) entity.state = state;
+    }
+
+    getLayoutProperty(featureLayer, property) {
+        return null;
     }
 
 }
