@@ -1,5 +1,5 @@
 import docopt
-from chemaboxwriters.app import write_abox
+import chemaboxwriters.app as app
 import chemaboxwriters.app_exceptions.app_exceptions as app_exc
 import chemaboxwriters.common.assemble_pipeline as asp
 import chemaboxwriters.common.utilsfunc as utilsfunc
@@ -90,7 +90,7 @@ def start():
         )
 
         if args["--info"]:
-            pipeline.info()  # type: ignore
+            pipeline.info()
             return
 
 
@@ -102,8 +102,8 @@ def start():
             input_type=utilsfunc.stage_name_to_enum(args["--inp-file-type"])
         )
 
-        write_abox(
-            pipeline=pipeline,  # type: ignore
+        app.write_abox(
+            pipeline=pipeline,
             file_or_dir=args["--file-or-dir"],
             input_file_type=args["--inp-file-type"],
             file_ext=args["--file-ext"],
