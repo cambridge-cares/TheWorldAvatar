@@ -249,25 +249,22 @@
 	 * 
 	 * @returns {MapBox map}
 	 */
-	createMap(containerName) {
+	initialiseMap(map) {
 		if(this._registry == null) {
 			console.log("ERROR: Cannot create map until metadata has been initialised!");
 			return;
 		}
 
-		// Specify default options
-		let defaultOptions = {
-			container: containerName,
-			style: "mapbox://styles/mapbox/light-v10?optimize=true",
+		this._map = map;
+
+		map.setStyle("mapbox://styles/mapbox/light-v10?optimize=true");
+
+		map.jumpTo({
 			center: this._registry.globalMeta["defaultCenter"],
 			zoom: this._registry.globalMeta["defaultZoom"],
 			pitch: this._registry.globalMeta["defaultPitch"],
 			bearing: this._registry.globalMeta["defaultBearing"]
-		};
-
-		// Create the map instance
-		mapboxgl.accessToken = mapboxAPI;
-		this._map = new mapboxgl.Map(defaultOptions);
+		});
 
 		// Now that we have a map, do some initialisation of handlers
 		this._sourceHandler = new SourceHandler(this._map, this._registry);
@@ -284,7 +281,6 @@
 		);
 		
 		console.log("INFO: Map object has been initialised.");
-		return this._map;
 	}
 
 	/**
