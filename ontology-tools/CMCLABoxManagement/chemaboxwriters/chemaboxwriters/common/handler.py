@@ -1,24 +1,81 @@
-from enum import Enum
-from typing import List, Tuple, Dict, Optional, Literal, Callable
-from chemaboxwriters.common.uploaders import (
-    UploaderClient,
-    get_file_server_uploader,
-    get_triple_store_uploader,
-)
-from chemaboxwriters.kgoperations.remotestore_client import (
-    RemoteStoreClientContainer,
-    get_store_client_container,
-)
+import chemaboxwriters.common.uploaders as uploaders
+import chemaboxwriters.kgoperations.remotestore_client as rsc
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from abc import ABC, abstractmethod
-
 from pprint import pformat
+from enum import Enum
+from typing import List, Tuple, Dict, Optional, Any
 import logging
+
 
 logger = logging.getLogger(__name__)
 
-Handler_Arg = Literal["prefix", "parameter"]
+class Handler_Parameters:
+    def __init__(self, name: str, handler_name: str)->None:
+        self.name = name
+        self.handler_name = handler_name
+        self._parameters = {}
 
+    def add_parameter(
+        self,
+        name: str,
+        value: Optional[str] = None,
+        required: bool = False,
+    ) -> None:
+        if name in self._parameters:
+            logger.warning(f"{self.handler_name} handler {self.name}: {name} already exists.")
+            return
+        self._parameters[name] = {"value": value, "required": required}
+
+
+    def add_parameters_from_dict(
+        self,
+        parameters_dict: Dict
+    ) -> None:
+        for param_name, param_settings in parameters_dict.items():
+            self.add_parameter(
+                name=param_name,
+                required=param_settings.get("required"),
+                value=param_settings.get("value"),
+            )
+
+
+    def get_parameter_value(
+        self,
+        name: str,
+    ) -> Optional[str]:
+
+        if name not in self._parameters:
+            return
+
+        return self._parameters[name]["value"]
+
+    def set_parameter_value(self, name: str, value: Optional[str])->None:
+        if name not in self._parameters:
+            self.add_parameter(name = name, value= value, required = False)
+            return
+
+        self._parameters[name]["value"] = value
+
+    def is_parameter_required(self, name: str) -> bool:
+        if name not in self._parameters:
+            return False
+        return self._parameters[name]["required"]
+
+
+    def check_configs(self) -> None:
+        for parameter in self._parameters:
+            if (
+                self.is_parameter_required(name=parameter)
+                and self.get_parameter_value(name=parameter) is None
+            ):
+
+                raise app_exceptions.MissingRequiredInput(
+                    (
+                        f"Missing required {self.name} in {self.handler_name} handler."
+                    )
+
+                )
 
 class Handler(ABC):
     """
@@ -38,25 +95,31 @@ class Handler(ABC):
         self.written_files = []
         self._in_stage = in_stage
         self._out_stage = out_stage
-        self._handler_prefixes: Dict = {}
+        self._handler_prefixes: Handler_Parameters = Handler_Parameters(
+            name='prefix',
+            handler_name=self.name
+        )
         if prefixes is not None:
-            self.register_handler_prefixes_from_dict(prefixes=prefixes)
-        self._handler_params: Dict = {}
+            self._handler_prefixes.add_parameters_from_dict(parameters_dict=prefixes)
+        self._handler_params: Handler_Parameters = Handler_Parameters(
+            name='parameter',
+            handler_name=self.name
+        )
         if handler_params is not None:
-            self.register_handler_parameters_from_dict(paramaters=handler_params)
+            self._handler_params.add_parameters_from_dict(parameters_dict=handler_params)
 
-        self._file_server_uploader: Optional[UploaderClient] = None
-        self._triple_store_uploader: Optional[UploaderClient] = None
-        self._remote_store_client: Optional[RemoteStoreClientContainer] = None
+        self._file_server_uploader: Optional[uploaders.UploaderClient] = None
+        self._triple_store_uploader: Optional[uploaders.UploaderClient] = None
+        self._remote_store_client: Optional[rsc.RemoteStoreClientContainer] = None
 
-    def set_file_server_uploader(self, file_server_uploader: UploaderClient) -> None:
+    def set_file_server_uploader(self, file_server_uploader: uploaders.UploaderClient) -> None:
         self._file_server_uploader = file_server_uploader
 
-    def set_triple_store_uploader(self, triple_store_uploader: UploaderClient) -> None:
+    def set_triple_store_uploader(self, triple_store_uploader: uploaders.UploaderClient) -> None:
         self._triple_store_uploader = triple_store_uploader
 
     def set_remote_store_client(
-        self, remote_store_client: RemoteStoreClientContainer
+        self, remote_store_client: rsc.RemoteStoreClientContainer
     ) -> None:
         self._remote_store_client = remote_store_client
 
@@ -72,170 +135,30 @@ class Handler(ABC):
 
         return self._triple_store_uploader.get_upload_configs()
 
-    def register_handler_parameters_from_dict(self, paramaters: Dict) -> None:
-        self._register_handler_args_from_dict(
-            arg_type="parameter", args_dict=paramaters
-        )
+    def get_parameter_value(self, name: str) -> Optional[str]:
+        return self._handler_params.get_parameter_value(name=name)
 
-    def register_handler_prefixes_from_dict(self, prefixes: Dict) -> None:
-        self._register_handler_args_from_dict(arg_type="prefix", args_dict=prefixes)
+    def get_prefix_value(self, name: str) -> Optional[str]:
+        return self._handler_prefixes.get_parameter_value(name=name)
 
-    def register_handler_parameter(
-        self, name: str, value: Optional[str] = None, required: bool = False
-    ) -> None:
-
-        self._register_handler_arg(
-            arg_type="parameter", name=name, value=value, required=required
-        )
-
-    def register_handler_prefix(
-        self, name: str, value: Optional[str] = None, required: bool = False
-    ) -> None:
-
-        self._register_handler_arg(
-            arg_type="prefix", name=name, value=value, required=required
-        )
-
-    def get_handler_parameter_value(self, name: str) -> str:
-        return self._get_handler_arg_value(arg_type="parameter", name=name)
-
-    def get_handler_prefix_value(self, name: str) -> str:
-        return self._get_handler_arg_value(arg_type="prefix", name=name)
-
-    def set_handler_parameter_value(
+    def set_parameter_value(
         self, name: str, value: Optional[str] = None
     ) -> None:
+        self._handler_params.set_parameter_value(name=name, value=value)
 
-        self._set_handler_arg_value(arg_type="parameter", name=name, value=value)
+    def set_prefix_value(self, name: str, value: Optional[str] = None) -> None:
+        self._handler_prefixes.set_parameter_value(name=name, value=value)
 
-    def set_handler_prefix_value(self, name: str, value: Optional[str] = None) -> None:
-        self._set_handler_arg_value(arg_type="prefix", name=name, value=value)
+    def is_parameter_required(self, name: str) -> bool:
+        return self._handler_params.is_parameter_required(name=name)
 
-    def is_handler_parameter_required(self, name: str) -> bool:
-        return self._is_handler_arg_required(arg_type="parameter", name=name)
+    def is_prefix_required(self, name: str) -> bool:
+        return self._handler_prefixes.is_parameter_required(name=name)
 
-    def is_handler_prefix_required(self, name: str) -> bool:
-        return self._is_handler_arg_required(arg_type="prefix", name=name)
+    def check_configs(self) -> None:
+        self._handler_params.check_configs()
+        self._handler_prefixes.check_configs()
 
-    def check_configs(self) -> bool:
-        for prefix in self._handler_prefixes:
-            if (
-                self.is_handler_prefix_required(name=prefix)
-                and self.get_handler_prefix_value(name=prefix) is None
-            ):
-                return False
-        for param in self._handler_params:
-            if (
-                self.is_handler_parameter_required(name=param)
-                and self.get_handler_parameter_value(name=param) is None
-            ):
-                return False
-        return True
-
-    def _register_handler_args_from_dict(
-        self, arg_type: Handler_Arg, args_dict: Dict
-    ) -> None:
-        register_method = self._get_handler_args_register_method(arg_type=arg_type)
-
-        for param_name, param_settings in args_dict.items():
-            register_method(
-                name=param_name,
-                required=param_settings["required"],
-                value=param_settings.get("value"),
-            )
-
-    def _register_handler_arg(
-        self,
-        arg_type: Handler_Arg,
-        name: str,
-        value: Optional[str] = None,
-        required: bool = False,
-    ) -> None:
-        arg_config = {"value": value, "required": required}
-        if arg_type == "parameter":
-            self._handler_params[name] = arg_config
-        else:
-            self._handler_prefixes[name] = arg_config
-
-    def _set_handler_arg_value(
-        self,
-        arg_type: Handler_Arg,
-        name: str,
-        value: Optional[str] = None,
-    ) -> None:
-
-        handler_args_dict = self._get_handler_args_dict(arg_type=arg_type)
-        if name not in handler_args_dict:
-            handler_arg_register_method = self._get_handler_args_register_method(
-                arg_type=arg_type
-            )
-            handler_arg_register_method(name)
-
-        handler_args_dict[name]["value"] = value
-
-    def _get_handler_arg_value(
-        self,
-        arg_type: Handler_Arg,
-        name: str,
-    ) -> str:
-
-        handler_args_dict = self._get_handler_args_dict(arg_type=arg_type)
-
-        if name not in handler_args_dict:
-            raise app_exceptions.MissingHandlerConfig(
-                (
-                    f"Parameter {name} does not exist. "
-                    f"Please register it first via register_handler_{arg_type} method."
-                )
-            )
-
-        value = handler_args_dict[name]["value"]
-
-        if value is None and self._is_handler_arg_required(
-            arg_type=arg_type, name=name
-        ):
-            raise app_exceptions.MissingRequiredInput(
-                (f"Parameter '[{arg_type}][{name}]' is required and must be provided.")
-            )
-
-        return handler_args_dict[name]["value"]
-
-    def _get_handler_args_dict(self, arg_type: Handler_Arg) -> Dict:
-        if arg_type == "parameter":
-            return self._handler_params
-        elif arg_type == "prefix":
-            return self._handler_prefixes
-        else:
-            raise app_exceptions.WrongHandlerArgType(
-                (
-                    f"Wrong handler argument type '{arg_type}'. Choose between "
-                    "'prefixes' and 'parameter' type."
-                )
-            )
-
-    def _get_handler_args_register_method(self, arg_type: Handler_Arg) -> Callable:
-        if arg_type == "parameter":
-            return self.register_handler_parameter
-        elif arg_type == "prefix":
-            return self.register_handler_prefix
-        else:
-            raise app_exceptions.WrongHandlerArgType(
-                (
-                    f"Wrong handler argument type '{arg_type}'. Choose between "
-                    "'prefixes' and 'parameter' type."
-                )
-            )
-
-    def _is_handler_arg_required(self, arg_type: Handler_Arg, name: str) -> bool:
-        handler_args_dict = self._get_handler_args_dict(arg_type=arg_type)
-        if name not in handler_args_dict:
-            raise app_exceptions.MissingHandlerConfig(
-                (
-                    f"Parameter {name} does not exist. "
-                    f"Please register it first via register_handler_{arg_type} method."
-                )
-            )
-        return handler_args_dict[name]["required"]
 
     def handle_input(
         self,
@@ -246,6 +169,9 @@ class Handler(ABC):
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
     ) -> Tuple[List[str], Enum]:
+
+
+        self.check_configs()
 
         self.do_uploads(
             inputs=inputs,
@@ -318,6 +244,37 @@ class Handler(ABC):
     def clean_written_files(self) -> None:
         self.written_files = []
 
+
+    def do_remote_store_query(
+        self,
+        endpoint_prefix: str,
+        query_str: str,
+        store_client_class: rsc.TRemoteStoreClient = rsc.JPSRemoteStoreClient
+        )->List[Dict[str,Any]]:
+
+        results = []
+        if self._remote_store_client is None:
+            return results
+
+        try:
+            store_client = self._remote_store_client.get_store_client(
+                endpoint_prefix=endpoint_prefix,
+                store_client_class=store_client_class,
+            )
+            results = store_client.execute_query(
+                query_str=query_str,
+            )
+        except app_exceptions.MissingQueryEndpoint:
+            logger.warning(
+                (
+                    f"Query unsuccessful. Query endpoint "
+                    f"{endpoint_prefix} is not defined."
+                )
+            )
+        finally:
+            return results
+
+
     @abstractmethod
     def _handle_input(
         self,
@@ -354,11 +311,12 @@ class Handler(ABC):
 
         if prefixes is not None:
             for name, value in prefixes.items():
-                self.set_handler_prefix_value(name=name, value=value)
+                self.set_prefix_value(name=name, value=value)
 
         if handler_kwargs is not None:
             for name, value in handler_kwargs.items():
-                self.set_handler_parameter_value(name=name, value=value)
+                self.set_parameter_value(name=name, value=value)
+
 
     def _configure_file_server_uploader_from_dict(self, config_dict: Dict) -> None:
         url = config_dict.get("url")
@@ -375,7 +333,7 @@ class Handler(ABC):
             raise app_exceptions.MissingUploadEndpointAuthorisation(
                 "Missing file server secrets file path."
             )
-        fs_uploader = get_file_server_uploader(
+        fs_uploader = uploaders.get_file_server_uploader(
             upload_file_types=upload_file_types,
             url=url,
             auth_file=auth_file,
@@ -383,6 +341,7 @@ class Handler(ABC):
             subdirs=subdirs,
         )
         self.set_file_server_uploader(fs_uploader)
+
 
     def _configure_triple_store_uploader_from_dict(self, config_dict: Dict) -> None:
         url = config_dict.get("url")
@@ -398,7 +357,7 @@ class Handler(ABC):
             raise app_exceptions.MissingUploadEndpointAuthorisation(
                 "Missing triple store secrets file path."
             )
-        fs_uploader = get_triple_store_uploader(
+        fs_uploader = uploaders.get_triple_store_uploader(
             upload_file_types=upload_file_types,
             url=url,
             auth_file=auth_file,
@@ -407,5 +366,5 @@ class Handler(ABC):
         self.set_triple_store_uploader(fs_uploader)
 
     def _configure_remote_store_client_from_dict(self, query_endpoints: Dict) -> None:
-        store_client = get_store_client_container(query_endpoints=query_endpoints)
+        store_client = rsc.get_store_client_container(query_endpoints=query_endpoints)
         self.set_remote_store_client(store_client)
