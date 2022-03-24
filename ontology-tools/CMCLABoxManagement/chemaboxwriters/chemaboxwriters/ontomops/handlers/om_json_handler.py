@@ -78,9 +78,10 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         mops_id = data[globals.ENTRY_IRI]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
-            for prefix_name in self._handler_prefixes:
-                prefix_value = self.get_handler_prefix_value(name=prefix_name)
-                writer.register_prefix(name=prefix_name, value=prefix_value)
+            for prefix_name in self._handler_prefixes._parameters:
+                prefix_value = self.get_prefix_value(name=prefix_name)
+                if prefix_value is not None:
+                    writer.register_prefix(name=prefix_name, value=prefix_value)
 
             self._write_initial(writer, gen_id, mops_id, data)
             self._write_provenance(writer, gen_id, mops_id, data)
@@ -112,8 +113,13 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         ).add_data_prop(
             rel="onto_mops:#hasCCDCNumber",
             value=data["Mops_CCDC_Number"],
-        )  # CCDC No. for the MOP
-        #
+        )
+        if 'Mops_xyz_geometry_file_url' in data:
+            writer.write_data_prop(
+                iri=f"mops_pref:{mops_id}",
+                rel="onto_mops:#hasXYZGeometryFile",
+                value=data["Mops_xyz_geometry_file_url"],
+        )
 
     def _write_provenance(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
 
@@ -220,40 +226,26 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
     def _get_assembly_model_uuid(self, gen_id, data) -> str:
 
         assemblymodel = None
-        if self._remote_store_client is not None:
-            search = []
-            try:
-                store_client = self._remote_store_client.get_store_client(
-                    endpoint_prefix="omops",
+        if assemblymodel is None:
+            symmetry = data["Mops_Symmetry_Point_Group"]
+            gbu_properties = []
+            for cbu in data["Mops_Chemical_Building_Units"]:
+                gbu_properties.append(
+                    {'modularity': cbu["GenericUnitModularity"],
+                     'planarity': cbu["GenericUnitPlanarity"],
+                     'gbu_number': cbu["GenericUnitNumber"]
+                    },
                 )
-                for i in range(2):
-                    result = qtmpl.get_assembly_iri(
-                        modularity=data["Mops_Chemical_Building_Units"][i][
-                            "GenericUnitModularity"
-                        ],
-                        planarity=data["Mops_Chemical_Building_Units"][i][
-                            "GenericUnitPlanarity"
-                        ],
-                        gbu_number=data["Mops_Chemical_Building_Units"][i][
-                            "GenericUnitNumber"
-                        ],
-                        symmetry=data["Mops_Symmetry_Point_Group"],
-                        store_client=store_client,
-                    )
-                    search.append(result)
-                if all(search):
-                    assemblymodel = list(set(search[0]).intersection(search[1]))[0]
-            except app_exceptions.MissingQueryEndpoint:
-                logger.warning(
-                    (
-                        "Couldn't query for the assembly model IRI, The query "
-                        "endpoint not specified in the aboxwriters config file."
-                    )
+
+            response = self.do_remote_store_query(
+                endpoint_prefix="omops",
+                query_str=qtmpl.get_assemblyModel(
+                    gbu_properties=gbu_properties,
+                    mops_symmetry = symmetry
                 )
-            except Exception as ec:
-                logger.exception(ec)
-
-
+            )
+            if response:
+                assemblymodel = response[0]['AssemblyModel']
 
         if assemblymodel is None:
             asmodel_uuid = gen_id
@@ -413,3 +405,32 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 trg_iri=f"mops_pref:{gbu}_{asmodel_uuid}_{i}",
                 rel="onto_mops:#isFunctioningAs",
             )  # Connect the CBU to its corresonding GBU
+
+
+handler = OM_JSON_TO_OM_CSV_Handler()
+query_endpoints = {
+    "omops": "http://theworldavatar.com/blazegraph/namespace/omops/sparql/",
+
+}
+handler._configure_remote_store_client_from_dict(query_endpoints)
+
+gbu_properties = [
+    {'modularity': "2",
+        'planarity': "linear",
+        'gbu_number': "10",
+    },
+    {'modularity': "2",
+        'planarity': "linear",
+        'gbu_number': "10",
+    },
+]
+
+response = handler.do_remote_store_query(
+    endpoint_prefix="omops",
+    query_str=qtmpl.get_assemblyModel(
+        gbu_properties=gbu_properties,
+        mops_symmetry = "Td"
+    )
+)
+if response:
+    assemblymodel = response[0]['AssemblyModel']

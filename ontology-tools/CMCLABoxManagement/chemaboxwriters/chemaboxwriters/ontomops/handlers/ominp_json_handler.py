@@ -15,6 +15,7 @@ HANDLER_PARAMETERS = {
     "random_id": {"required": False},
 }
 
+MOPS_XYZ_GEOMETRY_FILE_URL = 'Mops_xyz_geometry_file_url'
 
 class OMINP_JSON_TO_OM_JSON_Handler(Handler):
     """Handler converting ontomops ominp_json files to om_json.
@@ -41,10 +42,10 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
-        xyz_inputs = self._extract_XYZ_data(inputs)
-        if xyz_inputs:
+        json_file_xyz_file_map = self._extract_XYZ_data(inputs)
+        if json_file_xyz_file_map:
             self.do_uploads(
-                inputs=xyz_inputs,
+                inputs=list(json_file_xyz_file_map.values()),
                 input_type=globals.aboxStages.OMINP_XYZ,
                 dry_run=dry_run,
                 triple_store_uploads=triple_store_uploads,
@@ -58,7 +59,19 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
                 file_extension=self._out_stage.name.lower(),
                 out_dir=out_dir,
             )
-            self.om_jsonwriter(file_path=json_file_path, output_file_path=out_file_path)
+
+            xyz_file_location = None
+            if file_server_uploads is not None and json_file_xyz_file_map:
+                xyz_file = json_file_xyz_file_map.get(json_file_path)
+                if xyz_file is not None:
+                    xyz_file_location = file_server_uploads.get(xyz_file)
+                    if xyz_file_location is not None:
+                        xyz_file_location = xyz_file_location['location']
+
+            self.om_jsonwriter(
+                file_path = json_file_path,
+                output_file_path = out_file_path,
+                xyz_file_location= xyz_file_location)
             outputs.append(out_file_path)
         return outputs
 
@@ -66,11 +79,14 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         self,
         file_path: str,
         output_file_path: str,
-        random_id: str = "",
+        xyz_file_location: Optional[str]
     ) -> None:
 
-        omops_entry_prefix = self.get_handler_prefix_value(name="omops_entry_prefix")
-        random_id = self.get_handler_parameter_value(name="random_id")
+        omops_entry_prefix = self.get_prefix_value(name="omops_entry_prefix")
+        random_id = self.get_parameter_value(name="random_id")
+
+        if omops_entry_prefix is None:
+            omops_entry_prefix = ''
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
@@ -79,20 +95,21 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             random_id = utilsfunc.get_random_id()
 
         data[globals.ENTRY_UUID] = random_id
-        data[globals.ENTRY_IRI] = omops_entry_prefix + random_id
+        data[globals.ENTRY_IRI] = f"{omops_entry_prefix}{random_id}"
+        if xyz_file_location is not None:
+            data[MOPS_XYZ_GEOMETRY_FILE_URL] = xyz_file_location
 
         utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
 
     @staticmethod
-    def _extract_XYZ_data(inputs: List[str]):
-        xyz_file_paths = []
+    def _extract_XYZ_data(inputs: List[str])->Dict[str,str]:
+        json_file_xyz_file_map = {}
         for file_path in inputs:
             with open(file_path, "r") as file_handle:
                 data = json.load(file_handle)
                 xyz_file = data.get("Mops_XYZ_coordinates_file")
                 if xyz_file is not None:
                     xyz_file = os.path.abspath(xyz_file)
-                    if xyz_file not in xyz_file_paths:
-                        xyz_file_paths.append(xyz_file)
+                    json_file_xyz_file_map[file_path] = xyz_file
 
-        return xyz_file_paths
+        return json_file_xyz_file_map
