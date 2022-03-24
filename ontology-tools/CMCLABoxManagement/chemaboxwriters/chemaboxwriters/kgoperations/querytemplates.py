@@ -64,11 +64,12 @@ def get_assemblyModel(gbu_properties: List[Dict], mops_symmetry: str):
     PREFIX Measure: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     SELECT ?AssemblyModel
     WHERE
     {
     ?mopIRI OntoMOPs:hasAssemblyModel ?AssemblyModel .
-    ?AssemblyModel OntoMOPs:hasSymmetryPointGroup "#Symmetry#" .
+    ?AssemblyModel OntoMOPs:hasSymmetryPointGroup "#Symmetry#"^^xsd:string .
     """.replace("#Symmetry#", str(mops_symmetry))
 
     queryStr_part2 = ''
@@ -81,9 +82,9 @@ def get_assemblyModel(gbu_properties: List[Dict], mops_symmetry: str):
         queryStr_part2 = queryStr_part2 + """
             ?AssemblyModel OntoMOPs:hasGenericBuildingUnitNumber ?#GBUNumber# .
             ?#GBUNumber# OntoMOPs:isNumberOf ?#GBU# .
-            ?#GBU# OntoMOPs:hasPlanarity "#Planarity#" .
-            ?#GBU# OntoMOPs:hasModularity "#Modularity#" .
-            ?#GBUNumber# OntoSpecies:value "#NumberValue#" .
+            ?#GBU# OntoMOPs:hasPlanarity "#Planarity#"^^xsd:string .
+            ?#GBU# OntoMOPs:hasModularity "#Modularity#"^^xsd:string .
+            ?#GBUNumber# OntoSpecies:value "#NumberValue#"^^xsd:string .
             """.replace("#GBUNumber#", f"GBUNumber_{i}") \
                .replace("#GBU#", f"GBU_{i}") \
                .replace("#Planarity#", planarity_i) \
