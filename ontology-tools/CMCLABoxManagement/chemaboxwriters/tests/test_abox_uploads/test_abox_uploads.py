@@ -1,8 +1,5 @@
 from chemaboxwriters.app import write_abox
-from chemaboxwriters.common.utilsfunc import readFile, fileExists
 import pytest
-import shutil
-import re
 import os
 from chemaboxwriters.common.pipeline import Pipeline
 import chemaboxwriters.common.assemble_pipeline as asp
@@ -70,7 +67,6 @@ def _construct_full_url(upload_configs: Dict)->str:
         if not subdirs.endswith('/'): subdirs = f"{subdirs}/"
         url = f"{url}{subdirs}"
     return url
-
 
 def cleanup_test_data(writtenFiles: List[str]) -> None:
     for file in writtenFiles:
