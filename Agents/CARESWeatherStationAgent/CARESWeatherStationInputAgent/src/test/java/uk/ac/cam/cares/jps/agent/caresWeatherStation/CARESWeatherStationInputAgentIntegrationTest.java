@@ -66,7 +66,7 @@ public class CARESWeatherStationInputAgentIntegrationTest {
     private ArrayList<String> IRIs;
 
     // Default list of timestamps
-    private final String[] timestamps = {"2022-07-11T16:10:00", "2022-07-11T16:15:00", "2022-07-11T16:20:00", "2022-07-11T16:25:00"};
+    private final String[] timestamps = {"2022-07-11T16:10:00Z", "2022-07-11T16:15:00Z", "2022-07-11T16:20:00Z", "2022-07-11T16:25:00Z"};
 
 
     // Values created as example readings
@@ -243,6 +243,9 @@ public class CARESWeatherStationInputAgentIntegrationTest {
         for (String iri: IRIs) {
             Assert.assertEquals(weatherValues, ts.getValues(iri));
         }
+        for (int i=0;i< timestamps.length;++i){
+            timestamps[i]=timestamps[i].replace("Z","");
+        }
         // Assert timestamps
         Assert.assertTrue(OffsetDateTime.of(LocalDateTime.parse(timestamps[0]), CARESWeatherStationInputAgent.ZONE_OFFSET)
                 .isEqual(tsClient.getMinTime(IRIs.get(0))));
@@ -268,6 +271,9 @@ public class CARESWeatherStationInputAgentIntegrationTest {
         insertTimeSeries();
         // Add data for weather readings up to last reading
         List<OffsetDateTime> times = new ArrayList<>();
+        for (int i=0;i< timestamps.length;++i){
+            timestamps[i]=timestamps[i].replace("Z","");
+        }
         for(int i = 0; i < timestamps.length ; i++) {
             if (i < (timestamps.length-1)) {
                 times.add(OffsetDateTime.of(LocalDateTime.parse(timestamps[i]), CARESWeatherStationInputAgent.ZONE_OFFSET));
@@ -281,7 +287,6 @@ public class CARESWeatherStationInputAgentIntegrationTest {
         // Check that database was updated and existing gas data is untouched
         ts = tsClient.getTimeSeries(IRIs);
         JSONArray jsArr = weatherDataReadings.getJSONArray("observations");
-        JSONObject currentEntry = jsArr.getJSONObject(0);
         Assert.assertEquals(jsArr.length(),ts.getTimes().size());
         // Check that data content is correct
         for (String iri: IRIs) {

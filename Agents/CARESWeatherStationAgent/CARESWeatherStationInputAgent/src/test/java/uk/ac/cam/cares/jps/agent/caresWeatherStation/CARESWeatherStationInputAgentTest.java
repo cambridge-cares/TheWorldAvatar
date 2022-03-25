@@ -38,7 +38,7 @@ public class CARESWeatherStationInputAgentTest {
 
     private final String[] keys = {"temp","dewpt","heatIndex","windChill","windGust","windSpeed","pressure","precipRate", "precipTotal" ,"elev"};
     // Default list of timestamps
-    private final String[] timestamps = {"2022-07-11T16:10:00", "2022-07-11T16:15:00", "2022-07-11T16:20:00", "2022-07-11T16:25:00"};
+    private final String[] timestamps = {"2022-07-11T16:10:00Z", "2022-07-11T16:15:00Z", "2022-07-11T16:20:00Z", "2022-07-11T16:25:00Z"};
 
     private ArrayList<Double> weatherValues;
     // Readings used by several tests
@@ -363,11 +363,11 @@ public class CARESWeatherStationInputAgentTest {
 
     @Test
     public void testUpdateDataPrune() {
-        int numEntriesToKeep = 2;
-        //assert weatherDataReadings.length() > numEntriesToKeep + 1;
+
         JSONArray jsArr1 = weatherDataReadings.getJSONArray("observations");
         JSONObject currentEntry1 = jsArr1.getJSONObject(0);
-        String maxTime = currentEntry1.getString(CARESWeatherStationInputAgent.timestampKey);
+
+        String maxTime = currentEntry1.getString(CARESWeatherStationInputAgent.timestampKey).replace("Z","");
         Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(OffsetDateTime.parse(maxTime+"+00:00"));
         // Run the update
         testAgent.updateData(weatherDataReadings);
@@ -397,7 +397,7 @@ public class CARESWeatherStationInputAgentTest {
         // Use a max time that is past max time of readings
         JSONArray jsArr1 = weatherDataReadings.getJSONArray("observations");
         JSONObject currentEntry1 = jsArr1.getJSONObject(jsArr1.length()-1);
-        String maxTime = currentEntry1.getString(CARESWeatherStationInputAgent.timestampKey);
+        String maxTime = currentEntry1.getString(CARESWeatherStationInputAgent.timestampKey).replace("Z","");
 
         OffsetDateTime endTime = OffsetDateTime.parse(maxTime+"+00:00");
         Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(endTime.plusDays(1));
@@ -444,7 +444,7 @@ public class CARESWeatherStationInputAgentTest {
             String key = it.next();
             Assert.assertTrue(readings.containsKey(key));
         }
-        Assert.assertTrue(readings.containsKey("obsTimeLocal"));
+        Assert.assertTrue(readings.containsKey("obsTimeUtc"));
     }
 
 
@@ -480,8 +480,8 @@ public class CARESWeatherStationInputAgentTest {
 
 
 
-                String[] Timestamps = {"2021-07-11T16:10:00", "2021-07-11T16:15:00",
-                        "2021-07-11T16:20:00", "2021-07-11T16:25:00"};
+                String[] Timestamps = {"2021-07-11T16:10:00Z", "2021-07-11T16:15:00Z",
+                        "2021-07-11T16:20:00Z", "2021-07-11T16:25:00Z"};
                 Map<String, List<?>> timeStampReadings = new HashMap<>();
                 Map<String, List<?>> weatherReadings = new HashMap<>();
 
@@ -545,7 +545,7 @@ public class CARESWeatherStationInputAgentTest {
         Method convertStringToOffsetDateTime = CARESWeatherStationInputAgent.class.getDeclaredMethod("convertStringToOffsetDateTime", String.class);
         convertStringToOffsetDateTime.setAccessible(true);
         // Test with a valid string
-        String timestamp = "2022-07-11T16:15:00";
+        String timestamp = "2022-07-11T16:15:00Z";
         OffsetDateTime time = (OffsetDateTime) convertStringToOffsetDateTime.invoke(testAgent, timestamp);
         Assert.assertEquals(2022, time.getYear());
         Assert.assertEquals(7, time.getMonth().getValue());
@@ -561,8 +561,11 @@ public class CARESWeatherStationInputAgentTest {
         List<String> iris = Arrays.asList("data_int","data_str");
         List<Integer> intValues = new ArrayList<>();
         List<String> stringValues = new ArrayList<>();
-        String[] timestamps = {"2022-07-11T16:10:00+00:00", "2022-07-11T16:15:00+00:00",
-                "2022-07-11T16:20:00+00:00", "2022-07-11T16:25:00+00:00"};
+        String[] timestamps = {"2022-07-11T16:10:00+00:00Z", "2022-07-11T16:15:00+00:00Z",
+                "2022-07-11T16:20:00+00:00Z", "2022-07-11T16:25:00+00:00Z"};
+        for (int i=0;i< timestamps.length;++i){
+            timestamps[i]=timestamps[i].replace("Z","");
+        }
         List<OffsetDateTime> times = new ArrayList<>();
         for (int i = 0; i < timestamps.length; i++) {
             times.add(OffsetDateTime.parse(timestamps[i]));

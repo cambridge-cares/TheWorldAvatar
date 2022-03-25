@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.caresWeatherStation;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jooq.exception.DataAccessException;
+import org.openrdf.query.algebra.evaluation.function.datetime.Timezone;
 import uk.ac.cam.cares.jps.agent.utils.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -12,9 +13,12 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,7 +55,8 @@ public class CARESWeatherStationInputAgent {
     /**
      * The JSON key for the timestamp
      */
-    public static final String timestampKey = "obsTimeLocal";
+    public static final String timestampKey = "obsTimeUtc";
+
 
     //JSON key denoting whether the observations obtained from the weather station passed quality control checks
     public static final String status= "qcStatus";
@@ -192,7 +197,7 @@ public class CARESWeatherStationInputAgent {
             throw new JPSRuntimeException("Readings can not be empty!",e);
         }
 
-        // Only do something if both readings contain data
+        // Only do something if readings contain data
         if(!weatherReadingsMap.isEmpty()) {
             List<TimeSeries<OffsetDateTime>> timeSeries;
             try {
@@ -240,16 +245,18 @@ public class CARESWeatherStationInputAgent {
 
         // First save the values as Object //
         Map<String, List<Object>> readingsMap = new HashMap<>();
-        JSONArray jsArr = new JSONArray();
+        JSONArray jsArr;
         try {
             jsArr = readings.getJSONArray("observations");
             for(int i=0; i<jsArr.length();i++) {
                 JSONObject currentEntry = jsArr.getJSONObject(i);
-                for (Iterator<String> it = currentEntry.keys(); it.hasNext(); ) {
+                Iterator<String> it = currentEntry.keys();
+                while(it.hasNext()) {
                     String key = it.next();
-                    if (key != "metric_si") {
+                    //LOGGER.info(String.format("Reading %s key now", key));
+                    Object value = currentEntry.get(key);
+                    if (value.getClass() != JSONObject.class) {
                         // Get the value and add it to the corresponding list
-                        Object value = currentEntry.get(key);
                         // Handle cases where the API returned null
                         if (value == JSONObject.NULL) {
                             // Handling depends on the datatype of the current key
@@ -267,24 +274,17 @@ public class CARESWeatherStationInputAgent {
                         if (!readingsMap.containsKey(key)) {
                             readingsMap.put(key, new ArrayList<>());
                         }
+                        if (key=="metric_si")
+                            LOGGER.info(String.format("Reading %s key now", key));
                         readingsMap.get(key).add(value);
                     } else {
-                        JSONObject obj = currentEntry.getJSONObject(key);
+                        JSONObject obj = currentEntry.getJSONObject("metric_si");
                         for (Iterator<String> it1 = obj.keys(); it1.hasNext(); ) {
                             String key1 = it1.next();
                             Object value1 = obj.get(key1);
                             // Handle cases where the API returned null
                             if (value1 == JSONObject.NULL) {
-                                // Handling depends on the datatype of the current key
-                                String datatype1 = getClassFromJSONKey(key1).getSimpleName();
-                                // If it is a number use NaN (not a number)
-                                if (datatype1.equals(Integer.class.getSimpleName()) | datatype1.equals(Double.class.getSimpleName())) {
-                                    value1 = Double.NaN;
-                                }
-                                // Otherwise, use the string NA (not available)
-                                else {
-                                    value1 = "NA";
-                                }
+                                value1 = Double.NaN;
                             }
                             // If the key is not present yet initialize the list
                             if (!readingsMap.containsKey(key1)) {
@@ -299,28 +299,28 @@ public class CARESWeatherStationInputAgent {
             throw new JPSRuntimeException("Readings can not be empty!", e);
         }
 
-            // Convert the values to the proper datatype //
-            Map<String, List<?>> readingsMapTyped = new HashMap<>();
-            for (String key : readingsMap.keySet()) {
-                // Get the class (datatype) corresponding to the key
-                String datatype = getClassFromJSONKey(key).getSimpleName();
-                // Get current list with object type
-                List<Object> valuesUntyped = readingsMap.get(key);
-                List<?> valuesTyped;
-                // Use mapping to cast the values into integer, double, boolean or string
-                // The Number cast is required for org.json datatypes
-                if (datatype.equals(Integer.class.getSimpleName())) {
-                    valuesTyped = valuesUntyped.stream().map(value -> ((Number) value).intValue()).collect(Collectors.toList());
-                } else if (datatype.equals(Double.class.getSimpleName())) {
-                    valuesTyped = valuesUntyped.stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
-                } else if (datatype.equals(Long.class.getSimpleName())) {
-                    valuesTyped = valuesUntyped.stream().map(value -> ((Number) value).longValue()).collect(Collectors.toList());
-                } else {
-                    valuesTyped = valuesUntyped.stream().map(Object::toString).collect(Collectors.toList());
-                }
-                readingsMapTyped.put(key, valuesTyped);
+        // Convert the values to the proper datatype //
+        Map<String, List<?>> readingsMapTyped = new HashMap<>();
+        for (String key : readingsMap.keySet()) {
+            // Get the class (datatype) corresponding to the key
+            String datatype = getClassFromJSONKey(key).getSimpleName();
+            // Get current list with object type
+            List<Object> valuesUntyped = readingsMap.get(key);
+            List<?> valuesTyped;
+            // Use mapping to cast the values into integer, double, boolean or string
+            // The Number cast is required for org.json datatypes
+            if (datatype.equals(Integer.class.getSimpleName())) {
+                valuesTyped = valuesUntyped.stream().map(x -> ((Number) x).intValue()).collect(Collectors.toList());
+            } else if (datatype.equals(Double.class.getSimpleName())) {
+                valuesTyped = valuesUntyped.stream().map(x -> ((Number) x).doubleValue()).collect(Collectors.toList());
+            } else if (datatype.equals(Long.class.getSimpleName())) {
+                valuesTyped = valuesUntyped.stream().map(x -> ((Number) x).longValue()).collect(Collectors.toList());
+            } else {
+                valuesTyped = valuesUntyped.stream().map(Object::toString).collect(Collectors.toList());
             }
-            return readingsMapTyped;
+            readingsMapTyped.put(key, valuesTyped);
+        }
+        return readingsMapTyped;
 
     }
 
@@ -334,6 +334,7 @@ public class CARESWeatherStationInputAgent {
           throws  NoSuchElementException {
         // Extract the timestamps by mapping the private conversion method on the list items
         // that are supposed to be string (toString() is necessary as the map contains lists of different types)
+
         List<OffsetDateTime> weatherTimestamps = weatherReadings.get(CARESWeatherStationInputAgent.timestampKey).stream()
                 .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
 
@@ -358,7 +359,7 @@ public class CARESWeatherStationInputAgent {
                     throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
                 }
             }
-            // Timestamps depend on which readings are used for the mapping
+
             List<OffsetDateTime> times = weatherTimestamps;
             // Create the time series object and add it to the list
 
@@ -376,9 +377,14 @@ public class CARESWeatherStationInputAgent {
      * @param timestamp The timestamp as string, the format should be equal to 2007-12-03T10:15:30.
      * @return The resulting datetime object.
      */
-    private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
-        // Convert first to a local time
-        LocalDateTime localTime = LocalDateTime.parse(timestamp);
+    private OffsetDateTime convertStringToOffsetDateTime(String timestamp)  {
+
+        timestamp=timestamp.replace("Z","");
+
+        DateTimeFormatter dtf=DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        LocalDateTime localTime=LocalDateTime.parse(timestamp,dtf);
+
+
         // Then add the zone id
         return OffsetDateTime.of(localTime, CARESWeatherStationInputAgent.ZONE_OFFSET);
     }
@@ -427,10 +433,10 @@ public class CARESWeatherStationInputAgent {
      * @return The corresponding class as Class<?> object.
      */
     private Class<?> getClassFromJSONKey(String jsonKey) {
-        if (jsonKey.contains(timestampKey) || jsonKey.contains("stationID") || jsonKey.contains("obsTimeUtc") || jsonKey.contains("tz")){
+        if (jsonKey.contains(timestampKey) || jsonKey.contains("stationID") || jsonKey.contains("obsTimeLocal") || jsonKey.contains("tz")){
             return String.class;
         }
-        else if(jsonKey==status){
+        else if( jsonKey.contains(status) || jsonKey.contains("winddirAvg")){
             return Integer.class;
         }
         else if(jsonKey=="epoch"){
