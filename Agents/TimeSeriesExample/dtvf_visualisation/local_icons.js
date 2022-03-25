@@ -12,5 +12,6 @@ const EXAMPLE_ICONS = [
     "img/icons/beta.png",
     "img/icons/beta-empty.png",
     "img/icons/gamma.png",
-    "img/icons/gamma-empty.png"
+    "img/icons/gamma-empty.png",
+    "img/icons/arrow-sdf.png"
 ];

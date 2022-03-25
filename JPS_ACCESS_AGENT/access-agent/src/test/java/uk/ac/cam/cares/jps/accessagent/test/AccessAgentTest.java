@@ -74,7 +74,7 @@ public class AccessAgentTest{
 		Mockito.doReturn(true).when(agent).validateInput(any(JSONObject.class));
 		Mockito.doReturn(null).when(agent).get(any(JSONObject.class));
 		Mockito.doNothing().when(agent).put(any(JSONObject.class));
-		Mockito.doNothing().when(agent).post(any(JSONObject.class));
+		Mockito.doReturn(null).when(agent).post(any(JSONObject.class));
 		
 		JSONObject requestParams;
 		
@@ -146,6 +146,7 @@ public class AccessAgentTest{
 		assertEquals("OH",jo.get("o").toString());
 	}
 	
+	@Test
 	public void testGetWithSparqlUpdate() throws ParseException {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -210,6 +211,7 @@ public class AccessAgentTest{
 		assertEquals(content, strResult);		
 	}
 	
+	@Test
 	public void testPutWithSparqlUpdate() throws ParseException {
 				
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -226,6 +228,7 @@ public class AccessAgentTest{
         Assertions.assertThrows( JPSRuntimeException.class, ()->{agent.put(jo);});
 	}
 	
+	@Test
 	public void testPutWithSparqlQuery() {
 				
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -241,7 +244,7 @@ public class AccessAgentTest{
 	}
 	
 	@Test
-	public void testPost() throws ParseException {
+	public void testPostWithSparqlUpdate() throws ParseException {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
 		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
@@ -262,6 +265,7 @@ public class AccessAgentTest{
 		assertEquals("TEST",result.get("o").toString());      
 	}
 	
+	@Test
 	public void testPostWithSparqlQuery() {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -273,10 +277,16 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
 		
-        Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.post(jo);});								
+		agent.post(jo);		
+        		
+		JSONObject result = agent.get(jo);		
+		JSONArray ja = new JSONArray(result.getString("result")); 
+		jo = ja.getJSONObject(0); 
+		assertEquals("OH",jo.get("o").toString());
 	}
 	
-	public void testPostWithoutSparqlUpdate() {
+	@Test
+	public void testPostWithoutSparql() {
 				
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
 		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));

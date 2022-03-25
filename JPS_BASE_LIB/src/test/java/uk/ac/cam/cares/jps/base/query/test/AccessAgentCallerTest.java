@@ -10,7 +10,9 @@ import java.net.URLDecoder;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
@@ -21,7 +23,7 @@ public class AccessAgentCallerTest {
 	public void testCreateRequestUrlCase1() throws UnsupportedEncodingException, URISyntaxException {
 			
 		String expectedPath = JPSConstants.ACCESS_AGENT_PATH;
-		String expectedRequestUrl = "http://"+JPSConstants.ACCESS_AGENT_HOST+expectedPath;
+		String expectedRequestUrl = "http://"+KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST)+expectedPath;
 		
 		String datasetUrl = null; 
 		String targetUrl = "http://www.theworldavatar.com:83/kb/ontokin/ABF.owl";
@@ -66,7 +68,7 @@ public class AccessAgentCallerTest {
 		JSONObject joparams;
 		
 		String expectedPath = JPSConstants.ACCESS_AGENT_PATH;
-		String expectedRequestUrl =  "http://"+JPSConstants.ACCESS_AGENT_HOST+expectedPath;
+		String expectedRequestUrl =  "http://"+KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST)+expectedPath;
 		
 		//////////////////////
 		//dataset, no target/graph
@@ -221,7 +223,7 @@ public class AccessAgentCallerTest {
 		
 		String url;
 		String result;
-		String expected = "http://"+JPSConstants.ACCESS_AGENT_HOST+JPSConstants.ACCESS_AGENT_PATH;
+		String expected = "http://"+KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST)+JPSConstants.ACCESS_AGENT_PATH;
 		String expectedLocal = "http://localhost:8080"+JPSConstants.ACCESS_AGENT_PATH;
 		
 		url = "http://www.theworldavatar.com:83/kb/agents/Service__OpenWeatherMap.owl%23Service";
