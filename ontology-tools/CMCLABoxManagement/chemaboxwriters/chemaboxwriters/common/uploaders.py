@@ -21,9 +21,7 @@ class UploaderClient:
         self._uploader_type = uploader_type
         self._upload_file_types = upload_file_types
         self._url = url
-        self._auth_file = (
-            os.path.abspath(auth_file) if auth_file is not None else auth_file
-        )
+        self._auth_file = auth_file
         self._no_auth = no_auth
         self._subdirs = subdirs
         self._uploader = get_uploader(
