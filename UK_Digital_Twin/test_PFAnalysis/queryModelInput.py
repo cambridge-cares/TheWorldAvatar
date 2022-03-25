@@ -166,11 +166,6 @@ def queryGeneratorModelInput_new(numOfBus, numOfBranch, endPoint) -> list:
     if len(res) == 0:
       raise Exception("The queryGeneratorModelInput is failed.")
     
-    for r in res:
-      for key in r.keys():
-          if '\"^^' in  r[key]:
-            r[key] = (r[key].split('\"^^')[0]).replace('\"','')   
-    
     return res
 
 def queryGeneratorModelInput(numOfBus, numOfBranch, endPoint, splitCharacter):

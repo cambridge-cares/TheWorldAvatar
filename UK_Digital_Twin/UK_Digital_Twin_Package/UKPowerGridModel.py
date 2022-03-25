@@ -86,19 +86,19 @@ class UKEbusModel:
         self.location = Location
         
         # Model input
-        self.INPUT_VARIABLE_KEYS[0] = None # BUS
-        self.INPUT_VARIABLE_KEYS[1] = 1 # TYPE
-        self.INPUT_VARIABLE_KEYS[2] = None # PD_INPUT
-        self.INPUT_VARIABLE_KEYS[3] = 0 # GD_INPUT
-        self.INPUT_VARIABLE_KEYS[4] = 0 # GS
-        self.INPUT_VARIABLE_KEYS[5] = 0 # BS
-        self.INPUT_VARIABLE_KEYS[6] = 1 # AREA 
-        self.INPUT_VARIABLE_KEYS[7] = 1 # VM_INPUT
-        self.INPUT_VARIABLE_KEYS[8] = 0 # VA_INPUT            
-        self.INPUT_VARIABLE_KEYS[9] = 400 # BASEKV
-        self.INPUT_VARIABLE_KEYS[10] = 1 # ZONE
-        self.INPUT_VARIABLE_KEYS[11] = 1.05 # VMAX
-        self.INPUT_VARIABLE_KEYS[12] = 0.95 # VMIN
+        self.BUS = None # BUS
+        self.TYPE = 1 # TYPE
+        self.PD_INPUT = None # PD_INPUT
+        self.GD_INPUT = 0 # GD_INPUT
+        self.GS = 0 # GS
+        self.BS = 0 # BS
+        self.AREA = 1 # AREA 
+        self.VM_INPUT = 1 # VM_INPUT
+        self.VA_INPUT = 0 # VA_INPUT            
+        self.BASEKV = 400 # BASEKV
+        self.ZONE = 1 # ZONE
+        self.VMAX = 1.05 # VMAX
+        self.VMIN = 0.95 # VMIN
         
         # Model output
         self.PD_OUTPUT = None
@@ -182,19 +182,19 @@ class UKElineModel:
         
         ## Attributes ##
         # model input
-        self.INPUT_VARIABLE_KEYS[0] = None # FROMBUS
-        self.INPUT_VARIABLE_KEYS[1] = None # TOBUS
-        self.INPUT_VARIABLE_KEYS[2] = None # R
-        self.INPUT_VARIABLE_KEYS[3] = None # X
-        self.INPUT_VARIABLE_KEYS[4] = None # B
-        self.INPUT_VARIABLE_KEYS[5] = None # RateA
-        self.INPUT_VARIABLE_KEYS[6] = 0 # RateB
-        self.INPUT_VARIABLE_KEYS[7] = 0 # RateC
-        self.INPUT_VARIABLE_KEYS[8] = 1 # RATIO
-        self.INPUT_VARIABLE_KEYS[9] = 0 # ANGLE
-        self.INPUT_VARIABLE_KEYS[10] = 1 # STATUS
-        self.INPUT_VARIABLE_KEYS[11] = -360 # ANGMIN
-        self.INPUT_VARIABLE_KEYS[12] = 360 # ANGMAX
+        self.FROMBUS = None # FROMBUS
+        self.TOBUS = None # TOBUS
+        self.R = None # R
+        self.X = None # X
+        self.B = None # B
+        self.RateA = None # RateA
+        self.RateB = 0 # RateB
+        self.RateC = 0 # RateC
+        self.RATIO = 1 # RATIO
+        self.ANGLE = 0 # ANGLE
+        self.STATUS = 1 # STATUS
+        self.ANGMIN = -360 # ANGMIN
+        self.ANGMAX = 360 # ANGMAX
         
         # The PF analysis output
         self.FROMBUSINJECTION_P = None
@@ -279,27 +279,27 @@ class UKEGenModel:
         self.location = Location
         
         # Model input
-        self.INPUT_VARIABLE_KEYS[0] = None # BUS
-        self.INPUT_VARIABLE_KEYS[1] = None # PG_INPUT
-        self.INPUT_VARIABLE_KEYS[2] = 0 # QG_INPUT
-        self.INPUT_VARIABLE_KEYS[3] = None # QMAX
-        self.INPUT_VARIABLE_KEYS[4] = None # QMIN
-        self.INPUT_VARIABLE_KEYS[5] = 1 # VG
-        self.INPUT_VARIABLE_KEYS[6] = 100 # MBASE
-        self.INPUT_VARIABLE_KEYS[7] = 1 # STATUS
-        self.INPUT_VARIABLE_KEYS[8] = None # PMAX
-        self.INPUT_VARIABLE_KEYS[9] = None # PMIN
-        self.INPUT_VARIABLE_KEYS[10] = 0 # PC1
-        self.INPUT_VARIABLE_KEYS[11] = 0 # PC2
-        self.INPUT_VARIABLE_KEYS[12] = 0 # QC1MIN
-        self.INPUT_VARIABLE_KEYS[13] = 0 # QC1MAX
-        self.INPUT_VARIABLE_KEYS[14] = 0 # QC2MIN
-        self.INPUT_VARIABLE_KEYS[15] = 0 # QC2MAX
-        self.INPUT_VARIABLE_KEYS[16] = 0 # RAMP_AGC
-        self.INPUT_VARIABLE_KEYS[17] = 0 # RAMP_10
-        self.INPUT_VARIABLE_KEYS[18] = 0 # RAMP_30
-        self.INPUT_VARIABLE_KEYS[19] = 0 # RAMP_Q
-        self.INPUT_VARIABLE_KEYS[20] = 0 # APF
+        self.BUS = None # BUS
+        self.PG_INPUT = None # PG_INPUT
+        self.QG_INPUT = 0 # QG_INPUT
+        self.QMAX = None # QMAX
+        self.QMIN = None # QMIN
+        self.VG = 1 # VG
+        self.MBASE = 100 # MBASE
+        self.STATUS = 1 # STATUS
+        self.PMAX = None # PMAX
+        self.PMIN = None # PMIN
+        self.PC1 = 0 # PC1
+        self.PC2 = 0 # PC2
+        self.QC1MIN = 0 # QC1MIN
+        self.QC1MAX = 0 # QC1MAX
+        self.QC2MIN = 0 # QC2MIN
+        self.QC2MAX = 0 # QC2MAX
+        self.RAMP_AGC = 0 # RAMP_AGC
+        self.RAMP_10 = 0 # RAMP_10
+        self.RAMP_30 = 0 # RAMP_30
+        self.RAMP_Q = 0 # RAMP_Q
+        self.RAMP_Q = 0 # APF
         
         # Model output
         self.PG_OUTPUT = None
