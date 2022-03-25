@@ -13,7 +13,7 @@ The `chemaboxwriters` package provides a simple python API for generating and up
 All of the listed abox writers were built in a modular fashion as an input processing pipeline containing a number of different handlers, where each handler is specialised in processing a particular type of input. All handlers are tagged with the input and output stages determining supported type of input (file types) and produced output type. Once the handler processes the input it passes the generated output to another handler that is able to process it. Thanks to such design, all abox writers are capable of starting with any input type as long as one of its handlers supports it.
 
 Running any of the supported abox writers results in the following steps:
-1. assemble the pipeline
+1. assemble pipeline
 2. configure and check the pipeline handlers
 3. check and pass the inputs to the first handler that supports them
 4. handler: receives the inputs
