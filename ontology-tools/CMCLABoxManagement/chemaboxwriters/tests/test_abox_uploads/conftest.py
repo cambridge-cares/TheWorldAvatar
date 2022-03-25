@@ -2,10 +2,9 @@ import pytest
 import os
 import time
 import requests
-import pathlib
 
 
-THIS_DIR = pathlib.Path(__file__).parent.resolve()
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRETS_PATH = os.path.join(THIS_DIR, "docker_settings", "dummy_services_secrets")
 SERVICE_ROUTES = {
     "blazegraph-geo": "blazegraph/namespace/kb/sparql",
@@ -68,7 +67,7 @@ def start_services(session_scoped_container_getter):
 
     # this will run only once per entire test session and ensures that all the services
     # in docker containers are ready. Increase the sleep value in case services need
-    #  bit more time to run on your machine.
+    # bit more time to run on your machine.
     time.sleep(8)
 
 def insert_namespaces():
