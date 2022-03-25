@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='compchemparser',
-    version='1.0.0',
+    version='1.0.2',
     author='Daniel Nurkowski and Angiras Menon',
     author_email='danieln@cmclinnovations.com',
     license='MIT',
@@ -12,7 +12,7 @@ setup(
     packages=find_packages(exclude=("tests")),
     long_description_content_type="text/markdown",
     description="The `compchemparser` package provides parsers to convert quantum chemistry log files into a more condensed JSON format.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/thermo/CoMoCompChemParser/compchemparser",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/thermo/CoMoCompChemParser",
     # Specify which Python versions you support pip install' will check this
     # and refuse to install the project if the version does not match.
     python_requires='>=3.5, <4',
