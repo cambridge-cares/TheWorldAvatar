@@ -125,7 +125,7 @@ def check_uploader_connection_configs(
         assert uploader._url == uploader_configs[abconf.URL_ENDPOINT_KEY]
 
     if abconf.AUTH_FILE_KEY in uploader_configs:
-        assert uploader._auth_file == os.path.abspath(uploader_configs[abconf.AUTH_FILE_KEY])
+        assert uploader._auth_file == uploader_configs[abconf.AUTH_FILE_KEY]
 
     if abconf.NO_AUTH_KEY in uploader_configs:
         assert uploader._no_auth == uploader_configs[abconf.NO_AUTH_KEY]

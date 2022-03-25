@@ -2,11 +2,11 @@
 # in the upload_file_types and upload_file_types sections
 file_server_upload_settings:
     url: http://localhost:48086/FileServer/
-    auth_file: tests/abox_uploads_tests/docker_settings//dummy_services_secrets/fileserver_secrets.txt
+    auth_file: tests/test_abox_uploads/docker_settings/dummy_services_secrets/fileserver_secrets.txt
     no_auth: False
 triple_store_upload_settings:
     url: http://localhost:48083/blazegraph/namespace/kb/sparql/
-    auth_file: tests/abox_uploads_tests/docker_settings/dummy_services_secrets/blazegraph-geo_secrets.txt
+    auth_file: tests/test_abox_uploads/docker_settings/dummy_services_secrets/blazegraph-geo_secrets.txt
     no_auth: False
 kg_query_endpoints:
     ospecies: http://localhost:48083/blazegraph/namespace/ospecies/sparql/

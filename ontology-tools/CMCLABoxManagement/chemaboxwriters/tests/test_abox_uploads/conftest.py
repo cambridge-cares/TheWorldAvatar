@@ -2,8 +2,10 @@ import pytest
 import os
 import time
 import requests
+import pathlib
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+THIS_DIR = pathlib.Path(__file__).parent.resolve()
 SECRETS_PATH = os.path.join(THIS_DIR, "docker_settings", "dummy_services_secrets")
 SERVICE_ROUTES = {
     "blazegraph-geo": "blazegraph/namespace/kb/sparql",
@@ -16,29 +18,42 @@ def pytest_sessionstart(session):
 
     # split secrets file into user and passwd files needed for the docker compose
     for service in SERVICE_ROUTES:
-        service_secrets_file = os.path.join(SECRETS_PATH, f"{service}_secrets.txt")
-        service_user_file = os.path.join(SECRETS_PATH, f"{service}_user.txt")
-        service_passwd_file = os.path.join(SECRETS_PATH, f"{service}_passwd.txt")
+        create_auth_files(service=service)
 
-        with open(service_secrets_file, "r") as secrets_file:
-            user, passwd = secrets_file.read().strip().split(":")
 
-        with open(service_user_file, "w") as user_file:
-            user_file.write(user)
+def create_auth_files(service: str)->None:
+    service_secrets_file = os.path.abspath(
+        os.path.normpath(
+            os.path.join(SECRETS_PATH, f"{service}_secrets.txt")
+        )
+    )
+    service_user_file = os.path.abspath(
+        os.path.normpath(
+            os.path.join(SECRETS_PATH, f"{service}_user.txt")
+        )
+    )
+    service_passwd_file = os.path.abspath(
+        os.path.normpath(
+            os.path.join(SECRETS_PATH, f"{service}_passwd.txt")
+        )
+    )
 
-        with open(service_passwd_file, "w") as passwd_file:
-            passwd_file.write(passwd)
+    with open(service_user_file, "r") as user_file:
+        user = user_file.read().strip()
+
+    with open(service_passwd_file, "r") as passwd_file:
+        passwd = passwd_file.read().strip()
+
+    with open(service_secrets_file, "w") as secrets_file:
+        secrets_file.write(f"{user}:{passwd}")
 
 
 def pytest_sessionfinish(session):
     """This will run after all the tests"""
     for service in SERVICE_ROUTES:
-        service_user_file = os.path.join(SECRETS_PATH, f"{service}_user.txt")
-        service_passwd_file = os.path.join(SECRETS_PATH, f"{service}_passwd.txt")
-        if os.path.exists(service_user_file):
-            os.remove(service_user_file)
-        if os.path.exists(service_passwd_file):
-            os.remove(service_passwd_file)
+        service_secrets_file = os.path.join(SECRETS_PATH, f"{service}_secrets.txt")
+        if os.path.exists(service_secrets_file):
+            os.remove(service_secrets_file)
 
 
 # ----------------------------------------------------------------------------------

@@ -204,7 +204,7 @@ def test_opsscan_abox_uploads(
         ("OM_om_json_test\\example.ominp_json", "ominp_json", 1, 1),
     ],
 )
-def test_omops_abox_writer(
+def test_omops_abox_uploads(
     inp_file_or_dir,
     inp_file_type,
     fs_num_uploads,

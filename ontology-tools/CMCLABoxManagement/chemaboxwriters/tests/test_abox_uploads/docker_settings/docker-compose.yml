@@ -9,6 +9,8 @@ services:
     container_name: "blazegraph_geo_test"
     ports:
       - 48083:8080
+    secrets:
+      - blazegraph_password
 
   # File server
   fileserver:
@@ -23,6 +25,6 @@ services:
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: dummy_services_secrets/blazegraph_passwd.txt
+    file: dummy_services_secrets/blazegraph-geo_passwd.txt
   file_server_password:
     file: dummy_services_secrets/fileserver_passwd.txt
