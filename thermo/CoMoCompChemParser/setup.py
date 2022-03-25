@@ -35,7 +35,6 @@ setup(
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional
         'console_scripts': [
-            #'ccparse=compchemparser:compchemparser.main',
              'ccparse=compchemparser.main:main'
         ],
     },
