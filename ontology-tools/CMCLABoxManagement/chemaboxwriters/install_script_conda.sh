@@ -123,9 +123,6 @@ function install_local_dependencies {
     echo "-----------------------------------------------"
     echo ""
 	$SPATH/../../../thermo/chemutils/install_script_conda.sh -i -s -n $VENV_NAME $DEV_INSTALL
-    echo ""
-    echo ""
-	$SPATH/../../../thermo/CoMoCompChemParser/install_script_conda.sh -i -s -n $VENV_NAME $DEV_INSTALL
 
     if [ $? -eq 0 ]; then
     	echo ""
