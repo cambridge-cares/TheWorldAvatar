@@ -2,12 +2,9 @@ package uk.ac.cam.cares.jps.base.query;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -15,12 +12,13 @@ import java.sql.Statement;
 import java.util.Base64;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
@@ -802,43 +800,96 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * upload an RDF file to a sparql endpoint using REST API only tested with
-     * Blazegraph
+     * upload a file to the endpoint using its REST API
+     * only tested the xml format with Blazegraph and RDF4j, this may vary between stores
+     * the update endpoint for rdf4j is <BASE_HTTP_URL>/rdf4j-server/repositories/<REPOSITORY_NAME>/statements
+     * The query and update endpoints for Blazegraph are the same
+     * Accepted extensions: rdf, rdfs, owl, xml, nt, ntx, ttl, ttlx, n3, trix, trig, nq, rsj, json
      *
      * @param file
      */
-    public void uploadRDFFile(File file) {
-        try (InputStream is = new FileInputStream(file)) {
-            StringEntity entity = new StringEntity(IOUtils.toString(is, StandardCharsets.UTF_8), ContentType.create("application/rdf+xml"));
+    public void uploadFile(File file) {
+    	if (!file.exists()) {
+    		throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
+    	}
+    	
+    	String extension = FilenameUtils.getExtension(file.getAbsolutePath());
+    	HttpEntity entity;
+    	switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
+    		case "rdf":
+    		case "rdfs":
+    		case "owl":
+    		case "xml":
+    			entity = new FileEntity(file, ContentType.create("application/rdf+xml"));
+    			break;
+    		
+    		case "nt":
+    			entity = new FileEntity(file, ContentType.TEXT_PLAIN);
+    			break;
+    			
+    		case "ntx":
+    			entity = new FileEntity(file, ContentType.create("application/x-n-triples-RDR"));
+    			break;
 
-            // tried a few methods to add credentials, this seems to be the only way that works
-            // i.e. setting it manually in the header
-            HttpPost postRequest = new HttpPost(this.updateEndpoint);
-            if ((this.userName != null) && (this.password != null)) {
-                String auth = this.userName + ":" + this.password;
-                String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes());
-                postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+    		case "ttl":
+    			entity = new FileEntity(file, ContentType.create("application/x-turtle"));
+    			break;
+    			
+    		case "ttlx":
+    			entity = new FileEntity(file, ContentType.create("application/x-turtle-RDR"));
+    			break;
+    			
+    		case "n3":
+    			entity = new FileEntity(file, ContentType.create("text/rdf+n3"));
+    			break;
+    			
+    		case "trix":
+    			entity = new FileEntity(file, ContentType.create("application/trix"));
+    			break;
+    			
+    		case "trig":
+    			entity = new FileEntity(file, ContentType.create("application/x-trig"));
+    			break;
+    			
+    		case "nq":
+    			entity = new FileEntity(file, ContentType.create("text/x-nquads"));
+    			break;
+    			
+    		case "srj":
+    			entity = new FileEntity(file, ContentType.create("application/sparql-results+json"));
+    			break;
+    			
+    		case "json":
+    			entity = new FileEntity(file, ContentType.APPLICATION_JSON);
+    			break;
+    		
+    		default:
+    			throw new JPSRuntimeException("Unsupported file extension: " + extension);
+    	}
+
+        // tried a few methods to add credentials, this seems to be the only way that works
+        // i.e. setting it manually in the header
+        HttpPost postRequest = new HttpPost(this.updateEndpoint);
+        if ((this.userName != null) && (this.password != null)) {
+            String auth = this.userName + ":" + this.password;
+            String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes());
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+        }
+
+        // add contents to the post request 
+        postRequest.setEntity(entity);
+
+        LOGGER.info("Uploading " + file + " to " + this.updateEndpoint);
+        // then send the post request
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            CloseableHttpResponse response = httpclient.execute(postRequest);
+
+            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
+                throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
             }
-
-            // add contents to the post request 
-            postRequest.setEntity(entity);
-
-            LOGGER.info("Uploading " + file + " to " + this.updateEndpoint);
-            // then send the post request
-            CloseableHttpClient httpclient = HttpClients.createDefault();
-            try {
-                CloseableHttpResponse response = httpclient.execute(postRequest);
-
-                if (response.getStatusLine().getStatusCode() != 200) {
-                    throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
-                }
-            } catch (IOException ex) {
-                throw new JPSRuntimeException("Upload RDF file failed.", ex);
-            }
-        } catch (FileNotFoundException ex) {
-            throw new JPSRuntimeException("Could not find file '" + file.getAbsolutePath() + "'.", ex);
         } catch (IOException ex) {
-            throw new JPSRuntimeException("Could not read file '" + file.getAbsolutePath() + "'.", ex);
+            throw new JPSRuntimeException("Upload RDF file failed.", ex);
         }
     }
 }

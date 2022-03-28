@@ -18,6 +18,11 @@ class DataRegistry {
     _meta = [];
 
     /**
+     * Cached GeoJSON sources, keyed by name.
+     */
+    _cachedGeoJSON = [];
+
+    /**
      * Returns the metadata for the entire visualisation.
      */
     get globalMeta() {
@@ -29,6 +34,13 @@ class DataRegistry {
      */
     get meta() {
         return this._meta;
+    }
+
+    /**
+     * 
+     */
+    get cachedGeoJSON() {
+        return this._cachedGeoJSON;
     }
 
     /**

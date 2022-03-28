@@ -11,27 +11,58 @@ class ControlHandler {
 	#controlHTML = `
 		<div id="controlContainer">
 			<div id="cameraContainer">
-				<p>Camera:</p>
+				<div id="controlTitle">
+					<p>Camera:</p>
+					<div class="tooltip">
+						<label class="switch"><input type="checkbox" onclick="manager.setTiltshift(this.checked)"><span class="slider round"><p>DoF</p></label>
+						<span class="tooltiptext">Enable/Disable depth of field</span>
+					</div>
+				</div>
 				<a href="#" onclick="manager.changeCamera('bird')">Bird's Eye</a>
 				<br>
 				<a href="#" onclick="manager.changeCamera('pitch')">Pitched</a>
 			</div>
 			<div id="terrainContainer">
-				<p>Terrain:</p>
+				<div id="controlTitle">
+					<p>Terrain:</p>
+					<div class="tooltip">
+						<label class="switch"><input type="checkbox" onclick="manager.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
+						<span class="tooltiptext">Enable/Disable 3D terrain</span>
+					</div>
+				</div>
+			
 				<input type="radio" name="terrain" id="light" onclick="manager.changeTerrain('light')" checked>
 				<label for="light">Light</label>
 				<br>
 				<input type="radio" name="terrain" id="dark" onclick="manager.changeTerrain('dark')">
 				<label for="dark">Dark</label>
 				<br>
+				<input type="radio" name="terrain" id="outdoors" onclick="manager.changeTerrain('outdoors')">
+				<label for="outdoors">Outdoors</label>
+				<br>
+				<input type="radio" name="terrain" id="blueprint" onclick="manager.changeTerrain('blueprint')">
+				<label for="blueprint">Blueprint</label>
+				<br>
 				<input type="radio" name="terrain" id="satellite" onclick="manager.changeTerrain('satellite')">
-				<label for="satellite">Satellite</label>
+				<label for="satellite">Satellite (Raw)</label>
 				<br>
 				<input type="radio" name="terrain" id="satellite-streets" onclick="manager.changeTerrain('satellite-streets')">
-				<label for="satellite-streets">Satellite (with Streets)</label>
+				<label for="satellite-streets">Satellite (Labelled)</label>
 			</div>
-			<div id="layerContainer">TREE-GOES-HERE</div>
+			<div id="layerContainer">
+				<div id="controlTitle">
+					<p>Layers:</p>
+					<div class="tooltip">
+						<label class="switch"><input type="checkbox" onclick="manager.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
+						<span class="tooltiptext">Show/Hide place names</span>
+					</div>
+				</div>
+				<div id="layerTreeContainer">
+					TREE-GOES-HERE
+				</div>
+			</div>
 			<div id="selectionsContainer"></div>
+			<div id="developerContainer"></div>
 		</div>
 	`;
 
@@ -93,7 +124,47 @@ class ControlHandler {
 		// Build the initial dropdown selections
 		let selectString = this.buildDropdown(this._registry.meta);
 		document.getElementById("selectionsContainer").innerHTML += selectString;
+
+		// Show/hide selections box is empty
+		selectionsContainer.style.display = (selectionsContainer.childElementCount > 0) ? "block" : "none";
 	}
+
+	/**
+	 * Shows debugging info, should only be used for developers during testing.
+	 */
+	showDeveloperControls() {
+		let developerInfo = document.getElementById("developerContainer");
+		developerInfo.style.display = "none !important";
+
+		let self = this;
+		this._map.on("mousemove", function(event) {
+			self.#updateDeveloperControls(event);
+		});
+	}
+
+	/**
+	 * Update developer info panel.
+	 */
+	#updateDeveloperControls(event) {
+		let developerInfo = document.getElementById("developerContainer");
+		developerInfo.style.display = "block";
+
+		let lng = event.lngLat.lng.toFixed(5);
+		let lat = event.lngLat.lat.toFixed(5);
+		developerInfo.innerHTML = `
+			<table width="100%">
+				<tr>
+					<td width="35%">Longitude:</td>
+					<td width="65%">` + lng + `</td>
+				</tr>
+				<tr>
+					<td width="35%">Latitude:</td>
+					<td width="65%">` + lat + `</td>
+				</tr>
+			</table>
+		`;
+	}
+
 
 	/**
 	 * 
@@ -192,7 +263,7 @@ class ControlHandler {
 	 */
 	rebuildTree() {
 		this.#renderTree();
-		document.getElementById("layerContainer").innerHTML = this._treeHTML;
+		document.getElementById("layerTreeContainer").innerHTML = this._treeHTML;
 
 		// Update tree selection states
 		for(var i = 0; i < this._treeSpecification.length; i++) {
@@ -209,7 +280,6 @@ class ControlHandler {
 				inputBox.checked = false;
 			}
 		}
-
 	}
 
 	/**
@@ -222,6 +292,10 @@ class ControlHandler {
 			this._map.setStyle("mapbox://styles/mapbox/light-v10?optimize=true");
 		} else if(mode === "dark") {
 			this._map.setStyle("mapbox://styles/mapbox/dark-v10?optimize=true");
+		} else if(mode === "outdoors") {
+			this._map.setStyle("mapbox://styles/mapbox/outdoors-v11?optimize=true");
+		} else if(mode === "blueprint") {
+			this._map.setStyle("mapbox://styles/cmclinnovations/ckweqsj667xkx15qnilos1kzj");
 		} else if(mode === "satellite") {
 			this._map.setStyle("mapbox://styles/mapbox/satellite-v9?optimize=true");
 		} else if(mode === "satellite-streets") {
@@ -362,6 +436,8 @@ class ControlHandler {
 	 * @param {boolean} visible desired visibility.
 	 */
 	#toggleLayer(layerID, visible) {
+		if(this._map.getLayer(layerID) == null) return;
+		
 		try {
 			this._map.setLayoutProperty(
 				layerID,
@@ -386,6 +462,15 @@ class ControlHandler {
 					(visible ? "visible" : "none")
 				);
 			}
+
+			// Is there a corresponding _arrows layer?
+			if(this._map.getLayer(layerID + "_arrows") != null) {
+				this._map.setLayoutProperty(
+					layerID + "_arrows",
+					"visibility",
+					(visible ? "visible" : "none")
+				);
+			}
 		} catch(err) {
 			console.log("WARN: Could not toggle '" + layerID + "', it may have no initial 'visibility' layout property?");
 		}
@@ -395,8 +480,7 @@ class ControlHandler {
 	 * Builds the HTML required to show the Layer Tree.
 	 */
 	#renderTree() {
-		this._treeHTML = `<p>Layers:</p>`;
-		this._treeHTML += `<ul id="layerTree">`;
+		this._treeHTML = `<ul id="layerTree">`;
 		
 		for(var i = 0; i < this._treeSpecification.length; i++) {
 			this.#renderIterate(this._treeSpecification[i]);
@@ -432,23 +516,42 @@ class ControlHandler {
 
 
 		} else if(treeEntry["layerName"]){
-			var layerName = treeEntry["layerName"];
-
 			if(!this.#anyLayersVisible(treeEntry["layerIDs"])) {
 				// No layers for this entry have been added to the map
 				return;
 			}
 
+			// HTML start
+			var layerName = treeEntry["layerName"];
 			this._treeHTML += `<li>`
 			this._treeHTML += "<input class='layerInput' type='" + controlType + "' onclick='manager.onLayerChange(this);' id='" + layerName + "' name='" + currentGroup + "'";
 
-			if(treeEntry["defaultState"] === "visible") {
-				treeEntry["currentState"] = "visible";
-				this._treeHTML += ` checked>`;
-			} else {
-				treeEntry["currentState"] = "hidden";
+			// Determin if the layer should be hidden or not
+			let shouldHide = true;
+
+			if(treeEntry["currentState"]) {
+				if(treeEntry["currentState"] === "visible") {
+					shouldHide = false;
+				}
+			} else if(treeEntry["defaultState"]) {
+				if(treeEntry["defaultState"] === "visible") {
+					shouldHide = false;
+				}
+			} 
+
+			// Show/hide the layer and update the checkbxo accordingly
+			if(shouldHide) {
 				this._treeHTML += `>`;
+				treeEntry["currentState"] = "hidden";
+				treeEntry["layerIDs"].forEach(layerID => {
+					this.#toggleLayer(layerID, false);
+				});
+			} else {
+				this._treeHTML += ` checked>`;
+				treeEntry["currentState"] = "visible";
 			}
+
+			// HTML end
 			this._treeHTML += "<label for='" + layerName + "'>" + layerName + "</label>";
 			this._treeHTML += `</li>`		
 		}
