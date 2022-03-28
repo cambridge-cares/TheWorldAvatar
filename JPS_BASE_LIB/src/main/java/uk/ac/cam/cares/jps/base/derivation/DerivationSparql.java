@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -66,6 +67,11 @@ public class DerivationSparql {
 	private static String INPROGRESS = "InProgress";
 	private static String FINISHED = "Finished";
 
+	// derivation types
+	private static String DERIVATION = "Derivation";
+	private static String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
+	private static String DERIVATIONASYN = "DerivationAsyn";
+
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",
 			iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
@@ -76,9 +82,9 @@ public class DerivationSparql {
 	private static Iri Service = p_agent.iri("Service");
 	private static Iri Operation = p_agent.iri("Operation");
 	private static Iri TimePosition = p_time.iri("TimePosition");
-	private static Iri Derivation = p_derived.iri("Derivation");
-	private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
-	private static Iri DerivationAsyn = p_derived.iri("DerivationAsyn");
+	private static Iri Derivation = p_derived.iri(DERIVATION);
+	private static Iri DerivationWithTimeSeries = p_derived.iri(DERIVATIONWITHTIMESERIES);
+	private static Iri DerivationAsyn = p_derived.iri(DERIVATIONASYN);
 	private static Iri Status = p_derived.iri("Status");
 	private static Iri Requested = p_derived.iri(REQUESTED);
 	private static Iri InProgress = p_derived.iri(INPROGRESS);
@@ -121,6 +127,16 @@ public class DerivationSparql {
 		statusToType = statusMap;
 	}
 
+	//
+	private static final Map<String, Iri> derivationToIri;
+	static {
+		Map<String, Iri> derivationTypeMap = new HashMap<>();
+		derivationTypeMap.put(derivednamespace.concat(DERIVATION), Derivation);
+		derivationTypeMap.put(derivednamespace.concat(DERIVATIONWITHTIMESERIES), DerivationWithTimeSeries);
+		derivationTypeMap.put(derivednamespace.concat(DERIVATIONASYN), DerivationAsyn);
+		derivationToIri = derivationTypeMap;
+	}
+
 	private static final Logger LOGGER = LogManager.getLogger(DerivationSparql.class);
 
 	/**
@@ -159,7 +175,7 @@ public class DerivationSparql {
 	 * @return
 	 */
 	List<String> unifiedBulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
-			List<String> agentURLList, List<List<String>> inputsList, Iri derivationType) {
+			List<String> agentURLList, List<List<String>> inputsList, List<Iri> derivationTypeList) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		if (entitiesList.size() != agentIRIList.size()) {
@@ -180,6 +196,12 @@ public class DerivationSparql {
 			throw new JPSRuntimeException(errmsg);
 		}
 
+		if (entitiesList.size() != derivationTypeList.size()) {
+			String errmsg = "Size of entities list is different from derivationType list";
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+
 		List<String> derivations = new ArrayList<>();
 
 		for (int i = 0; i < entitiesList.size(); i++) {
@@ -187,6 +209,7 @@ public class DerivationSparql {
 			List<String> inputs = inputsList.get(i);
 			String agentIRI = agentIRIList.get(i);
 			String agentURL = agentURLList.get(i);
+			Iri derivationType = derivationTypeList.get(i);
 			// create a unique IRI for this new derived quantity
 			String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
 			derivations.add(derivedQuantity);
@@ -338,7 +361,9 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<String> agentURLList, List<List<String>> inputsList) {
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList, Derivation);
+		List<Iri> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> Derivation)
+				.collect(Collectors.toList());
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList, derivationTypeList);
 	}
 
 	/**
@@ -404,8 +429,10 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<String> agentURLList, List<List<String>> inputsList) {
+		List<Iri> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> DerivationWithTimeSeries)
+				.collect(Collectors.toList());
 		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList,
-				DerivationWithTimeSeries);
+				derivationTypeList);
 	}
 
 	/**
@@ -487,7 +514,25 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateDerivationsAsync(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<String> agentURLList, List<List<String>> inputsList) {
-		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList, DerivationAsyn);
+		List<Iri> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> DerivationAsyn)
+				.collect(Collectors.toList());
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList, derivationTypeList);
+	}
+
+	/**
+	 * This method enables creating multiple derivations with potentially mixed
+	 * derivation type in one go.
+	 * 
+	 * @param entitiesList
+	 * @param agentIRIList
+	 * @param agentURLList
+	 * @param inputsList
+	 */
+	List<String> bulkCreateMixedDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
+			List<String> agentURLList, List<List<String>> inputsList, List<String> derivationRdfTypeList) {
+		List<Iri> derivationTypeList = derivationRdfTypeList.stream().map(iri -> derivationToIri.get(iri))
+				.collect(Collectors.toList());
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList, derivationTypeList);
 	}
 
 	/**
