@@ -58,6 +58,9 @@ public class DerivationSparql {
 
 	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
 
+	// placeholder string used by method getAllDerivations()
+	private static final String PLACEHOLDER = "This is a placeholder string.";
+
 	// status concepts
 	private static String REQUESTED = "Requested";
 	private static String INPROGRESS = "InProgress";
@@ -1606,11 +1609,140 @@ public class DerivationSparql {
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 
+	List<Derivation> getRootAndAllUpstreamDerivations(String rootDerivationIRI) {
+		SelectQuery query = Queries.SELECT();
+		Variable derivation = query.var();
+		Variable input = query.var();
+		Variable inputType = query.var();
+		Variable entity = query.var();
+		Variable entityType = query.var();
+		Variable agentURL = query.var();
+		Variable derivationTimestamp = query.var();
+		Variable inputTimestamp = query.var();
+		Variable derivationType = query.var();
+
+		// ignore certain rdf:type (e.g. OWL.namedInvididual)
+		Expression<?>[] entityTypeFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityTypeFilters[j] = Expressions.notEquals(entityType, classesToIgnore.get(j));
+		}
+
+		// ignore certain rdf:type (e.g. OWL.namedInvididual)
+		Expression<?>[] inputTypeFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			inputTypeFilters[j] = Expressions.notEquals(inputType, classesToIgnore.get(j));
+		}
+
+		GraphPattern derivationPattern = derivation.has(isDerivedFrom, input)
+				.andHas(PropertyPaths.path(isDerivedUsing, hasOperation, hasHttpUrl), agentURL)
+				.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
+				.andIsA(derivationType);
+		GraphPattern entityPattern = entity.has(belongsTo, derivation);
+		GraphPattern inputTimestampPattern = input.has(
+				PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp).optional();
+		GraphPattern inputTypePattern = input.isA(inputType).optional().filter(Expressions.and(inputTypeFilters));
+		GraphPattern entityTypePattern = entity.isA(entityType).optional().filter(Expressions.and(entityTypeFilters));
+
+		// this is the only part added compared to the function getDerivations()
+		if (!rootDerivationIRI.equals(PLACEHOLDER)) {
+			GraphPattern rootDerivationPattern = iri(rootDerivationIRI)
+					.has(PropertyPaths.zeroOrMore(groupPropertyPath(PropertyPaths.path(isDerivedFrom, belongsTo))),
+							derivation);
+			query.where(rootDerivationPattern);
+		}
+
+		query.select(derivation, input, entity, agentURL, derivationTimestamp, inputTimestamp, derivationType,
+				inputType, entityType)
+				.where(derivationPattern, entityPattern, inputTimestampPattern, inputTypePattern,
+						entityTypePattern)
+				.prefix(p_derived, p_time, p_agent);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		Map<String, Derivation> derivationsMap = new HashMap<>();
+		List<Derivation> derivationList = new ArrayList<>();
+		Map<String, Entity> entitiesMap = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			String derivationIRI = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
+			String inputIRI = queryResult.getJSONObject(i).getString(input.getQueryString().substring(1));
+			String entityIRI = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+			String urlString = queryResult.getJSONObject(i).getString(agentURL.getQueryString().substring(1));
+			String derivedType = queryResult.getJSONObject(i).getString(derivationType.getQueryString().substring(1));
+			long derivedTimestamp = queryResult.getJSONObject(i)
+					.getLong(derivationTimestamp.getQueryString().substring(1));
+
+			Derivation derived;
+			if (derivationsMap.containsKey(derivationIRI)) {
+				derived = derivationsMap.get(derivationIRI);
+			} else {
+				derived = new Derivation(derivationIRI, derivedType);
+				derivationsMap.put(derivationIRI, derived);
+				derivationList.add(derived);
+			}
+
+			// input of this derivation
+			Entity input_entity;
+			if (entitiesMap.containsKey(inputIRI)) {
+				input_entity = entitiesMap.get(inputIRI);
+			} else {
+				input_entity = new Entity(inputIRI);
+				entitiesMap.put(inputIRI, input_entity);
+			}
+
+			// if rdf type exists
+			if (queryResult.getJSONObject(i).has(inputType.getQueryString().substring(1))) {
+				input_entity
+						.setRdfType(queryResult.getJSONObject(i).getString(inputType.getQueryString().substring(1)));
+			}
+
+			// if it's a pure input it will have a timestamp
+			if (queryResult.getJSONObject(i).has(inputTimestamp.getQueryString().substring(1))) {
+				long input_timestamp = queryResult.getJSONObject(i)
+						.getLong(inputTimestamp.getQueryString().substring(1));
+				input_entity.setTimestamp(input_timestamp);
+			}
+
+			Entity entity_entity;
+			if (entitiesMap.containsKey(entityIRI)) {
+				entity_entity = entitiesMap.get(entityIRI);
+			} else {
+				entity_entity = new Entity(entityIRI);
+				entitiesMap.put(entityIRI, entity_entity);
+			}
+
+			// if rdf type exists
+			if (queryResult.getJSONObject(i).has(entityType.getQueryString().substring(1))) {
+				entity_entity
+						.setRdfType(queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1)));
+			}
+
+			// set properties of derivation
+			derived.addEntity(entity_entity);
+			derived.addInput(input_entity);
+			derived.setAgentURL(urlString);
+			derived.setTimestamp(derivedTimestamp);
+		}
+
+		return derivationList;
+	}
+
 	/**
-	 * this is used to obtain all the derivations in the kg
+	 * This method obtains all the derivations in the knowledge graph.
 	 * 
 	 * @return
 	 */
+	List<Derivation> getAllDerivationsInKG() {
+		return getRootAndAllUpstreamDerivations(PLACEHOLDER);
+	}
+
+	/**
+	 * this is used to obtain all the derivations in the kg
+	 * NOTE: this method is marked as Deprecated as it's replaced by method
+	 * getAllDerivationsInKG()
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	List<Derivation> getDerivations() {
 		SelectQuery query = Queries.SELECT();
 
@@ -1992,5 +2124,21 @@ public class DerivationSparql {
 			iri = iri.substring(0, iri.length() - 1);
 		}
 		return iri;
+	}
+
+	/**
+	 * This method groups PropertyPath by adding parenthesis, for example:
+	 * input: objProperty1/objProperty2
+	 * output: (objProperty1/objProperty2)
+	 * 
+	 * This method is advised to be used together with other functions provided by
+	 * org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths for more flexible KG
+	 * operations.
+	 * 
+	 * @param aElement
+	 * @return
+	 */
+	private RdfPredicate groupPropertyPath(RdfPredicate aElement) {
+		return () -> "(" + aElement.getQueryString() + ")";
 	}
 }
