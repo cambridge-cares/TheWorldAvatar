@@ -171,7 +171,7 @@ public class DerivationSparql {
 	 * @param agentIRIList
 	 * @param agentURLList
 	 * @param inputsList
-	 * @param derivationType
+	 * @param derivationTypeList
 	 * @return
 	 */
 	List<String> unifiedBulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
@@ -230,10 +230,14 @@ public class DerivationSparql {
 			// link to agent
 			// here it is assumed that an agent only has one operation
 			modify.insert(derived_iri.has(isDerivedUsing, iri(agentIRI)));
-			String operation_iri = derivationInstanceBaseURL + UUID.randomUUID().toString();
-			// add agent url
-			modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
-			modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
+			// only add information about ontoagent:Operation to knowledge graph if the
+			// agent url is provided and is NOT PLACEHOLDER string
+			if (!agentURL.contentEquals(PLACEHOLDER)) {
+				String operation_iri = derivationInstanceBaseURL + UUID.randomUUID().toString();
+				// add agent url
+				modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
+				modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
+			}
 		}
 
 		modify.prefix(p_derived, p_agent);
@@ -505,7 +509,11 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * same method as above but initialise a large number of derivations in 1 go
+	 * This method enables creating multiple asynchronous derivations in one go.
+	 * Note that this method DOES create statements about OntoAgent:Operation
+	 * and OntoAgent:hasHttpUrl, i.e. below triples
+	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
+	 * <URL>}
 	 * 
 	 * @param entitiesList
 	 * @param agentIRIList
@@ -520,8 +528,33 @@ public class DerivationSparql {
 	}
 
 	/**
+	 * This method enables creating multiple asynchronous derivations in one go.
+	 * Note that this method does NOT create statements about OntoAgent:Operation
+	 * and OntoAgent:hasHttpUrl. Rather, this method assumes the triples
+	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
+	 * <URL>}
+	 * already exist in respective OntoAgent instances.
+	 * 
+	 * @param entitiesList
+	 * @param agentIRIList
+	 * @param inputsList
+	 */
+	List<String> bulkCreateDerivationsAsync(List<List<String>> entitiesList, List<String> agentIRIList,
+			List<List<String>> inputsList) {
+		List<String> agentURLList = IntStream.range(0, entitiesList.size()).mapToObj(i -> PLACEHOLDER)
+				.collect(Collectors.toList());
+		List<Iri> derivationTypeList = IntStream.range(0, entitiesList.size()).mapToObj(i -> DerivationAsyn)
+				.collect(Collectors.toList());
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList, derivationTypeList);
+	}
+
+	/**
 	 * This method enables creating multiple derivations with potentially mixed
 	 * derivation type in one go.
+	 * Note that this method DOES create statements about OntoAgent:Operation
+	 * and OntoAgent:hasHttpUrl, i.e. below triples
+	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
+	 * <URL>}
 	 * 
 	 * @param entitiesList
 	 * @param agentIRIList
@@ -530,6 +563,28 @@ public class DerivationSparql {
 	 */
 	List<String> bulkCreateMixedDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
 			List<String> agentURLList, List<List<String>> inputsList, List<String> derivationRdfTypeList) {
+		List<Iri> derivationTypeList = derivationRdfTypeList.stream().map(iri -> derivationToIri.get(iri))
+				.collect(Collectors.toList());
+		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList, derivationTypeList);
+	}
+
+	/**
+	 * This method enables creating multiple derivations with potentially mixed
+	 * derivation type in one go.
+	 * Note that this method does NOT create statements about OntoAgent:Operation
+	 * and OntoAgent:hasHttpUrl. Rather, this method assumes the triples
+	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl>
+	 * <URL>}
+	 * already exist in respective OntoAgent instances.
+	 * 
+	 * @param entitiesList
+	 * @param agentIRIList
+	 * @param inputsList
+	 */
+	List<String> bulkCreateMixedDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
+			List<List<String>> inputsList, List<String> derivationRdfTypeList) {
+		List<String> agentURLList = IntStream.range(0, entitiesList.size()).mapToObj(i -> PLACEHOLDER)
+				.collect(Collectors.toList());
 		List<Iri> derivationTypeList = derivationRdfTypeList.stream().map(iri -> derivationToIri.get(iri))
 				.collect(Collectors.toList());
 		return unifiedBulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList, derivationTypeList);
