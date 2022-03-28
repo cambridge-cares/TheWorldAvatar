@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-public class LaunchScheduledUpdaterAndWriter {
+public class LaunchScheduledUpdater {
 	// Logger for reporting info/errors
-    private static final Logger LOGGER = LogManager.getLogger(LaunchScheduledUpdaterAndWriter.class);
+    private static final Logger LOGGER = LogManager.getLogger(LaunchScheduledUpdater.class);
     
     private final static ScheduledExecutorService scheduler = Executors
     		.newScheduledThreadPool(1);
@@ -49,9 +49,6 @@ public class LaunchScheduledUpdaterAndWriter {
             	String[] input = new String[1];
             	input[0] = yesterday.toString();
             	UpdateStations.main(input);
-            	
-            	LOGGER.info("Writing output files for "+ yesterday);
-            	WriteOutputs.main(input);
                 
                 LOGGER.info("Next update will be at " + nextUpdate);
             } catch (Exception ex) {
