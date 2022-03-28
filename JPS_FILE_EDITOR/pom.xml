@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.cam.cares.jps</groupId>
   <artifactId>JPS_FILE_EDITOR</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
