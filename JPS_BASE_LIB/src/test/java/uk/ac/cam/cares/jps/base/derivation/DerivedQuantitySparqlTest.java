@@ -32,6 +32,9 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * createDerivedQuantity, createDerivedQuantityWithTimeSeries, updateTimestamp,
  * addTimeinstance are already tested in DerivedQuantityClientTest
  * 
+ * unifiedBulkCreateDerivations is tested by testing other functions that depend
+ * on it
+ * 
  * @author Kok Foong Lee
  * @author Jiaru Bai
  *
@@ -527,6 +530,74 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
+	public void testBulkCreateDerivationsAsync() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
+		List<List<String>> inputsList = Arrays.asList(inputs, inputs2);
+
+		Resource derivationType = ResourceFactory
+				.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+
+		List<String> derivations = devClient.bulkCreateDerivationsAsync(entitiesList, agentIRIList,
+				agentURLList, inputsList);
+		for (int i = 0; i < derivations.size(); i++) {
+			List<String> entities = entitiesList.get(i);
+			List<String> inputs = inputsList.get(i);
+
+			Assert.assertEquals(derivationType, testKG.getIndividual(derivations.get(i)).getRDFType());
+			Assert.assertEquals(agentURLList.get(i), devClient.getAgentUrl(derivations.get(i)));
+
+			for (String entity : entities) {
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+						ResourceFactory.createResource(derivations.get(i))));
+			}
+
+			for (String input : inputs) {
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivations.get(i)),
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+						ResourceFactory.createResource(input)));
+			}
+		}
+	}
+
+	@Test
+	public void testBulkCreateMixedDerivations() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+
+		List<String> derivationTypeSequence = Arrays.asList(
+				DerivationSparql.derivednamespace + "Derivation",
+				DerivationSparql.derivednamespace + "DerivationWithTimeSeries",
+				DerivationSparql.derivednamespace + "DerivationAsyn");
+		List<Resource> derivationTypeResourceList = derivationTypeSequence.stream()
+				.map(type -> ResourceFactory.createResource(type))
+				.collect(Collectors.toList());
+
+		List<String> derivations = devClient.bulkCreateMixedDerivations(entitiesListChain5, agentIRIListChain5,
+				agentURLListChain5, inputsListChain5, derivationTypeSequence);
+		for (int i = 0; i < derivations.size(); i++) {
+			List<String> entities = entitiesListChain5.get(i);
+			List<String> inputs = inputsListChain5.get(i);
+
+			Assert.assertEquals(derivationTypeResourceList.get(i),
+					testKG.getIndividual(derivations.get(i)).getRDFType());
+			Assert.assertEquals(agentURLListChain5.get(i), devClient.getAgentUrl(derivations.get(i)));
+
+			for (String entity : entities) {
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+						ResourceFactory.createResource(derivations.get(i))));
+			}
+
+			for (String input : inputs) {
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivations.get(i)),
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+						ResourceFactory.createResource(input)));
+			}
+		}
+	}
+
+	@Test
 	public void testGetInputsMapToAgent() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		// add triples about agent
@@ -717,31 +788,39 @@ public class DerivedQuantitySparqlTest {
 	// below test case replaces the test case testGetDerivations()
 	// as function getAllDerivationsInKG() replaces function getDerivations()
 	@Test
-	public void testGetAllDerivationsInKG() {
+	public void testGetAllDerivationsInKG_Derivation() {
 		for (int mode = 0; mode < compactEntititsList.size(); mode++) {
-			List<String> derivationIRIs = devClient.bulkCreateDerivations(compactEntititsList.get(mode),
-					compactAgentIRIList.get(mode), compactAgentURLList.get(mode), compactInputsList.get(mode));
+			List<List<String>> _entitiesList = compactEntititsList.get(mode);
+			List<String> _agentIRIList = compactAgentIRIList.get(mode);
+			List<String> _agentURLList = compactAgentURLList.get(mode);
+			List<List<String>> _inputsList = compactInputsList.get(mode);
+
+			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList,
+					_agentURLList, _inputsList);
 			devClient.addTimeInstance(derivationIRIs);
 
-			List<Derivation> derivations = devClient.getAllDerivationsInKG();
+			assertTestGetAllDerivationsInKG(devClient, derivationIRIs, _entitiesList, _agentURLList, _inputsList);
 
-			for (int i = 0; i < derivationIRIs.size(); i++) {
-				String derivationIRI = derivationIRIs.get(i);
-				Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(derivationIRI))
-						.findFirst().get();
+			devClient.dropAllDerivations();
+			devClient.dropAllTimestamps();
+		}
+	}
 
-				List<Entity> inputs = derivation.getInputs();
-				for (Entity input : inputs) {
-					Assert.assertTrue(compactInputsList.get(mode).get(i).contains(input.getIri()));
-				}
+	// below test case replaces the test case testGetDerivations()
+	// as function getAllDerivationsInKG() replaces function getDerivations()
+	@Test
+	public void testGetAllDerivationsInKG_DerivationAsyn() {
+		for (int mode = 0; mode < compactEntititsList.size(); mode++) {
+			List<List<String>> _entitiesList = compactEntititsList.get(mode);
+			List<String> _agentIRIList = compactAgentIRIList.get(mode);
+			List<String> _agentURLList = compactAgentURLList.get(mode);
+			List<List<String>> _inputsList = compactInputsList.get(mode);
 
-				List<Entity> entities = derivation.getEntities();
-				for (Entity entity : entities) {
-					Assert.assertTrue(compactEntititsList.get(mode).get(i).contains(entity.getIri()));
-				}
+			List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(_entitiesList, _agentIRIList,
+					_agentURLList, _inputsList);
+			devClient.addTimeInstance(derivationIRIs);
 
-				Assert.assertEquals(compactAgentURLList.get(mode).get(i), derivation.getAgentURL());
-			}
+			assertTestGetAllDerivationsInKG(devClient, derivationIRIs, _entitiesList, _agentURLList, _inputsList);
 
 			devClient.dropAllDerivations();
 			devClient.dropAllTimestamps();
@@ -749,7 +828,7 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testGetRootAndAllUpstreamDerivations_Fragmented() {
+	public void testGetRootAndAllUpstreamDerivations_Fragmented_Derivation() {
 		for (int cas = 0; cas < fragmentedEntititsList.size(); cas++) {
 			List<List<String>> _entitiesList = fragmentedEntititsList.get(cas);
 			List<String> _agentIRIList = fragmentedAgentIRIList.get(cas);
@@ -760,11 +839,238 @@ public class DerivedQuantitySparqlTest {
 					_inputsList);
 			devClient.addTimeInstance(derivationIRIs);
 
-			for (int i = 0; i < derivationIRIs.size(); i++) {
-				String derivationIRI = derivationIRIs.get(i);
-				List<Derivation> derivations = devClient.getRootAndAllUpstreamDerivations(derivationIRI);
+			assertTestGetRootAndAllUpstreamDerivations_Fragmented(devClient, derivationIRIs,
+					_entitiesList, _agentURLList, _inputsList);
 
-				Assert.assertEquals(1, derivations.size());
+			devClient.dropAllDerivations();
+			devClient.dropAllTimestamps();
+			List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+			Assert.assertEquals(0, allDerivations.size());
+		}
+	}
+
+	@Test
+	public void testGetRootAndAllUpstreamDerivations_Fragmented_DerivationAsyn() {
+		for (int cas = 0; cas < fragmentedEntititsList.size(); cas++) {
+			List<List<String>> _entitiesList = fragmentedEntititsList.get(cas);
+			List<String> _agentIRIList = fragmentedAgentIRIList.get(cas);
+			List<String> _agentURLList = fragmentedAgentURLList.get(cas);
+			List<List<String>> _inputsList = fragmentedInputsList.get(cas);
+
+			List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(_entitiesList, _agentIRIList,
+					_agentURLList, _inputsList);
+			devClient.addTimeInstance(derivationIRIs);
+
+			assertTestGetRootAndAllUpstreamDerivations_Fragmented(devClient, derivationIRIs,
+					_entitiesList, _agentURLList, _inputsList);
+
+			devClient.dropAllDerivations();
+			devClient.dropAllTimestamps();
+			List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+			Assert.assertEquals(0, allDerivations.size());
+		}
+	}
+
+	@Test
+	public void testGetRootAndAllUpstreamDerivations_Chain_Derivation() {
+		for (int cas = 0; cas < chainEntititsList.size(); cas++) {
+			List<List<String>> _entitiesList = chainEntititsList.get(cas);
+			List<String> _agentIRIList = chainAgentIRIList.get(cas);
+			List<String> _agentURLList = chainAgentURLList.get(cas);
+			List<List<String>> _inputsList = chainInputsList.get(cas);
+
+			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList, _agentURLList,
+					_inputsList);
+			devClient.addTimeInstance(derivationIRIs);
+
+			assertTestGetRootAndAllUpstreamDerivations_Chain(devClient, derivationIRIs,
+					_entitiesList, _agentURLList, _inputsList);
+
+			devClient.dropAllDerivations();
+			devClient.dropAllTimestamps();
+			List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+			Assert.assertEquals(0, allDerivations.size());
+		}
+	}
+
+	@Test
+	public void testGetRootAndAllUpstreamDerivations_Chain_DerivationAsyn() {
+		for (int cas = 0; cas < chainEntititsList.size(); cas++) {
+			List<List<String>> _entitiesList = chainEntititsList.get(cas);
+			List<String> _agentIRIList = chainAgentIRIList.get(cas);
+			List<String> _agentURLList = chainAgentURLList.get(cas);
+			List<List<String>> _inputsList = chainInputsList.get(cas);
+
+			List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(_entitiesList, _agentIRIList,
+					_agentURLList, _inputsList);
+			devClient.addTimeInstance(derivationIRIs);
+
+			assertTestGetRootAndAllUpstreamDerivations_Chain(devClient, derivationIRIs,
+					_entitiesList, _agentURLList, _inputsList);
+
+			devClient.dropAllDerivations();
+			devClient.dropAllTimestamps();
+			List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+			Assert.assertEquals(0, allDerivations.size());
+		}
+	}
+
+	@Test
+	public void testGetRootAndAllUpstreamDerivations_Tree1_Derivation() {
+		// tree case 1 has structure: d3 --> d1, d3 --> d2, no connection between d1/d2
+		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListTree1, agentIRIListTree1,
+				agentURLListTree1, inputsListTree1);
+		devClient.addTimeInstance(derivationIRIs);
+
+		assertTestGetRootAndAllUpstreamDerivations_Tree1(devClient, derivationIRIs);
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+		List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+		Assert.assertEquals(0, allDerivations.size());
+	}
+
+	@Test
+	public void testGetRootAndAllUpstreamDerivations_Tree1_DerivationAsyn() {
+		// tree case 1 has structure: d3 --> d1, d3 --> d2, no connection between d1/d2
+		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListTree1, agentIRIListTree1,
+				agentURLListTree1, inputsListTree1);
+		devClient.addTimeInstance(derivationIRIs);
+
+		assertTestGetRootAndAllUpstreamDerivations_Tree1(devClient, derivationIRIs);
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+		List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+		Assert.assertEquals(0, allDerivations.size());
+	}
+
+	@Test
+	public void testGetRootAndAllUpstreamDerivations_DAG1_Derivation() {
+		// DAG case 1 has structure: d1 --> d0, d2 --> d0, no connection between d1/d2
+		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG1, agentIRIListDAG1,
+				agentURLListDAG1, inputsListDAG1);
+		devClient.addTimeInstance(derivationIRIs);
+
+		assertTestGetRootAndAllUpstreamDerivations_DAG1(devClient, derivationIRIs);
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+		List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+		Assert.assertEquals(0, allDerivations.size());
+	}
+
+	@Test
+	public void testGetRootAndAllUpstreamDerivations_DAG1_DerivationAsyn() {
+		// DAG case 1 has structure: d1 --> d0, d2 --> d0, no connection between d1/d2
+		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG1, agentIRIListDAG1,
+				agentURLListDAG1, inputsListDAG1);
+		devClient.addTimeInstance(derivationIRIs);
+
+		assertTestGetRootAndAllUpstreamDerivations_DAG1(devClient, derivationIRIs);
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+		List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+		Assert.assertEquals(0, allDerivations.size());
+	}
+
+	@Test
+	public void testGetRootAndAllUpstreamDerivations_DAG2_Derivation() {
+		// DAG case 2 has structure: d3 --> (d1, d2) --> d0, no connection between d1/d2
+		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG2, agentIRIListDAG2,
+				agentURLListDAG2, inputsListDAG2);
+		devClient.addTimeInstance(derivationIRIs);
+
+		assertTestGetRootAndAllUpstreamDerivations_DAG2(devClient, derivationIRIs);
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+		List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+		Assert.assertEquals(0, allDerivations.size());
+	}
+
+	@Test
+	public void testGetRootAndAllUpstreamDerivations_DAG2_DerivationAsyn() {
+		// DAG case 2 has structure: d3 --> (d1, d2) --> d0, no connection between d1/d2
+		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListDAG2, agentIRIListDAG2,
+				agentURLListDAG2, inputsListDAG2);
+		devClient.addTimeInstance(derivationIRIs);
+
+		assertTestGetRootAndAllUpstreamDerivations_DAG2(devClient, derivationIRIs);
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+		List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+		Assert.assertEquals(0, allDerivations.size());
+	}
+
+	////////////////////////////////////////////////////////////
+	// Below are utility functions to reduce code-duplication //
+	////////////////////////////////////////////////////////////
+	public void assertTestGetAllDerivationsInKG(DerivationSparql devClient, List<String> derivationIRIs,
+			List<List<String>> _entitiesList, List<String> _agentURLList, List<List<String>> _inputsList) {
+
+		List<Derivation> derivations = devClient.getAllDerivationsInKG();
+
+		for (int i = 0; i < derivationIRIs.size(); i++) {
+			String derivationIRI = derivationIRIs.get(i);
+			Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(derivationIRI))
+					.findFirst().get();
+
+			List<Entity> inputs = derivation.getInputs();
+			for (Entity input : inputs) {
+				Assert.assertTrue(_inputsList.get(i).contains(input.getIri()));
+			}
+
+			List<Entity> entities = derivation.getEntities();
+			for (Entity entity : entities) {
+				Assert.assertTrue(_entitiesList.get(i).contains(entity.getIri()));
+			}
+
+			Assert.assertEquals(_agentURLList.get(i), derivation.getAgentURL());
+		}
+	}
+
+	public void assertTestGetRootAndAllUpstreamDerivations_Fragmented(DerivationSparql devClient,
+			List<String> derivationIRIs, List<List<String>> _entitiesList, List<String> _agentURLList,
+			List<List<String>> _inputsList) {
+
+		for (int i = 0; i < derivationIRIs.size(); i++) {
+			String derivationIRI = derivationIRIs.get(i);
+			List<Derivation> derivations = devClient.getRootAndAllUpstreamDerivations(derivationIRI);
+
+			Assert.assertEquals(1, derivations.size());
+			Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(derivationIRI))
+					.findFirst().get();
+
+			List<Entity> inputs = derivation.getInputs();
+			for (Entity input : inputs) {
+				Assert.assertTrue(_inputsList.get(i).contains(input.getIri()));
+			}
+
+			List<Entity> entities = derivation.getEntities();
+			for (Entity entity : entities) {
+				Assert.assertTrue(_entitiesList.get(i).contains(entity.getIri()));
+			}
+
+			Assert.assertEquals(_agentURLList.get(i), derivation.getAgentURL());
+
+			assertNoImmediateUpstreamDerivation(derivation);
+			assertNoImmediateDownstreamDerivation(derivation);
+		}
+	}
+
+	public void assertTestGetRootAndAllUpstreamDerivations_Chain(DerivationSparql devClient,
+			List<String> derivationIRIs, List<List<String>> _entitiesList, List<String> _agentURLList,
+			List<List<String>> _inputsList) {
+
+		for (int devIdx = 0; devIdx < derivationIRIs.size(); devIdx++) {
+			List<String> dIRIs = derivationIRIs.subList(0, devIdx + 1);
+			List<Derivation> derivations = devClient.getRootAndAllUpstreamDerivations(derivationIRIs.get(devIdx));
+
+			for (int i = 0; i < dIRIs.size(); i++) {
+				String derivationIRI = dIRIs.get(i);
 				Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(derivationIRI))
 						.findFirst().get();
 
@@ -779,66 +1085,12 @@ public class DerivedQuantitySparqlTest {
 				}
 
 				Assert.assertEquals(_agentURLList.get(i), derivation.getAgentURL());
-
-				assertNoImmediateUpstreamDerivation(derivation);
-				assertNoImmediateDownstreamDerivation(derivation);
 			}
-
-			devClient.dropAllDerivations();
-			devClient.dropAllTimestamps();
-			List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
-			Assert.assertEquals(0, allDerivations.size());
 		}
 	}
 
-	@Test
-	public void testGetRootAndAllUpstreamDerivations_Chain() {
-		for (int cas = 0; cas < chainEntititsList.size(); cas++) {
-			List<List<String>> _entitiesList = chainEntititsList.get(cas);
-			List<String> _agentIRIList = chainAgentIRIList.get(cas);
-			List<String> _agentURLList = chainAgentURLList.get(cas);
-			List<List<String>> _inputsList = chainInputsList.get(cas);
-
-			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList, _agentURLList,
-					_inputsList);
-			devClient.addTimeInstance(derivationIRIs);
-
-			for (int devIdx = 0; devIdx < derivationIRIs.size(); devIdx++) {
-				List<String> dIRIs = derivationIRIs.subList(0, devIdx + 1);
-				List<Derivation> derivations = devClient.getRootAndAllUpstreamDerivations(derivationIRIs.get(devIdx));
-
-				for (int i = 0; i < dIRIs.size(); i++) {
-					String derivationIRI = dIRIs.get(i);
-					Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(derivationIRI))
-							.findFirst().get();
-
-					List<Entity> inputs = derivation.getInputs();
-					for (Entity input : inputs) {
-						Assert.assertTrue(_inputsList.get(i).contains(input.getIri()));
-					}
-
-					List<Entity> entities = derivation.getEntities();
-					for (Entity entity : entities) {
-						Assert.assertTrue(_entitiesList.get(i).contains(entity.getIri()));
-					}
-
-					Assert.assertEquals(_agentURLList.get(i), derivation.getAgentURL());
-				}
-			}
-
-			devClient.dropAllDerivations();
-			devClient.dropAllTimestamps();
-			List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
-			Assert.assertEquals(0, allDerivations.size());
-		}
-	}
-
-	@Test
-	public void testGetRootAndAllUpstreamDerivations_Tree1() {
-		// tree case 1 has structure: d3 --> d1, d3 --> d2, no connection between d1/d2
-		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListTree1, agentIRIListTree1,
-				agentURLListTree1, inputsListTree1);
-		devClient.addTimeInstance(derivationIRIs);
+	public void assertTestGetRootAndAllUpstreamDerivations_Tree1(DerivationSparql devClient,
+			List<String> derivationIRIs) {
 
 		for (String derivationIRI : derivationIRIs) {
 			List<Derivation> derivations = devClient.getRootAndAllUpstreamDerivations(derivationIRI);
@@ -893,19 +1145,11 @@ public class DerivedQuantitySparqlTest {
 				fail("Unexpected derivation detected: " + derivation.getAgentURL());
 			}
 		}
-
-		devClient.dropAllDerivations();
-		devClient.dropAllTimestamps();
-		List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
-		Assert.assertEquals(0, allDerivations.size());
 	}
 
-	@Test
-	public void testGetRootAndAllUpstreamDerivations_DAG1() {
+	public void assertTestGetRootAndAllUpstreamDerivations_DAG1(DerivationSparql devClient,
+			List<String> derivationIRIs) {
 		// DAG case 1 has structure: d1 --> d0, d2 --> d0, no connection between d1/d2
-		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG1, agentIRIListDAG1,
-				agentURLListDAG1, inputsListDAG1);
-		devClient.addTimeInstance(derivationIRIs);
 
 		for (String derivationIRI : derivationIRIs) {
 			List<Derivation> derivations = devClient.getRootAndAllUpstreamDerivations(derivationIRI);
@@ -951,19 +1195,11 @@ public class DerivedQuantitySparqlTest {
 				fail("Unexpected derivation detected: " + derivation.getAgentURL());
 			}
 		}
-
-		devClient.dropAllDerivations();
-		devClient.dropAllTimestamps();
-		List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
-		Assert.assertEquals(0, allDerivations.size());
 	}
 
-	@Test
-	public void testGetRootAndAllUpstreamDerivations_DAG2() {
+	public void assertTestGetRootAndAllUpstreamDerivations_DAG2(DerivationSparql devClient,
+			List<String> derivationIRIs) {
 		// DAG case 2 has structure: d3 --> (d1, d2) --> d0, no connection between d1/d2
-		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG2, agentIRIListDAG2,
-				agentURLListDAG2, inputsListDAG2);
-		devClient.addTimeInstance(derivationIRIs);
 
 		for (String derivationIRI : derivationIRIs) {
 			List<Derivation> derivations = devClient.getRootAndAllUpstreamDerivations(derivationIRI);
@@ -1047,11 +1283,6 @@ public class DerivedQuantitySparqlTest {
 				fail("Unexpected derivation detected: " + derivation.getAgentURL());
 			}
 		}
-
-		devClient.dropAllDerivations();
-		devClient.dropAllTimestamps();
-		List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
-		Assert.assertEquals(0, allDerivations.size());
 	}
 
 	public void assertD0(Derivation d0) {
