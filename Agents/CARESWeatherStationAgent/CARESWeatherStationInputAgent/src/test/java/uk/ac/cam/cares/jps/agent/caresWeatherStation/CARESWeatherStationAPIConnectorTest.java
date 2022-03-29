@@ -1,18 +1,13 @@
 package uk.ac.cam.cares.jps.agent.caresWeatherStation;
 
-import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.HttpResponseException;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+
 
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -58,7 +53,7 @@ public class CARESWeatherStationAPIConnectorTest {
         writePropertyFile(propertiesFile, Arrays.asList("weather.api_key=password", "weather.stationId=id", "weather.api_url=url"));
         CARESWeatherStationAPIConnector connectorFile = new CARESWeatherStationAPIConnector(propertiesFile);
 
-        // Retrieve private fields for username and password and check that they were set correctly
+        // Retrieve private fields for api_key, stationId and api_url. Check that they were set correctly
         Field apiKeyField = CARESWeatherStationAPIConnector.class.getDeclaredField("api_key");
         apiKeyField.setAccessible(true);
         Assert.assertEquals("password", apiKeyField.get(connector));
@@ -140,7 +135,7 @@ public class CARESWeatherStationAPIConnectorTest {
             Assert.fail(e.getMessage());
         }
 
-        // Retrieve private fields for apiKey and stationId and check that they were set correctly
+        // Retrieve private fields for apiKey, stationId and api_url. Check that they were set correctly
         Field apiKeyField = CARESWeatherStationAPIConnector.class.getDeclaredField("api_key");
         apiKeyField.setAccessible(true);
         Assert.assertEquals("test_key", apiKeyField.get(testConnector));

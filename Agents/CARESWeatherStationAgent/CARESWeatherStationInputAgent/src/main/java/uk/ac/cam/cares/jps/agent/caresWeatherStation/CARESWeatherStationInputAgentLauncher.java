@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Class with a main method that is the entry point of the compiled war and puts all components together to retrieve
  * data from the API and write it into the database.
- * @author
+ * @author GMMajal
  */
 @WebServlet(urlPatterns = {"/retrieve"})
 public class CARESWeatherStationInputAgentLauncher extends JPSAgent {

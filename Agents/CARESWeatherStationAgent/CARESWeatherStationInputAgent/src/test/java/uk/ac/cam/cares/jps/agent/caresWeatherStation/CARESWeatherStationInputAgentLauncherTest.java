@@ -189,17 +189,24 @@ public class CARESWeatherStationInputAgentLauncherTest {
         createProperClientPropertiesFile();
         createProperAPIPropertiesFile();
         // Create dummy readings to return
+        String[] keys = {"temp","dewpt","heatIndex","windChill","windGust","windSpeed","pressure","precipRate", "precipTotal" ,"elev"};
+        String[] timestamps = {"2022-07-11T16:10:00Z", "2022-07-11T16:15:00Z", "2022-07-11T16:20:00Z", "2022-07-11T16:25:00Z"};
         JSONObject readings = new JSONObject();
-        JSONObject values_01 = new JSONObject();
-        values_01.put("ts","7891011" );
-        values_01.put("value", "0.123");
-        JSONObject values_02 = new JSONObject();
-        values_02.put("ts","123456" );
-        values_02.put("value", "0.456");
-        JSONArray values = new JSONArray();
-        values.put(values_01);
-        values.put(values_02);
-        readings.put("Current", values);
+        JSONArray jsArr= new JSONArray();
+        double value=0.0;
+        for(int i=0; i<timestamps.length;i++) {
+            JSONObject currentWeatherData = new JSONObject();
+            currentWeatherData.put(CARESWeatherStationInputAgent.timestampKey, timestamps[i]);
+            JSONObject measurements = new JSONObject();
+            for(String key: keys) {
+                measurements.put(key, value);
+            }
+            currentWeatherData.put("metric_si",measurements);
+            jsArr.put(i,currentWeatherData);
+            value++;
+        }
+        readings.put("observations",jsArr);
+
         // Use a mock for the input agent
         try(MockedConstruction<CARESWeatherStationInputAgent> mockAgent = Mockito.mockConstruction(CARESWeatherStationInputAgent.class)) {
             // Use a mock for the connector that returns the dummy readings

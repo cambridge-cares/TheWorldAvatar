@@ -1,19 +1,14 @@
 package uk.ac.cam.cares.jps.agent.caresWeatherStation;
 
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpRequest;
+
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -21,6 +16,9 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.io.*;
 import java.util.Properties;
 
+/**
+ * Class that connects to the weather station API
+ * @author  GMMajal*/
 public class CARESWeatherStationAPIConnector {
     private String api_key;
     private String api_url="https://api.weather.com/";

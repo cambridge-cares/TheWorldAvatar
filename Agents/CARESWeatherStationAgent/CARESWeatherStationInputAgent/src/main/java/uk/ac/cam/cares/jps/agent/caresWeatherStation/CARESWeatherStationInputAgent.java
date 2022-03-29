@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.caresWeatherStation;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jooq.exception.DataAccessException;
-import org.openrdf.query.algebra.evaluation.function.datetime.Timezone;
 import uk.ac.cam.cares.jps.agent.utils.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -13,8 +12,6 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.*;
@@ -27,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Class to retrieve data from the weather station API and storing it with connection to The World Avatar (Knowledge Base).
- * @author  */
+ * @author  GMMajal*/
 public class CARESWeatherStationInputAgent {
 
     /**
@@ -374,7 +371,7 @@ public class CARESWeatherStationInputAgent {
 
     /**
      * Converts a string into a datetime object with zone information using the zone globally define for the agent.
-     * @param timestamp The timestamp as string, the format should be equal to 2007-12-03T10:15:30.
+     * @param timestamp The timestamp as string, the format should be equal to 2007-12-03T10:15:30Z.
      * @return The resulting datetime object.
      */
     private OffsetDateTime convertStringToOffsetDateTime(String timestamp)  {
@@ -392,7 +389,7 @@ public class CARESWeatherStationInputAgent {
     /**
      * Prunes a times series so that all timestamps and corresponding values start after the threshold.
      * @param timeSeries The times series tp prune
-     * @param timeThreshold The treshold before which no data should occur
+     * @param timeThreshold The threshold before which no data should occur
      * @return The resulting datetime object.
      */
     private TimeSeries<OffsetDateTime> pruneTimeSeries(TimeSeries<OffsetDateTime> timeSeries, OffsetDateTime timeThreshold) {

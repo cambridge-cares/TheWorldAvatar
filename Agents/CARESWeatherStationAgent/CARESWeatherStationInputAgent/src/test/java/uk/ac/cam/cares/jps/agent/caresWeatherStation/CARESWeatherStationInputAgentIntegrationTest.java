@@ -26,9 +26,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * This test class is to test the CARESWeatherStation input agent with a running KG and postgres database.

@@ -9,7 +9,6 @@ import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -379,8 +378,7 @@ public class CARESWeatherStationInputAgentTest {
         // Ensure that the timeseries objects have the correct structure
         int numIRIs = 0;
         for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
-            // Check that number of timestamps is correct
-            //Assert.assertEquals(numEntriesToKeep, ts.getTimes().size());
+
             numIRIs = numIRIs + ts.getDataIRIs().size();
         }
         // Number of unique keys in both readings should match the number of IRIs
@@ -388,7 +386,7 @@ public class CARESWeatherStationInputAgentTest {
         JSONObject currentEntry = jsArr.getJSONObject(0);
 
         Set<String> uniqueKeys = new HashSet<>(currentEntry.getJSONObject("metric_si").keySet());
-        // Timestamp key has no match (therefore -1)
+
         Assert.assertEquals(uniqueKeys.size() , numIRIs);
     }
 
@@ -476,9 +474,6 @@ public class CARESWeatherStationInputAgentTest {
         try {
             SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
                 CARESWeatherStationInputAgent agent = new CARESWeatherStationInputAgent(propertiesFile);
-                // Assert that the mappings were set
-
-
 
                 String[] Timestamps = {"2021-07-11T16:10:00Z", "2021-07-11T16:15:00Z",
                         "2021-07-11T16:20:00Z", "2021-07-11T16:25:00Z"};
