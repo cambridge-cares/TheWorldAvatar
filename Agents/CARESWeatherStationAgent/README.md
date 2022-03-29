@@ -31,9 +31,9 @@ provide the weather readings corresponding to a particular timestamp.
 The following examples of what the JSONObject looks like with the first and last image corresponding to the first and last entry of the JSONArray. The second image corresponds to weather data readings
 taken at a timestamp between the first and third image.
 
-![Shows part of the response body of a successful weather readings request.](docs/img/sample_readings_1.png "The earliest weather data reading")
-![Shows part of the response body of a successful weather readings request.](docs/img/sample_readings_2.png "A weather data reading in between the two extreme time stamps")
-![Shows part of the response body of a successful weather readings request.](docs/img/sample_readings_3.png "The latest weather data reading")
+![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading1.png "The earliest weather data reading")
+![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading2.png "A weather data reading in between the two extreme time stamps")
+![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading3.png "The latest weather data reading")
 
 
 ## Usage 
