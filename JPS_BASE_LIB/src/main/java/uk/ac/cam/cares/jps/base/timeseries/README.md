@@ -84,5 +84,5 @@ You can request login details by emailing `support<at>cmclinnovations.com` with 
    [test repository]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/test/java/uk/ac/cam/cares/jps/base/timeseries>
    [AQMeshInputAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AQMeshInputAgent>
    [FloodAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent>
-   [GasGridAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/1161-dev-gas-grid-input-agent/Agents/GasGridAgent/src/gasgridagent>
+   [GasGridAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/1161-dev-gas-grid-input-agent/Agents/GasGridAgent/>
    [TimeSeriesExample]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/TimeSeriesExample>
