@@ -82,7 +82,7 @@ docker cp flood:/root/.jps .
 ```
 
 ## Main entrypoint
-The main entrypoint is the `LaunchScheduledUpdaterAndWriter` class, it is set as the main class in the manifest, i.e. running the `java -jar FloodAgent-1.0.0-SNAPSHOT.jar` command will launch this by default.
+The main entrypoint is the `LaunchScheduledUpdater` class, it is set as the main class in the manifest, i.e. running the `java -jar FloodAgent-1.0.0-SNAPSHOT.jar` command will launch this by default.
 
 When launched, it will initialise the flood monitoring stations if they are not initialised, and start a scheduled task that runs once a day. The code will always download readings from the day before and upload the data to the time series tables in PostgreSQL.
 
