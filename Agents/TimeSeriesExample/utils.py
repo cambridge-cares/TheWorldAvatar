@@ -27,7 +27,7 @@ PREFIXES = {
     # Namespaces for used ontologies
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
-    'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
+    'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
     'xsd': 'http://www.w3.org/2001/XMLSchema#',
     'geolit': 'http://www.bigdata.com/rdf/geospatial/literals/v1#',
     'geo': 'http://www.bigdata.com/rdf/geospatial#>'
