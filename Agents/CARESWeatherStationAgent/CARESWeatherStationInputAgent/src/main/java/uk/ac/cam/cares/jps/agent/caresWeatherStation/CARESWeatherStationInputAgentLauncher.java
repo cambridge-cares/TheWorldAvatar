@@ -177,7 +177,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         }
         LOGGER.info(String.format("Retrieved %d weather station readings.",
                 weatherDataReadings.length()));
-        jsonMessage.accumulate("Result", "Retrieved " + weatherDataReadings.length() +
+        jsonMessage.accumulate("Result", "Retrieved " + weatherDataReadings.getJSONArray("observations").length() +
                 " weather station readings.");
         // If readings are not empty there is new data
         if(!weatherDataReadings.isEmpty()) {
