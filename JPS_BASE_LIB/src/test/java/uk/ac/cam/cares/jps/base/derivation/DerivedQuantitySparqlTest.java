@@ -799,10 +799,18 @@ public class DerivedQuantitySparqlTest {
 					_agentURLList, _inputsList);
 			devClient.addTimeInstance(derivationIRIs);
 
+			OntModel testKG = mockClient.getKnowledgeBase();
+			Resource derivationType = ResourceFactory
+					.createResource(DerivationSparql.derivednamespace + "Derivation");
+			for (String dIRI : derivationIRIs) {
+				Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+			}
 			assertTestGetAllDerivationsInKG(devClient, derivationIRIs, _entitiesList, _agentURLList, _inputsList);
 
 			devClient.dropAllDerivations();
 			devClient.dropAllTimestamps();
+			List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+			Assert.assertEquals(0, allDerivations.size());
 		}
 	}
 
@@ -820,10 +828,19 @@ public class DerivedQuantitySparqlTest {
 					_agentURLList, _inputsList);
 			devClient.addTimeInstance(derivationIRIs);
 
+			OntModel testKG = mockClient.getKnowledgeBase();
+			Resource derivationType = ResourceFactory
+					.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+			for (String dIRI : derivationIRIs) {
+				Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+			}
+
 			assertTestGetAllDerivationsInKG(devClient, derivationIRIs, _entitiesList, _agentURLList, _inputsList);
 
 			devClient.dropAllDerivations();
 			devClient.dropAllTimestamps();
+			List<Derivation> allDerivations = devClient.getAllDerivationsInKG();
+			Assert.assertEquals(0, allDerivations.size());
 		}
 	}
 
@@ -838,6 +855,13 @@ public class DerivedQuantitySparqlTest {
 			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList, _agentURLList,
 					_inputsList);
 			devClient.addTimeInstance(derivationIRIs);
+
+			OntModel testKG = mockClient.getKnowledgeBase();
+			Resource derivationType = ResourceFactory
+					.createResource(DerivationSparql.derivednamespace + "Derivation");
+			for (String dIRI : derivationIRIs) {
+				Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+			}
 
 			assertTestGetRootAndAllUpstreamDerivations_Fragmented(devClient, derivationIRIs,
 					_entitiesList, _agentURLList, _inputsList);
@@ -861,6 +885,13 @@ public class DerivedQuantitySparqlTest {
 					_agentURLList, _inputsList);
 			devClient.addTimeInstance(derivationIRIs);
 
+			OntModel testKG = mockClient.getKnowledgeBase();
+			Resource derivationType = ResourceFactory
+					.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+			for (String dIRI : derivationIRIs) {
+				Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+			}
+
 			assertTestGetRootAndAllUpstreamDerivations_Fragmented(devClient, derivationIRIs,
 					_entitiesList, _agentURLList, _inputsList);
 
@@ -882,6 +913,13 @@ public class DerivedQuantitySparqlTest {
 			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList, _agentURLList,
 					_inputsList);
 			devClient.addTimeInstance(derivationIRIs);
+
+			OntModel testKG = mockClient.getKnowledgeBase();
+			Resource derivationType = ResourceFactory
+					.createResource(DerivationSparql.derivednamespace + "Derivation");
+			for (String dIRI : derivationIRIs) {
+				Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+			}
 
 			assertTestGetRootAndAllUpstreamDerivations_Chain(devClient, derivationIRIs,
 					_entitiesList, _agentURLList, _inputsList);
@@ -905,6 +943,13 @@ public class DerivedQuantitySparqlTest {
 					_agentURLList, _inputsList);
 			devClient.addTimeInstance(derivationIRIs);
 
+			OntModel testKG = mockClient.getKnowledgeBase();
+			Resource derivationType = ResourceFactory
+					.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+			for (String dIRI : derivationIRIs) {
+				Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+			}
+
 			assertTestGetRootAndAllUpstreamDerivations_Chain(devClient, derivationIRIs,
 					_entitiesList, _agentURLList, _inputsList);
 
@@ -922,6 +967,13 @@ public class DerivedQuantitySparqlTest {
 				agentURLListTree1, inputsListTree1);
 		devClient.addTimeInstance(derivationIRIs);
 
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Resource derivationType = ResourceFactory
+				.createResource(DerivationSparql.derivednamespace + "Derivation");
+		for (String dIRI : derivationIRIs) {
+			Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+		}
+
 		assertTestGetRootAndAllUpstreamDerivations_Tree1(devClient, derivationIRIs);
 
 		devClient.dropAllDerivations();
@@ -936,6 +988,13 @@ public class DerivedQuantitySparqlTest {
 		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListTree1, agentIRIListTree1,
 				agentURLListTree1, inputsListTree1);
 		devClient.addTimeInstance(derivationIRIs);
+
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Resource derivationType = ResourceFactory
+				.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+		for (String dIRI : derivationIRIs) {
+			Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+		}
 
 		assertTestGetRootAndAllUpstreamDerivations_Tree1(devClient, derivationIRIs);
 
@@ -952,6 +1011,13 @@ public class DerivedQuantitySparqlTest {
 				agentURLListDAG1, inputsListDAG1);
 		devClient.addTimeInstance(derivationIRIs);
 
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Resource derivationType = ResourceFactory
+				.createResource(DerivationSparql.derivednamespace + "Derivation");
+		for (String dIRI : derivationIRIs) {
+			Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+		}
+
 		assertTestGetRootAndAllUpstreamDerivations_DAG1(devClient, derivationIRIs);
 
 		devClient.dropAllDerivations();
@@ -963,9 +1029,16 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_DAG1_DerivationAsyn() {
 		// DAG case 1 has structure: d1 --> d0, d2 --> d0, no connection between d1/d2
-		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG1, agentIRIListDAG1,
+		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListDAG1, agentIRIListDAG1,
 				agentURLListDAG1, inputsListDAG1);
 		devClient.addTimeInstance(derivationIRIs);
+
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Resource derivationType = ResourceFactory
+				.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+		for (String dIRI : derivationIRIs) {
+			Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+		}
 
 		assertTestGetRootAndAllUpstreamDerivations_DAG1(devClient, derivationIRIs);
 
@@ -982,6 +1055,13 @@ public class DerivedQuantitySparqlTest {
 				agentURLListDAG2, inputsListDAG2);
 		devClient.addTimeInstance(derivationIRIs);
 
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Resource derivationType = ResourceFactory
+				.createResource(DerivationSparql.derivednamespace + "Derivation");
+		for (String dIRI : derivationIRIs) {
+			Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+		}
+
 		assertTestGetRootAndAllUpstreamDerivations_DAG2(devClient, derivationIRIs);
 
 		devClient.dropAllDerivations();
@@ -996,6 +1076,13 @@ public class DerivedQuantitySparqlTest {
 		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListDAG2, agentIRIListDAG2,
 				agentURLListDAG2, inputsListDAG2);
 		devClient.addTimeInstance(derivationIRIs);
+
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Resource derivationType = ResourceFactory
+				.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
+		for (String dIRI : derivationIRIs) {
+			Assert.assertEquals(derivationType, testKG.getIndividual(dIRI).getRDFType());
+		}
 
 		assertTestGetRootAndAllUpstreamDerivations_DAG2(devClient, derivationIRIs);
 

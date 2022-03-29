@@ -1974,14 +1974,12 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * only works with the standard Derivation type and DerivationWithTimeSeries
+	 * works with the Derivation, DerivationWithTimeSeries, and DerivationAsyn
 	 * does not remove timestamps of inputs (technically outside derivation)
-	 * needs modification to work with asynchronous derivations
 	 * 
-	 * @param storeClient
 	 */
 	void dropAllDerivations() {
-		List<Iri> derivationTypes = Arrays.asList(Derivation, DerivationWithTimeSeries);
+		List<Iri> derivationTypes = Arrays.asList(Derivation, DerivationWithTimeSeries, DerivationAsyn);
 		ModifyQuery modify = Queries.MODIFY();
 
 		SubSelect query = GraphPatterns.select();
@@ -2010,16 +2008,30 @@ public class DerivationSparql {
 
 		// agent
 		TriplePattern agentTp1 = derivation.has(isDerivedUsing, agent);
+		// TODO we need to decide whether to delete these triples
+		// TODO this is also relevant if we should write these triples using derivation
+		// framework in the first place
 		TriplePattern agentTp2 = agent.isA(Service).andHas(hasOperation, operation);
 		TriplePattern agentTp3 = operation.isA(Operation).andHas(hasHttpUrl, url);
 
+		// DerivationAsyn Status related variables and triples
+		Variable status = query.var();
+		Variable statusType = query.var();
+		Variable newDerivedIRI = query.var();
+		TriplePattern tp1 = derivation.has(hasStatus, status);
+		TriplePattern tp2 = status.isA(statusType);
+		TriplePattern tp3 = status.has(hasNewDerivedIRI, newDerivedIRI);
+		GraphPattern gp = status.has(hasNewDerivedIRI, newDerivedIRI).optional();
+		GraphPattern asyncStatusGP = GraphPatterns.and(tp1, tp2, gp).optional();
+
 		GraphPattern queryPattern = GraphPatterns.and(belongsToTp, isDerivedFromTp,
 				timestampTp1, timeTpAll1, timeTpAll2,
-				agentTp1, agentTp2, agentTp3, new ValuesPattern(derivationType, derivationTypes));
+				agentTp1, agentTp2, agentTp3, derivationTypeTp, new ValuesPattern(derivationType, derivationTypes),
+				asyncStatusGP);
 
 		modify.delete(belongsToTp, isDerivedFromTp,
 				timestampTp1, timeTpAll1, timeTpAll2,
-				agentTp1, agentTp2, agentTp3, derivationTypeTp).where(queryPattern)
+				agentTp1, agentTp2, agentTp3, derivationTypeTp, tp1, tp2, tp3).where(queryPattern)
 				.prefix(p_time, p_derived, p_agent);
 
 		storeClient.executeUpdate(modify.getQueryString());
