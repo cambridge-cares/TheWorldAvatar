@@ -139,7 +139,7 @@ The agent is reachable at "caresweatherstation-agent/retrieve" on localhost port
 
 
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1010/thingsboard-agent/retrieve with a correct JSON Object.
+To run the agent, a POST request must be sent to http://localhost:1080/caresweatherstation-agent/retrieve with a correct JSON Object.
 Follow the request shown below.
 
 ```
