@@ -142,9 +142,3 @@ http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_O3_M
 http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasProgram,Data Property,http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,,Gaussian,String
 http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasProgramVersion,Data Property,http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,,9,String
 http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasRunDate,Data Property,http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,,Fri Jul 17 17:49:11 2020,String
-http://www.theworldavatar.com/data/ontocompchem/OutputSource_testID-111-111-111.g09,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#OutputSource,,,
-http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,Instance,http://www.theworldavatar.com/data/ontocompchem/OutputSource_testID-111-111-111.g09,http://purl.org/gc/hasOutputFile,,
-http://www.theworldavatar.com/data/ontocompchem/OutputSource_testID-111-111-111.xml,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#OutputSource,,,
-http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,Instance,http://www.theworldavatar.com/data/ontocompchem/OutputSource_testID-111-111-111.xml,http://purl.org/gc/hasOutputFile,,
-http://www.theworldavatar.com/data/ontocompchem/OutputSource_testID-111-111-111.png,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#OutputSource,,,
-http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,Instance,http://www.theworldavatar.com/data/ontocompchem/OutputSource_testID-111-111-111.png,http://purl.org/gc/hasOutputFile,,

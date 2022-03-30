@@ -3,6 +3,10 @@ import chemaboxwriters.common.params as params
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.handlers import CCLOG_SOURCE_LOCATION
+from chemaboxwriters.ontocompchem.handlers.qc_json_handler import (
+    PNG_SOURCE_LOCATION,
+    XML_SOURCE_LOCATION,
+)
 from chemaboxwriters.ontocompchem.abox_stages import OC_ABOX_STAGES
 from typing import List, Optional, Dict
 
@@ -511,17 +515,16 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 trg_iri=data[CCLOG_SOURCE_LOCATION],
             )
 
-        writer.write_inst(
-            iri=f"ocompchem_data_pref:OutputSource_{calc_id}.xml",
-            type="onto_comp:#OutputSource",
-        ).add_obj_prop(
-            iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",
-            rel="gain_pref:hasOutputFile",
-        )
-        writer.write_inst(
-            iri=f"ocompchem_data_pref:OutputSource_{calc_id}.png",
-            type="onto_comp:#OutputSource",
-        ).add_obj_prop(
-            iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",
-            rel="gain_pref:hasOutputFile",
-        )
+        if PNG_SOURCE_LOCATION in data:
+            writer.write_obj_prop(
+                src_iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",
+                rel="gain_pref:hasOutputFile",
+                trg_iri=data[PNG_SOURCE_LOCATION],
+            )
+
+        if XML_SOURCE_LOCATION in data:
+            writer.write_obj_prop(
+                src_iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",
+                rel="gain_pref:hasOutputFile",
+                trg_iri=data[PNG_SOURCE_LOCATION],
+            )
