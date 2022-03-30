@@ -25,7 +25,7 @@ class WorkspaceTest {
 	@Test
 	public void getWorkspaceTest() throws IOException {
 		
-		String workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
+		String workspaceParentPath = System.getProperty("java.io.tmpdir").toString();
 		String agentClass = "UnitTestAgent";
 		File workspace = new File(workspaceParentPath.concat(File.separator).concat(agentClass).concat("_").concat(""+System.nanoTime()));
 		workspace.mkdir();
@@ -34,7 +34,7 @@ class WorkspaceTest {
 		
 		workspace.delete();
 		
-		assertEquals(workspaceParentPath.concat(File.separator).concat(agentClass), Workspace.getWorkspace(workspaceParentPath, agentClass).getAbsolutePath().split("_")[0]);
+		assertEquals(workspaceParentPath.concat(agentClass), Workspace.getWorkspace(workspaceParentPath, agentClass).getAbsolutePath().split("_")[0]);
 		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
 		assertNotNull(Workspace.getWorkspace(workspaceParentPath, agentClass));
 		
@@ -45,13 +45,13 @@ class WorkspaceTest {
 	@Test
 	public void createWorkspaceNameTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		
-		String workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
+		String workspaceParentPath = System.getProperty("java.io.tmpdir").toString();
 		String agentClass = "UnitTestAgent";
 		Workspace workspace = new Workspace();
 		Method createWorkspaceName = workspace.getClass().getDeclaredMethod("createWorkspaceName", String.class, String.class);
 		createWorkspaceName.setAccessible(true);
 		File wspace = (File) createWorkspaceName.invoke(workspace, workspaceParentPath, agentClass);
-		assertEquals(workspaceParentPath.concat(File.separator).concat(agentClass), wspace.getAbsolutePath().split("_")[0]);
+		assertEquals(workspaceParentPath.concat(agentClass), wspace.getAbsolutePath().split("_")[0]);
 		assertNotNull(createWorkspaceName.invoke(workspace, workspaceParentPath, agentClass));
 		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
 		Workspace.getWorkspace(workspaceParentPath, agentClass).delete();
@@ -61,11 +61,10 @@ class WorkspaceTest {
 	@Test
 	public void isWorkspaceAvailableTestOne() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException{
 		
-		String workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
+		String workspaceParentPath = System.getProperty("java.io.tmpdir").toString();
 		String agentClass = "UnitTestAgent";
 		File ws = new File(workspaceParentPath.concat(File.separator).concat(agentClass).concat("_").concat(""+System.nanoTime()));
 		ws.mkdir();
-		
 		Workspace workspace = new Workspace();
 		Method isWorkspaceAvailable = workspace.getClass().getDeclaredMethod("isWorkspaceAvailable", String.class, String.class);
 		isWorkspaceAvailable.setAccessible(true);
@@ -79,7 +78,7 @@ class WorkspaceTest {
 	@Test
 	public void isWorkspaceAvailableTestTwo() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException{
 		
-		String workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
+		String workspaceParentPath = System.getProperty("java.io.tmpdir").toString();
 		String agentClass = "UnitTestAgent";
 		File ws = new File(workspaceParentPath.concat(File.separator).concat(agentClass).concat("_").concat(""+System.nanoTime()));
 		ws.mkdir();
@@ -145,7 +144,7 @@ class WorkspaceTest {
 	
 	@Test
 	public void createJobFolderTest() {
-		String workspacePath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
+		String workspacePath = System.getProperty("java.io.tmpdir").toString();
 		String hpcAddress = "login-skylake.hpc.cam.ac.uk";
 		long timeStamp = System.nanoTime();
 		Workspace workspace = new Workspace();
