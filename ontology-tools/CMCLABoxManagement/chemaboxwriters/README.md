@@ -80,6 +80,7 @@ The ontocompchem abox writer creates and uploads the ontocompchem aboxes. The wr
   - handler_kwargs:
     - random_id (str) OPTIONAL
     - ontospecies_IRI (str) OPTIONAL - IRI of an ontospecies entry to link to. If not provied a query based on inchi will be made to find the ontospecies IRI. If that fails, the ontospecies link is not included in the ontocompchem abox
+    - generate_png (bool) OPTIONAL - generate png files representing the molecules, by default false
 - OC_JSON_TO_OC_CSV
   - input type: OC_JSON
   - output type: OC_CSV - an intermediate ontocompchem csv file
@@ -326,6 +327,13 @@ ocompchem:
                 - qc_log
     # handler 2
     qc_json_to_oc_json:
+        file_server_upload_settings:
+            # this enables molecules png files upload (if files are present)
+            upload_file_types:
+                - oc_png
+        handler_kwargs:
+            # this enables molecules png files generation
+            generate_png: true
     # handler 3
     oc_csv_to_oc_owl:
         triple_store_upload_settings:
