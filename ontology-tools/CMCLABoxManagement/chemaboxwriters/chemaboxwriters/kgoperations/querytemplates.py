@@ -70,26 +70,33 @@ def get_assemblyModel(gbu_properties: List[Dict], mops_symmetry: str):
     {
     ?mopIRI OntoMOPs:hasAssemblyModel ?AssemblyModel .
     ?AssemblyModel OntoMOPs:hasSymmetryPointGroup "#Symmetry#"^^xsd:string .
-    """.replace("#Symmetry#", str(mops_symmetry))
+    """.replace(
+        "#Symmetry#", str(mops_symmetry)
+    )
 
-    queryStr_part2 = ''
+    queryStr_part2 = ""
 
     for i in range(len(gbu_properties)):
-        planarity_i = gbu_properties[i]['planarity']
-        modularity_i = gbu_properties[i]['modularity']
-        gbu_number_i = gbu_properties[i]['gbu_number']
+        planarity_i = gbu_properties[i]["planarity"]
+        modularity_i = gbu_properties[i]["modularity"]
+        gbu_number_i = gbu_properties[i]["gbu_number"]
 
-        queryStr_part2 = queryStr_part2 + """
+        queryStr_part2 = (
+            queryStr_part2
+            + """
             ?AssemblyModel OntoMOPs:hasGenericBuildingUnitNumber ?#GBUNumber# .
             ?#GBUNumber# OntoMOPs:isNumberOf ?#GBU# .
             ?#GBU# OntoMOPs:hasPlanarity "#Planarity#"^^xsd:string .
             ?#GBU# OntoMOPs:hasModularity "#Modularity#"^^xsd:string .
             ?#GBUNumber# OntoSpecies:value "#NumberValue#"^^xsd:string .
-            """.replace("#GBUNumber#", f"GBUNumber_{i}") \
-               .replace("#GBU#", f"GBU_{i}") \
-               .replace("#Planarity#", planarity_i) \
-               .replace("#Modularity#", modularity_i) \
-               .replace("#NumberValue#", gbu_number_i)
+            """.replace(
+                "#GBUNumber#", f"GBUNumber_{i}"
+            )
+            .replace("#GBU#", f"GBU_{i}")
+            .replace("#Planarity#", planarity_i)
+            .replace("#Modularity#", modularity_i)
+            .replace("#NumberValue#", gbu_number_i)
+        )
 
     queryStr = f"{queryStr_part1}\n{queryStr_part2}}}"
     return queryStr
