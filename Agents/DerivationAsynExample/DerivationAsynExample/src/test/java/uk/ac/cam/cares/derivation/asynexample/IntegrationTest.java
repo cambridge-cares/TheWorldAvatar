@@ -98,6 +98,7 @@ public class IntegrationTest extends TestCase {
 
         // initialise all variables to be used
         kgUrl = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort() + "/blazegraph/namespace/kb/sparql";
+        System.out.println(kgUrl);
         Config.initProperties();
         storeClient = new RemoteStoreClient(kgUrl, kgUrl);
         devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
@@ -198,33 +199,16 @@ public class IntegrationTest extends TestCase {
         Assert.assertEquals(0, sparqlClient.getValue(maxvalue_instance));
         Assert.assertEquals(0, sparqlClient.getValue(minvalue_instance));
         Assert.assertEquals(0, sparqlClient.getValue(difference_instance));
+
+        // test if all derivations were marked as Requested
+        Assert.assertEquals(StatusType.REQUESTED, (StatusType) getStatusType.invoke(devSparql, difference_derivation));
+        Assert.assertEquals(StatusType.REQUESTED, (StatusType) getStatusType.invoke(devSparql, maxvalue_derivation));
+        Assert.assertEquals(StatusType.REQUESTED, (StatusType) getStatusType.invoke(devSparql, minvalue_derivation));
+        Assert.assertEquals(StatusType.REQUESTED, (StatusType) getStatusType.invoke(devSparql, rng_derivation));
     }
 
     @Test
     @Order(2)
-    public void testUpdateDerivations() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        // request updating derivations
-        UpdateDerivations updateDerivations = new UpdateDerivations();
-        updateDerivations.updateDerivations(sparqlClient, devClient);
-
-        // get IRIs of initialise instances, the keys are located in the servlet InitialiseInstances
-        // derivations
-        String difference_derivation = response.getString("Difference Derivation");
-        String maxvalue_derivation = response.getString("MaxValue Derivation");
-        String minvalue_derivation = response.getString("MinValue Derivation");
-        String rng_derivation = response.getString("RandomNumberGeneration Derivation");
-
-        // test if all derivations were marked as PendingUpdate
-//        Assert.assertEquals(StatusType.PENDINGUPDATE, sparqlClient.getDifferenceIRI());
-        
-        Assert.assertEquals(StatusType.PENDINGUPDATE, (StatusType) getStatusType.invoke(devSparql, difference_derivation));
-        Assert.assertEquals(StatusType.PENDINGUPDATE, (StatusType) getStatusType.invoke(devSparql, maxvalue_derivation));
-        Assert.assertEquals(StatusType.PENDINGUPDATE, (StatusType) getStatusType.invoke(devSparql, minvalue_derivation));
-        Assert.assertEquals(StatusType.PENDINGUPDATE, (StatusType) getStatusType.invoke(devSparql, rng_derivation));
-    }
-
-    @Test
-    @Order(3)
     public void testInitialiseAgents() throws ServletException {
         // now initialise all agents
         rngAgent.init();
@@ -235,7 +219,7 @@ public class IntegrationTest extends TestCase {
 
     @Test
     @Timeout(value = 180, unit = TimeUnit.SECONDS)
-    @Order(4)
+    @Order(3)
     public void testRNGDerivation() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
         String rng_derivation = response.getString("RandomNumberGeneration Derivation");
         
@@ -245,6 +229,8 @@ public class IntegrationTest extends TestCase {
             TimeUnit.SECONDS.sleep(30);
             currentTimestamp_rng_derivation = (long) getTimestamp.invoke(devSparql, rng_derivation);
         }
+        // wait arbitrary amount of time so that the cleaning up is finished
+        TimeUnit.SECONDS.sleep(5);
         Assert.assertNotEquals(response.getString("ListOfRandomPoints instance"), sparqlClient.getListOfRandomPointsIRI());
         // test if it contains correct number of points
         Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()), sparqlClient.getAmountOfPointsInList());
@@ -252,7 +238,7 @@ public class IntegrationTest extends TestCase {
 
     @Test
     @Timeout(value = 180, unit = TimeUnit.SECONDS)
-    @Order(5)
+    @Order(4)
     public void testMaxValueDerivation() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
         String maxvalue_derivation = response.getString("MaxValue Derivation");
 
@@ -262,6 +248,8 @@ public class IntegrationTest extends TestCase {
             TimeUnit.SECONDS.sleep(30);
             currentTimestamp_maxvalue_derivation = (long) getTimestamp.invoke(devSparql, maxvalue_derivation);
         }
+        // wait arbitrary amount of time so that the cleaning up is finished
+        TimeUnit.SECONDS.sleep(5);
         String maxvalue_instance = sparqlClient.getMaxValueIRI();
         Assert.assertNotEquals(response.getString("MaxValue instance"), maxvalue_instance);
         // test if the value is the same as the max value
@@ -270,7 +258,7 @@ public class IntegrationTest extends TestCase {
 
     @Test
     @Timeout(value = 180, unit = TimeUnit.SECONDS)
-    @Order(6)
+    @Order(5)
     public void testMinValueDerivation() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
         String minvalue_derivation = response.getString("MinValue Derivation");
         // once timestamp updated, the iri of maxvalue should be different from previous one
@@ -279,6 +267,8 @@ public class IntegrationTest extends TestCase {
             TimeUnit.SECONDS.sleep(30);
             currentTimestamp_minvalue_derivation = (long) getTimestamp.invoke(devSparql, minvalue_derivation);
         }
+        // wait arbitrary amount of time so that the cleaning up is finished
+        TimeUnit.SECONDS.sleep(5);
         String minvalue_instance = sparqlClient.getMinValueIRI();
         Assert.assertNotEquals(response.getString("MinValue instance"), minvalue_instance);
         // test if the value is the same as the min value
@@ -287,7 +277,7 @@ public class IntegrationTest extends TestCase {
 
     @Test
     @Timeout(value = 180, unit = TimeUnit.SECONDS)
-    @Order(7)
+    @Order(6)
     public void testDifferenceDerivation() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
         String difference_derivation = response.getString("Difference Derivation");
         // once timestamp updated, the iri of difference should be different from the previous one, it should have the value same as the max - min value
@@ -296,6 +286,8 @@ public class IntegrationTest extends TestCase {
             TimeUnit.SECONDS.sleep(30);
             currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
         }
+        // wait arbitrary amount of time so that the cleaning up is finished
+        TimeUnit.SECONDS.sleep(5);
         String difference_instance = sparqlClient.getDifferenceIRI();
         Assert.assertNotEquals(response.getString("Difference instance"), difference_instance);
         // test if the value is the same as the difference value
@@ -304,7 +296,7 @@ public class IntegrationTest extends TestCase {
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     public void testInputAgent() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         // get information about old NumberOfPoints instance
         String numOfPoint_old = sparqlClient.getNumberOfPointsIRI();
@@ -326,8 +318,8 @@ public class IntegrationTest extends TestCase {
 
     @Test
     @Timeout(value = 300, unit = TimeUnit.SECONDS)
-    @Order(9)
-    public void testUpdateDerivationsAgain() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
+    @Order(8)
+    public void testUpdateDerivations() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
         // get old timestamp of difference derivation
         String difference_derivation = response.getString("Difference Derivation");
         long difference_derivation_timestamp = (long) getTimestamp.invoke(devSparql, difference_derivation);
@@ -341,9 +333,11 @@ public class IntegrationTest extends TestCase {
         // once timestamp of difference derivation updated, the iri of difference should be different from the previous one, it should have the value same as the max - min value
         currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
         while (currentTimestamp_difference_derivation <= difference_derivation_timestamp) {
-            TimeUnit.SECONDS.sleep(100);
+            TimeUnit.SECONDS.sleep(20);
             currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
         }
+        // wait arbitrary amount of time so that the cleaning up is finished
+        TimeUnit.SECONDS.sleep(5);
         String difference_instance_new = sparqlClient.getDifferenceIRI();
         Assert.assertNotEquals(difference_instance_old, difference_instance_new);
         // test if the value is the same as the difference value
