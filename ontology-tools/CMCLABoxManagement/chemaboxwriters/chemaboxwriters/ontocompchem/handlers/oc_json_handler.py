@@ -1,10 +1,11 @@
 import json
-import chemaboxwriters.common.globals as globals
+import chemaboxwriters.common.params as params
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
-from chemaboxwriters.common.globals import aboxStages
+from chemaboxwriters.common.handlers import CCLOG_SOURCE_LOCATION
+from chemaboxwriters.ontocompchem.abox_stages import OC_ABOX_STAGES
 from typing import List, Optional, Dict
-from enum import Enum
+
 
 Abox_Writer = utilsfunc.Abox_csv_writer
 
@@ -30,8 +31,8 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
     def __init__(self) -> None:
         super().__init__(
             name="OC_JSON_TO_OC_CSV",
-            in_stage=aboxStages.OC_JSON,
-            out_stage=aboxStages.OC_CSV,
+            in_stage=OC_ABOX_STAGES.oc_json,  # type: ignore
+            out_stage=OC_ABOX_STAGES.oc_csv,  # type: ignore
             prefixes=HANDLER_PREFIXES,
         )
 
@@ -39,7 +40,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         self,
         inputs: List[str],
         out_dir: str,
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -49,7 +50,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self._out_stage.name.lower(),
+                file_extension=self._out_stage,
                 out_dir=out_dir,
             )
             self._oc_csvwriter(
@@ -64,9 +65,9 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
-        spec_IRI = data[globals.SPECIES_IRI]
-        calc_id = data[globals.ENTRY_UUID]
-        entryIRI = data[globals.ENTRY_IRI]
+        spec_IRI = data[params.SPECIES_IRI]
+        calc_id = data[params.ENTRY_UUID]
+        entryIRI = data[params.ENTRY_IRI]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
             for prefix_name in self._handler_prefixes._parameters:
@@ -502,13 +503,14 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             rel="onto_comp:#hasRunDate",
             value=data["Run date"],
         )
-        writer.write_inst(
-            iri=f"ocompchem_data_pref:OutputSource_{calc_id}.g09",
-            type="onto_comp:#OutputSource",
-        ).add_obj_prop(
-            iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",
-            rel="gain_pref:hasOutputFile",
-        )
+
+        if CCLOG_SOURCE_LOCATION in data:
+            writer.write_obj_prop(
+                src_iri=f"comp_pref:SourcePackage_{calc_id}_EnvironmentModule",
+                rel="gain_pref:hasOutputFile",
+                trg_iri=data[CCLOG_SOURCE_LOCATION],
+            )
+
         writer.write_inst(
             iri=f"ocompchem_data_pref:OutputSource_{calc_id}.xml",
             type="onto_comp:#OutputSource",
