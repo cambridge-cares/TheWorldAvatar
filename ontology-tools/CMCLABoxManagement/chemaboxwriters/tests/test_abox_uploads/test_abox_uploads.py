@@ -85,7 +85,7 @@ def cleanup_test_data(writtenFiles: List[str]) -> None:
 @pytest.mark.parametrize(
     "inp_file_or_dir, inp_file_type, fs_num_uploads, ts_num_uploads",
     [
-        ("OC_qc_log_single_log_scan_test\\ethane_scan_rigid.g09", "qc_log", 1, 4),
+        ("OC_qc_log_single_log_scan_test\\ethane_scan_rigid.g09", "qc_log", 5, 4),
     ],
 )
 def test_ocompchem_abox_uploads(

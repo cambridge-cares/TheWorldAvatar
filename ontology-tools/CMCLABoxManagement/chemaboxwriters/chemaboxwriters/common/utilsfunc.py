@@ -1,5 +1,7 @@
 import chemaboxwriters.common.params as params
 from chemaboxwriters.common.abox_stages import ABOX_STAGES_COMMON
+import chemutils.rdkitutils.rdkitmolutils as rdkitutils
+import chemutils.rdkitutils.rdkitconverters as rdkitconverters
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF import (
     convert_csv_string_into_rdf,
@@ -296,4 +298,5 @@ def get_out_file_path(
 
 
 def generate_molecule_png(inchi: str, out_path: str, **kwargs) -> None:
-    pass
+    rdkit_mol = rdkitconverters.inchiToRdkitMol(inchi=inchi)
+    rdkitutils.rdkitMolToFile(rdkitMol=rdkit_mol, out_path=out_path, **kwargs)

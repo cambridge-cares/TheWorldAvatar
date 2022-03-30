@@ -55,9 +55,13 @@ ocompchem:
             upload_file_types:
                 - qc_log
     qc_json_to_oc_json:
+        file_server_upload_settings:
+            upload_file_types:
+                - oc_png
         handler_kwargs:
             random_id: testID-111-111-111
             ontospecies_IRI: test_species_iri
+            generate_png: true
     oc_csv_to_oc_owl:
         triple_store_upload_settings:
             upload_file_types:

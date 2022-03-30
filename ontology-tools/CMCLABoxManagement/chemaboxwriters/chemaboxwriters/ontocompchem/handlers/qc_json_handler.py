@@ -61,7 +61,10 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
                 out_dir=out_dir,
             )
             self._oc_jsonwriter(
-                file_path=json_file_path, output_file_path=out_file_path
+                file_path=json_file_path,
+                output_file_path=out_file_path,
+                file_server_uploads=file_server_uploads,
+                dry_run=dry_run,
             )
             outputs.append(out_file_path)
         return outputs
@@ -70,12 +73,14 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         self,
         file_path: str,
         output_file_path: str,
+        dry_run: bool,
+        file_server_uploads: Optional[Dict] = None,
     ) -> None:
 
         random_id = self.get_parameter_value(name="random_id")
         ontospecies_IRI = self.get_parameter_value(name="ontospecies_IRI")
+        generate_png = self.get_parameter_value(name="generate_png")
         comp_pref = self.get_prefix_value(name="comp_pref")
-        generate_png = self.get_prefix_value(name="generate_png")
 
         if random_id is None:
             random_id = utilsfunc.get_random_id()
@@ -90,10 +95,20 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         inchi = obconverter.obConvert(xyz, "xyz", "inchi")
 
         if generate_png is not None:
-            logger.warning("Molecule PNG generation is not yet supported.")
-            # png_out_path = f"{output_file_path}.png"
-            # utilsfunc.generate_molecule_png(inchi=inchi, out_path=png_out_path)
-            # self.do_uploads(inputs = [png_out_path], input_type=)
+            if generate_png is True:
+                png_out_path = f"{output_file_path}.png"
+                utilsfunc.generate_molecule_png(inchi=inchi, out_path=png_out_path)
+                self.do_uploads(
+                    inputs=[png_out_path],
+                    input_type="oc_png",
+                    dry_run=dry_run,
+                    file_server_uploads=file_server_uploads,
+                )
+                if file_server_uploads is not None:
+                    png_file_loc = file_server_uploads.get(png_out_path)
+                    if png_file_loc is not None:
+                        data[PNG_SOURCE_LOCATION] = png_file_loc["location"]
+                self.written_files.append(png_out_path)
 
         if ontospecies_IRI is None:
             response = self.do_remote_store_query(
