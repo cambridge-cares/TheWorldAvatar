@@ -875,7 +875,6 @@ class UtilsTest {
 	public void copyModifiedContentForUnixTest()
 			throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		File src = new File(System.getProperty("java.io.tmpdir") + "src.txt");
-		System.out.println(src.getAbsolutePath());
 		File dest = new File(System.getProperty("java.io.tmpdir") + "dest.txt");
 		File expected = new File(System.getProperty("java.io.tmpdir") + "expected.txt");
 
