@@ -7,12 +7,11 @@ Created on Thu Mar  4 16:10:02 2021
 
 import json
 import chemaboxwriters.kgoperations.querytemplates as qtmpl
-import chemaboxwriters.common.globals as globals
+import chemaboxwriters.common.params as params
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.handler import Handler
 from typing import List, Optional, Dict
-import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
-from enum import Enum
+from chemaboxwriters.ontomops.abox_stages import OM_ABOX_STAGES
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,8 +39,8 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
 
         super().__init__(
             name="OM_JSON_TO_OM_CSV",
-            in_stage=globals.aboxStages.OM_JSON,
-            out_stage=globals.aboxStages.OM_CSV,
+            in_stage=OM_ABOX_STAGES.om_json,  # type: ignore
+            out_stage=OM_ABOX_STAGES.om_csv,  # type: ignore
             prefixes=HANDLER_PREFIXES,
         )
 
@@ -49,7 +48,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         self,
         inputs: List[str],
         out_dir: str,
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -59,7 +58,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self._out_stage.name.lower(),
+                file_extension=self._out_stage,
                 out_dir=out_dir,
             )
             self._om_csvwriter(
@@ -74,8 +73,8 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
-        gen_id = data[globals.ENTRY_UUID]
-        mops_id = data[globals.ENTRY_IRI]
+        gen_id = data[params.ENTRY_UUID]
+        mops_id = data[params.ENTRY_IRI]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
             for prefix_name in self._handler_prefixes._parameters:
@@ -114,12 +113,12 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             rel="onto_mops:#hasCCDCNumber",
             value=data["Mops_CCDC_Number"],
         )
-        if 'Mops_xyz_geometry_file_url' in data:
+        if "Mops_xyz_geometry_file_url" in data:
             writer.write_data_prop(
                 iri=f"mops_pref:{mops_id}",
                 rel="onto_mops:#hasXYZGeometryFile",
                 value=data["Mops_xyz_geometry_file_url"],
-        )
+            )
 
     def _write_provenance(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
 
@@ -231,21 +230,21 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             gbu_properties = []
             for cbu in data["Mops_Chemical_Building_Units"]:
                 gbu_properties.append(
-                    {'modularity': cbu["GenericUnitModularity"],
-                     'planarity': cbu["GenericUnitPlanarity"],
-                     'gbu_number': cbu["GenericUnitNumber"]
+                    {
+                        "modularity": cbu["GenericUnitModularity"],
+                        "planarity": cbu["GenericUnitPlanarity"],
+                        "gbu_number": cbu["GenericUnitNumber"],
                     },
                 )
 
             response = self.do_remote_store_query(
                 endpoint_prefix="omops",
                 query_str=qtmpl.get_assemblyModel(
-                    gbu_properties=gbu_properties,
-                    mops_symmetry = symmetry
-                )
+                    gbu_properties=gbu_properties, mops_symmetry=symmetry
+                ),
             )
             if response:
-                assemblymodel = response[0]['AssemblyModel']
+                assemblymodel = response[0]["AssemblyModel"]
 
         if assemblymodel is None:
             asmodel_uuid = gen_id

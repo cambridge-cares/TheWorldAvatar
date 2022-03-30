@@ -1,10 +1,10 @@
 import json
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
-import chemaboxwriters.common.globals as globals
+import chemaboxwriters.common.params as params
+from chemaboxwriters.ontomops.abox_stages import OM_ABOX_STAGES
 import os
 from typing import List, Optional, Dict
-from enum import Enum
 
 
 HANDLER_PREFIXES = {
@@ -15,7 +15,8 @@ HANDLER_PARAMETERS = {
     "random_id": {"required": False},
 }
 
-MOPS_XYZ_GEOMETRY_FILE_URL = 'Mops_xyz_geometry_file_url'
+MOPS_XYZ_GEOMETRY_FILE_URL = "Mops_xyz_geometry_file_url"
+
 
 class OMINP_JSON_TO_OM_JSON_Handler(Handler):
     """Handler converting ontomops ominp_json files to om_json.
@@ -26,8 +27,8 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
     def __init__(self) -> None:
         super().__init__(
             name="OMINP_JSON_TO_OM_JSON",
-            in_stage=globals.aboxStages.OMINP_JSON,
-            out_stage=globals.aboxStages.OM_JSON,
+            in_stage=OM_ABOX_STAGES.ominp_json,  # type: ignore
+            out_stage=OM_ABOX_STAGES.om_json,  # type: ignore
             prefixes=HANDLER_PREFIXES,
             handler_params=HANDLER_PARAMETERS,
         )
@@ -36,7 +37,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         self,
         inputs: List[str],
         out_dir: str,
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -46,7 +47,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         if json_file_xyz_file_map:
             self.do_uploads(
                 inputs=list(json_file_xyz_file_map.values()),
-                input_type=globals.aboxStages.OMINP_XYZ,
+                input_type="ominp_xyz",  # type: ignore
                 dry_run=dry_run,
                 triple_store_uploads=triple_store_uploads,
                 file_server_uploads=file_server_uploads,
@@ -56,7 +57,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self._out_stage.name.lower(),
+                file_extension=self._out_stage,
                 out_dir=out_dir,
             )
 
@@ -66,27 +67,25 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
                 if xyz_file is not None:
                     xyz_file_location = file_server_uploads.get(xyz_file)
                     if xyz_file_location is not None:
-                        xyz_file_location = xyz_file_location['location']
+                        xyz_file_location = xyz_file_location["location"]
 
             self.om_jsonwriter(
-                file_path = json_file_path,
-                output_file_path = out_file_path,
-                xyz_file_location= xyz_file_location)
+                file_path=json_file_path,
+                output_file_path=out_file_path,
+                xyz_file_location=xyz_file_location,
+            )
             outputs.append(out_file_path)
         return outputs
 
     def om_jsonwriter(
-        self,
-        file_path: str,
-        output_file_path: str,
-        xyz_file_location: Optional[str]
+        self, file_path: str, output_file_path: str, xyz_file_location: Optional[str]
     ) -> None:
 
         omops_entry_prefix = self.get_prefix_value(name="omops_entry_prefix")
         random_id = self.get_parameter_value(name="random_id")
 
         if omops_entry_prefix is None:
-            omops_entry_prefix = ''
+            omops_entry_prefix = ""
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
@@ -94,15 +93,15 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         if random_id is None:
             random_id = utilsfunc.get_random_id()
 
-        data[globals.ENTRY_UUID] = random_id
-        data[globals.ENTRY_IRI] = f"{omops_entry_prefix}{random_id}"
+        data[params.ENTRY_UUID] = random_id
+        data[params.ENTRY_IRI] = f"{omops_entry_prefix}{random_id}"
         if xyz_file_location is not None:
             data[MOPS_XYZ_GEOMETRY_FILE_URL] = xyz_file_location
 
         utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
 
     @staticmethod
-    def _extract_XYZ_data(inputs: List[str])->Dict[str,str]:
+    def _extract_XYZ_data(inputs: List[str]) -> Dict[str, str]:
         json_file_xyz_file_map = {}
         for file_path in inputs:
             with open(file_path, "r") as file_handle:

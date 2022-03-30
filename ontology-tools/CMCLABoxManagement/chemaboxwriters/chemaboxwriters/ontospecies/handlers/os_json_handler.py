@@ -32,10 +32,11 @@ from chemaboxwriters.ontospecies.handlers.qc_json_handler import (
     ENTH_PROV,
 )
 
-import chemaboxwriters.common.globals as globals
+import chemaboxwriters.common.params as params
 from typing import List, Optional, Dict
-from enum import Enum
 from chemaboxwriters.common.handler import Handler
+from chemaboxwriters.ontospecies.abox_stages import OS_ABOX_STAGES
+
 
 Abox_Writer = utilsfunc.Abox_csv_writer
 
@@ -58,8 +59,8 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
     def __init__(self) -> None:
         super().__init__(
             name="OS_JSON_TO_OS_CSV",
-            in_stage=globals.aboxStages.OS_JSON,
-            out_stage=globals.aboxStages.OS_CSV,
+            in_stage=OS_ABOX_STAGES.os_json,  # type: ignore
+            out_stage=OS_ABOX_STAGES.os_csv,  # type: ignore
             prefixes=HANDLER_PREFIXES,
         )
 
@@ -67,7 +68,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         self,
         inputs: List[str],
         out_dir: str,
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -77,7 +78,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self._out_stage.name.lower(),
+                file_extension=self._out_stage,
                 out_dir=out_dir,
             )
             self._os_csvwriter(file_path=json_file_path, output_file_path=out_file_path)
@@ -89,7 +90,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
-        gen_id = data[globals.ENTRY_UUID]
+        gen_id = data[params.ENTRY_UUID]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
             for prefix_name in self._handler_prefixes._parameters:
@@ -97,7 +98,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 if prefix_value is not None:
                     writer.register_prefix(name=prefix_name, value=prefix_value)
 
-            out_id = data[globals.ENTRY_IRI]
+            out_id = data[params.ENTRY_IRI]
             label = utilsfunc.formula_clean_re.sub("", data[EMP_FORMULA])
 
             self._write_prelim(writer, out_id, label)

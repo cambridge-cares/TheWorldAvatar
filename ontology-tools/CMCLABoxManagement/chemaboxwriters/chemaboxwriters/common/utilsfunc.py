@@ -1,11 +1,11 @@
-import chemaboxwriters.common.globals as globals
+import chemaboxwriters.common.params as params
+from chemaboxwriters.common.abox_stages import ABOX_STAGES_COMMON
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF import (
     convert_csv_string_into_rdf,
 )
 import os
 import glob
-from enum import Enum
 from typing import List, Optional, Dict, Literal
 import uuid
 import logging
@@ -206,15 +206,15 @@ def config_logging(
 
 
 def get_stage_files(
-    file_or_dir: str, in_stage: Enum, file_ext: Optional[str] = None
+    file_or_dir: str, in_stage: str, file_ext: Optional[str] = None
 ) -> List[str]:
 
     file_ext_str: str = ""
     if file_ext is None:
-        if in_stage == globals.aboxStages.QC_LOG:
-            file_ext_str = globals.CC_LOG_EXT
+        if in_stage == ABOX_STAGES_COMMON.qc_log:
+            file_ext_str = params.CC_LOG_EXT
         else:
-            file_ext_str = in_stage.name.lower()
+            file_ext_str = in_stage.lower()
     else:
         file_ext_str = file_ext
 
@@ -265,14 +265,6 @@ def get_random_id():
     )  # Get a randomly generated identifier for creation of the ABox.
 
 
-def stage_name_to_enum(stage_name: str) -> Enum:
-    try:
-        inStage = globals.aboxStages[stage_name.upper()]
-    except KeyError:
-        raise app_exceptions.UnsupportedStage
-    return inStage
-
-
 def write_dict_to_file(
     dict_data: Dict, dest_path: str, indent: int = 4, *args, **kwargs
 ) -> None:
@@ -301,3 +293,7 @@ def get_out_file_path(
         return str((p.parents[0]).joinpath(filename))
     else:
         return str((pathlib.Path(out_dir)).joinpath(filename))
+
+
+def generate_molecule_png(inchi: str, out_path: str, **kwargs) -> None:
+    pass

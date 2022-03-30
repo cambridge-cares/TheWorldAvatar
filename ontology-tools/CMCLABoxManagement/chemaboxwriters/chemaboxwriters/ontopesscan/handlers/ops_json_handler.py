@@ -1,5 +1,5 @@
 import json
-import chemaboxwriters.common.globals as globals
+import chemaboxwriters.common.params as params
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.ontopesscan.handlers.oc_json_handler import (
@@ -10,8 +10,8 @@ from chemaboxwriters.ontopesscan.handlers.oc_json_handler import (
     SCAN_POINTS_JOBS,
     SCAN_ATOM_IDS,
 )
+from chemaboxwriters.ontopesscan.abox_stages import OPS_ABOX_STAGES
 from typing import List, Optional, Dict
-from enum import Enum
 
 
 Abox_Writer = utilsfunc.Abox_csv_writer
@@ -35,8 +35,8 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
     def __init__(self) -> None:
         super().__init__(
             name="OPS_JSON_TO_OPS_CSV",
-            in_stage=globals.aboxStages.OPS_JSON,
-            out_stage=globals.aboxStages.OPS_CSV,
+            in_stage=OPS_ABOX_STAGES.ops_json,  # type: ignore
+            out_stage=OPS_ABOX_STAGES.ops_csv,  # type: ignore
             prefixes=HANDLER_PREFIXES,
         )
 
@@ -44,7 +44,7 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         self,
         inputs: List[str],
         out_dir: str,
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -54,7 +54,7 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self._out_stage.name.lower(),
+                file_extension=self._out_stage,
                 out_dir=out_dir,
             )
             self._ops_csvwriter(
@@ -68,9 +68,9 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
-        spec_IRI = data[globals.SPECIES_IRI]
-        calc_id = data[globals.ENTRY_UUID]
-        entryIRI = data[globals.ENTRY_IRI]
+        spec_IRI = data[params.SPECIES_IRI]
+        calc_id = data[params.ENTRY_UUID]
+        entryIRI = data[params.ENTRY_IRI]
 
         with utilsfunc.Abox_csv_writer(file_path=output_file_path) as writer:
             for prefix_name in self._handler_prefixes._parameters:

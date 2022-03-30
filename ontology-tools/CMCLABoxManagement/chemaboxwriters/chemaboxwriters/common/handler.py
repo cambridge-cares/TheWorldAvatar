@@ -3,15 +3,15 @@ import chemaboxwriters.kgoperations.remotestore_client as rsc
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from abc import ABC, abstractmethod
 from pprint import pformat
-from enum import Enum
 from typing import List, Tuple, Dict, Optional, Any
 import logging
 
 
 logger = logging.getLogger(__name__)
 
+
 class Handler_Parameters:
-    def __init__(self, name: str, handler_name: str)->None:
+    def __init__(self, name: str, handler_name: str) -> None:
         self.name = name
         self.handler_name = handler_name
         self._parameters = {}
@@ -23,22 +23,19 @@ class Handler_Parameters:
         required: bool = False,
     ) -> None:
         if name in self._parameters:
-            logger.warning(f"{self.handler_name} handler {self.name}: {name} already exists.")
+            logger.warning(
+                f"{self.handler_name} handler {self.name}: {name} already exists."
+            )
             return
         self._parameters[name] = {"value": value, "required": required}
 
-
-    def add_parameters_from_dict(
-        self,
-        parameters_dict: Dict
-    ) -> None:
+    def add_parameters_from_dict(self, parameters_dict: Dict) -> None:
         for param_name, param_settings in parameters_dict.items():
             self.add_parameter(
                 name=param_name,
                 required=param_settings.get("required"),
                 value=param_settings.get("value"),
             )
-
 
     def get_parameter_value(
         self,
@@ -50,9 +47,9 @@ class Handler_Parameters:
 
         return self._parameters[name]["value"]
 
-    def set_parameter_value(self, name: str, value: Optional[str])->None:
+    def set_parameter_value(self, name: str, value: Optional[str]) -> None:
         if name not in self._parameters:
-            self.add_parameter(name = name, value= value, required = False)
+            self.add_parameter(name=name, value=value, required=False)
             return
 
         self._parameters[name]["value"] = value
@@ -62,7 +59,6 @@ class Handler_Parameters:
             return False
         return self._parameters[name]["required"]
 
-
     def check_configs(self) -> None:
         for parameter in self._parameters:
             if (
@@ -71,13 +67,12 @@ class Handler_Parameters:
             ):
 
                 raise app_exceptions.MissingRequiredInput(
-                    (
-                        f"Missing required {self.name} in {self.handler_name} handler."
-                    )
-
+                    (f"Missing required {self.name} in {self.handler_name} handler.")
                 )
-    def info(self)->None:
+
+    def info(self) -> None:
         print(pformat(self._parameters))
+
 
 class Handler(ABC):
     """
@@ -87,8 +82,8 @@ class Handler(ABC):
     def __init__(
         self,
         name: str,
-        in_stage: Enum,
-        out_stage: Enum,
+        in_stage: str,
+        out_stage: str,
         prefixes: Optional[Dict] = None,
         handler_params: Optional[Dict] = None,
     ) -> None:
@@ -98,26 +93,30 @@ class Handler(ABC):
         self._in_stage = in_stage
         self._out_stage = out_stage
         self._handler_prefixes: Handler_Parameters = Handler_Parameters(
-            name='prefix',
-            handler_name=self.name
+            name="prefix", handler_name=self.name
         )
         if prefixes is not None:
             self._handler_prefixes.add_parameters_from_dict(parameters_dict=prefixes)
         self._handler_params: Handler_Parameters = Handler_Parameters(
-            name='parameter',
-            handler_name=self.name
+            name="parameter", handler_name=self.name
         )
         if handler_params is not None:
-            self._handler_params.add_parameters_from_dict(parameters_dict=handler_params)
+            self._handler_params.add_parameters_from_dict(
+                parameters_dict=handler_params
+            )
 
         self._file_server_uploader: Optional[uploaders.UploaderClient] = None
         self._triple_store_uploader: Optional[uploaders.UploaderClient] = None
         self._remote_store_client: Optional[rsc.RemoteStoreClientContainer] = None
 
-    def set_file_server_uploader(self, file_server_uploader: uploaders.UploaderClient) -> None:
+    def set_file_server_uploader(
+        self, file_server_uploader: uploaders.UploaderClient
+    ) -> None:
         self._file_server_uploader = file_server_uploader
 
-    def set_triple_store_uploader(self, triple_store_uploader: uploaders.UploaderClient) -> None:
+    def set_triple_store_uploader(
+        self, triple_store_uploader: uploaders.UploaderClient
+    ) -> None:
         self._triple_store_uploader = triple_store_uploader
 
     def set_remote_store_client(
@@ -143,9 +142,7 @@ class Handler(ABC):
     def get_prefix_value(self, name: str) -> Optional[str]:
         return self._handler_prefixes.get_parameter_value(name=name)
 
-    def set_parameter_value(
-        self, name: str, value: Optional[str] = None
-    ) -> None:
+    def set_parameter_value(self, name: str, value: Optional[str] = None) -> None:
         self._handler_params.set_parameter_value(name=name, value=value)
 
     def set_prefix_value(self, name: str, value: Optional[str] = None) -> None:
@@ -161,17 +158,15 @@ class Handler(ABC):
         self._handler_params.check_configs()
         self._handler_prefixes.check_configs()
 
-
     def handle_input(
         self,
         inputs: List[str],
-        input_type: Enum,
+        input_type: str,
         out_dir: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
-    ) -> Tuple[List[str], Enum]:
-
+    ) -> Tuple[List[str], str]:
 
         self.check_configs()
 
@@ -206,7 +201,7 @@ class Handler(ABC):
     def do_uploads(
         self,
         inputs: List[str],
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -215,14 +210,14 @@ class Handler(ABC):
         if self._file_server_uploader is not None:
             self._file_server_uploader.do_uploads(
                 inputs=inputs,
-                input_type=input_type.name.lower(),
+                input_type=input_type,
                 dry_run=dry_run,
                 uploads=file_server_uploads,
             )
         if self._triple_store_uploader is not None:
             self._triple_store_uploader.do_uploads(
                 inputs=inputs,
-                input_type=input_type.name.lower(),
+                input_type=input_type,
                 dry_run=dry_run,
                 uploads=triple_store_uploads,
             )
@@ -246,13 +241,12 @@ class Handler(ABC):
     def clean_written_files(self) -> None:
         self.written_files = []
 
-
     def do_remote_store_query(
         self,
         endpoint_prefix: str,
         query_str: str,
-        store_client_class: rsc.TRemoteStoreClient = rsc.JPSRemoteStoreClient
-        )->List[Dict[str,Any]]:
+        store_client_class: rsc.TRemoteStoreClient = rsc.JPSRemoteStoreClient,
+    ) -> List[Dict[str, Any]]:
 
         results = []
         if self._remote_store_client is None:
@@ -276,14 +270,13 @@ class Handler(ABC):
         finally:
             return results
 
-
     @abstractmethod
     def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,
         dry_run: bool,
-        input_type: Enum,
+        input_type: str,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
@@ -319,7 +312,6 @@ class Handler(ABC):
             for name, value in handler_kwargs.items():
                 self.set_parameter_value(name=name, value=value)
 
-
     def _configure_file_server_uploader_from_dict(self, config_dict: Dict) -> None:
         url = config_dict.get("url")
         auth_file = config_dict.get("auth_file")
@@ -343,7 +335,6 @@ class Handler(ABC):
             subdirs=subdirs,
         )
         self.set_file_server_uploader(fs_uploader)
-
 
     def _configure_triple_store_uploader_from_dict(self, config_dict: Dict) -> None:
         url = config_dict.get("url")

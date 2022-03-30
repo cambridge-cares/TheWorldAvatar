@@ -16,9 +16,9 @@ from collections import Counter
 import json
 import re
 import time
-import chemaboxwriters.common.globals as globals
+import chemaboxwriters.common.params as params
 from chemaboxwriters.common.handler import Handler
-from enum import Enum
+from chemaboxwriters.ontospecies.abox_stages import OS_ABOX_STAGES
 from typing import List, Optional, Dict
 
 
@@ -66,8 +66,8 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
     def __init__(self) -> None:
         super().__init__(
             name="QC_JSON_TO_OS_JSON",
-            in_stage=globals.aboxStages.QC_JSON,
-            out_stage=globals.aboxStages.OS_JSON,
+            in_stage=OS_ABOX_STAGES.qc_json,  # type: ignore
+            out_stage=OS_ABOX_STAGES.os_json,  # type: ignore
             prefixes=HANDLER_PREFIXES,
             handler_params=HANDLER_PARAMETERS,
         )
@@ -76,7 +76,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         self,
         inputs: List[str],
         out_dir: str,
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -86,7 +86,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         for json_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=json_file_path,
-                file_extension=self._out_stage.name.lower(),
+                file_extension=self._out_stage,
                 out_dir=out_dir,
             )
             self._os_jsonwriter(
@@ -104,9 +104,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         enth_of_form = self.get_parameter_value(name="enth_of_form")
         enth_of_form_unit = self.get_parameter_value(name="enth_of_form_unit")
         enth_of_form_phase = self.get_parameter_value(name="enth_of_form_phase")
-        enth_of_form_ref_temp = self.get_parameter_value(
-            name="enth_of_form_ref_temp"
-        )
+        enth_of_form_ref_temp = self.get_parameter_value(name="enth_of_form_ref_temp")
         enth_of_form_ref_temp_unit = self.get_parameter_value(
             name="enth_of_form_ref_temp_unit"
         )
@@ -141,7 +139,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         if enth_of_form_provenance is not None:
             data_out[ENTH_PROV] = enth_of_form_provenance
         if spec_pref is None:
-            spec_pref = ''
+            spec_pref = ""
 
         if ATOM_MASSES not in data.keys():
             data_out[MOLWT] = get_molwt_from_atom_types(data_out[ATOM_TYPES])
@@ -193,8 +191,8 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         if not random_id:
             random_id = utilsfunc.get_random_id()
 
-        data_out[globals.ENTRY_UUID] = random_id
-        data_out[globals.ENTRY_IRI] = f"{spec_pref}Species_{random_id}"
+        data_out[params.ENTRY_UUID] = random_id
+        data_out[params.ENTRY_IRI] = f"{spec_pref}Species_{random_id}"
 
         utilsfunc.write_dict_to_file(dict_data=data_out, dest_path=output_file_path)
 

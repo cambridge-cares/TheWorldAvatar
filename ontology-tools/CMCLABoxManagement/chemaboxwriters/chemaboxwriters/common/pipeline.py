@@ -2,7 +2,6 @@ import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from collections import OrderedDict
 from typing import Dict, List, Optional, Any
 from chemaboxwriters.common.handler import Handler
-from enum import Enum
 import chemaboxwriters.common.aboxconfig as abconf
 import logging
 
@@ -27,11 +26,10 @@ class Pipeline:
     def get_handler_by_name(self, handler_name) -> Optional[Handler]:
         return self._handlers.get(handler_name)
 
-    def get_handler_by_in_stage(self, in_stage: Enum) -> Optional[Handler]:
+    def get_handler_by_in_stage(self, in_stage: str) -> Optional[Handler]:
         for handler in self._handlers.values():
             if handler._in_stage == in_stage:
                 return handler
-
 
     def add_handler(
         self,
@@ -45,7 +43,7 @@ class Pipeline:
         return self
 
     @property
-    def in_stages(self) -> List[Enum]:
+    def in_stages(self) -> List[str]:
         in_stages = []
         for handler in self._handlers.values():
             if handler._in_stage not in in_stages:
@@ -65,7 +63,7 @@ class Pipeline:
             handler.clean_written_files()
 
     def run(
-        self, inputs: List[str], input_type: Enum, out_dir: str, dry_run: bool = True
+        self, inputs: List[str], input_type: str, out_dir: str, dry_run: bool = True
     ) -> None:
 
         logger.info(f"Running the {self.name} pipeline.")
@@ -74,7 +72,7 @@ class Pipeline:
 
         if input_type not in self.in_stages:
             raise app_exceptions.UnsupportedStage(
-                f"Error: Stage: '{ input_type.name.lower()}' is not supported."
+                f"Error: Stage: '{ input_type.lower()}' is not supported."
             )
 
         return self._run_handlers(
@@ -82,7 +80,7 @@ class Pipeline:
         )
 
     def _run_handlers(
-        self, inputs: List[str], input_type: Enum, out_dir: str, dry_run: bool
+        self, inputs: List[str], input_type: str, out_dir: str, dry_run: bool
     ) -> None:
 
         for handler in self._handlers.values():
@@ -114,7 +112,7 @@ class Pipeline:
             for param_name, param_value in params_config.items():
                 handler.set_parameter_value(name=param_name, value=param_value)
 
-    def check_handlers_configs(self, input_type: Optional[Enum] = None) -> None:
+    def check_handlers_configs(self, input_type: Optional[str] = None) -> None:
         if input_type is None:
             for handler in self._handlers.values():
                 handler.check_configs()

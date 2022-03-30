@@ -1,6 +1,5 @@
 from pyuploader.uploaders import TS_UPLOADER, FS_UPLOADER
 from pyuploader.uploaders.uploader_factory import get_uploader
-import os
 from typing import Literal, List, Dict, Optional
 
 
@@ -42,13 +41,13 @@ class UploaderClient:
             print(f"subdirs: {self._subdirs}")
         print(f"upload_file_types: {self._upload_file_types}")
 
-    def get_upload_configs(self)->Dict:
+    def get_upload_configs(self) -> Dict:
         return {
-            'url': self._url,
-            'auth_file': self._auth_file,
-            'no_auth': self._no_auth,
-            'subdirs': self._subdirs,
-            'upload_file_types': self._upload_file_types
+            "url": self._url,
+            "auth_file": self._auth_file,
+            "no_auth": self._no_auth,
+            "subdirs": self._subdirs,
+            "upload_file_types": self._upload_file_types,
         }
 
     def do_uploads(
@@ -69,7 +68,7 @@ class UploaderClient:
                 uploads_local.update(location)
         if uploads is not None:
             for source, location in uploads_local.items():
-                uploads[source] = {'location': location, 'input_type': input_type}
+                uploads[source] = {"location": location, "input_type": input_type}
 
 
 def get_triple_store_uploader(

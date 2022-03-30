@@ -7,7 +7,6 @@ from chemaboxwriters.ontocompchem.pipeline import OC_PIPELINE
 from chemaboxwriters.ontospecies.pipeline import OS_PIPELINE
 from chemaboxwriters.ontomops.pipeline import OMOPS_PIPELINE
 from chemaboxwriters.ontopesscan.pipeline import OPS_PIPELINE
-import chemaboxwriters.common.utilsfunc as utilsfunc
 from typing import List, Dict
 
 
@@ -25,14 +24,17 @@ class DummyPubchemComp:
         self.cid = cid
         self.synonyms = synonyms
 
-def check_uploads(pipeline: Pipeline, inp_file_type, fs_num_uploads, ts_num_uploads)->None:
+
+def check_uploads(
+    pipeline: Pipeline, inp_file_type, fs_num_uploads, ts_num_uploads
+) -> None:
 
     fs_uploads = pipeline._file_server_uploads
     ts_uploads = pipeline._triple_store_uploads
     assert len(fs_uploads) == fs_num_uploads
     assert len(ts_uploads) == ts_num_uploads
 
-    inp_stage = utilsfunc.stage_name_to_enum(inp_file_type)
+    inp_stage = inp_file_type
 
     for handler in pipeline._handlers.values():
         if handler._in_stage == inp_stage:
@@ -45,28 +47,35 @@ def check_uploads(pipeline: Pipeline, inp_file_type, fs_num_uploads, ts_num_uplo
 
             inp_stage = handler._out_stage
 
+
 def _check_uploads_exists(uploads, upload_configs):
     if upload_configs is not None:
-        upload_file_types = upload_configs['upload_file_types']
+        upload_file_types = upload_configs["upload_file_types"]
         url = _construct_full_url(upload_configs)
 
         file_type_in_uploads = []
         for file_type in upload_file_types:
             for _, upload_entry in uploads.items():
-                if upload_entry['input_type'] == file_type:
+                if upload_entry["input_type"] == file_type:
                     file_type_in_uploads.append(file_type)
-                    upload_url = f"{'/'.join(upload_entry['location'].split('/')[:-1])}/"
+                    upload_url = (
+                        f"{'/'.join(upload_entry['location'].split('/')[:-1])}/"
+                    )
                     assert upload_url == url
         assert set(file_type_in_uploads) == set(upload_file_types)
 
-def _construct_full_url(upload_configs: Dict)->str:
-    url = upload_configs['url']
-    subdirs = upload_configs['subdirs']
-    if not url.endswith('/'): url = f"{url}/"
+
+def _construct_full_url(upload_configs: Dict) -> str:
+    url = upload_configs["url"]
+    subdirs = upload_configs["subdirs"]
+    if not url.endswith("/"):
+        url = f"{url}/"
     if subdirs is not None:
-        if not subdirs.endswith('/'): subdirs = f"{subdirs}/"
+        if not subdirs.endswith("/"):
+            subdirs = f"{subdirs}/"
         url = f"{url}{subdirs}"
     return url
+
 
 def cleanup_test_data(writtenFiles: List[str]) -> None:
     for file in writtenFiles:
@@ -76,7 +85,7 @@ def cleanup_test_data(writtenFiles: List[str]) -> None:
 @pytest.mark.parametrize(
     "inp_file_or_dir, inp_file_type, fs_num_uploads, ts_num_uploads",
     [
-        ("OC_qc_log_single_log_scan_test\\ethane_scan_rigid.g09","qc_log", 1, 4),
+        ("OC_qc_log_single_log_scan_test\\ethane_scan_rigid.g09", "qc_log", 1, 4),
     ],
 )
 def test_ocompchem_abox_uploads(
@@ -98,7 +107,10 @@ def test_ocompchem_abox_uploads(
     )
 
     write_abox(
-        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type, dry_run=False
+        pipeline=pipeline,
+        file_or_dir=inp_file_or_dir,
+        input_file_type=inp_file_type,
+        dry_run=False,
     )
 
     check_uploads(pipeline, inp_file_type, fs_num_uploads, ts_num_uploads)
@@ -114,7 +126,7 @@ def test_ocompchem_abox_uploads(
 @pytest.mark.parametrize(
     "inp_file_or_dir, inp_file_type, fs_num_uploads, ts_num_uploads",
     [
-        ("OS_qc_log_test\\h2o_opt_n_g09.log","qc_log", 0, 1),
+        ("OS_qc_log_test\\h2o_opt_n_g09.log", "qc_log", 0, 1),
     ],
 )
 def test_ospecies_abox_uploads(
@@ -142,7 +154,10 @@ def test_ospecies_abox_uploads(
     )
 
     write_abox(
-        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type, dry_run=False
+        pipeline=pipeline,
+        file_or_dir=inp_file_or_dir,
+        input_file_type=inp_file_type,
+        dry_run=False,
     )
 
     check_uploads(pipeline, inp_file_type, fs_num_uploads, ts_num_uploads)
@@ -158,7 +173,7 @@ def test_ospecies_abox_uploads(
 @pytest.mark.parametrize(
     "inp_file_or_dir, inp_file_type, fs_num_uploads, ts_num_uploads",
     [
-        ("OPS_oc_json_angle_test","oc_json", 0, 1),
+        ("OPS_oc_json_angle_test", "oc_json", 0, 1),
     ],
 )
 def test_opsscan_abox_uploads(
@@ -181,7 +196,10 @@ def test_opsscan_abox_uploads(
     )
 
     write_abox(
-        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type, dry_run=False
+        pipeline=pipeline,
+        file_or_dir=inp_file_or_dir,
+        input_file_type=inp_file_type,
+        dry_run=False,
     )
 
     check_uploads(pipeline, inp_file_type, fs_num_uploads, ts_num_uploads)
@@ -220,7 +238,10 @@ def test_omops_abox_uploads(
     )
 
     write_abox(
-        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type, dry_run=False
+        pipeline=pipeline,
+        file_or_dir=inp_file_or_dir,
+        input_file_type=inp_file_type,
+        dry_run=False,
     )
 
     check_uploads(pipeline, inp_file_type, fs_num_uploads, ts_num_uploads)

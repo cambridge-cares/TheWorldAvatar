@@ -3,8 +3,7 @@ import compchemparser.app as qcparser
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF as entityrdfizer
 from typing import List, Optional, Dict
-from enum import Enum
-from chemaboxwriters.common.globals import aboxStages
+from chemaboxwriters.common.abox_stages import ABOX_STAGES_COMMON
 import json
 
 CCLOG_SOURCE_LOCATION = "cclog_source_location"
@@ -19,15 +18,15 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
     def __init__(self) -> None:
         super().__init__(
             name="QC_LOG_TO_QC_JSON",
-            in_stage=aboxStages.QC_LOG,
-            out_stage=aboxStages.QC_JSON,
+            in_stage=ABOX_STAGES_COMMON.qc_log,  # type: ignore
+            out_stage=ABOX_STAGES_COMMON.qc_json,  # type: ignore
         )
 
     def _handle_input(
         self,
         inputs: List[str],
         out_dir: str,
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -46,13 +45,15 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
 
                 out_file_path = utilsfunc.get_out_file_path(
                     input_file_path=f"{cclog_file_path}{inp_file_suffix}",
-                    file_extension=self._out_stage.name.lower(),
+                    file_extension=self._out_stage.lower(),
                     out_dir=out_dir,
                     replace_last_ext=False,
                 )
                 cclog_dict_data = json.loads(cclog_parsed_job)
                 if cclog_upload_loc is not None:
-                    cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc['location']
+                    cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc[
+                        "location"
+                    ]
                 utilsfunc.write_dict_to_file(
                     dict_data=cclog_dict_data,
                     dest_path=out_file_path,
@@ -70,8 +71,8 @@ class CSV_TO_OWL_Handler(Handler):
     def __init__(
         self,
         name: str,
-        in_stage: Enum,
-        out_stage: Enum,
+        in_stage: str,
+        out_stage: str,
     ) -> None:
 
         super().__init__(
@@ -84,7 +85,7 @@ class CSV_TO_OWL_Handler(Handler):
         self,
         inputs: List[str],
         out_dir: str,
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -95,7 +96,7 @@ class CSV_TO_OWL_Handler(Handler):
         for csv_file_path in inputs:
             out_file_path = utilsfunc.get_out_file_path(
                 input_file_path=csv_file_path,
-                file_extension=self._out_stage.name.lower(),
+                file_extension=self._out_stage,
                 out_dir=out_dir,
             )
             with open(csv_file_path, "r") as csvfile:

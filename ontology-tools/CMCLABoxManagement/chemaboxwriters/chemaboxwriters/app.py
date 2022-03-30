@@ -20,9 +20,9 @@ def write_abox(
     **kwargs,
 ) -> None:
 
-    in_stage = utilsfunc.stage_name_to_enum(input_file_type)
+    in_stage = input_file_type
     if in_stage not in pipeline.in_stages:
-        supported_stages = [stage.name.lower() for stage in pipeline.in_stages]
+        supported_stages = [stage for stage in pipeline.in_stages]
         logger.error(
             textwrap.dedent(
                 f"""
@@ -41,7 +41,7 @@ def write_abox(
     if not input_file_paths:
         logger.warning(
             (
-                f"No {in_stage.name.lower()} files to process. "
+                f"No {in_stage} files to process. "
                 "Directory / file path is either empty or does not exists."
             )
         )

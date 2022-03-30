@@ -6,11 +6,12 @@ from chemutils.mathutils.linalg import (
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import json
 import numpy as np
-import chemaboxwriters.common.globals as globals
+import chemaboxwriters.common.params as params
 from compchemparser.parsers.ccgaussian_parser import GEOM
 from chemaboxwriters.common.handler import Handler
+from chemaboxwriters.ontopesscan.abox_stages import OPS_ABOX_STAGES
 from typing import List, Optional, Dict
-from enum import Enum
+
 
 SCAN_COORDINATE_ATOMS_IRIS = "ScanCoordinateAtomsIRIs"
 SCAN_COORDINATE_TYPE = "ScanCoordinateType"
@@ -37,8 +38,8 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
     def __init__(self) -> None:
         super().__init__(
             name="OC_JSON_TO_OPS_JSON",
-            in_stage=globals.aboxStages.OC_JSON,
-            out_stage=globals.aboxStages.OPS_JSON,
+            in_stage=OPS_ABOX_STAGES.oc_json,  # type: ignore
+            out_stage=OPS_ABOX_STAGES.ops_json,  # type: ignore
             handler_params=HANDLER_PARAMETERS,
         )
 
@@ -46,7 +47,7 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
         self,
         inputs: List[str],
         out_dir: str,
-        input_type: Enum,
+        input_type: str,
         dry_run: bool,
         triple_store_uploads: Optional[Dict] = None,
         file_server_uploads: Optional[Dict] = None,
@@ -55,7 +56,7 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
         outputs: List[str] = []
         out_file_path = utilsfunc.get_out_file_path(
             input_file_path=inputs[0],
-            file_extension=self._out_stage.name.lower(),
+            file_extension=self._out_stage,
             out_dir=out_dir,
         )
         self._ops_jsonwriter(file_paths=inputs, output_file_path=out_file_path)
@@ -70,16 +71,16 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
         oc_atoms_pos = self.get_parameter_value(name="oc_atoms_pos")
 
         if os_iris is None:
-            os_iris = ''
+            os_iris = ""
 
         if os_atoms_iris is None:
-            os_atoms_iris = ''
+            os_atoms_iris = ""
 
         if oc_atoms_pos is None:
-            oc_atoms_pos = ''
+            oc_atoms_pos = ""
 
         data_out = {}
-        data_out[globals.SPECIES_IRI] = os_iris.split(",")
+        data_out[params.SPECIES_IRI] = os_iris.split(",")
         data_out[SCAN_COORDINATE_ATOMS_IRIS] = [
             iri.strip() for iri in os_atoms_iris.split(",")
         ]
@@ -99,8 +100,8 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
 
         if not random_id:
             random_id = utilsfunc.get_random_id()
-        data_out[globals.ENTRY_UUID] = random_id
-        data_out[globals.ENTRY_IRI] = f"PotentialEnergySurfaceScan_{random_id}"
+        data_out[params.ENTRY_UUID] = random_id
+        data_out[params.ENTRY_IRI] = f"PotentialEnergySurfaceScan_{random_id}"
 
         scanCoordinateValue = []
         ontoCompChemJobs = []
@@ -110,7 +111,7 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
             with open(file_path, "r") as file_handle:
                 data_item = json.load(file_handle)
 
-            ontoCompChemJobs.append(data_item[globals.ENTRY_IRI])
+            ontoCompChemJobs.append(data_item[params.ENTRY_IRI])
             xyz = np.array(data_item[GEOM])
 
             if ndegrees == 2:

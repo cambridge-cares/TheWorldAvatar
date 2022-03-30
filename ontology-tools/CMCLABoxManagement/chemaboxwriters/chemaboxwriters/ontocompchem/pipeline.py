@@ -1,6 +1,6 @@
 from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
 import chemaboxwriters.common.handlers as hnds
-import chemaboxwriters.common.globals as globals
+from chemaboxwriters.ontocompchem.abox_stages import OC_ABOX_STAGES
 from chemaboxwriters.ontocompchem.handlers import (
     OC_JSON_TO_OC_CSV_Handler,
     QC_JSON_TO_OC_JSON_Handler,
@@ -20,8 +20,8 @@ def assemble_oc_pipeline() -> Pipeline:
         OC_JSON_TO_OC_CSV_Handler(),
         hnds.CSV_TO_OWL_Handler(
             name="OC_CSV_TO_OC_OWL",
-            in_stage=globals.aboxStages.OC_CSV,
-            out_stage=globals.aboxStages.OC_OWL,
+            in_stage=OC_ABOX_STAGES.oc_csv, # type: ignore
+            out_stage=OC_ABOX_STAGES.oc_owl, # type: ignore
         ),
     ]
 
