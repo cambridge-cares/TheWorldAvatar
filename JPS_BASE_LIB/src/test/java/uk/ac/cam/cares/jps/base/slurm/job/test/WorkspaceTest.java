@@ -96,8 +96,8 @@ class WorkspaceTest {
 	public void createJSONInputFileTest() throws IOException {
 		
 		File workspaceFolder = new File(System.getProperty("java.io.tmpdir"));
-		String jsonInputFilePath = workspaceFolder.getAbsolutePath()+"input.json";
-		String jsonInputFilePath_temp = workspaceFolder.getAbsolutePath()+"input_temp.json";
+		String jsonInputFilePath = workspaceFolder.getAbsolutePath()+File.separator+"input.json";
+		String jsonInputFilePath_temp = workspaceFolder.getAbsolutePath()+File.separator+"input_temp.json";
 		String jsonString = "Lorem ipsum dolor sit amet\nconsectetur adipisci elit,\nsed eiusmod tempor incidunt\n minim veniam, quis nostrum exercitationem ullam corporis suscipit\n";
 		Workspace workspace = new Workspace();
 		
