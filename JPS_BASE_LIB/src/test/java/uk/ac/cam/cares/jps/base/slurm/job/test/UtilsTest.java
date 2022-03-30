@@ -26,14 +26,10 @@ import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 
 class UtilsTest {
 
-//	@Test
-//	public void getTimeStampTest() {
-//		Utils utils = new Utils();
-//		utils.previousTimeStamp = System.nanoTime();
-//		assertEquals(System.nanoTime(), utils.getTimeStamp());
-//		utils.previousTimeStamp = System.nanoTime()+1000;
-//		assertEquals(System.nanoTime(), utils.getTimeStamp());
-//	}
+	@Test
+	public void getTimeStampTest() {
+		assertNotEquals(Utils.getTimeStamp(), Utils.getTimeStamp());
+	}
 
 	@Test
 	public void openBufferedWriterTest() throws IOException {
