@@ -874,9 +874,10 @@ class UtilsTest {
 	@Test
 	public void copyModifiedContentForUnixTest()
 			throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		File src = new File("src.txt");
-		File dest = new File("dest.txt");
-		File expected = new File("expected.txt");
+		File src = new File(System.getProperty("java.io.tmpdir") + "src.txt");
+		System.out.println(src.getAbsolutePath());
+		File dest = new File(System.getProperty("java.io.tmpdir") + "dest.txt");
+		File expected = new File(System.getProperty("java.io.tmpdir") + "expected.txt");
 
 		BufferedWriter bw1 = new BufferedWriter(new FileWriter(src));
 		bw1.write("Lorem ipsum dolor sit amet \r consectetur adipisci elit,\r sed eiusmod tempor incidunt \r minim veniam, quis nostrum exercitationem ullam corporis suscipit \r");
