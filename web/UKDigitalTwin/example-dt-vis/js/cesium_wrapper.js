@@ -249,7 +249,7 @@ class CesiumWrapper {
      */
     queryRenderedFeatures(point) {
         let feature = this._viewer.scene.pick(point);
-        if (feature) {
+        if (feature?.id?.dataSource?.name) {
             return [{
                 id: feature.id._id,
                 layer: this.getLayer(feature.id.dataSource.name),
