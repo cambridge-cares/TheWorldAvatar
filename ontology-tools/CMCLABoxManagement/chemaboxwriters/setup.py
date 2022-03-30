@@ -16,7 +16,7 @@ setup(
         "entityrdfizer==1.0.5",
         "compchemparser==1.0.2",
         "pyuploader==1.1.0",
-        "SPARQLWrapper",
+        "SPARQLWrapper==1.8.5",
         "PyYAML",
     ],
     include_package_data=True,
