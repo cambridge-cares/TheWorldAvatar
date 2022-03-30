@@ -15,7 +15,7 @@ class RemoteStoreClient(ABC):
         self._store_client = self._create_store_client(endpoint_url)
 
     @abstractmethod
-    def _create_store_client(self, endpoint_url)->Any:
+    def _create_store_client(self, endpoint_url) -> Any:
         pass
 
     @abstractmethod
@@ -43,23 +43,19 @@ class SPARQLWrapperRemoteStoreClient(RemoteStoreClient):
         self._store_client.setQuery(query_str)
         response = self._store_client.queryAndConvert()
 
-        return self._sparql_wrapper_jps_client_response_adapter(
-                    response=response
-                )
+        return self._sparql_wrapper_jps_client_response_adapter(response=response)
 
-    def _sparql_wrapper_jps_client_response_adapter(
-        self,
-        response: Dict
-        )->List:
+    def _sparql_wrapper_jps_client_response_adapter(self, response: Dict) -> List:
 
         results = []
-        results_dict= {}
-        for result_item in response['results']['bindings']:
+        results_dict = {}
+        for result_item in response["results"]["bindings"]:
             for key, item in result_item.items():
-                results_dict.update({key: item['value']})
+                results_dict.update({key: item["value"]})
         if results_dict:
             results.append(results_dict)
         return results
+
 
 TRemoteStoreClient = Type[RemoteStoreClient]
 
@@ -112,12 +108,12 @@ class RemoteStoreClientContainer:
             )
 
         if store_client_class.__name__ not in self.store_clients[endpoint_prefix]:
-            self.store_clients[endpoint_prefix][store_client_class.__name__] \
-            = self._create_store_client(
+            self.store_clients[endpoint_prefix][
+                store_client_class.__name__
+            ] = self._create_store_client(
                 endpoint_url, store_client_class=store_client_class
             )
         return self.store_clients[endpoint_prefix][store_client_class.__name__]
-
 
     def _create_store_client(
         self, endpoint_url: str, store_client_class: TRemoteStoreClient

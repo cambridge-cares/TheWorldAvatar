@@ -39,13 +39,14 @@ def test_abox_writer_cascade(endpoints_config_file: str):
     print()
 
 
-def _compare_config_items(config_item1, config_item2)->None:
+def _compare_config_items(config_item1, config_item2) -> None:
     if isinstance(config_item1, dict):
         for key, value in config_item1.items():
             assert key in config_item2
             _compare_config_items(value, config_item2[key])
     else:
         assert config_item1 == config_item2
+
 
 @pytest.mark.parametrize(
     "endpoints_config_file",

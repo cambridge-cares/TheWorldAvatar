@@ -92,7 +92,6 @@ def compare_results(pipeline, regenerate_result, regenerate_all_results, file_ex
 
 
 def cleanup_test_data(writtenFiles: List[str]) -> None:
-
     for file in writtenFiles:
         os.remove(file)
 
