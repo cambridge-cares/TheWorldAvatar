@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <!-- Version of this configuration -->
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <!-- Common properties -->
     <properties>
@@ -78,7 +78,7 @@
                                     <artifactItem>   
                                         <groupId>uk.ac.cam.cares.jps</groupId>
                                         <artifactId>${log.artifact}</artifactId>
-                                        <version>1.0.0-SNAPSHOT</version>
+                                        <version>1.0.0</version>
                                         <type>zip</type>
                                         <overWrite>true</overWrite>
                                         <outputDirectory>${basedir}/WEB-INF</outputDirectory>
@@ -100,7 +100,7 @@
                                     <artifactItem>   
                                         <groupId>uk.ac.cam.cares.jps</groupId>
                                         <artifactId>java-logging-dev</artifactId>
-                                        <version>1.0.0-SNAPSHOT</version>
+                                        <version>1.0.0</version>
                                         <type>zip</type>
                                         <overWrite>true</overWrite>
                                         <outputDirectory>${basedir}/src/test/resources</outputDirectory>

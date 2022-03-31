@@ -33,65 +33,65 @@ public class DerivationClient {
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	DerivationSparql sparqlClient;
-	boolean upstreamDerivationPendingUpdate;
+	boolean upstreamDerivationRequested;
 	
-     /**
-     * Logger for error output.
-     */
-    private static final Logger LOGGER = LogManager.getLogger(DerivationClient.class);
-    
-    /**
-     * This constructor is tagged as @Deprecated as ideally user should provide based URL when creating derivation instances.
-     * @param kbClient
-     */
-    @Deprecated
-    public DerivationClient(StoreClientInterface kbClient) {
-    	this.kbClient = kbClient;
-    	this.sparqlClient = new DerivationSparql(kbClient);	
-    }
-    
-    /**
-     * This constructor should be used to enable customised derivation instance base URL.
-     * @param kbClient
-     * @param derivationInstanceBaseURL
-     */
-    public DerivationClient(StoreClientInterface kbClient, String derivationInstanceBaseURL) {
-    	this.kbClient = kbClient;
-    	this.sparqlClient = new DerivationSparql(kbClient, derivationInstanceBaseURL);
-    }
-    
-    /**
-     * This creates a new derived instance and adds the following statements
-     * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <agentIRI> <hasHttpUrl> <agentURL>, <derived> <isDerivedFrom> <inputsIRI>
-     * Use this for instances that get replaced by agents
-     * @param derivedQuantityIRI
-     * @param inputsIRI
-     * @param agentIRI
-     */
-    public String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	String createdDerivation = this.sparqlClient.createDerivation(entities, agentIRI, agentURL, inputsIRI);
-    	this.sparqlClient.addTimeInstance(createdDerivation);
-    	LOGGER.info("Instantiated derivation <" + createdDerivation + ">");
-    	LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
-    	return createdDerivation;
-    }
-    
-    public List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
-    	List<String> derivations = this.sparqlClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList);
-    	LOGGER.info("Instantiated derivations " + derivations);
-    	
-    	// add timestamp to each derivation
-    	this.sparqlClient.addTimeInstance(derivations);
-    	
-    	return derivations;
-    }
-    
+	 /**
+	 * Logger for error output.
+	 */
+	private static final Logger LOGGER = LogManager.getLogger(DerivationClient.class);
+	
+	/**
+	 * This constructor is tagged as @Deprecated as ideally user should provide based URL when creating derivation instances.
+	 * @param kbClient
+	 */
+	@Deprecated
+	public DerivationClient(StoreClientInterface kbClient) {
+		this.kbClient = kbClient;
+		this.sparqlClient = new DerivationSparql(kbClient);
+	}
+	
+	/**
+	 * This constructor should be used to enable customised derivation instance base URL.
+	 * @param kbClient
+	 * @param derivationInstanceBaseURL
+	 */
+	public DerivationClient(StoreClientInterface kbClient, String derivationInstanceBaseURL) {
+		this.kbClient = kbClient;
+		this.sparqlClient = new DerivationSparql(kbClient, derivationInstanceBaseURL);
+	}
+	
+	/**
+	 * This creates a new derived instance and adds the following statements
+	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <agentIRI> <hasHttpUrl> <agentURL>, <derived> <isDerivedFrom> <inputsIRI>
+	 * Use this for instances that get replaced by agents
+	 * @param derivedQuantityIRI
+	 * @param inputsIRI
+	 * @param agentIRI
+	 */
+	public String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
+		String createdDerivation = this.sparqlClient.createDerivation(entities, agentIRI, agentURL, inputsIRI);
+		this.sparqlClient.addTimeInstance(createdDerivation);
+		LOGGER.info("Instantiated derivation <" + createdDerivation + ">");
+		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
+		return createdDerivation;
+	}
+	
+	public List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
+		List<String> derivations = this.sparqlClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList);
+		LOGGER.info("Instantiated derivations " + derivations);
+		
+		// add timestamp to each derivation
+		this.sparqlClient.addTimeInstance(derivations);
+		
+		return derivations;
+	}
+	
 	/**
 	 * This method creates a new derived instance and adds the following statements
 	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <derived> <isDerivedFrom> <inputsIRI>
-     * Use this for instances that get replaced by agents, also when the information about agent exists already
+	 * Use this for instances that get replaced by agents, also when the information about agent exists already
 	 * @param entities
 	 * @param agentIRI
 	 * @param inputsIRI
@@ -107,97 +107,119 @@ public class DerivationClient {
 		return createdDerivation;
 	}
 
-    /**
-     * use this if all the agent does to the instance is appending time series data, entity do not get replaced
-     * @param entity
-     * @param agentIRI
-     * @param agentURL
-     * @param inputsIRI
-     */
-    public String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	String createdDerivation = this.sparqlClient.createDerivationWithTimeSeries(entities, agentIRI, agentURL, inputsIRI);
-    	this.sparqlClient.addTimeInstance(createdDerivation);
-    	LOGGER.info("Instantiated derivation with time series <" + createdDerivation + ">");
-    	LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
-    	return createdDerivation;
-    }
-    
-    public List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
-    	List<String> derivations = this.sparqlClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList, agentURLList, inputsList);
-    	LOGGER.info("Instantiated derivations with time series " + derivations);
-    	
-    	// add timestamp to each derivation
-    	this.sparqlClient.addTimeInstance(derivations);
-    	
-    	return derivations;
-    }
-    
-    /**
-     * This method creates a new asynchronous derived instance and adds the following statements
+	/**
+	 * use this if all the agent does to the instance is appending time series data, entity do not get replaced
+	 * @param entity
+	 * @param agentIRI
+	 * @param agentURL
+	 * @param inputsIRI
+	 */
+	public String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
+		String createdDerivation = this.sparqlClient.createDerivationWithTimeSeries(entities, agentIRI, agentURL, inputsIRI);
+		this.sparqlClient.addTimeInstance(createdDerivation);
+		LOGGER.info("Instantiated derivation with time series <" + createdDerivation + ">");
+		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
+		return createdDerivation;
+	}
+	
+	public List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
+		List<String> derivations = this.sparqlClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList, agentURLList, inputsList);
+		LOGGER.info("Instantiated derivations with time series " + derivations);
+		
+		// add timestamp to each derivation
+		this.sparqlClient.addTimeInstance(derivations);
+		
+		return derivations;
+	}
+	
+	/**
+	 * This method creates a new asynchronous derived instance and adds the following statements
 	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <derived> <isDerivedFrom> <inputsIRI>
-     * Use this for asynchronous instances that get replaced by agents, also when the information about agent exists already
-     * @param entities
-     * @param agentIRI
-     * @param inputsIRI
-     * @return
-     */
-    public String createAsynDerivation(List<String> entities, String agentIRI, List<String> inputsIRI) {
-    	String createdDerivation = this.sparqlClient.createDerivationAsyn(entities, agentIRI, inputsIRI);
-    	this.sparqlClient.addTimeInstance(createdDerivation);
-    	LOGGER.info("Instantiated asynchronous derivation <" + createdDerivation + ">");
-    	LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + ">");
-    	return createdDerivation;
-    }
-    
-    /**
-     * adds a timestamp to your input following the w3c standard for unix timestamp https://www.w3.org/TR/owl-time/
-     * <entity> <hasTime> <time>, <time> <numericPosition> 123
-     * @param entity
-     */
-    public void addTimeInstance(String entity) {
-    	this.sparqlClient.addTimeInstance(entity);
-    	LOGGER.info("Added timestamp to <" + entity + ">");
-    }
-    
-    /**
-     * same method as above but in bulk
-     * @param entities
-     */
-    public void addTimeInstance(List<String> entities) {
-    	this.sparqlClient.addTimeInstance(entities);
-    	LOGGER.info("Added timestamps to <" + entities + ">");
-    }
-    
-    /**
-     * manually update the timestamps of pure inputs or derivations
-     * entity can be a derivation or a pure input
-     * @param entities
-     */
-    public void updateTimestamps(List<String> entities) {
-    	// if the given entity is part of a derivation, update the derivation instead
-    	Map<String,String> entityDerivationMap = this.sparqlClient.getDerivationsOf(entities);
-    	Map<String,Long> timestamp_map = new HashMap<>();
-    	long currentTime = Instant.now().getEpochSecond();
-    	for (String entity : entities) {
-    		if (entityDerivationMap.containsKey(entity)) {
-    			// belongs to a derivation, update timestamp of derivation
-    			timestamp_map.put(entityDerivationMap.get(entity), currentTime);
-		} else {
-    			// assume this is a pure input, if this does not exist  
-    			// nothing should happen
-    			timestamp_map.put(entity, currentTime);
+	 * Use this for asynchronous instances that get replaced by agents, also when the information about agent exists already
+	 * @param entities
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @return
+	 */
+	public String createAsyncDerivation(List<String> entities, String agentIRI, List<String> inputsIRI, boolean forUpdate) {
+		String createdDerivation = this.sparqlClient.createDerivationAsync(entities, agentIRI, inputsIRI, forUpdate);
+		this.sparqlClient.addTimeInstance(createdDerivation);
+		// mark up the derivation with current timestamp
+		if (!forUpdate) {
+			this.sparqlClient.updateTimeStamp(createdDerivation);
 		}
-    }
-    	this.sparqlClient.updateTimestamps(timestamp_map);
-    }
-    
-    public void updateTimestamp(String entity) {
-    	updateTimestamps(Arrays.asList(entity));
-    }
+		LOGGER.info("Instantiated asynchronous derivation <" + createdDerivation + ">");
+		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + ">");
+		return createdDerivation;
+	}
+	
+	/**
+	 * This method creates a new asynchronous derived instance given an existing derivation and adds the following statements
+	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <derived> <isDerivedFrom> <inputsIRI>
+	 * Note that the <inputsIRI> to be used are actually derivation outputs retrieved from the given derivation.
+	 * Use this for asynchronous instances that get replaced by agents, also when the information about agent exists already
+	 * @param entities
+	 * @param agentIRI
+	 * @param derivation
+	 * @param forUpdate
+	 * @return
+	 */
+	public String createAsyncDerivation(List<String> entities, String agentIRI, String derivation, boolean forUpdate) {
+		// first retrieve a list of inputs
+		List<String> inputsIRI = this.sparqlClient.retrieveMatchingInstances(derivation, agentIRI);
+		// then create asynchronous derivation as usual
+		return createAsyncDerivation(entities, agentIRI, inputsIRI, forUpdate);
+	}
+
+	/**
+	 * adds a timestamp to your input following the w3c standard for unix timestamp https://www.w3.org/TR/owl-time/
+	 * <entity> <hasTime> <time>, <time> <numericPosition> 123
+	 * @param entity
+	 */
+	public void addTimeInstance(String entity) {
+		this.sparqlClient.addTimeInstance(entity);
+		LOGGER.info("Added timestamp to <" + entity + ">");
+	}
+	
+	/**
+	 * same method as above but in bulk
+	 * @param entities
+	 */
+	public void addTimeInstance(List<String> entities) {
+		this.sparqlClient.addTimeInstance(entities);
+		LOGGER.info("Added timestamps to <" + entities + ">");
+	}
+	
+	/**
+	 * manually update the timestamps of pure inputs or derivations
+	 * entity can be a derivation or a pure input
+	 * @param entities
+	 */
+	public void updateTimestamps(List<String> entities) {
+		// if the given entity is part of a derivation, update the derivation instead
+		Map<String,String> entityDerivationMap = this.sparqlClient.getDerivationsOf(entities);
+		Map<String,Long> timestamp_map = new HashMap<>();
+		long currentTime = Instant.now().getEpochSecond();
+		for (String entity : entities) {
+			if (entityDerivationMap.containsKey(entity)) {
+				// belongs to a derivation, update timestamp of derivation
+				timestamp_map.put(entityDerivationMap.get(entity), currentTime);
+		} else {
+				// assume this is a pure input, if this does not exist
+				// nothing should happen
+				timestamp_map.put(entity, currentTime);
+		}
+	}
+		this.sparqlClient.updateTimestamps(timestamp_map);
+	}
+	
+	public void updateTimestamp(String entity) {
+		updateTimestamps(Arrays.asList(entity));
+	}
 	
 	/**
 	 * This method checks and makes sure the derived instance is up-to-date by comparing the timestamp
@@ -209,7 +231,7 @@ public class DerivationClient {
 		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
 		try {
 			// the flag upstreamDerivationRequested is set as false by default
-			upstreamDerivationPendingUpdate = false;
+			upstreamDerivationRequested = false;
 			updateDerivationAsyn(derivationIRI, graph);
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
@@ -377,23 +399,17 @@ public class DerivationClient {
 	}
 	
 	/**
-	 * This method checks at the status "PendingUpdate" to decide whether change it to "Requested".
+	 * This method checks at the status "Requested" to see if any immediate upstream derivations are yet to be updated.
 	 * @param derivation
 	 */
-	public List<String> checkAtPendingUpdate(String derivation) {
-		// get a list of upstream derivations that need an update
+	public List<String> checkImmediateUpstreamDerivation(String derivation) {
+		// get a list of immediate upstream derivations that need an update
 		// (IMMEDIATE upstream derivations in the chain - <derivation> <isDerivedFrom>/<belongsTo> <upstreamDerivation>)
 		// if all IMMEDIATE upstream derivations are up-to-date,
 		// or if the derivation is the first one in the chain, this function returns empty list
-		List<String> upstreamDerivationsNeedUpdate = this.sparqlClient.getUpstreamDerivationsNeedUpdate(derivation);
-		
-		// if the list is empty, mark this derivation as Requested
 		// TODO when the list is not empty, it is possible to add more operations as now we know exactly which IMMEDIATE upstream derivation(s) need an update
 		// TODO additional support to be added when detecting any upstream derivation needs an update is synchronous derivation
-		if (upstreamDerivationsNeedUpdate.isEmpty()) {
-			this.sparqlClient.markAsRequested(derivation);
-		}
-
+		List<String> upstreamDerivationsNeedUpdate = this.sparqlClient.getUpstreamDerivationsNeedUpdate(derivation);
 		return upstreamDerivationsNeedUpdate;
 	}
 	
@@ -574,20 +590,20 @@ public class DerivationClient {
 			if (isDerivedAsynchronous(instance)) {
 				// we start with checking if this derivation is OutOfDate
 				if (isOutOfDate(instance, inputs)) {
-					// if it is OutOfDate and no status, just mark it as PendingUpdate
-					// from PendingUpdate to other status will be handled from AsynAgent side
+					// if it is OutOfDate and no status, just mark it as Requested
+					// from Requested to other status will be handled from AsynAgent side
 					if (!this.sparqlClient.hasStatus(instance)) {
-						this.sparqlClient.markAsPendingUpdate(instance);
+						this.sparqlClient.markAsRequested(instance);
 					}
-					// set the flag to true so that other derivations will know there is one derivation upstream already PendingUpdate
-					// thus they can be marked as PendingUpdate as well
-					upstreamDerivationPendingUpdate = true;
+					// set the flag to true so that other derivations will know there is one derivation upstream already Requested
+					// thus they can be marked as Requested as well
+					upstreamDerivationRequested = true;
 				} else {
-					// if the Derivation is not OutOfDate, then only consider mark it as PendingUpdate if meet all below situations
-					// (1) there is upstream derivation being marked as PendingUpdate;
+					// if the Derivation is not OutOfDate, then only consider mark it as Requested if meet all below situations
+					// (1) there is upstream derivation being marked as Requested;
 					// (2) this Derivation does NOT have any status, otherwise just leave it with its existing status
-					if (upstreamDerivationPendingUpdate && !this.sparqlClient.hasStatus(instance)) {
-						this.sparqlClient.markAsPendingUpdate(instance);
+					if (upstreamDerivationRequested && !this.sparqlClient.hasStatus(instance)) {
+						this.sparqlClient.markAsRequested(instance);
 					}
 				}
 			}
@@ -733,16 +749,16 @@ public class DerivationClient {
 	 * @return
 	 */
 	private boolean isOutOfDate(String instance, List<String> inputs) {
-	    boolean outOfDate = false;
-	    long instanceTimestamp = this.sparqlClient.getTimestamp(instance);
-	    
-	    for (String input : inputs) {
-	    	long inputTimestamp = this.sparqlClient.getTimestamp(input);
-	    	if (inputTimestamp > instanceTimestamp) {
-	    		outOfDate = true;
-	    		return outOfDate;
-	    	}
-	    }
-	    return outOfDate;
+		boolean outOfDate = false;
+		long instanceTimestamp = this.sparqlClient.getTimestamp(instance);
+		
+		for (String input : inputs) {
+			long inputTimestamp = this.sparqlClient.getTimestamp(input);
+			if (inputTimestamp > instanceTimestamp) {
+				outOfDate = true;
+				return outOfDate;
+			}
+		}
+		return outOfDate;
 	}
 }
