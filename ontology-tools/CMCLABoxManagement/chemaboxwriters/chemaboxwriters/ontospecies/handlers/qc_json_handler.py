@@ -19,8 +19,10 @@ import time
 import chemaboxwriters.common.params as params
 from chemaboxwriters.common.handler import Handler
 from chemaboxwriters.ontospecies.abox_stages import OS_ABOX_STAGES
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
+import logging
 
+logger = logging.getLogger(__name__)
 
 cas_re = re.compile(r"(\d{2,7}-\d\d-\d)")
 
@@ -55,6 +57,8 @@ HANDLER_PARAMETERS = {
     "enth_of_form_ref_temp_unit": {"required": False},
     "enth_of_form_provenance": {"required": False},
 }
+
+PUBCHEM_QUERY_ATTEMPTS = 3
 
 
 class QC_JSON_TO_OS_JSON_Handler(Handler):
@@ -138,8 +142,6 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             data_out[ENTH_REFTEMP_UNIT] = enth_of_form_ref_temp_unit
         if enth_of_form_provenance is not None:
             data_out[ENTH_PROV] = enth_of_form_provenance
-        if spec_pref is None:
-            spec_pref = ""
 
         if ATOM_MASSES not in data.keys():
             data_out[MOLWT] = get_molwt_from_atom_types(data_out[ATOM_TYPES])
@@ -159,30 +161,14 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             for bond in bonds_info
         ]
         data_out[BOND_STRING] = " ".join(bonds_info_line)
-        # add atoms positions!
 
-        alt_labels = None
-        casid = None
-        cid = None
+        pubchem_data = _get_pubchem_data(
+            inchi=data_out[INCHI], max_attempts=PUBCHEM_QUERY_ATTEMPTS
+        )
 
-        try:
-            pubchem_compound = pcp.get_compounds(data_out[INCHI], "inchi")
-            time.sleep(
-                5
-            )  # We will wait for 5 seconds to try and avoid hitting PubChem's limit.
-            if pubchem_compound:
-                cid = pubchem_compound[0].cid
-                if pubchem_compound[0].synonyms:
-                    alt_labels = pubchem_compound[0].synonyms[0]
-                    casid = self._get_substructure_cas(pubchem_compound[0].synonyms)
-                    if casid:
-                        casid = casid[0]
-        except pcp.BadRequestError:
-            print("Issue with PubChem request")
-
-        data_out[PUBCHEM_ALT_LABEL] = alt_labels
-        data_out[CAS_NUMBER] = casid
-        data_out[PUBCHEM_CID] = cid
+        data_out[PUBCHEM_ALT_LABEL] = pubchem_data.get("alt_labels")
+        data_out[CAS_NUMBER] = pubchem_data.get("casid")
+        data_out[PUBCHEM_CID] = pubchem_data.get("cid")
 
         atom_list, atom_counts = self._atom_constructor(data_out[ATOM_TYPES])
         data_out[ATOM_LIST] = atom_list
@@ -195,15 +181,6 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         data_out[params.ENTRY_IRI] = f"{spec_pref}Species_{random_id}"
 
         utilsfunc.write_dict_to_file(dict_data=data_out, dest_path=output_file_path)
-
-    @staticmethod
-    def _get_substructure_cas(synonyms):
-        cas_rns = []
-        for syn in synonyms:
-            match = re.match(cas_re, syn)
-            if match:
-                cas_rns.append(match.group(1))
-        return cas_rns
 
     @staticmethod
     def _geom_info(data):
@@ -225,3 +202,51 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         c = Counter(atom_list)
         atom_counts = [c[x] for x in pruned_atoms]
         return pruned_atoms, atom_counts
+
+
+def _get_pubchem_data(inchi: str, max_attempts: int = 3) -> Dict:
+    attempts_loc = 0
+    pubchem_data = {}
+    while attempts_loc < max_attempts:
+        try:
+            pubchem_data = _query_pubchem(inchi=inchi)
+            break
+        except pcp.BadRequestError:
+            logger.warning("PubChem Bad request error.")
+            attempts_loc = max_attempts
+        except Exception:
+            logger.warning("Issue with the PubChem request. Waiting 10s and retrying.")
+            time.sleep(10)
+            attempts_loc += 1
+
+    return pubchem_data
+
+
+def _get_substructure_cas(synonyms) -> List[str]:
+    cas_rns: List[str] = []
+    for syn in synonyms:
+        match = re.match(cas_re, syn)
+        if match:
+            cas_rns.append(match.group(1))
+    return cas_rns
+
+
+def _query_pubchem(inchi: str) -> Dict:
+    pubchem_data: Dict[str, Optional[Any]] = {
+        "cid": None,
+        "casid": None,
+        "alt_labels": None,
+    }
+
+    pubchem_compound = pcp.get_compounds(inchi, "inchi")
+    # We will wait for 1 second to try and avoid hitting PubChem's limit.
+
+    time.sleep(1)
+    if pubchem_compound:
+        pubchem_data["cid"] = pubchem_compound[0].cid
+        if pubchem_compound[0].synonyms:
+            pubchem_data["alt_labels"] = pubchem_compound[0].synonyms[0]
+            casid = _get_substructure_cas(pubchem_compound[0].synonyms)
+            if casid:
+                pubchem_data["casid"] = casid[0]
+    return pubchem_data
