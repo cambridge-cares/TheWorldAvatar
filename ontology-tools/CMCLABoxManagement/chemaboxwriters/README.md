@@ -350,7 +350,11 @@ ospecies:
     #-----------------------------------------
     # SELECTED OSPECIES HANDLERS
     #-----------------------------------------
-    qc_json_to_os_json:
+    # If one wishes to fully merge all the pipeline or global settings into
+    # the lower setting, e.g. qc_json_to_os_json, then this is the correct way
+    # to do it. If the {} brackets were omitted the qc_json_to_os_json field
+    # would be set to None, preventing any merging
+    qc_json_to_os_json: {}
     os_csv_to_os_owl:
         triple_store_upload_settings:
             upload_file_types:

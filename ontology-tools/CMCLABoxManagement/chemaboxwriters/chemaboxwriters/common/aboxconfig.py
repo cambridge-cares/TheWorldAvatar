@@ -67,9 +67,12 @@ def cascade_configs(configs: Dict, cascade_fields: List[str] = CONFIG_GROUPS) ->
     subconfigs = [name for name in configs.keys() if name not in cascade_fields]
 
     for configs_group in subconfigs:
-        _merge_config_groups(
-            merge_from=configs,
-            merge_to=configs[configs_group],
-            merge_fields=cascade_fields,
-        )
-        cascade_configs(configs=configs[configs_group], cascade_fields=cascade_fields)
+        if configs[configs_group] is not None:
+            _merge_config_groups(
+                merge_from=configs,
+                merge_to=configs[configs_group],
+                merge_fields=cascade_fields,
+            )
+            cascade_configs(
+                configs=configs[configs_group], cascade_fields=cascade_fields
+            )

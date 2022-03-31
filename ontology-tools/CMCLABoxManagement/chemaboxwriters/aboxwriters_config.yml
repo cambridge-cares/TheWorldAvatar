@@ -19,14 +19,14 @@ file_server_upload_settings:
     # file server secrets file
     auth_file: dummy_fileserver_secrets_file
     # if True, auth_file input is not needed
-    no_auth: False
+    no_auth: True
     # directory on the file server where all files should go
     subdirs: dummy_subdir1/subdir2
 triple_store_upload_settings:
     # triple store sparql upload endpoint
     url: http://localhost:48083/blazegraph/namespace/kb/sparql/
     auth_file: dummy_blazegraph-geo_secrets_file
-    no_auth: False
+    no_auth: True
 kg_query_endpoints:
     # define any sparql query endpoints for the given prefixes
     # these are used in some handlers to query KG for extra information
@@ -124,7 +124,11 @@ ospecies:
     #-----------------------------------------
     # SELECTED OSPECIES HANDLERS
     #-----------------------------------------
-    qc_json_to_os_json:
+    # If one wishes to fully merge all the pipeline or global settings into
+    # the lower setting, e.g. qc_json_to_os_json, then this is the correct way
+    # to do it. If the {} brackets were omitted the qc_json_to_os_json field
+    # would be set to None, preventing any merging
+    qc_json_to_os_json: {}
     os_csv_to_os_owl:
         triple_store_upload_settings:
             upload_file_types:
