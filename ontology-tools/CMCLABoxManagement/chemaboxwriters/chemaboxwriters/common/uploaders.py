@@ -3,10 +3,6 @@ from pyuploader.uploaders.uploader_factory import get_uploader
 from typing import Literal, List, Dict, Optional
 
 
-triple_store_uploader: str = TS_UPLOADER
-fs_upl: str = FS_UPLOADER
-
-
 class UploaderClient:
     def __init__(
         self,
