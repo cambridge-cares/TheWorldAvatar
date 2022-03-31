@@ -28,6 +28,21 @@ CONFIG_GROUPS = [
 ]
 
 
+def cascade_configs(configs: Dict, cascade_fields: List[str] = CONFIG_GROUPS) -> None:
+    subconfigs = [name for name in configs.keys() if name not in cascade_fields]
+
+    for configs_group in subconfigs:
+        if configs[configs_group] is not None:
+            _merge_config_groups(
+                merge_from=configs,
+                merge_to=configs[configs_group],
+                merge_fields=cascade_fields,
+            )
+            cascade_configs(
+                configs=configs[configs_group], cascade_fields=cascade_fields
+            )
+
+
 def _merge_config_groups(
     merge_from: Dict, merge_to: Dict, merge_fields: List[str]
 ) -> None:
@@ -61,18 +76,3 @@ def read_config_file(config_file: str) -> Dict:
             config_dict = yaml.safe_load(stream)
 
     return config_dict
-
-
-def cascade_configs(configs: Dict, cascade_fields: List[str] = CONFIG_GROUPS) -> None:
-    subconfigs = [name for name in configs.keys() if name not in cascade_fields]
-
-    for configs_group in subconfigs:
-        if configs[configs_group] is not None:
-            _merge_config_groups(
-                merge_from=configs,
-                merge_to=configs[configs_group],
-                merge_fields=cascade_fields,
-            )
-            cascade_configs(
-                configs=configs[configs_group], cascade_fields=cascade_fields
-            )
