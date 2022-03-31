@@ -65,8 +65,8 @@ Options:
 --info                  Prints the pipeline info.
                         Can be used together with
                         the --config-file option to check
-                        the pipeline configuration befrre
-                        runing it
+                        the pipeline configuration before
+                        running it.
 """
 
 
