@@ -12,9 +12,10 @@ setup(
     python_requires='>=3.5',
     include_package_data=True,
     install_requires= [
+        'configobj~=5.0',
         'docopt~=0.6',
-        'py4jps==1.0.17', 
         'flask~=2.1',
+        'py4jps==1.0.17', 
         'requests~=2.27',
         'metoffer @ git+https://github.com/sludgedesk/metoffer#egg=MetOffer'],
     entry_points={

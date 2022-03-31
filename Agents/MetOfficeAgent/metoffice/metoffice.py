@@ -13,6 +13,25 @@ https://github.com/sludgedesk/metoffer/issues/4
 
 Further documentation for function and arguments
 https://github.com/sludgedesk/metoffer/blob/master/metoffer.py
+
+Site ID is unique within the API
+Data gets updated hourly
+
+
+Temperature (degrees Celsius)
+Wind direction (16 point compass)
+Wind speed (mph)
+Wind gust (mph)
+Dew Point (degrees Celsius)
+Screen Relative Humidity (%)
+Visibility (m)
+Pressure (hPa)
+Pressure Tendency (Pa/s)
+
+The normal unit of wind speed is the knot (nautical mile per hour = 0.51 m sec-1 = 1.15 mph). Wind direction is measured relative to true north (not magnetic north) and is reported from where the wind is blowing
+
+ISO 8601 date
+
 """
 
 import metoffer
