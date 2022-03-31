@@ -1,3 +1,7 @@
+from pesfit.kgoperations.queryendpoints import SPARQL_ENDPOINTS
+from pesfit.kgoperations.querykg import querykg
+import json
+
 def ontocompchem_data_query(ocIRI):
     query = """PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
@@ -5,9 +9,9 @@ def ontocompchem_data_query(ocIRI):
         PREFIX oc:  <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
         PREFIX gc:  <http://purl.org/gc/>
 
-        SELECT ?elem ?XCoordValue ?YCoordValue ?ZCoordValue ?ScfElecValue ?ScfElecUnit
+        SELECT ?elem ?atom ?XCoordValue ?YCoordValue ?ZCoordValue ?ScfElecValue ?ScfElecUnit
         WHERE {
-            <#ocIRI#> a oc:G09;
+            <#ocIRI#>	a oc:G09;
                 gc:isCalculationOn ?geomOpt ;
                 gc:isCalculationOn ?ScfEnergy .
             
@@ -44,12 +48,12 @@ def ontopesscan_data_query(opesIRI):
         SELECT ?oc_IRIs ?scan_coord_value ?scan_coord_unit
         WHERE {
             <#opesIRI#> a ops:PotentialEnergySurfaceScan ;
-                ops:hasScanPoint ?ScanPoints .
-        
+               ops:hasScanPoint ?ScanPoints .
+  
             ?ScanPoints a ops:ScanPoint ;
                 ops:hasCalculation ?oc_IRIs ;
                 ops:hasScanCoordinateValue ?Scan_Value .
-        
+  
             ?Scan_Value a ops:ScanCoordinateValue ;
                 gc:hasValue ?scan_coord_value ;
                 gc:hasUnit ?scan_coord_unit .                                                                                                                       

@@ -6,7 +6,7 @@
 # Do not use absolute paths.
 
 # paths
-library = <relative_dlf_lib_path>
+library = lib/
 solvent = solvent/ 
-output  = output_<N>_<timestamp>/
+output  = output<N>/
 control = state<N>.control       

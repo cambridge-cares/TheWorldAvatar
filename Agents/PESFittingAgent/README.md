@@ -35,7 +35,7 @@ The above commands will create and activate the virtual environment `pesfit_venv
 
 ## Installation from the version-controlled source (for developers) ##
 
-This type of installation is only for the developers. To install `pesfit` directly from its repository you need to first clone the `TheWorldAvatar` project. Then simply navigate to the *TheWorldAvatar\pesfit* directory and execute the following commands:
+This type of installation is only for the developers. To install `pesfit` directly from its repository you need to first clone the `TheWorldAvatar` project. Then simply navigate to the *TheWorldAvatar\Agents\PESFittingAgent* directory and execute the following commands:
 
 ```bash
 # build and install
@@ -57,11 +57,75 @@ $ install_script_pip.sh -v -i -e
 Note that installing the project for in-place development (setting the `-e` flag) also installs the required python packages for development and testing. To test the code, simply run the following commands:
 
 ```bash
-(pesfit_venv) $ pytest tests\test_termocalc.py
+(pesfit_venv) $ pytest tests\test_pesfit.py
 ```
 
 ## How to use ##
 
+The pesfit agent requires DL_FIELD, DL_POLY (version 5 with evb module) and MoDS installed on the hpc platform to run.
+The pesfit agent can be used as a simple commnad line tool.
+
+## command line usage
+
+The pesfit agent can be run from the command line via the `pesfit` command which accepts the following options:
+
+```bash
+Usage:
+    pesfit  (--opesIRI=<ONTO_PES_SCAN_IRI>)
+            (--conf-file=<CONF-FILE-NAME-OR-PATH>)
+
+Options: 
+--opesIRI=<ONTO_PES_SCAN_IRI>                   OntoPESScan IRI
+--conf-file=<CONF-FILE-NAME-OR-PATH>            configuration file name (if in the working dir) or path (if not in the working dir)
+```
+
+Example usage: 
+
+```bash
+(pesfit_venv) $ pesfit --opesIRI http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_b6d609c6-fe80-4bb8-aaf7-d4675ffd2638 \ --conf-file=configuartion.json
+```
+
+Configuration file:
+
+The configuration file is a json file. An example of configuration file is in the pesfit\resources folder.
+
+```
+slurm and hpc server properties:
+"hpc.server.login.user.name"        user name on the hpc server
+"hpc.server.login.user.password"    password to login on the hpc server
+"hpc.address"                       hpc server address        
+
+third-party software paths on hpc:
+"dl_field.executable.path"  full path to DL_FIELD executable on the hpc server 
+"dl_field_lib.folder.path"  full path to DL_FIELD executable on the hpc server 
+"dl_poly.executable.path"   full path to DL_POLY executable on the hpc server (version required: dl_poly version 5 with evb)
+"MoDS.executable.path":     full path to MoDS executable on the hpc server
+
+force field properties:
+"classic.force.field"   Classic fore field in DL_FIELD. Example "opls2005"
+"tabulated_potential"   Tabulated potential for vdw. At the moment it supports only "isoPAHAP"
+
+DO NOT CHANGE:
+"agent.class":"pesfit"
+"agent.completed.job.space.prefix":"CompletedJobs",
+"agent.failed.job.space.prefix":"FailedJobs",
+"input.file.name":"input",
+"input.file.extension":".zip",
+"output.file.name":"output",
+"output.file.extension":".zip",
+"json.file.extension":".json",
+"json.input.file.name":"input",
+"slurm.script.file.name":"Slurm.sh",
+"agent.initial.delay.to.start": 1,
+"agent.periodic.action.interval": 10,
+"max.number.of.hpc.jobs": 5
+```
+
+## web agent usage
+
+To be implemented
+
+
 ## Authors ##
 
-Laura Pascazio (lp521@lp521.cam.ac.uk), 30 September 2021
+Laura Pascazio (lp521@lp521.cam.ac.uk), February 2022

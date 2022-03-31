@@ -5,7 +5,7 @@ FROM python:3.7.11-slim-buster
 # Meta data
 LABEL authors = "lp521@cam.ac.uk"
 LABEL version = "1.0.0-SNAPSHOT"
-LABEL description = "Potential Energy Surface fitting agent"
+LABEL description = "Force Field Fitting agent"
 
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless

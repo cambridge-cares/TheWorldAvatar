@@ -19,7 +19,7 @@
                 <detail name="output_by_case">false</detail>
                 <detail name="output_values">true</detail>
                 <detail name="global">false</detail>
-                <detail name="n_points">10000</detail>
+                <detail name="n_points">256</detail>
                 <detail name="seed">1</detail>
                 <detail name="output_interval">100</detail>
                 <detail name="previous_algorithm">Initial</detail>
@@ -27,7 +27,7 @@
         </algorithm>
         <algorithm name="CalibrationAlg" display_name="Model [Calibrated]">
             <details>
-                <detail name="algorithm_type">Hooke_Jeeves</detail>
+                <detail name="algorithm_type">SolvOpt</detail>
                 <detail name="optimisable_param_subtypes">subtype_A1CaseGroup1 subtype_A2CaseGroup1 subtype_A3CaseGroup1 subtype_A4CaseGroup1</detail>
                 <detail name="response_param_subtypes">subtype_EgCaseGroup1</detail>
                 <detail name="model_name">exe</detail>
@@ -35,12 +35,13 @@
                 <detail name="output_by_case">false</detail>
                 <detail name="output_values">true</detail>
                 <detail name="global">false</detail>
-                <detail name="n_iters">5000</detail>
-                <detail name="n_initial_points">2000</detail>
-                <detail name="constrained">true</detail>
-                <detail name="rho">0.5</detail>
-                <detail name="rho_factor">0.5</detail>
-                <detail name="epsilon">0.001</detail>
+                <detail name="n_iters">500</detail>
+                <detail name="n_initial_points">256</detail>
+                <detail name="constrained">false</detail>
+                <detail name="min_dx">1.0E-6</detail>
+                <detail name="min_Dx">1.0E-4</detail>
+                <detail name="min_OF_diff">1.0E-4</detail>
+                <detail name="coeff_of_space_dilation">2.5</detail>
                 <detail name="previous_algorithm">SamplingAlg</detail>
             </details>
         </algorithm>
@@ -48,7 +49,6 @@
     <models>
         <model name="FormulaCaseGroup1">
             <details>
-                <detail name="fnames_for_dependent_models"></detail>
                 <detail name="model_type">Executable</detail>
             </details>
         </model>
@@ -135,8 +135,8 @@
                         <detail name="column">A1</detail>
                         <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
                         <detail name="read_function">Get_DSV_double</detail>
-                        <detail name="lb_abs">-5000.0</detail>
-                        <detail name="ub_abs">5000.0</detail>
+                        <detail name="lb_abs">0.0</detail>
+                        <detail name="ub_abs">1000.0</detail>
                     </details>
                 </initial_read>
             </files>
@@ -155,8 +155,8 @@
                         <detail name="column">A2</detail>
                         <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
                         <detail name="read_function">Get_DSV_double</detail>
-                        <detail name="lb_abs">-5000.0</detail>
-                        <detail name="ub_abs">5000.0</detail>
+                        <detail name="lb_abs">-500.0</detail>
+                        <detail name="ub_abs">500.0</detail>
                     </details>
                 </initial_read>
             </files>
@@ -175,8 +175,8 @@
                         <detail name="column">A3</detail>
                         <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
                         <detail name="read_function">Get_DSV_double</detail>
-                        <detail name="lb_abs">-10000.0</detail>
-                        <detail name="ub_abs">10000.0</detail>
+                        <detail name="lb_abs">0.0</detail>
+                        <detail name="ub_abs">1000.0</detail>
                     </details>
                 </initial_read>
             </files>
@@ -195,8 +195,8 @@
                         <detail name="column">A4</detail>
                         <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
                         <detail name="read_function">Get_DSV_double</detail>
-                        <detail name="lb_abs">-5000.0</detail>
-                        <detail name="ub_abs">5000.0</detail>
+                        <detail name="lb_abs">-500.0</detail>
+                        <detail name="ub_abs">500.0</detail>
                     </details>
                 </initial_read>
             </files>

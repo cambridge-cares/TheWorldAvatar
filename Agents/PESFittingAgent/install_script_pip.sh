@@ -1,12 +1,12 @@
 #!/bin/bash
-# D. Nurkowski (danieln@cmclinnovations.com)
+# L. Pascazio (lp521@cam.ac.uk)
 echo "-----------------------------------------------"
 echo "--   python entrdfizer installation script  --"
 echo "-----------------------------------------------"
 echo ""
 #
 
-AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
+AUTHOR="Laura Pascazio <lp521@cam.ac.uk>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 CREATE_VENV='n'
 VENV_NAME='pesfit_venv'

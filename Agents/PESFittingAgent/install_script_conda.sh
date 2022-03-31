@@ -1,7 +1,7 @@
 #!/bin/bash
-# D. Nurkowski (danieln@cmclinnovations.com)
+# L. Pascazio (lp521@cam.ac.uk)
 
-AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
+AUTHOR="Laura Pascazio <lp521@cam.ac.uk>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 VENV_NAME='pesfit_venv'
 PROJECT_NAME='pesfit'

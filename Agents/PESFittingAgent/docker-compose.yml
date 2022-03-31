@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  pesfit_agent:
+  stdc_agent:
     container_name: pesfit_agent
     image: docker.cmclinnovations.com/pesfit_agent:1.0.0-SNAPSHOT
     build: .
