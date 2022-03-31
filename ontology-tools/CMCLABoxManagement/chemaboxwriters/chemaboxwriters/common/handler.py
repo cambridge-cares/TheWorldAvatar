@@ -92,12 +92,12 @@ class Handler(ABC):
         self.written_files = []
         self._in_stage = in_stage
         self._out_stage = out_stage
-        self._handler_prefixes: Handler_Parameters = Handler_Parameters(
+        self._handler_prefixes = Handler_Parameters(
             name="prefix", handler_name=self.name
         )
         if prefixes is not None:
             self._handler_prefixes.add_parameters_from_dict(parameters_dict=prefixes)
-        self._handler_params: Handler_Parameters = Handler_Parameters(
+        self._handler_params = Handler_Parameters(
             name="parameter", handler_name=self.name
         )
         if handler_params is not None:
@@ -158,7 +158,7 @@ class Handler(ABC):
         self._handler_params.check_configs()
         self._handler_prefixes.check_configs()
 
-    def handle_input(
+    def run(
         self,
         inputs: List[str],
         input_type: str,
@@ -178,7 +178,7 @@ class Handler(ABC):
             file_server_uploads=file_server_uploads,
         )
 
-        outputs = self._handle_input(
+        outputs = self.handle_input(
             inputs=inputs,
             out_dir=out_dir,
             input_type=input_type,
@@ -271,7 +271,7 @@ class Handler(ABC):
             return results
 
     @abstractmethod
-    def _handle_input(
+    def handle_input(
         self,
         inputs: List[str],
         out_dir: str,

@@ -86,7 +86,7 @@ class Pipeline:
         for handler in self._handlers.values():
             if input_type == handler._in_stage:
 
-                inputs, input_type = handler.handle_input(
+                inputs, input_type = handler.run(
                     inputs=inputs,
                     input_type=input_type,
                     out_dir=out_dir,

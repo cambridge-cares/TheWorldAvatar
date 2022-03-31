@@ -33,7 +33,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             handler_params=HANDLER_PARAMETERS,
         )
 
-    def _handle_input(
+    def handle_input(
         self,
         inputs: List[str],
         out_dir: str,

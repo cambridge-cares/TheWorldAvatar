@@ -22,7 +22,7 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
             out_stage=ABOX_STAGES_COMMON.qc_json,  # type: ignore
         )
 
-    def _handle_input(
+    def handle_input(
         self,
         inputs: List[str],
         out_dir: str,
@@ -81,7 +81,7 @@ class CSV_TO_OWL_Handler(Handler):
             out_stage=out_stage,
         )
 
-    def _handle_input(
+    def handle_input(
         self,
         inputs: List[str],
         out_dir: str,

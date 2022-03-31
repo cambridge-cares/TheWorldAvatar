@@ -43,7 +43,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             handler_params=HANDLER_PARAMETERS,
         )
 
-    def _handle_input(
+    def handle_input(
         self,
         inputs: List[str],
         out_dir: str,
@@ -91,21 +91,20 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         xyz = get_xyz_from_parsed_json(data)
         inchi = obconverter.obConvert(xyz, "xyz", "inchi")
 
-        if generate_png is not None:
-            if generate_png is True:
-                png_out_path = f"{output_file_path}.png"
-                utilsfunc.generate_molecule_png(inchi=inchi, out_path=png_out_path)
-                self.do_uploads(
-                    inputs=[png_out_path],
-                    input_type="oc_png",
-                    dry_run=dry_run,
-                    file_server_uploads=file_server_uploads,
-                )
-                if file_server_uploads is not None:
-                    png_file_loc = file_server_uploads.get(png_out_path)
-                    if png_file_loc is not None:
-                        data[PNG_SOURCE_LOCATION] = png_file_loc["location"]
-                self.written_files.append(png_out_path)
+        if generate_png is True:
+            png_out_path = f"{output_file_path}.png"
+            utilsfunc.generate_molecule_png(inchi=inchi, out_path=png_out_path)
+            self.do_uploads(
+                inputs=[png_out_path],
+                input_type="oc_png",
+                dry_run=dry_run,
+                file_server_uploads=file_server_uploads,
+            )
+            if file_server_uploads is not None:
+                png_file_loc = file_server_uploads.get(png_out_path)
+                if png_file_loc is not None:
+                    data[PNG_SOURCE_LOCATION] = png_file_loc["location"]
+            self.written_files.append(png_out_path)
 
         if ontospecies_IRI is None:
             response = self.do_remote_store_query(

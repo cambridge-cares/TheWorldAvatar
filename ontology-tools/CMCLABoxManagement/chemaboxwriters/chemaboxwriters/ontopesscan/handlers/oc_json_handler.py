@@ -43,7 +43,7 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
             handler_params=HANDLER_PARAMETERS,
         )
 
-    def _handle_input(
+    def handle_input(
         self,
         inputs: List[str],
         out_dir: str,
@@ -126,11 +126,11 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
             elif ndegrees == 4:
                 scanAtomsPos = xyz[oc_atoms_pos_ids]
                 dangle = getDihedralAngle(
-                        scanAtomsPos[0],
-                        scanAtomsPos[1],
-                        scanAtomsPos[2],
-                        scanAtomsPos[3],
-                    )
+                    scanAtomsPos[0],
+                    scanAtomsPos[1],
+                    scanAtomsPos[2],
+                    scanAtomsPos[3],
+                )
                 scanCoordinateValue.append(round(dangle, 3))
 
         scanCoordinateValue, ontoCompChemJobs = zip(

@@ -64,7 +64,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
             prefixes=HANDLER_PREFIXES,
         )
 
-    def _handle_input(
+    def handle_input(
         self,
         inputs: List[str],
         out_dir: str,

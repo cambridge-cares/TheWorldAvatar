@@ -76,7 +76,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             handler_params=HANDLER_PARAMETERS,
         )
 
-    def _handle_input(
+    def handle_input(
         self,
         inputs: List[str],
         out_dir: str,

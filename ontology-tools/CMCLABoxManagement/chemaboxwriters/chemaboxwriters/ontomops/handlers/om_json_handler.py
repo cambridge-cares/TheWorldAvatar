@@ -44,7 +44,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             prefixes=HANDLER_PREFIXES,
         )
 
-    def _handle_input(
+    def handle_input(
         self,
         inputs: List[str],
         out_dir: str,
