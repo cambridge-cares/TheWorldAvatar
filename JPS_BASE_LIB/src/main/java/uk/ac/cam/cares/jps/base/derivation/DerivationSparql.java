@@ -68,9 +68,9 @@ public class DerivationSparql {
 	private static String FINISHED = "Finished";
 
 	// derivation types
-	private static String DERIVATION = "Derivation";
-	private static String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
-	private static String DERIVATIONASYN = "DerivationAsyn";
+	public static String DERIVATION = "Derivation";
+	public static String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
+	public static String DERIVATIONASYN = "DerivationAsyn";
 
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",
@@ -136,6 +136,9 @@ public class DerivationSparql {
 		derivationTypeMap.put(derivednamespace.concat(DERIVATIONASYN), DerivationAsyn);
 		derivationToIri = derivationTypeMap;
 	}
+
+	// all possible derivation rdf:type
+	public static final List<String> derivationTypes = derivationToIri.keySet().stream().collect(Collectors.toList());
 
 	private static final Logger LOGGER = LogManager.getLogger(DerivationSparql.class);
 
@@ -1683,7 +1686,20 @@ public class DerivationSparql {
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 
-	List<Derivation> getRootAndAllUpstreamDerivations(String rootDerivationIRI) {
+	/**
+	 * This method retrieves a list of derivations including the root derivation and
+	 * all its upstream derivations matching the given derivation rdf:type.
+	 * NOTE that the functions assumes the rdf:type of root derivation is provided
+	 * in the targetDerivationTypeList by developer.
+	 * 
+	 * @param rootDerivationIRI
+	 * @param targetDerivationTypeList
+	 * @return
+	 */
+	List<Derivation> getRootAndAllTargetUpstreamDerivations(String rootDerivationIRI,
+			List<String> targetDerivationTypeList) {
+		List<Iri> targetDerivationTypeIriList = targetDerivationTypeList.stream().map(iri -> derivationToIri.get(iri))
+				.collect(Collectors.toList());
 		SelectQuery query = Queries.SELECT();
 		Variable derivation = query.var();
 		Variable input = query.var();
@@ -1707,17 +1723,23 @@ public class DerivationSparql {
 			inputTypeFilters[j] = Expressions.notEquals(inputType, classesToIgnore.get(j));
 		}
 
-		GraphPattern derivationPattern = derivation.has(isDerivedFrom, input)
-				.andHas(PropertyPaths.path(isDerivedUsing, hasOperation, hasHttpUrl), agentURL)
-				.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
-				.andIsA(derivationType);
+		// compared to the function getDerivations(), ValursPattern of derivationType is
+		// added so that one may only query the specific types of derivation, e.g.
+		// DerivationAsyn
+		GraphPattern derivationPattern = GraphPatterns.and(
+				new ValuesPattern(derivationType, targetDerivationTypeIriList),
+				derivation.has(isDerivedFrom, input)
+						.andHas(PropertyPaths.path(isDerivedUsing, hasOperation, hasHttpUrl), agentURL)
+						.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
+						.andIsA(derivationType));
 		GraphPattern entityPattern = entity.has(belongsTo, derivation);
 		GraphPattern inputTimestampPattern = input.has(
 				PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp).optional();
 		GraphPattern inputTypePattern = input.isA(inputType).optional().filter(Expressions.and(inputTypeFilters));
 		GraphPattern entityTypePattern = entity.isA(entityType).optional().filter(Expressions.and(entityTypeFilters));
 
-		// this is the only part added compared to the function getDerivations()
+		// compared to the function getDerivations(), this part is added to decide
+		// whether to query ALL derivations in the KG or just those upstream of root
 		if (!rootDerivationIRI.equals(PLACEHOLDER)) {
 			GraphPattern rootDerivationPattern = iri(rootDerivationIRI)
 					.has(PropertyPaths.zeroOrMore(groupPropertyPath(PropertyPaths.path(isDerivedFrom, belongsTo))),
@@ -1806,7 +1828,7 @@ public class DerivationSparql {
 	 * @return
 	 */
 	List<Derivation> getAllDerivationsInKG() {
-		return getRootAndAllUpstreamDerivations(PLACEHOLDER);
+		return getRootAndAllTargetUpstreamDerivations(PLACEHOLDER, derivationTypes);
 	}
 
 	/**
