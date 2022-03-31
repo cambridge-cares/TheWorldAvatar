@@ -27,7 +27,7 @@ def spec_inchi_query(inchi_string):
            ?speciesIRI rdf:type OntoSpecies:Species .
            ?speciesIRI OntoSpecies:inChI "#inchi_string_non_standard#"^^xsd:string .}
     }
-    """
+    """  # noqa: E501
     query = query.replace("#inchi_string_standard#", inchi_string_standard).replace(
         "#inchi_string_non_standard#", inchi_string_non_standard
     )
@@ -70,9 +70,9 @@ def get_assemblyModel(gbu_properties: List[Dict], mops_symmetry: str):
     {
     ?mopIRI OntoMOPs:hasAssemblyModel ?AssemblyModel .
     ?AssemblyModel OntoMOPs:hasSymmetryPointGroup "#Symmetry#"^^xsd:string .
-    """.replace(
-        "#Symmetry#", str(mops_symmetry)
-    )
+    """  # noqa: E501
+
+    queryStr_part1 = queryStr_part1.replace("#Symmetry#", str(mops_symmetry))
 
     queryStr_part2 = ""
 

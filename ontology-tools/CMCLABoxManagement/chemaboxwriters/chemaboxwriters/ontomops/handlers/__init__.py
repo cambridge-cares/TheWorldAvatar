@@ -4,3 +4,8 @@ from chemaboxwriters.ontomops.handlers.ominp_json_handler import (
 from chemaboxwriters.ontomops.handlers.om_json_handler import (
     OM_JSON_TO_OM_CSV_Handler,
 )
+
+__all__ = [
+    "OMINP_JSON_TO_OM_JSON_Handler",
+    "OM_JSON_TO_OM_CSV_Handler",
+]

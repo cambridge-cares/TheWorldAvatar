@@ -4,3 +4,8 @@ from chemaboxwriters.ontopesscan.handlers.oc_json_handler import (
 from chemaboxwriters.ontopesscan.handlers.ops_json_handler import (
     OPS_JSON_TO_OPS_CSV_Handler,
 )
+
+__all__ = [
+    "OC_JSON_TO_OPS_JSON_Handler",
+    "OPS_JSON_TO_OPS_CSV_Handler",
+]

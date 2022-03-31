@@ -20,8 +20,8 @@ def assemble_oc_pipeline() -> Pipeline:
         OC_JSON_TO_OC_CSV_Handler(),
         hnds.CSV_TO_OWL_Handler(
             name="OC_CSV_TO_OC_OWL",
-            in_stage=OC_ABOX_STAGES.oc_csv, # type: ignore
-            out_stage=OC_ABOX_STAGES.oc_owl, # type: ignore
+            in_stage=OC_ABOX_STAGES.oc_csv,  # type: ignore
+            out_stage=OC_ABOX_STAGES.oc_owl,  # type: ignore
         ),
     ]
 
