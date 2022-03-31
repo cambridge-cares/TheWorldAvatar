@@ -13,14 +13,14 @@
     "EntryUUID": "OPStestID-111-111-11",
     "EntryIRI": "PotentialEnergySurfaceScan_OPStestID-111-111-11",
     "ScanCoordinateValue": [
-        107.06348867717506,
-        117.06347244563806,
-        127.06349646115667,
-        137.06350791988802,
-        147.06344012380447,
-        157.0634616574389,
-        167.0634805630812,
-        177.0634666838331
+        107.063,
+        117.063,
+        127.063,
+        137.064,
+        147.063,
+        157.063,
+        167.063,
+        177.063
     ],
     "ScanPointsJobs": [
         "http://www.theworldavatar.com/kb/ontocompchem/G09_OCtestID-111-111-111",

@@ -19,7 +19,7 @@ http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_1,In
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_1,,2 3 9,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_1,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue,,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_1,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_1,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue,,
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_1,,107.06348867717506,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_1,,107.063,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_1,Instance,http://data.nasa.gov/qudt/owl/unit#DegreeAngle,http://purl.org/gc/hasUnit,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_2,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint,,,
 http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_OPStestID-111-111-11,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_2,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint,,
@@ -28,7 +28,7 @@ http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_2,In
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_2,,2 3 9,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_2,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue,,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_2,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_2,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue,,
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_2,,117.06347244563806,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_2,,117.063,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_2,Instance,http://data.nasa.gov/qudt/owl/unit#DegreeAngle,http://purl.org/gc/hasUnit,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_3,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint,,,
 http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_OPStestID-111-111-11,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_3,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint,,
@@ -37,7 +37,7 @@ http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_3,In
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_3,,2 3 9,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_3,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue,,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_3,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_3,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue,,
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_3,,127.06349646115667,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_3,,127.063,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_3,Instance,http://data.nasa.gov/qudt/owl/unit#DegreeAngle,http://purl.org/gc/hasUnit,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_4,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint,,,
 http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_OPStestID-111-111-11,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_4,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint,,
@@ -46,7 +46,7 @@ http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_4,In
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_4,,2 3 9,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_4,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue,,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_4,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_4,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue,,
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_4,,137.06350791988802,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_4,,137.064,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_4,Instance,http://data.nasa.gov/qudt/owl/unit#DegreeAngle,http://purl.org/gc/hasUnit,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_5,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint,,,
 http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_OPStestID-111-111-11,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_5,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint,,
@@ -55,7 +55,7 @@ http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_5,In
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_5,,2 3 9,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_5,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue,,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_5,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_5,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue,,
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_5,,147.06344012380447,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_5,,147.063,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_5,Instance,http://data.nasa.gov/qudt/owl/unit#DegreeAngle,http://purl.org/gc/hasUnit,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_6,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint,,,
 http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_OPStestID-111-111-11,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_6,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint,,
@@ -64,7 +64,7 @@ http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_6,In
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_6,,2 3 9,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_6,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue,,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_6,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_6,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue,,
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_6,,157.0634616574389,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_6,,157.063,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_6,Instance,http://data.nasa.gov/qudt/owl/unit#DegreeAngle,http://purl.org/gc/hasUnit,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_7,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint,,,
 http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_OPStestID-111-111-11,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_7,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint,,
@@ -73,7 +73,7 @@ http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_7,In
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_7,,2 3 9,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_7,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue,,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_7,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_7,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue,,
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_7,,167.0634805630812,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_7,,167.063,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_7,Instance,http://data.nasa.gov/qudt/owl/unit#DegreeAngle,http://purl.org/gc/hasUnit,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_8,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint,,,
 http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_OPStestID-111-111-11,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_8,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint,,
@@ -82,5 +82,5 @@ http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_8,In
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_8,,2 3 9,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_8,Instance,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue,,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_8,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_8,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue,,
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_8,,177.0634666838331,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_8,,177.063,String
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_8,Instance,http://data.nasa.gov/qudt/owl/unit#DegreeAngle,http://purl.org/gc/hasUnit,,

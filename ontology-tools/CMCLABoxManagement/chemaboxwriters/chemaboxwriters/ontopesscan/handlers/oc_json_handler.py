@@ -55,7 +55,7 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
 
         outputs: List[str] = []
         out_file_path = utilsfunc.get_out_file_path(
-            input_file_path=inputs[0],
+            input_file_path=sorted(inputs)[0],
             file_extension=self._out_stage,
             out_dir=out_dir,
         )
@@ -116,25 +116,22 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
 
             if ndegrees == 2:
                 scanAtomsPos = xyz[oc_atoms_pos_ids]
-                scanCoordinateValue.append(
-                    getXYZPointsDistance(scanAtomsPos[0], scanAtomsPos[1])
-                )
+                atom_dist = getXYZPointsDistance(scanAtomsPos[0], scanAtomsPos[1])
+                scanCoordinateValue.append(round(atom_dist, 3))
             elif ndegrees == 3:
                 scanAtomsPos = xyz[oc_atoms_pos_ids]
-                scanCoordinateValue.append(
-                    getPlaneAngle(scanAtomsPos[0], scanAtomsPos[1], scanAtomsPos[2])
-                )
+                angle = getPlaneAngle(scanAtomsPos[0], scanAtomsPos[1], scanAtomsPos[2])
+                scanCoordinateValue.append(round(angle, 3))
 
             elif ndegrees == 4:
                 scanAtomsPos = xyz[oc_atoms_pos_ids]
-                scanCoordinateValue.append(
-                    getDihedralAngle(
+                dangle = getDihedralAngle(
                         scanAtomsPos[0],
                         scanAtomsPos[1],
                         scanAtomsPos[2],
                         scanAtomsPos[3],
                     )
-                )
+                scanCoordinateValue.append(round(dangle, 3))
 
         scanCoordinateValue, ontoCompChemJobs = zip(
             *sorted(zip(scanCoordinateValue, ontoCompChemJobs))
