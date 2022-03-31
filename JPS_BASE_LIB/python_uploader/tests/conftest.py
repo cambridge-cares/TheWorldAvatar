@@ -1,6 +1,7 @@
 import pytest
 import time
 import os
+import pyuploader.uploaders as uploaders
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
@@ -8,6 +9,17 @@ SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 LARGE_TXT_FILE = os.path.join(THIS_DIR, 'large_txt_file')
 LARGE_OWL_FILE = os.path.join(THIS_DIR, 'large_owl_file')
+SERVICE_ROUTES ={
+    "blazegraph": "blazegraph/namespace/kb/sparql",
+    "blazegraph-geo": "blazegraph/namespace/kb/sparql",
+    "fileserver": "FileServer/"
+}
+
+UPLOADER_TYPE = {
+    "blazegraph": uploaders.TS_UPLOADER,
+    "blazegraph-geo": uploaders.TS_UPLOADER,
+    "fileserver": uploaders.FS_UPLOADER
+}
 
 def pytest_sessionstart(session):
     """ This will run before all the tests"""
@@ -37,9 +49,9 @@ def pytest_sessionfinish(session):
 
 @pytest.fixture(scope="session")
 def get_service_url(session_scoped_container_getter):
-    def _get_service_url(service_name, url_route):
+    def _get_service_url(service_name):
         service = session_scoped_container_getter.get(service_name).network_info[0]
-        service_url = f"http://localhost:{service.host_port}/{url_route}"
+        service_url = f"http://localhost:{service.host_port}/{SERVICE_ROUTES[service_name]}"
         return service_url
 
     # this will run only once per entire test session and ensures that all the services
@@ -73,17 +85,23 @@ def get_service_auth_file_path():
 
 @pytest.fixture(scope="session")
 def write_service_url_to_file(get_service_url):
-    def _write_service_url_to_file(service_name, url_route):
-        service_url = get_service_url(service_name, url_route)
+    def _write_service_url_to_file(service_name):
+        service_url = get_service_url(service_name)
         with open(URL_FILE_PATH, 'w') as f:
             f.write(service_url)
         return URL_FILE_PATH
     return _write_service_url_to_file
 
 @pytest.fixture(scope="session")
+def get_service_uploader_type():
+    def _get_service_uploader_type(service_name):
+        return UPLOADER_TYPE[service_name]
+    return _get_service_uploader_type
+
+@pytest.fixture(scope="session")
 def create_large_file():
     def _create_large_file(uploader_type):
-        if uploader_type == 'ts_uploader':
+        if uploader_type == uploaders.TS_UPLOADER:
             large_file_path = create_large_owl_file()
         else:
             large_file_path = create_large_txt_file()

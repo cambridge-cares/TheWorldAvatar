@@ -79,18 +79,19 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
     	derivationsAndStatusType.forEach((derivation, statusType) -> {
 			LOGGER.info("Derivation <" + derivation +"> has status type: " + statusType +".");
     		switch (statusType) {
-			case PENDINGUPDATE:
-				List<String> immediateUpstreamDerivationToUpdate = devClient.checkAtPendingUpdate(derivation);
-				LOGGER.info("Derivation <" + derivation + "> has a list of immediate upstream derivations to be updated: " + immediateUpstreamDerivationToUpdate.toString());
-				break;
 			case REQUESTED:
-				JSONObject agentInputs = devClient.retrieveAgentInputIRIs(derivation, agentIRI);
-				LOGGER.info("Agent <" + agentIRI + "> retrieved inputs of derivation <" + derivation + ">: " + agentInputs.toString() + ".");
-				LOGGER.info("Derivation <" + derivation + "> is now in progress.");
-				List<String> newDerivedIRI = setupJob(agentInputs);
-				LOGGER.info("Derivation <" + derivation + "> has new generated derived IRI: " + newDerivedIRI.toString() + ".");
-				devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
-				LOGGER.info("Derivation <" + derivation + "> is now finished, to be cleaned up.");
+				List<String> immediateUpstreamDerivationToUpdate = devClient.checkImmediateUpstreamDerivation(derivation);
+				if (!immediateUpstreamDerivationToUpdate.isEmpty()) {
+					LOGGER.info("Derivation <" + derivation + "> has a list of immediate upstream derivations to be updated: " + immediateUpstreamDerivationToUpdate.toString());
+				} else {
+					JSONObject agentInputs = devClient.retrieveAgentInputIRIs(derivation, agentIRI);
+					LOGGER.info("Agent <" + agentIRI + "> retrieved inputs of derivation <" + derivation + ">: " + agentInputs.toString() + ".");
+					LOGGER.info("Derivation <" + derivation + "> is now in progress.");
+					List<String> newDerivedIRI = setupJob(agentInputs);
+					LOGGER.info("Derivation <" + derivation + "> has new generated derived IRI: " + newDerivedIRI.toString() + ".");
+					devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+					LOGGER.info("Derivation <" + derivation + "> is now finished, to be cleaned up.");
+				}
 				break;
 			case INPROGRESS:
 				// at the moment the design is the agent just pass when it's detected as "InProgress"

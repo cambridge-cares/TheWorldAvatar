@@ -1,6 +1,5 @@
 version: "3.8"
 
-
 services:
 
   # Blazegraph
@@ -22,21 +21,9 @@ services:
     ports:
       - 48083:8080
 
-  ## RDF4J
-  #rdf4j:
-  #  image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
-  #  container_name: "rdf4j_test"
-  #  environment:
-  #    RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
-  #  # Add secrets to set BASIC authentication passwords for both the workbench and server
-  #  ports:
-  #    - 48084:8080
-  #  secrets:
-  #    - rdf4j_user_password
-
   # File server
   fileserver:
-    image: docker.cmclinnovations.com/fileserver:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
     container_name: "fileserver_test"
     ports:
       - 48086:8080
@@ -50,5 +37,3 @@ secrets:
     file: dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
     file: dummy_services_secrets/fileserver_passwd.txt
-  #rdf4j_user_password:
-  #  file: dummy_services_secrets/rdf4j_passwd.txt

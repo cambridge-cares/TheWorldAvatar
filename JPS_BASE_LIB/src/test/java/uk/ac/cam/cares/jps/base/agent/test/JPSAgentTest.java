@@ -28,11 +28,6 @@ public class JPSAgentTest extends TestCase {
         }
     }
 
-    public void testNewPSAgentMethods() {
-        JPSAgent jpsa = new JPSAgent();
-        assertEquals(5, jpsa.getClass().getDeclaredMethods().length);
-    }
-
     public void testProcessRequestParameters() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         JPSAgent jpsa = new JPSAgent();
         assertNotNull(jpsa.getClass().getDeclaredMethod("processRequestParameters", JSONObject.class));

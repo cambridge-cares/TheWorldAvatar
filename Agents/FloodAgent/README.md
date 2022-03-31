@@ -14,7 +14,23 @@ credentials/
 
 repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in `FloodAgent/src/main/resources/credentials.properties`. A template `credentials.properties.template` is provided in the same folder. To access Blazegraph and Postgres on your local machine, but not within the same docker network, the host name to use is `host.docker.internal`. User and password for Blazegraph can be left empty if not required. 
+Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in with the following environment variables, the names of the variables should be self explanatory. OUTPUT_DIR refers to the absolute path of the directory for this script to write the output files.
+Mandatory variables:
+- KG_HOST (e.g. kg.cmclinnovations.com)
+- KG_PATH (e.g. /blazegraph_geo/namespace/flood/sparql)
+- KG_PROTOCOL (e.g. http)
+- POSTGRES_DBNAME (name of the database, e.g. flood)
+- POSTGRES_USER
+- POSTGRES_PASSWORD
+- OUTPUT_DIR
+
+Optional variables:
+- KG_USER
+- KG_PASSWORD
+- KG_PORT
+- POSTGRES_HOST
+- POSTGRES_PORT
+- SKIP_RIVER (if set to true, this code will be skipped)
 
 In addition to the credentials for the databases, a directory to write the geojson and flood needs to be specified.
 
@@ -48,6 +64,17 @@ To run
 ```
 docker run -d [TAGNAME]
 ```
+
+To push this image to the repository:
+```
+docker login ghcr.io -u <github_username>
+```
+enter your personal access token when prompted for the password, then
+```
+docker compose -f docker compose -f docker-compose-write-only.yml build
+docker compose -f docker compose -f docker-compose-write-only.yml push
+```
+
 ### Logs
 Logs are saved at `root/.jps/` by default, you can copy the logs into your local environment by using the following command
 ```
@@ -55,7 +82,7 @@ docker cp flood:/root/.jps .
 ```
 
 ## Main entrypoint
-The main entrypoint is the `LaunchScheduledUpdaterAndWriter` class, it is set as the main class in the manifest, i.e. running the `java -jar FloodAgent-1.0.0-SNAPSHOT.jar` command will launch this by default.
+The main entrypoint is the `LaunchScheduledUpdater` class, it is set as the main class in the manifest, i.e. running the `java -jar FloodAgent-1.0.0-SNAPSHOT.jar` command will launch this by default.
 
 When launched, it will initialise the flood monitoring stations if they are not initialised, and start a scheduled task that runs once a day. The code will always download readings from the day before and upload the data to the time series tables in PostgreSQL.
 

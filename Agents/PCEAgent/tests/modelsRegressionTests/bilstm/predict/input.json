@@ -1,0 +1,72 @@
+{
+"goals":{
+    "hpo": true,
+    "contour_plot": false,
+    "best_trial_retraining": true,
+    "transfer_learning": false,
+    "predict": true
+},
+"numerical_settings":{
+    "seed": 1,
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false
+},
+"dataset":{
+    "src": "./data/processed/HOPV_15_revised_2_processed_homo_5fold.csv",
+    "z-stand": "False",
+    "x_column": ["smiles"],
+    "y_column": ["pce"],
+    "split": "ml_phase"
+    },
+"logging_settings":{
+    "log_main_dir": "./tests/modelsRegressionTests/bilstm/predict",
+    "log_sub_dir_prefix": "reg_test",
+    "log_config_file": "./tests/conf/logging.yaml",
+    "log_file_name": "oscml.log",
+    "use_date_time": false
+},
+"model":{
+    "name": "BILSTM",
+    "model_specific":{
+        "embedding_dim": 256,
+        "mlp_layers": 1,
+        "mlp_units": [256, 145],
+        "mlp_dropouts": [1.705E-2, 1.705E-2]
+        },
+    "max_sequence_length": 160,
+    "type_dict": "HOPV15"
+},
+"training":{
+    "optimiser":{
+        "name":"Adam",
+        "lr": 1.8521E-3,
+        "weight_decay": 1.948E-5
+        },
+    "batch_size": 20,
+    "epochs": 1,
+    "patience": 20,
+    "min_delta": 0.0,
+    "metric": "val_loss",
+    "direction": "minimize",
+    "cross_validation": 0,
+    "trials": 1,
+    "study_name": "predict",
+    "storage": "sqlite:///tests/modelsRegressionTests/bilstm/predict/reg_test.db",
+    "storage_timeout": 1000,
+    "load_if_exists": true,
+    "jobs": 1
+    },
+"post_processing":{
+    "contour_plot_alt_dir": null,
+    "z_transform_inverse_prediction": true,
+    "regression_plot": false
+},
+"predict_settings": {
+    "ckpt_path": "./tests/modelsRegressionTests/bilstm/predict/reg_test/best_trial_retrain/trial_*/best_trial_retrain_model*.ckpt",
+    "predict_input": ["Cc1nc2c3ccsc3c3sc(-c4ccc(-c5cnc(C6=S=CC=C6)c6nsnc65)s4)cc3c2nc1C",
+					  "COc1c2ccsc2c(OC)c2cc(-c3scc4sc(C(C)=O)c(F)c43)sc21",
+					  "COc1c(OC)c(-c2ccc(-c3ccc4c(c3)C(C)(C)c3ccccc3-4)s2)c2nsnc2c1-c1cccs1",
+					  "COc1c2ccsc2c(OC)c2cc(-c3scc4sc(C(C)=O)cc43)sc21"],
+    "actual_output": [5.57, 7.7, 3.1, 6.6]
+  }
+}

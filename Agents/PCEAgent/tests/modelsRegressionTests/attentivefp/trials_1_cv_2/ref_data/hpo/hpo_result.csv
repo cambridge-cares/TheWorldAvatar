@@ -1,0 +1,2 @@
+,number,value,datetime_start,datetime_complete,duration,params_dropout,params_graph_feat_size,params_lr,params_num_layers,params_num_timesteps,params_weight_decay,state
+0,0,0.9776017088023691,2021-03-26 11:53:48.507396,2021-03-26 11:54:27.293376,0 days 00:00:38.785980,0.044026767245133915,145,0.00017826497151386962,4,2,0.0014486833887239336,COMPLETE

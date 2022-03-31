@@ -35,7 +35,6 @@ public class WriteOutputs {
     private static TimeSeriesClient<Instant> tsClient = null;
     
     // output files
-    private static String dataFolder = "data";
     private static String mainDirectory = "main";
     
     // err msg
@@ -48,8 +47,14 @@ public class WriteOutputs {
     public static void setTsClient(TimeSeriesClient<Instant> tsClient) {
     	WriteOutputs.tsClient = tsClient;
     }
-	
+    
 	public static void main(String[] args) {
+		if (Boolean.parseBoolean(System.getenv("SKIP_RIVER"))) {
+			LOGGER.info("SKIP_RIVER is set to true, this code will not write any outputs");
+			new File(Config.outputdir).mkdirs(); // make an empty directory to simplify Argo workflow
+			System.exit(0);
+		}
+		
 		// input needs to be a valid date
         LocalDate date;
 		
@@ -79,13 +84,16 @@ public class WriteOutputs {
     	String southwest = System.getenv("SOUTH_WEST");
     	String northeast = System.getenv("NORTH_EAST");
     	
-    	List<Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
+    	Map<String, Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
+    	
+    	// add time series to station objects, will also remove stations without any data
+    	queryTimeSeries(stations, date);
     	
     	// remove old outputs if exist
     	removeOldOutput();
-    	
+
     	// create directory
-    	File directories = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory).toString());
+    	File directories = new File(Paths.get(Config.outputdir, mainDirectory).toString());
     	directories.mkdirs();
     	
     	// then write the files..
@@ -101,17 +109,54 @@ public class WriteOutputs {
 		LOGGER.info("Trying to delete old data files");
 		Path dataFolderPath = null;
 		try {
-			dataFolderPath = Paths.get(Config.outputdir, dataFolder);
+			dataFolderPath = Paths.get(Config.outputdir);
 			FileUtils.cleanDirectory(dataFolderPath.toFile());
 		} catch (IOException | IllegalArgumentException e) {
 			LOGGER.warn(e.getMessage());
 		}
 	}
 	
+	/**
+	 * set time series objects to each station object, if a station does not have any time series
+	 * the entry gets removed
+	 * @param stations
+	 * @param date
+	 */
+	static void queryTimeSeries(Map<String, Station> stations, LocalDate date) {
+		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
+		List<String> stationsList = new ArrayList<>(stations.keySet());
+				
+		for (String stationIri : stationsList) {
+			try {
+				Station station = stations.get(stationIri);
+				List<String> measures = station.getMeasures();
+				
+				for (String measure : measures) {
+					TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure), lowerbound, upperbound);
+					List<Instant> time = ts.getTimes();
+					
+					// ignore blank time series
+					if(time.size() > 0) {
+						station.addTimeseries(ts);
+					}
+				}				
+				
+				if (station.getTimeSeriesList().size() == 0) {
+					// do not plot this station if it does not have any data
+					stations.remove(stationIri);
+				}
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
+				LOGGER.error("Failed to query time series for " + stationIri);
+			}
+		}
+	}
+	
 	static void writeOverallMetaFile() {
 		double[] mapcentre = {0.3976, 52.7543};
 	    
-        File file = new File(Paths.get(Config.outputdir, dataFolder, "meta.json").toString());
+        File file = new File(Paths.get(Config.outputdir, "meta.json").toString());
 		
 		JSONObject json = new JSONObject();
 		JSONObject global = new JSONObject();
@@ -137,13 +182,13 @@ public class WriteOutputs {
 	}
 	
 	static void writeLayerTree() {
-		File file = new File(Paths.get(Config.outputdir, dataFolder, "tree.json").toString());
+		File file = new File(Paths.get(Config.outputdir, "tree.json").toString());
 		
 		JSONArray layers = new JSONArray();
 		
 		// layer tree
 		JSONObject layer = new JSONObject();
-		layer.put("layerName", "River stations");
+		layer.put("layerName", "Environment Agency");
 		layer.put("defaultState", "visible");
 		layer.put("layerIDs", new JSONArray().put("stations"));
 		layers.put(layer);
@@ -153,7 +198,7 @@ public class WriteOutputs {
 	}
 	
 	static void writeMainMeta(LocalDate date) {
-		File file = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory, "meta.json").toString());
+		File file = new File(Paths.get(Config.outputdir, mainDirectory, "meta.json").toString());
 		
 		JSONObject json = new JSONObject();
 		
@@ -162,9 +207,27 @@ public class WriteOutputs {
 		JSONObject dataSet = new JSONObject();
 		dataSet.put("name", "stations");
 		dataSet.put("dataLocation", "flood-stations.geojson");
-		dataSet.put("locationType", "point");
+		dataSet.put("locationType", "symbol");
 		dataSet.put("metaFiles", new JSONArray().put("stationsmeta.json"));
 		dataSet.put("timeseriesFiles", new JSONArray().put("flood-" + date + "-timeseries.json"));
+		
+		// clustering properties
+		dataSet.put("cluster", true);
+		dataSet.put("clusterRadius", 30);
+
+		// preparing cluster properties
+		JSONObject clusterProperties = new JSONObject();
+		
+		JSONArray icon_image = new JSONArray();
+		icon_image.put("string").put("ea-empty");
+		
+		JSONArray text_colour = new JSONArray();
+		text_colour.put("string").put("#68bf56");
+		
+		clusterProperties.put("icon-image", icon_image);
+		clusterProperties.put("text-color", text_colour);
+		
+		dataSet.put("clusterProperties", clusterProperties);
 		
 		dataSets.put(dataSet);
 		
@@ -178,15 +241,16 @@ public class WriteOutputs {
 	 * location of file - Config.outputdir
 	 * name of file  - stations.geojson
 	 */
-	static void writeStationsToGeojson(List<Station> stations) {
-		File geojsonfile = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"flood-stations.geojson").toString());
+	static void writeStationsToGeojson(Map<String, Station> stations) {
+		File geojsonfile = new File(Paths.get(Config.outputdir, mainDirectory,"flood-stations.geojson").toString());
 		
 		// create geojson file
 		JSONObject featureCollection = new JSONObject();
 		featureCollection.put("type", "FeatureCollection");
 		JSONArray features = new JSONArray();
 		
-		for (Station station : stations) {
+		for (String stationIri : stations.keySet()) {
+			Station station = stations.get(stationIri);
 			// each station will be a feature within FeatureCollection
 			JSONObject feature = new JSONObject();
 			
@@ -198,11 +262,10 @@ public class WriteOutputs {
 			
 			//properties (display name and styling)
 			JSONObject property = new JSONObject();
-			property.put("displayName", station.getLabel());
-			property.put("circle-color", "rgb(204,41,41)");
-			property.put("circle-stroke-width", 1);
-			property.put("circle-stroke-color", "#000000"); // black
-			property.put("circle-opacity", 0.75);
+			property.put("displayName", "Environment Agency: " + station.getLabel() + " (" + station.getIdentifier() + ")");
+			property.put("description", station.getDescription());
+			// icon properties
+			property.put("icon-image", station.getIconImage());
 			feature.put("properties", property);
 			
 			// geometry
@@ -221,12 +284,13 @@ public class WriteOutputs {
 		writeToFile(geojsonfile, featureCollection.toString(4));
 	}
 	
-	static void writeStationsMeta(List<Station> stations) {
-		File metafile = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"stationsmeta.json").toString());
+	static void writeStationsMeta(Map<String, Station> stations) {
+		File metafile = new File(Paths.get(Config.outputdir, mainDirectory,"stationsmeta.json").toString());
 		
 		JSONArray metaDataCollection = new JSONArray();
 		
-		for (Station station : stations) {
+		for (String stationIri : stations.keySet()) {
+			Station station = stations.get(stationIri);
 			// meta
 			JSONObject metadata = new JSONObject();
 			
@@ -256,56 +320,32 @@ public class WriteOutputs {
 	 * writes out data for a specific date
 	 * @param date
 	 */
-	static void writeTimeSeriesJson(List<Station> stations, LocalDate date) {
+	static void writeTimeSeriesJson(Map<String, Station> stations, LocalDate date) {
 		// write to file 
-		File file = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"flood-" + date + "-timeseries.json").toString());
-
-		List<String> measures = sparqlClient.getMeasures(stations);
-		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
-		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
+		File file = new File(Paths.get(Config.outputdir, mainDirectory,"flood-" + date + "-timeseries.json").toString());
 		
 		// collect time series into a list first
 		List<TimeSeries<Instant>> ts_list = new ArrayList<>();
-		
-		for (int i = 0; i < measures.size(); i++) {
-			try {
-				TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measures.get(i)), lowerbound, upperbound);
-				
-				List<Instant> time = ts.getTimes();
-				
-				// ignore blank time series
-				if(time.size() > 0) {
-					ts_list.add(ts);
-				}
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
-				LOGGER.error("Failed to query time series for " + measures.get(i));
-			}
-		}
-		
-		// prepare JSON output
-		//index 0: data name, list 1: unit, list 2: vis ID
-		List<String> measuresToPlot = new ArrayList<>();
-		for (TimeSeries<Instant> ts : ts_list) {
-			measuresToPlot.add(ts.getDataIRIs().get(0));
-		}
-		
-		// index 0: data name, 1: unit, 2: vis ID
-		List<Map<String,?>> measureProps = sparqlClient.getMeasurePropertiesForVis(measuresToPlot);
-		
 		List<Map<String,String>> table_header = new ArrayList<>();
 		List<Map<String,String>> units = new ArrayList<>();
 		List<Integer> visId = new ArrayList<>();
-		for (String measure : measuresToPlot) {
+		
+		for (String stationIri : stations.keySet()) {
+			Station station = stations.get(stationIri);
+			TimeSeries<Instant> combined_ts = station.getCombinedTimeSeries(tsClient);
+			ts_list.add(combined_ts);
+			
 			Map<String,String> measure_header_map = new HashMap<>();
-			measure_header_map.put(measure, (String) measureProps.get(0).get(measure));
-			table_header.add(measure_header_map);
-			
 			Map<String,String> measure_unit_map = new HashMap<>();
-			measure_unit_map.put(measure, (String) measureProps.get(1).get(measure));
-			units.add(measure_unit_map);
 			
-			visId.add((Integer) measureProps.get(2).get(measure));
+			for (String measureIri : combined_ts.getDataIRIs()) {
+				String header = station.getMeasureName(measureIri) + " (" + station.getMeasureSubTypeName(measureIri) + ")";
+				measure_header_map.put(measureIri, header);
+				measure_unit_map.put(measureIri, station.getMeasureUnit(measureIri));
+			}
+			table_header.add(measure_header_map);
+			units.add(measure_unit_map);
+			visId.add(station.getVisId());
 		}
 		
 		JSONArray ts_array = tsClient.convertToJSON(ts_list, 
