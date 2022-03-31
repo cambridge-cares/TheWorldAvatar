@@ -105,7 +105,11 @@ def cleanup_test_data(writtenFiles: List[str]) -> None:
         ("OC_qc_json_test", "qc_json", False),
         ("OC_qc_log_multi_job_test", "qc_log", False),
         ("OC_qc_log_multi_log_scan_test", "qc_log", False),
-        ("OC_qc_log_single_log_scan_test\\ethane_scan_rigid.g09", "qc_log", False),
+        (
+            os.path.join("OC_qc_log_single_log_scan_test", "ethane_scan_rigid.g09"),
+            "qc_log",
+            False,
+        ),
     ],
 )
 def test_ocompchem_abox_writer(
