@@ -3,6 +3,9 @@
 # Date: 31 Mar 2022                           #
 ###############################################
 
+# The purpose of this module is to provide a function which eases
+# the inclusion of prefixes into SPARQL queries
+
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
@@ -15,6 +18,9 @@ PREFIXES = {
     # CoMo / CARES ontologies
     'ems': 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#',
     'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
+    # Knowledge base
+    'kb': 'http://www.theworldavatar.com/kb/metoffice/',
+    'tsa': 'http://www.theworldavatar.com/kb/ontotimeseries/',
 }
 
 
