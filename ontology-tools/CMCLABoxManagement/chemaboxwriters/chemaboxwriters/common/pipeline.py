@@ -1,6 +1,6 @@
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from collections import OrderedDict
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.aboxconfig as abconf
 import logging
@@ -17,7 +17,7 @@ class Pipeline:
     def __init__(
         self,
         name: str,
-    ):
+    ) -> None:
         self.name = name
         self._handlers: Dict[str, Handler] = OrderedDict()
         self._file_server_uploads = {}
@@ -34,7 +34,7 @@ class Pipeline:
     def add_handler(
         self,
         handler: Handler,
-    ) -> Any:
+    ) -> "Pipeline":
 
         if self.get_handler_by_name(handler.name) is not None:
             logger.warning(f"Handler {handler.name} already exist.")
