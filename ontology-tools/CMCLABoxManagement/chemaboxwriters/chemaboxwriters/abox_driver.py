@@ -48,23 +48,25 @@ Options:
                          - for all other stages
                            the extension equals to the
                            input file type (e.g. oc_json)
---config-file=<file>    Path to the config file with the upload
-                        options. If not provided, the code will
-                        try to read the config file path from
-                        the ABOXWRITERS_CONFIG_FILE environment
-                        variable.
+--config-file=<file>    Path to the abox config file.
 --out-dir=<dir>         Output directory to write the
                         abox files to. If not provided
                         defaults to the directory of the
                         input file.
 --log-file-name=<name>  Name of the generated log file.
 --log-file-dir=<dir>    Path to the abox writer log file.
-                        Defaults to the <file_or_dir> dir.
+                        If not provided defults to the
+                        directory of the input file.
 --no-file-logging       No logging to a file flag.
 --dry-run=<dry_run>     Run the abox writer tool in a dry        [default: True]
-                        run mode (files are not uploaded).
+                        run mode (files are created but
+                        not uploaded).
                         Choose between True / False
 --info                  Prints the pipeline info.
+                        Can be used together with
+                        the --config-file option to check
+                        the pipeline configuration befrre
+                        runing it
 """
 
 
