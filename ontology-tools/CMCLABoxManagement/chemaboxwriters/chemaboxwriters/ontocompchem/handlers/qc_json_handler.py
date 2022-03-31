@@ -85,9 +85,6 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         if random_id is None:
             random_id = utilsfunc.get_random_id()
 
-        if comp_pref is None:
-            comp_pref = ""
-
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
