@@ -1,4 +1,7 @@
-from metoffice.kgutils.javagateway import jpsBaseLibGW
+# The purpose of this module is to provide functionality to execute
+# KG updates using the Store Router from the JPB_BASE_LIB
+
+from metoffice.kgoperations.javagateway import jpsBaseLibGW
 import json
 
 
