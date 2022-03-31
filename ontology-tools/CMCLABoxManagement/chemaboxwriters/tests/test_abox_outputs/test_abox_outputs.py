@@ -9,7 +9,8 @@ from chemaboxwriters.ontocompchem.pipeline import OC_PIPELINE
 from chemaboxwriters.ontospecies.pipeline import OS_PIPELINE
 from chemaboxwriters.ontomops.pipeline import OMOPS_PIPELINE
 from chemaboxwriters.ontopesscan.pipeline import OPS_PIPELINE
-from typing import List
+from pytest_mock import MockerFixture
+from typing import List, Dict, Callable
 
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -51,12 +52,17 @@ OPS_dihedral_angle_handler_kwargs = {
 
 
 class DummyPubchemComp:
-    def __init__(self, cid, synonyms):
+    def __init__(self, cid: int, synonyms: List[str]):
         self.cid = cid
         self.synonyms = synonyms
 
 
-def compare_results(pipeline, regenerate_result, regenerate_all_results, file_exts):
+def compare_results(
+    pipeline: asp.Pipeline,
+    regenerate_result: bool,
+    regenerate_all_results: bool,
+    file_exts: List[str],
+) -> None:
 
     files_to_check_content = []
     files_to_check_existance = []
@@ -64,7 +70,7 @@ def compare_results(pipeline, regenerate_result, regenerate_all_results, file_ex
     for file in pipeline.written_files:
         check_content = False
         for fileExt in file_exts:
-            match = re.search(f"\.{fileExt}$", file)
+            match = re.search(r"\.{}$".format(fileExt), file)
             if match is not None:
                 check_content = True
                 break
@@ -91,11 +97,6 @@ def compare_results(pipeline, regenerate_result, regenerate_all_results, file_ex
         assert fileExists(file) is True
 
 
-def cleanup_test_data(writtenFiles: List[str]) -> None:
-    for file in writtenFiles:
-        os.remove(file)
-
-
 @pytest.mark.parametrize(
     "inp_file_or_dir, inp_file_type,  \
      regenerate_result",
@@ -113,11 +114,12 @@ def cleanup_test_data(writtenFiles: List[str]) -> None:
     ],
 )
 def test_ocompchem_abox_writer(
-    inp_file_or_dir,
-    inp_file_type,
-    regenerate_result,
-    clean_tests,
-    regenerate_all_results=False,
+    inp_file_or_dir: str,
+    inp_file_type: str,
+    regenerate_result: bool,
+    clean_tests: bool,
+    cleanup_test_data: Callable,
+    regenerate_all_results: bool = False,
 ):
     print("========================================================")
     print("TEST INPUT FILE: ", inp_file_or_dir)
@@ -166,12 +168,13 @@ def test_ocompchem_abox_writer(
     ],
 )
 def test_ospecies_abox_writer(
-    inp_file_or_dir,
-    inp_file_type,
-    regenerate_result,
-    clean_tests,
-    mocker,
-    regenerate_all_results=False,
+    inp_file_or_dir: str,
+    inp_file_type: str,
+    regenerate_result: bool,
+    clean_tests: bool,
+    cleanup_test_data: Callable,
+    mocker: MockerFixture,
+    regenerate_all_results: bool = False,
 ):
     print("========================================================")
     print("TEST INPUT FILE: ", inp_file_or_dir)
@@ -231,12 +234,13 @@ def test_ospecies_abox_writer(
     ],
 )
 def test_opsscan_abox_writer(
-    inp_file_or_dir,
-    inp_file_type,
-    handler_kwargs,
-    regenerate_result,
-    clean_tests,
-    regenerate_all_results=False,
+    inp_file_or_dir: str,
+    inp_file_type: str,
+    handler_kwargs: Dict,
+    regenerate_result: bool,
+    clean_tests: bool,
+    cleanup_test_data: Callable,
+    regenerate_all_results: bool = False,
 ):
     print("========================================================")
     print("TEST INPUT FILE: ", inp_file_or_dir)
@@ -276,11 +280,12 @@ def test_opsscan_abox_writer(
     ],
 )
 def test_omops_abox_writer(
-    inp_file_or_dir,
-    inp_file_type,
-    regenerate_result,
-    clean_tests,
-    regenerate_all_results=False,
+    inp_file_or_dir: str,
+    inp_file_type: str,
+    regenerate_result: bool,
+    clean_tests: bool,
+    cleanup_test_data: Callable,
+    regenerate_all_results: bool = False,
 ):
     print("========================================================")
     print("TEST INPUT FILE: ", inp_file_or_dir)

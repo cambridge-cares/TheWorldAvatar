@@ -7,7 +7,8 @@ from chemaboxwriters.ontocompchem.pipeline import OC_PIPELINE
 from chemaboxwriters.ontospecies.pipeline import OS_PIPELINE
 from chemaboxwriters.ontomops.pipeline import OMOPS_PIPELINE
 from chemaboxwriters.ontopesscan.pipeline import OPS_PIPELINE
-from typing import List, Dict
+from pytest_mock import MockerFixture
+from typing import Callable, Dict, Optional, List
 
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,13 +21,13 @@ OMOPS_REF_DIR = os.path.join(REF_DIR, "ontomops")
 
 
 class DummyPubchemComp:
-    def __init__(self, cid, synonyms):
+    def __init__(self, cid: int, synonyms: List[str]):
         self.cid = cid
         self.synonyms = synonyms
 
 
 def check_uploads(
-    pipeline: Pipeline, inp_file_type, fs_num_uploads, ts_num_uploads
+    pipeline: Pipeline, inp_file_type: str, fs_num_uploads: int, ts_num_uploads: int
 ) -> None:
 
     fs_uploads = pipeline._file_server_uploads
@@ -48,7 +49,7 @@ def check_uploads(
             inp_stage = handler._out_stage
 
 
-def _check_uploads_exists(uploads, upload_configs):
+def _check_uploads_exists(uploads: Dict, upload_configs: Optional[Dict]) -> None:
     if upload_configs is not None:
         upload_file_types = upload_configs["upload_file_types"]
         url = _construct_full_url(upload_configs)
@@ -77,23 +78,24 @@ def _construct_full_url(upload_configs: Dict) -> str:
     return url
 
 
-def cleanup_test_data(writtenFiles: List[str]) -> None:
-    for file in writtenFiles:
-        os.remove(file)
-
-
 @pytest.mark.parametrize(
     "inp_file_or_dir, inp_file_type, fs_num_uploads, ts_num_uploads",
     [
-        ("OC_qc_log_single_log_scan_test\\ethane_scan_rigid.g09", "qc_log", 5, 4),
+        (
+            os.path.join("OC_qc_log_single_log_scan_test", "ethane_scan_rigid.g09"),
+            "qc_log",
+            5,
+            4,
+        ),
     ],
 )
 def test_ocompchem_abox_uploads(
-    inp_file_or_dir,
-    inp_file_type,
-    fs_num_uploads,
-    ts_num_uploads,
-    clean_tests,
+    inp_file_or_dir: str,
+    inp_file_type: str,
+    fs_num_uploads: int,
+    ts_num_uploads: int,
+    clean_tests: bool,
+    cleanup_test_data: Callable,
 ):
     print("========================================================")
     print("TEST INPUT FILE: ", inp_file_or_dir)
@@ -130,12 +132,13 @@ def test_ocompchem_abox_uploads(
     ],
 )
 def test_ospecies_abox_uploads(
-    inp_file_or_dir,
-    inp_file_type,
-    fs_num_uploads,
-    ts_num_uploads,
-    mocker,
-    clean_tests,
+    inp_file_or_dir: str,
+    inp_file_type: str,
+    fs_num_uploads: int,
+    ts_num_uploads: int,
+    mocker: MockerFixture,
+    clean_tests: bool,
+    cleanup_test_data: Callable,
 ):
     print("========================================================")
     print("TEST INPUT FILE: ", inp_file_or_dir)
@@ -177,11 +180,12 @@ def test_ospecies_abox_uploads(
     ],
 )
 def test_opsscan_abox_uploads(
-    inp_file_or_dir,
-    inp_file_type,
-    fs_num_uploads,
-    ts_num_uploads,
-    clean_tests,
+    inp_file_or_dir: str,
+    inp_file_type: str,
+    fs_num_uploads: int,
+    ts_num_uploads: int,
+    clean_tests: bool,
+    cleanup_test_data: Callable,
 ):
     print("========================================================")
     print("TEST INPUT DIR: ", inp_file_or_dir)
@@ -219,11 +223,12 @@ def test_opsscan_abox_uploads(
     ],
 )
 def test_omops_abox_uploads(
-    inp_file_or_dir,
-    inp_file_type,
-    fs_num_uploads,
-    ts_num_uploads,
-    clean_tests,
+    inp_file_or_dir: str,
+    inp_file_type: str,
+    fs_num_uploads: int,
+    ts_num_uploads: int,
+    clean_tests: bool,
+    cleanup_test_data: Callable,
 ):
     print("========================================================")
     print("TEST INPUT FILE: ", inp_file_or_dir)

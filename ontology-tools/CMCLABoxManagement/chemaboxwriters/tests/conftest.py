@@ -1,5 +1,7 @@
 import pytest
 import pathlib
+import os
+from typing import List, Callable
 
 
 def pytest_addoption(parser):
@@ -12,6 +14,15 @@ def pytest_addoption(parser):
 @pytest.fixture
 def clean_tests(request):
     return request.config.getoption("--clean-tests")
+
+
+@pytest.fixture
+def cleanup_test_data() -> Callable[[List[str]], None]:
+    def _cleanup_test_data(files: List[str]) -> None:
+        for file in files:
+            os.remove(file)
+
+    return _cleanup_test_data
 
 
 def pytest_configure(config):

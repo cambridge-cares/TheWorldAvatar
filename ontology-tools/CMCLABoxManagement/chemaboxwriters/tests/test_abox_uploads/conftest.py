@@ -12,6 +12,7 @@ SERVICE_ROUTES = {
 }
 NAMESPACES_TO_INSERT = ["ospecies", "omops", "ocompchem", "opsscan"]
 
+
 def pytest_sessionstart(session):
     """This will run before all the tests"""
 
@@ -20,21 +21,15 @@ def pytest_sessionstart(session):
         create_auth_files(service=service)
 
 
-def create_auth_files(service: str)->None:
+def create_auth_files(service: str) -> None:
     service_secrets_file = os.path.abspath(
-        os.path.normpath(
-            os.path.join(SECRETS_PATH, f"{service}_secrets.txt")
-        )
+        os.path.normpath(os.path.join(SECRETS_PATH, f"{service}_secrets.txt"))
     )
     service_user_file = os.path.abspath(
-        os.path.normpath(
-            os.path.join(SECRETS_PATH, f"{service}_user.txt")
-        )
+        os.path.normpath(os.path.join(SECRETS_PATH, f"{service}_user.txt"))
     )
     service_passwd_file = os.path.abspath(
-        os.path.normpath(
-            os.path.join(SECRETS_PATH, f"{service}_passwd.txt")
-        )
+        os.path.normpath(os.path.join(SECRETS_PATH, f"{service}_passwd.txt"))
     )
 
     with open(service_user_file, "r") as user_file:
@@ -70,6 +65,7 @@ def start_services(session_scoped_container_getter):
     # bit more time to run on your machine.
     time.sleep(8)
 
+
 def insert_namespaces():
     insert_namespace = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
     <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
@@ -86,11 +82,11 @@ def insert_namespaces():
     <entry key="com.bigdata.rdf.store.AbstractTripleStore.geoSpatial">false</entry>
     <entry key="com.bigdata.rdf.sail.isolatableIndices">false</entry>
     </properties>
-    """
+    """  # noqa: E501
 
     for namespace in NAMESPACES_TO_INSERT:
-        response = requests.post(
-            url = "http://localhost:48083/blazegraph/namespace",
-            data= insert_namespace.replace("#ns_to_insert#", namespace),
-            headers = {"Content-Type":"application/xml"}
+        _ = requests.post(
+            url="http://localhost:48083/blazegraph/namespace",
+            data=insert_namespace.replace("#ns_to_insert#", namespace),
+            headers={"Content-Type": "application/xml"},
         )
