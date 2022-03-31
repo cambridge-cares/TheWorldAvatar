@@ -1,3 +1,3 @@
 SPARQL_ENDPOINTS = {
-    'ontocompchem': 'http://kb/ontocompchem'
+    'ontopowerplant': 'http://localhost:9999/blazegraph/namespace/powerplants'
 }

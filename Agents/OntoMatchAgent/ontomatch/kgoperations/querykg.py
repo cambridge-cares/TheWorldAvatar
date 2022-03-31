@@ -11,3 +11,8 @@ def querykg(sparqlEndPoint=None, queryStr=None):
     StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
     response = json.loads(str(StoreClient.executeQuery(queryStr)))
     return response
+
+#Dummy function for local test
+def querykgLocal(sparqlEndPoint=None, queryStr=None):
+    #TODO: call local blazegraph api
+    pass
