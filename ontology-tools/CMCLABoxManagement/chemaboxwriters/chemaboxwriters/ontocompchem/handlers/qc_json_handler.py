@@ -8,7 +8,7 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 import chemaboxwriters.kgoperations.remotestore_client as rsc
 from chemaboxwriters.ontocompchem.abox_stages import OC_ABOX_STAGES
 import json
-from typing import List, Optional, Dict
+from typing import List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -49,8 +49,6 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         out_dir: str,
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []
@@ -63,7 +61,6 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             self._oc_jsonwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                file_server_uploads=file_server_uploads,
                 dry_run=dry_run,
             )
             outputs.append(out_file_path)
@@ -74,7 +71,6 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         file_path: str,
         output_file_path: str,
         dry_run: bool,
-        file_server_uploads: Optional[Dict] = None,
     ) -> None:
 
         random_id = self.get_parameter_value(name="random_id")
@@ -94,16 +90,14 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         if generate_png is True:
             png_out_path = f"{output_file_path}.png"
             utilsfunc.generate_molecule_png(inchi=inchi, out_path=png_out_path)
-            self.do_uploads(
+            self.do_fs_uploads(
                 inputs=[png_out_path],
                 input_type="oc_png",
                 dry_run=dry_run,
-                file_server_uploads=file_server_uploads,
             )
-            if file_server_uploads is not None:
-                png_file_loc = file_server_uploads.get(png_out_path)
-                if png_file_loc is not None:
-                    data[PNG_SOURCE_LOCATION] = png_file_loc["location"]
+            png_file_loc = self.get_fs_upload_location(upload_file=png_out_path)
+            if png_file_loc is not None:
+                data[PNG_SOURCE_LOCATION] = png_file_loc
             self.written_files.append(png_out_path)
 
         if ontospecies_IRI is None:

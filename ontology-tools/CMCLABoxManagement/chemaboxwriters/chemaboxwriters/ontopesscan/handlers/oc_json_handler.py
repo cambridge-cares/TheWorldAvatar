@@ -10,7 +10,7 @@ import chemaboxwriters.common.params as params
 from compchemparser.parsers.ccgaussian_parser import GEOM
 from chemaboxwriters.common.handler import Handler
 from chemaboxwriters.ontopesscan.abox_stages import OPS_ABOX_STAGES
-from typing import List, Optional, Dict
+from typing import List
 
 
 SCAN_COORDINATE_ATOMS_IRIS = "ScanCoordinateAtomsIRIs"
@@ -49,8 +49,6 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
         out_dir: str,
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []

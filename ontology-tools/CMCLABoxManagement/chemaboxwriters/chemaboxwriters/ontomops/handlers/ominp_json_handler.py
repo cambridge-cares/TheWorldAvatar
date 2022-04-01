@@ -4,7 +4,7 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 import chemaboxwriters.common.params as params
 from chemaboxwriters.ontomops.abox_stages import OM_ABOX_STAGES
 import os
-from typing import List, Optional, Dict
+from typing import List
 
 
 HANDLER_PREFIXES = {
@@ -39,19 +39,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         out_dir: str,
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
-
-        json_file_xyz_file_map = self._extract_XYZ_data(inputs)
-        if json_file_xyz_file_map:
-            self.do_uploads(
-                inputs=list(json_file_xyz_file_map.values()),
-                input_type="ominp_xyz",  # type: ignore
-                dry_run=dry_run,
-                triple_store_uploads=triple_store_uploads,
-                file_server_uploads=file_server_uploads,
-            )
 
         outputs: List[str] = []
         for json_file_path in inputs:
@@ -61,24 +49,16 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
                 out_dir=out_dir,
             )
 
-            xyz_file_location = None
-            if file_server_uploads is not None and json_file_xyz_file_map:
-                xyz_file = json_file_xyz_file_map.get(json_file_path)
-                if xyz_file is not None:
-                    xyz_file_location = file_server_uploads.get(xyz_file)
-                    if xyz_file_location is not None:
-                        xyz_file_location = xyz_file_location["location"]
-
             self.om_jsonwriter(
                 file_path=json_file_path,
                 output_file_path=out_file_path,
-                xyz_file_location=xyz_file_location,
+                dry_run=dry_run,
             )
             outputs.append(out_file_path)
         return outputs
 
     def om_jsonwriter(
-        self, file_path: str, output_file_path: str, xyz_file_location: Optional[str]
+        self, file_path: str, output_file_path: str, dry_run: bool
     ) -> None:
 
         omops_entry_prefix = self.get_prefix_value(name="omops_entry_prefix")
@@ -90,25 +70,22 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
 
+        xyz_file = data.get("Mops_XYZ_coordinates_file")
+        if xyz_file is not None:
+            xyz_file = os.path.abspath(xyz_file)
+            self.do_fs_uploads(
+                inputs=[xyz_file],
+                input_type="ominp_xyz",
+                dry_run=dry_run,
+            )
+            xyz_file_loc = self.get_fs_upload_location(upload_file=xyz_file)
+            if xyz_file_loc is not None:
+                data[MOPS_XYZ_GEOMETRY_FILE_URL] = xyz_file_loc
+
         if random_id is None:
             random_id = utilsfunc.get_random_id()
 
         data[params.ENTRY_UUID] = random_id
         data[params.ENTRY_IRI] = f"{omops_entry_prefix}{random_id}"
-        if xyz_file_location is not None:
-            data[MOPS_XYZ_GEOMETRY_FILE_URL] = xyz_file_location
 
         utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
-
-    @staticmethod
-    def _extract_XYZ_data(inputs: List[str]) -> Dict[str, str]:
-        json_file_xyz_file_map = {}
-        for file_path in inputs:
-            with open(file_path, "r") as file_handle:
-                data = json.load(file_handle)
-                xyz_file = data.get("Mops_XYZ_coordinates_file")
-                if xyz_file is not None:
-                    xyz_file = os.path.abspath(xyz_file)
-                    json_file_xyz_file_map[file_path] = xyz_file
-
-        return json_file_xyz_file_map

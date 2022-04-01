@@ -158,69 +158,138 @@ class Handler(ABC):
         self._handler_params.check_configs()
         self._handler_prefixes.check_configs()
 
+    def init_fs_uploads_history(
+        self,
+        uploads_history: Dict,
+    ) -> None:
+
+        self._init_uploads_history(
+            uploader=self._file_server_uploader, uploads_history=uploads_history
+        )
+
+    def init_ts_uploads_history(
+        self,
+        uploads_history: Dict,
+    ) -> None:
+
+        self._init_uploads_history(
+            uploader=self._triple_store_uploader, uploads_history=uploads_history
+        )
+
+    @staticmethod
+    def _init_uploads_history(
+        uploader: Optional[uploaders.UploaderClient],
+        uploads_history: uploaders.Upload_History,
+    ) -> None:
+        if uploader is None or uploads_history is None:
+            return
+
+        uploader.init_uploads_history(uploads_history=uploads_history)
+
+    def get_fs_upload_location(
+        self, upload_file: str, upload_stage: Optional[str] = None
+    ) -> Optional[str]:
+
+        location = self._get_upload_location(
+            uploader=self._file_server_uploader,
+            upload_file=upload_file,
+            upload_stage=upload_stage,
+        )
+        return location
+
+    def get_ts_upload_location(
+        self, upload_file: str, upload_stage: Optional[str] = None
+    ) -> Optional[str]:
+
+        return self._get_upload_location(
+            uploader=self._triple_store_uploader,
+            upload_file=upload_file,
+            upload_stage=upload_stage,
+        )
+
+    @staticmethod
+    def _get_upload_location(
+        uploader: Optional[uploaders.UploaderClient],
+        upload_file: str,
+        upload_stage: Optional[str] = None,
+    ) -> Optional[str]:
+
+        if uploader is None:
+            return
+
+        return uploader.get_upload_location(
+            upload_file=upload_file, upload_stage=upload_stage
+        )
+
     def run(
         self,
         inputs: List[str],
         input_type: str,
         out_dir: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> Tuple[List[str], str]:
 
         self.check_configs()
 
-        self.do_uploads(
-            inputs=inputs,
-            input_type=input_type,
-            dry_run=dry_run,
-            triple_store_uploads=triple_store_uploads,
-            file_server_uploads=file_server_uploads,
-        )
+        self.do_fs_uploads(inputs=inputs, input_type=input_type, dry_run=dry_run)
+        self.do_ts_uploads(inputs=inputs, input_type=input_type, dry_run=dry_run)
 
         outputs = self.handle_input(
-            inputs=inputs,
-            out_dir=out_dir,
-            input_type=input_type,
-            dry_run=dry_run,
-            triple_store_uploads=triple_store_uploads,
-            file_server_uploads=file_server_uploads,
+            inputs=inputs, out_dir=out_dir, input_type=input_type, dry_run=dry_run
         )
         self.written_files.extend(outputs)
 
-        self.do_uploads(
-            inputs=outputs,
-            input_type=self._out_stage,
-            dry_run=dry_run,
-            triple_store_uploads=triple_store_uploads,
-            file_server_uploads=file_server_uploads,
-        )
+        self.do_fs_uploads(inputs=outputs, input_type=self._out_stage, dry_run=dry_run)
+        self.do_ts_uploads(inputs=outputs, input_type=self._out_stage, dry_run=dry_run)
 
         return outputs, self._out_stage
 
-    def do_uploads(
+    def do_all_uploads(
         self,
         inputs: List[str],
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
-    ) -> None:
+    ) -> Tuple[uploaders.Upload_History, uploaders.Upload_History]:
 
+        fs_uploads = self.do_fs_uploads(
+            inputs=inputs, input_type=input_type, dry_run=dry_run
+        )
+        ts_uploads = self.do_ts_uploads(
+            inputs=inputs, input_type=input_type, dry_run=dry_run
+        )
+        return fs_uploads, ts_uploads
+
+    def do_fs_uploads(
+        self,
+        inputs: List[str],
+        input_type: str,
+        dry_run: bool,
+    ) -> Dict[str, Dict[str, str]]:
+
+        uploads = {}
         if self._file_server_uploader is not None:
-            self._file_server_uploader.do_uploads(
+            uploads = self._file_server_uploader.do_uploads(
                 inputs=inputs,
                 input_type=input_type,
                 dry_run=dry_run,
-                uploads=file_server_uploads,
             )
+        return uploads
+
+    def do_ts_uploads(
+        self,
+        inputs: List[str],
+        input_type: str,
+        dry_run: bool,
+    ) -> Dict[str, Dict[str, str]]:
+
+        uploads = {}
         if self._triple_store_uploader is not None:
-            self._triple_store_uploader.do_uploads(
+            uploads = self._triple_store_uploader.do_uploads(
                 inputs=inputs,
                 input_type=input_type,
                 dry_run=dry_run,
-                uploads=triple_store_uploads,
             )
+        return uploads
 
     def info(self) -> None:
         print("----------------------------------------------------------------------")
@@ -277,8 +346,6 @@ class Handler(ABC):
         out_dir: str,
         dry_run: bool,
         input_type: str,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
         pass
 

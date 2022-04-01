@@ -69,6 +69,7 @@ class Pipeline:
         logger.info(f"Running the {self.name} pipeline.")
 
         self.clean_written_files()
+        self.reset_uploads_history()
 
         if input_type not in self.in_stages:
             raise app_exceptions.UnsupportedStage(
@@ -91,8 +92,6 @@ class Pipeline:
                     input_type=input_type,
                     out_dir=out_dir,
                     dry_run=dry_run,
-                    triple_store_uploads=self._triple_store_uploads,
-                    file_server_uploads=self._file_server_uploads,
                 )
 
     def info(self) -> None:
@@ -137,6 +136,15 @@ class Pipeline:
                     handler_configs if handler_configs is not None else pipeline_configs
                 )
                 handler.configure_from_dict(config_dict=handler_configs)
+
+    def reset_uploads_history(self) -> None:
+        for handler in self._handlers.values():
+            handler.init_fs_uploads_history(
+                uploads_history=self._file_server_uploads,
+            )
+            handler.init_ts_uploads_history(
+                uploads_history=self._triple_store_uploads,
+            )
 
 
 def get_pipeline(name: str = "", handlers: Optional[List[Handler]] = None) -> Pipeline:

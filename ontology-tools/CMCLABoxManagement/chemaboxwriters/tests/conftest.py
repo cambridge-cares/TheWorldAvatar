@@ -7,7 +7,7 @@ from typing import List, Callable
 def pytest_addoption(parser):
     parser.addoption("--clean-tests", action="store", default=True)
     parser.addoption(
-        "--upload-tests", action="store", default=False, help="Run uploads tests"
+        "--upload-tests", action="store", default=True, help="Run uploads tests"
     )
 
 

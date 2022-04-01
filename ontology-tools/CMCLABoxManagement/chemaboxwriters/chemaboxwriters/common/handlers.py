@@ -2,7 +2,7 @@ from chemaboxwriters.common.handler import Handler
 import compchemparser.app as qcparser
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF as entityrdfizer
-from typing import List, Optional, Dict
+from typing import List
 from chemaboxwriters.common.abox_stages import ABOX_STAGES_COMMON
 import json
 
@@ -28,15 +28,12 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
         out_dir: str,
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []
-        cclog_upload_loc = None
+        # cclog_upload_loc = None
         for cclog_file_path in inputs:
-            if file_server_uploads is not None:
-                cclog_upload_loc = file_server_uploads.get(cclog_file_path)
+            cclog_upload_loc = self.get_fs_upload_location(upload_file=cclog_file_path)
 
             cclog_parsed_jobs = qcparser.parseLog(cclog_file_path)
 
@@ -51,9 +48,8 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
                 )
                 cclog_dict_data = json.loads(cclog_parsed_job)
                 if cclog_upload_loc is not None:
-                    cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc[
-                        "location"
-                    ]
+                    cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc
+
                 utilsfunc.write_dict_to_file(
                     dict_data=cclog_dict_data,
                     dest_path=out_file_path,
@@ -87,9 +83,6 @@ class CSV_TO_OWL_Handler(Handler):
         out_dir: str,
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
-        **handler_kwargs,
     ) -> List[str]:
 
         outputs: List[str] = []

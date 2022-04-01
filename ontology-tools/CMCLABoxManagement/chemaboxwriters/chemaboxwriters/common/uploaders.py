@@ -3,6 +3,9 @@ from pyuploader.uploaders.uploader_factory import get_uploader
 from typing import Literal, List, Dict, Optional
 
 
+Upload_History = Dict[str, Dict[str, str]]
+
+
 class UploaderClient:
     def __init__(
         self,
@@ -26,6 +29,7 @@ class UploaderClient:
             no_auth=self._no_auth,
             subdirs=self._subdirs,
         )
+        self._uploads = {}
 
     def info(self) -> None:
         print("--------------------------------------------------")
@@ -51,20 +55,41 @@ class UploaderClient:
         inputs: List[str],
         input_type: str,
         dry_run: bool,
-        uploads: Optional[Dict] = None,
-    ) -> None:
+    ) -> Upload_History:
 
         uploads_local = {}
         if input_type in self._upload_file_types:
             for file in inputs:
+                # skip already uploaded files
+                if file in self._uploads:
+                    continue
                 file_ext = "owl" if "owl" in input_type else input_type
                 location = self._uploader.upload(
                     file_ext=file_ext, file_or_dir=file, dry_run=dry_run
                 )
-                uploads_local.update(location)
-        if uploads is not None:
-            for source, location in uploads_local.items():
-                uploads[source] = {"location": location, "input_type": input_type}
+                if location.get(file) is not None:
+                    location_and_type = {
+                        "location": location.get(file),
+                        "input_type": input_type,
+                    }
+                    uploads_local[file] = location_and_type
+                    self._uploads[file] = location_and_type
+        return uploads_local
+
+    def init_uploads_history(self, uploads_history: Upload_History) -> None:
+        self._uploads = uploads_history
+
+    def get_upload_location(
+        self, upload_file: str, upload_stage: Optional[str] = None
+    ) -> Optional[str]:
+
+        upload_location = self._uploads.get(upload_file)
+        if upload_location is None:
+            return
+        if upload_stage is not None:
+            if upload_stage not in upload_location:
+                return
+        return upload_location["location"]
 
 
 def get_triple_store_uploader(

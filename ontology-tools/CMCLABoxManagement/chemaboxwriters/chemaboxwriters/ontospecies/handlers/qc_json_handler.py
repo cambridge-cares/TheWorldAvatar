@@ -82,8 +82,6 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         out_dir: str,
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []

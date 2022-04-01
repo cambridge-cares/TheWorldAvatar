@@ -10,7 +10,7 @@ import chemaboxwriters.kgoperations.querytemplates as qtmpl
 import chemaboxwriters.common.params as params
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.handler import Handler
-from typing import List, Optional, Dict
+from typing import List
 from chemaboxwriters.ontomops.abox_stages import OM_ABOX_STAGES
 import logging
 
@@ -50,8 +50,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
         out_dir: str,
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []

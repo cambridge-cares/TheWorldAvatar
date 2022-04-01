@@ -33,7 +33,7 @@ from chemaboxwriters.ontospecies.handlers.qc_json_handler import (
 )
 
 import chemaboxwriters.common.params as params
-from typing import List, Optional, Dict
+from typing import List
 from chemaboxwriters.common.handler import Handler
 from chemaboxwriters.ontospecies.abox_stages import OS_ABOX_STAGES
 
@@ -70,8 +70,6 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
         out_dir: str,
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []

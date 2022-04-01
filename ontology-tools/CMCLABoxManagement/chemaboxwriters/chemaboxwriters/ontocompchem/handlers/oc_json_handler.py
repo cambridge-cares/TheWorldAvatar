@@ -8,7 +8,7 @@ from chemaboxwriters.ontocompchem.handlers.qc_json_handler import (
     XML_SOURCE_LOCATION,
 )
 from chemaboxwriters.ontocompchem.abox_stages import OC_ABOX_STAGES
-from typing import List, Optional, Dict
+from typing import List
 
 
 Abox_Writer = utilsfunc.Abox_csv_writer
@@ -46,8 +46,6 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         out_dir: str,
         input_type: str,
         dry_run: bool,
-        triple_store_uploads: Optional[Dict] = None,
-        file_server_uploads: Optional[Dict] = None,
     ) -> List[str]:
 
         outputs: List[str] = []
