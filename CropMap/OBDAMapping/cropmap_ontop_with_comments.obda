@@ -1,31 +1,23 @@
 [PrefixDeclaration]
-:		http://example.org/crops/
-owl:		http://www.w3.org/2002/07/owl#
-rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
-xml:		http://www.w3.org/XML/1998/namespace
 xsd:		http://www.w3.org/2001/XMLSchema#
-obda:		https://w3id.org/obda/vocabulary#
-rdfs:		http://www.w3.org/2000/01/rdf-schema#
 geo:		http://www.opengis.net/ont/geosparql#
-landuse:    http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#
-datex:      http://vocab.datex.org/terms#
-BigData:    http://www.bigdata.com/rdf/geospatial/literals/v1#
-CropMapGML:    http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#
+crop:       http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#
+cropkb:     http://www.theworldavatar.com/kb/ontocropmapgml/
+lucodekb:   http://theworldavatar.com/ontology/ontolanduse/
 inria:      http://ns.inria.fr/ast/sql#
-dbo:    https://dbpedia.org/ontology/
+dbo:        https://dbpedia.org/ontology/
 vocab:      http://open.vocab.org/terms/
 
-[MappingDeclaration] @collection [[
-mappingId	lucode-map-cells
-target		:cropmap/cell/{gid} a CropMapGML:CropMap ;
-                CropMapGML:hasLucode "{lucode}"^^xsd:string ;
-                CropMapGML:hasCromeID "{cromeid}"^^xsd:string ;
-                inria:ObjectIdentifier {gid} ;
-                dbo:area {st_area_sh} ;
-                vocab:length {st_perimet} ;
-                geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral ;
-                CropMapGML:hasReferenceDate {refdate} .
 
-source		SELECT gid, cromeid, lucode, st_area_sh, st_perimet, ST_ASTEXT(geom) wkt, refdate
+[MappingDeclaration] @collection [[
+mappingId	crop-map-cells
+target		cropkb:cell/{id} a crop:CropMap ;
+                    crop:hasLucode lucodekb:{lucode} ;
+                    inria:ObjectIdentifier {gid} ;
+                    dbo:area {st_area_sh} ;
+                    vocab:length {st_perimet} ;
+                    geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral ;
+                    crop:hasCromeID {id}^^xsd:string .
+source		SELECT gid, cromeid AS id, lucode, st_area_sh, st_perimet, ST_ASTEXT(geom) wkt
             FROM "cropmap"
 ]]
