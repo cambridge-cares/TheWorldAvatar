@@ -6,13 +6,18 @@
 # The purpose of this module is to provide functions to retrieve 
 # station data from the API and instantiate it in the KG
 
+import agentlogging
 import uuid
 
 from metoffice.utils.settings import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from metoffice.kgoperations.kgclient import KGClient
-from metoffice.kgoperations.prefixes import create_sparql_prefix
-from metoffice.kgoperations.prefixes import PREFIXES
-from metoffice.kgoperations.querytemplates import *
+from metoffice.kgutils.kgclient import KGClient
+from metoffice.kgutils.prefixes import create_sparql_prefix
+from metoffice.kgutils.prefixes import PREFIXES
+from metoffice.kgutils.querytemplates import *
+
+
+# Initialise logger
+logger = agentlogging.get_logger("dev")
 
 
 def instantiate_stations(station_data: list) -> None:
@@ -22,6 +27,7 @@ def instantiate_stations(station_data: list) -> None:
             station_data - list of dictionaries with station parameters as returned
                            from MetOffice DataPoint using metoffer
     """
+    
     # Initialise update query
     query_string = f"""
         {create_sparql_prefix('geo')}
@@ -32,6 +38,7 @@ def instantiate_stations(station_data: list) -> None:
         {create_sparql_prefix('kb')}
         INSERT DATA {{
     """
+
     # Add station details
     for data in station_data:
         station_IRI = PREFIXES['kb'] + 'ReportingStation_' + str(uuid.uuid4())
@@ -46,6 +53,7 @@ def instantiate_stations(station_data: list) -> None:
     # Execute query
     kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
     kg_client.performUpdate(query_string)
+
 
 
 def _condition_metoffer_data(station_data: dict) -> dict:
@@ -70,6 +78,3 @@ def _condition_metoffer_data(station_data: dict) -> dict:
         conditioned['location'] = station_data['latitude'] + '#' + station_data['longitude']
     
     return conditioned
-
-s = {'elevation': '7.0', 'id': '3066', 'latitude': '57.6494', 'longitude': '-3.5606', 'name': 'Kinloss', 'region': 'gr', 'unitaryAuthArea': 'Moray'}
-instantiate_stations([s])

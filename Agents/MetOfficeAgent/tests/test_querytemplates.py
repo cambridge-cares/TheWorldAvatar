@@ -1,7 +1,7 @@
 import pytest
 
 # Import module under test from metoffice
-import metoffice.kgoperations.querytemplates as templates
+import metoffice.kgutils.querytemplates as templates
 
 def test_add_station_data():
     # Define test data

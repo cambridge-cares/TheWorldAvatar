@@ -6,7 +6,7 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
-from metoffice.kgoperations.prefixes import create_sparql_prefix
+from metoffice.kgutils.prefixes import create_sparql_prefix
 
 
 def all_metoffice_station_ids() -> str:

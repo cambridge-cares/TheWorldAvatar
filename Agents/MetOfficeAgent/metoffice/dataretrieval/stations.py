@@ -3,11 +3,18 @@
 # Date: 01 Apr 2022                           #
 ###############################################
 
-# The purpose of this module is to provide templates for (frequently)
+# The purpose of this module is to provide functions to retrieve 
+# station data from the KG
+
+import agentlogging
 
 from metoffice.utils.settings import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from metoffice.kgoperations.kgclient import KGClient
-from metoffice.kgoperations.querytemplates import *
+from metoffice.kgutils.kgclient import KGClient
+from metoffice.kgutils.querytemplates import *
+
+
+# Initialise logger
+logger = agentlogging.get_logger("dev")
 
 
 def get_all_metoffice_stations():

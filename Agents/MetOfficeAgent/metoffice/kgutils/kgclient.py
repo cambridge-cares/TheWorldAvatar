@@ -1,8 +1,15 @@
 # The purpose of this module is to provide functionality to execute
 # KG queries and updates using the StoreRouter from the JPB_BASE_LIB
 
-from metoffice.kgoperations.javagateway import jpsBaseLibGW
+import agentlogging
 import json
+
+from metoffice.errorhandling.exceptions import KGException
+from metoffice.kgutils.javagateway import jpsBaseLibGW
+
+
+# Initialise logger
+logger = agentlogging.get_logger("dev")
 
 
 class KGClient:
@@ -20,10 +27,14 @@ class KGClient:
         # # query operations enabled (True) and update operations disabled (False)
         # StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
 
-        if kg_user is not None:
-            self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
-        else:
-            self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+        try:
+            if kg_user is not None:
+                self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
+            else:
+                self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+        except:
+            logger.error("Unable to initialise KG client.")
+            raise KGException("Unable to initialise KG client.")
 
     
     def performQuery(self, query):
@@ -32,7 +43,11 @@ class KGClient:
             Arguments:
                 query - SPARQL Query string
         """
-        response = self.kg_client.execute(query)
+        try:
+            response = self.kg_client.execute(query)
+        except:
+            logger.error("SPARQL query not successful.")
+            raise KGException("SPARQL query not successful.")
         return json.loads(response)
 
 
@@ -42,4 +57,8 @@ class KGClient:
             Arguments:
                 update - SPARQL Update string
         """
-        self.kg_client.executeUpdate(update)
+        try:
+            self.kg_client.executeUpdate(update)
+        except:
+            logger.error("SPARQL update not successful.")
+            raise KGException("SPARQL update not successful.")
