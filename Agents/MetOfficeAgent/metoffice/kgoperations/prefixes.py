@@ -19,7 +19,7 @@ PREFIXES = {
     'ems': 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#',
     'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
     # Knowledge base
-    'kb': 'http://www.theworldavatar.com/kb/metoffice/',
+    'kb': 'http://www.theworldavatar.com/kb/ontoems/',
     'tsa': 'http://www.theworldavatar.com/kb/ontotimeseries/',
 }
 
