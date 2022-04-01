@@ -30,9 +30,12 @@ This type of installation is only for the developers. To install `MetOffice`  di
 ```bash
 # build and install
 (metoff_venv) $ python -m pip install .
+(metoff_venv) $ python -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
 # or build for in-place development
-(metoff_venv) $ python -m  pip install -e .
+(metoff_venv) $ python -m pip install -e .
+(metoff_venv) $ python -m pip install -r dev_requirements.txt
+(metoff_venv) $ python -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 ```
 
 Alternatively, use the provided `install_script_pip.sh` convenience scripts, that can create virtual environment and install the `MetOffice` in one go:

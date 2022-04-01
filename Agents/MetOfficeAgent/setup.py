@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='metoffice',
-    version='1.0.0',
+    version='0.0.1',
     author='Markus Hofmeister',
     license='MIT',
     long_description=open('README.md').read(),
@@ -15,9 +15,11 @@ setup(
         'configobj~=5.0',
         'docopt~=0.6',
         'flask~=2.1',
+        # TODO update py4jps version to include latest base lib changes
         'py4jps==1.0.17', 
         'requests~=2.27',
-        'metoffer @ git+https://github.com/sludgedesk/metoffer#egg=MetOffer'],
+        'metoffer @ git+https://github.com/sludgedesk/metoffer#egg=MetOffer',
+    ],
     entry_points={
         'console_scripts': [
             'metoffice=metoffice.driver:main',
