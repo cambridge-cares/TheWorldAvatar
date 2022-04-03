@@ -12,11 +12,8 @@ from metoffice.kgutils.prefixes import create_sparql_prefix
 def all_metoffice_station_ids() -> str:
     # Returns query to retrieve all identifiers of instantiated stations
     query = f"""
-        {create_sparql_prefix('geo')}
         {create_sparql_prefix('rdf')}
-        {create_sparql_prefix('rdfs')}
         {create_sparql_prefix('ems')}
-        {create_sparql_prefix('kb')}
         SELECT ?id
         WHERE {{
             ?station rdf:type ems:ReportingStation ;
@@ -24,6 +21,46 @@ def all_metoffice_station_ids() -> str:
                      ems:hasIdentifier ?id 
               }}
     """
+    return query
+
+
+def all_metoffice_stations(circle_center: str = None,
+                           circle_radius: str = None) -> str:
+    # Returns query to retrieve identifiers and IRIs of instantiated stations
+    if not circle_center and not circle_radius:
+        # Retrieve all stations
+        query = f"""
+            {create_sparql_prefix('rdf')}
+            {create_sparql_prefix('ems')}
+            SELECT ?id ?station
+            WHERE {{
+                ?station rdf:type ems:ReportingStation ;
+                        ems:dataSource "Met Office DataPoint" ;
+                        ems:hasIdentifier ?id 
+                }}
+        """
+    else:
+        # Retrieve only stations in provided circle (radius in km)
+        query = f"""
+            {create_sparql_prefix('rdf')}
+            {create_sparql_prefix('ems')}
+            {create_sparql_prefix('geo')}
+            {create_sparql_prefix('geolit')}
+            SELECT ?id ?station
+            WHERE {{
+                  SERVICE geo:search {{
+                    ?station geo:search "inCircle" .
+                    ?station geo:predicate ems:hasObservationLocation .
+                    ?station geo:searchDatatype geolit:lat-lon .
+                    ?station geo:spatialCircleCenter "{circle_center}" .
+                    ?station geo:spatialCircleRadius "{circle_radius}" . 
+                }}
+                ?station rdf:type ems:ReportingStation ;
+                         ems:dataSource "Met Office DataPoint" ;
+                         ems:hasIdentifier ?id 
+                }}
+        """
+    
     return query
 
 
@@ -36,7 +73,7 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
         if dataSource: triples += f"<{station_iri}> ems:dataSource \"{dataSource}\"^^xsd:string . "
         if comment: triples += f"<{station_iri}> rdfs:comment \"{comment}\"^^xsd:string . "
         if id: triples += f"<{station_iri}> ems:hasIdentifier \"{id}\"^^xsd:string . "
-        if location: triples += f"<{station_iri}> ems:hasObservationLocation \"{location}\"^^geo:lat-lon . "
+        if location: triples += f"<{station_iri}> ems:hasObservationLocation \"{location}\"^^geolit:lat-lon . "
         if elevation: triples += f"<{station_iri}> ems:hasObservationElevation \"{elevation}\"^^xsd:float . "
     else:
         triples = None

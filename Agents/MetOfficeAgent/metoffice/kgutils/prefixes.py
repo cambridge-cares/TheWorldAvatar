@@ -13,7 +13,8 @@ PREFIXES = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
     'xsd': 'http://www.w3.org/2001/XMLSchema#',
-    'geo': 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon',
+    'geo': 'http://www.bigdata.com/rdf/geospatial#',
+    'geolit': 'http://www.bigdata.com/rdf/geospatial/literals/v1#',
     'om' : 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     # CoMo / CARES ontologies
     'ems': 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#',

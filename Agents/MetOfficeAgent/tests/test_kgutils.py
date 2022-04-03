@@ -42,7 +42,7 @@ def test_add_station_data():
                 + "<test_iri> ems:dataSource \"test_source\"^^xsd:string . " \
                 + "<test_iri> rdfs:comment \"test_comment\"^^xsd:string . " \
                 + "<test_iri> ems:hasIdentifier \"test_id\"^^xsd:string . " \
-                + "<test_iri> ems:hasObservationLocation \"test_location\"^^geo:lat-lon . " \
+                + "<test_iri> ems:hasObservationLocation \"test_location\"^^geolit:lat-lon . " \
                 + "<test_iri> ems:hasObservationElevation \"1.23\"^^xsd:float . "
     result3 = "<test_iri> rdf:type ems:ReportingStation . " \
                 + "<test_iri> ems:dataSource \"test_source\"^^xsd:string . " \

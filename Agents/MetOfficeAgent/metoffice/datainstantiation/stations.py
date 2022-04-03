@@ -10,7 +10,7 @@ import uuid
 import metoffer
 
 #import agentlogging
-from metoffice.dataretrieval.stations import get_all_metoffice_stations
+from metoffice.dataretrieval.stations import get_all_metoffice_station_ids
 from metoffice.errorhandling.exceptions import APIException
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.prefixes import create_sparql_prefix
@@ -35,7 +35,7 @@ def instantiate_stations(station_data: list,
     
     # Initialise update query
     query_string = f"""
-        {create_sparql_prefix('geo')}
+        {create_sparql_prefix('geolit')}
         {create_sparql_prefix('rdf')}
         {create_sparql_prefix('rdfs')}
         {create_sparql_prefix('xsd')}
@@ -110,7 +110,7 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
     available_ids = [s['id'] for s in available]
 
     # Get already instantiated stations
-    instantiated_ids = get_all_metoffice_stations(query_endpoint=query_endpoint)
+    instantiated_ids = get_all_metoffice_station_ids(query_endpoint=query_endpoint)
 
     # Derive non yet instantiated stations
     missing_ids = [s for s in available_ids if not s in instantiated_ids]
@@ -147,3 +147,8 @@ def _condition_metoffer_data(station_data: dict) -> dict:
         print(f"Station {station_data['id']} does not have location data.")
     
     return conditioned
+
+
+if __name__ == '__main__':
+
+    instantiate_all_stations()
