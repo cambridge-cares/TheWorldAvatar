@@ -12,16 +12,24 @@ def test_add_station_data():
             'id': 'test_id',
             'location': 'test_location',
             'elevation': 1.23,
-			 }
+	}
     data3 = {'station_iri': 'test_iri',
             'comment': 'test_comment',
             'dataSource': 'test_source',
             'id': 'test_id',
-			 }
+	}
     # Define expected results
     result1 = None
-    result2 = "<test_iri> rdf:type ems:ReportingStation ; ems:dataSource test_source ; rdfs:comment test_comment ; ems:hasIdentifier test_id ; ems:hasObservationLocation \"test_location\"^^geo:lat-lon ; ems:hasObservationElevation 1.23 ; "
-    result3 = "<test_iri> rdf:type ems:ReportingStation ; ems:dataSource test_source ; rdfs:comment test_comment ; ems:hasIdentifier test_id ; "
+    result2 = "<test_iri> rdf:type ems:ReportingStation ; " \
+                + "ems:dataSource \"test_source\"^^xsd:string ; " \
+                + "rdfs:comment \"test_comment\"^^xsd:string ; " \
+                + "ems:hasIdentifier \"test_id\"^^xsd:string ; " \
+                + "ems:hasObservationLocation \"test_location\"^^geo:lat-lon ; " \
+                + "ems:hasObservationElevation \"1.23\"^^xsd:float ; "
+    result3 = "<test_iri> rdf:type ems:ReportingStation ; " \
+                + "ems:dataSource \"test_source\"^^xsd:string ; " \
+                + "rdfs:comment \"test_comment\"^^xsd:string ; " \
+                + "ems:hasIdentifier \"test_id\"^^xsd:string ; "   
     # Tests
     test1 = templates.add_station_data(**data1)
     assert test1 == result1

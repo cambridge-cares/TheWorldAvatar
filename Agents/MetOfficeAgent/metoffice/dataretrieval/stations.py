@@ -8,7 +8,7 @@
 
 import agentlogging
 
-from metoffice.utils.settings import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.querytemplates import *
 

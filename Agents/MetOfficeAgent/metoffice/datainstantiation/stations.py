@@ -9,7 +9,7 @@
 import agentlogging
 import uuid
 
-from metoffice.utils.settings import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.prefixes import create_sparql_prefix
 from metoffice.kgutils.prefixes import PREFIXES
