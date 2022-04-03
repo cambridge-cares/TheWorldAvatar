@@ -22,6 +22,7 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
     """
         Returns list of MetOffice IDs of all instantiated stations
     """
+    
     # Construct KG client with correct query
     query_string = all_metoffice_station_ids()
     kg_client = KGClient(query_endpoint, update_endpoint)

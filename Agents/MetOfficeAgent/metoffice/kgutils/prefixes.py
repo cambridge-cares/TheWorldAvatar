@@ -27,6 +27,7 @@ PREFIXES = {
 def create_sparql_prefix(abbreviation):
     """
         Constructs proper SPARQL Prefix String for given namespace abbreviation.
+        
         Arguments:
             abbreviation - namespace abbreviation.
         Returns:

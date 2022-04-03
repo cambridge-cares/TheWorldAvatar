@@ -7,6 +7,7 @@ from testcontainers.core.container import DockerContainer
 
 import agentlogging
 from metoffice.dataretrieval.stations import *
+from metoffice.errorhandling.exceptions import APIException
 
 # Import module under test from gasgridagent
 from metoffice.datainstantiation.stations import *
@@ -62,6 +63,16 @@ def test_instantiate_stations(initialise_triple_store):
         assert len(res) == 4
         triples = _get_number_of_triples(endpoint)
         assert triples == 21
+
+
+def test_retrieve_api_data_exceptions():
+
+    with pytest.raises(APIException) as excinfo:
+    # Check correct exception type
+        retrieve_api_data(None)
+    # Check correct exception message
+    expected = 'No Met Office DataPoint API key provided.'
+    assert expected in str(excinfo.value)
 
 
 def _get_sparql_endpoint(docker_container):
