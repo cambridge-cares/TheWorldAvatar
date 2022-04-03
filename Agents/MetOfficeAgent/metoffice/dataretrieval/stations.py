@@ -55,8 +55,8 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
         raise InvalidInput("Circle center or radius is missing for geo:search.")
     if circle_center:
         if not re.findall('[\w\-\.]*#[\w\-\.]*', circle_center):
-            raise InvalidInput("Circle center coordinates shall be provided as \
-                                \"latitude#longitude\n in WGS84 coordinates.")
+            raise InvalidInput("Circle center coordinates shall be provided as " \
+                               +"\"latitude#longitude\" in WGS84 coordinates.")
 
     # Construct KG client with correct query
     query_string = all_metoffice_stations(circle_center=circle_center,
