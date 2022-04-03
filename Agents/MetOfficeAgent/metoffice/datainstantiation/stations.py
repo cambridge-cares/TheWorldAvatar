@@ -6,9 +6,9 @@
 # The purpose of this module is to provide functions to retrieve 
 # station data from the API and instantiate it in the KG
 
-import agentlogging
 import uuid
 
+import agentlogging
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.prefixes import create_sparql_prefix
@@ -20,7 +20,9 @@ from metoffice.kgutils.querytemplates import *
 logger = agentlogging.get_logger("dev")
 
 
-def instantiate_stations(station_data: list) -> None:
+def instantiate_stations(station_data: list,
+                         query_endpoint: str = QUERY_ENDPOINT,
+                         update_endpoint: str = UPDATE_ENDPOINT) -> None:
     """
         Instantiates a list of measurement stations in a single SPARQL update;
         Arguments:
@@ -51,7 +53,7 @@ def instantiate_stations(station_data: list) -> None:
     query_string += f"}}"
 
     # Execute query
-    kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    kg_client = KGClient(query_endpoint, update_endpoint)
     kg_client.performUpdate(query_string)
 
 
@@ -76,5 +78,7 @@ def _condition_metoffer_data(station_data: dict) -> dict:
     if 'elevation' in station_data.keys(): conditioned['elevation'] = station_data['elevation']
     if ('latitude' in station_data.keys()) and ('longitude' in station_data.keys()):
         conditioned['location'] = station_data['latitude'] + '#' + station_data['longitude']
+    else:
+        logger.warning(f"Station {station_data['id']} does not have location data.")
     
     return conditioned

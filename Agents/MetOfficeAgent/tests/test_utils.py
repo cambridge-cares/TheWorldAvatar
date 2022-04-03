@@ -1,7 +1,6 @@
 import os
 import pytest
 
-
 # Import module under test from gasgridagent
 import metoffice.utils.properties as utils
 

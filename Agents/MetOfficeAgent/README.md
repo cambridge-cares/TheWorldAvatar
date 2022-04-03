@@ -51,7 +51,7 @@ Note that installing the project for in-place development (setting the `-e` flag
 (metoff_venv) $ pytest tests\test_termocalc.py
 ```
 
-# How to use #
+# How to use
 
 The `MetOffice` agent can be used as a simple command line tool or as a web agent.
 
@@ -68,6 +68,10 @@ In order to use the `MetOffice` as a web agent, simply start a server with the f
 (stdc_venv) $ set FLASK_APP=metoffice\flaskapp\wsgi.py & flask run
 ```
 
+# Notes on tests
+
+Please note that some of the tests use the `testcontainers` library and, hence, require Docker to be installed. Furthermore, access to the `docker.cmclinnovations.com registry` is required from the machine the test is run on to pull docker images.  
+You can request login details by emailing `support<at>cmclinnovations.com` with the subject 'Docker registry access'
 
 # Authors #
 Markus Hofmeister (mh807@cam.ac.uk), March 2022

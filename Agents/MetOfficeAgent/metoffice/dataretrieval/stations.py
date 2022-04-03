@@ -17,10 +17,14 @@ from metoffice.kgutils.querytemplates import *
 logger = agentlogging.get_logger("dev")
 
 
-def get_all_metoffice_stations():
+def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
+                               update_endpoint: str = UPDATE_ENDPOINT):
+    """
+        Returns list of MetOffice IDs of all instantiated stations
+    """
     # Construct KG client with correct query
     query_string = all_metoffice_station_ids()
-    kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    kg_client = KGClient(query_endpoint, update_endpoint)
     # Execute query
     results = kg_client.performQuery(query=query_string)
     # Extract results
