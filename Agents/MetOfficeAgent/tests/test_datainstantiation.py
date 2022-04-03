@@ -5,15 +5,11 @@ import pytest
 from pathlib import Path
 from testcontainers.core.container import DockerContainer
 
-import agentlogging
 from metoffice.dataretrieval.stations import *
 from metoffice.errorhandling.exceptions import APIException
 
 # Import module under test from gasgridagent
 from metoffice.datainstantiation.stations import *
-
-# Initialise logger
-logger = agentlogging.get_logger("dev")
 
 
 @pytest.fixture()
@@ -73,6 +69,45 @@ def test_retrieve_api_data_exceptions():
     # Check correct exception message
     expected = 'No Met Office DataPoint API key provided.'
     assert expected in str(excinfo.value)
+
+
+def test_instantiate_all_stations(initialise_triple_store, mocker):
+
+    # Read test station data
+    station_data = _read_station_data()
+    station_data = [station_data[i] for i in station_data]
+    # Mock call to Met Office DataPoint API
+    m = mocker.patch('metoffice.datainstantiation.stations.retrieve_api_data',
+                     return_value=station_data)
+
+    # Spin up temporary docker container
+    with initialise_triple_store as container:
+        # Wait some arbitrary time until container is reachable
+        time.sleep(3)
+        # Retrieve SPARQL endpoint
+        endpoint = _get_sparql_endpoint(container)
+
+        # Verify that knowledge base is empty
+        res = get_all_metoffice_stations(query_endpoint=endpoint)
+        assert len(res) == 0
+
+        # Instantiate all stations
+        instantiate_all_stations('test_api_key', query_endpoint=endpoint,
+                                 update_endpoint=endpoint)
+        # Verify that data gets added
+        res = get_all_metoffice_stations(query_endpoint=endpoint)
+        assert len(res) == 3
+        triples = _get_number_of_triples(endpoint)
+        assert triples == 15
+
+        # Instantiate all stations
+        instantiate_all_stations('test_api_key', query_endpoint=endpoint,
+                                 update_endpoint=endpoint)
+        # Verify that same data does not get added twice
+        res = get_all_metoffice_stations(query_endpoint=endpoint)
+        assert len(res) == 3
+        triples = _get_number_of_triples(endpoint)
+        assert triples == 15
 
 
 def _get_sparql_endpoint(docker_container):

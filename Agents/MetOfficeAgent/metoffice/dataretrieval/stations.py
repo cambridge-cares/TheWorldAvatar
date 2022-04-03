@@ -6,15 +6,13 @@
 # The purpose of this module is to provide functions to retrieve 
 # station data from the KG
 
-import agentlogging
-
-from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
+#import agentlogging
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.querytemplates import *
+from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
-
-# Initialise logger
-logger = agentlogging.get_logger("dev")
+# # Initialise logger
+# logger = agentlogging.get_logger("dev")
 
 
 def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
