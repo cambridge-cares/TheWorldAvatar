@@ -413,7 +413,6 @@
 		if(this._defaultPanelCallback != null) {
 			this._defaultPanelCallback();
 		}
-        console.log("RETURNED TO DEFAULT?");
 	}
 	
 	/**
