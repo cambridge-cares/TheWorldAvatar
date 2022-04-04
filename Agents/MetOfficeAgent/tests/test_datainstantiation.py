@@ -1,9 +1,13 @@
+import os
 import time
 import pytest
+from pathlib import Path
 from testcontainers.core.container import DockerContainer
 
 from metoffice.dataretrieval.stations import *
 from metoffice.errorhandling.exceptions import APIException
+from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from metoffice.flaskapp import create_app
 from tests.utils import *
 
 # Import module under test from gasgridagent
@@ -16,6 +20,13 @@ def initialise_triple_store():
     blazegraph = DockerContainer('docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
     blazegraph.with_exposed_ports(9999)
     yield blazegraph
+
+
+@pytest.fixture
+def client():
+    app = create_app({'TESTING': True})
+    with app.test_client() as client:
+        yield client
 
 
 def test_instantiate_stations(initialise_triple_store):
@@ -108,3 +119,33 @@ def test_instantiate_all_stations(initialise_triple_store, mocker):
         assert len(res) == 3
         triples = get_number_of_triples(endpoint)
         assert triples == 15
+
+
+@pytest.mark.skip(reason="only works as integration test with local blazegraph")
+def test_instantiate_all_stations_webapp(client, mocker):
+    # Integration test for expected behavior of instantiation of all stations
+    # via webapp (requires (local) blazegraph running at endpoints specified
+    # in 'metoffice.properties'; namespace MUST be empty)
+
+    # Read test station data
+    station_data = read_station_data()
+    station_data = [station_data[i] for i in station_data]
+    # Mock call to Met Office DataPoint API
+    m = mocker.patch('metoffice.datainstantiation.stations.retrieve_api_data',
+                     return_value=station_data)
+
+    # Verify that knowledge base is empty
+    res = get_all_metoffice_station_ids(query_endpoint=QUERY_ENDPOINT)
+    assert len(res) == 0
+   
+    # Instantiate all stations
+    route = '/api/metofficeagent/instantiate/stations'
+    response = client.get(route)
+    new_stations = response.json['stations']
+    assert new_stations == 3
+
+    # Instantiate all stations (2nd time)
+    route = '/api/metofficeagent/instantiate/stations'
+    response = client.get(route)
+    new_stations = response.json['stations']
+    assert new_stations == 0
