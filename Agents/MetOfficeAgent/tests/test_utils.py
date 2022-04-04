@@ -1,3 +1,8 @@
+###############################################
+# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
+# Date: 01 Apr 2022                           #
+###############################################
+
 import os
 import pytest
 

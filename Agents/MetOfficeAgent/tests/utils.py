@@ -1,4 +1,10 @@
+###############################################
+# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
+# Date: 04 Apr 2022                           #
+###############################################
+
 # This module provides helper functions for various tests
+
 import os
 import json
 import requests

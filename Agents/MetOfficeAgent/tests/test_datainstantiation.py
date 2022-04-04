@@ -1,7 +1,10 @@
-import os
+###############################################
+# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
+# Date: 04 Apr 2022                           #
+###############################################
+
 import time
 import pytest
-from pathlib import Path
 from testcontainers.core.container import DockerContainer
 
 from metoffice.dataretrieval.stations import *

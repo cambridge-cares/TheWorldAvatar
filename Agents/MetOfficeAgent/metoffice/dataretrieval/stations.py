@@ -68,4 +68,3 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
     res = [{r['id']: r['station']} for r in results]
     
     return res
-

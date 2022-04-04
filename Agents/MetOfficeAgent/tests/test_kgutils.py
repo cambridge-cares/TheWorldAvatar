@@ -1,3 +1,8 @@
+###############################################
+# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
+# Date: 04 Apr 2022                           #
+###############################################
+
 import pytest
 
 # Import module(s) under test from metoffice
