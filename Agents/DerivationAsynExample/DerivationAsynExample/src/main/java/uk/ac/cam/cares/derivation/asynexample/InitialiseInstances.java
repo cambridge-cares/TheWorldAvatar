@@ -38,10 +38,10 @@ public class InitialiseInstances extends JPSAgent {
 		JSONObject response = initialise(sparqlClient, devClient);
 
 		// invoke all asynchronous agents so that they can be initialised
-        AgentCaller.executeGet(Config.agentHttpUrlRNG);
-		AgentCaller.executeGet(Config.agentHttpUrlMaxValue);
-		AgentCaller.executeGet(Config.agentHttpUrlMinValue);
-		AgentCaller.executeGet(Config.agentHttpUrlDifference);
+		// AgentCaller.executeGet(Config.agentHttpUrlRNG);
+		// AgentCaller.executeGet(Config.agentHttpUrlMaxValue);
+		// AgentCaller.executeGet(Config.agentHttpUrlMinValue);
+		// AgentCaller.executeGet(Config.agentHttpUrlDifference);
 		
 		return response;
 	}
@@ -53,13 +53,13 @@ public class InitialiseInstances extends JPSAgent {
     	sparqlClient.clearKG();
 		
     	// get the IRIs
-    	String ul_rdf_type = SparqlClient.UpperLimit.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace);
-    	String ll_rdf_type = SparqlClient.LowerLimit.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace);
-    	String np_rdf_type = SparqlClient.NumberOfPoints.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace);
-    	String lp_rdf_type = SparqlClient.ListOfRandomPoints.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace);
-    	String maxv_rdf_type = SparqlClient.MaxValue.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace);
-    	String minv_rdf_type = SparqlClient.MinValue.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace);
-    	String diff_rdf_type = SparqlClient.Difference.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace);
+		String ul_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.UpperLimit);
+		String ll_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.LowerLimit);
+		String np_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.NumberOfPoints);
+		String lp_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints);
+		String maxv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
+		String minv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
+		String diff_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.Difference);
 		
     	// create ontoagent instances    	
 		sparqlClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG, Arrays.asList(ul_rdf_type,ll_rdf_type,np_rdf_type), Arrays.asList(lp_rdf_type));

@@ -41,7 +41,7 @@ public class UpdateDerivations extends JPSAgent {
 		String difference = sparqlClient.getDifferenceIRI();
 		String difference_derivation = devClient.getDerivationsOf(Arrays.asList(difference)).get(difference);
 		
-		devClient.updateDerivationAsyn(difference_derivation);
+		devClient.unifiedUpdateDerivation(difference_derivation);
 		
 		String res_msg = "Checked derivation of difference <" + difference_derivation + ">, the update should be done in a few minutes";
 		LOGGER.info(res_msg);
@@ -50,5 +50,18 @@ public class UpdateDerivations extends JPSAgent {
 		response.put("status", res_msg);
 		
 		return response;
+	}
+
+	public static void main(String[] args) {
+		String kgUrl = "http://localhost:62232/blazegraph/namespace/kb/sparql";
+		RemoteStoreClient storeClient;
+		DerivationClient devClient;
+		SparqlClient sparqlClient;
+		Config.initProperties();
+		storeClient = new RemoteStoreClient(kgUrl, kgUrl);
+		devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
+		sparqlClient = new SparqlClient(storeClient);
+		UpdateDerivations updateDerivations = new UpdateDerivations();
+		updateDerivations.updateDerivations(sparqlClient, devClient);
 	}
 }

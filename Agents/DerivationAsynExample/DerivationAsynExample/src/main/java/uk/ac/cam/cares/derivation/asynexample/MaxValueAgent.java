@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -11,10 +9,10 @@ import javax.servlet.annotation.WebServlet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.agent.AsynAgent;
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
+import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
+import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
+import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -25,7 +23,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  *
  */
 @WebServlet(urlPatterns = {MaxValueAgent.API_PATTERN})
-public class MaxValueAgent extends AsynAgent {
+public class MaxValueAgent extends DerivationAgent {
 	
 	private static final Logger LOGGER = LogManager.getLogger(MaxValueAgent.class);
 	
@@ -47,20 +45,23 @@ public class MaxValueAgent extends AsynAgent {
 	}
 	
 	@Override
-	public List<String> setupJob(JSONObject requestParams) {
-		List<String> createdInstances = new ArrayList<String>();
-		
+	public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
 		// get the input from the KG
-		String listOfRandomPoints_iri = requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY).getString(SparqlClient.ListOfRandomPoints.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace));
+		String listOfRandomPoints_iri = derivationInputs
+				.getIris(SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints)).get(0);
 		
 		// find the maximum value
 		Integer maxvalue = sparqlClient.getExtremeValueInList(listOfRandomPoints_iri, true);
 		
 		// create new instances in KG
-		createdInstances.add(sparqlClient.createMaxValue());
-		sparqlClient.addValueInstance(createdInstances.get(0), maxvalue);
-		
-		return createdInstances;
+		String createdMaxValue = sparqlClient.createMaxValue();
+		sparqlClient.addValueInstance(createdMaxValue, maxvalue);
+
+		// create DerivationOutputs instance
+		DerivationOutputs derivationOutputs = new DerivationOutputs(
+				SparqlClient.getRdfTypeString(SparqlClient.MaxValue), createdMaxValue);
+
+		return derivationOutputs;
 	}
 	
 	@Override

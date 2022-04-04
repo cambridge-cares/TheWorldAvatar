@@ -65,6 +65,16 @@ public class SparqlClient {
 	}
 	
 	/**
+	 * This method returns the rdf:type in the string format of the given class.
+	 * 
+	 * @param clz
+	 * @return
+	 */
+	public static String getRdfTypeString(Iri clz) {
+		return clz.getQueryString().replaceAll(prefix + ":", namespace);
+	}
+
+	/**
      * clears kg before initialising anything
      */
     public void clearKG() {

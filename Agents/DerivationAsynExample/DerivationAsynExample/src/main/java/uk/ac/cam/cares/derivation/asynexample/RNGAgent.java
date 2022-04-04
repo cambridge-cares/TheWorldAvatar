@@ -12,11 +12,10 @@ import javax.servlet.annotation.WebServlet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
-import org.springframework.stereotype.Controller;
 
-import uk.ac.cam.cares.jps.base.agent.AsynAgent;
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
+import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
+import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
+import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -27,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  *
  */
 @WebServlet(urlPatterns = {RNGAgent.API_PATTERN})
-public class RNGAgent extends AsynAgent {
+public class RNGAgent extends DerivationAgent {
 	
 	private static final Logger LOGGER = LogManager.getLogger(RNGAgent.class);
 	
@@ -49,15 +48,14 @@ public class RNGAgent extends AsynAgent {
 	}
 	
 	@Override
-	public List<String> setupJob(JSONObject requestParams) {
-		List<String> createdInstances = new ArrayList<String>();
-		
+	public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
 		// get the input from the KG
-		String upperLimitIRI = requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY).getString(SparqlClient.UpperLimit.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace));
+		String upperLimitIRI = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.UpperLimit)).get(0);
 		Integer upperLimit = sparqlClient.getValue(upperLimitIRI);
-		String lowerLimitIRI = requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY).getString(SparqlClient.LowerLimit.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace));
+		String lowerLimitIRI = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.LowerLimit)).get(0);
 		Integer lowerLimit = sparqlClient.getValue(lowerLimitIRI);
-		String numberOfPointsIRI = requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY).getString(SparqlClient.NumberOfPoints.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace));
+		String numberOfPointsIRI = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.NumberOfPoints))
+				.get(0);
 		Integer numberOfPoints = sparqlClient.getValue(numberOfPointsIRI);
 		
 		if (upperLimit >= lowerLimit) {
@@ -67,8 +65,9 @@ public class RNGAgent extends AsynAgent {
 			String listOfRandomPoints_iri = sparqlClient.createListOfRandomPoints(listOfRandomPoints);
 			
 			// respond with the created IRI
-			createdInstances.add(listOfRandomPoints_iri);
-			return createdInstances;
+			DerivationOutputs derivationOutputs = new DerivationOutputs(
+					SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints), listOfRandomPoints_iri);
+			return derivationOutputs;
 		} else {
 			return null;
 		}
