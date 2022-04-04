@@ -48,14 +48,14 @@ def get_all_time_series(terminal, KGClient, TSClient, now, duration, start_1, st
 
     # Initialise lists
     dataIRIs = []
-    utilities = []
+    measurements = []
     units = []
     measurement_iri = None
     # Append lists with all query results
     for r in response:
         if r['terminal'].lower() == terminal.lower():
             dataIRIs.append(r['dataIRI'])
-            utilities.append("Instantaneous Flow")
+            measurements.append("Instantaneous Flow")
             units.append((r['unit']))
             measurement_iri = r['dataIRI']
             break
@@ -63,6 +63,8 @@ def get_all_time_series(terminal, KGClient, TSClient, now, duration, start_1, st
     # Java Instant instances are associated with UTC (i.e. hold a value of date-time with a UTC time-line)
     print("INFO: Submitting TimeSeriesClient SPARQL queries at",
           dt.utcfromtimestamp(now.getEpochSecond()).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    if measurement_iri is None:
+        return None, None, None, None
     # Get results for last "duration" hours (e.g. 24h)
     timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_1, now)
     if not timeseries.getTimes():
@@ -75,10 +77,9 @@ def get_all_time_series(terminal, KGClient, TSClient, now, duration, start_1, st
            timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_7, now)
 
     # Retrieve time series data for retrieved set of dataIRIs
-    timeseries = TSClient.getTimeSeries(dataIRIs)
-
+    # timeseries = TSClient.getTimeSeries(dataIRIs)
     # Return time series and associated lists of variables and units
-    return timeseries, utilities, units
+    return timeseries, dataIRIs, measurements, units
 
 
 def put_metadata_in_json(feature_id, lon, lat):
@@ -444,12 +445,14 @@ def generate_terminal_visualisation_data(terminals, terminal_coordinates, KGClie
         else:
             metadata.append(put_metadata_in_json(feature_id, lon, lat))
         # Retrieve time series data
-        timeseries, utilities, units = get_all_time_series(iri, KGClient, TSClient, now, duration, start_1, start_2, start_7)
-        ts_data['ts'].append(timeseries)
-        ts_data['id'].append(feature_id)
-        ts_data['units'].append(units)
-        ts_data['headers'].append(utilities)
-
+        timeseries, dataIRIs, measurements, units = get_all_time_series(iri, KGClient, TSClient, now, duration, start_1, start_2, start_7)
+        if timeseries != None:
+            ts_data['ts'].append(timeseries)
+            ts_data['id'].append(feature_id)
+            ts_data['units'].append(dict(zip(dataIRIs, units)))
+            ts_data['headers'].append(dict(zip(dataIRIs, measurements)))
+        else:
+            print('Timeseries is None')
     # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
     ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
     # Make JSON file readable in Python
