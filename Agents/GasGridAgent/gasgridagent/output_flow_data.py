@@ -58,7 +58,8 @@ def get_gasflow_history(duration, callbackSuccess, callbackFailure):
         terminalIRI = terminals[terminal]
         # Get MeasurementIRI to which time series is actually connected to
         measurement_iri = kg.get_measurementIRI(kg.QUERY_ENDPOINT, terminalIRI)
-
+        if measurement_iri is None:
+            continue
         # Retrieve instantaneous gas flow time series history
         try:
             # Get results for last "duration" hours (e.g. 24h)
