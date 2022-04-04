@@ -17,6 +17,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
+@Deprecated
 public class AsynAgent extends JPSAgent implements AsynAgentInterface {
 	
 	/**
@@ -80,7 +81,8 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
 			LOGGER.info("Derivation <" + derivation +"> has status type: " + statusType +".");
     		switch (statusType) {
 			case REQUESTED:
-				List<String> immediateUpstreamDerivationToUpdate = devClient.checkImmediateUpstreamDerivation(derivation);
+					Map<String, List<String>> immediateUpstreamDerivationToUpdate = devClient
+							.checkImmediateUpstreamDerivation(derivation);
 				if (!immediateUpstreamDerivationToUpdate.isEmpty()) {
 					LOGGER.info("Derivation <" + derivation + "> has a list of immediate upstream derivations to be updated: " + immediateUpstreamDerivationToUpdate.toString());
 				} else {

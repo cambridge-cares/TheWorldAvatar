@@ -71,6 +71,9 @@ public class DerivationSparql {
 	public static String DERIVATION = "Derivation";
 	public static String DERIVATIONWITHTIMESERIES = "DerivationWithTimeSeries";
 	public static String DERIVATIONASYN = "DerivationAsyn";
+	public static String ONTODERIVATION_DERIVATION = derivednamespace + DERIVATION;
+	public static String ONTODERIVATION_DERIVATIONASYN = derivednamespace + DERIVATIONASYN;
+	public static String ONTODERIVATION_DERIVATIONWITHTIMESERIES = derivednamespace + DERIVATIONWITHTIMESERIES;
 
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",
@@ -1088,14 +1091,15 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * This method retrieves a list of upstream derivations that directly linked
-	 * with the given derivation in the chain and need an update.
+	 * This method retrieves a list of upstream derivations and their rdf:type that
+	 * directly linked with the given derivation in the chain and need an update.
 	 * 
 	 * @param derivation
 	 * @return
 	 */
-	List<String> getUpstreamDerivationsNeedUpdate(String derivation) {
+	Map<String, List<String>> getUpstreamDerivationsNeedUpdate(String derivation) {
 		String upsDevQueryKey = "upstreamDerivation";
+		String upsDevTypeQueryKey = "upstreamDerivationType";
 		String upsDevTimeQueryKey = "upstreamDerivationTimestamp";
 		String statusQueryKey = "status";
 		String statusTypeQueryKey = "statusType";
@@ -1105,6 +1109,7 @@ public class DerivationSparql {
 		SelectQuery query = Queries.SELECT().distinct();
 
 		Variable upstreamDerivation = SparqlBuilder.var(upsDevQueryKey);
+		Variable upstreamDerivationType = SparqlBuilder.var(upsDevTypeQueryKey);
 		Variable upstreamDerivationTimestamp = SparqlBuilder.var(upsDevTimeQueryKey);
 		Variable status = SparqlBuilder.var(statusQueryKey);
 		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
@@ -1120,18 +1125,21 @@ public class DerivationSparql {
 		// check if the upstreamDerivation (outdated timestamp compared to pure input ||
 		// outdated timestamp compared to its own upstream derivations || has status)
 		Expression<?> upstreamDerivationFilter = Expressions.or(
-				Expressions.lt(upstreamDerivationTimestamp, pureInputTimestamp), // ?upstreamDerivationTimestamp <
-																					// ?pureInputTimestamp
-				Expressions.lt(upstreamDerivationTimestamp, inputsBelongingToDerivationTimestamp), // ?upstreamDerivationTimestamp
-																									// <
-																									// ?inputsBelongingToDerivationTimestamp
-				Expressions.equals(statusType, Requested), // ?statusType IN (derived:Requested, derived:InProgress,
-															// derived:Finished)
+				// ?upstreamDerivationTimestamp < ?pureInputTimestamp
+				Expressions.lt(upstreamDerivationTimestamp, pureInputTimestamp),
+				// ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp
+				Expressions.lt(upstreamDerivationTimestamp, inputsBelongingToDerivationTimestamp),
+				// ?statusType IN (derived:Requested, derived:InProgress, derived:Finished)
+				Expressions.equals(statusType, Requested),
 				Expressions.equals(statusType, InProgress),
 				Expressions.equals(statusType, Finished));
 
-		GraphPattern upstreamDerivationPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom, belongsTo),
-				upstreamDerivation);
+		GraphPattern upstreamDerivationPattern = GraphPatterns.and(
+				iri(derivation).has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)),
+						upstreamDerivation),
+				upstreamDerivation.isA(upstreamDerivationType),
+				new ValuesPattern(upstreamDerivationType,
+						derivationTypes.stream().map(i -> derivationToIri.get(i)).collect(Collectors.toList())));
 		GraphPattern upDevTimePattern = upstreamDerivation
 				.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), upstreamDerivationTimestamp);
 		GraphPattern upDevStatusTypePattern = GraphPatterns
@@ -1149,9 +1157,12 @@ public class DerivationSparql {
 		// PREFIX derived:
 		// <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
 		// PREFIX time: <http://www.w3.org/2006/time#>
-		// SELECT DISTINCT ?upstreamDerivation
+		// SELECT DISTINCT ?upstreamDerivation ?upstreamDerivationType
 		// WHERE {
-		// <derivation> derived:isDerivedFrom/derived:belongsTo ?upstreamDerivation.
+		// <derivation> derived:isDerivedFrom/derived:belongsTo? ?upstreamDerivation.
+		// ?upstreamDerivation a ?upstreamDerivationType.
+		// VALUES ?upstreamDerivationType {derived:DerivationAsyn derived:Derivation
+		// derived:DerivationWithTimeSeries}
 		// ?upstreamDerivation time:hasTime/time:inTimePosition/time:numericPosition
 		// ?upstreamDerivationTimestamp.
 		// OPTIONAL{?upstreamDerivation derived:hasStatus ?status .
@@ -1187,14 +1198,95 @@ public class DerivationSparql {
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-		List<String> listOfUpstreamDerivation = new ArrayList<>();
+		Map<String, List<String>> upstreamDerivationMap = new HashMap<>();
 
 		for (int i = 0; i < queryResult.length(); i++) {
 			String derivedIRI = queryResult.getJSONObject(i).getString(upsDevQueryKey);
-			listOfUpstreamDerivation.add(derivedIRI);
+			String derivationType = queryResult.getJSONObject(i).getString(upsDevTypeQueryKey);
+			if (!upstreamDerivationMap.containsKey(derivationType)) {
+				upstreamDerivationMap.put(derivationType, Arrays.asList(derivedIRI));
+			} else {
+				upstreamDerivationMap.get(derivationType).add(derivedIRI);
+			}
 		}
 
-		return listOfUpstreamDerivation;
+		return upstreamDerivationMap;
+	}
+
+	/**
+	 * This method checks if a derivation is outdated or not. A derivation is
+	 * outdated IN FACT if:
+	 * (1) its timestamp is outdated (smaller) compared to the timestamp of its
+	 * upstream derivations or pure inputs; (2) any of its upstream derivations
+	 * have status (the derivation might still up-to-date when comparing the
+	 * timestamp, but its timestamp will be outdated once the update of upstream
+	 * derivations are done, thus it is in fact outdated from a global view).
+	 * 
+	 * @param derivationIRI
+	 * @return
+	 */
+	boolean isOutdated(String derivationIRI) {
+		// complete query string
+		// prefix d:
+		// <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+		// prefix time: <http://www.w3.org/2006/time#>
+		// select distinct ?upstream
+		// where {
+		// <derivationIRI> time:hasTime/time:inTimePosition/time:numericPosition
+		// ?derivationTimestamp.
+		// <derivationIRI> d:isDerivedFrom/d:belongsTo? ?upstream.
+		// ?upstream time:hasTime/time:inTimePosition/time:numericPosition
+		// ?upstreamTimestamp.
+		// optional {?upstream d:hasStatus/a ?statusType}
+		// filter (?derivationTimestamp < ?upstreamTimestamp || ?statusType =
+		// derived:Requested || ?statusType = derived:InProgress ||
+		// ?statusType = derived:Finished))
+		// }
+
+		String derivationTimeQueryKey = "derivationTimestamp";
+		String upstreamQueryKey = "upstream";
+		String upstreamTimeQueryKey = "upstreamTimestamp";
+		String statusTypeQueryKey = "statusType";
+
+		SelectQuery query = Queries.SELECT().distinct();
+
+		Variable derivationTimestamp = SparqlBuilder.var(derivationTimeQueryKey);
+		Variable upstream = SparqlBuilder.var(upstreamQueryKey);
+		Variable upstreamTimestamp = SparqlBuilder.var(upstreamTimeQueryKey);
+		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
+
+		// check if the derivation (outdated timestamp compared to its upstream
+		// inputs/derivations || its upstream derivations have status)
+		Expression<?> upstreamFilter = Expressions.or(
+				// ?derivationTimestamp < ?upstreamTimestamp
+				Expressions.lt(derivationTimestamp, upstreamTimestamp),
+				// ?statusType IN (derived:Requested, derived:InProgress, derived:Finished)
+				Expressions.equals(statusType, Requested),
+				Expressions.equals(statusType, InProgress),
+				Expressions.equals(statusType, Finished));
+
+		GraphPattern derivationTimePattern = iri(derivationIRI)
+				.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp);
+		GraphPattern upstreamPattern = iri(derivationIRI)
+				.has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)), upstream);
+		GraphPattern upstreamTimePattern = upstream
+				.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), upstreamTimestamp);
+		GraphPattern upstreamStatusTypePattern = GraphPatterns
+				.optional(GraphPatterns.and(upstream.has(PropertyPaths.path(hasStatus, RdfPredicate.a), statusType)));
+
+		query.prefix(p_derived, p_time).select(upstream)
+				.where(GraphPatterns
+						.and(derivationTimePattern, upstreamPattern, upstreamTimePattern,
+								upstreamStatusTypePattern)
+						.filter(upstreamFilter));
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		if (queryResult.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	/**
@@ -1687,17 +1779,16 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * This method retrieves a list of derivations including the root derivation and
-	 * all its upstream derivations matching the given derivation rdf:type.
-	 * NOTE that the functions assumes the rdf:type of root derivation is provided
-	 * in the targetDerivationTypeList by developer.
+	 * This method gets the derivations that match the given root derivation IRI,
+	 * target derivation rdf:type and its upstream property paths.
 	 * 
 	 * @param rootDerivationIRI
 	 * @param targetDerivationTypeList
+	 * @param upstreamPath
 	 * @return
 	 */
-	List<Derivation> getRootAndAllTargetUpstreamDerivations(String rootDerivationIRI,
-			List<String> targetDerivationTypeList) {
+	List<Derivation> getDerivations(String rootDerivationIRI,
+			List<String> targetDerivationTypeList, RdfPredicate upstreamPath) {
 		List<Iri> targetDerivationTypeIriList = targetDerivationTypeList.stream().map(iri -> derivationToIri.get(iri))
 				.collect(Collectors.toList());
 		SelectQuery query = Queries.SELECT();
@@ -1740,10 +1831,9 @@ public class DerivationSparql {
 
 		// compared to the function getDerivations(), this part is added to decide
 		// whether to query ALL derivations in the KG or just those upstream of root
+		// also here we alter the depth of the queried DAG by using upstreamPath
 		if (!rootDerivationIRI.equals(PLACEHOLDER)) {
-			GraphPattern rootDerivationPattern = iri(rootDerivationIRI)
-					.has(PropertyPaths.zeroOrMore(groupPropertyPath(PropertyPaths.path(isDerivedFrom, belongsTo))),
-							derivation);
+			GraphPattern rootDerivationPattern = iri(rootDerivationIRI).has(upstreamPath, derivation);
 			query.where(rootDerivationPattern);
 		}
 
@@ -1820,6 +1910,48 @@ public class DerivationSparql {
 		}
 
 		return derivationList;
+	}
+
+	/**
+	 * This method retrieves a list of derivations including the root derivation and
+	 * all its upstream derivations matching the given derivation rdf:type.
+	 * NOTE that the functions assumes the rdf:type of root derivation is provided
+	 * in the targetDerivationTypeList by developer.
+	 * 
+	 * @param rootDerivationIRI
+	 * @param targetDerivationTypeList
+	 * @return
+	 */
+	List<Derivation> getRootAndAllTargetUpstreamDerivations(String rootDerivationIRI,
+			List<String> targetDerivationTypeList) {
+		return getDerivations(rootDerivationIRI, targetDerivationTypeList,
+				PropertyPaths.zeroOrMore(groupPropertyPath(PropertyPaths.path(isDerivedFrom, belongsTo))));
+	}
+
+	/**
+	 * This method retrieves a list of immediate upstream derivations of the root
+	 * derivation matching the given derivation rdf:type.
+	 * 
+	 * @param rootDerivationIRI
+	 * @return
+	 */
+	List<Derivation> getAllImmediateUpstreamDerivations(String rootDerivationIRI) {
+		return getDerivations(rootDerivationIRI, derivationTypes,
+				groupPropertyPath(PropertyPaths.path(isDerivedFrom, belongsTo)));
+	}
+
+	/**
+	 * This method retrieves the information about the given derivation IRI.
+	 * 
+	 * @param rootDerivationIRI
+	 * @return
+	 */
+	Derivation getDerivation(String rootDerivationIRI) {
+		List<Derivation> derivations = getDerivations(rootDerivationIRI, derivationTypes,
+				zeroOrOne(isDerivedFrom));
+		Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(rootDerivationIRI))
+				.findFirst().get();
+		return derivation;
 	}
 
 	/**
@@ -2248,5 +2380,16 @@ public class DerivationSparql {
 	 */
 	private RdfPredicate groupPropertyPath(RdfPredicate aElement) {
 		return () -> "(" + aElement.getQueryString() + ")";
+	}
+
+	/**
+	 * This method implements the zero or one path in SPARQL 1.1 Property Paths.
+	 * see https://www.w3.org/TR/sparql11-property-paths/
+	 * 
+	 * @param aElement
+	 * @return
+	 */
+	private RdfPredicate zeroOrOne(RdfPredicate aElement) {
+		return () -> aElement.getQueryString() + "?";
 	}
 }

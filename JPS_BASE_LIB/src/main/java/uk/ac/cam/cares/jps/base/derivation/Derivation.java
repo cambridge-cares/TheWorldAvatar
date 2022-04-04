@@ -123,7 +123,15 @@ public class Derivation {
 	}
 
 	public boolean isDerivationWithTimeSeries() {
-		if (rdfType.equals(DerivationSparql.derivednamespace + "DerivationWithTimeSeries")) {
+		if (rdfType.equals(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isDerivationAsyn() {
+		if (rdfType.equals(DerivationSparql.ONTODERIVATION_DERIVATIONASYN)) {
 			return true;
 		} else {
 			return false;
