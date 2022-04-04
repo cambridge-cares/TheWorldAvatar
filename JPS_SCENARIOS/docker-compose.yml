@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  access-agent:
-    image: scenarios:1.0.0-SNAPSHOT
+  jps-scenarios:
+    image: scenarios:6.0.0
     build: .
     container_name: jps_scenarios
     pull_policy: if_not_present

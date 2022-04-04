@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 March 2022        #
+# Last Update Date: 31 March 2022        #
 ##########################################
 
 import sys, os
@@ -12,6 +12,20 @@ from UK_Digital_Twin_Package import UKPowerGridModel
 import UK_Digital_Twin_Package.PYPOWER.pypower.ppoption as ppo
 import UK_Digital_Twin_Package.PYPOWER.pypower.runpf as pf
 
+from numpy import r_, c_, ix_, zeros, pi, ones, exp, argmax, union1d, array, linalg, where
+from numpy import flatnonzero as find
+from scipy.sparse import hstack, vstack
+
+from pypower.loadcase import loadcase
+from pypower.ext2int import ext2int
+from pypower.bustypes import bustypes
+from pypower.makeYbus import makeYbus
+from pypower.makeSbus import makeSbus
+from pypower.dSbus_dV import dSbus_dV
+from pypower.idx_bus import PD, QD, VM, VA, GS, BUS_TYPE, PV, PQ, REF
+from pypower.idx_brch import PF, PT, QF, QT
+from pypower.idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
+
 class powerFlowAnalysis:
     
      def __init__(self, BusModelTopNodeIRI:str, BranchModelTopNodeIRI:str, GeneratorModelTopNodeIRI:str, baseMVA: float, PFOrOPFAnalysis:bool = True):
@@ -20,6 +34,8 @@ class powerFlowAnalysis:
         self.BusModelTopNodeIRI = BusModelTopNodeIRI
         self.BranchModelTopNodeIRI = BranchModelTopNodeIRI
         self.GeneratorModelTopNodeIRI = GeneratorModelTopNodeIRI
+        
+        #TODO: baseMVA should be written in the KG and can be quired via the iri
         self.baseMVA = float(baseMVA)
         
         self.PFOrOPFAnalysis = PFOrOPFAnalysis
@@ -103,12 +119,26 @@ class powerFlowAnalysis:
                   ppc["gen"][index_gen][index] = getattr(ObjectSet.get(UKPowerGridModel.UKEGenModel.EGenKey + str(index_gen)), key)
               index_gen += 1
          
+         self.ppc = ppc
+         
          ## starts pf analysis
          # set up numerical method: Newton's Method and the tolerance, max iteration steps are default 
          ppopt = ppo.ppoption(OUT_ALL=1, VERBOSE = 2, PF_ALG = 1, PF_MAX_IT = 20) 
-         results = pf.runpf(ppc, ppopt)   
+         results, _, J_newtonpf = pf.runpf(self.ppc, ppopt)   
          
-         print(results[0], len(results[0]))   
+         if results["success"] ==1:
+             print('The model is converged.')
+         else:
+             print('!!!!!!The model is diverged.!!!!!')
+             
+         BusSwitchingIndicator, J_formMonitor = self.PowerFlowAnalysisMonitor()
+         
+         print('The maximum V reported form the pypower is:', results['BusSwitchingIndicator'])
+          
+         #print(J_newtonpf, J_formMonitor)
+         if (J_newtonpf == J_formMonitor).all():
+             print('J_formMonitor and J_newtonpf are the same of each item.')
+         #print(results[0], len(results[0]))   
          
          ## Invake the calculation monitor
         # Monitor = self.PowerFlowAnalysisMonitor(results[0]["BusSwitchingIndicator"])
@@ -116,16 +146,61 @@ class powerFlowAnalysis:
          
             
          return ObjectSet
-     
-        
-     
-        
+         
      def PowerFlowAnalysisMonitor(self):   
         
+        ## read data
+        ppc = loadcase(self.ppc)
+    
+        ## add zero columns to branch for flows if needed
+        if ppc["branch"].shape[1] < QT:
+            ppc["branch"] = c_[ppc["branch"],
+                               zeros((ppc["branch"].shape[0],
+                                      QT - ppc["branch"].shape[1] + 1))]
+    
+        ## convert to internal indexing
+        ppc = ext2int(ppc)
+        baseMVA, bus, gen, branch = \
+            ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"]
+    
+        ## get bus index lists of each type of bus
+        ref, pv, pq = bustypes(bus, gen)
+    
+        ## generator info
+        on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?
+        gbus = gen[on, GEN_BUS].astype(int)    ## what buses are they at?
+     
+        ## initial state
+        V0  = bus[:, VM] * exp(1j * pi/180 * bus[:, VA])
+        vcb = ones(V0.shape)    # create mask of voltage-controlled buses
+        vcb[pq] = 0     # exclude PQ buses
+        k = find(vcb[gbus])     # in-service gens at v-c buses
+        V0[gbus[k]] = gen[on[k], VG] / abs(V0[gbus[k]]) * V0[gbus[k]]
+
+        ## build admittance matrices
+        Ybus, _, _ = makeYbus(baseMVA, bus, branch)
          
+        ## set up indexing for updating V
+        pvpq = r_[pv, pq]
+        dS_dVm, dS_dVa = dSbus_dV(Ybus, V0)
+
+        J11 = dS_dVa[array([pvpq]).T, pvpq].real
+        J12 = dS_dVm[array([pvpq]).T, pq].real
+        J21 = dS_dVa[array([pq]).T, pvpq].imag
+        J22 = dS_dVm[array([pq]).T, pq].imag
+
+        J = vstack([
+                hstack([J11, J12]),
+                hstack([J21, J22])
+            ], format="csr")
+
+        U, s, _V = linalg.svd(J.toarray(), full_matrices=True)        
+        normalised_V = abs(_V[-1]/(linalg.norm(_V[-1])))       
+        # indexOfMaxV = where(normalised_V == max(normalised_V))  
+        indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0]     
+        print('The maximum V reported form the monitor is:', indexOfMaxV_firstIteration)   
         
-        
-        return
+        return indexOfMaxV_firstIteration, J.toarray()
         
 if __name__ == '__main__':        
     test_PowerFlowAnalysis_1 = powerFlowAnalysis(1,1,1, 100, True)

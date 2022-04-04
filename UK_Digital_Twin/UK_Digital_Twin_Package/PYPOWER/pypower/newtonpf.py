@@ -99,9 +99,9 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
         ## SVD of the Jacobian Matrix of the first iteration
         if i == 1: 
             U, s, _V = linalg.svd(J.toarray(), full_matrices=True)        
-            normalised_V = abs(_V[-1]/(linalg.norm(_V[-1])))       
-            # indexOfMaxV = where(normalised_V == max(normalised_V))  
-            indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0]     
+            normalised_V = abs(_V[-1]/(linalg.norm(_V[-1])))        
+            indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0]  
+            J_first = J.toarray()
             print('The maximum V is:', indexOfMaxV_firstIteration)      
 
 
@@ -139,4 +139,4 @@ def newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt=None):
             sys.stdout.write("\nNewton's method power did not converge in %d "
                              "iterations.\n" % i)
 
-    return V, converged, i, indexOfMaxV_firstIteration
+    return V, converged, i, indexOfMaxV_firstIteration, J_first

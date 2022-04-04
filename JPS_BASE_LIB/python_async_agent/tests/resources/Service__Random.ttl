@@ -1,0 +1,57 @@
+@prefix ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#> .
+@prefix example:             <http://www.example.com/ontology/random.owl#> .
+@prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
+@prefix :                    <http://www.asyncagent.com/resource/agents/Service__Random#> .
+
+:Service
+    rdf:type ontoagent:Service;
+    ontoagent:hasOperation :Operation;
+.
+
+:Operation
+    rdf:type ontoagent:Operation;
+    ontoagent:hasInput :MessageContent_input;
+    ontoagent:hasOutput :MessageContent_output;
+    ontoagent:hasHttpUrl "http://localhost:7000/placeholder/"^^xsd:string;
+.
+
+:MessageContent_input
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_numofpoints;
+    ontoagent:hasMandatoryPart :MessagePart_upperlimit;
+    ontoagent:hasMandatoryPart :MessagePart_lowerlimit;
+.
+
+:MessageContent_output
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_listofpoints;
+.
+
+:MessagePart_numofpoints
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType example:NumOfPoints;
+    ontoagent:hasName "numofpoints"^^xsd:string;
+.
+
+:MessagePart_upperlimit
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType example:UpperLimit;
+    ontoagent:hasName "upperlimit"^^xsd:string;
+.
+
+:MessagePart_lowerlimit
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType example:LowerLimit;
+    ontoagent:hasName "lowerlimit"^^xsd:string;
+.
+
+:MessagePart_listofpoints
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType example:ListOfPoints;
+    ontoagent:hasName "listofpoints"^^xsd:string;
+.

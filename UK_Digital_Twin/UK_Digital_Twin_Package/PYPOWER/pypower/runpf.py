@@ -183,7 +183,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
             ## run the power flow
             alg = ppopt["PF_ALG"]
             if alg == 1:
-                V, success, _ , indexOfMaxV_firstIteration = newtonpf_modified.newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt) # add a new return which is relevant to the SVD of the Jacobian matrix
+                V, success, _ , indexOfMaxV_firstIteration, J_first = newtonpf_modified.newtonpf(Ybus, Sbus, V0, ref, pv, pq, ppopt) # add a new return which is relevant to the SVD of the Jacobian matrix
             elif alg == 2 or alg == 3:
                 Bp, Bpp = makeB(baseMVA, bus, branch, alg)
                 V, success, _ = fdpf(Ybus, Sbus, V0, Bp, Bpp, ref, pv, pq, ppopt)
@@ -321,7 +321,7 @@ def runpf(casedata=None, ppopt=None, fname='', solvedcase=''):
     if solvedcase:
         savecase(solvedcase, results)
 
-    return results, success
+    return results, success, J_first
 
 
 if __name__ == '__main__':

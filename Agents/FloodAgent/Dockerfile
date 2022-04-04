@@ -28,13 +28,6 @@ COPY --from=builder /root/FloodAgent/target/*.jar /app
 # Copy the downloaded dependencies from the builder
 COPY --from=builder /root/FloodAgent/target/lib /app/lib
 
-# Install web server (to host json files for download)
-RUN apk update && apk add apache2 dos2unix bash
-COPY ./httpd.conf /etc/apache2/httpd.conf
-RUN mkdir -p /var/www/html/
-RUN chown -R apache:apache /var/www/
-RUN chmod -R 775 /var/www/
-
 #==================================================================================================
 
 # default configuration that runs the scheduled updater and writes output files
@@ -43,6 +36,13 @@ RUN chmod -R 775 /var/www/
 #==================================================================================================
 FROM agent as default
 # Copy in start up script
+# Install web server (to host json files for download)
+RUN apk update && apk add apache2 dos2unix bash
+COPY ./httpd.conf /etc/apache2/httpd.conf
+RUN mkdir -p /var/www/html/
+RUN chown -R apache:apache /var/www/
+RUN chmod -R 775 /var/www/
+
 COPY ./start-up.sh /app/start-up.sh
 RUN dos2unix /app/start-up.sh
 RUN chmod -R 775 /app/start-up.sh
@@ -56,12 +56,8 @@ ENTRYPOINT bash /app/start-up.sh
 # docker build --target write-only -t [TAGNAME] .
 #==================================================================================================
 FROM agent as write-only
-# Copy in start up script
-COPY ./start-up-writer-only.sh /app/start-up-writer-only.sh
-RUN dos2unix /app/start-up-writer-only.sh
-RUN chmod -R 775 /app/start-up-writer-only.sh
-
+WORKDIR /app
 # Run the jar to start the agent
-ENTRYPOINT bash /app/start-up-writer-only.sh
+ENTRYPOINT java -cp FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.LaunchWriterOnly
 
 #==================================================================================================

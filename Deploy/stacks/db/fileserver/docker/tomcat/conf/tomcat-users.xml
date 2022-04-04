@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tomcat-users xmlns="http://tomcat.apache.org/xml"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"
+              version="1.0">
+
+<!-- Create a role for use with the FileServer servlet -->
+<role rolename="fs_role"/>
+<user username="fs_user" password="FS_PASSWORD" roles="fs_role"/>
+
+</tomcat-users>

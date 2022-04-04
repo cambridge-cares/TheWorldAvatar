@@ -770,5 +770,31 @@ public class TimeSeriesRDBClientIntegrationTest {
 		client.deleteAll();
 		Assert.assertEquals(0, context.meta().getTables().size());
 	}
+	
+	@Test
+	public void testGetLatestData() {
+		// Initialise time series tables
+		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
+		client.addTimeSeriesData(ts1);
+		TimeSeries<Instant> ts = client.getLatestData(dataIRI_1.get(0));
+		Instant latestTime = ts.getTimes().get(0);
+		Double latestValue = ts.getValuesAsDouble(dataIRI_1.get(0)).get(0);
+		
+		Assert.assertEquals(timeList_1.get(timeList_1.size()-1), latestTime);
+		Assert.assertEquals(data1_1.get(data1_1.size()-1), latestValue);
+	}
+	
+	@Test
+	public void testGetOldestData() {
+		// Initialise time series tables
+		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
+		client.addTimeSeriesData(ts1);
+		TimeSeries<Instant> ts = client.getOldestData(dataIRI_1.get(0));
+		Instant oldestTime = ts.getTimes().get(0);
+		Double oldestValue = ts.getValuesAsDouble(dataIRI_1.get(0)).get(0);
+		
+		Assert.assertEquals(timeList_1.get(0), oldestTime);
+		Assert.assertEquals(data1_1.get(0), oldestValue);
+	}
 }
 

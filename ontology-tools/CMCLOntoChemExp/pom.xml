@@ -12,6 +12,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version>0.0.1-SNAPSHOT</version>
 		<rdf4j.version>2.0</rdf4j.version>
+		<!-- Version of the JPS Base Library to use -->
+        <jps.base.version>1.6.0-SNAPSHOT</jps.base.version>
 	</properties>
 
 	<distributionManagement>
@@ -97,11 +99,12 @@
 			<artifactId>CMCLConversionCheck</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>uk.ac.cam.cares.jps</groupId>
-			<artifactId>JPS_BLAZEGRAPH</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
+		<!-- JPS Base Library -->
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps</groupId>
+            <artifactId>jps-base-lib</artifactId>
+            <version>${jps.base.version}</version>
+        </dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
