@@ -387,7 +387,6 @@ def generate_all_visualisation_data():
     terminals = get_all_terminals(KGClient)
     # Retrieve all geocoordinates of terminals for GeoJSON output
     terminal_coordinates = get_all_terminal_geodata(KGClient)
-    print('terminal_coordinates:', terminal_coordinates)
     generate_terminal_visualisation_data(terminals, terminal_coordinates, KGClient, TSClient, Instant)
 
     # Get all offtakes of interest
@@ -452,7 +451,7 @@ def generate_terminal_visualisation_data(terminals, terminal_coordinates, KGClie
             ts_data['units'].append(dict(zip(dataIRIs, units)))
             ts_data['headers'].append(dict(zip(dataIRIs, measurements)))
         else:
-            print('Timeseries is None')
+            print("INFO: Timeseries is None for the terminal with IRI:", iri)
     # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
     ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
     # Make JSON file readable in Python
@@ -487,12 +486,11 @@ def generate_offtake_visualisation_data(offtakes, offtake_coordinates, KGClient)
         geojson_attributes['displayName'] = offtake
         # Append results to overall GeoJSON FeatureCollection
         if offtake.lower() in offtake_coordinates:
-            print('offtake_coordinates[offtake.lower()]:', offtake_coordinates[offtake.lower()])
             geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, offtake_coordinates[offtake.lower()]))
         # Retrieve offtake metadata
         lon, lat = get_offtake_metadata(iri, KGClient)
         if lon == None and lat == None:
-            print('The following offtake is not represented in the knowledge graph with coordinates:', iri)
+            print("INFO: The offtake with the following IRI is not represented in the knowledge graph with coordinates:", iri)
         else:
             metadata.append(put_metadata_in_json(feature_id, lon, lat))
 
