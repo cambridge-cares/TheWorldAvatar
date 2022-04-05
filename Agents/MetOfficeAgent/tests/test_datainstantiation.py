@@ -4,6 +4,7 @@
 ###############################################
 
 import time
+import datetime as dt
 import pytest
 from testcontainers.core.container import DockerContainer
 
@@ -13,8 +14,9 @@ from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.flaskapp import create_app
 from tests.utils import *
 
-# Import module under test from gasgridagent
+# Import modules under test from gasgridagent
 from metoffice.datainstantiation.stations import *
+from metoffice.datainstantiation.readings import *
 
 
 @pytest.fixture()
@@ -74,11 +76,11 @@ def test_instantiate_stations(initialise_triple_store):
         assert triples == 21
 
 
-def test_retrieve_api_data_exceptions():
+def test_retrieve_station_data_from_api_exceptions():
 
     with pytest.raises(APIException) as excinfo:
     # Check correct exception type
-        retrieve_api_data(None)
+        retrieve_station_data_from_api(None)
     # Check correct exception message
     expected = 'No Met Office DataPoint API key provided.'
     assert expected in str(excinfo.value)
@@ -90,7 +92,7 @@ def test_instantiate_all_stations(initialise_triple_store, mocker):
     station_data = read_station_data()
     station_data = [station_data[i] for i in station_data]
     # Mock call to Met Office DataPoint API
-    m = mocker.patch('metoffice.datainstantiation.stations.retrieve_api_data',
+    m = mocker.patch('metoffice.datainstantiation.stations.retrieve_station_data_from_api',
                      return_value=station_data)
 
     # Spin up temporary docker container
@@ -134,7 +136,7 @@ def test_instantiate_all_stations_webapp(client, mocker):
     station_data = read_station_data()
     station_data = [station_data[i] for i in station_data]
     # Mock call to Met Office DataPoint API
-    m = mocker.patch('metoffice.datainstantiation.stations.retrieve_api_data',
+    m = mocker.patch('metoffice.datainstantiation.stations.retrieve_station_data_from_api',
                      return_value=station_data)
 
     # Verify that knowledge base is empty
@@ -152,3 +154,71 @@ def test_instantiate_all_stations_webapp(client, mocker):
     response = client.get(route)
     new_stations = response.json['stations']
     assert new_stations == 0
+
+
+def test_condition_readings_data():
+
+    # Test readings data as returned by metoffer
+    test_readings = [
+        {'Dew Point': (8.3, 'C', 'Dp'),
+        'Pressure': (1002, 'hpa', 'P'),
+        'Pressure Tendency': ('F', 'Pa/s', 'Pt'),
+        'Screen Relative Humidity': (90.3, '%', 'H'),
+        'Temperature': (9.8, 'C', 'T'),
+        'Visibility': (75000, 'm', 'V'),
+        'Weather Type': (7, '', 'W'),
+        'Wind Direction': ('S', 'compass', 'D'),
+        'Wind Gust': (30, 'mph', 'G'),
+        'Wind Speed': (21, 'mph', 'S'),
+        'timestamp': (dt.datetime(2022, 4, 4, 1, 0), '')},       
+        {'Dew Point': (8.1, 'C', 'Dp'),
+        'Pressure': (1001, 'hpa', 'P'),
+        'Pressure Tendency': ('F', 'Pa/s', 'Pt'),
+        'Screen Relative Humidity': (87.9, '%', 'H'),
+        'Temperature': (10.0, 'C', 'T'),
+        'Visibility': (75000, 'm', 'V'),
+        'Weather Type': (9, '', 'W'),
+        'Wind Direction': ('WSW', 'compass', 'D'),
+        'Wind Gust': (30, 'mph', 'G'),
+        'Wind Speed': (19, 'mph', 'S'),
+        'timestamp': (dt.datetime(2022, 4, 4, 2, 0), '')},       
+        {'Dew Point': (8.4, 'C', 'Dp'),
+        'Pressure': (1001, 'hpa', 'P'),
+        'Pressure Tendency': ('F', 'Pa/s', 'Pt'),
+        'Screen Relative Humidity': (90.9, '%', 'H'),
+        'Temperature': (9.8, 'C', 'T'),
+        'Visibility': (29000, 'm', 'V'),
+        'Weather Type': (12, '', 'W'),
+        'Wind Direction': ('NE', 'compass', 'D'),
+        'Wind Gust': (32, 'mph', 'G'),
+        'Wind Speed': (22, 'mph', 'S'),
+        'timestamp': (dt.datetime(2022, 4, 4, 3, 0), '')}
+        ] 
+    # Expected results
+    expected1 = {'Temperature': None, 'Pressure': None, 'Dew Point': None, 
+                 'Feels Like Temperature': None, 'Precipitation Probability': None, 
+                 'Screen Relative Humidity': None, 'Max UV Index': None, 
+                 'Visibility': None, 'Wind Direction': None, 'Wind Speed': None, 
+                 'Wind Gust': None}
+    expected2 = {'Temperature': [9.8, 10.0, 9.8], 
+                 'Pressure': [1002.0, 1001.0, 1001.0], 
+                 'Dew Point': [8.3, 8.1, 8.4], 
+                 'Feels Like Temperature': None, 
+                 'Precipitation Probability': None, 
+                 'Screen Relative Humidity': [90.3, 87.9, 90.9], 
+                 'Max UV Index': None, 
+                 'Visibility': [75000.0, 75000.0, 29000.0], 
+                 'Wind Direction': [180.0, 247.5, 45.0], 
+                 'Wind Speed': [21.0, 19.0, 22.0], 
+                 'Wind Gust': [30.0, 30.0, 32.0], 
+                 'timestamp': ['2022-04-04T01:00:00Z', '2022-04-04T02:00:00Z', '2022-04-04T03:00:00Z']}
+    
+    # Perform test for retrieval of keys only
+    res = condition_readings_data(test_readings)
+    for k in res:
+        assert res[k] == expected1[k]
+
+    # Perform test for retrieval of keys and data
+    res = condition_readings_data(test_readings, False)
+    for k in res:
+        assert res[k] == expected2[k]

@@ -60,7 +60,7 @@ def instantiate_stations(station_data: list,
     kg_client.performUpdate(query_string)
 
 
-def retrieve_api_data(api_key: str = None) -> list:
+def retrieve_station_data_from_api(api_key: str = None) -> list:
     """
         Retrieve station data from Met Office DataPoint via MetOffer wrapper
 
@@ -109,7 +109,7 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
 
     # Get all available stations from API
     # MetOffice station IDs as unique references for stations
-    available = retrieve_api_data(api_key)
+    available = retrieve_station_data_from_api(api_key)
     available_ids = [s['id'] for s in available]
 
     # Get already instantiated stations
