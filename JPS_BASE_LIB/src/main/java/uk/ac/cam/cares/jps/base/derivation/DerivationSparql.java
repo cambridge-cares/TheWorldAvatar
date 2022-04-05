@@ -651,23 +651,25 @@ public class DerivationSparql {
 	 * @param derivation
 	 */
 	void updateStatusBeforeSetupJob(String derivation) {
-		deleteStatus(derivation);
+		SelectQuery query = Queries.SELECT();
 		ModifyQuery modify = Queries.MODIFY();
+		Variable status = query.var();
+		Variable statusType = query.var();
 
-		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		GraphPattern query_gp = GraphPatterns.and(
+			iri(derivation).has(hasStatus, status), status.isA(statusType));
+		TriplePattern delete_tp = status.isA(statusType);
+		TriplePattern insert_tp_rdf_type = status.isA(InProgress);
 
-		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
-		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(InProgress);
-
-		modify.prefix(p_derived).insert(insert_tp);
-		modify.prefix(p_derived).insert(insert_tp_rdf_type);
+		modify.delete(delete_tp).where(query_gp).prefix(p_derived);
+		modify.insert(insert_tp_rdf_type);
 
 		// record timestamp at the point the derivation status is marked as InProgress
 		// <derivation> <retrievedInputsAt> timestamp.
 		long retrievedInputsAtTimestamp = Instant.now().getEpochSecond();
 		TriplePattern insert_tp_retrieved_inputs_at = iri(derivation).has(retrievedInputsAt,
 				retrievedInputsAtTimestamp);
-		modify.prefix(p_derived).insert(insert_tp_retrieved_inputs_at);
+		modify.insert(insert_tp_retrieved_inputs_at);
 
 		storeClient.executeUpdate(modify.getQueryString());
 	}
@@ -679,19 +681,21 @@ public class DerivationSparql {
 	 * @param newDerivedIRI
 	 */
 	void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
-		deleteStatus(derivation);
+		SelectQuery query = Queries.SELECT();
 		ModifyQuery modify = Queries.MODIFY();
+		Variable status = query.var();
+		Variable statusType = query.var();
 
-		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		GraphPattern query_gp = GraphPatterns.and(
+			iri(derivation).has(hasStatus, status), status.isA(statusType));
+		TriplePattern delete_tp = status.isA(statusType);
+		TriplePattern insert_tp_rdf_type = status.isA(Finished);
 
-		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
-		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Finished);
-
-		modify.prefix(p_derived).insert(insert_tp);
-		modify.prefix(p_derived).insert(insert_tp_rdf_type);
+		modify.delete(delete_tp).where(query_gp).prefix(p_derived);
+		modify.insert(insert_tp_rdf_type);
 
 		for (String newIRI : newDerivedIRI) {
-			modify.insert(iri(statusIRI).has(hasNewDerivedIRI, iri(newIRI)));
+			modify.insert(status.has(hasNewDerivedIRI, iri(newIRI)));
 		}
 
 		storeClient.executeUpdate(modify.getQueryString());
