@@ -31,8 +31,6 @@ class UKEbusModel:
     BUSTYPEKey = "BusType_"
     PD_INPUTKey = "InputVariable_Pd_"
     GD_INPUTKey = "InputVariable_Gd_"
-    PD_OUTPUTKey = "StateVariable_Pd_"
-    GD_OUTPUTKey = "StateVariable_Gd_"
     GSKey = "Gs_"
     BSKey = "Bs_"
     AREAKey = "Area_"
@@ -47,6 +45,15 @@ class UKEbusModel:
     PDGENKey = "Pd_Gen_"
     GDGENKey = "Gd_Gen_"
     
+    """Model output keys"""
+    PD_OUTPUTKey = "Output_Pd_"
+    GD_OUTPUTKey = "Output_Gd_"
+    VM_OUTPUTKey = "Output_Vm_"
+    VA_OUTPUTKey = "Output_Va_"
+    PG_OUTPUTKey = "Generation_Pg_"
+    GG_OUTPUTKey = "Generation_Gg_"
+    
+    
     """Data file header"""
     headerBusModel = ["Bus", "Type", "Pd", "Gd", "Gs", "Bs", "area", "Vm", "Va", "basekV", "zone", "Vmax", "Vmin\n"]
     
@@ -54,8 +61,9 @@ class UKEbusModel:
     
     """The dictionary index key for PF analysis """
    # INPUT_VARIABLE = ["BUS", "TYPE", "PD_INPUT", "GD_INPUT", "GS", "BS", "AREA", "VM_INPUT", "VA_INPUT", "BASEKV", "ZONE", "VMAX", "VMIN"]
-    OUTPUT_VARIABLE = ["VM_OUTPUT", "VA_OUTPUT", "PDGEN", "GDGEN", "PD_OUTPUT", "GD_OUTPUT"]
+   # OUTPUT_VARIABLE = ["VM_OUTPUT", "VA_OUTPUT", "P_GEN", "G_GEN", "PD_OUTPUT", "GD_OUTPUT"]
     
+    ##--Input keys--##
     # Map keys with the bus indices of the pypower package (keys are the attribute named defined in UK digital twin and the value is the index used in the pyPower)
     INPUT_VARIABLE = collections.OrderedDict()
     INPUT_VARIABLE["BUS"] =  idx_bus.BUS_I 
@@ -73,6 +81,17 @@ class UKEbusModel:
     INPUT_VARIABLE["VMIN"] =  idx_bus.VMIN
     
     INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
+    
+    startingIndexOfOutput = len(INPUT_VARIABLE)
+    OUTPUT_VARIABLE = collections.OrderedDict()
+    OUTPUT_VARIABLE["VM_OUTPUT"] = 0
+    OUTPUT_VARIABLE["VA_OUTPUT"] = 1
+    OUTPUT_VARIABLE["P_GEN"] = 2
+    OUTPUT_VARIABLE["G_GEN"] = 3
+    OUTPUT_VARIABLE["PD_OUTPUT"] = 4
+    OUTPUT_VARIABLE["GD_OUTPUT"] = 5
+    
+    OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
     # {"BUS":"BUS_I", "TYPE": "BUS_TYPE", "PD_INPUT": "PD", "GD_INPUT": "QD", "GS": "GS", "BS": "BS", "AREA": "BUS_AREA", "VM_INPUT": "VM", "VA_INPUT": "VA", "BASEKV": "BASE_KV", "ZONE": "ZONE", "VMAX":"VMAX", "VMIN": "VMIN" }
     
@@ -162,6 +181,17 @@ class UKElineModel:
     INPUT_VARIABLE["ANGMAX"] =  idx_brch.ANGMAX
     
     INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
+    
+    startingIndexOfOutput = len(INPUT_VARIABLE)
+    OUTPUT_VARIABLE = collections.OrderedDict()
+    OUTPUT_VARIABLE["FROMBUSINJECTION_P"] = 0
+    OUTPUT_VARIABLE["FROMBUSINJECTION_Q"] = 1
+    OUTPUT_VARIABLE["TOBUSINJECTION_P"] = 2
+    OUTPUT_VARIABLE["TOBUSINJECTION_Q"] = 3
+    OUTPUT_VARIABLE["LOSS_P"] = 4
+    OUTPUT_VARIABLE["LOSS_Q"] = 5
+    
+    OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, initialiserMethod = 'defaultBranchInitialiser', Location = 'http://dbpedia.org/resource/United_Kingdom'):
         
@@ -268,7 +298,15 @@ class UKEGenModel:
     INPUT_VARIABLE["RAMP_Q"] =  idx_gen.RAMP_Q
     INPUT_VARIABLE["APF"] =  idx_gen.APF
     
+    
     INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
+    
+    startingIndexOfOutput = len(INPUT_VARIABLE)
+    OUTPUT_VARIABLE = collections.OrderedDict()
+    OUTPUT_VARIABLE["PG_OUTPUT"] = 0
+    OUTPUT_VARIABLE["QG_OUTPUT"] = 1
+   
+    OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\"
