@@ -7,7 +7,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## Requirements
 
-- You need Python >3.5 to run the `MetOffice` agent. You can install Python by going to the official Python [download page]
+- You need Python >3.7 to run the `MetOffice` agent. You can install Python by going to the official Python [download page]
 - You also need to install a [Java Runtime Environment version >=8]
 
 ## Virtual environment setup
