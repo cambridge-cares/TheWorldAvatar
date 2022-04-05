@@ -210,6 +210,37 @@ public class DerivedQuantityClientTest {
 	}
 
 	@Test
+	public void testCreateAsyncDerivationForNewInfo() {
+		String createdDerived = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, inputs);
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Individual devIndividual = testKG.getIndividual(createdDerived);
+		Assert.assertNotNull(devIndividual);
+		Assert.assertEquals(DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
+				devIndividual.getRDFType().toString());
+
+		// check that NO entity is connected to the derived instance
+		Assert.assertTrue(devClient.sparqlClient.getDerivedEntities(createdDerived).isEmpty());
+
+		// checks for agent
+		Assert.assertTrue(testKG.contains(devIndividual,
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
+				testKG.getIndividual(derivedAgentIRI)));
+
+		// checks for inputs
+		for (String input : inputs) {
+			Assert.assertTrue(testKG.contains(devIndividual,
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+
+		// checks the status
+		Assert.assertEquals(StatusType.REQUESTED, devClient.getStatusType(createdDerived));
+
+		// checks the timestamp should be 0
+		Assert.assertEquals(0, devClient.sparqlClient.getTimestamp(createdDerived));
+	}
+
+	@Test
 	public void testCreateAsyncDerivationForMarkup() {
 		boolean forUpdate = false;
 		String createdDerived = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, forUpdate);
@@ -320,6 +351,82 @@ public class DerivedQuantityClientTest {
 		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient
 				.createDerivation(Arrays.asList(entity4, entity5), derivedAgentIRI3, derivedAgentURL3, inputs));
 		Assert.assertTrue(e.getMessage().contains("part of another derivation"));
+	}
+
+	@Test
+	public void testCreateAsyncDerivation_FromExistingDerivation_ForNewInfo() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// create first asynchronous derivation1
+		String upstreamDerivationIRI = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, inputs);
+
+		// add triples about agent2 that monitors the derivation2 which is one
+		// derivation downstream compared to the derivation1
+		// agent2 takes some entities from the output of the derivation1 as inputs
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI2), ResourceFactory.createProperty(hasOperation),
+				ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput),
+				ResourceFactory.createResource(derivedAgentInputMsgCont));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
+				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
+				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType),
+				ResourceFactory.createResource(input1ParentRdfType));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType),
+				ResourceFactory.createResource(input2ParentRdfType));
+
+		// add triples about rdf:type and rdfs:subClassOf properties
+		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(input1RdfType));
+		testKG.add(ResourceFactory.createResource(input1RdfType), RDFS.subClassOf,
+				ResourceFactory.createResource(input1ParentRdfType));
+		testKG.add(ResourceFactory.createResource(entity2), RDF.type, ResourceFactory.createResource(input2RdfType));
+		testKG.add(ResourceFactory.createResource(input2RdfType), RDFS.subClassOf,
+				ResourceFactory.createResource(input2ParentRdfType));
+
+		// now we create the second derivation given the upstream derivation
+		List<String> inputsOfDownstreamDerivation = Arrays.asList(input1, input2, upstreamDerivationIRI);
+		String downstreamDerivationIRI = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, inputsOfDownstreamDerivation);
+
+		Individual devIndividual1 = testKG.getIndividual(upstreamDerivationIRI);
+		Individual devIndividual2 = testKG.getIndividual(downstreamDerivationIRI);
+		Assert.assertNotNull(devIndividual1);
+		Assert.assertNotNull(devIndividual2);
+		Assert.assertEquals(DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
+				devIndividual1.getRDFType().toString());
+		Assert.assertEquals(DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
+				devIndividual2.getRDFType().toString());
+
+		// check that NO entity is connected to both derived instances
+		Assert.assertTrue(devClient.sparqlClient.getDerivedEntities(upstreamDerivationIRI).isEmpty());
+		Assert.assertTrue(devClient.sparqlClient.getDerivedEntities(downstreamDerivationIRI).isEmpty());
+
+		// checks for agent
+		Assert.assertTrue(testKG.contains(devIndividual1,
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
+				testKG.getIndividual(derivedAgentIRI)));
+		Assert.assertTrue(testKG.contains(devIndividual2,
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
+				testKG.getIndividual(derivedAgentIRI2)));
+
+		// checks for inputs
+		for (String input : inputs) {
+			Assert.assertTrue(testKG.contains(devIndividual1,
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+		for (String input : inputsOfDownstreamDerivation) {
+			Assert.assertTrue(testKG.contains(devIndividual2,
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+
+		// checks the status
+		Assert.assertEquals(StatusType.REQUESTED, devClient.getStatusType(upstreamDerivationIRI));
+		Assert.assertEquals(StatusType.REQUESTED, devClient.getStatusType(downstreamDerivationIRI));
+
+		// checks the timestamp should be 0
+		Assert.assertEquals(0, devClient.sparqlClient.getTimestamp(upstreamDerivationIRI));
+		Assert.assertEquals(0, devClient.sparqlClient.getTimestamp(downstreamDerivationIRI));
 	}
 
 	@Test

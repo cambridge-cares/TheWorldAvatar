@@ -204,6 +204,10 @@ public class DerivationClient {
 		return createAsyncDerivation(entities, agentIRI, inputsIRI, forUpdate);
 	}
 
+	public String createAsyncDerivationForNewInfo(String agentIRI, List<String> inputsAndDerivations) {
+		return createAsyncDerivation(new ArrayList<>(), agentIRI, inputsAndDerivations, true);
+	}
+
 	/**
 	 * adds a timestamp to your input following the w3c standard for unix timestamp
 	 * https://www.w3.org/TR/owl-time/
@@ -575,8 +579,9 @@ public class DerivationClient {
 		// from Agent in method updateDerivation(String instance,
 		// DirectedAcyclicGraph<String,DefaultEdge> graph)
 		// the additional part in this method (compared to the above mentioned method)
-		// is: (1) how we get newDerivedIRI; (2) we delete all triples connected to the
-		// status of the derivation
+		// is: (1) how we get newDerivedIRI; (2) we connect the newDerivedIRI with
+		// downstream derivaitons if the current derivation was created for new info;
+		// (3) we delete all triples connected to the status of the derivation
 		// in the future development, there's a potential these two methods can be
 		// merged into one
 
@@ -602,6 +607,8 @@ public class DerivationClient {
 		// create local variable for the new entities for reconnecting purpose
 		List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
 
+		// if none of the outputs of derivaiton is input of other derivations, or if the derivation was created
+		// for new info, the code will NOT enter the next if block
 		if (oldEntitiesAsInput.size() > 0) {
 			LOGGER.debug("This derivation contains at least one entity which is an input to another derivation");
 			LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
@@ -629,7 +636,20 @@ public class DerivationClient {
 			this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);
 		}
 
-		// (2) delete all triples connected to status of the derivation
+		// (2) we need to check if any of the downstream derivations are directly connected
+		// to this derivation, i.e. the current derivation was created for new information,
+		// and other derivation instances further depend on the current one
+		Map<String, String> downstreamDerivations = this.sparqlClient.getDownstreamDerivationForNewInfo(derivation);
+		List<String> newInfoAsInputs = new ArrayList<>();
+		List<String> downstreamDerivationsToReconnect = new ArrayList<>();
+		downstreamDerivations.forEach((downstream_derivation, agent_iri) -> {
+			List<String> asInputs = this.sparqlClient.retrieveMatchingInstances(derivation, agent_iri);
+			asInputs.forEach(inp -> {newInfoAsInputs.add(inp);downstreamDerivationsToReconnect.add(downstream_derivation);});
+		});
+		// reconnect within the triple store
+		this.sparqlClient.reconnectInputToDerived(newInfoAsInputs, downstreamDerivationsToReconnect);
+
+		// (3) delete all triples connected to status of the derivation
 		this.sparqlClient.deleteStatus(derivation);
 
 		// if there are no errors, assume update is successful

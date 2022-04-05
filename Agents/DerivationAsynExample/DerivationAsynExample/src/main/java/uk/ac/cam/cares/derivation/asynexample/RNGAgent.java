@@ -105,4 +105,13 @@ public class RNGAgent extends DerivationAgent {
 		LOGGER.info("\n---------------------- Random Number Generator (RNG) Agent is monitoring derivation instance ----------------------\n");
 		System.out.println("\n---------------------- Random Number Generator (RNG) Agent is monitoring derivation instance ----------------------\n");
 	}
+
+	public static void main(String[] args) {
+		String endpoint = "http://localhost:53180/blazegraph/namespace/kb/sparql";
+		StoreClientInterface storeClient = new RemoteStoreClient(endpoint, endpoint);
+		String derivationInstanceBaseURL = "https://www.derivationasynexample.com/triplestore/repository/";
+		RNGAgent agent = new RNGAgent(storeClient, derivationInstanceBaseURL);
+		String agentIRI = "http://www.theworldavatar.com/kb/agents/Service__RNG#Service";
+		agent.monitorDerivation(agentIRI);
+	}
 }

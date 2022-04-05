@@ -335,16 +335,13 @@ public class SparqlClient {
     	
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
-    	if (queryResult.length() != 1) {
-    		throw new JPSRuntimeException("There should only be one Difference instance, consider a reset by running InitialiseInstances");
-    	}
-    	
-    	try {
-    		return queryResult.getJSONObject(0).getString(key);
-    	} catch (Exception e) {
-    		System.out.println(e.getMessage());
-    		throw new JPSRuntimeException("Difference is probably not initialised yet/properly, please run InitialiseInstances");
-    	}
+		if (queryResult.length() > 1) {
+    		throw new JPSRuntimeException("There should be at MOST ONE Difference instance, consider a reset by running InitialiseInstances");
+    	} else if (queryResult.length() == 1) {
+			return queryResult.getJSONObject(0).getString(key);
+		} else {
+			return new String();
+		}
     }
 
 	/**
@@ -362,16 +359,13 @@ public class SparqlClient {
     	
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
-    	if (queryResult.length() != 1) {
-    		throw new JPSRuntimeException("There should only be one ListOfRandomPoints instance, consider a reset by running InitialiseInstances");
-    	}
-    	
-    	try {
-    		return queryResult.getJSONObject(0).getString(key);
-    	} catch (Exception e) {
-    		System.out.println(e.getMessage());
-    		throw new JPSRuntimeException("ListOfRandomPoints is probably not initialised yet/properly, please run InitialiseInstances");
-    	}
+    	if (queryResult.length() > 1) {
+    		throw new JPSRuntimeException("There should be at MOST ONE ListOfRandomPoints instance, consider a reset by running InitialiseInstances");
+    	} else if (queryResult.length() == 1) {
+			return queryResult.getJSONObject(0).getString(key);
+		} else {
+			return new String();
+		}
     }
 	
 	/**
@@ -389,16 +383,13 @@ public class SparqlClient {
     	
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
-    	if (queryResult.length() != 1) {
-    		throw new JPSRuntimeException("There should only be one MaxValue instance, consider a reset by running InitialiseInstances");
-    	}
-    	
-    	try {
-    		return queryResult.getJSONObject(0).getString(key);
-    	} catch (Exception e) {
-    		System.out.println(e.getMessage());
-    		throw new JPSRuntimeException("MaxValue is probably not initialised yet/properly, please run InitialiseInstances");
-    	}
+    	if (queryResult.length() > 1) {
+    		throw new JPSRuntimeException("There should be at MOST ONE MaxValue instance, consider a reset by running InitialiseInstances");
+    	} else if (queryResult.length() == 1) {
+			return queryResult.getJSONObject(0).getString(key);
+		} else {
+			return new String();
+		}
     }
 
 	/**
@@ -416,16 +407,13 @@ public class SparqlClient {
     	
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
-    	if (queryResult.length() != 1) {
-    		throw new JPSRuntimeException("There should only be one MinValue instance, consider a reset by running InitialiseInstances");
-    	}
-    	
-    	try {
-    		return queryResult.getJSONObject(0).getString(key);
-    	} catch (Exception e) {
-    		System.out.println(e.getMessage());
-    		throw new JPSRuntimeException("MinValue is probably not initialised yet/properly, please run InitialiseInstances");
-    	}
+		if (queryResult.length() > 1) {
+    		throw new JPSRuntimeException("There should be at MOST ONE MinValue instance, consider a reset by running InitialiseInstances");
+    	} else if (queryResult.length() == 1) {
+			return queryResult.getJSONObject(0).getString(key);
+		} else {
+			return new String();
+		}
     }
 
 	/**

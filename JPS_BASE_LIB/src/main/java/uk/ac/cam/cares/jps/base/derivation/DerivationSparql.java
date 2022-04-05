@@ -1419,6 +1419,30 @@ public class DerivationSparql {
 		return entities;
 	}
 
+	Map<String, String> getDownstreamDerivationForNewInfo(String derivation) {
+		SelectQuery query = Queries.SELECT().distinct();
+		Variable downstream = query.var();
+		Variable downstreamType = query.var();
+		Variable agentIRI = query.var();
+
+		GraphPattern queryPattern = GraphPatterns.and(
+			downstream.has(isDerivedFrom, iri(derivation))
+			.andHas(RdfPredicate.a, downstreamType)
+			.andHas(isDerivedUsing, agentIRI),
+			new ValuesPattern(downstreamType, Arrays.asList(DerivationAsyn)));
+
+		query.prefix(p_derived, p_agent).select(downstream, agentIRI).where(queryPattern);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		Map<String, String> downstreamDerivations = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			downstreamDerivations.put(
+				queryResult.getJSONObject(i).getString(downstream.getQueryString().substring(1)),
+				queryResult.getJSONObject(i).getString(agentIRI.getQueryString().substring(1)));
+		}
+		return downstreamDerivations;
+	}
+
 	/**
 	 * returns the derived instance, where the given entity is an input to it
 	 * <derived> <derived:isDerivedFrom> <entity>

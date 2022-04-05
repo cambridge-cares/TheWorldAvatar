@@ -38,10 +38,10 @@ public class InitialiseInstances extends JPSAgent {
 		JSONObject response = initialise(sparqlClient, devClient);
 
 		// invoke all asynchronous agents so that they can be initialised
-		// AgentCaller.executeGet(Config.agentHttpUrlRNG);
-		// AgentCaller.executeGet(Config.agentHttpUrlMaxValue);
-		// AgentCaller.executeGet(Config.agentHttpUrlMinValue);
-		// AgentCaller.executeGet(Config.agentHttpUrlDifference);
+		AgentCaller.executeGet(Config.agentHttpUrlRNG);
+		AgentCaller.executeGet(Config.agentHttpUrlMaxValue);
+		AgentCaller.executeGet(Config.agentHttpUrlMinValue);
+		AgentCaller.executeGet(Config.agentHttpUrlDifference);
 		
 		return response;
 	}
@@ -86,53 +86,54 @@ public class InitialiseInstances extends JPSAgent {
 		devClient.updateTimestamp(numOfPoints);
 		LOGGER.info("Created NumberOfPoints instance <" + numOfPoints + ">");
 		
-		// create listofrandompoints, points
-		String listOfRandomPoints = sparqlClient.createListOfRandomPoints(null);
-		LOGGER.info("Created ListOfRandomPoints instance <" + listOfRandomPoints + ">");
+		// // create listofrandompoints, points
+		// String listOfRandomPoints = sparqlClient.createListOfRandomPoints(null);
+		// LOGGER.info("Created ListOfRandomPoints instance <" + listOfRandomPoints + ">");
 		
-		// create maxvalue, minvalue
-		String maxValue = sparqlClient.createMaxValue();
-		String max = sparqlClient.addValueInstance(maxValue, 0);
-		LOGGER.info("Created MaxValue instance <" + maxValue + ">");
+		// // create maxvalue, minvalue
+		// String maxValue = sparqlClient.createMaxValue();
+		// String max = sparqlClient.addValueInstance(maxValue, 0);
+		// LOGGER.info("Created MaxValue instance <" + maxValue + ">");
 		
-		String minValue = sparqlClient.createMinValue();
-		String min = sparqlClient.addValueInstance(minValue, 0);
-		LOGGER.info("Created MinValue instance <" + minValue + ">");
+		// String minValue = sparqlClient.createMinValue();
+		// String min = sparqlClient.addValueInstance(minValue, 0);
+		// LOGGER.info("Created MinValue instance <" + minValue + ">");
 		
-		// create difference
-		String difference = sparqlClient.createDifference();
-		String diff = sparqlClient.addValueInstance(difference, 0);
-		LOGGER.info("Created Difference instance <" + difference + ">");
+		// // create difference
+		// String difference = sparqlClient.createDifference();
+		// String diff = sparqlClient.addValueInstance(difference, 0);
+		// LOGGER.info("Created Difference instance <" + difference + ">");
 		
 		// create chain of derivation
-		String rng_dev = devClient.createAsyncDerivation(Arrays.asList(listOfRandomPoints), Config.agentIriRNG, Arrays.asList(upperLimit,lowerLimit,numOfPoints), true);
-		String max_dev = devClient.createAsyncDerivation(Arrays.asList(maxValue), Config.agentIriMaxValue, Arrays.asList(listOfRandomPoints), true);
-		String min_dev = devClient.createAsyncDerivation(Arrays.asList(minValue), Config.agentIriMinValue, Arrays.asList(listOfRandomPoints), true);
-		String diff_dev = devClient.createAsyncDerivation(Arrays.asList(difference), Config.agentIriDifference, Arrays.asList(maxValue,minValue), true);
+		String rng_dev = devClient.createAsyncDerivationForNewInfo(Config.agentIriRNG, Arrays.asList(upperLimit,lowerLimit,numOfPoints));
+		String max_dev = devClient.createAsyncDerivationForNewInfo(Config.agentIriMaxValue, Arrays.asList(rng_dev));
+		String min_dev = devClient.createAsyncDerivationForNewInfo(Config.agentIriMinValue, Arrays.asList(rng_dev));
+		String diff_dev = devClient.createAsyncDerivationForNewInfo(Config.agentIriDifference, Arrays.asList(max_dev, min_dev));
 		
 		// check all connections between the derived quantities
 		// as the validate method traverse down, checking difference derivation checks all other derivations in the chain
-		LOGGER.info("Validating derivations: " + rng_dev + ", " + max_dev + ", " + min_dev + ", and " + diff_dev);
-		try {
-			devClient.validateDerivations();
-			LOGGER.info("Validated chain of derivations successfully");
-		} catch (Exception e) {
-			LOGGER.error("Validation failure for chain of derivations: " + e.getMessage());
-			throw new JPSRuntimeException(e);
-		}
+		// TODO update validateDerivations for NEW_INFO mode
+		// LOGGER.info("Validating derivations: " + rng_dev + ", " + max_dev + ", " + min_dev + ", and " + diff_dev);
+		// try {
+		// 	devClient.validateDerivations();
+		// 	LOGGER.info("Validated chain of derivations successfully");
+		// } catch (Exception e) {
+		// 	LOGGER.error("Validation failure for chain of derivations: " + e.getMessage());
+		// 	throw new JPSRuntimeException(e);
+		// }
 
 		JSONObject response = new JSONObject();
 		response.put("UpperLimit instance", upperLimit);
 		response.put("LowerLimit instance", lowerLimit);
 		response.put("NumberOfPoints instance", numOfPoints);
 		response.put("RandomNumberGeneration Derivation", rng_dev);
-		response.put("ListOfRandomPoints instance", listOfRandomPoints);
+		// response.put("ListOfRandomPoints instance", listOfRandomPoints);
 		response.put("MaxValue Derivation", max_dev);
-		response.put("MaxValue instance", maxValue);
+		// response.put("MaxValue instance", maxValue);
 		response.put("MinValue Derivation", min_dev);
-		response.put("MinValue instance", minValue);
+		// response.put("MinValue instance", minValue);
 		response.put("Difference Derivation", diff_dev);
-		response.put("Difference instance", difference);
+		// response.put("Difference instance", difference);
 
 		return response;
 	}
