@@ -48,6 +48,10 @@ class powerFlowAnalysis:
         
         self.ConvergeFlag = None
         
+        self.SlackBusName = []
+        self.PVBusName = []
+        self.PQBusName = []
+        
      def ModelObjectCreator(self, buslist, branchList): 
          """
          The ModelObjectCreator is used to created the model objects (bus, branch and generator) which should be call in the first palce when proforming PF/OPF analysis
@@ -76,7 +80,14 @@ class powerFlowAnalysis:
              ObjectSet[UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord])] = UKPowerGridModel.UKEbusModel()
              for varKey in businput.keys():
                  setattr(ObjectSet.get(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord])), varKey, businput[varKey])
-         
+                 if UKPowerGridModel.UKEbusModel.INPUT_VARIABLE_KEYS.index(varKey) == BUS_TYPE: 
+                     if businput[varKey] == REF:
+                         self.SlackBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))
+                     elif businput[varKey] == PV:
+                         self.PVBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))
+                     elif businput[varKey] == PQ:    
+                         self.PQBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))
+                         
          self.NumberOfBus = len(BusInput)        
          
          ## query branch input
@@ -367,8 +378,29 @@ class powerFlowAnalysis:
 
         U, s, _V = linalg.svd(J.toarray(), full_matrices=True)        
         normalised_V = abs(_V[-1]/(linalg.norm(_V[-1])))       
-        # indexOfMaxV = where(normalised_V == max(normalised_V))  
-        self.indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0]     
+        indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0] + 1 #TODO: ordered from large to small 
+        
+        numberOfPEq = self.NumberOfBus - len(self.SlackBusName)
+        numberOfQEq = self.NumberOfBus - len(self.SlackBusName) -len(self.PVBusName)
+        
+        if indexOfMaxV_firstIteration <= numberOfPEq:
+            busToBeSwitched = indexOfMaxV_firstIteration
+            for sb in self.SlackBusName:
+                if indexOfMaxV_firstIteration >= getattr(self.ObjectSet.get(sb),"BUS"):
+                    busToBeSwitched += 1               
+        else:
+            busToBeSwitched = indexOfMaxV_firstIteration - numberOfPEq
+            for sb in self.SlackBusName:
+                if indexOfMaxV_firstIteration >= getattr(self.ObjectSet.get(sb),"BUS"):
+                    busToBeSwitched += 1
+               
+            for pvb in self.PVBusName:
+                if indexOfMaxV_firstIteration >= getattr(self.ObjectSet.get(pvb),"BUS"):
+                    busToBeSwitched += 1
+        
+        #TODO: if the selected bus is in the list of PV, find the next one
+        
+        
         print('The maximum V reported form the monitor is:', self.indexOfMaxV_firstIteration)   
         return 
         
