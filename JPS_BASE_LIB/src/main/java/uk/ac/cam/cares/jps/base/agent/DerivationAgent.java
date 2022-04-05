@@ -89,7 +89,8 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 		JSONObject res = new JSONObject();
 		if (validateInput(requestParams)) {
 			// serialises DerivationInputs objects from JSONObject
-			DerivationInputs inputs = new DerivationInputs(requestParams);
+			DerivationInputs inputs = new DerivationInputs(
+				requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY));
 			long timestamp = Instant.now().getEpochSecond();
 			// apply agent logic to convert inputs to outputs
 			DerivationOutputs outputs = processRequestParameters(inputs);
@@ -114,8 +115,12 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 		// TODO developer needs to overwrite this function for customised validation
 		if (requestParams.isEmpty()) {
-			LOGGER.warn("Agent inputs are empty, throwing BadRequestException...");
+			LOGGER.warn("RequestParams are empty, throwing BadRequestException...");
 			throw new BadRequestException();
+		}
+		if (!requestParams.has(DerivationClient.AGENT_INPUT_KEY)) {
+			LOGGER.info(this.getClass().toString()+" agent received an empty request...");
+			return false;
 		}
 		return true;
 	}
