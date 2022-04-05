@@ -1194,7 +1194,7 @@ public class DerivationSparql {
 		// ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp ||
 		// ?statusType IN (derived:Requested, derived:InProgress, derived:Finished))
 
-		query.prefix(p_derived, p_time).select(upstreamDerivation)
+		query.prefix(p_derived, p_time).select(upstreamDerivation, upstreamDerivationType)
 				.where(GraphPatterns
 						.and(upstreamDerivationPattern, upDevTimePattern, upDevStatusTypePattern,
 								upDevPureInputTimePattern, inputsBelongsToDevTimePattern)
@@ -1208,7 +1208,7 @@ public class DerivationSparql {
 			String derivedIRI = queryResult.getJSONObject(i).getString(upsDevQueryKey);
 			String derivationType = queryResult.getJSONObject(i).getString(upsDevTypeQueryKey);
 			if (!upstreamDerivationMap.containsKey(derivationType)) {
-				upstreamDerivationMap.put(derivationType, Arrays.asList(derivedIRI));
+				upstreamDerivationMap.put(derivationType, new ArrayList<>(Arrays.asList(derivedIRI)));
 			} else {
 				upstreamDerivationMap.get(derivationType).add(derivedIRI);
 			}
