@@ -112,3 +112,81 @@ def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
         triples += f"""<{quantity_iri}> rdfs:comment "{comment}"^^xsd:string . """
 
     return triples
+
+
+def all_instantiated_observations():
+    # Returns query to retrieve all instantiated observation types per station
+    query = f"""
+        {create_sparql_prefix('rdf')}
+        {create_sparql_prefix('om')}
+        {create_sparql_prefix('ems')}
+        SELECT ?stationID ?observationType
+        WHERE {{
+            ?station rdf:type ems:ReportingStation ;
+                     ems:dataSource "Met Office DataPoint" ;
+                     ems:hasIdentifier ?stationID ;
+                     ems:reports ?quantity .
+            ?quantity om:hasValue ?measure ;
+                      rdf:type ?observationType .
+        }}
+    """
+    return query
+
+
+def all_instantiated_forecasts():
+    # Returns query to retrieve all instantiated forecast types per station
+    query = f"""
+        {create_sparql_prefix('rdf')}
+        {create_sparql_prefix('om')}
+        {create_sparql_prefix('ems')}
+        SELECT ?stationID ?forecastType
+        WHERE {{
+            ?station rdf:type ems:ReportingStation ;
+                     ems:dataSource "Met Office DataPoint" ;
+                     ems:hasIdentifier ?stationID ;
+                     ems:reports ?quantity .
+            ?quantity ems:hasForecastedValue ?forecast ;
+                      rdf:type ?forecastType .
+        }}
+    """
+    return query
+
+
+def all_instantiated_observation_timeseries():
+    # Returns query to retrieve all instantiated observation time series per station
+    query = f"""
+        {create_sparql_prefix('rdf')}
+        {create_sparql_prefix('om')}
+        {create_sparql_prefix('ems')}
+        SELECT ?stationID ?observationType ?dataIRI ?tsIRI
+        WHERE {{
+            ?station rdf:type ems:ReportingStation ;
+                     ems:dataSource "Met Office DataPoint" ;
+                     ems:hasIdentifier ?stationID ;
+                     ems:reports ?quantity .
+            ?quantity om:hasValue ?dataIRI ;
+                      rdf:type ?observationType .
+            ?dataIRI ts:hasTimeSeries ?tsIRI .   
+        }}
+    """
+    return query
+
+
+def all_instantiated_forecast_timeseries():
+    # Returns query to retrieve all instantiated forecast time series per station
+    query = f"""
+        {create_sparql_prefix('rdf')}
+        {create_sparql_prefix('om')}
+        {create_sparql_prefix('ems')}
+        SELECT ?stationID ?observationType ?dataIRI ?tsIRI
+        WHERE {{
+            ?station rdf:type ems:ReportingStation ;
+                     ems:dataSource "Met Office DataPoint" ;
+                     ems:hasIdentifier ?stationID ;
+                     ems:reports ?quantity .
+            ?quantity ems:hasForecastedValue ?dataIRI ;
+                      rdf:type ?observationType .
+            ?dataIRI ts:hasTimeSeries ?tsIRI .   
+        }}
+    """
+    return query

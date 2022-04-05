@@ -6,9 +6,7 @@
 # The purpose of this module is to provide functions to retrieve 
 # readings data from the API and instantiate it in the KG
 
-import unittest
 import uuid
-from xmlrpc.client import boolean
 import metoffer
 import datetime as dt
 
@@ -27,47 +25,70 @@ from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, CO
 # logger = agentlogging.get_logger("dev")
 
 
-# def instantiate_station_readings(instantiated_sites_list: list,
-#                                  query_endpoint: str = QUERY_ENDPOINT,
-#                                  update_endpoint: str = UPDATE_ENDPOINT) -> None:
-#     """
-#         Instantiates readings for the provided list of measurement stations
+def instantiate_station_readings(instantiated_sites_list: list,
+                                 query_endpoint: str = QUERY_ENDPOINT,
+                                 update_endpoint: str = UPDATE_ENDPOINT) -> None:
+        """
+            Instantiates readings for the provided list of measurement stations
+            
+            Arguments:
+                instantiated_sites_list - list of dictionaries with instantiated
+                                          stations/sites in the form [{id : iri},]
+        """
+
+        # Create MetOffice client to retrieve readings via API
+        try:
+            metclient = metoffer.MetOffer(DATAPOINT_API_KEY)
+        except:
+            raise APIException("MetOffer client could not be created to retrieve station readings.")
+            #logger.error("MetOffer client could not be created to retrieve station readings.")
         
-#         Arguments:
-#             instantiated_sites_list - list of dictionaries with instantiated
-#                                       stations/sites in the form [{id : iri},]
-#     """
-    
-#     # Initialise update query
-#     query_string = f"""
-#         {create_sparql_prefix('geolit')}
-#         {create_sparql_prefix('rdf')}
-#         {create_sparql_prefix('rdfs')}
-#         {create_sparql_prefix('xsd')}
-#         {create_sparql_prefix('ems')}
-#         {create_sparql_prefix('kb')}
-#         INSERT DATA {{
-#     """
+        # Initialise update query
+        query_string = f"""
+            {create_sparql_prefix('rdf')}
+            {create_sparql_prefix('rdfs')}
+            {create_sparql_prefix('xsd')}
+            {create_sparql_prefix('ems')}
+            {create_sparql_prefix('kb')}
+            {create_sparql_prefix('om')}
+            {create_sparql_prefix('ts')}
+            INSERT DATA {{
+        """
+
+        # Loop over all sites
+        for id in instantiated_sites_list:
+
+            # Test if quantities are already instantiated      
+
+            # Load OBSERVATIONS data for that station
+            try:
+                obs = metclient.loc_observations(id)
+                observation = metoffer.Weather(obs)
+                readings_obs = observation.data
+            except:
+                print('Error while retrieving data for station ID: {:>10}'.format(id))
+                #logger.warning('Error while retrieving data for station ID: {:>10}'.format(id))
+            
+            # Get station IRI
+            station_iri = instantiated_sites_list[id]
+            # Create triples
+            triples, dataIRIs, dataClasses, timeUnit = add_readings_for_station(station_iri, readings_obs, is_observation=True)
 
 
-#     # # Loop over all sites
-#     # for site in instantiated_sites_list:
+        # Add station details
+        for data in station_data:
+            station_IRI = PREFIXES['kb'] + 'ReportingStation_' + str(uuid.uuid4())
+            # Extract station information from API result
+            to_instantiate = _condition_metoffer_data(data)
+            to_instantiate['station_iri'] = station_IRI
+            query_string += add_station_data(**to_instantiate)
 
+        # Close query
+        query_string += f"}}"
 
-#     # # Add station details
-#     # for data in station_data:
-#     #     station_IRI = PREFIXES['kb'] + 'ReportingStation_' + str(uuid.uuid4())
-#     #     # Extract station information from API result
-#     #     to_instantiate = _condition_metoffer_data(data)
-#     #     to_instantiate['station_iri'] = station_IRI
-#     #     query_string += add_station_data(**to_instantiate)
-
-#     # # Close query
-#     # query_string += f"}}"
-
-#     # # Execute query
-#     # kg_client = KGClient(query_endpoint, update_endpoint)
-#     # kg_client.performUpdate(query_string)
+        # Execute query
+        kg_client = KGClient(query_endpoint, update_endpoint)
+        kg_client.performUpdate(query_string)
 
 
 def add_readings_for_station(station_iri: str,
@@ -82,13 +103,12 @@ def add_readings_for_station(station_iri: str,
             readings - list of station readings as returned by MetOffer
             is_observation - boolean to indicate whether readings are measure
                              or forecast
+            quantity_comments - comments to be attached to quantities
         
         Returns
             triples - triples to be added to INSERT DATA query
             dataIRIs, dataClasses, timeUnit - to be appended to input arguments
                                               to TimSeriesClient bulkInit call
-            quantity_comments - comments to be attached to quantities
-
     """
 
     # Condition readings data
