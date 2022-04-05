@@ -86,7 +86,7 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
 
 def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
                     data_iri_type, unit, symbol, is_observation: bool, 
-                    comment=None):
+                    creation_time=None, comment=None):
     """
         Create triples to instantiate station measurements
     """
@@ -95,7 +95,8 @@ def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
         triple = f"""<{quantity_iri}> om:hasValue <{data_iri}> . """
         
     else:
-        triple = f"""<{quantity_iri}> ems:hasForecastedValue <{data_iri}> . """
+        triple = f"<{quantity_iri}> ems:hasForecastedValue <{data_iri}> . "
+        if creation_time: triple += f"<{data_iri}> ems:createdOn \"{creation_time}\"^^xsd:dateTime . "
 
     # Create triples to instantiate station measurement according to OntoEMS
     triples = f"""
@@ -120,7 +121,7 @@ def all_instantiated_observations():
         {create_sparql_prefix('rdf')}
         {create_sparql_prefix('om')}
         {create_sparql_prefix('ems')}
-        SELECT ?stationID ?quantityType
+        SELECT ?station ?stationID ?quantityType
         WHERE {{
             ?station rdf:type ems:ReportingStation ;
                      ems:dataSource "Met Office DataPoint" ;
@@ -129,6 +130,7 @@ def all_instantiated_observations():
             ?quantity om:hasValue ?measure ;
                       rdf:type ?quantityType .
         }}
+        ORDER BY ?station
     """
     return query
 
@@ -139,7 +141,7 @@ def all_instantiated_forecasts():
         {create_sparql_prefix('rdf')}
         {create_sparql_prefix('om')}
         {create_sparql_prefix('ems')}
-        SELECT ?stationID ?quantityType
+        SELECT ?station ?stationID ?quantityType
         WHERE {{
             ?station rdf:type ems:ReportingStation ;
                      ems:dataSource "Met Office DataPoint" ;
@@ -148,6 +150,7 @@ def all_instantiated_forecasts():
             ?quantity ems:hasForecastedValue ?forecast ;
                       rdf:type ?quantityType .
         }}
+        ORDER BY ?station
     """
     return query
 
@@ -159,7 +162,7 @@ def all_instantiated_observation_timeseries():
         {create_sparql_prefix('om')}
         {create_sparql_prefix('ems')}
         {create_sparql_prefix('ts')}
-        SELECT ?stationID ?quantityType ?dataIRI ?tsIRI
+        SELECT ?station ?stationID ?quantityType ?dataIRI ?tsIRI
         WHERE {{
             ?station rdf:type ems:ReportingStation ;
                      ems:dataSource "Met Office DataPoint" ;
@@ -169,6 +172,7 @@ def all_instantiated_observation_timeseries():
                       rdf:type ?quantityType .
             ?dataIRI ts:hasTimeSeries ?tsIRI .   
         }}
+        ORDER BY ?station
     """
     return query
 
@@ -180,7 +184,7 @@ def all_instantiated_forecast_timeseries():
         {create_sparql_prefix('om')}
         {create_sparql_prefix('ems')}
         {create_sparql_prefix('ts')}
-        SELECT ?stationID ?quantityType ?dataIRI ?tsIRI
+        SELECT ?station ?stationID ?quantityType ?dataIRI ?tsIRI
         WHERE {{
             ?station rdf:type ems:ReportingStation ;
                      ems:dataSource "Met Office DataPoint" ;
@@ -190,5 +194,6 @@ def all_instantiated_forecast_timeseries():
                       rdf:type ?quantityType .
             ?dataIRI ts:hasTimeSeries ?tsIRI .   
         }}
+        ORDER BY ?station
     """
     return query

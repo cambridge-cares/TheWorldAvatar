@@ -221,11 +221,9 @@ def test_condition_readings_data():
 
 def test_add_readings_for_station(mocker):
 
-    # Test readings data as returned by metoffer
-    test_readings = [
-        {'Dew Point': (8.3, 'C', 'Dp'),
-         'Wind Gust': (30, 'mph', 'G')}
-    ] 
+    # Test readings
+    test_readings = ['DewPoint', 'WindGust']
+     
     # Expected result
     expected_obs1_1 = '<http://Station/1> ems:reports <http://www.theworldavatar.com/kb/ontoems/WindGust_1> . <http://www.theworldavatar.com/kb/ontoems/WindGust_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindGust> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> om:hasUnit om:mile-StatutePerHour . om:mile-StatutePerHour om:symbol "mi/h"^^xsd:string . <http://www.theworldavatar.com/kb/ontoems/WindGust_1> om:hasValue <http://www.theworldavatar.com/kb/ontoems/Measure_1> .'
     expected_obs1_2 = '<http://Station/1> ems:reports <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> . <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DewPoint> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> om:hasUnit om:degreeCelsius . om:degreeCelsius om:symbol "&#x00B0;C"^^xsd:string . <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> om:hasValue <http://www.theworldavatar.com/kb/ontoems/Measure_1> .'

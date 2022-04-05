@@ -11,9 +11,12 @@ import metoffer
 import datetime as dt
 
 #import agentlogging
-from metoffice.dataretrieval.stations import get_all_metoffice_station_ids
+from metoffice.kgutils.javagateway import jpsBaseLibGW
+from metoffice.dataretrieval.readings import *
+from metoffice.dataretrieval.stations import *
 from metoffice.errorhandling.exceptions import APIException
 from metoffice.kgutils.kgclient import KGClient
+from metoffice.kgutils.tsclient import TSClient
 from metoffice.kgutils.prefixes import create_sparql_prefix
 from metoffice.kgutils.prefixes import PREFIXES
 from metoffice.kgutils.querytemplates import *
@@ -55,40 +58,84 @@ def instantiate_station_readings(instantiated_sites_list: list,
             INSERT DATA {{
         """
 
+        # Initialise lists for TimeSeriesClient bulk Init
+        dataIRIs = []
+        dataClasses = []
+        timeUnit = []
+
+        # Get already instantiated observations and forecasts (across all stations)
+        instantiated_obs = get_all_instantiated_observations(query_endpoint, 
+                                                             update_endpoint)
+        instantiated_fcs = get_all_instantiated_forecasts(query_endpoint, 
+                                                          update_endpoint)
+        # Get short version of variable type from full quantity type
+        instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
+        instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])                                                        
+
         # Loop over all sites
         for id in instantiated_sites_list:
-
-            # Test if quantities are already instantiated      
-
-            # Load OBSERVATIONS data for that station
-            try:
-                obs = metclient.loc_observations(id)
-                observation = metoffer.Weather(obs)
-                readings_obs = observation.data
-            except:
-                print('Error while retrieving data for station ID: {:>10}'.format(id))
-                #logger.warning('Error while retrieving data for station ID: {:>10}'.format(id))
             
+            # Get lists of instantiated readings for current station
+            inst_obs = instantiated_obs[instantiated_obs['stationID'] == id]['reading'].tolist()
+            inst_fcs = instantiated_fcs[instantiated_fcs['stationID'] == id]['reading'].tolist()
+
+            # Load observations and forecasts for that station from API
+            available_obs, available_fcs = retrieve_readings_concepts_for_station(metclient, id)
+            
+            # Derive quantities to instantiate
+            obs = [i for i in available_obs if i not in inst_obs]
+            fcs = [i for i in available_fcs if i not in inst_fcs]
+            both = [i for i in obs if i in fcs]
+            obs = list(set(obs) - set(both))
+            fcs = list(set(fcs) - set(both))
+
             # Get station IRI
             station_iri = instantiated_sites_list[id]
-            # Create triples
-            triples, dataIRIs, dataClasses, timeUnit = add_readings_for_station(station_iri, readings_obs, is_observation=True)
+
+            # Create triples and input lists for TimeSeriesClient bulkInit
+            triples1, dataIRIs1, dataClasses1, _ = add_readings_for_station(station_iri, both, is_observation=True)
+            triples2, dataIRIs2, dataClasses2, _ = add_readings_for_station(station_iri, both, is_observation=False)
+            triples3, dataIRIs3, dataClasses3, timeUnit3 = add_readings_for_station(station_iri, obs, is_observation=True)
+            triples4, dataIRIs4, dataClasses4, timeUnit4 = add_readings_for_station(station_iri, fcs, is_observation=False)
+
+            # Add triples to INSERT DATA query
+            query_string += triples1
+            query_string += triples2
+            query_string += triples3
+            query_string += triples4
+
+            # Append lists to overarching TimeSeriesClient input lists
+            if dataIRIs1 + dataIRIs3:
+                dataIRIs.append(dataIRIs1 + dataIRIs3)
+                dataClasses.append(dataClasses1 + dataClasses3)
+                timeUnit.append(timeUnit3)
+            if dataIRIs2 + dataIRIs4:
+                dataIRIs.append(dataIRIs2 + dataIRIs4)
+                dataClasses.append(dataClasses2 + dataClasses4)
+                timeUnit.append(timeUnit4)
+
+        # Close query
+        query_string += f"}}"
+
+        # Instantiate all non-time series triples
+        kg_client = KGClient(query_endpoint, update_endpoint)
+        kg_client.performUpdate(query_string)
+        # Instantiate all time series triples
+        ts_client = TSClient()
+        ts_client.ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
 
 
-        # # Add station details
-        # for data in station_data:
-        #     station_IRI = PREFIXES['kb'] + 'ReportingStation_' + str(uuid.uuid4())
-        #     # Extract station information from API result
-        #     to_instantiate = _condition_metoffer_data(data)
-        #     to_instantiate['station_iri'] = station_IRI
-        #     query_string += add_station_data(**to_instantiate)
+def instantiate_all_station_readings(query_endpoint: str = QUERY_ENDPOINT,
+                                    update_endpoint: str = UPDATE_ENDPOINT) -> None:
+        """
+            Instantiates all readings for all instantiated stations
+        """
 
-        # # Close query
-        # query_string += f"}}"
-
-        # # Execute query
-        # kg_client = KGClient(query_endpoint, update_endpoint)
-        # kg_client.performUpdate(query_string)
+        stations = get_all_metoffice_stations()
+        selection = list(stations.keys())[:10]
+        stations_subset = {key: stations[key] for key in selection}
+        
+        instantiate_station_readings(stations_subset)
 
 
 def add_readings_for_station(station_iri: str,
@@ -100,7 +147,8 @@ def add_readings_for_station(station_iri: str,
 
         Arguments:
             station_iri - Station IRI without trailing '<' and '>'
-            readings - list of station readings as returned by MetOffer
+            readings - list of station readings to instantiate
+                       (i.e. OntoEMS concept names)
             is_observation - boolean to indicate whether readings are measure
                              or forecast
             quantity_comments - comments to be attached to quantities
@@ -111,8 +159,8 @@ def add_readings_for_station(station_iri: str,
                                               to TimSeriesClient bulkInit call
     """
 
-    # Condition readings data
-    conditioned_readings = condition_readings_data(readings)
+    # Initialise "creation" time for forecasts
+    t = dt.datetime.utcnow().strftime('%Y-%m-%dT%H:00:00Z')
 
     # Initialise return values : triples for INSERT DATA query & input lists
     # for bulkInit function using TimeSeriesClient
@@ -122,19 +170,21 @@ def add_readings_for_station(station_iri: str,
     timeUnit = TIME_FORMAT
 
     # Get concepts and create IRIs
-    keys = list(conditioned_readings.keys())
-    for i in range(len(keys)):
-        r = keys[i]
+    for i in range(len(readings)):
+        r = readings[i]
         # Create IRI for reported quantity
-        quantity_type = PREFIXES['ems'] + READINGS_MAPPING[r]
-        quantity_iri = PREFIXES['kb'] + READINGS_MAPPING[r] + '_' + str(uuid.uuid4())
+        quantity_type = PREFIXES['ems'] + r
+        quantity_iri = PREFIXES['kb'] + r + '_' + str(uuid.uuid4())
         # Create Measure / Forecast IRI
         if is_observation:
             data_iri = PREFIXES['kb'] + 'Measure_' + str(uuid.uuid4())
             data_iri_type = PREFIXES['om'] + 'Measure'
+            creation_time = None
         else:
             data_iri = PREFIXES['kb'] + 'Forecast_' + str(uuid.uuid4())
             data_iri_type = PREFIXES['ems'] + 'Forecast'
+            creation_time = t
+
         unit = UNITS_MAPPING[r][0]
         symbol = UNITS_MAPPING[r][1]
 
@@ -142,7 +192,8 @@ def add_readings_for_station(station_iri: str,
         comment = quantity_comments[i] if quantity_comments else None
         triples += add_om_quantity(station_iri, quantity_iri, quantity_type,
                                   data_iri, data_iri_type, unit, symbol,
-                                  is_observation, comment)
+                                  is_observation, creation_time=creation_time, 
+                                  comment=comment)
 
         # Get data to bulkInit time series
         dataIRIs.append(data_iri)
@@ -180,6 +231,46 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
 
     return conditioned
 
+
+def retrieve_readings_concepts_for_station(metclient, station_id: str, 
+                                          observations: bool = True,
+                                          forecasts: bool = True):
+    """
+        Retrieve station readings via Metoffer client
+    """
+
+    available_obs = []
+    available_fcs = []
+
+    if observations:
+        # Load OBSERVATIONS data for that station
+        try:
+            obs = metclient.loc_observations(station_id)
+            observation = metoffer.Weather(obs)
+            available_obs = condition_readings_data(observation.data)
+            available_obs = list(available_obs.keys())
+            available_obs = [READINGS_MAPPING[i] for i in available_obs]
+        except:
+            print('Error while retrieving observation for station ID: {:>10}'.format(station_id))
+            #logger.warning('Error while retrieving observation for station ID: {:>10}'.format(id))
+
+    if forecasts:
+        # Load 3-hourly FORECAST data for that station
+        try:
+            fc = metclient.loc_forecast(station_id, metoffer.THREE_HOURLY)
+            forecast = metoffer.Weather(fc)
+            available_fcs = condition_readings_data(forecast.data)
+            available_fcs = list(available_fcs.keys())
+            available_fcs = [READINGS_MAPPING[i] for i in available_fcs]
+        except:
+            print('Error while retrieving forecast for station ID: {:>10}'.format(station_id))
+            #logger.warning('Error while retrieving forecast for station ID: {:>10}'.format(id))
+
+    return available_obs, available_fcs
+
+
 if __name__ == '__main__':
 
-    instantiate_station_readings([])
+    print(dt.datetime.now().strftime('%Y-%m-%dT%H:%M'))
+    instantiate_all_station_readings()
+    print(dt.datetime.now().strftime('%Y-%m-%dT%H:%M'))

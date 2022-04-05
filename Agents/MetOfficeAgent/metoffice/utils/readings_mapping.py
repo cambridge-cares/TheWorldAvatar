@@ -29,17 +29,17 @@ READINGS_MAPPING = {
 
 # Mapping of units to OM units and symbols
 UNITS_MAPPING = {
-    'Temperature': ('om:degreeCelsius', '&#x00B0;C'), # °C
-    'Feels Like Temperature': ('om:degreeCelsius', '&#x00B0;C'), # °C
-    'Dew Point': ('om:degreeCelsius', '&#x00B0;C'), # °C
-    'Pressure': ('om:hectopascal', 'hPa'),
-    'Precipitation Probability': ('om:percent', '%'),
-    'Screen Relative Humidity': ('om:percent', '%'),
+    'AirTemperature': ('om:degreeCelsius', '&#x00B0;C'), # °C
+    'FeelsLikeTemperature': ('om:degreeCelsius', '&#x00B0;C'), # °C
+    'DewPoint': ('om:degreeCelsius', '&#x00B0;C'), # °C
+    'AtmosphericPressure': ('om:hectopascal', 'hPa'),
+    'PrecipitationProbability': ('om:percent', '%'),
+    'RelativeHumidity': ('om:percent', '%'),
     'Visibility': ('om:metre', 'm'),
-    'Wind Speed': ('om:mile-StatutePerHour', 'mi/h'),
-    'Wind Gust': ('om:mile-StatutePerHour', 'mi/h'),
-    'Wind Direction': ('degree', '&#x00B0;'),   # °
-    'Max UV Index': ('om:one', '1')
+    'WindSpeed': ('om:mile-StatutePerHour', 'mi/h'),
+    'WindGust': ('om:mile-StatutePerHour', 'mi/h'),
+    'WindDirection': ('om:degree', '&#x00B0;'),   # °
+    'UVIndex': ('om:one', '1')
 }
 
 # Mapping of 16 wind direction readings to angles wrt true north

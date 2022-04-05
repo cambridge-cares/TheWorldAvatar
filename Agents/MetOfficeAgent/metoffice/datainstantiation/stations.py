@@ -157,3 +157,4 @@ def _condition_metoffer_data(station_data: dict) -> dict:
 if __name__ == '__main__':
 
     instantiate_all_stations()
+    

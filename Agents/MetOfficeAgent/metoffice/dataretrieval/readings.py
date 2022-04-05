@@ -29,7 +29,7 @@ def get_all_instantiated_observations(query_endpoint: str = QUERY_ENDPOINT,
     kg_client = KGClient(query_endpoint, update_endpoint)
     results = kg_client.performQuery(query=query_string)
     # Parse results into DataFrame
-    df = pd.DataFrame(columns=['stationID', 'quantityType', 'dataIRI', 'tsIRI'])
+    df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
     
     return df
@@ -46,7 +46,7 @@ def get_all_instantiated_forecasts(query_endpoint: str = QUERY_ENDPOINT,
     kg_client = KGClient(query_endpoint, update_endpoint)
     results = kg_client.performQuery(query=query_string)
     # Parse results into DataFrame
-    df = pd.DataFrame(columns=['stationID', 'quantityType', 'dataIRI', 'tsIRI'])
+    df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
     
     return df
@@ -63,7 +63,7 @@ def get_all_instantiated_observation_timeseries(query_endpoint: str = QUERY_ENDP
     kg_client = KGClient(query_endpoint, update_endpoint)
     results = kg_client.performQuery(query=query_string)
     # Parse results into DataFrame
-    df = pd.DataFrame(columns=['stationID', 'quantityType', 'dataIRI', 'tsIRI'])
+    df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
     
     return df
@@ -80,7 +80,7 @@ def get_all_instantiated_forecast_timeseries(query_endpoint: str = QUERY_ENDPOIN
     kg_client = KGClient(query_endpoint, update_endpoint)
     results = kg_client.performQuery(query=query_string)
     # Parse results into DataFrame
-    df = pd.DataFrame(columns=['stationID', 'quantityType', 'dataIRI', 'tsIRI'])
+    df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
     
     return df

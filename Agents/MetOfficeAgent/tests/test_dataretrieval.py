@@ -70,4 +70,4 @@ def test_get_all_metoffice_stations(initialise_triple_store):
                                           circle_center='57.5#-3.5',
                                           circle_radius='100')
         assert len(res) == 1
-        assert list(res[0].keys())[0] == station_data['station1']['id']
+        assert list(res.keys())[0] == station_data['station1']['id']
