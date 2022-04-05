@@ -892,4 +892,93 @@ public class RemoteStoreClient implements StoreClientInterface {
             throw new JPSRuntimeException("Upload RDF file failed.", ex);
         }
     }
+    
+    /**
+     * same method as above but receives extension as a separate argument
+     * @param file
+     * @param extension
+     */
+    public void uploadFile(File file, String extension) {
+    	if (!file.exists()) {
+    		throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
+    	}
+    	
+    	HttpEntity entity;
+    	switch (extension) {
+    		case "rdf":
+    		case "rdfs":
+    		case "owl":
+    		case "xml":
+    			entity = new FileEntity(file, ContentType.create("application/rdf+xml"));
+    			break;
+    		
+    		case "nt":
+    			entity = new FileEntity(file, ContentType.TEXT_PLAIN);
+    			break;
+    			
+    		case "ntx":
+    			entity = new FileEntity(file, ContentType.create("application/x-n-triples-RDR"));
+    			break;
+
+    		case "ttl":
+    			entity = new FileEntity(file, ContentType.create("application/x-turtle"));
+    			break;
+    			
+    		case "ttlx":
+    			entity = new FileEntity(file, ContentType.create("application/x-turtle-RDR"));
+    			break;
+    			
+    		case "n3":
+    			entity = new FileEntity(file, ContentType.create("text/rdf+n3"));
+    			break;
+    			
+    		case "trix":
+    			entity = new FileEntity(file, ContentType.create("application/trix"));
+    			break;
+    			
+    		case "trig":
+    			entity = new FileEntity(file, ContentType.create("application/x-trig"));
+    			break;
+    			
+    		case "nq":
+    			entity = new FileEntity(file, ContentType.create("text/x-nquads"));
+    			break;
+    			
+    		case "srj":
+    			entity = new FileEntity(file, ContentType.create("application/sparql-results+json"));
+    			break;
+    			
+    		case "json":
+    			entity = new FileEntity(file, ContentType.APPLICATION_JSON);
+    			break;
+    		
+    		default:
+    			throw new JPSRuntimeException("Unsupported file extension: " + extension);
+    	}
+
+        // tried a few methods to add credentials, this seems to be the only way that works
+        // i.e. setting it manually in the header
+        HttpPost postRequest = new HttpPost(this.updateEndpoint);
+        if ((this.userName != null) && (this.password != null)) {
+            String auth = this.userName + ":" + this.password;
+            String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes());
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+        }
+
+        // add contents to the post request 
+        postRequest.setEntity(entity);
+
+        LOGGER.info("Uploading " + file + " to " + this.updateEndpoint);
+        // then send the post request
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            CloseableHttpResponse response = httpclient.execute(postRequest);
+
+            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
+                throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
+            }
+        } catch (IOException ex) {
+            throw new JPSRuntimeException("Upload RDF file failed.", ex);
+        }
+    }
 }
