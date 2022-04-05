@@ -84,42 +84,31 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
     return triples
 
 
-def instantiate_om_quantity(station, quantity_type_str, quantity_type,
-                            comment, unitsymbol, observation=True):
+def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
+                    data_iri_type, unit, symbol, is_observation: bool, 
+                    comment=None):
     """
-        Create 
+        Create triples to instantiate station measurements
     """
-    # Create IRI for reported quantity
-    quantity = PREFIXES['kb'] + quantity_type_str + '_' + str(uuid.uuid4())
-    # Create IRI for measure/forecast
-    if observation:
-        iri = PREFIXES['kb'] + mf_type_string + '_' + str(uuid.uuid4())
-        substring = f"""<{quantity}> om:hasValue <{iri}> ."""
+    # Create triple for measure vs. forecast
+    if is_observation:
+        triple = f"""<{quantity_iri}> om:hasValue <{data_iri}> . """
+        
     else:
-        iri = PREFIXES['kb'] + mf_type_string + '_' + str(uuid.uuid4())
-        substring = f"""<{quantity}> om:hasForecastedValue <{iri}> ."""
-    
-    # Construct query
-    quantity = PREFIXES['kb'] + quantity_type_str + '_' + str(uuid.uuid4())
-    query = f"""
-        {create_sparql_prefix('rdf')}
-        {create_sparql_prefix('rdfs')}
-        {create_sparql_prefix('om')}
-        {create_sparql_prefix('xsd')}
-        {create_sparql_prefix('ems')}
-        {create_sparql_prefix('kb')}
-        INSERT DATA {{
-            <{station}> ems:reports <{quantity}> .
-            <{quantity}> rdf:type {quantity_type} .
-            <{quantity}> rdfs:comment "{comment}"^^xsd:string .
-            {substring}
-            <{iri}> rdf:type {mf_type} .
-            <{iri}> om:hasUnit om:Unit .
-            om:Unit om:symbol "{unitsymbol}"^^xsd:string .
-    """
+        triple = f"""<{quantity_iri}> ems:hasForecastedValue <{data_iri}> . """
 
-def add_quantity(quantity: str):
-    # Create IRI for instance of subclass of quantity
-    iri = PREFIXES['kb'] + '{quantity}_' + str(uuid.uuid4())
-    triple = f"<{iri}> rdf:type ems:{quantity} ."
-    return triple, iri
+    # Create triples to instantiate station measurement according to OntoEMS
+    triples = f"""
+        <{station_iri}> ems:reports <{quantity_iri}> . 
+        <{quantity_iri}> rdf:type <{quantity_type}> .
+        <{data_iri}> rdf:type <{data_iri_type}> .
+        <{data_iri}> om:hasUnit {unit} .
+        {unit} om:symbol "{symbol}"^^xsd:string .
+    """
+    triples += triple
+
+    # Create optional comment to quantity
+    if comment:
+        triples += f"""<{quantity_iri}> rdfs:comment "{comment}"^^xsd:string . """
+
+    return triples

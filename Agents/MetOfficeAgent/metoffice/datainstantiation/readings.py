@@ -6,7 +6,9 @@
 # The purpose of this module is to provide functions to retrieve 
 # readings data from the API and instantiate it in the KG
 
+import unittest
 import uuid
+from xmlrpc.client import boolean
 import metoffer
 import datetime as dt
 
@@ -18,7 +20,8 @@ from metoffice.kgutils.prefixes import create_sparql_prefix
 from metoffice.kgutils.prefixes import PREFIXES
 from metoffice.kgutils.querytemplates import *
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
-from metoffice.utils.readings_mapping import READINGS_MAPPING, COMPASS
+from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, TIME_FORMAT, DATACLASS
+
 
 # # Initialise logger
 # logger = agentlogging.get_logger("dev")
@@ -67,15 +70,65 @@ from metoffice.utils.readings_mapping import READINGS_MAPPING, COMPASS
 #     # kg_client.performUpdate(query_string)
 
 
-# def instantiate_readings_for_station(station_iri: str,
-#                                      readings: list) -> str:
-#     """
+def add_readings_for_station(station_iri: str,
+                             readings: list, is_observation: bool,
+                             quantity_comments: list = None):
+    """
+        Return SPARQL update query string to instantiate readings for given 
+        station IRI (query string to be included in overarching INSERT DATA query)
 
-#     """
+        Arguments:
+            station_iri - Station IRI without trailing '<' and '>'
+            readings - list of station readings as returned by MetOffer
+            is_observation - boolean to indicate whether readings are measure
+                             or forecast
+        
+        Returns
+            triples - triples to be added to INSERT DATA query
+            dataIRIs, dataClasses, timeUnit - to be appended to input arguments
+                                              to TimSeriesClient bulkInit call
+            quantity_comments - comments to be attached to quantities
 
-#     # Condition readings data
+    """
 
-#     return ''
+    # Condition readings data
+    conditioned_readings = condition_readings_data(readings)
+
+    # Initialise return values : triples for INSERT DATA query & input lists
+    # for bulkInit function using TimeSeriesClient
+    triples = ''
+    dataIRIs = []
+    dataClasses = []
+    timeUnit = TIME_FORMAT
+
+    # Get concepts and create IRIs
+    keys = list(conditioned_readings.keys())
+    for i in range(len(keys)):
+        r = keys[i]
+        # Create IRI for reported quantity
+        quantity_type = PREFIXES['ems'] + READINGS_MAPPING[r]
+        quantity_iri = PREFIXES['kb'] + READINGS_MAPPING[r] + '_' + str(uuid.uuid4())
+        # Create Measure / Forecast IRI
+        if is_observation:
+            data_iri = PREFIXES['kb'] + 'Measure_' + str(uuid.uuid4())
+            data_iri_type = PREFIXES['om'] + 'Measure'
+        else:
+            data_iri = PREFIXES['kb'] + 'Forecast_' + str(uuid.uuid4())
+            data_iri_type = PREFIXES['ems'] + 'Forecast'
+        unit = UNITS_MAPPING[r][0]
+        symbol = UNITS_MAPPING[r][1]
+
+        # Add triples to instantiate
+        comment = quantity_comments[i] if quantity_comments else None
+        triples += add_om_quantity(station_iri, quantity_iri, quantity_type,
+                                  data_iri, data_iri_type, unit, symbol,
+                                  is_observation, comment)
+
+        # Get data to bulkInit time series
+        dataIRIs.append(data_iri)
+        dataClasses.append(DATACLASS)
+
+    return triples, dataIRIs, dataClasses, timeUnit
 
 
 # def retrieve_station_readings_from_api(api_key: str = None) -> list:
@@ -120,7 +173,7 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
         Condition retrieved MetOffer readings as required for query template
 
         Arguments:
-            readings_data - readings data dict as returned by MetOffer
+            readings_data - readings data list as returned by MetOffer
             only_keys - boolean flag indicating whether only the keys (i.e. variable
                         names) shall be retrieved or also time series data
     """
@@ -128,19 +181,18 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
     # Read all unique measurement variables
     read_variables = [v for data in readings_data for v in list(data.keys())]
     read_variables = list(set(read_variables))
+    relevant_variables = list(set(read_variables) & set(READINGS_MAPPING.keys()))
     # Initialise dict of conditioned readings
-    conditioned = dict(zip(list(READINGS_MAPPING.keys()), 
-                                [None]*len(list(READINGS_MAPPING.keys()))))
+    conditioned = dict(zip(relevant_variables, [None]*len(relevant_variables)))
 
     if not only_keys:
         # Read reported times and values for variables
-        for read_var in read_variables:
+        for read_var in relevant_variables:
             if read_var == 'timestamp':
-                conditioned[read_var] = [dt.datetime.strftime(r[read_var][0], '%Y-%m-%dT%H:%M:%SZ') for r in readings_data]
-            elif read_var in READINGS_MAPPING:
-                if read_var == 'Wind Direction':
-                    conditioned[read_var] = [float(COMPASS[r[read_var][0]]) for r in readings_data]
-                else:
-                    conditioned[read_var] = [float(r[read_var][0]) for r in readings_data]
-    
+                conditioned[read_var] = [dt.datetime.strftime(r[read_var][0], TIME_FORMAT) for r in readings_data]
+            elif read_var == 'Wind Direction':
+                conditioned[read_var] = [float(COMPASS[r[read_var][0]]) for r in readings_data]
+            else:
+                conditioned[read_var] = [float(r[read_var][0]) for r in readings_data]
+
     return conditioned

@@ -196,17 +196,12 @@ def test_condition_readings_data():
         ] 
     # Expected results
     expected1 = {'Temperature': None, 'Pressure': None, 'Dew Point': None, 
-                 'Feels Like Temperature': None, 'Precipitation Probability': None, 
-                 'Screen Relative Humidity': None, 'Max UV Index': None, 
-                 'Visibility': None, 'Wind Direction': None, 'Wind Speed': None, 
-                 'Wind Gust': None}
+                 'Screen Relative Humidity': None, 'Visibility': None, 
+                 'Wind Direction': None, 'Wind Speed': None, 'Wind Gust': None}
     expected2 = {'Temperature': [9.8, 10.0, 9.8], 
                  'Pressure': [1002.0, 1001.0, 1001.0], 
                  'Dew Point': [8.3, 8.1, 8.4], 
-                 'Feels Like Temperature': None, 
-                 'Precipitation Probability': None, 
                  'Screen Relative Humidity': [90.3, 87.9, 90.9], 
-                 'Max UV Index': None, 
                  'Visibility': [75000.0, 75000.0, 29000.0], 
                  'Wind Direction': [180.0, 247.5, 45.0], 
                  'Wind Speed': [21.0, 19.0, 22.0], 
@@ -222,3 +217,56 @@ def test_condition_readings_data():
     res = condition_readings_data(test_readings, False)
     for k in res:
         assert res[k] == expected2[k]
+
+
+def test_add_readings_for_station(mocker):
+
+    # Test readings data as returned by metoffer
+    test_readings = [
+        {'Dew Point': (8.3, 'C', 'Dp'),
+         'Wind Gust': (30, 'mph', 'G')}
+    ] 
+    # Expected result
+    expected_obs1_1 = '<http://Station/1> ems:reports <http://www.theworldavatar.com/kb/ontoems/WindGust_1> . <http://www.theworldavatar.com/kb/ontoems/WindGust_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindGust> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> om:hasUnit om:mile-StatutePerHour . om:mile-StatutePerHour om:symbol "mi/h"^^xsd:string . <http://www.theworldavatar.com/kb/ontoems/WindGust_1> om:hasValue <http://www.theworldavatar.com/kb/ontoems/Measure_1> .'
+    expected_obs1_2 = '<http://Station/1> ems:reports <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> . <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DewPoint> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> om:hasUnit om:degreeCelsius . om:degreeCelsius om:symbol "&#x00B0;C"^^xsd:string . <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> om:hasValue <http://www.theworldavatar.com/kb/ontoems/Measure_1> .'
+    expected_obs2_1 = '<http://Station/1> ems:reports <http://www.theworldavatar.com/kb/ontoems/WindGust_1> . <http://www.theworldavatar.com/kb/ontoems/WindGust_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindGust> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> om:hasUnit om:mile-StatutePerHour . om:mile-StatutePerHour om:symbol "mi/h"^^xsd:string . <http://www.theworldavatar.com/kb/ontoems/WindGust_1> om:hasValue <http://www.theworldavatar.com/kb/ontoems/Measure_1> . <http://www.theworldavatar.com/kb/ontoems/WindGust_1> rdfs:comment "test1"^^xsd:string .'
+    expected_obs2_2 = '<http://Station/1> ems:reports <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> . <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DewPoint> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> . <http://www.theworldavatar.com/kb/ontoems/Measure_1> om:hasUnit om:degreeCelsius . om:degreeCelsius om:symbol "&#x00B0;C"^^xsd:string . <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> om:hasValue <http://www.theworldavatar.com/kb/ontoems/Measure_1> . <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> rdfs:comment "test2"^^xsd:string .'
+    expected_fc1 = '<http://Station/1> ems:reports <http://www.theworldavatar.com/kb/ontoems/WindGust_1> . <http://www.theworldavatar.com/kb/ontoems/WindGust_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindGust> . <http://www.theworldavatar.com/kb/ontoems/Forecast_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Forecast> . <http://www.theworldavatar.com/kb/ontoems/Forecast_1> om:hasUnit om:mile-StatutePerHour . om:mile-StatutePerHour om:symbol "mi/h"^^xsd:string . <http://www.theworldavatar.com/kb/ontoems/WindGust_1> ems:hasForecastedValue <http://www.theworldavatar.com/kb/ontoems/Forecast_1> .'
+    expected_fc2 = '<http://Station/1> ems:reports <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> . <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DewPoint> . <http://www.theworldavatar.com/kb/ontoems/Forecast_1> rdf:type <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Forecast> . <http://www.theworldavatar.com/kb/ontoems/Forecast_1> om:hasUnit om:degreeCelsius . om:degreeCelsius om:symbol "&#x00B0;C"^^xsd:string . <http://www.theworldavatar.com/kb/ontoems/DewPoint_1> ems:hasForecastedValue <http://www.theworldavatar.com/kb/ontoems/Forecast_1> .'
+
+    # Mock call to uuid function
+    m = mocker.patch('uuid.uuid4', return_value=str(1))
+        
+    station_iri = 'http://Station/1'
+
+    # Perform test for observation without comment
+    res = add_readings_for_station(station_iri, test_readings, is_observation=True)
+    query = res[0]
+    query = re.sub(r'\n', '', query)
+    query = re.sub(r' +', ' ', query)
+    query = query.strip()
+    assert (expected_obs1_1 in query) and (expected_obs1_2 in query)
+    assert len(res[1]) == 2
+    assert res[1] == ['http://www.theworldavatar.com/kb/ontoems/Measure_1']*2
+
+    # Perform test for observation with comment
+    comments = ['test1', 'test2']
+    res = add_readings_for_station(station_iri, test_readings, is_observation=True, 
+                                   quantity_comments=comments)
+    query = res[0]
+    query = re.sub(r'\n', '', query)
+    query = re.sub(r' +', ' ', query)
+    query = query.strip()
+    assert (expected_obs2_1 in query) and (expected_obs2_2 in query)
+    assert len(res[1]) == 2
+    assert res[1] == ['http://www.theworldavatar.com/kb/ontoems/Measure_1']*2
+
+    # Perform test for forecast without comment
+    res = add_readings_for_station(station_iri, test_readings, is_observation=False)
+    query = res[0]
+    query = re.sub(r'\n', '', query)
+    query = re.sub(r' +', ' ', query)
+    query = query.strip()
+    assert (expected_fc1 in query) and (expected_fc2 in query)
+    assert len(res[1]) == 2
+    assert res[1] == ['http://www.theworldavatar.com/kb/ontoems/Forecast_1']*2

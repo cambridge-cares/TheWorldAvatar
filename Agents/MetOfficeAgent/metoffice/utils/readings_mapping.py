@@ -7,6 +7,8 @@
 # observation variables from Met Office (via metoffer) to corresponding
 # concepts and units as defined in OntoEMS
 
+from metoffice.kgutils.javagateway import jpsBaseLibGW
+
 
 # Mapping of observation variables to OntoEMS concepts
 READINGS_MAPPING = {
@@ -18,6 +20,8 @@ READINGS_MAPPING = {
     'Screen Relative Humidity': 'RelativeHumidity',
     'Max UV Index':'UVIndex',
     'Visibility': 'Visibility',
+    # Wind direction is measured relative to true north (not magnetic north) 
+    # and is reported from where the wind is blowing
     'Wind Direction': 'WindDirection',
     'Wind Speed': 'WindSpeed',
     'Wind Gust': 'WindGust'
@@ -25,13 +29,17 @@ READINGS_MAPPING = {
 
 # Mapping of units to OM units and symbols
 UNITS_MAPPING = {
-    'C': ('om:degreeCelsius', '&#x00B0;C'), # °C
-    'hpa': ('om:hectopascal', 'hPa'),
-    '%': ('om:percent', '%'),
-    'm': ('om:metre', 'm'),
-    'mph': ('om:mile-StatutePerHour', 'mi/h'),
-    '': ('om:one', '1'),
-    'compass': ('degree', '&#x00B0;')   # °
+    'Temperature': ('om:degreeCelsius', '&#x00B0;C'), # °C
+    'Feels Like Temperature': ('om:degreeCelsius', '&#x00B0;C'), # °C
+    'Dew Point': ('om:degreeCelsius', '&#x00B0;C'), # °C
+    'Pressure': ('om:hectopascal', 'hPa'),
+    'Precipitation Probability': ('om:percent', '%'),
+    'Screen Relative Humidity': ('om:percent', '%'),
+    'Visibility': ('om:metre', 'm'),
+    'Wind Speed': ('om:mile-StatutePerHour', 'mi/h'),
+    'Wind Gust': ('om:mile-StatutePerHour', 'mi/h'),
+    'Wind Direction': ('degree', '&#x00B0;'),   # °
+    'Max UV Index': ('om:one', '1')
 }
 
 # Mapping of 16 wind direction readings to angles wrt true north
@@ -53,3 +61,10 @@ COMPASS = {
     'NW':   315.0,
     'NNW':  337.5,
 }
+
+# Times are reported in ISO 8601 dateTime (UTC)
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+# Create data class for all time series data (i.e. all data as double)
+jpsBaseLibView = jpsBaseLibGW.createModuleView()
+DATACLASS = jpsBaseLibView.java.lang.Double.TYPE
