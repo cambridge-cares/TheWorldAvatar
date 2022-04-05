@@ -16,6 +16,10 @@ PREFIXES = {
     'geo': 'http://www.bigdata.com/rdf/geospatial#',
     'geolit': 'http://www.bigdata.com/rdf/geospatial/literals/v1#',
     'om' : 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
+    'owl': 'http://www.w3.org/2002/07/owl#',
+    'm3l': 'http://purl.org/iot/vocab/m3-lite#',
+    'weather': 'https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#',
+    'sio': 'http://semanticscience.org/resource/',
     # CoMo / CARES ontologies
     'ems': 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#',
     'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',

@@ -6,6 +6,9 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
+import uuid
+
+from metoffice.kgutils.prefixes import PREFIXES
 from metoffice.kgutils.prefixes import create_sparql_prefix
 
 
@@ -79,3 +82,44 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
         triples = None
     
     return triples
+
+
+def instantiate_om_quantity(station, quantity_type_str, quantity_type,
+                            comment, unitsymbol, observation=True):
+    """
+        Create 
+    """
+    # Create IRI for reported quantity
+    quantity = PREFIXES['kb'] + quantity_type_str + '_' + str(uuid.uuid4())
+    # Create IRI for measure/forecast
+    if observation:
+        iri = PREFIXES['kb'] + mf_type_string + '_' + str(uuid.uuid4())
+        substring = f"""<{quantity}> om:hasValue <{iri}> ."""
+    else:
+        iri = PREFIXES['kb'] + mf_type_string + '_' + str(uuid.uuid4())
+        substring = f"""<{quantity}> om:hasForecastedValue <{iri}> ."""
+    
+    # Construct query
+    quantity = PREFIXES['kb'] + quantity_type_str + '_' + str(uuid.uuid4())
+    query = f"""
+        {create_sparql_prefix('rdf')}
+        {create_sparql_prefix('rdfs')}
+        {create_sparql_prefix('om')}
+        {create_sparql_prefix('xsd')}
+        {create_sparql_prefix('ems')}
+        {create_sparql_prefix('kb')}
+        INSERT DATA {{
+            <{station}> ems:reports <{quantity}> .
+            <{quantity}> rdf:type {quantity_type} .
+            <{quantity}> rdfs:comment "{comment}"^^xsd:string .
+            {substring}
+            <{iri}> rdf:type {mf_type} .
+            <{iri}> om:hasUnit om:Unit .
+            om:Unit om:symbol "{unitsymbol}"^^xsd:string .
+    """
+
+def add_quantity(quantity: str):
+    # Create IRI for instance of subclass of quantity
+    iri = PREFIXES['kb'] + '{quantity}_' + str(uuid.uuid4())
+    triple = f"<{iri}> rdf:type ems:{quantity} ."
+    return triple, iri
