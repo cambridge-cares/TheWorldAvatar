@@ -44,3 +44,6 @@ Therein is a README.md file. Follow the instructions within (two lines to run fr
 Once these are run, you should see a new docker container running. To see this, click 'open in browser' from the options. 
 
 If everything worked you should now have a webpage running and visualising the data. 
+
+Also: 
+The 'mapping' folder is not run as part of the main program(s), and its functionally seperate. The readme within details its use. 
