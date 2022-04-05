@@ -13,7 +13,7 @@ setup(
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/EntityRDFizer",
     python_requires='>=3.5, <4',
     include_package_data=True,
-    install_requires= ['rdflib>=4.2, <6.0', 'docopt', 'py4jps>=1.0.6, <=1.0.14'],
+    install_requires= ['rdflib>=4.2, <6.0', 'docopt', 'py4jps>=1.0.6'],
     entry_points={  # Optional
         'console_scripts': [
             'csv2rdf=entityrdfizer.driver:main',
