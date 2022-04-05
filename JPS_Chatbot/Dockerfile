@@ -13,7 +13,7 @@ RUN sed -i "s|REPO_URL|${repo_url}|g;s|REPO_USERNAME|$(cat ../credentials/repo_u
 
 # Download Maven dependencies
 WORKDIR /root/
-RUN mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
+RUN --mount=type=cache,target=/root/.m2/repository mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
 
 # Download geckodriver
 RUN apt-get update && apt-get install wget -y

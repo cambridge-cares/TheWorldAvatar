@@ -1,22 +1,9 @@
 ﻿import io
 
-def writeNasaChemkinBlock(Formula,Composition,P,Tlow,Tmid,Thigh,
-                     NasaHighTCoeffs,NasaLowTCoeffs,EnthRef=None,
-                     EnthRefTemp=None):
+def writeNasaChemkinBlock(Formula,Composition,Tlow,Tmid,Thigh,
+                     NasaHighTCoeffs,NasaLowTCoeffs):
+
     thdfile = io.StringIO(newline='')
-    #thdfile.write("# Pref=")
-    #thdfile.write("{0:13.6e}".format(P))
-    #thdfile.write(" Pa")
-    #thdfile.write("{:1}".format('\n'))
-    #if EnthRef is None:
-    #    thdfile.write("# Href=None")
-    #else:
-    #    thdfile.write("# Href= ")
-    #    thdfile.write("{0:13.6e}".format(EnthRef))
-    #    thdfile.write(" J/mol @ Tref= ")
-    #    thdfile.write("{0:13.6e}".format(EnthRefTemp))
-    #    thdfile.write(" K")
-    #thdfile.write("{:1}".format('\n'))
     thdfile.write("{:16}".format(Formula))
     thdfile.write("{:8}".format('STHD'))
     for i in range(0,8):

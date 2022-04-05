@@ -26,6 +26,10 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
+@Deprecated
+/**
+ * @deprecated QueryBorker is deprecated. The AccessAgent should be called instead, using query and update methods in JPSAgent or AccessAgentCaller. 
+ */
 public class QueryBroker {
 
     /**

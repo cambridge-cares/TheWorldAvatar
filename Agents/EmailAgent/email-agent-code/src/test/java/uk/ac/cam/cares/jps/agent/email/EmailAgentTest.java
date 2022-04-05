@@ -82,7 +82,7 @@ public class EmailAgentTest {
         EmailAgent agent = new EmailAgent();
 
         // Pass in request and get result
-        JSONObject result = agent.processRequestParameters(SAMPLE_REQUEST_GOOD, new MockHttpServletRequest());
+        JSONObject result = agent.processRequestParameters(SAMPLE_REQUEST_GOOD, new MockHttpServletRequest("/send"));
 
         boolean hasStatus = !result.isNull("status");
         Assertions.assertTrue(hasStatus, "Expected a 'status' field from JSON result!");
@@ -106,7 +106,7 @@ public class EmailAgentTest {
         // Base Library actually throws a RuntimeException
         Assertions.assertThrows(RuntimeException.class, () -> {
             // Pass in request and get result
-            agent.processRequestParameters(SAMPLE_REQUEST_BAD, new MockHttpServletRequest());
+            agent.processRequestParameters(SAMPLE_REQUEST_BAD, new MockHttpServletRequest("/send"));
             Assertions.fail("Bad request passed in, expected an Exception to be thrown!");
         }, "Expected a BadRequestException to be thrown!");
     }
@@ -115,18 +115,17 @@ public class EmailAgentTest {
      * Tests the ping functionality of the EmailAgent.
      */
     @Test
-    public void testPing() {
-        LOGGER.debug("Running testPing()...");
+    public void testStatus() {
+        LOGGER.debug("Running testStatus()...");
         
         // New agent
         EmailAgent agent = new EmailAgent();
 
         // Ping request
         JSONObject request = new JSONObject();
-        request.put("ping", "true");
-
+        
         // Pass in request and get result
-        JSONObject result = agent.processRequestParameters(request, new MockHttpServletRequest());
+        JSONObject result = agent.processRequestParameters(request, new MockHttpServletRequest("/status"));
 
         boolean hasStatus = !result.isNull("status");
         Assertions.assertTrue(hasStatus, "Expected a 'status' field from JSON result!");
