@@ -15,7 +15,7 @@ import UK_Digital_Twin_Package.PYPOWER.pypower.runpf as pf
 
 from numpy import r_, c_, ix_, zeros, pi, ones, exp, union1d, array, linalg, where, logical_or, arange, \
                     ones, sort, exp, pi, diff, min, \
-                    argmin, argmax, real, imag, any
+                    argmin, argmax, real, imag, any, delete
 from numpy import flatnonzero as find
 from scipy.sparse import hstack, vstack
 
@@ -46,7 +46,8 @@ class powerFlowAnalysis:
         
         self.PFOrOPFAnalysis = PFOrOPFAnalysis
         
-        self.ConvergeFlag = None
+        self.ConvergeFlag = -1
+        self.Terminate = False
         
         self.SlackBusName = []
         self.PVBusName = []
@@ -80,14 +81,17 @@ class powerFlowAnalysis:
              ObjectSet[UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord])] = UKPowerGridModel.UKEbusModel()
              for varKey in businput.keys():
                  setattr(ObjectSet.get(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord])), varKey, businput[varKey])
-                 if UKPowerGridModel.UKEbusModel.INPUT_VARIABLE_KEYS.index(varKey) == BUS_TYPE: 
-                     if businput[varKey] == REF:
-                         self.SlackBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))
-                     elif businput[varKey] == PV:
-                         self.PVBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))
-                     elif businput[varKey] == PQ:    
-                         self.PQBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))
+                 if UKPowerGridModel.UKEbusModel.INPUT_VARIABLE_KEYS.index(varKey) == BUS_TYPE:                      
+                     if int(businput[varKey]) == REF:                        
+                         self.SlackBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))                         
+                     elif int(businput[varKey]) == PV:                        
+                         self.PVBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))                        
+                     elif int(businput[varKey]) == PQ:                            
+                         self.PQBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))                         
+         
                          
+         print("Bus type list ", self.SlackBusName, self.PVBusName, self.PQBusName)
+            
          self.NumberOfBus = len(BusInput)        
          
          ## query branch input
@@ -200,7 +204,7 @@ class powerFlowAnalysis:
          """
          
          if not hasattr(self, 'ppc'): 
-             if ppc is None or not isinstance(ppc, list ):
+             if ppc is None or not isinstance(ppc, list):
                  raise Exception("The model input has not been reformatted, please run the function ModelInputFormatter at first.")
              else:
                  self.ppc = ppc
@@ -208,7 +212,7 @@ class powerFlowAnalysis:
          ##-- starts pf analysis --## 
          # set up numerical method: Newton's Method
          self.ppopt = ppoption(OUT_ALL = 1, VERBOSE = 2, PF_ALG = 1, PF_MAX_IT = 20) 
-         self.results, _ = runpf(self.ppc, self.ppopt)
+         self.results, _, _ = pf.runpf(self.ppc, self.ppopt) #TODO: use the original pypower
          
          self.ConvergeFlag = self.results["success"]
          
@@ -370,45 +374,71 @@ class powerFlowAnalysis:
         J12 = dS_dVm[array([pvpq]).T, pq].real
         J21 = dS_dVa[array([pq]).T, pvpq].imag
         J22 = dS_dVm[array([pq]).T, pq].imag
-
+        ## Jacobian Matrix
         J = vstack([
                 hstack([J11, J12]),
                 hstack([J21, J22])
             ], format="csr")
-
+        
+        ## SVD operation of the Jacobian matrix
         U, s, _V = linalg.svd(J.toarray(), full_matrices=True)        
-        normalised_V = abs(_V[-1]/(linalg.norm(_V[-1])))       
-        indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0] + 1 #TODO: ordered from large to small 
+        normalised_V = abs(_V[-1]/(linalg.norm(_V[-1])))  
         
-        numberOfPEq = self.NumberOfBus - len(self.SlackBusName)
-        numberOfQEq = self.NumberOfBus - len(self.SlackBusName) -len(self.PVBusName)
+        ## Initialise the ACCEPT flag to identify whether the selected bus is the proper one 
+        ACCEPT = False
         
-        if indexOfMaxV_firstIteration <= numberOfPEq:
-            busToBeSwitched = indexOfMaxV_firstIteration
-            for sb in self.SlackBusName:
-                if indexOfMaxV_firstIteration >= getattr(self.ObjectSet.get(sb),"BUS"):
-                    busToBeSwitched += 1               
-        else:
-            busToBeSwitched = indexOfMaxV_firstIteration - numberOfPEq
-            for sb in self.SlackBusName:
-                if indexOfMaxV_firstIteration >= getattr(self.ObjectSet.get(sb),"BUS"):
-                    busToBeSwitched += 1
-               
+        while not ACCEPT and len(self.PVBusName) < (self.NumberOfBus - len(self.SlackBusName)):         
+            indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0] 
+            normalised_V = delete(normalised_V, indexOfMaxV_firstIteration)
+            indexOfMaxV_firstIteration += 1 
+            numberOfPEq = self.NumberOfBus - len(self.SlackBusName)
+            
+            print("indexOfMaxV_firstIteration is ", indexOfMaxV_firstIteration) 
+            
+            if indexOfMaxV_firstIteration <= numberOfPEq:
+                busToBeSwitched = indexOfMaxV_firstIteration
+                for sb in self.SlackBusName:
+                    if busToBeSwitched >= int(getattr(self.ObjectSet.get(sb),"BUS")):
+                        busToBeSwitched += 1               
+            else:
+                busToBeSwitched = indexOfMaxV_firstIteration - numberOfPEq
+                for sb in self.SlackBusName:
+                    if busToBeSwitched >= int(getattr(self.ObjectSet.get(sb),"BUS")):
+                        busToBeSwitched += 1
+                   
+                for pvb in self.PVBusName:
+                    if busToBeSwitched >= int(getattr(self.ObjectSet.get(pvb),"BUS")):
+                        busToBeSwitched += 1
+            
+            ACCEPT = True 
+            
             for pvb in self.PVBusName:
-                if indexOfMaxV_firstIteration >= getattr(self.ObjectSet.get(pvb),"BUS"):
-                    busToBeSwitched += 1
+                 if busToBeSwitched == int(getattr(self.ObjectSet.get(pvb),"BUS")):
+                     ACCEPT = False 
+                     break
+            
+            if ACCEPT:
+                self.busToBeSwitched = busToBeSwitched
+                print('The bus that should be changed the type is:', self.busToBeSwitched)   
         
-        #TODO: if the selected bus is in the list of PV, find the next one
-        
-        
-        print('The maximum V reported form the monitor is:', self.indexOfMaxV_firstIteration)   
+        if not ACCEPT: # if still not accepted, it means that there is no more bus that can be switched from the PQ to PV and the model has failed
+            self.Terminate = True
+            print("*******************There is no more bus that is allowed to be switched to PV bus. The model is FAILED.*******************")
         return 
         
 if __name__ == '__main__':        
     test_PowerFlowAnalysis_1 = powerFlowAnalysis(1,1,1, 100, True)
-    busList = [{'BUS': '1', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '4305.753', 'VMIN': '0.95', 'TYPE': '3'}, {'BUS': '2', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2690.713', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '3', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '4349.411', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '4', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2997.804', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '5', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2354.482', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '6', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2730.946', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '7', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '3493.016', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '8', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '3876.755', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '9', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '1696.433', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '10', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2756.565', 'VMIN': '0.95', 'TYPE': '2'}]
+    busList = [{'BUS': '1', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '4305.753', 'VMIN': '0.95', 'TYPE': '3'}, {'BUS': '2', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2690.713', 'VMIN': '0.95', 'TYPE': '2'}, {'BUS': '3', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '4349.411', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '4', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2997.804', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '5', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2354.482', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '6', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2730.946', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '7', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '3493.016', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '8', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '3876.755', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '9', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '1696.433', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '10', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2756.565', 'VMIN': '0.95', 'TYPE': '2'}]
     branchList = [{'TOBUS': '2', 'B': '3.4347502328055', 'FROMBUS': '1', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '8400.792858', 'R': '0.0019538132483099997', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.0188834047633', 'ANGMAX': '360.0'}, {'TOBUS': '3', 'B': '1.887069984274', 'FROMBUS': '1', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '11201.057144', 'R': '6.038073872325E-4', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.005835736502474999', 'ANGMAX': '360.0'}, {'TOBUS': '6', 'B': '1.539446743787', 'FROMBUS': '2', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '5600.528572', 'R': '0.001970312333715', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.019042866732450002', 'ANGMAX': '360.0'}, {'TOBUS': '9', 'B': '1.3219533136480002', 'FROMBUS': '2', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '5410.911345', 'R': '9.259004261394184E-4', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.01010836111654295', 'ANGMAX': '360.0'}, {'TOBUS': '4', 'B': '2.9436182372009996', 'FROMBUS': '3', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '8400.792858', 'R': '0.00167443916442', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.016183282880599996', 'ANGMAX': '360.0'}, {'TOBUS': '5', 'B': '2.6635415720849998', 'FROMBUS': '3', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '8400.792858', 'R': '0.0015151211756999998', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.014643490850999998', 'ANGMAX': '360.0'}, {'TOBUS': '5', 'B': '2.0370593803409998', 'FROMBUS': '4', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '5600.528572', 'R': '0.002607198487245', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.02519830612035', 'ANGMAX': '360.0'}, {'TOBUS': '6', 'B': '2.0515595937679', 'FROMBUS': '5', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '8211.175631', 'R': '7.04271614929686E-4', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.007295864343325824', 'ANGMAX': '360.0'}, {'TOBUS': '8', 'B': '3.27753321567', 'FROMBUS': '5', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '11201.057144', 'R': '0.0010487150895375', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.010135723838625', 'ANGMAX': '360.0'}, {'TOBUS': '7', 'B': '2.1010674006375', 'FROMBUS': '6', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '8400.792858', 'R': '0.00119516501775', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.011551147382500002', 'ANGMAX': '360.0'}, {'TOBUS': '9', 'B': '1.7635110489349999', 'FROMBUS': '6', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '5600.528572', 'R': '0.0022570885185749998', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.02181452916225', 'ANGMAX': '360.0'}, {'TOBUS': '8', 'B': '3.7299925384703996', 'FROMBUS': '7', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '10821.82269', 'R': '6.531247444995235E-4', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.007130378802263265', 'ANGMAX': '360.0'}, {'TOBUS': '10', 'B': '1.826004669239', 'FROMBUS': '7', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '2800.264286', 'R': '0.00934829226342', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.0903502864506', 'ANGMAX': '360.0'}, {'TOBUS': '10', 'B': '3.5598669251920003', 'FROMBUS': '8', 'RATIO': '1.0', 'ANGLE': '0.0', 'ANGMIN': '-360.0', 'RateA': '5600.528572', 'R': '0.00455621458644', 'RateC': '0.0', 'STATUS': '1', 'RateB': '0.0', 'X': '0.044035346929200005', 'ANGMAX': '360.0'}]
-    res = test_PowerFlowAnalysis_1.PowerFlowAnalysisSimulation(busList, branchList)
+    test_PowerFlowAnalysis_1.ModelObjectCreator(busList, branchList)
+    test_PowerFlowAnalysis_1.ModelInputFormatter()
+    test_PowerFlowAnalysis_1.PowerFlowAnalysisSimulation()
+    test_PowerFlowAnalysis_1.ModelOutputFormatter()
+    
+    print(test_PowerFlowAnalysis_1. __dir__())
+  
+    
+    # res = test_PowerFlowAnalysis_1.PowerFlowAnalysisSimulation(busList, branchList)
     # print(res.get('Generator_1').PG_INPUT)
     # print(res.get('Bus_1'). __dir__()[0])
     # print(res.get('Bus_1').BUS)
