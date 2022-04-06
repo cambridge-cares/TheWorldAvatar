@@ -42,7 +42,10 @@ ENTH_PHASE = "StandardEnthalpyOfFormationPhase"
 ENTH_REFTEMP = "ReferenceTemperature"
 ENTH_REFTEMP_UNIT = "ReferenceTemperatureUnit"
 ENTH_PROV = "StandardEnthalpyofFormationProvenance"
-
+ATOM_INDICES = "AtomsIndices"
+COORD_X = "CoordinateX"
+COORD_Y = "CoordinateY"
+COORD_Z = "CoordinateZ"
 
 HANDLER_PREFIXES = {
     "spec_pref": {"required": True},
@@ -123,10 +126,16 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         smiles = obconverter.obConvert(xyz, "xyz", "smi")
         data_out[INCHI] = inchi
         data_out[SMILES] = smiles
-        data_out[EMP_FORMULA] = data[EMP_FORMULA]
+        data_out[EMP_FORMULA] = utilsfunc.clean_qc_json_emp_formula(emp_formula=data[EMP_FORMULA])
         data_out[ATOM_TYPES] = data[ATOM_TYPES]
         data_out[GEOM] = data[GEOM]
         data_out[SPIN_MULT] = data[SPIN_MULT]
+        data_out[ATOM_INDICES] = utilsfunc.get_atom_indices_from_qc_json(data[ATOM_TYPES])
+
+        coord_x, coord_y, coord_z = utilsfunc.split_qc_json_geom_to_xyz_coords(data[GEOM])
+        data_out[COORD_X] = coord_x
+        data_out[COORD_Y] = coord_y
+        data_out[COORD_Z] = coord_z
 
         if enth_of_form is not None:
             data_out[ENTH_FORM] = enth_of_form

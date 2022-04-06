@@ -6,6 +6,11 @@ from chemaboxwriters.common.handlers import CCLOG_SOURCE_LOCATION
 from chemaboxwriters.ontocompchem.handlers.qc_json_handler import (
     PNG_SOURCE_LOCATION,
     XML_SOURCE_LOCATION,
+    UNIQUE_ATOMS,
+    TOTAL_ATOMS_COUNTS,
+    FREQ_STRING,
+    ROT_CONST_STRING,
+    ZPE_ENERGY
 )
 from chemaboxwriters.ontocompchem.abox_stages import OC_ABOX_STAGES
 from typing import List
@@ -128,22 +133,15 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             rel="gain_pref:hasMoleculeProperty",
         )
 
+
     def _write_mols(self, writer: Abox_Writer, calc_id, data):
         # This section starts the representation of the molecule, namely dividing
         # the species into sub-molecules that contain the different atom types.
         # This will hopefully be changed by an update in OntoCompChem later.
 
-        at_count = []
-        for key, value in data["Atom counts"].items():
-            temp = [key, value]
-            at_count.append(temp)
-        for k in range(
-            len(at_count)
-        ):  # For each atom in the molecule, make a molecule object
+        for atom, count in zip(data[UNIQUE_ATOMS],data[TOTAL_ATOMS_COUNTS]):
+            # For each atom in the molecule, make a molecule object
             # (This is the way it's done atm.)
-
-            atom = at_count[k][0]
-            count = str(float(at_count[k][1]))
 
             writer.write_inst(
                 iri=f"comp_pref:Molecule_{calc_id}_{atom}{count}",
@@ -167,9 +165,10 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 store_inst=True,
             ).add_data_prop(
                 rel="gain_pref:hasNumberOfAtoms",
-                value=at_count[k][1],
+                value=count,
                 data_type="Integer",
             )
+
 
     def _write_level_of_theory(self, writer: Abox_Writer, calc_id, data):
         # This section writes the information related to the level
@@ -209,13 +208,13 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         writer.write_data_prop(
             iri=f"comp_pref:MoleculeProperty_{calc_id}",
             rel="gain_pref:hasName",
-            value=utilsfunc.formula_clean_re.sub("", data["Empirical formula"]),
+            value=data["Empirical formula"],
         )
 
     def _write_frequencies(self, writer: Abox_Writer, jobIRI, calc_id, data):
         # This section writes the vibrations to the ABox (if they exist).
 
-        if "Frequencies" in data:
+        if FREQ_STRING in data:
             writer.write_inst(
                 iri=f"comp_pref:VibrationalAnalysis_{calc_id}",
                 type="gain_pref:VibrationalAnalysis",
@@ -231,7 +230,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 rel="gain_pref:hasResult",
             ).add_data_prop(
                 rel="onto_comp:#hasFrequencies",
-                value=" ".join(str(i) for i in data["Frequencies"]),
+                value=data[FREQ_STRING],
             ).add_data_prop(
                 rel="gain_pref:hasVibrationCount",
                 value=data["Frequencies number"],
@@ -245,7 +244,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
 
     def _write_rotations(self, writer: Abox_Writer, jobIRI, calc_id, data):
 
-        if "Rotational constants" in data:
+        if ROT_CONST_STRING in data:
             # This section writes the rotational constants information
             # - rotational symmetry, rotational constants, and their values/units.
 
@@ -254,7 +253,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 type="onto_comp:#RotationalConstants",
             ).add_obj_prop(iri=jobIRI, rel="gain_pref:isCalculationOn",).add_data_prop(
                 rel="onto_comp:#hasRotationalConstants",
-                value=" ".join(str(i) for i in data["Rotational constants"]),
+                value=data[ROT_CONST_STRING],
             ).add_data_prop(
                 rel="onto_comp:#hasRotationalConstantsCount",
                 value=data["Rotational constants number"],
@@ -270,7 +269,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 type="onto_comp:#RotationalSymmetry",
             ).add_obj_prop(iri=jobIRI, rel="gain_pref:isCalculationOn",).add_data_prop(
                 rel="onto_comp:#hasRotationalSymmetryNumber",
-                value=str(int(data["Rotational symmetry number"])),
+                value=data["Rotational symmetry number"],
             )
 
     def _write_geom_type(self, writer: Abox_Writer, jobIRI, calc_id, data):
@@ -288,7 +287,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
         # This section writes the zero-point energy information (if it exists).
         # Note that this requires a frequency calculation to be computed.
 
-        if "Electronic and ZPE energy" in data and "Electronic energy" in data:
+        if ZPE_ENERGY in data:
             writer.write_inst(
                 iri=f"comp_pref:ZeroPointEnergy_{calc_id}",
                 type="onto_comp:#ZeroPointEnergy",
@@ -304,7 +303,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
                 rel="gain_pref:hasElectronicEnergy",
             ).add_data_prop(
                 rel="gain_pref:hasValue",
-                value=data["Electronic and ZPE energy"] - data["Electronic energy"],
+                value=data[ZPE_ENERGY],
             ).add_obj_prop(
                 iri="unit_pref:unit#Hartree", rel="gain_pref:hasUnit", reverse=True
             )
@@ -379,32 +378,132 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             },
         }
 
-        for orb_en_data, orb_ont in orbitals_en_keys.items():
-            if orb_en_data not in data:
-                continue
+        #"HOMO energy"
+        writer.write_inst(
+            iri=f"comp_pref:HomoEnergy_{calc_id}",
+            type=f"onto_comp:#HomoEnergy",
+        ).add_obj_prop(
+            iri=jobIRI,
+            rel="gain_pref:isCalculationOn",
+        )
+        writer.write_inst(
+            iri=f"comp_pref:FloatValue_{calc_id}_HomoEnergy",
+            type="gain_pref:FloatValue",
+        ).add_obj_prop(
+            iri=f"comp_pref:HomoEnergy_{calc_id}",
+            rel=f"onto_comp:#hasHomoEnergy",
+        ).add_data_prop(
+            rel="gain_pref:hasValue",
+            value=data["HOMO energy"],
+        ).add_obj_prop(
+            iri="unit_pref:unit#Hartree", rel="gain_pref:hasUnit", reverse=True
+        )
 
-            orb_en_type = orb_ont["type"]
-            orb_en_pred = orb_ont["predicate"]
+        #"HOMO-1 energy"
+        writer.write_inst(
+            iri=f"comp_pref:HomoMinusOneEnergy_{calc_id}",
+            type=f"onto_comp:#HomoMinusOneEnergy",
+        ).add_obj_prop(
+            iri=jobIRI,
+            rel="gain_pref:isCalculationOn",
+        )
+        writer.write_inst(
+            iri=f"comp_pref:FloatValue_{calc_id}_HomoMinusOneEnergy",
+            type="gain_pref:FloatValue",
+        ).add_obj_prop(
+            iri=f"comp_pref:HomoMinusOneEnergy_{calc_id}",
+            rel=f"onto_comp:#hasHomoMinusOneEnergy",
+        ).add_data_prop(
+            rel="gain_pref:hasValue",
+            value=data["HOMO-1 energy"],
+        ).add_obj_prop(
+            iri="unit_pref:unit#Hartree", rel="gain_pref:hasUnit", reverse=True
+        )
 
-            writer.write_inst(
-                iri=f"comp_pref:{orb_en_type}_{calc_id}",
-                type=f"onto_comp:#{orb_en_type}",
-            ).add_obj_prop(
-                iri=jobIRI,
-                rel="gain_pref:isCalculationOn",
-            )
-            writer.write_inst(
-                iri=f"comp_pref:FloatValue_{calc_id}_{orb_en_type}",
-                type="gain_pref:FloatValue",
-            ).add_obj_prop(
-                iri=f"comp_pref:{orb_en_type}_{calc_id}",
-                rel=f"onto_comp:#{orb_en_pred}",
-            ).add_data_prop(
-                rel="gain_pref:hasValue",
-                value=data[orb_en_data],
-            ).add_obj_prop(
-                iri="unit_pref:unit#Hartree", rel="gain_pref:hasUnit", reverse=True
-            )
+        #"HOMO-2 energy"
+        writer.write_inst(
+            iri=f"comp_pref:HomoMinusTwoEnergy_{calc_id}",
+            type=f"onto_comp:#HomoMinusTwoEnergy",
+        ).add_obj_prop(
+            iri=jobIRI,
+            rel="gain_pref:isCalculationOn",
+        )
+        writer.write_inst(
+            iri=f"comp_pref:FloatValue_{calc_id}_HomoMinusTwoEnergy",
+            type="gain_pref:FloatValue",
+        ).add_obj_prop(
+            iri=f"comp_pref:HomoMinusTwoEnergy_{calc_id}",
+            rel=f"onto_comp:#hasHomoMinusTwoEnergy",
+        ).add_data_prop(
+            rel="gain_pref:hasValue",
+            value=data["HOMO-2 energy"],
+        ).add_obj_prop(
+            iri="unit_pref:unit#Hartree", rel="gain_pref:hasUnit", reverse=True
+        )
+
+        #"LUMO energy"
+        writer.write_inst(
+            iri=f"comp_pref:LumoEnergy_{calc_id}",
+            type=f"onto_comp:#LumoEnergy",
+        ).add_obj_prop(
+            iri=jobIRI,
+            rel="gain_pref:isCalculationOn",
+        )
+        writer.write_inst(
+            iri=f"comp_pref:FloatValue_{calc_id}_LumoEnergy",
+            type="gain_pref:FloatValue",
+        ).add_obj_prop(
+            iri=f"comp_pref:LumoEnergy_{calc_id}",
+            rel=f"onto_comp:#hasLumoEnergy",
+        ).add_data_prop(
+            rel="gain_pref:hasValue",
+            value=data["LUMO energy"],
+        ).add_obj_prop(
+            iri="unit_pref:unit#Hartree", rel="gain_pref:hasUnit", reverse=True
+        )
+
+        #"LUMO+1 energy"
+        writer.write_inst(
+            iri=f"comp_pref:LumoPlusOneEnergy_{calc_id}",
+            type=f"onto_comp:#LumoPlusOneEnergy",
+        ).add_obj_prop(
+            iri=jobIRI,
+            rel="gain_pref:isCalculationOn",
+        )
+        writer.write_inst(
+            iri=f"comp_pref:FloatValue_{calc_id}_LumoPlusOneEnergy",
+            type="gain_pref:FloatValue",
+        ).add_obj_prop(
+            iri=f"comp_pref:LumoPlusOneEnergy_{calc_id}",
+            rel=f"onto_comp:#hasLumoPlusOneEnergy",
+        ).add_data_prop(
+            rel="gain_pref:hasValue",
+            value=data["LUMO+1 energy"],
+        ).add_obj_prop(
+            iri="unit_pref:unit#Hartree", rel="gain_pref:hasUnit", reverse=True
+        )
+
+        #"LUMO+2 energy"
+        writer.write_inst(
+            iri=f"comp_pref:LumoPlusTwoEnergy_{calc_id}",
+            type=f"onto_comp:#LumoPlusTwoEnergy",
+        ).add_obj_prop(
+            iri=jobIRI,
+            rel="gain_pref:isCalculationOn",
+        )
+        writer.write_inst(
+            iri=f"comp_pref:FloatValue_{calc_id}_LumoPlusTwoEnergy",
+            type="gain_pref:FloatValue",
+        ).add_obj_prop(
+            iri=f"comp_pref:LumoPlusTwoEnergy_{calc_id}",
+            rel=f"onto_comp:#hasLumoPlusTwoEnergy",
+        ).add_data_prop(
+            rel="gain_pref:hasValue",
+            value=data["LUMO+2 energy"],
+        ).add_obj_prop(
+            iri="unit_pref:unit#Hartree", rel="gain_pref:hasUnit", reverse=True
+        )
+
 
     def _write_geom_opt(self, writer: Abox_Writer, jobIRI, calc_id, data):
         # This section writes the geometry optimization, spin multiplicity
@@ -440,19 +539,16 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             iri="gain_pref:atomicUnit", rel="gain_pref:hasUnit", reverse=True
         )
 
+
     def _write_atom_info(self, writer: Abox_Writer, calc_id, data):
         # This section writes the atom coordinates and masses information.
 
-        count = 1  # This count essentially counts the indices of the atoms starting
-        # with 1. Basically, this additional number helps uniquely assign an IRI
-        # to each atom.
-        coord_string = ["x3", "y3", "z3"]  # How the coordinates are labeled.
-        coords = ["X", "Y", "Z"]  # The three cartesian corrdinates.
+        #coord_string = ["x3", "y3", "z3"]  # How the coordinates are labeled.
+        #coords = ["X", "Y", "Z"]  # The three cartesian corrdinates.
         # Coordinates.
-        for k in range(len(data["Atom types"])):
+        for k, atom in enumerate(data["Atom types"]):
 
-            atom = data["Atom types"][k]
-            atom_id = f"{calc_id}_{atom}{count}"
+            atom_id = f"{calc_id}_{atom}{k+1}"
 
             writer.write_inst(
                 iri=f"comp_pref:Atom_{atom_id}", type="gain_pref:Atom"
@@ -462,20 +558,49 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             ).add_obj_prop(
                 iri=f"table_pref:#{atom}", rel="gain_pref:isElement", reverse=True
             )
-            for i in range(3):
-                writer.write_inst(
-                    iri=(
-                        f"comp_pref:FloatValue_{atom_id}_"
-                        f"{coord_string[i]}Coordinate"
-                    ),
-                    type="gain_pref:FloatValue",
-                ).add_obj_prop(
-                    iri=f"comp_pref:Atom_{calc_id}_{atom}{count}",
-                    rel=f"gain_pref:hasAtomCoordinate{coords[i]}",
-                ).add_data_prop(
-                    rel="gain_pref:hasValue",
-                    value=data["Geometry"][k][i],
-                )
+
+            writer.write_inst(
+                iri=(
+                    f"comp_pref:FloatValue_{atom_id}_"
+                    f"x3Coordinate"
+                ),
+                type="gain_pref:FloatValue",
+            ).add_obj_prop(
+                iri=f"comp_pref:Atom_{calc_id}_{atom}{k+1}",
+                rel=f"gain_pref:hasAtomCoordinateX",
+            ).add_data_prop(
+                rel="gain_pref:hasValue",
+                value=data["CoordinateX"][k],
+            )
+
+            writer.write_inst(
+                iri=(
+                    f"comp_pref:FloatValue_{atom_id}_"
+                    f"y3Coordinate"
+                ),
+                type="gain_pref:FloatValue",
+            ).add_obj_prop(
+                iri=f"comp_pref:Atom_{calc_id}_{atom}{k+1}",
+                rel=f"gain_pref:hasAtomCoordinateY",
+            ).add_data_prop(
+                rel="gain_pref:hasValue",
+                value=data["CoordinateY"][k],
+            )
+
+            writer.write_inst(
+                iri=(
+                    f"comp_pref:FloatValue_{atom_id}_"
+                    f"z3Coordinate"
+                ),
+                type="gain_pref:FloatValue",
+            ).add_obj_prop(
+                iri=f"comp_pref:Atom_{calc_id}_{atom}{k+1}",
+                rel=f"gain_pref:hasAtomCoordinateZ",
+            ).add_data_prop(
+                rel="gain_pref:hasValue",
+                value=data["CoordinateZ"][k],
+            )
+
             # Write atom masses.
             writer.write_inst(
                 iri=f"comp_pref:FloatValue_{atom_id}_Mass",
@@ -489,7 +614,6 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             ).add_obj_prop(
                 iri="unit_pref:unit#Dalton", rel="gain_pref:hasUnit", reverse=True
             )
-            count += 1
 
     def _write_metadata(self, writer: Abox_Writer, calc_id, data):
         # These are the final parts of the ABox with the
@@ -500,7 +624,7 @@ class OC_JSON_TO_OC_CSV_Handler(Handler):
             value=data["Program name"],
         ).add_data_prop(
             rel="onto_comp:#hasProgramVersion",
-            value=data["Program version"].split("+")[0][-1],
+            value=data["Program version"],
         ).add_data_prop(
             rel="onto_comp:#hasRunDate",
             value=data["Run date"],

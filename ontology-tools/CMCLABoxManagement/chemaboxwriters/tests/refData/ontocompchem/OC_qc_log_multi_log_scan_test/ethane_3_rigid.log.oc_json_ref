@@ -92,7 +92,56 @@
     "Program version": "2009+D.01",
     "Run date": "Wed Jun 16 17:39:56 2021",
     "Log file name": "ethane_3_rigid.log",
+    "CoordinateX": [
+        0.0,
+        0.0,
+        1.018496,
+        -0.509246,
+        -0.509249,
+        0.509249,
+        0.509246,
+        -1.018496
+    ],
+    "CoordinateY": [
+        0.0,
+        0.0,
+        0.0,
+        -0.882045,
+        0.882044,
+        -0.882044,
+        0.882045,
+        0.0
+    ],
+    "CoordinateZ": [
+        -0.91537,
+        0.91537,
+        1.313512,
+        1.313512,
+        1.313511,
+        -1.313511,
+        -1.313512,
+        -1.313512
+    ],
+    "AtomsIndices": [
+        1,
+        2,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+    ],
     "SpeciesIRI": "test_species_iri",
     "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
-    "EntryUUID": "testID-111-111-111"
+    "EntryUUID": "testID-111-111-111",
+    "Unique_Atoms": [
+        "C",
+        "H"
+    ],
+    "Total_Atom_Counts": [
+        2,
+        6
+    ],
+    "Rotational_Constants_String": "80.5678459 15.0058116 15.0058058"
 }

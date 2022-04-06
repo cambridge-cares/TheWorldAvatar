@@ -1,5 +1,5 @@
 {
-    "Empirical formula": "C1O2",
+    "Empirical formula": "CO2",
     "Atom counts": {
         "C": 1,
         "O": 2
@@ -39,7 +39,7 @@
     ],
     "Geometry unit": "Angstroms",
     "Geometry type": "linear",
-    "Rotational symmetry number": 1.0,
+    "Rotational symmetry number": 1,
     "Rotational constants": [
         11.729883
     ],
@@ -65,7 +65,38 @@
     "Program version": "2009+D.01",
     "Run date": "Thu Jul 16 13:46:13 2020",
     "Log file name": "co2_linked_g09.log",
+    "CoordinateX": [
+        -3.555363,
+        -4.715866,
+        -2.394861
+    ],
+    "CoordinateY": [
+        -0.513457,
+        -0.521191,
+        -0.505724
+    ],
+    "CoordinateZ": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "AtomsIndices": [
+        1,
+        1,
+        2
+    ],
     "SpeciesIRI": "test_species_iri",
     "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
-    "EntryUUID": "testID-111-111-111"
+    "EntryUUID": "testID-111-111-111",
+    "Unique_Atoms": [
+        "C",
+        "O"
+    ],
+    "Total_Atom_Counts": [
+        1,
+        2
+    ],
+    "Frequencies_String": "666.8738 666.8738 1374.9931 2434.8919",
+    "Rotational_Constants_String": "11.729883",
+    "Zero_Point_Energy": 0.011717763999996578
 }

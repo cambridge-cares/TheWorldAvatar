@@ -13,6 +13,10 @@ from compchemparser.parsers.ccgaussian_parser import (
     EMP_FORMULA,
 )
 from chemaboxwriters.ontospecies.handlers.qc_json_handler import (
+    ATOM_INDICES,
+    COORD_X,
+    COORD_Y,
+    COORD_Z,
     MOLWT,
     INCHI,
     SMILES,
@@ -97,7 +101,7 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                     writer.register_prefix(name=prefix_name, value=prefix_value)
 
             out_id = data[params.ENTRY_IRI]
-            label = utilsfunc.formula_clean_re.sub("", data[EMP_FORMULA])
+            label = data[EMP_FORMULA]
 
             self._write_prelim(writer, out_id, label)
             self._write_identifier_geom(writer, out_id, data)
@@ -167,11 +171,8 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
 
     def _write_atom_info(self, writer: Abox_Writer, gen_id, out_id, data):
 
-        coords = ["X", "Y", "Z"]  # The three cartesian corrdinates.
-        atom_counters = {atom_type: 1 for atom_type in set(data[ATOM_TYPES])}
-        for k, atom_type in enumerate(data[ATOM_TYPES]):
-
-            atom_nr = atom_counters[atom_type]
+        for k, atom_nr in enumerate(data[ATOM_INDICES]):
+            atom_type = data[ATOM_TYPES][k]
             atom_id = f"{gen_id}_{atom_type}_{atom_nr}"
             # Now the atoms are written here
             writer.write_inst(
@@ -182,22 +183,48 @@ class OS_JSON_TO_OS_CSV_Handler(Handler):
                 rel="gain_pref:isElement",
                 reverse=True,
             )
-            for i in range(3):  # Write the atom coordinates.
-                writer.write_inst(
-                    iri=f"AtomCoordinate{coords[i]}_{atom_id}",
-                    type="gain_pref:FloatValue",
-                ).add_obj_prop(
-                    iri=f"Atom_{atom_id}",
-                    rel=f"gain_pref:hasAtomCoordinate{coords[i]}",
-                ).add_data_prop(
-                    rel="gain_pref:hasValue",
-                    value=data["Geometry"][k][i],
-                ).add_obj_prop(
-                    iri="unit_pref:unit#Angstrom",
-                    rel="gain_pref:hasUnit",
-                    reverse=True,
-                )
-            atom_counters[atom_type] += 1
+            writer.write_inst(
+                iri=f"AtomCoordinateX_{atom_id}",
+                type="gain_pref:FloatValue",
+            ).add_obj_prop(
+                iri=f"Atom_{atom_id}",
+                rel=f"gain_pref:hasAtomCoordinateX",
+            ).add_data_prop(
+                rel="gain_pref:hasValue",
+                value=data[COORD_X][k],
+            ).add_obj_prop(
+                iri="unit_pref:unit#Angstrom",
+                rel="gain_pref:hasUnit",
+                reverse=True,
+            )
+            writer.write_inst(
+                iri=f"AtomCoordinateY_{atom_id}",
+                type="gain_pref:FloatValue",
+            ).add_obj_prop(
+                iri=f"Atom_{atom_id}",
+                rel=f"gain_pref:hasAtomCoordinateY",
+            ).add_data_prop(
+                rel="gain_pref:hasValue",
+                value=data[COORD_Y][k],
+            ).add_obj_prop(
+                iri="unit_pref:unit#Angstrom",
+                rel="gain_pref:hasUnit",
+                reverse=True,
+            )
+            writer.write_inst(
+                iri=f"AtomCoordinateZ_{atom_id}",
+                type="gain_pref:FloatValue",
+            ).add_obj_prop(
+                iri=f"Atom_{atom_id}",
+                rel=f"gain_pref:hasAtomCoordinateZ",
+            ).add_data_prop(
+                rel="gain_pref:hasValue",
+                value=data[COORD_Z][k],
+            ).add_obj_prop(
+                iri="unit_pref:unit#Angstrom",
+                rel="gain_pref:hasUnit",
+                reverse=True,
+            )
 
     def _write_charge_info(self, writer: Abox_Writer, gen_id, out_id, data):
 

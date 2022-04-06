@@ -1,7 +1,7 @@
 {
     "InChi": "InChI=1S/CO2/c2-1-3",
     "Smiles": "C(=O)=O",
-    "Empirical formula": "C1O2",
+    "Empirical formula": "CO2",
     "Atom types": [
         "C",
         "O",
@@ -25,6 +25,26 @@
         ]
     ],
     "Spin multiplicity": 1,
+    "AtomsIndices": [
+        1,
+        1,
+        2
+    ],
+    "CoordinateX": [
+        -3.555363,
+        -4.71831,
+        -2.392417
+    ],
+    "CoordinateY": [
+        -0.513457,
+        -0.521207,
+        -0.505708
+    ],
+    "CoordinateZ": [
+        0.0,
+        0.0,
+        0.0
+    ],
     "MolecularWeight": 43.98982,
     "Formal charge": 0,
     "GeometryString": "C -3.555363 -0.513457 0.0 O -4.71831 -0.521207 0.0 O -2.392417 -0.505708 0.0",

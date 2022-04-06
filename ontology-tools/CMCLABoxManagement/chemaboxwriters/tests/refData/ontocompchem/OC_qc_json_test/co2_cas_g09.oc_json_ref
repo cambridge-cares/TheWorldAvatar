@@ -1,5 +1,5 @@
 {
-    "Empirical formula": "C1O2",
+    "Empirical formula": "CO2",
     "Atom counts": {
         "C": 1,
         "O": 2
@@ -54,7 +54,37 @@
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
     "Run date": "Fri Jul 17 17:49:11 2020",
+    "Log file name": "co2_cas_g09.log",
+    "CoordinateX": [
+        -3.55536,
+        -4.65534,
+        -2.45539
+    ],
+    "CoordinateY": [
+        -0.51345,
+        -0.52079,
+        -0.50613
+    ],
+    "CoordinateZ": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "AtomsIndices": [
+        1,
+        1,
+        2
+    ],
     "SpeciesIRI": "test_species_iri",
     "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
-    "EntryUUID": "testID-111-111-111"
+    "EntryUUID": "testID-111-111-111",
+    "Unique_Atoms": [
+        "C",
+        "O"
+    ],
+    "Total_Atom_Counts": [
+        1,
+        2
+    ],
+    "Rotational_Constants_String": "13.0563072"
 }

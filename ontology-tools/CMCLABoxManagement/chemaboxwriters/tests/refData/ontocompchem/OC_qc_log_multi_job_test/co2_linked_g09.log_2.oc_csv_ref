@@ -10,20 +10,20 @@ http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_E
 http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasEnvironment,,
 http://www.theworldavatar.com/kb/ontocompchem/MoleculeProperty_testID-111-111-111,Instance,http://purl.org/gc/MoleculeProperty,,,
 http://www.theworldavatar.com/kb/ontocompchem/InitializationModule_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/MoleculeProperty_testID-111-111-111,http://purl.org/gc/hasMoleculeProperty,,
-http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_C1.0,Instance,http://purl.org/gc/Molecule,,,
-http://www.theworldavatar.com/kb/ontocompchem/MoleculeProperty_testID-111-111-111_C1.0,Instance,http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_C1.0,http://purl.org/gc/hasMolecule,,
-http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_C1.0,Instance,http://purl.org/gc/Atom,,,
-http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_C1.0,Instance,http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_C1.0,http://purl.org/gc/hasAtom,,
+http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_C1,Instance,http://purl.org/gc/Molecule,,,
+http://www.theworldavatar.com/kb/ontocompchem/MoleculeProperty_testID-111-111-111_C1,Instance,http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_C1,http://purl.org/gc/hasMolecule,,
+http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_C1,Instance,http://purl.org/gc/Atom,,,
+http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_C1,Instance,http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_C1,http://purl.org/gc/hasAtom,,
 http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element,,,
-http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_C1.0,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
-http://purl.org/gc/hasNumberOfAtoms,Data Property,http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_C1.0,,1,Integer
-http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_O2.0,Instance,http://purl.org/gc/Molecule,,,
-http://www.theworldavatar.com/kb/ontocompchem/MoleculeProperty_testID-111-111-111_O2.0,Instance,http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_O2.0,http://purl.org/gc/hasMolecule,,
-http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_O2.0,Instance,http://purl.org/gc/Atom,,,
-http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_O2.0,Instance,http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_O2.0,http://purl.org/gc/hasAtom,,
+http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_C1,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
+http://purl.org/gc/hasNumberOfAtoms,Data Property,http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_C1,,1,Integer
+http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_O2,Instance,http://purl.org/gc/Molecule,,,
+http://www.theworldavatar.com/kb/ontocompchem/MoleculeProperty_testID-111-111-111_O2,Instance,http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_O2,http://purl.org/gc/hasMolecule,,
+http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_O2,Instance,http://purl.org/gc/Atom,,,
+http://www.theworldavatar.com/kb/ontocompchem/Molecule_testID-111-111-111_O2,Instance,http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_O2,http://purl.org/gc/hasAtom,,
 http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element,,,
-http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_O2.0,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O,http://purl.org/gc/isElement,,
-http://purl.org/gc/hasNumberOfAtoms,Data Property,http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_O2.0,,2,Integer
+http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_O2,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#O,http://purl.org/gc/isElement,,
+http://purl.org/gc/hasNumberOfAtoms,Data Property,http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_O2,,2,Integer
 http://www.theworldavatar.com/kb/ontocompchem/LevelOfTheory_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory,,,
 http://www.theworldavatar.com/kb/ontocompchem/MethodologyFeature_testID-111-111-111_LevelofTheoryParameter,Instance,http://purl.org/gc/MethodologyFeature,,,
 http://www.theworldavatar.com/kb/ontocompchem/InitializationModule_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/MethodologyFeature_testID-111-111-111_LevelofTheoryParameter,http://purl.org/gc/hasParameter,,
@@ -140,5 +140,5 @@ http://www.theworldavatar.com/kb/ontocompchem/Atom_testID-111-111-111_O3,Instanc
 http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_O3_Mass,,15.999491,String
 http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_O3_Mass,Instance,http://data.nasa.gov/qudt/owl/unit#Dalton,http://purl.org/gc/hasUnit,,
 http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasProgram,Data Property,http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,,Gaussian,String
-http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasProgramVersion,Data Property,http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,,9,String
+http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasProgramVersion,Data Property,http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,,2009+D.01,String
 http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasRunDate,Data Property,http://www.theworldavatar.com/kb/ontocompchem/SourcePackage_testID-111-111-111_EnvironmentModule,,Thu Jul 16 13:46:33 2020,String

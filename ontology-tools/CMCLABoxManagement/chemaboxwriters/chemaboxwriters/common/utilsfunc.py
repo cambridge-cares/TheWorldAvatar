@@ -8,15 +8,16 @@ from entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF import (
 )
 import os
 import glob
-from typing import List, Optional, Dict, Literal
+from typing import List, Optional, Dict, Literal, Tuple
 import uuid
 import logging
 import json
 import re
 import pathlib
 import csv
+import numpy as np
 
-formula_clean_re = re.compile("(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)")
+FORMULA_CLEAN_RE = re.compile("(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)")
 
 
 class Abox_csv_writer:
@@ -233,7 +234,11 @@ def get_files_by_extensions(file_or_dir: str, file_ext_str: str) -> List[str]:
         for ext in file_ext:
             files += glob.glob(os.path.join(file_or_dir, f"*.{ext}"))
     else:
-        raise app_exceptions.IncorrectFileOrDirPath
+        raise app_exceptions.IncorrectFileOrDirPath(
+            (
+                f"Error: File or dir {file_or_dir} does not exist."
+            )
+        )
     return files
 
 
@@ -300,3 +305,25 @@ def get_out_file_path(
 def generate_molecule_png(inchi: str, out_path: str, **kwargs) -> None:
     rdkit_mol = rdkitconverters.inchiToRdkitMol(inchi=inchi)
     rdkitutils.rdkitMolToFile(rdkitMol=rdkit_mol, out_path=out_path, **kwargs)
+
+
+def split_qc_json_geom_to_xyz_coords(geom_list: List) -> Tuple:
+    geom_arr = np.array(geom_list)
+    x_coord = geom_arr[:, 0].tolist()
+    y_coord = geom_arr[:, 1].tolist()
+    z_coord = geom_arr[:, 2].tolist()
+
+    return x_coord, y_coord, z_coord
+
+def get_atom_indices_from_qc_json(atom_list: List):
+    atom_counters = {}
+    atom_ind = []
+    for atom_type in atom_list:
+        if atom_type not in atom_counters:
+            atom_counters[atom_type] = 1
+        atom_ind.append(atom_counters[atom_type])
+        atom_counters[atom_type] += 1
+    return atom_ind
+
+def clean_qc_json_emp_formula(emp_formula: str):
+    return FORMULA_CLEAN_RE.sub("", emp_formula)

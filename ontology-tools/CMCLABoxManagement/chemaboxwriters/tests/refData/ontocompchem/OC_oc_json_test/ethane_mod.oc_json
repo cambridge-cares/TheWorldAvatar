@@ -109,6 +109,56 @@
         "Build",
         "Freeze"
     ],
+    "Log file name": "ethane_mod.log",
+    "CoordinateX": [
+        0.81537,
+        -0.81537,
+        -1.193012,
+        -1.193018,
+        -1.193057,
+        1.193057,
+        1.193018,
+        1.193012
+    ],
+    "CoordinateY": [
+        1.5e-05,
+        -1.5e-05,
+        0.195452,
+        0.775303,
+        -0.970777,
+        0.970777,
+        -0.775303,
+        -0.195452
+    ],
+    "CoordinateZ": [
+        -1.4e-05,
+        1.4e-05,
+        -1.008079,
+        0.673321,
+        0.334764,
+        -0.334764,
+        -0.673321,
+        1.008079
+    ],
+    "AtomsIndices": [
+        1,
+        2,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+    ],   
+    "Unique_Atoms": [
+        "C",
+        "H"
+    ],
+    "Total_Atom_Counts": [
+        2,
+        6
+    ],
+    "Rotational_Constants_String": "79.2600076 18.2114267 18.211344",
     "SpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/s00002784.owl/Species_7257944035703500",
     "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_a848bbdd-e333-4480-bd68-3101d502e0c3",
     "EntryUUID": "a848bbdd-e333-4480-bd68-3101d502e0c3"

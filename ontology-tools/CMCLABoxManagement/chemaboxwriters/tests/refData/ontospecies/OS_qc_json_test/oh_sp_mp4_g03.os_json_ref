@@ -1,7 +1,7 @@
 {
     "InChi": "InChI=1S/HO/h1H",
     "Smiles": "[OH]",
-    "Empirical formula": "H1O1",
+    "Empirical formula": "HO",
     "Atom types": [
         "O",
         "H"
@@ -19,6 +19,22 @@
         ]
     ],
     "Spin multiplicity": 2,
+    "AtomsIndices": [
+        1,
+        1
+    ],
+    "CoordinateX": [
+        0.0,
+        0.0
+    ],
+    "CoordinateY": [
+        0.0,
+        0.0
+    ],
+    "CoordinateZ": [
+        0.1065,
+        -0.852
+    ],
     "MolecularWeight": 17.007321,
     "Formal charge": 0,
     "GeometryString": "O 0.0 0.0 0.1065 H 0.0 0.0 -0.852",

@@ -1,7 +1,7 @@
 {
     "InChi": "InChI=1S/H",
     "Smiles": "[H]",
-    "Empirical formula": "H1",
+    "Empirical formula": "H",
     "Atom types": [
         "H"
     ],
@@ -13,6 +13,18 @@
         ]
     ],
     "Spin multiplicity": 2,
+    "AtomsIndices": [
+        1
+    ],
+    "CoordinateX": [
+        -1.38032
+    ],
+    "CoordinateY": [
+        -0.85577
+    ],
+    "CoordinateZ": [
+        0.0
+    ],
     "MolecularWeight": 1.00783,
     "Formal charge": 0,
     "GeometryString": "H -1.38032 -0.85577 0.0",

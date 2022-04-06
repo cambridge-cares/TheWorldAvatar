@@ -1,7 +1,7 @@
 {
     "InChi": "InChI=1S/H2O/h1H2",
     "Smiles": "O",
-    "Empirical formula": "H2O1",
+    "Empirical formula": "H2O",
     "Atom types": [
         "H",
         "H",
@@ -25,6 +25,26 @@
         ]
     ],
     "Spin multiplicity": 1,
+    "AtomsIndices": [
+        1,
+        2,
+        1
+    ],
+    "CoordinateX": [
+        -1.165511,
+        0.348322,
+        -0.401791
+    ],
+    "CoordinateY": [
+        -0.84079,
+        -0.858139,
+        -0.255822
+    ],
+    "CoordinateZ": [
+        0.0,
+        0.0,
+        0.0
+    ],
     "MolecularWeight": 18.015151,
     "Formal charge": 0,
     "GeometryString": "H -1.165511 -0.84079 0.0 H 0.348322 -0.858139 0.0 O -0.401791 -0.255822 0.0",
