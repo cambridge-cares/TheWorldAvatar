@@ -93,10 +93,10 @@ def instantiate_station_readings(instantiated_sites_list: list,
             station_iri = instantiated_sites_list[id]
 
             # Create triples and input lists for TimeSeriesClient bulkInit
-            triples1, dataIRIs1, dataClasses1, _ = add_readings_for_station(station_iri, both, is_observation=True)
-            triples2, dataIRIs2, dataClasses2, _ = add_readings_for_station(station_iri, both, is_observation=False)
-            triples3, dataIRIs3, dataClasses3, timeUnit3 = add_readings_for_station(station_iri, obs, is_observation=True)
-            triples4, dataIRIs4, dataClasses4, timeUnit4 = add_readings_for_station(station_iri, fcs, is_observation=False)
+            triples1, reading_iris, dataIRIs1, dataClasses1, _ = add_readings_for_station(station_iri, both, is_observation=True)
+            triples2, _, dataIRIs2, dataClasses2, _ = add_readings_for_station(station_iri, both, reading_iris, is_observation=False)
+            triples3, _, dataIRIs3, dataClasses3, timeUnit3 = add_readings_for_station(station_iri, obs, is_observation=True)
+            triples4, _, dataIRIs4, dataClasses4, timeUnit4 = add_readings_for_station(station_iri, fcs, is_observation=False)
 
             # Add triples to INSERT DATA query
             query_string += triples1
@@ -120,26 +120,29 @@ def instantiate_station_readings(instantiated_sites_list: list,
         # Instantiate all non-time series triples
         kg_client = KGClient(query_endpoint, update_endpoint)
         kg_client.performUpdate(query_string)
-        # Instantiate all time series triples
-        ts_client = TSClient()
-        ts_client.ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
+
+        if dataIRIs:
+            # Instantiate all time series triples
+            ts_client = TSClient()
+            ts_client.ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
 
 
 def instantiate_all_station_readings(query_endpoint: str = QUERY_ENDPOINT,
-                                    update_endpoint: str = UPDATE_ENDPOINT) -> None:
+                                     update_endpoint: str = UPDATE_ENDPOINT) -> None:
         """
             Instantiates all readings for all instantiated stations
         """
 
         stations = get_all_metoffice_stations()
-        selection = list(stations.keys())[:10]
+        selection = ['3041']
         stations_subset = {key: stations[key] for key in selection}
         
         instantiate_station_readings(stations_subset)
 
 
 def add_readings_for_station(station_iri: str,
-                             readings: list, is_observation: bool,
+                             readings: list, readings_iris: list = None, 
+                             is_observation: bool = True,
                              quantity_comments: list = None):
     """
         Return SPARQL update query string to instantiate readings for given 
@@ -149,15 +152,22 @@ def add_readings_for_station(station_iri: str,
             station_iri - Station IRI without trailing '<' and '>'
             readings - list of station readings to instantiate
                        (i.e. OntoEMS concept names)
+            readings_iris - list of IRIs for station readings (only relevant to
+                            link observation and forecast readings for same quantity
+                            to same instance instead of creating duplicates)
             is_observation - boolean to indicate whether readings are measure
                              or forecast
             quantity_comments - comments to be attached to quantities
         
         Returns
             triples - triples to be added to INSERT DATA query
+            created_reading_iris - list of newly created quantity IRIs
             dataIRIs, dataClasses, timeUnit - to be appended to input arguments
                                               to TimSeriesClient bulkInit call
     """
+
+    if readings_iris and (len(readings) != len(readings_iris)):
+        raise ValueError("Length or readings and readings_iris does not match.")
 
     # Initialise "creation" time for forecasts
     t = dt.datetime.utcnow().strftime('%Y-%m-%dT%H:00:00Z')
@@ -168,13 +178,19 @@ def add_readings_for_station(station_iri: str,
     dataIRIs = []
     dataClasses = []
     timeUnit = TIME_FORMAT
+    # List for all created station readings IRIs
+    created_reading_iris = []
 
     # Get concepts and create IRIs
     for i in range(len(readings)):
         r = readings[i]
         # Create IRI for reported quantity
         quantity_type = PREFIXES['ems'] + r
-        quantity_iri = PREFIXES['kb'] + r + '_' + str(uuid.uuid4())
+        if not readings_iris:
+            quantity_iri = PREFIXES['kb'] + r + '_' + str(uuid.uuid4())
+            created_reading_iris.append(quantity_iri)
+        else:
+            quantity_iri = readings_iris[i]
         # Create Measure / Forecast IRI
         if is_observation:
             data_iri = PREFIXES['kb'] + 'Measure_' + str(uuid.uuid4())
@@ -199,7 +215,7 @@ def add_readings_for_station(station_iri: str,
         dataIRIs.append(data_iri)
         dataClasses.append(DATACLASS)
 
-    return triples, dataIRIs, dataClasses, timeUnit
+    return triples, created_reading_iris, dataIRIs, dataClasses, timeUnit
 
 
 def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict:
