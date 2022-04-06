@@ -91,10 +91,6 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
             iri=f"pes_pref:{entryIRI}",
             type="onto_pes:#PotentialEnergySurfaceScan",
         )
-        writer.write_inst(
-            iri=f"spec_pref:{spec_IRI[0]}",
-            type="onto_spec:#Species",
-        )
         writer.write_obj_prop(
             src_iri=f"pes_pref:{entryIRI}",
             rel="onto_pes:#onSpecies",
@@ -104,7 +100,7 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
     def _write_scancoordinate(self, writer: Abox_Writer, calc_id, data):
 
         scan_type = data[SCAN_COORDINATE_TYPE]
-
+        
         writer.write_inst(
             iri=f"pes_pref:{scan_type}_{calc_id}",
             type=f"onto_pes:#{scan_type}",
@@ -125,7 +121,6 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
     def _write_scanpoints(self, writer: Abox_Writer, entryIRI, calc_id, data):
 
         for k in range(len(data[SCAN_COORDINATE_VALUE])):
-            gauss_type = data[SCAN_POINTS_JOBS][k].split("_")[0][-3:]
 
             writer.write_inst(
                 iri=f"pes_pref:ScanPoint_{calc_id}_{k + 1}",
@@ -134,18 +129,14 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
                 iri=f"pes_pref:{entryIRI}",
                 rel="onto_pes:#hasScanPoint",
             )
-            writer.write_inst(
-                iri=data[SCAN_POINTS_JOBS][k],
-                type=f"onto_comp:#{gauss_type}",
-            ).add_obj_prop(
-                iri=f"pes_pref:ScanPoint_{calc_id}_{k + 1}",
+            writer.write_obj_prop(
+                src_iri=f"pes_pref:ScanPoint_{calc_id}_{k + 1}",
                 rel="onto_pes:#hasCalculation",
-                store_inst=True,
+                trg_iri=data[SCAN_POINTS_JOBS][k],
             ).add_data_prop(
                 rel="onto_pes:#hasInputAtomIds",
                 value=data[SCAN_ATOM_IDS],
             )
-
             writer.write_inst(
                 iri=f"pes_pref:ScanCoordinateValue_{calc_id}_{k + 1}",
                 type="onto_pes:#ScanCoordinateValue",
