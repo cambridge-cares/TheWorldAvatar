@@ -193,30 +193,31 @@ def test_condition_readings_data():
         'Wind Gust': (32, 'mph', 'G'),
         'Wind Speed': (22, 'mph', 'S'),
         'timestamp': (dt.datetime(2022, 4, 4, 3, 0), '')}
-        ] 
+        ]
     # Expected results
-    expected1 = {'Temperature': None, 'Pressure': None, 'Dew Point': None, 
-                 'Screen Relative Humidity': None, 'Visibility': None, 
-                 'Wind Direction': None, 'Wind Speed': None, 'Wind Gust': None}
-    expected2 = {'Temperature': [9.8, 10.0, 9.8], 
-                 'Pressure': [1002.0, 1001.0, 1001.0], 
-                 'Dew Point': [8.3, 8.1, 8.4], 
-                 'Screen Relative Humidity': [90.3, 87.9, 90.9], 
+    expected1 = {'AirTemperature': None, 'AtmosphericPressure': None, 'DewPoint': None, 
+                 'RelativeHumidity': None, 'Visibility': None, 
+                 'WindDirection': None, 'WindSpeed': None, 'WindGust': None}
+    expected2 = {'AirTemperature': [9.8, 10.0, 9.8], 
+                 'AtmosphericPressure': [1002.0, 1001.0, 1001.0], 
+                 'DewPoint': [8.3, 8.1, 8.4], 
+                 'RelativeHumidity': [90.3, 87.9, 90.9], 
                  'Visibility': [75000.0, 75000.0, 29000.0], 
-                 'Wind Direction': [180.0, 247.5, 45.0], 
-                 'Wind Speed': [21.0, 19.0, 22.0], 
-                 'Wind Gust': [30.0, 30.0, 32.0], 
+                 'WindDirection': [180.0, 247.5, 45.0], 
+                 'WindSpeed': [21.0, 19.0, 22.0], 
+                 'WindGust': [30.0, 30.0, 32.0], 
                  'timestamp': ['2022-04-04T01:00:00Z', '2022-04-04T02:00:00Z', '2022-04-04T03:00:00Z']}
     
     # Perform test for retrieval of keys only
     res = condition_readings_data(test_readings)
-    for k in res:
-        assert res[k] == expected1[k]
+    for k in res['readings']:
+        assert res['readings'][k] == expected1[k]
 
     # Perform test for retrieval of keys and data
     res = condition_readings_data(test_readings, False)
-    for k in res:
-        assert res[k] == expected2[k]
+    for k in res['readings']:
+        assert res['readings'][k] == expected2[k]
+    assert res['times'] == expected2['timestamp']
 
 
 def test_add_readings_for_station(mocker):
@@ -245,7 +246,7 @@ def test_add_readings_for_station(mocker):
     query = query.strip()
     assert (expected_obs1_1 in query) and (expected_obs1_2 in query)
     assert len(res[1]) == 2
-    assert res[1] == ['http://www.theworldavatar.com/kb/ontoems/Measure_1']*2
+    assert res[2] == ['http://www.theworldavatar.com/kb/ontoems/Measure_1']*2
 
     # Perform test for observation with comment
     comments = ['test']*2
@@ -257,7 +258,7 @@ def test_add_readings_for_station(mocker):
     query = query.strip()
     assert (expected_obs2_1 in query) and (expected_obs2_2 in query)
     assert len(res[1]) == 2
-    assert res[1] == ['http://www.theworldavatar.com/kb/ontoems/Measure_1']*2
+    assert res[2] == ['http://www.theworldavatar.com/kb/ontoems/Measure_1']*2
 
     # Perform test for forecast without comment
     res = add_readings_for_station(station_iri, test_readings, is_observation=False)
@@ -267,4 +268,4 @@ def test_add_readings_for_station(mocker):
     query = query.strip()
     assert (expected_fc1 in query) and (expected_fc2 in query)
     assert len(res[1]) == 2
-    assert res[1] == ['http://www.theworldavatar.com/kb/ontoems/Forecast_1']*2
+    assert res[2] == ['http://www.theworldavatar.com/kb/ontoems/Forecast_1']*2

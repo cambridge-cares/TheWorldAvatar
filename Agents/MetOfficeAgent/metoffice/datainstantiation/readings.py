@@ -58,7 +58,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
             INSERT DATA {{
         """
 
-        # Initialise lists for TimeSeriesClient bulk Init
+        # Initialise lists for TimeSeriesClient's bulkInit function
         dataIRIs = []
         dataClasses = []
         timeUnit = []
@@ -72,6 +72,9 @@ def instantiate_station_readings(instantiated_sites_list: list,
         instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
         instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])                                                        
 
+        # Load available observations and forecasts from API
+        available_obs, available_fcs = retrieve_readings_concepts_per_station(metclient)
+
         # Loop over all sites
         for id in instantiated_sites_list:
             
@@ -79,12 +82,21 @@ def instantiate_station_readings(instantiated_sites_list: list,
             inst_obs = instantiated_obs[instantiated_obs['stationID'] == id]['reading'].tolist()
             inst_fcs = instantiated_fcs[instantiated_fcs['stationID'] == id]['reading'].tolist()
 
-            # Load observations and forecasts for that station from API
-            available_obs, available_fcs = retrieve_readings_concepts_for_station(metclient, id)
+            # Get available observations and forecasts for that station
+            try:
+                avail_obs = available_obs[id]
+            except KeyError:
+                # In case no observation data is available for instantiated station
+                avail_obs = []
+            try:
+                avail_fcs = available_fcs[id]
+            except KeyError:
+                # In case no forecast data is available for instantiated station
+                avail_fcs = []
             
             # Derive quantities to instantiate
-            obs = [i for i in available_obs if i not in inst_obs]
-            fcs = [i for i in available_fcs if i not in inst_fcs]
+            obs = [i for i in avail_obs if i not in inst_obs]
+            fcs = [i for i in avail_fcs if i not in inst_fcs]
             both = [i for i in obs if i in fcs]
             obs = list(set(obs) - set(both))
             fcs = list(set(fcs) - set(both))
@@ -114,17 +126,21 @@ def instantiate_station_readings(instantiated_sites_list: list,
                 dataClasses.append(dataClasses2 + dataClasses4)
                 timeUnit.append(timeUnit4)
 
+            print(f'Readings for station {id:>6} successfully added to query.')
+
         # Close query
         query_string += f"}}"
 
         # Instantiate all non-time series triples
         kg_client = KGClient(query_endpoint, update_endpoint)
         kg_client.performUpdate(query_string)
+        print('Insert query successfully performed.')
 
         if dataIRIs:
             # Instantiate all time series triples
             ts_client = TSClient()
             ts_client.ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
+            print('Time series triples successfully added.')
 
 
 def instantiate_all_station_readings(query_endpoint: str = QUERY_ENDPOINT,
@@ -133,11 +149,9 @@ def instantiate_all_station_readings(query_endpoint: str = QUERY_ENDPOINT,
             Instantiates all readings for all instantiated stations
         """
 
-        stations = get_all_metoffice_stations()
-        selection = ['3041']
-        stations_subset = {key: stations[key] for key in selection}
+        stations = get_all_metoffice_stations(query_endpoint, update_endpoint)
         
-        instantiate_station_readings(stations_subset)
+        instantiate_station_readings(stations)
 
 
 def add_readings_for_station(station_iri: str,
@@ -218,75 +232,147 @@ def add_readings_for_station(station_iri: str,
     return triples, created_reading_iris, dataIRIs, dataClasses, timeUnit
 
 
+def retrieve_readings_concepts_per_station(metclient, station_id: str = None, 
+                                           observations: bool = True,
+                                           forecasts: bool = True):
+    """
+        Retrieve station readings via Metoffer client (if station_id is provided, 
+        retrieve readings for given station, otherwise or for ALL stations)
+    """
+
+    # Retrieve data for particular station or ALL stations
+    station_id = station_id if station_id else metoffer.ALL
+
+    if observations:
+        # Load OBSERVATIONS data
+        try:
+            obs = metclient.loc_observations(station_id)
+        except:
+            raise APIException('Error while retrieving observation data.')
+            #logger.warning('Error while retrieving observation for station ID: {:>10}'.format(id))
+        observations = readings_dict_gen(obs)
+        available_obs = {key: condition_readings_data(observations[key]) for key in observations}
+        available_obs = [(i, list(available_obs[i]['readings'].keys())) for i in available_obs.keys()]
+        available_obs = dict(available_obs)
+
+
+    if forecasts:
+        # Load 3-hourly FORECAST data
+        try:
+            fc = metclient.loc_forecast(station_id, metoffer.THREE_HOURLY)
+        except:
+            raise APIException('Error while retrieving forecast data.')
+            #logger.warning('Error while retrieving observation for station ID: {:>10}'.format(id))
+        forecasts = readings_dict_gen(fc)
+        available_fcs = {key: condition_readings_data(forecasts[key]) for key in forecasts}
+        available_fcs = [(i, list(available_fcs[i]['readings'].keys())) for i in available_fcs.keys()]
+        available_fcs = dict(available_fcs)
+
+    return available_obs, available_fcs
+
+
+def readings_dict_gen(returned_data):
+    """
+        Create dictionary of all readings from returned data
+
+        Arguments:
+            returned_data - readings data as returned by MetOffer
+    """
+
+    def _dictionary_generator(loc, data_key):
+        # Create dictionary of readings for one station
+        returned_reps = loc['Period']
+        if type(returned_reps) != list:
+            returned_reps = [returned_reps]
+        for i in returned_reps:
+            y, m, d = i['value'][:-1].split("-")
+            date = dt.datetime(int(y), int(m), int(d))
+            ureps = i['Rep']
+            if type(ureps) != list:
+                ureps = [i['Rep']]
+            for rep in ureps:
+                try:
+                    t = (date + dt.timedelta(seconds=int(rep['$']) * 60), "")  # t always a tuple
+                except(ValueError):
+                    t = (date, rep['$'])  # Used for "DAILY" (time) step
+                except(KeyError):
+                    t = (date, '') 
+                del rep['$']
+                weather = {'timestamp': t}
+                for n in rep:
+                    try:
+                        # -99 is used by the Met Office as a value where no data is held.
+                        weather[data_key[n]['text']] = (
+                        int(rep[n]) if rep[n] != "-99" else None, data_key[n]['units'], n)
+                    except(ValueError):
+                        try:
+                            weather[data_key[n]['text']] = (float(rep[n]), data_key[n]['units'], n)
+                        except(ValueError):
+                            weather[data_key[n]['text']] = (rep[n], data_key[n]['units'], n)
+                yield weather
+
+    # Get dict containing measurement 'name', description ('text') and unit of measurement
+    data_key = {i["name"]: {"text": i["$"], "units": i["units"]} for i in returned_data["SiteRep"]["Wx"]["Param"]}
+    
+    # Initialise return dictionaries for all stations
+    all_sites = {}
+    # Get all station IDs
+    returned_locs = returned_data['SiteRep']['DV']['Location']
+    if type(returned_locs) != list:
+            returned_locs = [returned_locs]
+    for loc in returned_locs:
+        id = loc['i']
+        readings = []
+        for reading in _dictionary_generator(loc, data_key):
+            readings.append(reading)
+        all_sites[id] = readings
+
+    return all_sites
+
+
 def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict:
     """
         Condition retrieved MetOffer readings as required for query template
 
         Arguments:
-            readings_data - readings data list as returned by MetOffer
+            readings_data - readings data as returned by readings_dict_gen
             only_keys - boolean flag indicating whether only the keys (i.e. variable
                         names) shall be retrieved or also time series data
     """
-    
+
     # Read all unique measurement variables
     read_variables = [v for data in readings_data for v in list(data.keys())]
     read_variables = list(set(read_variables))
     relevant_variables = list(set(read_variables) & set(READINGS_MAPPING.keys()))
-    # Initialise dict of conditioned readings
-    conditioned = dict(zip(relevant_variables, [None]*len(relevant_variables)))
+    target_variables = [READINGS_MAPPING[i] for i in relevant_variables]
+    # Initialise return dict: times and dict of conditioned readings
+    conditioned = {'times': None,
+                   'readings': None}
+    conditioned['readings'] = dict(zip(target_variables, [None]*len(target_variables)))
 
     if not only_keys:
-        # Read reported times and values for variables
+        # Read reported times and values for variables and make sure that each
+        # variable has and entry for each reported time step
+        df = pd.DataFrame(readings_data)
+        df = df[['timestamp'] + relevant_variables]
+        df['timestamp'] = df['timestamp'].apply(lambda x: dt.datetime.strftime(x[0], TIME_FORMAT))
         for read_var in relevant_variables:
-            if read_var == 'timestamp':
-                conditioned[read_var] = [dt.datetime.strftime(r[read_var][0], TIME_FORMAT) for r in readings_data]
-            elif read_var == 'Wind Direction':
-                conditioned[read_var] = [float(COMPASS[r[read_var][0]]) for r in readings_data]
+            if read_var == 'Wind Direction':
+                df[read_var] = df[read_var].apply(lambda x: float(COMPASS[x[0]]) if(pd.notnull(x)) else x)
             else:
-                conditioned[read_var] = [float(r[read_var][0]) for r in readings_data]
+                df[read_var] = df[read_var].apply(lambda x: float(x[0]) if(pd.notnull(x)) else x)
+        
+        for c in df.columns:
+            if c == 'timestamp':
+                conditioned['times'] = df[c].to_list()
+            else:
+                conditioned['readings'][READINGS_MAPPING[c]] = df[c].to_list()
 
     return conditioned
 
 
-def retrieve_readings_concepts_for_station(metclient, station_id: str, 
-                                          observations: bool = True,
-                                          forecasts: bool = True):
-    """
-        Retrieve station readings via Metoffer client
-    """
-
-    available_obs = []
-    available_fcs = []
-
-    if observations:
-        # Load OBSERVATIONS data for that station
-        try:
-            obs = metclient.loc_observations(station_id)
-            observation = metoffer.Weather(obs)
-            available_obs = condition_readings_data(observation.data)
-            available_obs = list(available_obs.keys())
-            available_obs = [READINGS_MAPPING[i] for i in available_obs]
-        except:
-            print('Error while retrieving observation for station ID: {:>10}'.format(station_id))
-            #logger.warning('Error while retrieving observation for station ID: {:>10}'.format(id))
-
-    if forecasts:
-        # Load 3-hourly FORECAST data for that station
-        try:
-            fc = metclient.loc_forecast(station_id, metoffer.THREE_HOURLY)
-            forecast = metoffer.Weather(fc)
-            available_fcs = condition_readings_data(forecast.data)
-            available_fcs = list(available_fcs.keys())
-            available_fcs = [READINGS_MAPPING[i] for i in available_fcs]
-        except:
-            print('Error while retrieving forecast for station ID: {:>10}'.format(station_id))
-            #logger.warning('Error while retrieving forecast for station ID: {:>10}'.format(id))
-
-    return available_obs, available_fcs
-
-
 if __name__ == '__main__':
 
-    print(dt.datetime.now().strftime('%Y-%m-%dT%H:%M'))
+    #print(dt.datetime.now().strftime('%Y-%m-%dT%H:%M'))
     instantiate_all_station_readings()
-    print(dt.datetime.now().strftime('%Y-%m-%dT%H:%M'))
+    #print(dt.datetime.now().strftime('%Y-%m-%dT%H:%M'))
