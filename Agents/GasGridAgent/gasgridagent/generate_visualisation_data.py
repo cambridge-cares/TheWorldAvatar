@@ -17,12 +17,13 @@ import output_pipe_locations as pipe
 # Specify plotting properties for GeoJSON features
 geojson_attributes = { 'displayName': '',
                   'description': '',
-                  'circle-color': '#FF0000',
-                  'circle-stroke-width': 1,
-                  'circle-stroke-color': '#000000',
-                  'circle-stroke-opacity': 0.75,
-                  'circle-opacity': 0.75
+                  'icon-size': 1.0,
+                  'icon-image': '',
+                  'hasState': 0
                   }
+
+terminal_image_label = "terminal"
+offtake_image_label = "offtake"
 
 def get_all_time_series(terminal, KGClient, TSClient, now, duration, start_1, start_2, start_7):
     '''
@@ -434,6 +435,7 @@ def generate_terminal_visualisation_data(terminals, terminal_coordinates, KGClie
         # Update GeoJSON properties
         geojson_attributes['description'] = str(terminal)
         geojson_attributes['displayName'] = terminal
+        geojson_attributes['icon-image'] = terminal_image_label
         # Append results to overall GeoJSON FeatureCollection
         if terminal.lower() in terminal_coordinates:
             geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, terminal_coordinates[terminal.lower()]))
@@ -484,6 +486,7 @@ def generate_offtake_visualisation_data(offtakes, offtake_coordinates, KGClient)
         # Update GeoJSON properties
         geojson_attributes['description'] = str(offtake)
         geojson_attributes['displayName'] = offtake
+        geojson_attributes['icon-image'] = offtake_image_label
         # Append results to overall GeoJSON FeatureCollection
         if offtake.lower() in offtake_coordinates:
             geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, offtake_coordinates[offtake.lower()]))
