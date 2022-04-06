@@ -85,8 +85,8 @@ def compare_results(
             shutil.copy2(file, file + "_ref")
 
     for file in files_to_check_content:
-        targetFile = readFile(file).split("\n")
-        refFile = readFile(file + "_ref").split("\n")
+        targetFile = sorted(readFile(file).split("\n"))
+        refFile = sorted(readFile(file + "_ref").split("\n"))
 
         for tarLine, refLine in zip(targetFile, refFile):
             assert tarLine == refLine
