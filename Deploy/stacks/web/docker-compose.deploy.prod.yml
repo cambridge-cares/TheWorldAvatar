@@ -59,7 +59,6 @@ services:
         FTP_USER_GID: 33
     ports:
         - "21:21"
-        - "80:80"
         - "30000-30009:30000-30009"
     volumes:
       - ftp-data:/mount/ftp
