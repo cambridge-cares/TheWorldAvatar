@@ -144,7 +144,7 @@ def outputPipes():
 				"properties": {
 					"name": "%s",
 					"stroke": "#000000",
-                    "line-color": "#808080"
+                    "line-color": "#B1B1B1"
 					},
 				"id": %s,
 				"geometry": { 

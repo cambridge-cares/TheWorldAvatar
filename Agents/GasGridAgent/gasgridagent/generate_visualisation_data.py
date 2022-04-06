@@ -25,6 +25,9 @@ geojson_attributes = { 'displayName': '',
 terminal_image_label = "terminal"
 offtake_image_label = "offtake"
 
+unit_of_gas_flow_iri = "http://www.ontology-of-units-of-measure.org/resource/om-2/cubicMetrePerSecond-Time"
+unit_of_gas_flow_symbol = "m<sup>3</sup>/s"
+
 def get_all_time_series(terminal, KGClient, TSClient, now, duration, start_1, start_2, start_7):
     '''
         Returns all time series data of the terminals
@@ -57,7 +60,10 @@ def get_all_time_series(terminal, KGClient, TSClient, now, duration, start_1, st
         if r['terminal'].lower() == terminal.lower():
             dataIRIs.append(r['dataIRI'])
             measurements.append("Instantaneous Flow")
-            units.append((r['unit']))
+            if (r['unit']).lower() == unit_of_gas_flow_iri.lower():
+                units.append(unit_of_gas_flow_symbol)
+            else:
+                units.append((r['unit']))
             measurement_iri = r['dataIRI']
             break
     # Initialise timestamps for gas flow time series retrieval durations (time series entries stored as UTC times!)
