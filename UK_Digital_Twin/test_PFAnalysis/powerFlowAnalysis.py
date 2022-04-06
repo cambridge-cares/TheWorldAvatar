@@ -39,16 +39,13 @@ class powerFlowAnalysis:
         self.GeneratorModelTopNodeIRI = GeneratorModelTopNodeIRI
         
         # The initial BusSwitchingIndicator is set to be -1 noting that there is no bus needs to be switching the type only when this number becomes positive 
-        self.BusSwitchingIndicator = -1
-        
-        #TODO: baseMVA should be written in the KG and can be quired via the iri
-        self.baseMVA = float(baseMVA)
-        
-        self.PFOrOPFAnalysis = PFOrOPFAnalysis
-        
+        self.busToBeSwitched = -1
         self.ConvergeFlag = -1
         self.Terminate = False
         
+        #TODO: baseMVA should be written in the KG and can be quired via the iri
+        self.baseMVA = float(baseMVA)
+        self.PFOrOPFAnalysis = PFOrOPFAnalysis       
         self.SlackBusName = []
         self.PVBusName = []
         self.PQBusName = []
@@ -89,9 +86,6 @@ class powerFlowAnalysis:
                      elif int(businput[varKey]) == PQ:                            
                          self.PQBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))                         
          
-                         
-         print("Bus type list ", self.SlackBusName, self.PVBusName, self.PQBusName)
-            
          self.NumberOfBus = len(BusInput)        
          
          ## query branch input
@@ -120,8 +114,7 @@ class powerFlowAnalysis:
          
          self.ObjectSet = ObjectSet
          
-         return 
-     
+         return     
         
      def ModelInputFormatter(self):
          """
@@ -157,7 +150,7 @@ class powerFlowAnalysis:
                  index = int(UKPowerGridModel.UKEbusModel.INPUT_VARIABLE[key])
                  ppc["bus"][index_bus][index] = getattr(self.ObjectSet.get(UKPowerGridModel.UKEbusModel.EBusKey + str(index_bus + 1)), key)
              index_bus += 1
-          
+             
          ## branch data
          # fbus, tbus, r, x, b, rateA, rateB, rateC, ratio, angle, status, angmin, angmax     
          ppc["branch"] = numpy.zeros((self.NumberOfBranch, len(UKPowerGridModel.UKElineModel.INPUT_VARIABLE_KEYS)), dtype = float)
@@ -211,7 +204,7 @@ class powerFlowAnalysis:
     
          ##-- starts pf analysis --## 
          # set up numerical method: Newton's Method
-         self.ppopt = ppoption(OUT_ALL = 1, VERBOSE = 2, PF_ALG = 1, PF_MAX_IT = 20) 
+         self.ppopt = ppoption(OUT_ALL = 1, VERBOSE = 2, PF_ALG = 1, PF_MAX_IT = 30, PF_TOL = 1e-8) 
          self.results, _, _ = pf.runpf(self.ppc, self.ppopt) #TODO: use the original pypower
          
          self.ConvergeFlag = self.results["success"]
@@ -334,7 +327,14 @@ class powerFlowAnalysis:
          return 
          
      def PowerFlowAnalysisMonitor(self):  
-        
+        """
+        Monitor the Jacobian matrix of the first iteration and based on the SVD results selects the bus which is going to switched to PV for the next round of calculation.
+
+        Returns
+        -------
+        None.
+
+        """
         ## read data
         ppc = loadcase(self.ppc)
     
@@ -393,8 +393,6 @@ class powerFlowAnalysis:
             indexOfMaxV_firstIteration += 1 
             numberOfPEq = self.NumberOfBus - len(self.SlackBusName)
             
-            print("indexOfMaxV_firstIteration is ", indexOfMaxV_firstIteration) 
-            
             if indexOfMaxV_firstIteration <= numberOfPEq:
                 busToBeSwitched = indexOfMaxV_firstIteration
                 for sb in self.SlackBusName:
@@ -435,8 +433,20 @@ if __name__ == '__main__':
     test_PowerFlowAnalysis_1.PowerFlowAnalysisSimulation()
     test_PowerFlowAnalysis_1.ModelOutputFormatter()
     
-    print(test_PowerFlowAnalysis_1. __dir__())
-  
+    print("*****This are EBus results*****")
+    for attr in test_PowerFlowAnalysis_1.ObjectSet.get('EBus-7').__dir__():
+        print(attr, getattr(test_PowerFlowAnalysis_1.ObjectSet.get('EBus-7'), attr))
+    for attr in test_PowerFlowAnalysis_1.ObjectSet.get('EBus-8').__dir__():
+        print(attr, getattr(test_PowerFlowAnalysis_1.ObjectSet.get('EBus-8'), attr))
+    
+    print("*****This are ELine results*****")
+    for attr in test_PowerFlowAnalysis_1.ObjectSet.get('ELine-0').__dir__():
+        print(attr, getattr(test_PowerFlowAnalysis_1.ObjectSet.get('ELine-0'), attr)) 
+        
+    print("*****This are EGen results*****")
+    for attr in test_PowerFlowAnalysis_1.ObjectSet.get('EGen-1134').__dir__():
+        print(attr, getattr(test_PowerFlowAnalysis_1.ObjectSet.get('EGen-1134'), attr)) 
+        
     
     # res = test_PowerFlowAnalysis_1.PowerFlowAnalysisSimulation(busList, branchList)
     # print(res.get('Generator_1').PG_INPUT)
