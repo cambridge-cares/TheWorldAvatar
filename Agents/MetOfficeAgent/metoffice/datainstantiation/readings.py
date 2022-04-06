@@ -30,85 +30,101 @@ from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, CO
 
 def instantiate_station_readings(instantiated_sites_list: list,
                                  query_endpoint: str = QUERY_ENDPOINT,
-                                 update_endpoint: str = UPDATE_ENDPOINT) -> None:
-        """
-            Instantiates readings for the provided list of measurement stations
-            
-            Arguments:
-                instantiated_sites_list - list of dictionaries with instantiated
-                                          stations/sites in the form [{id : iri},]
-        """
-
-        # Create MetOffice client to retrieve readings via API
-        try:
-            metclient = metoffer.MetOffer(DATAPOINT_API_KEY)
-        except:
-            raise APIException("MetOffer client could not be created to retrieve station readings.")
-            #logger.error("MetOffer client could not be created to retrieve station readings.")
+                                 update_endpoint: str = UPDATE_ENDPOINT) -> int:
+    """
+        Instantiates readings for the provided list of measurement stations
         
-        # Initialise update query
-        query_string = f"""
-            {create_sparql_prefix('rdf')}
-            {create_sparql_prefix('rdfs')}
-            {create_sparql_prefix('xsd')}
-            {create_sparql_prefix('ems')}
-            {create_sparql_prefix('kb')}
-            {create_sparql_prefix('om')}
-            {create_sparql_prefix('ts')}
-            INSERT DATA {{
-        """
+        Arguments:
+            instantiated_sites_list - list of dictionaries with instantiated
+                                        stations/sites in the form [{id : iri},]
+    """
 
-        # Initialise lists for TimeSeriesClient's bulkInit function
-        dataIRIs = []
-        dataClasses = []
-        timeUnit = []
+    # Create MetOffice client to retrieve readings via API
+    try:
+        metclient = metoffer.MetOffer(DATAPOINT_API_KEY)
+    except:
+        raise APIException("MetOffer client could not be created to retrieve station readings.")
+        #logger.error("MetOffer client could not be created to retrieve station readings.")
+    
+    # Initialise update query
+    query_string = f"""
+        {create_sparql_prefix('rdf')}
+        {create_sparql_prefix('rdfs')}
+        {create_sparql_prefix('xsd')}
+        {create_sparql_prefix('ems')}
+        {create_sparql_prefix('kb')}
+        {create_sparql_prefix('om')}
+        {create_sparql_prefix('ts')}
+        INSERT DATA {{
+    """
 
-        # Get already instantiated observations and forecasts (across all stations)
-        instantiated_obs = get_all_instantiated_observations(query_endpoint, 
-                                                             update_endpoint)
-        instantiated_fcs = get_all_instantiated_forecasts(query_endpoint, 
-                                                          update_endpoint)
-        # Get short version of variable type from full quantity type
-        instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
-        instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])                                                        
+    # Initialise lists for TimeSeriesClient's bulkInit function
+    dataIRIs = []
+    dataClasses = []
+    timeUnit = []
 
-        # Load available observations and forecasts from API
-        available_obs, available_fcs = retrieve_readings_concepts_per_station(metclient)
+    # Get already instantiated observations and forecasts (across all stations)
+    instantiated_obs = get_all_instantiated_observations(query_endpoint, 
+                                                            update_endpoint)
+    instantiated_fcs = get_all_instantiated_forecasts(query_endpoint, 
+                                                        update_endpoint)
+    # Get short version of variable type from full quantity type
+    instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
+    instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])                                                        
 
-        # Loop over all sites
-        for id in instantiated_sites_list:
-            
-            # Get lists of instantiated readings for current station
-            inst_obs = instantiated_obs[instantiated_obs['stationID'] == id]['reading'].tolist()
-            inst_fcs = instantiated_fcs[instantiated_fcs['stationID'] == id]['reading'].tolist()
+    # Load available observations and forecasts from API
+    available_obs, available_fcs = retrieve_readings_concepts_per_station(metclient)
 
-            # Get available observations and forecasts for that station
-            try:
-                avail_obs = available_obs[id]
-            except KeyError:
-                # In case no observation data is available for instantiated station
-                avail_obs = []
-            try:
-                avail_fcs = available_fcs[id]
-            except KeyError:
-                # In case no forecast data is available for instantiated station
-                avail_fcs = []
-            
-            # Derive quantities to instantiate
-            obs = [i for i in avail_obs if i not in inst_obs]
-            fcs = [i for i in avail_fcs if i not in inst_fcs]
-            both = [i for i in obs if i in fcs]
-            obs = list(set(obs) - set(both))
-            fcs = list(set(fcs) - set(both))
+    # Initialise number of instantiated readings
+    instantiated = 0
 
-            # Get station IRI
-            station_iri = instantiated_sites_list[id]
+    # Loop over all sites
+    for id in instantiated_sites_list:
+        
+        # Get lists of instantiated readings for current station
+        inst_obs = instantiated_obs[instantiated_obs['stationID'] == id]['reading'].tolist()
+        inst_fcs = instantiated_fcs[instantiated_fcs['stationID'] == id]['reading'].tolist()
 
-            # Create triples and input lists for TimeSeriesClient bulkInit
-            triples1, reading_iris, dataIRIs1, dataClasses1, _ = add_readings_for_station(station_iri, both, is_observation=True)
-            triples2, _, dataIRIs2, dataClasses2, _ = add_readings_for_station(station_iri, both, reading_iris, is_observation=False)
-            triples3, _, dataIRIs3, dataClasses3, timeUnit3 = add_readings_for_station(station_iri, obs, is_observation=True)
-            triples4, _, dataIRIs4, dataClasses4, timeUnit4 = add_readings_for_station(station_iri, fcs, is_observation=False)
+        # Get available observations and forecasts for that station
+        try:
+            avail_obs = available_obs[id]
+        except KeyError:
+            # In case no observation data is available for instantiated station
+            avail_obs = []
+        try:
+            avail_fcs = available_fcs[id]
+        except KeyError:
+            # In case no forecast data is available for instantiated station
+            avail_fcs = []
+        
+        # Derive quantities to instantiate
+        obs = [i for i in avail_obs if i not in inst_obs]
+        fcs = [i for i in avail_fcs if i not in inst_fcs]
+        both = [i for i in obs if i in fcs]
+        obs = list(set(obs) - set(both))
+        fcs = list(set(fcs) - set(both))
+
+        # Get station IRI
+        station_iri = instantiated_sites_list[id]
+
+        # Initialise
+        triples1, triples2, triples3, triples4 = '', '', '', ''
+        dataIRIs1, dataIRIs2, dataIRIs3, dataIRIs4 = [], [], [], []
+        dataClasses1, dataClasses2, dataClasses3, dataClasses4 = [], [], [], []
+        timeUnit3, timeUnit4 = None, None
+
+        # Create triples and input lists for TimeSeriesClient bulkInit
+        if obs or fcs or both:
+            if both:
+                triples1, reading_iris, dataIRIs1, dataClasses1, _ = add_readings_for_station(station_iri, both, is_observation=True)
+                triples2, _, dataIRIs2, dataClasses2, _ = add_readings_for_station(station_iri, both, reading_iris, is_observation=False)
+                instantiated += len(both)
+            if obs:
+                triples3, _, dataIRIs3, dataClasses3, timeUnit3 = add_readings_for_station(station_iri, obs, is_observation=True)
+                instantiated += len(obs)
+            if fcs:
+                triples4, _, dataIRIs4, dataClasses4, timeUnit4 = add_readings_for_station(station_iri, fcs, is_observation=False)
+                instantiated += len(fcs)
 
             # Add triples to INSERT DATA query
             query_string += triples1
@@ -128,30 +144,34 @@ def instantiate_station_readings(instantiated_sites_list: list,
 
             print(f'Readings for station {id:>6} successfully added to query.')
 
-        # Close query
-        query_string += f"}}"
+    # Close query
+    query_string += f"}}"
 
-        # Instantiate all non-time series triples
-        kg_client = KGClient(query_endpoint, update_endpoint)
-        kg_client.performUpdate(query_string)
-        print('Insert query successfully performed.')
+    # Instantiate all non-time series triples
+    kg_client = KGClient(query_endpoint, update_endpoint)
+    kg_client.performUpdate(query_string)
+    print('Insert query successfully performed.')
 
-        if dataIRIs:
-            # Instantiate all time series triples
-            ts_client = TSClient()
-            ts_client.ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
-            print('Time series triples successfully added.')
+    if dataIRIs:
+        # Instantiate all time series triples
+        ts_client = TSClient()
+        ts_client.ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
+        print('Time series triples successfully added.')
+
+    return instantiated
 
 
 def instantiate_all_station_readings(query_endpoint: str = QUERY_ENDPOINT,
-                                     update_endpoint: str = UPDATE_ENDPOINT) -> None:
-        """
-            Instantiates all readings for all instantiated stations
-        """
+                                     update_endpoint: str = UPDATE_ENDPOINT) -> int:
+    """
+        Instantiates all readings for all instantiated stations
+    """
 
-        stations = get_all_metoffice_stations(query_endpoint, update_endpoint)
-        
-        instantiate_station_readings(stations)
+    stations = get_all_metoffice_stations(query_endpoint, update_endpoint)
+    
+    instantiated = instantiate_station_readings(stations)
+
+    return instantiated
 
 
 def add_readings_for_station(station_iri: str,
@@ -373,6 +393,5 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
 
 if __name__ == '__main__':
 
-    #print(dt.datetime.now().strftime('%Y-%m-%dT%H:%M'))
-    instantiate_all_station_readings()
-    #print(dt.datetime.now().strftime('%Y-%m-%dT%H:%M'))
+    response = instantiate_all_station_readings()
+    print(f"Number of instantiated readings: {response}")

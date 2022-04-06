@@ -99,7 +99,7 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
 
 def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
                              query_endpoint: str = QUERY_ENDPOINT,
-                             update_endpoint: str = UPDATE_ENDPOINT) -> None:
+                             update_endpoint: str = UPDATE_ENDPOINT) -> int:
     """
         Instantiate all weather stations available via Met Office DataPoint
 
@@ -117,6 +117,7 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
 
     # Derive non yet instantiated stations
     missing_ids = [s for s in available_ids if not s in instantiated_ids]
+    missing_ids = ['351499', '351552', '3469']
     to_instantiate = [s for s in available if s['id'] in missing_ids]
 
     # Instantiate missing stations
@@ -156,5 +157,6 @@ def _condition_metoffer_data(station_data: dict) -> dict:
 
 if __name__ == '__main__':
 
-    instantiate_all_stations()
+    response = instantiate_all_stations()
+    print(f"Number of instantiated stations: {response}")
     

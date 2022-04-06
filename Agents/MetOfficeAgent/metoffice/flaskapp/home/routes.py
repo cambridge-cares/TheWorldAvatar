@@ -17,7 +17,8 @@ def default():
     msg += "<BR>"
     msg += "Request to instantiate all Met Office stations (GET request):<BR>"
     msg += "&nbsp&nbsp /api/metofficeagent/instantiate/stations"
-    # TODO enter further HTTP request templates
-    #msg += "&nbsp&nbsp /api/metofficeagent/calculate?ontocompchem_IRI=oc_IRI&ontospecies_IRI=os_IRI"
-    #msg += "&temperature=temperature&pressure=pressure"
+    msg += "<BR>"
+    msg += "<BR>"
+    msg += "Request to instantiate Met Office readings for instantiated stations (GET request):<BR>"
+    msg += "&nbsp&nbsp /api/metofficeagent/instantiate/readings"
     return msg
