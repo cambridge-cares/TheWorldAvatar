@@ -40,3 +40,4 @@
 <user username="bg_user" password="BLAZEGRAPH_PASSWORD" roles="blazegraph"/>
 
 </tomcat-users>
+

@@ -25,3 +25,4 @@ ifort /exe:aermap.exe mod_main1.obj mod_tifftags.obj aermap.obj sub_calchc.obj s
 del *.obj
 del *.mod
 
+

@@ -149,3 +149,4 @@ if [[ "${DONT_PROMPT}" != "-y" ]];
 then
     read -n 1 -s -r -p "Press any key to continue"
 fi
+
