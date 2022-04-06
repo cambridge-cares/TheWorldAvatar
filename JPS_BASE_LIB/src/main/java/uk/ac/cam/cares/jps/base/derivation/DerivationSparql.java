@@ -1766,6 +1766,15 @@ public class DerivationSparql {
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 
+	void deleteDirectConnectionBetweenDerivations(Map<String, String> derivationPairMap) {
+		ModifyQuery modify = Queries.MODIFY();
+		derivationPairMap.forEach((downstream, upstream) -> {
+			modify.delete(iri(downstream).has(isDerivedFrom, iri(upstream)));
+		});
+		modify.prefix(p_derived);
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
 	/**
 	 * Returns true if it is a asynchronous derived quantity.
 	 * 

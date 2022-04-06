@@ -640,14 +640,23 @@ public class DerivationClient {
 		// to this derivation, i.e. the current derivation was created for new information,
 		// and other derivation instances further depend on the current one
 		Map<String, String> downstreamDerivations = this.sparqlClient.getDownstreamDerivationForNewInfo(derivation);
-		List<String> newInfoAsInputs = new ArrayList<>();
-		List<String> downstreamDerivationsToReconnect = new ArrayList<>();
-		downstreamDerivations.forEach((downstream_derivation, agent_iri) -> {
-			List<String> asInputs = this.sparqlClient.retrieveMatchingInstances(derivation, agent_iri);
-			asInputs.forEach(inp -> {newInfoAsInputs.add(inp);downstreamDerivationsToReconnect.add(downstream_derivation);});
-		});
-		// reconnect within the triple store
-		this.sparqlClient.reconnectInputToDerived(newInfoAsInputs, downstreamDerivationsToReconnect);
+		if (!downstreamDerivations.isEmpty()) {
+			List<String> newInfoAsInputs = new ArrayList<>();
+			List<String> downstreamDerivationsToReconnect = new ArrayList<>();
+			Map<String, String> derivationPairMap = new HashMap<>();
+			downstreamDerivations.forEach((downstream_derivation, agent_iri) -> {
+				List<String> asInputs = this.sparqlClient.retrieveMatchingInstances(derivation, agent_iri);
+				asInputs.forEach(inp -> {
+					newInfoAsInputs.add(inp);
+					downstreamDerivationsToReconnect.add(downstream_derivation);
+					derivationPairMap.put(downstream_derivation, derivation);
+				});
+			});
+			// delete <downstreamDerivation> <isDerivedFrom> <derivation>
+			this.sparqlClient.deleteDirectConnectionBetweenDerivations(derivationPairMap);
+			// reconnect within the triple store
+			this.sparqlClient.reconnectInputToDerived(newInfoAsInputs, downstreamDerivationsToReconnect);
+		}
 
 		// (3) delete all triples connected to status of the derivation
 		this.sparqlClient.deleteStatus(derivation);
