@@ -65,7 +65,13 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     query_string = f"""
         {create_sparql_prefix('xsd')}
         {create_sparql_prefix('ems')}
-        INSERT DATA {{
+        DELETE {{
+	        ?forecast ems:createdOn ?old }}
+        INSERT {{
+	        ?forecast ems:createdOn \"{t}\"^^xsd:dateTime }}
+        WHERE {{
+	        ?forecast ems:createdOn ?old .
+            FILTER ( ?forecast IN (
     """
 
     # Create MetOffice client to retrieve readings via API
@@ -98,10 +104,10 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     added_obs = 0
     added_fcs = 0
     
-    print('Adding time series data to KG ...')
+    print('\nAdding observation time series data to bulkadd list ...')
     # Loop through all observation timeseries
+    ts_list = []
     for tsiri in list(instantiated_obs['tsIRI'].unique()): 
-        print(f'Adding observation data for: {tsiri}')
         # Extract relevant data      
         data = instantiated_obs[instantiated_obs['tsIRI'] == tsiri]
         station_id = data['stationID'].iloc[0]
@@ -114,12 +120,14 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         for i in range(len(times_list)):
             added_obs += len(dataIRIs_list[i])
             ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
-            ts_client.addTimeSeriesData(ts)
-    print(f'\nTime series data for {added_obs} observations successfully added.\n')
+            ts_list.append(ts)
+    ts_client.bulkaddTimeSeriesData(ts_list)
+    print(f'\nTime series data for {added_obs} observations successfully added to KG.\n')
     
+    print('\nAdding forecast time series data to bulkadd list ...')
     # Loop through all forecast timeseries
+    ts_list = []
     for tsiri in list(instantiated_fcs['tsIRI'].unique()):  
-        print(f'Adding forecast data for: {tsiri}')
         # Extract relevant data      
         data = instantiated_fcs[instantiated_fcs['tsIRI'] == tsiri]
         station_id = data['stationID'].iloc[0]
@@ -132,13 +140,15 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         for i in range(len(times_list)):
             added_fcs += len(dataIRIs_list[i])
             ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
-            ts_client.addTimeSeriesData(ts)
+            ts_list.append(ts)
             for iri in dataIRIs_list[i]:
-                query_string += f"<{iri}> ems:createdOn \"{t}\"^^xsd:dateTime . "
+                query_string += f"<{iri}> , "
+    ts_client.bulkaddTimeSeriesData(ts_list)
     print(f'\nTime series data for {added_fcs} forecasts successfully added.\n')
 
-    # Close & perform creation date update query
-    query_string += f"}}"
+    # Strip trailing comma and close & perform creation date update query
+    query_string = query_string[:-2]
+    query_string += f") ) }}"
     kg_client = KGClient(query_endpoint, update_endpoint)
     kg_client.performUpdate(query_string)
     print('Creation time triples successfully updated.')
@@ -532,5 +542,7 @@ if __name__ == '__main__':
     # response = instantiate_all_station_readings()
     # print(f"Number of instantiated readings: {response}")
 
-    response = add_all_readings_timeseries()
+    response = add_readings_timeseries(['http://www.theworldavatar.com/kb/ontotimeseries/Timeseries_ae2b6c1d-3092-48f1-8eb0-dfd4ab5a7c89',
+    'http://www.theworldavatar.com/kb/ontotimeseries/Timeseries_6295daa0-402b-4659-ae37-2a637a0a3266'])
+    #response = add_all_readings_timeseries()
     print(f"Number of updated time series readings: {response}")
