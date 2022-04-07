@@ -202,7 +202,19 @@ public class TimeSeriesClient<T> {
     public void addTimeSeriesData(TimeSeries<T> ts) {
     	// Add time series data to respective database table
     	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-    	rdbClient.addTimeSeriesData(ts);
+		List<TimeSeries<T>> ts_list = new ArrayList<>();
+		ts_list.add(ts);
+    	rdbClient.addTimeSeriesData(ts_list);
+    }
+
+	/**
+     * Append time series data to an already instantiated time series
+	 * @param ts TimeSeries object to add
+     */
+    public void bulkaddTimeSeriesData(List<TimeSeries<T>> ts_list) {
+    	// Add time series data to respective database table
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
+    	rdbClient.addTimeSeriesData(ts_list);
     }
     
 	/**

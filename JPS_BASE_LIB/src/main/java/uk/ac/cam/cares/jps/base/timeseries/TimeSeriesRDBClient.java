@@ -205,44 +205,48 @@ public class TimeSeriesRDBClient<T> {
 	 * the existing data in the table
 	 * @param ts TimeSeries object to add
      */
-	protected void addTimeSeriesData(TimeSeries<T> ts) {
+	protected void addTimeSeriesData(List<TimeSeries<T>> ts_list) {
 		
-    	List<String> dataIRI = ts.getDataIRIs();
-    	
-		// Initialise connection and set jOOQ DSL context
+    	// Initialise connection and set jOOQ DSL context
     	connect();
+
+		// Loop over all time series in list
+		for (TimeSeries<T> ts : ts_list) {
 		
-		// All database interactions in try-block to ensure closure of connection
-		try {
+			List<String> dataIRI = ts.getDataIRIs();
 			
-			// Check if central database lookup table exists
-			String condition = String.format("table_name = '%s'", dbTableName);
-			if (context.select(count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) == 0) {
-				throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
-			}
-	    	
-			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
-			checkDataIsInSameTable(dataIRI);
-	    	
-	    	String tsTableName = getTimeseriesTableName(dataIRI.get(0));
-	    	// Assign column name for each dataIRI; name for time column is fixed
-			Map<String,String> dataColumnNames = new HashMap<>();
-			for (String s : dataIRI) {
-				dataColumnNames.put(s, getColumnName(s));
+			// All database interactions in try-block to ensure closure of connection
+			try {
+				
+				// Check if central database lookup table exists
+				String condition = String.format("table_name = '%s'", dbTableName);
+				if (context.select(count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) == 0) {
+					throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
+				}
+				
+				// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
+				checkDataIsInSameTable(dataIRI);
+				
+				String tsTableName = getTimeseriesTableName(dataIRI.get(0));
+				// Assign column name for each dataIRI; name for time column is fixed
+				Map<String,String> dataColumnNames = new HashMap<>();
+				for (String s : dataIRI) {
+					dataColumnNames.put(s, getColumnName(s));
+				}
+				
+				// Append time series data to time series table
+				// if a row with the time value exists, that row will be updated instead of creating a new row
+				populateTimeSeriesTable(tsTableName, ts, dataColumnNames);
+			} catch (JPSRuntimeException e) {
+				// Re-throw JPSRuntimeExceptions
+				throw e;
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
+				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 			
-			// Append time series data to time series table
-			// if a row with the time value exists, that row will be updated instead of creating a new row
-			populateTimeSeriesTable(tsTableName, ts, dataColumnNames);
-		} catch (JPSRuntimeException e) {
-			// Re-throw JPSRuntimeExceptions
-			throw e;
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
-		
 	}
 	
     /** 
