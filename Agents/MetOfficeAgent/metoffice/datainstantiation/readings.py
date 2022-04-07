@@ -16,16 +16,129 @@ from metoffice.dataretrieval.readings import *
 from metoffice.dataretrieval.stations import *
 from metoffice.errorhandling.exceptions import APIException
 from metoffice.kgutils.kgclient import KGClient
-from metoffice.kgutils.tsclient import TSClient
+from metoffice.kgutils.timeseries import TSClient
 from metoffice.kgutils.prefixes import create_sparql_prefix
 from metoffice.kgutils.prefixes import PREFIXES
 from metoffice.kgutils.querytemplates import *
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
-from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, TIME_FORMAT, DATACLASS
+from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, TIME_FORMAT, DATACLASS, VISIBILITY
 
 
 # # Initialise logger
 # logger = agentlogging.get_logger("dev")
+
+
+def add_readings_timeseries(instantiated_ts_iris: list = None,
+                            query_endpoint: str = QUERY_ENDPOINT,
+                            update_endpoint: str = UPDATE_ENDPOINT) -> int:
+    """
+        Adds time series data to instantiated time series IRIs
+        
+        Arguments:
+            instantiated_ts_iris - list of IRIs of instantiated time series
+    """
+
+    def _create_ts_subsets_to_add(times, dataIRIs, values):
+        # TimeSeriesClient faces issues to add data for all dataIRIs at once,
+        # if some dataIRIs contain missing values (None, nan); hence, create
+        # subsets of data to add without any missing entries
+        df = pd.DataFrame(index=times, data=dict(zip(dataIRIs, values)))
+        df[df.columns[~df.isnull().any()]]
+        non_nulls = df[df.columns[~df.isnull().any()]]
+        # Initialise return lists with data for non null quantities
+        times = [] if non_nulls.empty else [non_nulls.index.to_list()]
+        dataIRIs = [] if non_nulls.empty else [non_nulls.columns.to_list()]
+        values = [] if non_nulls.empty else [[non_nulls[c].values.tolist() for c in non_nulls.columns]]
+        some_nulls = [c for c in list(df.columns) if c not in list(non_nulls.columns)]
+        for c in some_nulls:
+            sub = df[c]
+            sub.dropna(inplace=True)
+            dataIRIs.append([c])
+            times.append(sub.index.to_list())
+            values.append([sub.values.tolist()])
+        
+        return times, dataIRIs, values  
+
+    # Create MetOffice client to retrieve readings via API
+    try:
+        metclient = metoffer.MetOffer(DATAPOINT_API_KEY)
+    except:
+        raise APIException("MetOffer client could not be created to retrieve station readings.")
+        #logger.error("MetOffer client could not be created to retrieve station readings.")
+    
+    # Load available observations and forecasts from API
+    print('Retrieving time series data from API ...')
+    available_obs, available_fcs = retrieve_readings_concepts_per_station(metclient, only_keys=False)    
+    
+    # Retrieve information about instantiated time series from KG
+    instantiated_obs = get_all_instantiated_observation_timeseries()
+    instantiated_fcs = get_all_instantiated_forecast_timeseries()
+
+    # Keep only the relevant subset for instantiated_ts_iris
+    if instantiated_ts_iris:
+        instantiated_obs = instantiated_obs[instantiated_obs['tsIRI'].isin(instantiated_ts_iris)]
+        instantiated_fcs = instantiated_fcs[instantiated_fcs['tsIRI'].isin(instantiated_ts_iris)]
+    # Get short version of variable type from full quantity type
+    instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
+    instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])   
+
+    # Initialise TimeSeriesClient
+    ts_client = TSClient.tsclient_with_default_settings()
+
+    added_obs = 0
+    added_fcs = 0
+    
+    print('Adding time series data to KG ...')
+    # Loop through all observation timeseries
+    for tsiri in list(instantiated_obs['tsIRI'].unique()): 
+        print(f'Adding observation data for: {tsiri}')
+        # Extract relevant data      
+        data = instantiated_obs[instantiated_obs['tsIRI'] == tsiri]
+        station_id = data['stationID'].iloc[0]
+        # Construct time series object to be added
+        times = available_obs[station_id]['times']
+        dataIRIs = data['dataIRI'].to_list()
+        values = [available_obs[station_id]['readings'][i] for i in data['reading'].to_list()]
+        # Potentially split time series data addition if None/nan exist in some readings
+        times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
+        for i in range(len(times_list)):
+            added_obs += len(dataIRIs_list[i])
+            ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
+            ts_client.addTimeSeriesData(ts)
+    print(f'\nTime series data for {added_obs} observations successfully added.\n')
+    
+    # Loop through all forecast timeseries
+    for tsiri in list(instantiated_fcs['tsIRI'].unique()):  
+        print(f'Adding forecast data for: {tsiri}')
+        # Extract relevant data      
+        data = instantiated_fcs[instantiated_fcs['tsIRI'] == tsiri]
+        station_id = data['stationID'].iloc[0]
+        # Construct time series object to be added
+        times = available_fcs[station_id]['times']
+        dataIRIs = data['dataIRI'].to_list()
+        values = [available_fcs[station_id]['readings'][i] for i in data['reading'].to_list()]
+        # Potentially split time series data addition if None/nan exist in some readings
+        times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
+        for i in range(len(times_list)):
+            added_fcs += len(dataIRIs_list[i])
+            ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
+            ts_client.addTimeSeriesData(ts)
+        # TODO add update triple for reference date of forecast creation
+    print(f'\nTime series data for {added_fcs} forecasts successfully added.\n')
+
+    return added_obs + added_fcs
+
+
+def add_all_readings_timeseries(query_endpoint: str = QUERY_ENDPOINT,
+                                update_endpoint: str = UPDATE_ENDPOINT) -> int:
+    """
+        Adds latest time series readings for all instantiated time series
+    """
+
+    updated_ts = add_readings_timeseries(query_endpoint=query_endpoint,
+                                         update_endpoint=update_endpoint)
+
+    return updated_ts
 
 
 def instantiate_station_readings(instantiated_sites_list: list,
@@ -154,8 +267,8 @@ def instantiate_station_readings(instantiated_sites_list: list,
 
     if dataIRIs:
         # Instantiate all time series triples
-        ts_client = TSClient()
-        ts_client.ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
+        ts_client = TSClient.tsclient_with_default_settings()
+        ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
         print('Time series triples successfully added.')
 
     return instantiated
@@ -252,9 +365,10 @@ def add_readings_for_station(station_iri: str,
     return triples, created_reading_iris, dataIRIs, dataClasses, timeUnit
 
 
-def retrieve_readings_concepts_per_station(metclient, station_id: str = None, 
+def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
                                            observations: bool = True,
-                                           forecasts: bool = True):
+                                           forecasts: bool = True,
+                                           only_keys: bool = True):
     """
         Retrieve station readings via Metoffer client (if station_id is provided, 
         retrieve readings for given station, otherwise or for ALL stations)
@@ -271,9 +385,10 @@ def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
             raise APIException('Error while retrieving observation data.')
             #logger.warning('Error while retrieving observation for station ID: {:>10}'.format(id))
         observations = readings_dict_gen(obs)
-        available_obs = {key: condition_readings_data(observations[key]) for key in observations}
-        available_obs = [(i, list(available_obs[i]['readings'].keys())) for i in available_obs.keys()]
-        available_obs = dict(available_obs)
+        available_obs = {key: condition_readings_data(observations[key], only_keys) for key in observations}
+        if only_keys:
+            available_obs = [(i, list(available_obs[i]['readings'].keys())) for i in available_obs.keys()]
+            available_obs = dict(available_obs)
 
 
     if forecasts:
@@ -284,9 +399,10 @@ def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
             raise APIException('Error while retrieving forecast data.')
             #logger.warning('Error while retrieving observation for station ID: {:>10}'.format(id))
         forecasts = readings_dict_gen(fc)
-        available_fcs = {key: condition_readings_data(forecasts[key]) for key in forecasts}
-        available_fcs = [(i, list(available_fcs[i]['readings'].keys())) for i in available_fcs.keys()]
-        available_fcs = dict(available_fcs)
+        available_fcs = {key: condition_readings_data(forecasts[key], only_keys) for key in forecasts}
+        if only_keys:
+            available_fcs = [(i, list(available_fcs[i]['readings'].keys())) for i in available_fcs.keys()]
+            available_fcs = dict(available_fcs)
 
     return available_obs, available_fcs
 
@@ -378,9 +494,12 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
         df['timestamp'] = df['timestamp'].apply(lambda x: dt.datetime.strftime(x[0], TIME_FORMAT))
         for read_var in relevant_variables:
             if read_var == 'Wind Direction':
-                df[read_var] = df[read_var].apply(lambda x: float(COMPASS[x[0]]) if(pd.notnull(x)) else x)
+                df[read_var] = df[read_var].apply(lambda x: float(COMPASS[x[0]]) if (pd.notnull(x)) else x)
+            elif read_var == 'Visibility':
+                # Visibility is provided as a mix of values and textual codes
+                df[read_var] = df[read_var].apply(lambda x: x if not pd.notnull(x) else float(x[0]) if isinstance(x[0], (int, float)) else VISIBILITY[x[0]])
             else:
-                df[read_var] = df[read_var].apply(lambda x: float(x[0]) if(pd.notnull(x)) else x)
+                df[read_var] = df[read_var].apply(lambda x: float(x[0]) if (pd.notnull(x)) else x)
         
         for c in df.columns:
             if c == 'timestamp':
@@ -393,5 +512,8 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
 
 if __name__ == '__main__':
 
-    response = instantiate_all_station_readings()
-    print(f"Number of instantiated readings: {response}")
+    # response = instantiate_all_station_readings()
+    # print(f"Number of instantiated readings: {response}")
+
+    response = add_all_readings_timeseries()
+    print(f"Number of updated time series readings: {response}")

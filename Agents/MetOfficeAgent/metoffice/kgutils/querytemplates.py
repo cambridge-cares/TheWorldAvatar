@@ -172,7 +172,7 @@ def all_instantiated_observation_timeseries():
                       rdf:type ?quantityType .
             ?dataIRI ts:hasTimeSeries ?tsIRI .   
         }}
-        ORDER BY ?station
+        ORDER BY ?tsIRI
     """
     return query
 
@@ -194,6 +194,6 @@ def all_instantiated_forecast_timeseries():
                       rdf:type ?quantityType .
             ?dataIRI ts:hasTimeSeries ?tsIRI .   
         }}
-        ORDER BY ?station
+        ORDER BY ?tsIRI
     """
     return query

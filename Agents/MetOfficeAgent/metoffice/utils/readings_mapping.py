@@ -62,6 +62,17 @@ COMPASS = {
     'NNW':  337.5,
 }
 
+# Visibility is provided as a mix of values and textual codes
+VISIBILITY = {
+    'UN': None,      # Unknown
+    'VP': 1000.0,    # Very poor - Less than 1 km
+    'PO': 4000.0,    # Poor - Between 1-4 km
+    'MO': 10000.0,   # Moderate - Between 4-10 km
+    'GO': 20000,     # Good - Between 10-20 km
+    'VG': 40000.0,   # Very good - Between 20-40 km
+    'EX': 60000.0    # Excellent - More than 40 km
+}
+
 # Times are reported in ISO 8601 dateTime (UTC)
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 

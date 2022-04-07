@@ -12,8 +12,9 @@ from metoffice.kgutils.javagateway import jpsBaseLibGW
 
 
 class KGClient:
+    
     def __init__(self, query_endpoint, update_endpoint, kg_user=None, 
-                 kg_password=None) -> None:
+                 kg_password=None):
 
         # create a JVM module view and use it to import the required java classes
         self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
