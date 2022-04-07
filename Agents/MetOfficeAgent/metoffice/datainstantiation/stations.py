@@ -117,7 +117,6 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
 
     # Derive non yet instantiated stations
     missing_ids = [s for s in available_ids if not s in instantiated_ids]
-    missing_ids = ['3002', '3005', '3008', '14', '22', '25']
     to_instantiate = [s for s in available if s['id'] in missing_ids]
 
     # Instantiate missing stations

@@ -24,5 +24,10 @@ def default():
     msg += "<BR>"
     msg += "<BR>"
     msg += "Request to add latest time series readings for all instantiated time series (GET request):<BR>"
-    msg += "&nbsp&nbsp /api/metofficeagent/timeseries/adddata"
+    msg += "&nbsp&nbsp /api/metofficeagent/update/timeseries"
+    msg += "<BR>"
+    msg += "<BR>"
+    msg += "Request to update all stations and readings (i.e. instantiate missing stations), "
+    msg += "and add latest time series readings for all time series (GET request):<BR>"
+    msg += "&nbsp&nbsp /api/metofficeagent/update/all"
     return msg
