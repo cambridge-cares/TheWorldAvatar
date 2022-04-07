@@ -3,8 +3,9 @@ from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import chemaboxwriters.common.params as params
 from chemaboxwriters.ontomops.abox_stages import OM_ABOX_STAGES
+import chemaboxwriters.kgoperations.querytemplates as qtmpl
 import os
-from typing import List
+from typing import List, Optional
 
 
 HANDLER_PREFIXES = {
@@ -88,4 +89,35 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         data[params.ENTRY_UUID] = random_id
         data[params.ENTRY_IRI] = f"{omops_entry_prefix}{random_id}"
 
+        assemblymodel = self.get_assembly_model_iri(data=data)
+
+        if assemblymodel is not None:
+            data["AssemblyModel_ID"] = assemblymodel.split("_")[-1]
+        else:
+            data["AssemblyModel_ID"] = data[params.ENTRY_UUID]
+
         utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
+
+    def get_assembly_model_iri(self, data) -> Optional[str]:
+        assemblymodel = None
+
+        symmetry = data["Mops_Symmetry_Point_Group"]
+        gbu_properties = []
+        for cbu in data["Mops_Chemical_Building_Units"]:
+            gbu_properties.append(
+                {
+                    "modularity": cbu["GenericUnitModularity"],
+                    "planarity": cbu["GenericUnitPlanarity"],
+                    "gbu_number": cbu["GenericUnitNumber"],
+                },
+            )
+
+        response = self.do_remote_store_query(
+            endpoint_prefix="omops",
+            query_str=qtmpl.get_assemblyModel(
+                gbu_properties=gbu_properties, mops_symmetry=symmetry
+            ),
+        )
+        if response:
+            assemblymodel = response[0]["AssemblyModel"]
+        return assemblymodel

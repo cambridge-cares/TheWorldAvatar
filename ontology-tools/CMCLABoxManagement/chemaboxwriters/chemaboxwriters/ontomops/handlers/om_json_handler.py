@@ -6,7 +6,6 @@ Created on Thu Mar  4 16:10:02 2021
 """
 
 import json
-import chemaboxwriters.kgoperations.querytemplates as qtmpl
 import chemaboxwriters.common.params as params
 import chemaboxwriters.common.utilsfunc as utilsfunc
 from chemaboxwriters.common.handler import Handler
@@ -85,9 +84,8 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             self._write_mol_weight(writer, gen_id, mops_id, data)
             self._write_charge(writer, gen_id, mops_id, data)
             self._write_cavity(writer, gen_id, mops_id, data)
-            asmodel_uuid = self._get_assembly_model_uuid(gen_id, data)
-            self._write_assembly_model(writer, gen_id, asmodel_uuid, mops_id, data)
-            self._write_cbu_gbu(writer, gen_id, asmodel_uuid, mops_id, data)
+            self._write_assembly_model(writer, gen_id, mops_id, data)
+            self._write_cbu_gbu(writer, gen_id, mops_id, data)
 
     def _write_initial(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
 
@@ -220,45 +218,12 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             rel="uom_pref:hasUnit",
         )
 
-    def _get_assembly_model_uuid(self, gen_id, data) -> str:
-
-        assemblymodel = None
-        if assemblymodel is None:
-            symmetry = data["Mops_Symmetry_Point_Group"]
-            gbu_properties = []
-            for cbu in data["Mops_Chemical_Building_Units"]:
-                gbu_properties.append(
-                    {
-                        "modularity": cbu["GenericUnitModularity"],
-                        "planarity": cbu["GenericUnitPlanarity"],
-                        "gbu_number": cbu["GenericUnitNumber"],
-                    },
-                )
-
-            response = self.do_remote_store_query(
-                endpoint_prefix="omops",
-                query_str=qtmpl.get_assemblyModel(
-                    gbu_properties=gbu_properties, mops_symmetry=symmetry
-                ),
-            )
-            if response:
-                assemblymodel = response[0]["AssemblyModel"]
-
-        if assemblymodel is None:
-            asmodel_uuid = gen_id
-        else:
-            asmodel_uuid = assemblymodel.split("_")[-1]
-
-        return asmodel_uuid
-
-    def _write_assembly_model(
-        self, writer: Abox_Writer, gen_id, asmodel_uuid, mops_id, data
-    ) -> None:
+    def _write_assembly_model(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
 
         # Write the Assembly Model initialization and shape/symmetry
         # related instances.
         writer.write_inst(
-            iri=f"mops_pref:AssemblyModel_{asmodel_uuid}",
+            iri=f"mops_pref:AssemblyModel_{data['AssemblyModel_ID']}",
             type="onto_mops:#AssemblyModel",
         ).add_obj_prop(
             iri=f"mops_pref:{mops_id}",
@@ -271,16 +236,14 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             iri=f"mops_pref:{data['Mops_Polyhedral_Shape']}_{gen_id}",
             type=f"onto_mops:#{data['Mops_Polyhedral_Shape']}",
         ).add_obj_prop(
-            iri=f"mops_pref:AssemblyModel_{asmodel_uuid}",
+            iri=f"mops_pref:AssemblyModel_{data['AssemblyModel_ID']}",
             rel="onto_mops:#hasPolyhedralShape",
         ).add_data_prop(
             rel="onto_mops:#hasSymbol",
             value=data["Mops_Polyhedral_Shape_Symbol"],
         )
 
-    def _write_cbu_gbu(
-        self, writer: Abox_Writer, gen_id, asmodel_uuid, mops_id, data
-    ) -> None:
+    def _write_cbu_gbu(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
 
         # Write the information about the Chemical and Generic Building units.
         for i, cbu_i in enumerate(
@@ -370,10 +333,10 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
             gbu = "GenericBuildingUnit"
 
             writer.write_inst(
-                iri=f"mops_pref:{gbu}_{asmodel_uuid}_{i}",
+                iri=f"mops_pref:{gbu}_{data['AssemblyModel_ID']}_{i}",
                 type=f"onto_mops:#{gbu}",
             ).add_obj_prop(
-                iri=f"mops_pref:AssemblyModel_{asmodel_uuid}",
+                iri=f"mops_pref:AssemblyModel_{data['AssemblyModel_ID']}",
                 rel=f"onto_mops:#has{gbu}",
             ).add_data_prop(
                 rel="onto_mops:#hasPlanarity",
@@ -383,13 +346,13 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 value=f"{cbu_i['GenericUnitModularity']}",
             )  # Modularity of GBU.
             writer.write_inst(
-                iri=f"mops_pref:{gbu}Number_{asmodel_uuid}_{i}",
+                iri=f"mops_pref:{gbu}Number_{data['AssemblyModel_ID']}_{i}",
                 type=f"onto_mops:#{gbu}Number",
             ).add_obj_prop(
-                iri=f"mops_pref:AssemblyModel_{asmodel_uuid}",
+                iri=f"mops_pref:AssemblyModel_{data['AssemblyModel_ID']}",
                 rel=f"onto_mops:#has{gbu}Number",
             ).add_obj_prop(
-                iri=f"mops_pref:{gbu}_{asmodel_uuid}_{i}",
+                iri=f"mops_pref:{gbu}_{data['AssemblyModel_ID']}_{i}",
                 rel="onto_mops:#isNumberOf",
                 reverse=True,
             ).add_data_prop(
@@ -399,6 +362,6 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
 
             writer.write_obj_prop(
                 src_iri=f"mops_pref:ChemicalBuildingUnit_{gen_id}_{i}",
-                trg_iri=f"mops_pref:{gbu}_{asmodel_uuid}_{i}",
+                trg_iri=f"mops_pref:{gbu}_{data['AssemblyModel_ID']}_{i}",
                 rel="onto_mops:#isFunctioningAs",
             )  # Connect the CBU to its corresonding GBU

@@ -46,5 +46,6 @@
         }
     ],
     "EntryUUID": "testID-111-111-111",
-    "EntryIRI": "MetalOrganicPolyhedra_testID-111-111-111"
+    "EntryIRI": "MetalOrganicPolyhedra_testID-111-111-111",
+    "AssemblyModel_ID": "testID-111-111-111"
 }
