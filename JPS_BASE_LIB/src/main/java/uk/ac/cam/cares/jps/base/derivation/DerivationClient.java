@@ -344,6 +344,33 @@ public class DerivationClient {
 	}
 
 	/**
+	 * This method updates all synchronous derivations in the knowledge graph.
+	 */
+	public void updateAllSyncDerivations() {
+		List<Derivation> derivations = this.sparqlClient.getAllDerivationsInKG();
+
+		// find derivations with entities that are not input of anything (the top nodes)
+		List<Derivation> topNodes = new ArrayList<>();
+		for (Derivation derivation : derivations) {
+			// all entities need to match the condition
+			if (derivation.getEntities().stream().allMatch(e -> !e.isInputToDerivation())) {
+				topNodes.add(derivation);
+			}
+		}
+
+		// the graph object makes sure that there is no circular dependency
+		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+		try {
+			for (Derivation derivation : topNodes) {
+				updatePureSyncDerivation(derivation, graph);
+			}
+		} catch (Exception e) {
+			LOGGER.fatal(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
+	}
+
+	/**
 	 * This method is a wrapper method of updateMixedAsyncDerivation(String
 	 * derivationIRI) and updatePureSyncDerivation(String derivationIRI) that
 	 * updates the given derivationIRI regardless its rdf:type.
@@ -918,8 +945,9 @@ public class DerivationClient {
 				// calling agent to create a new instance
 				String agentURL = derivation.getAgentURL();
 				JSONObject requestParams = new JSONObject();
-				JSONArray iris = new JSONArray(inputs);
-				requestParams.put(AGENT_INPUT_KEY, iris);
+				// NOTE difference 6 - pass in the derivation agent inputs
+				JSONObject inputsMapJson = derivation.getAgentInputsMap();
+				requestParams.put(AGENT_INPUT_KEY, inputsMapJson);
 				requestParams.put(BELONGSTO_KEY, derivation.getEntitiesIri()); // IRIs of belongsTo
 
 				LOGGER.debug("Updating <" + derivation.getIri() + "> using agent at <" + agentURL
@@ -930,16 +958,20 @@ public class DerivationClient {
 
 				LOGGER.debug("Obtained http response from agent: " + response);
 
+				// NOTE difference 7 - the response is processed as Derivation outputs for both
+				// Derivation and DerivationWithTimeSeries
+				JSONObject agentResponse = new JSONObject(response);
+				DerivationOutputs derivationOutputs = new DerivationOutputs(
+					agentResponse.getJSONObject(AGENT_OUTPUT_KEY));
+				// NOTE difference 3 - the timestamp is read from the agent response
+				// set the timestamp
+				derivation.setTimestamp(agentResponse.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY));
+
 				// if it is a derived quantity with time series, there will be no changes to the
 				// instances
 				if (!derivation.isDerivationWithTimeSeries()) {
-					JSONObject agentResponse = new JSONObject(response);
 					// collect new instances created by agent
-					List<String> newEntitiesString = agentResponse.getJSONArray(AGENT_OUTPUT_KEY).toList()
-							.stream().map(iri -> (String) iri).collect(Collectors.toList());
-					// NOTE difference 3 - the timestamp is read from the agent response
-					// set the timestamp
-					derivation.setTimestamp(agentResponse.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY));
+					List<String> newEntitiesString = derivationOutputs.getNewDerivedIRI();
 
 					// delete old instances
 					this.sparqlClient.deleteBelongsTo(derivation.getIri());
@@ -988,14 +1020,14 @@ public class DerivationClient {
 						// update triple-store and cached data
 						this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);
 						derivation.replaceEntities(newEntities);
-						// NOTE difference 4 - update timestamp after the update of every derivation
-						Map<String, Long> derivationTime_map = new HashMap<>();
-						derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
-						this.sparqlClient.updateTimestamps(derivationTime_map);
-						// NOTE difference 5 - delete status if there's any (for sync in mixed)
-						this.sparqlClient.deleteStatus(derivation.getIri());
 					}
 				}
+				// NOTE difference 4 - update timestamp after the update of every derivation
+				Map<String, Long> derivationTime_map = new HashMap<>();
+				derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
+				this.sparqlClient.updateTimestamps(derivationTime_map);
+				// NOTE difference 5 - delete status if there's any (for sync in mixed)
+				this.sparqlClient.deleteStatus(derivation.getIri());
 				// if there are no errors, assume update is successful
 				derivation.setUpdateStatus(true);
 			}

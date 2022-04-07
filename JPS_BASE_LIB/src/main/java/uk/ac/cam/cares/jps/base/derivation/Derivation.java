@@ -1,8 +1,13 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.json.JSONObject;
 
 public class Derivation {
 	private String iri;
@@ -95,6 +100,18 @@ public class Derivation {
 	 */
 	public List<String> getAgentInputs() {
 		return this.getInputs().stream().map(i -> i.getIri()).collect(Collectors.toList());
+	}
+
+	public JSONObject getAgentInputsMap() {
+		Map<String, List<String>> inputsMap = new HashMap<>();
+		this.getInputs().stream().forEach(i -> {
+			if (!inputsMap.containsKey(i.getRdfType())) {
+				inputsMap.put(i.getRdfType(), new ArrayList<>(Arrays.asList(i.getIri())));
+			} else {
+				inputsMap.get(i.getRdfType()).add(i.getIri());
+			}
+		});
+		return new JSONObject(inputsMap);
 	}
 
 	public boolean isOutOfDate() {

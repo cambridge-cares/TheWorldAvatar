@@ -24,15 +24,16 @@ public class SparqlClient {
 	
 	// namespace
 	public static String namespace = "http://derivation_example#";
-	private static Prefix p_namespace = SparqlBuilder.prefix("derivation_example", iri(namespace));
+	public static String prefix = "derivation_example";
+	private static Prefix p_namespace = SparqlBuilder.prefix(prefix, iri(namespace));
 	
 	// rdf:type
-	private static Iri MaxValue = p_namespace.iri("MaxValue");
-	private static Iri MinValue = p_namespace.iri("MinValue");
-	private static Iri Difference = p_namespace.iri("Difference");
-	private static Iri Average = p_namespace.iri("Average");
-	private static Iri InputData = p_namespace.iri("InputData"); // has a time series instance
-	private static Iri ScalarValue = p_namespace.iri("ScalarValue");
+	public static Iri MaxValue = p_namespace.iri("MaxValue");
+	public static Iri MinValue = p_namespace.iri("MinValue");
+	public static Iri Difference = p_namespace.iri("Difference");
+	public static Iri Average = p_namespace.iri("Average");
+	public static Iri InputData = p_namespace.iri("InputData"); // has a time series instance
+	public static Iri ScalarValue = p_namespace.iri("ScalarValue");
 	
 	// property
 	private static Iri hasValue = p_namespace.iri("hasValue");
@@ -55,6 +56,16 @@ public class SparqlClient {
     	
     	storeClient.executeUpdate(modify.getQueryString());
     }
+
+	/**
+	 * This method returns the rdf:type in the string format of the given class.
+	 * 
+	 * @param clz
+	 * @return
+	 */
+	public static String getRdfTypeString(Iri clz) {
+		return clz.getQueryString().replaceAll(prefix + ":", namespace);
+	}
     
     /**
      * query <instance> <hasValue> ?x, ?x <numericalValue> ?value

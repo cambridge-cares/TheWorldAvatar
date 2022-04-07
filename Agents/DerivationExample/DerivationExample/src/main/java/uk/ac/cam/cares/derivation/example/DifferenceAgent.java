@@ -7,8 +7,11 @@ import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
+import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
+import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.ArrayList;
@@ -22,7 +25,7 @@ import javax.servlet.annotation.WebServlet;
  * @author Kok Foong Lee
  */
 @WebServlet(urlPatterns = {DifferenceAgent.URL_Difference})
-public class DifferenceAgent extends JPSAgent {
+public class DifferenceAgent extends DerivationAgent {
 	private static final long serialVersionUID = 1L;
 
 	// ============================ Static variables ===========================
@@ -38,53 +41,56 @@ public class DifferenceAgent extends JPSAgent {
      * @return
      */
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
-        JSONObject response = new JSONObject();
+    public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
         Config.initProperties();
         RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
     	SparqlClient sparqlClient = new SparqlClient(storeClient);
 
-        if (validateInput(requestParams,sparqlClient)) {
-        	JSONArray inputs = requestParams.getJSONArray(DerivationClient.AGENT_INPUT_KEY);
-    		LOGGER.info("Calculating difference");
-    		Integer minvalue_input = null; Integer maxvalue_input = null;
+        if (validateInput(derivationInputs,sparqlClient)) {
+        	LOGGER.info("Calculating difference");
 
-    		// validate input should already ensure that one of them is a max value and the other is a min value
-    		if (sparqlClient.isMaxValue(inputs.getString(0))) {
-    			maxvalue_input = sparqlClient.getValue(inputs.getString(0));
-    			minvalue_input = sparqlClient.getValue(inputs.getString(1));
-    		} else if (sparqlClient.isMinValue(inputs.getString(0))) {
-    			minvalue_input = sparqlClient.getValue(inputs.getString(0));
-    			maxvalue_input = sparqlClient.getValue(inputs.getString(1));
-    		}
+			// validate input should already ensure that both max and min value exist
+			String maxIri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue)).get(0);
+			String minIri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MinValue)).get(0);
+    		Integer minvalue_input = null; Integer maxvalue_input = null;
+			maxvalue_input = sparqlClient.getValue(maxIri);
+			minvalue_input = sparqlClient.getValue(minIri);
     		
     		// calculate a new value and create a new instance
     		int difference = maxvalue_input - minvalue_input;
-    		List<String> createdInstances = new ArrayList<>();
-    		createdInstances.add(sparqlClient.createDifference());
-    		createdInstances.add(sparqlClient.addValueInstance(createdInstances.get(0), difference));
-    		LOGGER.info("Created a new calculated difference instance <" + createdInstances.get(0) + ">");
-    		response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(createdInstances));
-	       }
-        
-        return response;
+    		String createdDifference = sparqlClient.createDifference();
+			sparqlClient.addValueInstance(createdDifference, difference);
+    		LOGGER.info("Created a new calculated difference instance <" + createdDifference + ">");
+			// create DerivationOutputs instance
+			DerivationOutputs derivationOutputs = new DerivationOutputs(
+				SparqlClient.getRdfTypeString(SparqlClient.Difference), createdDifference);
+			return derivationOutputs;
+	    } else {
+			LOGGER.error("Input validation failed.");
+			throw new BadRequestException("Input validation failed.");
+		}
     }
 
-    private boolean validateInput(JSONObject requestParams, SparqlClient sparqlClient) throws BadRequestException {
+    private boolean validateInput(DerivationInputs derivationInputs, SparqlClient sparqlClient) throws BadRequestException {
         boolean valid = false;
-        JSONArray inputs = requestParams.getJSONArray(DerivationClient.AGENT_INPUT_KEY);
 		LOGGER.info("Checking inputs for DifferenceAgent");
 		
-		// if the first input is max value, the second one must be min value, and vice versa
-		if (inputs.length() == 2) {
-			if (sparqlClient.isMaxValue(inputs.getString(0))) {
-				if (sparqlClient.isMinValue(inputs.getString(1))) {
+		// check if the two inputs are complete
+		List<String> max = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue));
+		List<String> min = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MinValue));
+		if (max.size() == 1 && min.size() == 1) {
+			String maxIri = max.get(0);
+			String minIri = min.get(0);
+			if (sparqlClient.isMaxValue(maxIri)) {
+				if (sparqlClient.isMinValue(minIri)) {
 					valid = true;
+				} else {
+					LOGGER.error("MinValue IRI passed in doesn't match MinValue rdf:type.");
+					throw new BadRequestException("MinValue IRI passed in doesn't match MinValue rdf:type.");
 				}
-			} else if (sparqlClient.isMinValue(inputs.getString(0))) {
-				if (sparqlClient.isMaxValue(inputs.getString(1))) {
-					valid = true;
-				}
+			} else {
+				LOGGER.error("MaxValue IRI passed in doesn't match MaxValue rdf:type.");
+				throw new BadRequestException("MaxValue IRI passed in doesn't match MaxValue rdf:type.");
 			}
 		} else {
 			LOGGER.error("Incorrect number of inputs");
