@@ -100,7 +100,7 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
     def _write_scancoordinate(self, writer: Abox_Writer, calc_id, data):
 
         scan_type = data[SCAN_COORDINATE_TYPE]
-        
+
         writer.write_inst(
             iri=f"pes_pref:{scan_type}_{calc_id}",
             type=f"onto_pes:#{scan_type}",
@@ -148,14 +148,9 @@ class OPS_JSON_TO_OPS_CSV_Handler(Handler):
                 value=data[SCAN_COORDINATE_VALUE][k],
             )
 
-            scan_unit = ""
-            if data[SCAN_COORDINATE_UNIT] == "Angstrom":
-                scan_unit = "unit#Angstrom"
-            elif data[SCAN_COORDINATE_UNIT] == "Degree":
-                scan_unit = "unit#DegreeAngle"
-            if scan_unit:
+            if SCAN_COORDINATE_UNIT in data:
                 writer.write_obj_prop(
                     src_iri=f"pes_pref:ScanCoordinateValue_{calc_id}_{k + 1}",
-                    trg_iri=f"unit_pref:{scan_unit}",
+                    trg_iri=f"unit_pref:unit#{data[SCAN_COORDINATE_UNIT]}",
                     rel="gain_pref:hasUnit",
                 )

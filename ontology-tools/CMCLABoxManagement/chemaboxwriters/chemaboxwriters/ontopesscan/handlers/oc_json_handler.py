@@ -90,7 +90,7 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
             data_out[SCAN_COORDINATE_TYPE] = "DistanceCoordinate"
             data_out[SCAN_COORDINATE_UNIT] = "Angstrom"
         else:
-            data_out[SCAN_COORDINATE_UNIT] = "Degree"
+            data_out[SCAN_COORDINATE_UNIT] = "DegreeAngle"
             if ndegrees == 3:
                 data_out[SCAN_COORDINATE_TYPE] = "AngleCoordinate"
             else:

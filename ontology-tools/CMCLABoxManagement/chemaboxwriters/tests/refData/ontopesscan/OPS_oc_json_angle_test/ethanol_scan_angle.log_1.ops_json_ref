@@ -8,7 +8,7 @@
         "Atom_11-11-111_H1"
     ],
     "ScanAtomIDs": "2 3 9",
-    "ScanCoordinateUnit": "Degree",
+    "ScanCoordinateUnit": "DegreeAngle",
     "ScanCoordinateType": "AngleCoordinate",
     "EntryUUID": "OPStestID-111-111-11",
     "EntryIRI": "PotentialEnergySurfaceScan_OPStestID-111-111-11",
