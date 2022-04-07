@@ -3,9 +3,17 @@ import chemutils.obabelutils.obconverter as obconverter
 from compchemparser.helpers.utils import get_xyz_from_parsed_json
 import chemaboxwriters.common.params as params
 from compchemparser.parsers.ccgaussian_parser import (
-    PROGRAM_NAME, PROGRAM_VERSION, ATOM_COUNTS, FREQ,
-    ROT_CONST, ELECTRONIC_ENERGY, ELECTRONIC_ZPE_ENERGY,
-    EMP_FORMULA, ATOM_TYPES, GEOM, ROT_SYM_NR
+    PROGRAM_NAME,
+    PROGRAM_VERSION,
+    ATOM_COUNTS,
+    FREQ,
+    ROT_CONST,
+    ELECTRONIC_ENERGY,
+    ELECTRONIC_ZPE_ENERGY,
+    EMP_FORMULA,
+    ATOM_TYPES,
+    GEOM,
+    ROT_SYM_NR,
 )
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
@@ -39,6 +47,7 @@ ATOM_INDICES = "AtomsIndices"
 COORD_X = "CoordinateX"
 COORD_Y = "CoordinateY"
 COORD_Z = "CoordinateZ"
+
 
 class QC_JSON_TO_OC_JSON_Handler(Handler):
     """Handler converting qc_json files to oc_json.
@@ -132,9 +141,13 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             else:
                 jobType = "Gxx"
 
-        data[EMP_FORMULA] = utilsfunc.clean_qc_json_emp_formula(emp_formula=data[EMP_FORMULA])
-        
-        coord_x, coord_y, coord_z = utilsfunc.split_qc_json_geom_to_xyz_coords(data[GEOM])
+        data[EMP_FORMULA] = utilsfunc.clean_qc_json_emp_formula(
+            emp_formula=data[EMP_FORMULA]
+        )
+
+        coord_x, coord_y, coord_z = utilsfunc.split_qc_json_geom_to_xyz_coords(
+            data[GEOM]
+        )
         data[COORD_X] = coord_x
         data[COORD_Y] = coord_y
         data[COORD_Z] = coord_z
@@ -155,8 +168,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         if ROT_CONST in data:
             data[ROT_CONST_STRING] = " ".join(str(i) for i in data[ROT_CONST])
 
-
         if ELECTRONIC_ZPE_ENERGY in data and ELECTRONIC_ENERGY in data:
-            data[ZPE_ENERGY] = data[ELECTRONIC_ZPE_ENERGY] - data[ELECTRONIC_ENERGY]
+            data[ZPE_ENERGY] = data.pop(ELECTRONIC_ZPE_ENERGY) - data[ELECTRONIC_ENERGY]
 
         utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
