@@ -23,7 +23,7 @@ PREFIXES = {
     # CoMo / CARES ontologies
     'ems': 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#',
     # TODO update IRI
-    'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
+    'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
     # Knowledge base
     'kb': 'http://www.theworldavatar.com/kb/ontoems/',
     'tsa': 'http://www.theworldavatar.com/kb/ontotimeseries/',

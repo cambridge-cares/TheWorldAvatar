@@ -11,17 +11,18 @@ import metoffer
 import datetime as dt
 
 #import agentlogging
-from metoffice.kgutils.javagateway import jpsBaseLibGW
 from metoffice.dataretrieval.readings import *
 from metoffice.dataretrieval.stations import *
-from metoffice.errorhandling.exceptions import APIException
+from metoffice.datainstantiation.stations import *
+from metoffice.kgutils.querytemplates import *
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.timeseries import TSClient
+from metoffice.errorhandling.exceptions import APIException
 from metoffice.kgutils.prefixes import create_sparql_prefix
 from metoffice.kgutils.prefixes import PREFIXES
-from metoffice.kgutils.querytemplates import *
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
-from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, TIME_FORMAT, DATACLASS, VISIBILITY
+from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, \
+                                             TIME_FORMAT, DATACLASS, VISIBILITY
 
 
 # # Initialise logger
@@ -29,6 +30,7 @@ from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, CO
 
 
 def add_readings_timeseries(instantiated_ts_iris: list = None,
+                            api_key: str = DATAPOINT_API_KEY,
                             query_endpoint: str = QUERY_ENDPOINT,
                             update_endpoint: str = UPDATE_ENDPOINT) -> int:
     """
@@ -59,31 +61,18 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         
         return times, dataIRIs, values  
 
-    # Initialise "creation" time for forecast updates
-    t = dt.datetime.utcnow().strftime('%Y-%m-%dT%H:00:00Z')
-    # Initialise update query for creation time
-    query_string = f"""
-        {create_sparql_prefix('xsd')}
-        {create_sparql_prefix('ems')}
-        DELETE {{
-	        ?forecast ems:createdOn ?old }}
-        INSERT {{
-	        ?forecast ems:createdOn \"{t}\"^^xsd:dateTime }}
-        WHERE {{
-	        ?forecast ems:createdOn ?old .
-            FILTER ( ?forecast IN (
-    """
 
     # Create MetOffice client to retrieve readings via API
     try:
-        metclient = metoffer.MetOffer(DATAPOINT_API_KEY)
+        metclient = metoffer.MetOffer(api_key)
     except:
         raise APIException("MetOffer client could not be created to retrieve station readings.")
         #logger.error("MetOffer client could not be created to retrieve station readings.")
     
     # Load available observations and forecasts from API
     print('Retrieving time series data from API ...')
-    available_obs, available_fcs = retrieve_readings_concepts_per_station(metclient, only_keys=False)    
+    available_obs, available_fcs, issue_time = retrieve_readings_concepts_per_station(metclient, only_keys=False)    
+
     
     print('Retrieving time series triples from KG ...')
     # Retrieve information about instantiated time series from KG
@@ -97,6 +86,21 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     # Get short version of variable type from full quantity type
     instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
     instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])   
+
+
+    # Initialise update query for creation time
+    query_string = f"""
+        {create_sparql_prefix('xsd')}
+        {create_sparql_prefix('ems')}
+        DELETE {{
+	        ?forecast ems:createdOn ?old }}
+        INSERT {{
+	        ?forecast ems:createdOn \"{issue_time}\"^^xsd:dateTime }}
+        WHERE {{
+	        ?forecast ems:createdOn ?old .
+            FILTER ( ?forecast IN (
+    """
+
 
     # Initialise TimeSeriesClient
     ts_client = TSClient.tsclient_with_default_settings()
@@ -156,19 +160,22 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     return added_obs + added_fcs
 
 
-def add_all_readings_timeseries(query_endpoint: str = QUERY_ENDPOINT,
+def add_all_readings_timeseries(api_key: str = DATAPOINT_API_KEY,
+                                query_endpoint: str = QUERY_ENDPOINT,
                                 update_endpoint: str = UPDATE_ENDPOINT) -> int:
     """
         Adds latest time series readings for all instantiated time series
     """
 
-    updated_ts = add_readings_timeseries(query_endpoint=query_endpoint,
+    updated_ts = add_readings_timeseries(api_key=api_key,
+                                         query_endpoint=query_endpoint,
                                          update_endpoint=update_endpoint)
 
     return updated_ts
 
 
 def instantiate_station_readings(instantiated_sites_list: list,
+                                 api_key: str = DATAPOINT_API_KEY,
                                  query_endpoint: str = QUERY_ENDPOINT,
                                  update_endpoint: str = UPDATE_ENDPOINT) -> int:
     """
@@ -181,7 +188,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
 
     # Create MetOffice client to retrieve readings via API
     try:
-        metclient = metoffer.MetOffer(DATAPOINT_API_KEY)
+        metclient = metoffer.MetOffer(api_key)
     except:
         raise APIException("MetOffer client could not be created to retrieve station readings.")
         #logger.error("MetOffer client could not be created to retrieve station readings.")
@@ -213,7 +220,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
     instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])                                                        
 
     # Load available observations and forecasts from API
-    available_obs, available_fcs = retrieve_readings_concepts_per_station(metclient)
+    available_obs, available_fcs, _ = retrieve_readings_concepts_per_station(metclient)
 
     # Initialise number of instantiated readings
     instantiated = 0
@@ -301,7 +308,8 @@ def instantiate_station_readings(instantiated_sites_list: list,
     return instantiated
 
 
-def instantiate_all_station_readings(query_endpoint: str = QUERY_ENDPOINT,
+def instantiate_all_station_readings(api_key: str = DATAPOINT_API_KEY,
+                                     query_endpoint: str = QUERY_ENDPOINT,
                                      update_endpoint: str = UPDATE_ENDPOINT) -> int:
     """
         Instantiates all readings for all instantiated stations
@@ -309,9 +317,28 @@ def instantiate_all_station_readings(query_endpoint: str = QUERY_ENDPOINT,
 
     stations = get_all_metoffice_stations(query_endpoint, update_endpoint)
     
-    instantiated = instantiate_station_readings(stations)
+    instantiated = instantiate_station_readings(stations, api_key, query_endpoint,
+                                                update_endpoint)
 
     return instantiated
+
+
+def update_all_stations(api_key: str = DATAPOINT_API_KEY,
+                        query_endpoint: str = QUERY_ENDPOINT,
+                        update_endpoint: str = UPDATE_ENDPOINT):
+    
+    # Instantiate all available stations (ONLY not already existing stations
+    # will be newly instantiated)
+    new_stations = instantiate_all_stations(api_key, query_endpoint, update_endpoint)
+
+    # Instantiate all available station readings (ONLY not already existing
+    # readings will be newly instantiated)
+    new_readings = instantiate_all_station_readings(api_key, query_endpoint, update_endpoint)
+
+    # Add latest readings time series to instantiated reading quantities
+    updated_ts = add_all_readings_timeseries(api_key, query_endpoint, update_endpoint)
+
+    return new_stations, new_readings, updated_ts
 
 
 def add_readings_for_station(station_iri: str,
@@ -422,6 +449,7 @@ def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
         # Load 3-hourly FORECAST data
         try:
             fc = metclient.loc_forecast(station_id, metoffer.THREE_HOURLY)
+            creation_time = fc['SiteRep']['DV']['dataDate']
         except:
             raise APIException('Error while retrieving forecast data.')
             #logger.warning('Error while retrieving observation for station ID: {:>10}'.format(id))
@@ -431,7 +459,7 @@ def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
             available_fcs = [(i, list(available_fcs[i]['readings'].keys())) for i in available_fcs.keys()]
             available_fcs = dict(available_fcs)
 
-    return available_obs, available_fcs
+    return available_obs, available_fcs, creation_time
 
 
 def readings_dict_gen(returned_data):
@@ -542,7 +570,10 @@ if __name__ == '__main__':
     # response = instantiate_all_station_readings()
     # print(f"Number of instantiated readings: {response}")
 
-    response = add_readings_timeseries(['http://www.theworldavatar.com/kb/ontotimeseries/Timeseries_ae2b6c1d-3092-48f1-8eb0-dfd4ab5a7c89',
-    'http://www.theworldavatar.com/kb/ontotimeseries/Timeseries_6295daa0-402b-4659-ae37-2a637a0a3266'])
-    #response = add_all_readings_timeseries()
-    print(f"Number of updated time series readings: {response}")
+    # response = add_all_readings_timeseries()
+    # print(f"Number of updated time series readings: {response}")
+
+    response = update_all_stations()
+    print(f"Number of instantiated stations: {response[0]}")
+    print(f"Number of instantiated readings: {response[1]}")
+    print(f"Number of updated time series readings: {response[2]}")

@@ -126,9 +126,39 @@ def test_instantiate_all_stations(initialise_triple_store, mocker):
         assert triples == 15
 
 
-@pytest.mark.skip(reason="only works as integration test with local blazegraph")
+@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph")
 def test_instantiate_all_stations_webapp(client, mocker):
     # Integration test for expected behavior of instantiation of all stations
+    # via webapp (requires (local) blazegraph running at endpoints specified
+    # in 'metoffice.properties'; namespace MUST be empty)
+
+    # Read test station data
+    station_data = read_station_data()
+    station_data = [station_data[i] for i in station_data]
+    # Mock call to Met Office DataPoint API
+    m = mocker.patch('metoffice.datainstantiation.stations.retrieve_station_data_from_api',
+                     return_value=station_data)
+
+    # Verify that knowledge base is empty
+    res = get_all_metoffice_station_ids(query_endpoint=QUERY_ENDPOINT)
+    assert len(res) == 0
+   
+    # Instantiate all stations
+    route = '/api/metofficeagent/instantiate/stations'
+    response = client.get(route)
+    new_stations = response.json['stations']
+    assert new_stations == 3
+
+    # Instantiate all stations (2nd time)
+    route = '/api/metofficeagent/instantiate/stations'
+    response = client.get(route)
+    new_stations = response.json['stations']
+    assert new_stations == 0
+
+
+@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph")
+def test_update_all_stations_webapp(client, mocker):
+    # Integration test for expected behavior of updating all stations and readings
     # via webapp (requires (local) blazegraph running at endpoints specified
     # in 'metoffice.properties'; namespace MUST be empty)
 
