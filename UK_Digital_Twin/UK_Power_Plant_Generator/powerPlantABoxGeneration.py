@@ -22,6 +22,7 @@ from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion as LACode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
+from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion as LACode
 import uuid
 
 """Notation used in URI construction"""
@@ -29,11 +30,6 @@ HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
-
-"""LA code"""
-UK_LACode = "K02000001"
-GB_LACoce = "K03000001"
-NI_LACode = "N92000002"
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
@@ -101,7 +97,7 @@ def createDUKESDataPropertyInstance(version):
         designcapacityArrays, builtYearArrays, ownerArrays, gpslocationArrays, regionArrays, root_uri, fileNum
 
 """Main Function: Add Triples to the named graph"""
-def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOWLFile = True):  
+def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):  
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
@@ -129,13 +125,20 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             
     dukes, plantnameArrays, planttypeArrays, energygenArrays, gentechArrays, primaryfuelArrays, designcapacityArrays, builtYearArrays, ownerArrays, \
         gpslocationArrays, regionArrays, root_uri, fileNum = createDUKESDataPropertyInstance(version)     
-        
+     
+    UKElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4())            
+    GBElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4())
+    NIElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4())
+    
+    UKAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
+    GBAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
+    NIAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())    
+     
     counter = 0
     while(counter < fileNum): 
         plantname = ''.join(plantnameArrays[counter]).strip('\n').strip(' ')
         planttype = ''.join(planttypeArrays[counter]).strip('\n').strip(' ')
         # energygen = ''.join(energygenArrays[counter]).strip('\n').strip(' ')
-        # energygen = "PowerGeneration"
         gentech = ''.join(gentechArrays[counter]).strip('\n').strip(' ')
         primaryfueltype = ''.join(primaryfuelArrays[counter][0]).strip('\n').strip(' ')
         primaryfuellabel = ''.join(primaryfuelArrays[counter][1]).strip('\n').strip(' ')
@@ -149,28 +152,21 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             len(designcapacityArrays) != fileNum or len(builtYearArrays) != fileNum or len(ownerArrays) != fileNum or len(gpslocationArrays) != fileNum:
             raise Exception('The list length of each data files does not match.')
         else:
+            
+            ## root iri and ontology iri
             pp_root_node = root_uri + str(uuid.uuid4()) # plantname ## the top node of the named graph
-            # pp_root_node = root_uri + plantname # Old version
-            # pp_namespace = root_uri + plantname + SLASH
-            
+            ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())       
             ## attribute IRIs
-            ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4()) # + plantname #TODO: change?
-            UKElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4()) # UKElectricitySystemIRI = UKElectricitySystem + dt.UK           
-            LocalElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4())
-            UKAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
-            GBAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
-            NIAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
-            
-            RealizationAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) # + plantname
-            EnergyGenerationIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + ukpp.PowerGenerationKey + str(uuid.uuid4()) #  + plantname
-            GenerationTechnologyClassIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + gentech #  ukpp.GenerationTechnologyKey
+            RealizationAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
+            EnergyGenerationIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + ukpp.PowerGenerationKey + str(uuid.uuid4()) 
+            GenerationTechnologyClassIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + gentech 
             GenerationTechnologyIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + gentech + UNDERSCORE + str(uuid.uuid4())
-            PrimaryFuelTypeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + primaryfueltype + UNDERSCORE + str(uuid.uuid4()) # + plantname
-            RequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RequirementsAspectKey + str(uuid.uuid4()) # + plantname
-            valueOfRequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + str(uuid.uuid4()) # + ukpp.RequirementsAspectKey + plantname
-            BuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.BuiltYearKey + str(uuid.uuid4()) # + plantname
-            valueOfBuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + str(uuid.uuid4()) # + ukpp.BuiltYearKey + plantname
-            OwnerIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.OwnerKey + str(uuid.uuid4()) # + plantname
+            PrimaryFuelTypeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + primaryfueltype + UNDERSCORE + str(uuid.uuid4()) 
+            RequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RequirementsAspectKey + str(uuid.uuid4()) 
+            valueOfRequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + str(uuid.uuid4())
+            BuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.BuiltYearKey + str(uuid.uuid4())
+            valueOfBuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + str(uuid.uuid4())
+            OwnerIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.OwnerKey + str(uuid.uuid4())
             
             latlon = str(gpslocation[0].strip('\n').strip(' ').replace(' ', '') + '#' + gpslocation[1].strip('\n').strip(' ').replace(' ', '')).replace('\xa0', '')
            
@@ -192,26 +188,32 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             graph.add((URIRef(pp_root_node), RDFS.label, Literal(str(plantname)))) 
             graph.add((URIRef(pp_root_node), RDFS.comment, Literal("The DUKES Data Version is " + str(dukes.VERSION))))
             
-            ## Link the power plant with the UK electricity system
-            graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontocape_upper_level_system.contains.iri), URIRef(pp_root_node)))
-            graph.add((URIRef(LocalElectricitySystemIRI), RDF.type, URIRef(ontoenergysystem.ElectricPowerSystem.iri)))
-            graph.add((URIRef(UKElectricitySystemIRI), RDF.type, URIRef(ontoenergysystem.ElectricPowerSystem.iri)))
-            graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontocape_upper_level_system.isDirectSubsystemOf.iri), URIRef(UKElectricitySystemIRI)))
             graph.add((URIRef(UKElectricitySystemIRI), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(UKAdministrativeDivisionIRI)))
             graph.add((URIRef(UKAdministrativeDivisionIRI), OWL_NS['sameAs'], URIRef(t_box.dbr + dt.UK)))
             graph.add((URIRef(UKAdministrativeDivisionIRI), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
-            graph.add((URIRef(UKAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(UK_LACode)))
+            graph.add((URIRef(UKAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(LACode['United_Kingdom'])))
             
+            ## Link the power plant with the UK electricity system
             if region == dt.NI:
-                graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(NIAdministrativeDivisionIRI)))
+                graph.add((URIRef(NIElectricitySystemIRI), URIRef(ontocape_upper_level_system.contains.iri), URIRef(pp_root_node)))
+                graph.add((URIRef(NIElectricitySystemIRI), RDF.type, URIRef(ontoenergysystem.ElectricPowerSystem.iri)))
+                graph.add((URIRef(UKElectricitySystemIRI), RDF.type, URIRef(ontoenergysystem.ElectricPowerSystem.iri)))
+                graph.add((URIRef(NIElectricitySystemIRI), URIRef(ontocape_upper_level_system.isDirectSubsystemOf.iri), URIRef(UKElectricitySystemIRI)))
+                
+                graph.add((URIRef(NIElectricitySystemIRI), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(NIAdministrativeDivisionIRI)))
                 graph.add((URIRef(NIAdministrativeDivisionIRI), OWL_NS['sameAs'], URIRef(t_box.dbr + dt.NI)))
                 graph.add((URIRef(NIAdministrativeDivisionIRI), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
-                graph.add((URIRef(NIAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(NI_LACode)))                           
-            else:  
-                graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(GBAdministrativeDivisionIRI)))
+                graph.add((URIRef(NIAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(LACode['Northern_Ireland'])))                           
+            else:
+                graph.add((URIRef(GBElectricitySystemIRI), URIRef(ontocape_upper_level_system.contains.iri), URIRef(pp_root_node)))
+                graph.add((URIRef(GBElectricitySystemIRI), RDF.type, URIRef(ontoenergysystem.ElectricPowerSystem.iri)))
+                graph.add((URIRef(UKElectricitySystemIRI), RDF.type, URIRef(ontoenergysystem.ElectricPowerSystem.iri)))
+                graph.add((URIRef(GBElectricitySystemIRI), URIRef(ontocape_upper_level_system.isDirectSubsystemOf.iri), URIRef(UKElectricitySystemIRI)))
+                
+                graph.add((URIRef(GBElectricitySystemIRI), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(GBAdministrativeDivisionIRI)))
                 graph.add((URIRef(GBAdministrativeDivisionIRI), OWL_NS['sameAs'], URIRef(t_box.dbr + dt.GB)))
                 graph.add((URIRef(GBAdministrativeDivisionIRI), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
-                graph.add((URIRef(GBAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(GB_LACoce)))
+                graph.add((URIRef(GBAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(LACode['Great_Britain'])))
             
             ## Add Realization Aspect  
             graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRealizationAspect.iri), URIRef(RealizationAspectIRI)))
@@ -274,8 +276,8 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
     
     if isinstance(store, Sleepycat):  
         powerPlantConjunctiveGraph.close()
-    return
+    return UKElectricitySystemIRI, GBElectricitySystemIRI, NIElectricitySystemIRI
 
 if __name__ == '__main__':
-    addUKPowerPlantTriples('default', 2019, None, True)
+    addUKPowerPlantTriples(2019, None, True, 'default')
     print('terminated')

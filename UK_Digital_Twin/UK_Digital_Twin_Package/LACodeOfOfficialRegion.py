@@ -17,5 +17,6 @@ LACodeOfOfficialRegion = {
     'Northern_Ireland': 'N92000002',
     'Wales': 'W92000004',
     'West_Midlands_(county)': 'E12000005',
-    'United_Kingdom': 'K02000001'
+    'United_Kingdom': 'K02000001',
+    "Great_Britain": 'K03000001'
     }
