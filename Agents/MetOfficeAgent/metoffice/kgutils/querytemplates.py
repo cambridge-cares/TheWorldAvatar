@@ -6,9 +6,6 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
-import uuid
-
-from metoffice.kgutils.prefixes import PREFIXES
 from metoffice.kgutils.prefixes import create_sparql_prefix
 
 

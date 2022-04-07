@@ -3,13 +3,14 @@
 
 import os
 from pathlib import Path
+from tkinter import EXCEPTION
 
-# import agentlogging
+import agentlogging
 from metoffice.errorhandling.exceptions import TSException
 from metoffice.kgutils.javagateway import jpsBaseLibGW
 
-# # Initialise logger
-# logger = agentlogging.get_logger("dev")
+# Initialise logger
+logger = agentlogging.get_logger("dev")
 
 
 class TSClient:
@@ -32,9 +33,9 @@ class TSClient:
 
         try:
             ts_client = jpsBaseLibView.TimeSeriesClient(instant_class, fp)
-        except:
-            #logger.error("Unable to initialise TS client.")
-            raise TSException("Unable to initialise TS client.")
+        except Exception as ex:
+            logger.error("Unable to initialise TS client: " + ex.msg)
+            raise TSException("Unable to initialise TS client: " + ex.msg)
         
         return ts_client
 
@@ -48,6 +49,10 @@ class TSClient:
         jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
         jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
-        timeseries = jpsBaseLibView.TimeSeries(times, dataIRIs, values)
+        try:
+            timeseries = jpsBaseLibView.TimeSeries(times, dataIRIs, values)
+        except Exception as ex:
+            logger.error("Unable to create timeseries: " + ex.msg)
+            raise TSException("Unable to create timeseries: " + ex.msg)
         
         return timeseries

@@ -8,14 +8,14 @@
 
 import re
 
-#import agentlogging
+import agentlogging
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.querytemplates import *
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.errorhandling.exceptions import InvalidInput
 
-# # Initialise logger
-# logger = agentlogging.get_logger("dev")
+# Initialise logger
+logger = agentlogging.get_logger("dev")
 
 
 def get_all_metoffice_station_ids(query_endpoint: str = QUERY_ENDPOINT,
@@ -52,9 +52,12 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
     # Validate input
     if circle_center and not circle_radius or \
        circle_radius and not circle_center:
+        logger.error("Circle center or radius is missing for geo:search.")
         raise InvalidInput("Circle center or radius is missing for geo:search.")
     if circle_center:
         if not re.findall(r'[\w\-\.]*#[\w\-\.]*', circle_center):
+            logger.error("Circle center coordinates shall be provided as " \
+                               +"\"latitude#longitude\" in WGS84 coordinates.")
             raise InvalidInput("Circle center coordinates shall be provided as " \
                                +"\"latitude#longitude\" in WGS84 coordinates.")
 

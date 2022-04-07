@@ -9,7 +9,7 @@
 import uuid
 import metoffer
 
-#import agentlogging
+import agentlogging
 from metoffice.kgutils.querytemplates import *
 from metoffice.kgutils.prefixes import create_sparql_prefix
 from metoffice.dataretrieval.stations import get_all_metoffice_station_ids
@@ -18,8 +18,8 @@ from metoffice.errorhandling.exceptions import APIException
 from metoffice.kgutils.prefixes import PREFIXES
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
 
-# # Initialise logger
-# logger = agentlogging.get_logger("dev")
+# Initialise logger
+logger = agentlogging.get_logger("dev")
 
 
 def instantiate_stations(station_data: list,
@@ -72,7 +72,7 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
 
     # Create MetOffice client
     if not api_key:
-        #logger.error("No Met Office DataPoint API key provided.")
+        logger.error("No Met Office DataPoint API key provided.")
         raise APIException("No Met Office DataPoint API key provided.")
     else:
         # Initialise MetOffer client
@@ -85,9 +85,9 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
             # 2) Get all forecasts sites
             sites = metclient.loc_forecast(metoffer.SITELIST, step=metoffer.THREE_HOURLY)
             fcs_sites = sites['Locations']['Location']
-        except:
-            #logger.error("Error while retrieving station data from DataPoint.")
-            raise APIException("Error while retrieving station data from DataPoint.")
+        except Exception as ex:
+            logger.error("Error while retrieving station data from DataPoint.")
+            raise APIException("Error while retrieving station data from DataPoint: " + ex.msg)
         sites = []
         sites += obs_sites 
         sites += fcs_sites

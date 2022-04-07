@@ -6,6 +6,11 @@
 # The purpose of this module is to provide a function which eases
 # the inclusion of prefixes into SPARQL queries
 
+import agentlogging
+
+# Initialise logger
+logger = agentlogging.get_logger("dev")
+
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
@@ -22,7 +27,6 @@ PREFIXES = {
     'sio': 'http://semanticscience.org/resource/',
     # CoMo / CARES ontologies
     'ems': 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#',
-    # TODO update IRI
     'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
     # Knowledge base
     'kb': 'http://www.theworldavatar.com/kb/ontoems/',
@@ -45,6 +49,7 @@ def create_sparql_prefix(abbreviation):
 
     # Raise key error if given namespace abbreviation has not been specified
     if abbreviation not in PREFIXES.keys():
+        logger.error('Prefix: "' + abbreviation + '" has not been specified')
         raise KeyError('Prefix: "' + abbreviation + '" has not been specified')
 
     # Get full IRI from pre-specified prefixes dictionary
