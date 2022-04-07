@@ -1,0 +1,10 @@
+{
+    "name": "dtvf-grunt-utils",
+    "version": "1.0.0",
+    "devDependencies": {
+        "grunt": "1.4.1",
+        "grunt-contrib-uglify": "5.1.0",
+        "grunt-contrib-concat": "2.1.0",
+        "grunt-contrib-cssmin": "4.0.0"
+    }
+}
