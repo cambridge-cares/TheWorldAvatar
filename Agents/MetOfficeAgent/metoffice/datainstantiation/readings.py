@@ -59,6 +59,15 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         
         return times, dataIRIs, values  
 
+    # Initialise "creation" time for forecast updates
+    t = dt.datetime.utcnow().strftime('%Y-%m-%dT%H:00:00Z')
+    # Initialise update query for creation time
+    query_string = f"""
+        {create_sparql_prefix('xsd')}
+        {create_sparql_prefix('ems')}
+        INSERT DATA {{
+    """
+
     # Create MetOffice client to retrieve readings via API
     try:
         metclient = metoffer.MetOffer(DATAPOINT_API_KEY)
@@ -70,6 +79,7 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     print('Retrieving time series data from API ...')
     available_obs, available_fcs = retrieve_readings_concepts_per_station(metclient, only_keys=False)    
     
+    print('Retrieving time series triples from KG ...')
     # Retrieve information about instantiated time series from KG
     instantiated_obs = get_all_instantiated_observation_timeseries()
     instantiated_fcs = get_all_instantiated_forecast_timeseries()
@@ -123,8 +133,15 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
             added_fcs += len(dataIRIs_list[i])
             ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
             ts_client.addTimeSeriesData(ts)
-        # TODO add update triple for reference date of forecast creation
+            for iri in dataIRIs_list[i]:
+                query_string += f"<{iri}> ems:createdOn \"{t}\"^^xsd:dateTime . "
     print(f'\nTime series data for {added_fcs} forecasts successfully added.\n')
+
+    # Close & perform creation date update query
+    query_string += f"}}"
+    kg_client = KGClient(query_endpoint, update_endpoint)
+    kg_client.performUpdate(query_string)
+    print('Creation time triples successfully updated.')
 
     return added_obs + added_fcs
 

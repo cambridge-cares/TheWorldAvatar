@@ -21,4 +21,8 @@ def default():
     msg += "<BR>"
     msg += "Request to instantiate Met Office readings for instantiated stations (GET request):<BR>"
     msg += "&nbsp&nbsp /api/metofficeagent/instantiate/readings"
+    msg += "<BR>"
+    msg += "<BR>"
+    msg += "Request to add latest time series readings for all instantiated time series (GET request):<BR>"
+    msg += "&nbsp&nbsp /api/metofficeagent/timeseries/adddata"
     return msg
