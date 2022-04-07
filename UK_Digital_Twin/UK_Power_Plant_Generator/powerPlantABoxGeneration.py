@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 19 Jan 2022          #
+# Last Update Date: 07 April 2022        #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power plant graph."""
@@ -22,12 +22,18 @@ from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion as LACode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
+import uuid
 
 """Notation used in URI construction"""
 HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
+
+"""LA code"""
+UK_LACode = "K02000001"
+GB_LACoce = "K03000001"
+NI_LACode = "N92000002"
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
@@ -58,6 +64,7 @@ ontoecape_space_and_time        = owlready2.get_ontology(t_box.ontoecape_space_a
 ontocape_physical_dimension     = owlready2.get_ontology(t_box.ontocape_physical_dimension).load()
 ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordinate_system).load()
 ontocape_SI_units               = owlready2.get_ontology(t_box.ontocape_SI_units).load()
+ontoenergysystem                = owlready2.get_ontology(t_box.ontoenergysystem).load()
 
 """User specified folder path"""
 filepath = None # user specified path
@@ -128,7 +135,7 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
         plantname = ''.join(plantnameArrays[counter]).strip('\n').strip(' ')
         planttype = ''.join(planttypeArrays[counter]).strip('\n').strip(' ')
         # energygen = ''.join(energygenArrays[counter]).strip('\n').strip(' ')
-        energygen = "PowerGeneration"
+        # energygen = "PowerGeneration"
         gentech = ''.join(gentechArrays[counter]).strip('\n').strip(' ')
         primaryfueltype = ''.join(primaryfuelArrays[counter][0]).strip('\n').strip(' ')
         primaryfuellabel = ''.join(primaryfuelArrays[counter][1]).strip('\n').strip(' ')
@@ -142,53 +149,71 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             len(designcapacityArrays) != fileNum or len(builtYearArrays) != fileNum or len(ownerArrays) != fileNum or len(gpslocationArrays) != fileNum:
             raise Exception('The list length of each data files does not match.')
         else:
-            pp_root_node = root_uri + plantname # the top node of the named graph
+            pp_root_node = root_uri + str(uuid.uuid4()) # plantname ## the top node of the named graph
+            # pp_root_node = root_uri + plantname # Old version
             # pp_namespace = root_uri + plantname + SLASH
             
-            #attribute IRIs
-            ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + plantname
-            UKElectricitySystemIRI = UKElectricitySystem + dt.UK
-            if region == dt.NI:
-                LocalElectricitySystemIRI = UKElectricitySystem + dt.NI
-            else:
-                LocalElectricitySystemIRI = UKElectricitySystem + dt.GB
-            RealizationAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + plantname
-            EnergyGenerationIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + energygen + UNDERSCORE + plantname
-            GenerationTechnologyIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + ukpp.GenerationTechnologyKey + gentech
-            PrimaryFuelTypeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + primaryfueltype + UNDERSCORE + plantname
-            RequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RequirementsAspectKey + plantname
-            valueOfRequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + ukpp.RequirementsAspectKey + plantname
-            BuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.BuiltYearKey + plantname
-            valueOfBuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + ukpp.BuiltYearKey + plantname
-            OwnerIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.OwnerKey + plantname
+            ## attribute IRIs
+            ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4()) # + plantname #TODO: change?
+            UKElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4()) # UKElectricitySystemIRI = UKElectricitySystem + dt.UK           
+            LocalElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4())
+            UKAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
+            GBAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
+            NIAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
+            
+            RealizationAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) # + plantname
+            EnergyGenerationIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + ukpp.PowerGenerationKey + str(uuid.uuid4()) #  + plantname
+            GenerationTechnologyClassIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + gentech #  ukpp.GenerationTechnologyKey
+            GenerationTechnologyIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + gentech + UNDERSCORE + str(uuid.uuid4())
+            PrimaryFuelTypeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + primaryfueltype + UNDERSCORE + str(uuid.uuid4()) # + plantname
+            RequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RequirementsAspectKey + str(uuid.uuid4()) # + plantname
+            valueOfRequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + str(uuid.uuid4()) # + ukpp.RequirementsAspectKey + plantname
+            BuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.BuiltYearKey + str(uuid.uuid4()) # + plantname
+            valueOfBuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + str(uuid.uuid4()) # + ukpp.BuiltYearKey + plantname
+            OwnerIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.OwnerKey + str(uuid.uuid4()) # + plantname
             
             latlon = str(gpslocation[0].strip('\n').strip(' ').replace(' ', '') + '#' + gpslocation[1].strip('\n').strip(' ').replace(' ', '')).replace('\xa0', '')
            
-            # Create rdf graph with identifier
+            ## Create rdf graph with identifier
             graph = Graph(store = store, identifier = URIRef(ontologyIRI))
             
-            # Import T-boxes
+            ## Import T-boxes
             graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoecape_technical_system)))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoeip_powerplant)))
             graph.set((graph.identifier, RDFS.comment, Literal('This ontology represents power plant entities of the UK energy system.')))
             graph.set((graph.identifier, RDFS.label, Literal('UK Digital Twin - Energy System - Power Plant - ' + plantname)))
             
-            # Add rdf.type
-            graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontoenergysystem + 'PowerPlant')))
+            ## Add rdf.type
+            graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoeip_powerplant.PowerPlant.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoecape_technical_system.TechnicalSystem.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontopowsys_PowSysRealization + planttype)))
-            graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontoenergysystem + 'Asset'))) # The power plant is specifically declared as an asset  
+            graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoenergysystem.Asset.iri))) # The power plant is specifically declared as an asset  
             graph.add((URIRef(pp_root_node), RDFS.label, Literal(str(plantname)))) 
             graph.add((URIRef(pp_root_node), RDFS.comment, Literal("The DUKES Data Version is " + str(dukes.VERSION))))
             
-            # Link the power plant with the UK electricity system
+            ## Link the power plant with the UK electricity system
             graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontocape_upper_level_system.contains.iri), URIRef(pp_root_node)))
-            graph.add((URIRef(LocalElectricitySystemIRI), RDF.type, URIRef(t_box.ontoenergysystem + 'ElectricPowerSystem')))
-            graph.add((URIRef(UKElectricitySystemIRI), RDF.type, URIRef(t_box.ontoenergysystem + 'ElectricPowerSystem')))
+            graph.add((URIRef(LocalElectricitySystemIRI), RDF.type, URIRef(ontoenergysystem.ElectricPowerSystem.iri)))
+            graph.add((URIRef(UKElectricitySystemIRI), RDF.type, URIRef(ontoenergysystem.ElectricPowerSystem.iri)))
             graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontocape_upper_level_system.isDirectSubsystemOf.iri), URIRef(UKElectricitySystemIRI)))
+            graph.add((URIRef(UKElectricitySystemIRI), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(UKAdministrativeDivisionIRI)))
+            graph.add((URIRef(UKAdministrativeDivisionIRI), OWL_NS['sameAs'], URIRef(t_box.dbr + dt.UK)))
+            graph.add((URIRef(UKAdministrativeDivisionIRI), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
+            graph.add((URIRef(UKAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(UK_LACode)))
             
-            # Add Realization Aspect  
+            if region == dt.NI:
+                graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(NIAdministrativeDivisionIRI)))
+                graph.add((URIRef(NIAdministrativeDivisionIRI), OWL_NS['sameAs'], URIRef(t_box.dbr + dt.NI)))
+                graph.add((URIRef(NIAdministrativeDivisionIRI), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
+                graph.add((URIRef(NIAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(NI_LACode)))                           
+            else:  
+                graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(GBAdministrativeDivisionIRI)))
+                graph.add((URIRef(GBAdministrativeDivisionIRI), OWL_NS['sameAs'], URIRef(t_box.dbr + dt.GB)))
+                graph.add((URIRef(GBAdministrativeDivisionIRI), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
+                graph.add((URIRef(GBAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(GB_LACoce)))
+            
+            ## Add Realization Aspect  
             graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRealizationAspect.iri), URIRef(RealizationAspectIRI)))
             graph.add((URIRef(RealizationAspectIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
             graph.add((URIRef(RealizationAspectIRI), URIRef(ontoecape_technical_system.realizes.iri), URIRef(EnergyGenerationIRI)))
@@ -196,24 +221,27 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             graph.add((URIRef(EnergyGenerationIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGeneration.iri)))                
             graph.add((URIRef(EnergyGenerationIRI), URIRef(ontoeip_powerplant.usesGenerationTechnology.iri), URIRef(GenerationTechnologyIRI)))
                 
-            graph.add((URIRef(GenerationTechnologyIRI), RDF.type, URIRef(ontoeip_powerplant.PlantGenerationTechnology.iri)))
+            # graph.add((URIRef(GenerationTechnologyIRI), RDF.type, URIRef(ontoeip_powerplant.PlantGenerationTechnology.iri)))
+            
+            graph.add((URIRef(GenerationTechnologyIRI), RDF.type, URIRef(GenerationTechnologyClassIRI)))
+            graph.add((URIRef(GenerationTechnologyClassIRI), RDFS.subClassOf, URIRef(ontoeip_powerplant.PlantGenerationTechnology.iri)))
             graph.add((URIRef(EnergyGenerationIRI), URIRef(ontoeip_powerplant.consumesPrimaryFuel.iri), URIRef(PrimaryFuelTypeIRI)))
             graph.add((URIRef(PrimaryFuelTypeIRI), RDF.type, URIRef(t_box.ontoeip_powerplant + primaryfueltype)))
             graph.add((URIRef(PrimaryFuelTypeIRI), RDFS.label, Literal(str(primaryfuellabel))))
             
-            # Add Functional Aspect  
+            ## Add Functional Aspect  
             graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasFunctionalAspect.iri), URIRef(EnergyGenerationIRI)))
             
-            # Add Requirements Aspect
+            ## Add Requirements Aspect
             graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRequirementsAspect.iri), URIRef(RequirementsAspectIRI)))
             graph.add((URIRef(RequirementsAspectIRI), RDF.type, URIRef(t_box.ontoeip_system_requirement + 'DesignCapacity'))) # T-box undefined
             graph.add((URIRef(RequirementsAspectIRI), URIRef(ontoecape_technical_system.isAchievedThrough.iri), URIRef(EnergyGenerationIRI)))
-            # # add values to attributes
+            ## Add values to attributes
             graph.add((URIRef(RequirementsAspectIRI), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(valueOfRequirementsAspectIRI)))
             graph.add((URIRef(valueOfRequirementsAspectIRI), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
             graph.add((URIRef(valueOfRequirementsAspectIRI), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(ontocape_derived_SI_units.MW.iri)))
             graph.add((URIRef(valueOfRequirementsAspectIRI), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(designcapacity))))
-            # Add other attributes
+            ## Add other attributes
             graph.add((URIRef(pp_root_node), URIRef(ontoeip_powerplant.hasYearOfBuilt.iri), URIRef(BuiltYearIRI)))
             graph.add((URIRef(BuiltYearIRI), RDF.type, URIRef(ontoeip_powerplant.YearOfBuilt.iri)))
             graph.add((URIRef(BuiltYearIRI), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(valueOfBuiltYearIRI)))
@@ -224,14 +252,16 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             graph.add((URIRef(OwnerIRI), RDF.type, URIRef(ontoeip_upper_level_system_v1.Organization.iri)))
             graph.add((URIRef(OwnerIRI), URIRef(ontoeip_upper_level_system_v1.hasName.iri), Literal(owner)))
     
-            # Apply the OntoEnergySystem for representing the asset with LA code and its lat-lon
-            graph.add((URIRef(pp_root_node), URIRef(t_box.ontoenergysystem + 'hasRelevantPlace'), URIRef(t_box.dbr + region)))
-            graph.add((URIRef(t_box.dbr + region), RDF.type, URIRef(t_box.ontoenergysystem + 'AdministrativeDivision')))
-            graph.add((URIRef(t_box.dbr + region), URIRef(t_box.ontoenergysystem + 'hasLocalAuthorityCode'), Literal(str(LACode[region]))))
-            graph.add((URIRef(pp_root_node), URIRef(t_box.ontoenergysystem + 'hasWGS84LatitudeLongitude'), \
+            ## Apply the OntoEnergySystem for representing the asset with LA code and its lat-lon
+            graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(t_box.dbr + region)))
+            graph.add((URIRef(t_box.dbr + region), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
+            graph.add((URIRef(t_box.dbr + region), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(str(LACode[region]))))
+            graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasWGS84LatitudeLongitude.iri), \
                        Literal(latlon, datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
+                
+            # print(graph.serialize(format="turtle").decode("utf-8"))
             
-            # generate/update OWL files
+            ## generate/update OWL files
             if updateLocalOWLFile == True:
                 # Store/update the generated owl files      
                 if filepath[-2:] != '\\': 

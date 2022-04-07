@@ -1,7 +1,11 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 5 April 2022         #
+# Last Update Date: 6 April 2022         #
 ##########################################
+
+"""
+Power Flow Analysis
+"""
 
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -34,25 +38,31 @@ class powerFlowAnalysis:
      def __init__(self, BusModelTopNodeIRI:str, BranchModelTopNodeIRI:str, GeneratorModelTopNodeIRI:str, baseMVA: float, PFOrOPFAnalysis:bool = True):
         
         """ The IRIs of the model"""
-        self.BusModelTopNodeIRI = BusModelTopNodeIRI
-        self.BranchModelTopNodeIRI = BranchModelTopNodeIRI
-        self.GeneratorModelTopNodeIRI = GeneratorModelTopNodeIRI
+        self.BusModelTopNodeIRI:str = BusModelTopNodeIRI
+        self.BranchModelTopNodeIRI:str = BranchModelTopNodeIRI
+        self.GeneratorModelTopNodeIRI:str  = GeneratorModelTopNodeIRI
         
         # The initial BusSwitchingIndicator is set to be -1 noting that there is no bus needs to be switching the type only when this number becomes positive 
-        self.busToBeSwitched = -1
-        self.ConvergeFlag = -1
-        self.Terminate = False
+        self.busToBeSwitched:int = -1
+        self.ConvergeFlag:int = -1
+        self.Terminate:bool = False
         
         #TODO: baseMVA should be written in the KG and can be quired via the iri
         self.baseMVA = float(baseMVA)
-        self.PFOrOPFAnalysis = PFOrOPFAnalysis       
-        self.SlackBusName = []
-        self.PVBusName = []
-        self.PQBusName = []
+        self.PFOrOPFAnalysis:bool = PFOrOPFAnalysis   
+        
+        self.SlackBusName: list = [] 
+        self.PVBusName: list = []
+        self.PQBusName: list = []
+        
+        self.BusObjectList: list = []
+        self.BranchObjectList: list = []
+        self.GeneratorObjectList: list = []
         
      def ModelObjectCreator(self, buslist, branchList): 
          """
          The ModelObjectCreator is used to created the model objects (bus, branch and generator) which should be call in the first palce when proforming PF/OPF analysis
+         The funtion will query from the KG of with the model enetity IRI, BusModelTopNodeIRI, BranchModelTopNodeIRI, and GeneratorModelTopNodeIRI
          
          Parameters
          ----------
@@ -86,7 +96,8 @@ class powerFlowAnalysis:
                      elif int(businput[varKey]) == PQ:                            
                          self.PQBusName.append(UKPowerGridModel.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))                         
          
-         self.NumberOfBus = len(BusInput)        
+         self.NumberOfBus = len(BusInput)
+         self.BusObjectList = self.SlackBusName + self.PVBusName + self.PQBusName
          
          ## query branch input
      #    BranchInput = queryModelInput.queryBranchModelInput(self.BranchModelTopNodeIRI)
@@ -94,6 +105,7 @@ class powerFlowAnalysis:
          BranchInput = branchList 
          for branchinput in BranchInput:  
              ObjectSet[UKPowerGridModel.UKElineModel.ELineKey + str(i_branch)] = UKPowerGridModel.UKElineModel()
+             self.BranchObjectList.append(UKPowerGridModel.UKElineModel.ELineKey + str(i_branch))
              for varKey in branchinput.keys():
                  setattr(ObjectSet.get(UKPowerGridModel.UKElineModel.ELineKey + str(i_branch)), varKey, branchinput[varKey])
              i_branch += 1                   
@@ -106,6 +118,7 @@ class powerFlowAnalysis:
          GeneratorInput = queryModelInput.queryGeneratorModelInput_new(10, 14, 'ukdigitaltwin_test1')         
          for geninput in GeneratorInput:              
                ObjectSet[UKPowerGridModel.UKEGenModel.EGenKey + str(i_generator)] = UKPowerGridModel.UKEGenModel()
+               self.GeneratorObjectList.append(UKPowerGridModel.UKEGenModel.EGenKey + str(i_generator))
                for varKey in geninput.keys():
                    setattr(ObjectSet.get(UKPowerGridModel.UKEGenModel.EGenKey + str(i_generator)), varKey, geninput[varKey])
                i_generator += 1   
@@ -113,7 +126,7 @@ class powerFlowAnalysis:
          self.NumberOfGenerator = len(GeneratorInput)
          
          self.ObjectSet = ObjectSet
-         
+    
          return     
         
      def ModelInputFormatter(self):
@@ -130,7 +143,7 @@ class powerFlowAnalysis:
          -------
          None.
              
-        """
+         """
 
          if not hasattr(self, 'ObjectSet'):  
              raise Exception("The model object has not been properly created, please run the function ModelObjectCreator at first.")
@@ -208,7 +221,6 @@ class powerFlowAnalysis:
          self.results, _, _ = pf.runpf(self.ppc, self.ppopt) #TODO: use the original pypower
          
          self.ConvergeFlag = self.results["success"]
-         
          if self.ConvergeFlag == 1:
              print('-----The model is converged.-----')
          elif self.ConvergeFlag == 0:
@@ -242,15 +254,15 @@ class powerFlowAnalysis:
             i2e = bus[:, BUS_I].astype(int)
             e2i = zeros(max(i2e) + 1, int)
             e2i[i2e] = arange(bus.shape[0])
-            tap = ones(self.NumberOfBranch)                           ## default tap ratio = 1 for lines
+            tap = ones(self.NumberOfBranch)       ## default tap ratio = 1 for lines
             xfmr = find(branch[:, TAP])           ## indices of transformers
-            tap[xfmr] = branch[xfmr, TAP]            ## include transformer tap ratios
+            tap[xfmr] = branch[xfmr, TAP]         ## include transformer tap ratios
             tap = tap * exp(-1j * pi / 180 * branch[:, SHIFT]) ## add phase shifters
             V = bus[:, VM] * exp(-1j * pi / 180 * bus[:, VA])
             loss = self.baseMVA * abs(V[e2i[ branch[:, F_BUS].astype(int) ]] / tap -
                                  V[e2i[ branch[:, T_BUS].astype(int) ]])**2 / \
                         (branch[:, BR_R] - 1j * branch[:, BR_X])
-         out = find(branch[:, BR_STATUS] == 0)        ## out-of-service branches
+         out = find(branch[:, BR_STATUS] == 0)    ## out-of-service branches
          nout = len(out)
          loss[out] = zeros(nout)
             
@@ -423,7 +435,15 @@ class powerFlowAnalysis:
             self.Terminate = True
             print("*******************There is no more bus that is allowed to be switched to PV bus. The model is FAILED.*******************")
         return 
-        
+    
+     def ModelResultUpdater(self):
+         
+         
+         
+         
+         return 
+
+    
 if __name__ == '__main__':        
     test_PowerFlowAnalysis_1 = powerFlowAnalysis(1,1,1, 100, True)
     busList = [{'BUS': '1', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '4305.753', 'VMIN': '0.95', 'TYPE': '3'}, {'BUS': '2', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2690.713', 'VMIN': '0.95', 'TYPE': '2'}, {'BUS': '3', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '4349.411', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '4', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2997.804', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '5', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2354.482', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '6', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2730.946', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '7', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '3493.016', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '8', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '3876.755', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '9', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '1696.433', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '10', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2756.565', 'VMIN': '0.95', 'TYPE': '2'}]

@@ -130,7 +130,8 @@ class UKEbusModel:
         
         
     def __dir__(self):
-        return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}
+        return self.INPUT_VARIABLE_KEYS + self.OUTPUT_VARIABLE_KEYS
+        #return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}
          
 
 class UKElineModel:
@@ -235,7 +236,8 @@ class UKElineModel:
         self.LOSS_Q = None
     
     def __dir__(self):
-        return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}       
+        return self.INPUT_VARIABLE_KEYS + self.OUTPUT_VARIABLE_KEYS
+        #return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}       
 
 class UKEGenModel:
     
@@ -344,7 +346,8 @@ class UKEGenModel:
         self.QG_OUTPUT = None
         
     def __dir__(self):
-        return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}
+        return self.INPUT_VARIABLE_KEYS + self.OUTPUT_VARIABLE_KEYS
+        #return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}
     
     
 class UKEGenModel_CostFunc(UKEGenModel): 
