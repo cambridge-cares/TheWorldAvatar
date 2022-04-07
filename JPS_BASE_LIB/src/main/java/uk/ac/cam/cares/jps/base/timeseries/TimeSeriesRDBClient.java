@@ -203,7 +203,7 @@ public class TimeSeriesRDBClient<T> {
 	 * If certain columns within the table are not provided, they will be nulls
 	 * if a row with the equivalent time value exists, the values provided will overwrite
 	 * the existing data in the table
-	 * @param ts TimeSeries object to add
+	 * @param ts_list TimeSeries object to add
      */
 	protected void addTimeSeriesData(List<TimeSeries<T>> ts_list) {
 		
