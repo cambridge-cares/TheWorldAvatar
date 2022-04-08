@@ -12,7 +12,7 @@
     "ScanCoordinateUnit": "DegreeAngle",
     "ScanCoordinateType": "DihedralAngleCoordinate",
     "EntryUUID": "OPStestID-111-111-11",
-    "EntryIRI": "PotentialEnergySurfaceScan_OPStestID-111-111-11",
+    "EntryIRI": "http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_OPStestID-111-111-11",
     "ScanCoordinateValue": [
         -150.0,
         -120.0,

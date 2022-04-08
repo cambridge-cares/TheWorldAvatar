@@ -10,6 +10,7 @@ import chemaboxwriters.common.params as params
 from compchemparser.parsers.ccgaussian_parser import GEOM
 from chemaboxwriters.common.handler import Handler
 from chemaboxwriters.ontopesscan.abox_stages import OPS_ABOX_STAGES
+from chemaboxwriters.ontopesscan import OPS_SCHEMA
 from typing import List
 
 
@@ -99,7 +100,12 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
         if not random_id:
             random_id = utilsfunc.get_random_id()
         data_out[params.ENTRY_UUID] = random_id
-        data_out[params.ENTRY_IRI] = f"PotentialEnergySurfaceScan_{random_id}"
+
+        main_inst_pref = utilsfunc.read_main_pref_from_schema(
+            schema_file=OPS_SCHEMA, main_pref_name="main_inst_pref"
+        )
+
+        data_out[params.ENTRY_IRI] = f"{main_inst_pref}{random_id}"
 
         scanCoordinateValue = []
         ontoCompChemJobs = []

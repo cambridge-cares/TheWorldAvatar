@@ -1,6 +1,7 @@
 prefixes: {
     base_import: http://www.w3.org/2002/07/owl#imports,
     pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/",
+    main_inst_pref: "http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_",
     pes_pref_no_slash: http://www.theworldavatar.com/kb/ontopesscan,
     onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl",
     onto_pes:  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl",
@@ -30,16 +31,16 @@ abox_schema:
         ]
     - # main entry
         [
-            '<INS> pes_pref:${ENTRY_IRI} rdf:type onto_pes:#PotentialEnergySurfaceScan'
+            '<INS> ${ENTRY_IRI} rdf:type onto_pes:#PotentialEnergySurfaceScan'
         ]
     - # onSpecies entry
         [
-            '<OBJ> pes_pref:${ENTRY_IRI} onto_pes:#onSpecies spec_pref:${SPEC_IRI}'
+            '<OBJ> ${ENTRY_IRI} onto_pes:#onSpecies spec_pref:${SPEC_IRI}'
         ]
     - # scanCoordType entry
         [
             '<INS> pes_pref:${SCAN_COORD_TYPE}_${ENTRY_ID} rdf:type onto_pes:#${SCAN_COORD_TYPE}',
-            '<OBJ> pes_pref:${ENTRY_IRI} onto_pes:#hasScanCoordinate pes_pref:${SCAN_COORD_TYPE}_${ENTRY_ID}',
+            '<OBJ> ${ENTRY_IRI} onto_pes:#hasScanCoordinate pes_pref:${SCAN_COORD_TYPE}_${ENTRY_ID}',
         ]
     - # scanCoordAtoms entry
         [
@@ -49,7 +50,7 @@ abox_schema:
     -  # scanPoints
         [
             '<INS> pes_pref:ScanPoint_${ENTRY_ID}_%{i} rdf:type onto_pes:#ScanPoint',
-            '<OBJ> pes_pref:${ENTRY_IRI} onto_pes:#hasScanPoint pes_pref:ScanPoint_${ENTRY_ID}_%{i}',
+            '<OBJ> ${ENTRY_IRI} onto_pes:#hasScanPoint pes_pref:ScanPoint_${ENTRY_ID}_%{i}',
             '<OBJ> pes_pref:ScanPoint_${ENTRY_ID}_%{i} onto_pes:#hasCalculation ${QUANTUM_JOBS}',
             '<DAT> pes_pref:ScanPoint_${ENTRY_ID}_%{i} onto_pes:#hasInputAtomIds "${SCAN_ATOM_IDS}"',
             '<INS> pes_pref:ScanCoordinateValue_${ENTRY_ID}_%{i} rdf:type onto_pes:#ScanCoordinateValue',
