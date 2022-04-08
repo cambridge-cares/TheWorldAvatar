@@ -6,15 +6,13 @@ prefixes:
     skos: "http://www.w3.org/2004/02/skos/core"
     dc: "http://purl.org/dc/elements/1.1/"
     table_pref: "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl"
-
     spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
     gain_pref: "http://purl.org/gc/"
     unit_pref: "http://data.nasa.gov/qudt/owl/"
-
     onto_comp: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"
     comp_pref_no_slash: "http://www.theworldavatar.com/kb/ontocompchem"
     comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
-
+    main_inst_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
 #
 schema_to_json_vars:
     ENTRY_IRI: {'required': True, 'jsonKey': 'EntryIRI'}
