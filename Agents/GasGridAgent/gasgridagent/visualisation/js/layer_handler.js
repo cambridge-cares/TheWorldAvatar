@@ -368,8 +368,8 @@ class LayerHandler {
 			},
 			paint: {
                 'line-color': ["case", ["has", "line-color"], ["get", "line-color"], backupColor],
-                'line-width': ["case", ["has", "line-width"], ["get", "line-width"], 3],
-                'line-opacity': ["case", ["has", "line-opacity"], ["get", "line-opacity"], 0.35]
+                'line-width': ["case", ["has", "line-width"], ["get", "line-width"], 5],
+                'line-opacity': ["case", ["has", "line-opacity"], ["get", "line-opacity"], 1]
 			}
         };
         if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
