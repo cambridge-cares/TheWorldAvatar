@@ -21,10 +21,12 @@ import chemaboxwriters.kgoperations.remotestore_client as rsc
 from chemaboxwriters.ontocompchem.abox_stages import OC_ABOX_STAGES
 import json
 from typing import List
+import pkg_resources
 import logging
+import os
+import yaml
 
 logger = logging.getLogger(__name__)
-
 
 HANDLER_PARAMETERS = {
     "random_id": {"required": False},
@@ -149,7 +151,9 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         data[ATOM_INDICES] = utilsfunc.get_atom_indices_from_qc_json(data[ATOM_TYPES])
 
         data[params.SPECIES_IRI] = ontospecies_IRI
-        data[params.ENTRY_IRI] = f"{jobType}_{random_id}"
+
+        comp_pref = read_compchem_pref_from_schema()
+        data[params.ENTRY_IRI] = f"{comp_pref}{jobType}_{random_id}"
         data[params.ENTRY_UUID] = random_id
 
         if ATOM_COUNTS in data:
@@ -166,3 +170,15 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             data[ZPE_ENERGY] = data.pop(ELECTRONIC_ZPE_ENERGY) - data[ELECTRONIC_ENERGY]
 
         utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
+
+
+def read_compchem_pref_from_schema() -> str:
+    schema = pkg_resources.resource_filename(
+        __name__, os.path.join("..", "oc_schema.yml")
+    )
+    with open(schema, "r") as stream:
+        schema_dict = yaml.safe_load(stream)
+
+    prefixes = schema_dict.get("prefixes", {})
+
+    return prefixes.get("comp_pref", "")
