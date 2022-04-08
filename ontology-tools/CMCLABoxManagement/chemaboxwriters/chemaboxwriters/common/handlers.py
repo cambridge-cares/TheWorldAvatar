@@ -62,8 +62,8 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
 class JSON_TO_CSV_Handler(Handler):
     """Handler converting json files to csv,
     based on a json_csv schema.
-    Inputs: List of ops_json file paths
-    Outputs: List of ops_csv file paths
+    Inputs: List of json file paths + schema file
+    Outputs: List of csv file paths
     """
 
     def __init__(
