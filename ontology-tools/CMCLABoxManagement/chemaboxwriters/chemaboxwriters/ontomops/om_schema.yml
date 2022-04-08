@@ -47,25 +47,25 @@ abox_schema:
         ]
     - # main entry
         [
-            '<INS> mops_pref:${ENTRY_IRI} rdf:type onto_mops:MetalOrganicPolyhedra',
-            '<DAT> mops_pref:${ENTRY_IRI} rdfs:label ${MOPS_LABEL}',
-            '<DAT> mops_pref:${ENTRY_IRI} onto_mops:hasMOPFormula ${MOPS_FORMULA}',
-            '<DAT> mops_pref:${ENTRY_IRI} onto_mops:hasCCDCNumber ${MOPS_CCDC}',
+            '<INS> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} rdf:type onto_mops:MetalOrganicPolyhedra',
+            '<DAT> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} rdfs:label ${MOPS_LABEL}',
+            '<DAT> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} onto_mops:hasMOPFormula ${MOPS_FORMULA}',
+            '<DAT> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} onto_mops:hasCCDCNumber ${MOPS_CCDC}',
         ]
     - # xyz file url
         [
-            '<DAT> mops_pref:${ENTRY_IRI} onto_mops:hasXYZGeometryFile ${MOPS_XYZ_GEOMETRY_FILE_URL}',
+            '<DAT> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} onto_mops:hasXYZGeometryFile ${MOPS_XYZ_GEOMETRY_FILE_URL}',
         ]
     - # provenance
         [
             '<INS> mops_pref:Provenance_${ENTRY_ID} rdf:type onto_mops:Provenance',
-            '<OBJ> mops_pref:${ENTRY_IRI} onto_mops:hasProvenance mops_pref:Provenance_${ENTRY_ID}',
+            '<OBJ> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} onto_mops:hasProvenance mops_pref:Provenance_${ENTRY_ID}',
             '<DAT> mops_pref:Provenance_${ENTRY_ID} onto_mops:hasReferenceDOI ${MOPS_REF_DOI}',
         ]
     - # Mol mass
         [
             '<INS> mops_pref:MolecularWeight_${ENTRY_ID} rdf:type onto_spec:MolecularWeight',
-            '<OBJ> mops_pref:${ENTRY_IRI} onto_spec:hasMolecularWeight mops_pref:MolecularWeight_${ENTRY_ID}',
+            '<OBJ> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} onto_spec:hasMolecularWeight mops_pref:MolecularWeight_${ENTRY_ID}',
             '<INS> uom_pref:Measure_MolecularWeight_${ENTRY_ID} rdf:type uom_pref:Measure',
             '<OBJ> mops_pref:MolecularWeight_${ENTRY_ID} uom_pref:hasValue uom_pref:Measure_MolecularWeight_${ENTRY_ID}',
             '<DAT> uom_pref:Measure_MolecularWeight_${ENTRY_ID} uom_pref:hasNumericalValue ${MOPS_MOLWT}',
@@ -75,7 +75,7 @@ abox_schema:
     - # Charge
         [
             '<INS> mops_pref:Charge_${ENTRY_ID} rdf:type onto_spec:Charge',
-            '<OBJ> mops_pref:${ENTRY_IRI} onto_spec:hasCharge mops_pref:Charge_${ENTRY_ID}',
+            '<OBJ> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} onto_spec:hasCharge mops_pref:Charge_${ENTRY_ID}',
             '<INS> uom_pref:Measure_Charge_${ENTRY_ID} rdf:type uom_pref:Measure',
             '<OBJ> mops_pref:Charge_${ENTRY_ID} uom_pref:hasValue uom_pref:Measure_Charge_${ENTRY_ID}',
             '<DAT> uom_pref:Measure_Charge_${ENTRY_ID} uom_pref:hasNumericalValue ${MOPS_CHARGE}',
@@ -85,7 +85,7 @@ abox_schema:
     - # Cavity Volume
         [
             '<INS> mops_pref:Cavity_${ENTRY_ID} rdf:type onto_mops:Cavity',
-            '<OBJ> mops_pref:${ENTRY_IRI} onto_mops:hasCavity mops_pref:Cavity_${ENTRY_ID}',
+            '<OBJ> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} onto_mops:hasCavity mops_pref:Cavity_${ENTRY_ID}',
             '<INS> mops_pref:Volume_${ENTRY_ID} rdf:type onto_mops:Volume',
             '<OBJ> mops_pref:Cavity_${ENTRY_ID} onto_mops:hasMOPCavityVolume mops_pref:Volume_${ENTRY_ID}',
             '<INS> uom_pref:Measure_Volume_${ENTRY_ID} rdf:type uom_pref:Measure',
@@ -97,7 +97,7 @@ abox_schema:
     - # Assembly Model
         [
             '<INS> mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID} rdf:type onto_mops:AssemblyModel',
-            '<OBJ> mops_pref:${ENTRY_IRI} onto_mops:hasAssemblyModel mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID}',
+            '<OBJ> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} onto_mops:hasAssemblyModel mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID}',
             '<DAT> mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID} onto_mops:hasSymmetryPointGroup ${MOPS_SYM_POINT_GROUP}',
             '<INS> mops_pref:${MOPS_POL_SHAPE}_${ENTRY_ID} rdf:type onto_mops:${MOPS_POL_SHAPE}',
             '<OBJ> mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID} onto_mops:hasPolyhedralShape mops_pref:${MOPS_POL_SHAPE}_${ENTRY_ID}',
@@ -106,7 +106,7 @@ abox_schema:
     - # Chemical Building Units
         [
             '<INS> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} rdf:type onto_mops:ChemicalBuildingUnit',
-            '<OBJ> mops_pref:${ENTRY_IRI} onto_mops:hasChemicalBuildingUnit mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i}',
+            '<OBJ> mops_pref:MetalOrganicPolyhedra_${ENTRY_IRI} onto_mops:hasChemicalBuildingUnit mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i}',
             # CBU Formula
             '<DAT> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasCBUFormula ${CBU_FORMULA}',
             # CBU Binding direction

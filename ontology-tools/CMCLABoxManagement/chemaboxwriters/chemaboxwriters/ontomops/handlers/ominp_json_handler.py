@@ -8,10 +8,6 @@ import os
 from typing import List, Optional
 
 
-HANDLER_PREFIXES = {
-    "omops_entry_prefix": {"required": True},
-}
-
 HANDLER_PARAMETERS = {
     "random_id": {"required": False},
 }
@@ -30,7 +26,6 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             name="OMINP_JSON_TO_OM_JSON",
             in_stage=OM_ABOX_STAGES.ominp_json,  # type: ignore
             out_stage=OM_ABOX_STAGES.om_json,  # type: ignore
-            prefixes=HANDLER_PREFIXES,
             handler_params=HANDLER_PARAMETERS,
         )
 
@@ -62,11 +57,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         self, file_path: str, output_file_path: str, dry_run: bool
     ) -> None:
 
-        omops_entry_prefix = self.get_prefix_value(name="omops_entry_prefix")
         random_id = self.get_parameter_value(name="random_id")
-
-        if omops_entry_prefix is None:
-            omops_entry_prefix = ""
 
         with open(file_path, "r") as file_handle:
             data = json.load(file_handle)
@@ -87,7 +78,7 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             random_id = utilsfunc.get_random_id()
 
         data[params.ENTRY_UUID] = random_id
-        data[params.ENTRY_IRI] = f"{omops_entry_prefix}{random_id}"
+        data[params.ENTRY_IRI] = random_id
 
         assemblymodel = self.get_assembly_model_iri(data=data)
 
