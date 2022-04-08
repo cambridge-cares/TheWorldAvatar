@@ -2,13 +2,12 @@ from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
 import chemaboxwriters.common.handlers as hnds
 from chemaboxwriters.ontocompchem.abox_stages import OC_ABOX_STAGES
 from chemaboxwriters.ontocompchem.handlers import QC_JSON_TO_OC_JSON_Handler
-import pkg_resources
+from chemaboxwriters.ontocompchem import OC_SCHEMA
 import logging
 
 logger = logging.getLogger(__name__)
 
 OC_PIPELINE = "ocompchem"
-OC_SCHEMA = pkg_resources.resource_filename(__name__, "oc_schema.yml")
 
 
 def assemble_oc_pipeline() -> Pipeline:
