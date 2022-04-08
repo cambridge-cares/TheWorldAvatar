@@ -112,8 +112,8 @@ class Schema_Entry:
                     var_value = var_value[loop_iter]
                 entry_item = re.sub(r"\%\{(i)\}", str(loop_iter + 1), entry_item)
             entry_item = re.sub(r"\$\{(" + var_key + r")\}", str(var_value), entry_item)
-        if entry_item not in write_entry:
-            write_entry.append(entry_item)
+        # if entry_item not in write_entry:
+        write_entry.append(entry_item)
 
     def _find_loop_range(self, schema_variables: Dict) -> None:
         for var_key, var_value in schema_variables.items():
@@ -150,7 +150,10 @@ class Schema_Entry:
                 dat_prop_splitted[1],
                 dat_prop_splitted[2],
             )
-            writer.write_data_prop(iri=iri, rel=rel, value=value)
+            data_type = dat_prop_splitted[3] if len(dat_prop_splitted) > 3 else "String"
+            writer.write_data_prop(
+                iri=iri, rel=rel, value=value, data_type=data_type  # type: ignore
+            )
 
     @staticmethod
     def _split_line(line: str, delimiter: str = " ") -> List[str]:
@@ -186,7 +189,8 @@ class JSON_TO_CSV_CONVERTER:
                 writer.register_prefix(name=prefix_key, value=prefix_value)
 
             for entry in self._schema_entries:
-                entry._write_entry(writer=writer)
+                if entry.write_entry:
+                    entry._write_entry(writer=writer)
 
     def _set_schema_variables(self) -> None:
         schema_variables = self._schema.get("schema_to_json_vars")
@@ -222,4 +226,12 @@ class JSON_TO_CSV_CONVERTER:
 
     def _process_schema_entries(self) -> None:
         for entry in self._schema_entries:
-            entry.process(self._schema_variables)
+            if self._all_entry_vars_present(entry=entry):
+                entry.process(self._schema_variables)
+                entry.write_entry = True
+
+    def _all_entry_vars_present(self, entry: Schema_Entry) -> bool:
+        for var_name in entry.variables:
+            if self._schema_variables.get(var_name) is None:
+                return False
+        return True
