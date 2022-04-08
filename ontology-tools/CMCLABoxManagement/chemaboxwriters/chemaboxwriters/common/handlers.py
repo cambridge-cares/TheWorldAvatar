@@ -4,6 +4,7 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 import entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF as entityrdfizer
 from typing import List
 from chemaboxwriters.common.abox_stages import ABOX_STAGES_COMMON
+from chemaboxwriters.common.json_to_csv_mapper import JSON_TO_CSV_CONVERTER
 import json
 
 CCLOG_SOURCE_LOCATION = "cclog_source_location"
@@ -56,6 +57,48 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
                 )
                 outputs.append(out_file_path)
         return outputs
+
+
+class JSON_TO_CSV_Handler(Handler):
+    """Handler converting json files to csv,
+    based on a json_csv schema.
+    Inputs: List of ops_json file paths
+    Outputs: List of ops_csv file paths
+    """
+
+    def __init__(
+        self, name: str, in_stage: str, out_stage: str, schema_file: str
+    ) -> None:
+
+        super().__init__(
+            name=name,
+            in_stage=in_stage,
+            out_stage=out_stage,
+        )
+        self.schema_file = schema_file
+
+    def handle_input(
+        self,
+        inputs: List[str],
+        out_dir: str,
+        input_type: str,
+        dry_run: bool,
+    ) -> List[str]:
+
+        outputs: List[str] = []
+        for json_file_path in inputs:
+            out_file_path = utilsfunc.get_out_file_path(
+                input_file_path=json_file_path,
+                file_extension=self._out_stage,
+                out_dir=out_dir,
+            )
+            self.json_to_csv(file_path=json_file_path, output_file_path=out_file_path)
+            outputs.append(out_file_path)
+        return outputs
+
+    def json_to_csv(self, file_path: str, output_file_path: str) -> None:
+        abox_conv = JSON_TO_CSV_CONVERTER(schema_yml_file=self.schema_file)
+        abox_conv.json_to_csv(json_data_file=file_path, out_file=output_file_path)
 
 
 class CSV_TO_OWL_Handler(Handler):
