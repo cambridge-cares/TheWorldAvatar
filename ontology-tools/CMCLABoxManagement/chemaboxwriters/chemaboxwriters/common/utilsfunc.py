@@ -87,7 +87,7 @@ class Abox_csv_writer:
         store_inst: bool = True,
     ) -> "Abox_csv_writer":
 
-        iri, rel = self._apply_prefixes(iri, rel)
+        iri, rel, value = self._apply_prefixes(iri, rel, value)
         self._write_row(rel, self.data_property_field, iri, "", value, str(data_type))
 
         if store_inst:
