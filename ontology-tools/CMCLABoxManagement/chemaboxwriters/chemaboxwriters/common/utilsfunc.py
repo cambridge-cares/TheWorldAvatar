@@ -15,6 +15,7 @@ import json
 import re
 import pathlib
 import csv
+import yaml
 import numpy as np
 
 FORMULA_CLEAN_RE = re.compile("(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)")
@@ -330,3 +331,12 @@ def get_atom_indices_from_qc_json(atom_list: List):
 
 def clean_qc_json_emp_formula(emp_formula: str):
     return FORMULA_CLEAN_RE.sub("", emp_formula)
+
+
+def read_main_pref_from_schema(schema_file: str, main_pref_name: str) -> str:
+    with open(schema_file, "r") as stream:
+        schema_dict = yaml.safe_load(stream)
+
+    prefixes = schema_dict.get("prefixes", {})
+
+    return prefixes.get(main_pref_name, "")
