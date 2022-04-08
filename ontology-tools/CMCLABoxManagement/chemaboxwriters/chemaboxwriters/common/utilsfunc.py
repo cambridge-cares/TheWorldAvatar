@@ -34,6 +34,7 @@ class Abox_csv_writer:
         self._current_inst = None
         self._prefixes = {}
         self._current_name = None
+        self._write_history = []
 
     def register_prefix(self, name: str, value: str) -> None:
         self._prefixes[name] = value
@@ -159,7 +160,9 @@ class Abox_csv_writer:
 
     def _write_row(self, *args: str) -> None:
         content = [args[i] if i < len(args) else "" for i in range(self._num_cols)]
+        # if content not in self._write_history:
         self.csvwriter.writerow(content)
+        #    self._write_history.append(content)
 
     def _apply_prefixes(self, *args: str) -> List[str]:
         items = []
@@ -235,9 +238,7 @@ def get_files_by_extensions(file_or_dir: str, file_ext_str: str) -> List[str]:
             files += glob.glob(os.path.join(file_or_dir, f"*.{ext}"))
     else:
         raise app_exceptions.IncorrectFileOrDirPath(
-            (
-                f"Error: File or dir {file_or_dir} does not exist."
-            )
+            (f"Error: File or dir {file_or_dir} does not exist.")
         )
     return files
 
@@ -315,6 +316,7 @@ def split_qc_json_geom_to_xyz_coords(geom_list: List) -> Tuple:
 
     return x_coord, y_coord, z_coord
 
+
 def get_atom_indices_from_qc_json(atom_list: List):
     atom_counters = {}
     atom_ind = []
@@ -324,6 +326,7 @@ def get_atom_indices_from_qc_json(atom_list: List):
         atom_ind.append(atom_counters[atom_type])
         atom_counters[atom_type] += 1
     return atom_ind
+
 
 def clean_qc_json_emp_formula(emp_formula: str):
     return FORMULA_CLEAN_RE.sub("", emp_formula)
