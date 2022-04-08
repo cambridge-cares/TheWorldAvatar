@@ -5,6 +5,7 @@ import chemaboxwriters.common.params as params
 from chemaboxwriters.ontomops.abox_stages import OM_ABOX_STAGES
 import chemaboxwriters.kgoperations.querytemplates as qtmpl
 import os
+from chemaboxwriters.ontomops import OM_SCHEMA
 from typing import List, Optional
 
 
@@ -77,8 +78,12 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         if random_id is None:
             random_id = utilsfunc.get_random_id()
 
+        main_inst_pref = utilsfunc.read_main_pref_from_schema(
+            schema_file=OM_SCHEMA, main_pref_name="main_inst_pref"
+        )
+
         data[params.ENTRY_UUID] = random_id
-        data[params.ENTRY_IRI] = random_id
+        data[params.ENTRY_IRI] = f"{main_inst_pref}{random_id}"
 
         assemblymodel = self.get_assembly_model_iri(data=data)
 

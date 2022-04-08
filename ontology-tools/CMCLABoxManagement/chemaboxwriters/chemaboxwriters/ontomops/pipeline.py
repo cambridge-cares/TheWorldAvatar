@@ -2,13 +2,12 @@ from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
 import chemaboxwriters.common.handlers as hnds
 from chemaboxwriters.ontomops.abox_stages import OM_ABOX_STAGES
 from chemaboxwriters.ontomops.handlers import OMINP_JSON_TO_OM_JSON_Handler
-import pkg_resources
+from chemaboxwriters.ontomops import OM_SCHEMA
 import logging
 
 logger = logging.getLogger(__name__)
 
 OMOPS_PIPELINE = "omops"
-OM_SCHEMA = pkg_resources.resource_filename(__name__, "om_schema.yml")
 
 
 def assemble_omops_pipeline() -> Pipeline:

@@ -14,7 +14,7 @@
     "Mops_Reference_DOI": "someDOI",
     "Mops_XYZ_coordinates_file": "tests\\refData\\ontomops\\OM_om_json_test\\dummy_mops.xyz",
     "EntryUUID": "testID-111-111-111",
-    "EntryIRI": "testID-111-111-111",
+    "EntryIRI": "http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111",
     "AssemblyModel_ID": "testID-111-111-111",
     "OntoSpecies_IRI": [
         "IRI1",
