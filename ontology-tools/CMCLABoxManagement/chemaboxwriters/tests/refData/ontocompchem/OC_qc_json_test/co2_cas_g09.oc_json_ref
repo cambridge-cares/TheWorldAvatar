@@ -20,23 +20,6 @@
     "Spin multiplicity": 1,
     "Formal charge": 0,
     "Formal charge unit": "atomic",
-    "Geometry": [
-        [
-            -3.55536,
-            -0.51345,
-            0.0
-        ],
-        [
-            -4.65534,
-            -0.52079,
-            0.0
-        ],
-        [
-            -2.45539,
-            -0.50613,
-            0.0
-        ]
-    ],
     "Geometry unit": "Angstroms",
     "Geometry type": "linear",
     "Rotational constants": [

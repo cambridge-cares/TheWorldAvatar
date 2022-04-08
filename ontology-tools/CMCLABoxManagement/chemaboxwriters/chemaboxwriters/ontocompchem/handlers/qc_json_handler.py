@@ -141,7 +141,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         )
 
         coord_x, coord_y, coord_z = utilsfunc.split_qc_json_geom_to_xyz_coords(
-            data[GEOM]
+            data.pop(GEOM)
         )
         data[COORD_X] = coord_x
         data[COORD_Y] = coord_y
