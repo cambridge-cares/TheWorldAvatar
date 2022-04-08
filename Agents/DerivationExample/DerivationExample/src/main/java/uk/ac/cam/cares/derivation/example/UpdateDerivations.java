@@ -27,11 +27,8 @@ public class UpdateDerivations extends JPSAgent{
 		DerivationClient devClient = new DerivationClient(storeClient);
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		
-		// method updatePureSyncDerivation makes use of DerivationInputs/DerivationOutputs/DerivationAgent
-		String difference = sparqlClient.getDifference();
-		String derivationIRI = devClient.getDerivationsOf(Arrays.asList(difference)).get(difference);
-		devClient.updatePureSyncDerivation(derivationIRI);
-		
+		// method updateAllSyncDerivations makes use of DerivationInputs/DerivationOutputs/DerivationAgent
+		devClient.updateAllSyncDerivations();
 		
 		String res_msg = "Updated derivations";
 		LOGGER.info(res_msg);
