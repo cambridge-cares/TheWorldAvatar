@@ -1,22 +1,26 @@
 from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
 import chemaboxwriters.common.handlers as hnds
 from chemaboxwriters.ontomops.abox_stages import OM_ABOX_STAGES
-from chemaboxwriters.ontomops.handlers import (
-    OMINP_JSON_TO_OM_JSON_Handler,
-    OM_JSON_TO_OM_CSV_Handler,
-)
+from chemaboxwriters.ontomops.handlers import OMINP_JSON_TO_OM_JSON_Handler
+import pkg_resources
 import logging
 
 logger = logging.getLogger(__name__)
 
 OMOPS_PIPELINE = "omops"
+OM_SCHEMA = pkg_resources.resource_filename(__name__, "om_schema.yml")
 
 
 def assemble_omops_pipeline() -> Pipeline:
 
     handlers = [
         OMINP_JSON_TO_OM_JSON_Handler(),
-        OM_JSON_TO_OM_CSV_Handler(),
+        hnds.JSON_TO_CSV_Handler(
+            name="OM_JSON_TO_OM_CSV",
+            in_stage=OM_ABOX_STAGES.om_json,  # type: ignore
+            out_stage=OM_ABOX_STAGES.om_csv,  # type: ignore
+            schema_file=OM_SCHEMA,
+        ),
         hnds.CSV_TO_OWL_Handler(
             name="OM_CSV_TO_OM_OWL",
             in_stage=OM_ABOX_STAGES.om_csv,  # type: ignore
