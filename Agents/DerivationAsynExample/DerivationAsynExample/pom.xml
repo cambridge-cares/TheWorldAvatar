@@ -137,6 +137,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
+            <scope>runtime</scope>
         </dependency>
         
         <!-- Testing, versions pulled from parent -->
