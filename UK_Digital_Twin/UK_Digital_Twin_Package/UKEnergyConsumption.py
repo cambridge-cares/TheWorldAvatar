@@ -21,6 +21,7 @@ class UKEnergyConsumption:
     IndustrialAndCommercialConsumptionKey = "Non-DomesticElectricityConsumption_"
     TimePeriodKey = "TimePeriod_"
     StartTimeKey = "CoordinateValue_"
+    AdministrativeDivisionKey = "AdministrativeDivision_"
     
     valueKey = "ScalarValue_"
     

@@ -106,7 +106,7 @@ def addUKElectricityConsumptionTriples(UKElectricitySystemIRI, GBElectricitySyst
     
     # IRIs
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())  # root_node + dt.GB
-    ## GBElectricitySystemIRI = UKElectricitySystem + dt.GB #TODO: query from the triple store 
+    ## GBElectricitySystemIRI = UKElectricitySystem + dt.GB 
     # Create rdf graph with identifier, regional nodes are named graphs including its local nodes
     graph = Graph(store = store, identifier = URIRef(ontologyIRI)) # graph(store='default', identifier)
     
@@ -124,19 +124,20 @@ def addUKElectricityConsumptionTriples(UKElectricitySystemIRI, GBElectricitySyst
         print('The place is:', elecConData[0].strip('\n').replace('|',','))
         if len(elecConData) != len(engconsump.headerElectricityConsumption):
             raise Exception('The data is not sufficient, please check the data file')
-       ## TODO: modify the iri
+       
         # Define the URL of the nodes
         ec_place_name = elecConData[0].strip('\n').replace('|',',')
-        ec_root_node = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TotalConsumptionKey + ec_place_name # top node of the named graph
-        timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TimePeriodKey + ec_place_name        
-        value_timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + ukec.TimePeriodKey + ec_place_name 
-        starttime_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.StartTimeKey + ec_place_name 
-        value_totalconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey +ukec.TotalConsumptionKey + ec_place_name
-        domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.DomesticConsumptionKey + ec_place_name
-        non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.IndustrialAndCommercialConsumptionKey + ec_place_name
-        value_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey +ukec.DomesticConsumptionKey + ec_place_name
-        value_non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + ukec.IndustrialAndCommercialConsumptionKey + ec_place_name
-        observed_place_uri = t_box.dbr + ec_place_name
+        ec_root_node = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TotalConsumptionKey + str(uuid.uuid4()) # + ec_place_name # top node of the named graph
+        timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TimePeriodKey + str(uuid.uuid4()) # + ec_place_name        
+        value_timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4()) #+ ukec.TimePeriodKey + ec_place_name 
+        starttime_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.StartTimeKey + str(uuid.uuid4()) # + ec_place_name 
+        value_totalconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4()) # + ukec.TotalConsumptionKey + ec_place_name
+        domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.DomesticConsumptionKey + str(uuid.uuid4()) # + ec_place_name
+        non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.IndustrialAndCommercialConsumptionKey + str(uuid.uuid4()) # + ec_place_name
+        value_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4()) # +ukec.DomesticConsumptionKey + ec_place_name
+        value_non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4()) # ukec.IndustrialAndCommercialConsumptionKey + ec_place_name
+        observed_AdministrativeDivision_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.AdministrativeDivisionKey + str(uuid.uuid4())    
+        observed_place_uri = t_box.dbr + ec_place_name # dbpedia
                
         # type of the root node                              
         graph.add((URIRef(ec_root_node), RDF.type, URIRef(ontoenergysystem.TotalElectricityConsumption.iri)))
@@ -184,9 +185,10 @@ def addUKElectricityConsumptionTriples(UKElectricitySystemIRI, GBElectricitySyst
               
         # Add hasAddress and LACODE    
         index_LACode = header.index('LACode')            
-        graph.add((URIRef(ec_root_node), URIRef(ontoenergysystem.isObservedIn.iri), URIRef(observed_place_uri)))
-        graph.add((URIRef(observed_place_uri), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(str(elecConData[index_LACode]))))
-        graph.add((URIRef(observed_place_uri), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
+        graph.add((URIRef(ec_root_node), URIRef(ontoenergysystem.isObservedIn.iri), URIRef(observed_AdministrativeDivision_uri)))
+        graph.add((URIRef(observed_AdministrativeDivision_uri), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(str(elecConData[index_LACode]))))
+        graph.add((URIRef(observed_AdministrativeDivision_uri), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
+        graph.add((URIRef(observed_AdministrativeDivision_uri), OWL_NS['sameAs'], URIRef(observed_place_uri)))
                     
     # generate/update OWL files
     if updateLocalOWLFile == True:
