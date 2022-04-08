@@ -29,13 +29,10 @@ The ontospecies abox writer creates and uploads the ontospecies aboxes. The writ
 - QC_LOG_TO_QC_JSON
   - input type: QC_LOG - the quantum calculation log files (currently only Gaussian G03, G06, G09, G16 are supported)
   - output type: QC_JSON - a generic quantum calculations json file
-  - prefixes: None - this lists defined handler prefixes
   - handler_kwargs: None - this lists supported handler parameters (optional and required)
 - QC_JSON_TO_OS_JSON
   - input type: QC_JSON
   - output type: OS_JSON - an intermediate ontospecies meta json file
-  - prefixes:
-    - spec_pref (str) REQUIRED - prefix used to set the ontospecies IRI (ontospecies_IRI = spec_pref + "Species_" + random_id)
   - handler_kwargs:
     - random_id (str) OPTIONAL - random id used in all ontospecies instances, if not provided, randomly generated
     - enth_of_form (str) OPTIONAL - enthalpy of formation value, not included in the abox if omitted
@@ -47,18 +44,10 @@ The ontospecies abox writer creates and uploads the ontospecies aboxes. The writ
 - OS_JSON_TO_OS_CSV
   - input type: OS_JSON
   - output type: OS_CSV - an intermediate ontospecies csv file
-  - prefixes:
-    - spec_pref (str) REQUIRED
-    - onto_spec (str) REQUIRED - OntoSpecies ontology prefix
-    - gain_pref (str) REQUIRED - Gainesville Core ontology prefix
-    - onto_kin  (str) REQUIRED - OntoKin ontology prefix
-    - table_pref (str) REQUIRED - PeriodicTable ontology prefix
-    - unit_pref (str) REQUIRED - QUDT ontology prefix
   - handler_kwargs: None
 - OS_CSV_TO_OS_OWL
   - input type: OS_CSV
   - output type: OS_OWL - the ontospecies owl file
-  - prefixes: None
   - handler_kwargs: None
 
 
@@ -75,8 +64,6 @@ The ontocompchem abox writer creates and uploads the ontocompchem aboxes. The wr
 - QC_JSON_TO_OC_JSON
   - input type: QC_JSON
   - output type: OC_JSON - an intermediate ontocompchem meta json file
-  - prefixes:
-    - comp_pref (str) REQUIRED - prefix used to set the ontocompchem IRI (ontocompchem_IRI = comp_pref + jobType + "_" + random_id), where the jobType is any of the following values: G03, G06, G09, G16 or Gxx
   - handler_kwargs:
     - random_id (str) OPTIONAL
     - ontospecies_IRI (str) OPTIONAL - IRI of an ontospecies entry to link to. If not provied a query based on inchi will be made to find the ontospecies IRI. If that fails, the ontospecies link is not included in the ontocompchem abox
@@ -84,20 +71,10 @@ The ontocompchem abox writer creates and uploads the ontocompchem aboxes. The wr
 - OC_JSON_TO_OC_CSV
   - input type: OC_JSON
   - output type: OC_CSV - an intermediate ontocompchem csv file
-  - prefixes:
-    - comp_pref (str) REQUIRED
-    - gain_pref (str) REQUIRED
-    - table_pref (str) REQUIRED
-    - unit_pref (str) REQUIRED
-    - onto_comp (str) REQUIRED
-    - ocompchem_data_pref (str) REQUIRED
-    - inst_spec (str) REQUIRED
-    - has_spec (str) REQUIRED
   - handler_kwargs: None
 - OC_CSV_TO_OC_OWL
   - input type: OC_CSV
   - output type: OC_OWL - the ontocompchem owl file
-  - prefixes: None
   - handler_kwargs: None
 <a>
   <center>
@@ -113,7 +90,6 @@ The ontopesscan abox writer creates and uploads the ontopesscan aboxes. The writ
 - OC_JSON_TO_OPS_JSON
   - input type: OC_JSON
   - output type: OPS_JSON - an intermediate ontopesscan json file
-  - prefixes: None
   - handler_kwargs:
     - random_id (str) OPTIONAL
     - os_iris (str) REQUIRED - ontospecies IRI that the scan is about
@@ -122,19 +98,10 @@ The ontopesscan abox writer creates and uploads the ontopesscan aboxes. The writ
 - OPS_JSON_TO_OPS_CSV
   - input type: OPS_JSON
   - output type: OPS_CSV - an intermediate ontopesscan csv file
-  - prefixes:
-    - spec_pref (str) REQUIRED
-    - pes_pref (str) REQUIRED
-    - gain_pref (str) REQUIRED
-    - unit_pref (str) REQUIRED
-    - onto_spec (str) REQUIRED
-    - onto_comp (str) REQUIRED
-    - onto_pes (str) REQUIRED
   - handler_kwargs: None
 - OPS_CSV_TO_OPS_OWL
   - input type: OPS_CSV
   - output type: OPS_OWL - the ontopesscan owl file
-  - prefixes: None
   - handler_kwargs: None
 
 <a>
@@ -156,25 +123,15 @@ The ontomops abox writer creates and uploads the ontomops aboxes. The writer is 
 - OMINP_JSON_TO_OM_JSON
   - input type: OMINP_JSON - an ontomops input json file
   - output type: OM_JSON - an intermediate ontomops json file
-  - prefixes:
-    - onto_spec (str) REQUIRED
-    - onto_mops (str) REQUIRED
-    - mops_pref (str) REQUIRED
-    - rdf_pref (str) REQUIRED
-    - uom_pref (str) REQUIRED
-    - unres_pref (str) REQUIRED
   - handler_kwargs: None
 - OM_JSON_TO_OM_CSV
   - input type: OM_JSON - an intermediate ontomops json file
   - output type: OM_CSV - an intermediate ontomops csv file
-  - prefixes:
-    - omops_entry_prefix (str) REQUIRED
   - handler_kwarg:
     - random_id (str) OPTIONAL
 - OM_CSV_TO_OM_OWL
   - input type: OM_CSV - an intermediate ontomops csv file
   - output type: OM_OWL - the ontomops owl file
-  - prefixes: None
   - handler_kwargs: None
 
 <a>
@@ -264,39 +221,6 @@ kg_query_endpoints:
     omops: http://localhost:48083/blazegraph/namespace/omops/sparql/
     ocompchem: http://localhost:48083/blazegraph/namespace/ocompchem/sparql/
     opsscan: http://localhost:48083/blazegraph/namespace/opsscan/sparql/
-prefixes:
-    # these configs define any prefixes to be used when writing the aboxes
-    # the settings are then passed to the relevant handlers. Since most of
-    # these prefixes are required in all csv handlers, I decided to
-    # define them once in the global space.
-    #
-    # TWA ontology prefixes - needed for object and data properties
-    onto_comp: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"
-    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"
-    onto_mops: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl"
-    onto_pes:  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl"
-    onto_kin: "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"
-    # used to create iris of instances
-    spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
-    spec_pref_no_slash: "http://www.theworldavatar.com/kb/ontospecies"
-    mops_pref: "http://www.theworldavatar.com/kb/ontomops/"
-    comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
-    comp_pref_no_slash: "http://www.theworldavatar.com/kb/ontocompchem"
-    pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/"
-    pes_pref_no_slash: "http://www.theworldavatar.com/kb/ontopesscan"
-    # used to create iris of instances of any reference files
-    # so far only defined for ontocompchem to reference associated log files
-    ocompchem_data_pref: "http://www.theworldavatar.com/data/ontocompchem/"
-    # other prefixes
-    inst_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"
-    has_spec: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpecies"
-    gain_pref: "http://purl.org/gc/"
-    table_pref: "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl"
-    unit_pref: "http://data.nasa.gov/qudt/owl/"
-    rdf_pref: "http://www.w3.org/2000/01/rdf-schema"
-    uom_pref: "http://www.ontology-of-units-of-measure.org/resource/om-2/"
-    unres_pref: "http://theworldavatar.com/resource/ontouom/"
-    omops_entry_prefix: "MetalOrganicPolyhedra_"
 # ------------------------------------------------------------------------------
 # PIPELINES
 # ------------------------------------------------------------------------------
