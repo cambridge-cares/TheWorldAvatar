@@ -246,8 +246,8 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
     def _write_cbu_gbu(self, writer: Abox_Writer, gen_id, mops_id, data) -> None:
 
         # Write the information about the Chemical and Generic Building units.
-        for i, cbu_i in enumerate(
-            data["Mops_Chemical_Building_Units"]
+        for i in range(
+            len(data["CBU_Formula"])
         ):  # We will loop through all the building units in the JSON.
 
             writer.write_inst(
@@ -258,34 +258,34 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 rel="onto_mops:#hasChemicalBuildingUnit",
             ).add_data_prop(
                 rel="onto_mops:#hasCBUFormula",
-                value=cbu_i["CBU_Formula"],
+                value=data["CBU_Formula"][i],
             )  # CBU Formula
             bind_dir = "BindingDirection"
             writer.write_inst(
-                iri=f"mops_pref:{cbu_i[bind_dir]}Binding_{gen_id}",
-                type=f"onto_mops:#{cbu_i[bind_dir]}Binding",
+                iri=f"mops_pref:{data[bind_dir][i]}Binding_{gen_id}",
+                type=f"onto_mops:#{data[bind_dir][i]}Binding",
             ).add_obj_prop(
                 iri=f"mops_pref:ChemicalBuildingUnit_{gen_id}_{i}",
                 rel="onto_mops:#hasBindingDirection",
                 store_inst=True,
             ).add_obj_prop(
-                iri=f"{cbu_i['OntoSpecies_IRI']}",
+                iri=f"{data['OntoSpecies_IRI'][i]}",
                 rel="onto_spec:#hasUniqueSpecies",
                 reverse=True,
             )  # Connect CBU to OntoSpecies entry.
 
             writer.write_inst(
-                iri=f"mops_pref:{cbu_i['Binding_Site']}Site_{gen_id}",
-                type=f"onto_mops:#{cbu_i['Binding_Site']}Site",
+                iri=f"mops_pref:{data['Binding_Site'][i]}Site_{gen_id}",
+                type=f"onto_mops:#{data['Binding_Site'][i]}Site",
             ).add_obj_prop(
                 iri=f"mops_pref:ChemicalBuildingUnit_{gen_id}_{i}",
                 rel="onto_mops:#hasBindingSite",
             ).add_data_prop(
                 rel="rdf_pref:#label",
-                value=f"{cbu_i['Binding_Site_Label']}",
+                value=f"{data['Binding_Site_Label'][i]}",
             ).add_data_prop(
                 rel="onto_mops:#hasOuterCoordinationNumber",
-                value=f"{cbu_i['Binding_SiteCoordNumber']}",
+                value=f"{data['Binding_SiteCoordNumber'][i]}",
             )
 
             writer.write_inst(
@@ -296,7 +296,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 rel="onto_mops:#hasCore",
             ).add_data_prop(
                 rel="rdf_pref:#label",
-                value=f"{cbu_i['CoreLabel']}",
+                value=f"{data['CoreLabel'][i]}",
             )  # Attach label to Core.
             writer.write_inst(
                 iri=f"mops_pref:Substituent_Core_{gen_id}_{i}",
@@ -306,7 +306,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 rel="onto_mops:#hasSubstituent",
             ).add_data_prop(
                 rel="rdf_pref:#label",
-                value=f"{cbu_i['CoreSubstituentLabel']}",
+                value=f"{data['CoreSubstituentLabel'][i]}",
             )  # Attach label to Core Substituent.
 
             writer.write_inst(
@@ -317,7 +317,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 rel="onto_mops:#hasSpacer",
             ).add_data_prop(
                 rel="rdf_pref:#label",
-                value=f"{cbu_i['SpacerLabel']}",
+                value=f"{data['SpacerLabel'][i]}",
             )  # Attach label to Spacer.
             writer.write_inst(
                 iri=f"mops_pref:Substituent_Spacer_{gen_id}_{i}",
@@ -327,7 +327,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 rel="onto_mops:#hasSubstituent",
             ).add_data_prop(
                 rel="rdf_pref:#label",
-                value=f"{cbu_i['SpacerSubstituentLabel']}",
+                value=f"{data['SpacerSubstituentLabel'][i]}",
             )  # Attach label to Spacer Substituent.
 
             gbu = "GenericBuildingUnit"
@@ -340,10 +340,10 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 rel=f"onto_mops:#has{gbu}",
             ).add_data_prop(
                 rel="onto_mops:#hasPlanarity",
-                value=f"{cbu_i['GenericUnitPlanarity']}",
+                value=f"{data['GenericUnitPlanarity'][i]}",
             ).add_data_prop(
                 rel="onto_mops:#hasModularity",
-                value=f"{cbu_i['GenericUnitModularity']}",
+                value=f"{data['GenericUnitModularity'][i]}",
             )  # Modularity of GBU.
             writer.write_inst(
                 iri=f"mops_pref:{gbu}Number_{data['AssemblyModel_ID']}_{i}",
@@ -357,7 +357,7 @@ class OM_JSON_TO_OM_CSV_Handler(Handler):
                 reverse=True,
             ).add_data_prop(
                 rel="onto_spec:#value",
-                value=f"{cbu_i['GenericUnitNumber']}",
+                value=f"{data['GenericUnitNumber'][i]}",
             )  # Give the GBU Number its value.
 
             writer.write_obj_prop(

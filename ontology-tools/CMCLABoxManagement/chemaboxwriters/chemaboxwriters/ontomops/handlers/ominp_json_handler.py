@@ -96,6 +96,17 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
         else:
             data["AssemblyModel_ID"] = data[params.ENTRY_UUID]
 
+        # flatten the Mops_Chemical_Building_Units entries
+        Mops_CBUs = data.pop("Mops_Chemical_Building_Units")
+        for cbu_data in Mops_CBUs:
+            for key, value in cbu_data.items():
+                if key not in data:
+                    data[key] = [value]
+                else:
+                    tmp = data[key]
+                    tmp.append(value)
+                    data[key] = tmp
+
         utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
 
     def get_assembly_model_iri(self, data) -> Optional[str]:

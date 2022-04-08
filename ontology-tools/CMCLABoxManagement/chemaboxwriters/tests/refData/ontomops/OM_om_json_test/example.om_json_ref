@@ -13,39 +13,59 @@
     "Mops_CCDC_Number": "someLabel",
     "Mops_Reference_DOI": "someDOI",
     "Mops_XYZ_coordinates_file": "tests\\refData\\ontomops\\OM_om_json_test\\dummy_mops.xyz",
-    "Mops_Chemical_Building_Units": [
-        {
-            "OntoSpecies_IRI": "IRI1",
-            "CBU_Formula": "Some_formula",
-            "Binding_Site": "Organic",
-            "Binding_Site_Label": "Carboxylate",
-            "Binding_SiteCoordNumber": "2",
-            "CoreLabel": "C6H3",
-            "CoreSubstituentLabel": "C6H3",
-            "SpacerLabel": "C6H3",
-            "SpacerSubstituentLabel": "C6H3",
-            "BindingDirection": "Direct",
-            "GenericUnitPlanarity": "linear",
-            "GenericUnitModularity": "2",
-            "GenericUnitNumber": "10"
-        },
-        {
-            "OntoSpecies_IRI": "IRI2",
-            "CBU_Formula": "Some_formula",
-            "Binding_Site": "Organic",
-            "Binding_Site_Label": "Carboxylate",
-            "Binding_SiteCoordNumber": "2",
-            "CoreLabel": "CH4",
-            "CoreSubstituentLabel": "CH4",
-            "SpacerLabel": "CH4",
-            "SpacerSubstituentLabel": "CH4",
-            "BindingDirection": "Sideway",
-            "GenericUnitPlanarity": "pyramidal",
-            "GenericUnitModularity": "2",
-            "GenericUnitNumber": "20"
-        }
-    ],
     "EntryUUID": "testID-111-111-111",
     "EntryIRI": "MetalOrganicPolyhedra_testID-111-111-111",
-    "AssemblyModel_ID": "testID-111-111-111"
+    "AssemblyModel_ID": "testID-111-111-111",
+    "OntoSpecies_IRI": [
+        "IRI1",
+        "IRI2"
+    ],
+    "CBU_Formula": [
+        "Some_formula",
+        "Some_formula"
+    ],
+    "Binding_Site": [
+        "Organic",
+        "Organic"
+    ],
+    "Binding_Site_Label": [
+        "Carboxylate",
+        "Carboxylate"
+    ],
+    "Binding_SiteCoordNumber": [
+        "2",
+        "2"
+    ],
+    "CoreLabel": [
+        "C6H3",
+        "CH4"
+    ],
+    "CoreSubstituentLabel": [
+        "C6H3",
+        "CH4"
+    ],
+    "SpacerLabel": [
+        "C6H3",
+        "CH4"
+    ],
+    "SpacerSubstituentLabel": [
+        "C6H3",
+        "CH4"
+    ],
+    "BindingDirection": [
+        "Direct",
+        "Sideway"
+    ],
+    "GenericUnitPlanarity": [
+        "linear",
+        "pyramidal"
+    ],
+    "GenericUnitModularity": [
+        "2",
+        "2"
+    ],
+    "GenericUnitNumber": [
+        "10",
+        "20"
+    ]
 }
