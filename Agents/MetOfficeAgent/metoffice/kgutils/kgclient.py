@@ -3,12 +3,12 @@
 
 import json
 
-import agentlogging
+#import agentlogging
 from metoffice.errorhandling.exceptions import KGException
 from metoffice.kgutils.javagateway import jpsBaseLibGW
 
 # Initialise logger
-logger = agentlogging.get_logger("dev")
+#logger = agentlogging.get_logger("dev")
 
 
 class KGClient:
@@ -33,7 +33,7 @@ class KGClient:
             else:
                 self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
         except:
-            logger.error("Unable to initialise KG client")
+            #logger.error("Unable to initialise KG client")
             raise KGException("Unable to initialise KG client")
 
     
@@ -46,7 +46,7 @@ class KGClient:
         try:
             response = self.kg_client.execute(query)
         except:
-            logger.error("SPARQL query not successful")
+            #logger.error("SPARQL query not successful")
             raise KGException("SPARQL query not successful")
         return json.loads(response)
 
@@ -60,5 +60,5 @@ class KGClient:
         try:
             self.kg_client.executeUpdate(update)
         except:
-            logger.error("SPARQL update not successful")
+            #logger.error("SPARQL update not successful")
             raise KGException("SPARQL update not successful")

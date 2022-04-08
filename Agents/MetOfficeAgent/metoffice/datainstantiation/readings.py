@@ -10,7 +10,7 @@ import uuid
 import metoffer
 import datetime as dt
 
-import agentlogging
+#import agentlogging
 from metoffice.dataretrieval.readings import *
 from metoffice.dataretrieval.stations import *
 from metoffice.datainstantiation.stations import *
@@ -25,7 +25,7 @@ from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, CO
                                              TIME_FORMAT, DATACLASS, VISIBILITY
 
 # Initialise logger
-logger = agentlogging.get_logger("dev")
+#logger = agentlogging.get_logger("dev")
 
 
 def add_readings_timeseries(instantiated_ts_iris: list = None,
@@ -65,15 +65,15 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     try:
         metclient = metoffer.MetOffer(api_key)
     except Exception as ex:
-        logger.error("MetOffer client could not be created to retrieve station readings. " + ex)
+        #logger.error("MetOffer client could not be created to retrieve station readings. " + ex)
         raise APIException("MetOffer client could not be created to retrieve station readings.")        
     
     # Load available observations and forecasts from API
-    logger.info('Retrieving time series data from API ...')
+    #logger.info('Retrieving time series data from API ...')
     available_obs, available_fcs, issue_time = retrieve_readings_concepts_per_station(metclient, only_keys=False)    
 
     
-    logger.info('Retrieving time series triples from KG ...')
+    #logger.info('Retrieving time series triples from KG ...')
     # Retrieve information about instantiated time series from KG
     instantiated_obs = get_all_instantiated_observation_timeseries()
     instantiated_fcs = get_all_instantiated_forecast_timeseries()
@@ -107,7 +107,7 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     added_obs = 0
     added_fcs = 0
     
-    logger.info('Adding observation time series data to bulkadd list ...')
+    #logger.info('Adding observation time series data to bulkadd list ...')
     # Loop through all observation timeseries
     ts_list = []
     for tsiri in list(instantiated_obs['tsIRI'].unique()): 
@@ -125,9 +125,9 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
             ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
             ts_list.append(ts)
     ts_client.bulkaddTimeSeriesData(ts_list)
-    logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
+    #logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
     
-    logger.info('Adding forecast time series data to bulkadd list ...')
+    #logger.info('Adding forecast time series data to bulkadd list ...')
     # Loop through all forecast timeseries
     ts_list = []
     for tsiri in list(instantiated_fcs['tsIRI'].unique()):  
@@ -147,14 +147,14 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
             for iri in dataIRIs_list[i]:
                 query_string += f"<{iri}> , "
     ts_client.bulkaddTimeSeriesData(ts_list)
-    logger.info(f'Time series data for {added_fcs} forecasts successfully added.')
+    #logger.info(f'Time series data for {added_fcs} forecasts successfully added.')
 
     # Strip trailing comma and close & perform creation date update query
     query_string = query_string[:-2]
     query_string += f") ) }}"
     kg_client = KGClient(query_endpoint, update_endpoint)
     kg_client.performUpdate(query_string)
-    logger.info('Creation time triples successfully updated.')
+    #logger.info('Creation time triples successfully updated.')
 
     return added_obs + added_fcs
 
@@ -189,7 +189,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
     try:
         metclient = metoffer.MetOffer(api_key)
     except Exception as ex:
-        logger.error("MetOffer client could not be created to retrieve station readings. " + ex)
+        #logger.error("MetOffer client could not be created to retrieve station readings. " + ex)
         raise APIException("MetOffer client could not be created to retrieve station readings.")
     
     # Initialise update query
@@ -288,7 +288,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
                 dataClasses.append(dataClasses2 + dataClasses4)
                 timeUnit.append(timeUnit4)
 
-            logger.info(f'Readings for station {id:>6} successfully added to query.')
+            #logger.info(f'Readings for station {id:>6} successfully added to query.')
 
     # Close query
     query_string += f"}}"
@@ -296,13 +296,13 @@ def instantiate_station_readings(instantiated_sites_list: list,
     # Instantiate all non-time series triples
     kg_client = KGClient(query_endpoint, update_endpoint)
     kg_client.performUpdate(query_string)
-    logger.info('Insert query successfully performed.')
+    #logger.info('Insert query successfully performed.')
 
     if dataIRIs:
         # Instantiate all time series triples
         ts_client = TSClient.tsclient_with_default_settings()
         ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
-        logger.info('Time series triples successfully added.')
+        #logger.info('Time series triples successfully added.')
 
     return instantiated
 
@@ -367,7 +367,7 @@ def add_readings_for_station(station_iri: str,
     """
 
     if readings_iris and (len(readings) != len(readings_iris)):
-        logger.error("Length or readings and readings_iris does not match.")
+        #logger.error("Length or readings and readings_iris does not match.")
         raise ValueError("Length or readings and readings_iris does not match.")
 
     # Initialise "creation" time for forecasts
@@ -436,7 +436,7 @@ def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
         try:
             obs = metclient.loc_observations(station_id)
         except Exception as ex:
-            logger.error('Error while retrieving observation data from DataPoint API: ' + ex.msg)
+            #logger.error('Error while retrieving observation data from DataPoint API: ' + ex.msg)
             raise APIException('Error while retrieving observation data from DataPoint API: ' + ex.msg)
         observations = readings_dict_gen(obs)
         available_obs = {key: condition_readings_data(observations[key], only_keys) for key in observations}
@@ -451,7 +451,7 @@ def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
             fc = metclient.loc_forecast(station_id, metoffer.THREE_HOURLY)
             creation_time = fc['SiteRep']['DV']['dataDate']
         except Exception as ex:
-            logger.error('Error while retrieving observation data from DataPoint API: ' + ex.msg)
+            #logger.error('Error while retrieving observation data from DataPoint API: ' + ex.msg)
             raise APIException('Error while retrieving observation data from DataPoint API: ' + ex.msg)
         forecasts = readings_dict_gen(fc)
         available_fcs = {key: condition_readings_data(forecasts[key], only_keys) for key in forecasts}
@@ -567,13 +567,13 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
 
 if __name__ == '__main__':
 
-    response = instantiate_all_station_readings()
-    print(f"Number of instantiated readings: {response}")
+    # response = instantiate_all_station_readings()
+    # print(f"Number of instantiated readings: {response}")
 
     # response = add_all_readings_timeseries()
     # print(f"Number of updated time series readings: {response}")
 
-    # response = update_all_stations()
-    # print(f"Number of instantiated stations: {response[0]}")
-    # print(f"Number of instantiated readings: {response[1]}")
-    # print(f"Number of updated time series readings: {response[2]}")
+    response = update_all_stations()
+    print(f"Number of instantiated stations: {response[0]}")
+    print(f"Number of instantiated readings: {response[1]}")
+    print(f"Number of updated time series readings: {response[2]}")

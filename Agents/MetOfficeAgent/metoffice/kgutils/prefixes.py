@@ -6,10 +6,10 @@
 # The purpose of this module is to provide a function which eases
 # the inclusion of prefixes into SPARQL queries
 
-import agentlogging
+#import agentlogging
 
 # Initialise logger
-logger = agentlogging.get_logger("dev")
+#logger = agentlogging.get_logger("dev")
 
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
@@ -49,7 +49,7 @@ def create_sparql_prefix(abbreviation):
 
     # Raise key error if given namespace abbreviation has not been specified
     if abbreviation not in PREFIXES.keys():
-        logger.error('Prefix: "' + abbreviation + '" has not been specified')
+        #logger.error('Prefix: "' + abbreviation + '" has not been specified')
         raise KeyError('Prefix: "' + abbreviation + '" has not been specified')
 
     # Get full IRI from pre-specified prefixes dictionary

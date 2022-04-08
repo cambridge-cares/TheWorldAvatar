@@ -8,13 +8,13 @@
 
 import pandas as pd
 
-import agentlogging
+#import agentlogging
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.querytemplates import *
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 # Initialise logger
-logger = agentlogging.get_logger("dev")
+#logger = agentlogging.get_logger("dev")
 
 
 def get_all_instantiated_observations(query_endpoint: str = QUERY_ENDPOINT,
