@@ -26,10 +26,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-HANDLER_PREFIXES = {
-    "comp_pref": {"required": True},
-}
-
 HANDLER_PARAMETERS = {
     "random_id": {"required": False},
     "ontospecies_IRI": {"required": False},
@@ -60,7 +56,6 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             name="QC_JSON_TO_OC_JSON",
             in_stage=OC_ABOX_STAGES.qc_json,  # type: ignore
             out_stage=OC_ABOX_STAGES.oc_json,  # type: ignore
-            prefixes=HANDLER_PREFIXES,
             handler_params=HANDLER_PARAMETERS,
         )
 
@@ -97,7 +92,6 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         random_id = self.get_parameter_value(name="random_id")
         ontospecies_IRI = self.get_parameter_value(name="ontospecies_IRI")
         generate_png = self.get_parameter_value(name="generate_png")
-        comp_pref = self.get_prefix_value(name="comp_pref")
 
         if random_id is None:
             random_id = utilsfunc.get_random_id()
@@ -155,7 +149,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         data[ATOM_INDICES] = utilsfunc.get_atom_indices_from_qc_json(data[ATOM_TYPES])
 
         data[params.SPECIES_IRI] = ontospecies_IRI
-        data[params.ENTRY_IRI] = f"{comp_pref}{jobType}_{random_id}"
+        data[params.ENTRY_IRI] = f"{jobType}_{random_id}"
         data[params.ENTRY_UUID] = random_id
 
         if ATOM_COUNTS in data:

@@ -71,19 +71,19 @@ abox_schema:
         ]
     - # main instance
         [
-            '<INS> ${ENTRY_IRI} rdf:type onto_comp:#G09',
+            '<INS> comp_pref:${ENTRY_IRI} rdf:type onto_comp:#G09',
         ]
     - # Ontosepecies link
         [
             '<INS> ${SPECIES_IRI} rdf:type onto_spec:#Species',
-            '<OBJ> ${ENTRY_IRI} onto_comp:#hasUniqueSpecies ${SPECIES_IRI}',
+            '<OBJ> comp_pref:${ENTRY_IRI} onto_comp:#hasUniqueSpecies ${SPECIES_IRI}',
         ]
     - # Init
         [
             '<INS> comp_pref:InitializationModule_${ENTRY_ID} rdf:type onto_comp:#InitializationModule',
-            '<OBJ> ${ENTRY_IRI} onto_comp:#hasInitialization comp_pref:InitializationModule_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} onto_comp:#hasInitialization comp_pref:InitializationModule_${ENTRY_ID}',
             '<INS> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule rdf:type gain_pref:SourcePackage',
-            '<OBJ> ${ENTRY_IRI} onto_comp:#hasEnvironment comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule',
+            '<OBJ> comp_pref:${ENTRY_IRI} onto_comp:#hasEnvironment comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule',
             '<INS> comp_pref:MoleculeProperty_${ENTRY_ID} rdf:type gain_pref:MoleculeProperty',
             '<OBJ> comp_pref:InitializationModule_${ENTRY_ID} gain_pref:hasMoleculeProperty comp_pref:MoleculeProperty_${ENTRY_ID}',
         ]
@@ -115,7 +115,7 @@ abox_schema:
     - # Freq string
         [
             '<INS> comp_pref:VibrationalAnalysis_${ENTRY_ID} rdf:type gain_pref:VibrationalAnalysis',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:VibrationalAnalysis_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:VibrationalAnalysis_${ENTRY_ID}',
             '<INS> comp_pref:Frequency_${ENTRY_ID} rdf:type gain_pref:Frequency',
             '<OBJ> comp_pref:VibrationalAnalysis_${ENTRY_ID} gain_pref:hasResult comp_pref:Frequency_${ENTRY_ID}',
             '<DAT> comp_pref:Frequency_${ENTRY_ID} onto_comp:#hasFrequencies "${FREQ_STRING}"',
@@ -126,7 +126,7 @@ abox_schema:
     - # Rotational data
         [
             '<INS> comp_pref:RotationalConstants_${ENTRY_ID} rdf:type onto_comp:#RotationalConstants',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:RotationalConstants_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:RotationalConstants_${ENTRY_ID}',
             '<DAT> comp_pref:RotationalConstants_${ENTRY_ID} onto_comp:#hasRotationalConstants "${ROT_CONST_STRING}" String',
             '<DAT> comp_pref:RotationalConstants_${ENTRY_ID} onto_comp:#hasRotationalConstantsCount ${ROT_CONST_NR}',
             '<OBJ> comp_pref:RotationalConstants_${ENTRY_ID} gain_pref:hasUnit unit_pref:unit#GigaHertz',
@@ -134,19 +134,19 @@ abox_schema:
     - # Rotational sym nr
         [
             '<INS> comp_pref:RotationalSymmetry_${ENTRY_ID} rdf:type onto_comp:#RotationalSymmetry',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:RotationalSymmetry_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:RotationalSymmetry_${ENTRY_ID}',
             '<DAT> comp_pref:RotationalSymmetry_${ENTRY_ID} onto_comp:#hasRotationalSymmetryNumber ${ROT_CONST_SYM_NR}',
         ]
     - # Geom type
         [
             '<INS> comp_pref:GeometryType_${ENTRY_ID} rdf:type onto_comp:#GeometryType',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:GeometryType_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:GeometryType_${ENTRY_ID}',
             '<DAT> comp_pref:GeometryType_${ENTRY_ID} onto_comp:#hasGeometryType ${GEOM_TYPE}',
         ]
     - # ZPE
         [
             '<INS> comp_pref:ZeroPointEnergy_${ENTRY_ID} rdf:type onto_comp:#ZeroPointEnergy',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:ZeroPointEnergy_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:ZeroPointEnergy_${ENTRY_ID}',
             '<INS> comp_pref:FloatValue_${ENTRY_ID}_ZeroPointEnergy rdf:type gain_pref:FloatValue',
             '<OBJ> comp_pref:ZeroPointEnergy_${ENTRY_ID} gain_pref:hasElectronicEnergy comp_pref:FloatValue_${ENTRY_ID}_ZeroPointEnergy',
             '<DAT> comp_pref:FloatValue_${ENTRY_ID}_ZeroPointEnergy gain_pref:hasValue ${ZPE_ENERGY}',
@@ -155,7 +155,7 @@ abox_schema:
     - # Elec and ZPE
         [
             '<INS> comp_pref:ElectronicAndZPEEnergy_${ENTRY_ID} rdf:type onto_comp:#ElectronicAndZPEEnergy',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:ElectronicAndZPEEnergy_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:ElectronicAndZPEEnergy_${ENTRY_ID}',
             '<INS> comp_pref:FloatValue_${ENTRY_ID}_ElectronicAndZPEEnergy rdf:type gain_pref:FloatValue',
             '<OBJ> comp_pref:ElectronicAndZPEEnergy_${ENTRY_ID} gain_pref:hasElectronicEnergy comp_pref:FloatValue_${ENTRY_ID}_ElectronicAndZPEEnergy',
             '<DAT> comp_pref:FloatValue_${ENTRY_ID}_ElectronicAndZPEEnergy gain_pref:hasValue ${ELEC_AND_ZPE_ENERGY}',
@@ -164,7 +164,7 @@ abox_schema:
     - # Elec energy only
         [
             '<INS> comp_pref:ScfEnergy_${ENTRY_ID} rdf:type onto_comp:#ScfEnergy',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:ScfEnergy_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:ScfEnergy_${ENTRY_ID}',
             '<INS> comp_pref:FloatValue_${ENTRY_ID}_ScfEnergy rdf:type gain_pref:FloatValue',
             '<OBJ> comp_pref:ScfEnergy_${ENTRY_ID} gain_pref:hasElectronicEnergy comp_pref:FloatValue_${ENTRY_ID}_ScfEnergy',
             '<DAT> comp_pref:FloatValue_${ENTRY_ID}_ScfEnergy gain_pref:hasValue ${ELEC_ENERGY}',
@@ -173,7 +173,7 @@ abox_schema:
     - # HOMO energy
         [
             '<INS> comp_pref:HomoEnergy_${ENTRY_ID} rdf:type onto_comp:#HomoEnergy',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:HomoEnergy_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:HomoEnergy_${ENTRY_ID}',
             '<INS> comp_pref:FloatValue_${ENTRY_ID}_HomoEnergy rdf:type gain_pref:FloatValue',
             '<OBJ> comp_pref:HomoEnergy_${ENTRY_ID} onto_comp:#hasHomoEnergy comp_pref:FloatValue_${ENTRY_ID}_HomoEnergy',
             '<DAT> comp_pref:FloatValue_${ENTRY_ID}_HomoEnergy gain_pref:hasValue ${HOMO_ENERGY}',
@@ -182,7 +182,7 @@ abox_schema:
     - # HOMO-1 energy
         [
             '<INS> comp_pref:HomoMinusOneEnergy_${ENTRY_ID} rdf:type onto_comp:#HomoMinusOneEnergy',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:HomoMinusOneEnergy_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:HomoMinusOneEnergy_${ENTRY_ID}',
             '<INS> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusOneEnergy rdf:type gain_pref:FloatValue',
             '<OBJ> comp_pref:HomoMinusOneEnergy_${ENTRY_ID} onto_comp:#hasHomoMinusOneEnergy comp_pref:FloatValue_${ENTRY_ID}_HomoMinusOneEnergy',
             '<DAT> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusOneEnergy gain_pref:hasValue ${HOMO_MIN1_ENERGY}',
@@ -191,7 +191,7 @@ abox_schema:
     - # HOMO-2 energy
         [
             '<INS> comp_pref:HomoMinusTwoEnergy_${ENTRY_ID} rdf:type onto_comp:#HomoMinusTwoEnergy',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:HomoMinusTwoEnergy_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:HomoMinusTwoEnergy_${ENTRY_ID}',
             '<INS> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusTwoEnergy rdf:type gain_pref:FloatValue',
             '<OBJ> comp_pref:HomoMinusTwoEnergy_${ENTRY_ID} onto_comp:#hasHomoMinusTwoEnergy comp_pref:FloatValue_${ENTRY_ID}_HomoMinusTwoEnergy',
             '<DAT> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusTwoEnergy gain_pref:hasValue ${HOMO_MIN2_ENERGY}',
@@ -200,7 +200,7 @@ abox_schema:
     - # LUMO energy
         [
             '<INS> comp_pref:LumoEnergy_${ENTRY_ID} rdf:type onto_comp:#LumoEnergy',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:LumoEnergy_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:LumoEnergy_${ENTRY_ID}',
             '<INS> comp_pref:FloatValue_${ENTRY_ID}_LumoEnergy rdf:type gain_pref:FloatValue',
             '<OBJ> comp_pref:LumoEnergy_${ENTRY_ID} onto_comp:#hasLumoEnergy comp_pref:FloatValue_${ENTRY_ID}_LumoEnergy',
             '<DAT> comp_pref:FloatValue_${ENTRY_ID}_LumoEnergy gain_pref:hasValue ${LUMO_ENERGY}',
@@ -209,7 +209,7 @@ abox_schema:
     - # LUMO+1 energy
         [
             '<INS> comp_pref:LumoPlusOneEnergy_${ENTRY_ID} rdf:type onto_comp:#LumoPlusOneEnergy',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:LumoPlusOneEnergy_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:LumoPlusOneEnergy_${ENTRY_ID}',
             '<INS> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusOneEnergy rdf:type gain_pref:FloatValue',
             '<OBJ> comp_pref:LumoPlusOneEnergy_${ENTRY_ID} onto_comp:#hasLumoPlusOneEnergy comp_pref:FloatValue_${ENTRY_ID}_LumoPlusOneEnergy',
             '<DAT> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusOneEnergy gain_pref:hasValue ${LUMO_ADD1_ENERGY}',
@@ -218,7 +218,7 @@ abox_schema:
     - # LUMO+2 energy
         [
             '<INS> comp_pref:LumoPlusTwoEnergy_${ENTRY_ID} rdf:type onto_comp:#LumoPlusTwoEnergy',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:LumoPlusTwoEnergy_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:LumoPlusTwoEnergy_${ENTRY_ID}',
             '<INS> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusTwoEnergy rdf:type gain_pref:FloatValue',
             '<OBJ> comp_pref:LumoPlusTwoEnergy_${ENTRY_ID} onto_comp:#hasLumoPlusTwoEnergy comp_pref:FloatValue_${ENTRY_ID}_LumoPlusTwoEnergy',
             '<DAT> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusTwoEnergy gain_pref:hasValue ${LUMO_ADD2_ENERGY}',
@@ -227,7 +227,7 @@ abox_schema:
     - # Main Molulecule entry that would hold spin mult, charge and other props
         [
             '<INS> comp_pref:GeometryOptimization_${ENTRY_ID} rdf:type gain_pref:GeometryOptimization',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:GeometryOptimization_${ENTRY_ID}',
+            '<OBJ> comp_pref:${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:GeometryOptimization_${ENTRY_ID}',
             '<INS> comp_pref:Molecule_${ENTRY_ID} rdf:type gain_pref:Molecule',
             '<OBJ> comp_pref:GeometryOptimization_${ENTRY_ID} gain_pref:hasMolecule comp_pref:Molecule_${ENTRY_ID}',
         ]

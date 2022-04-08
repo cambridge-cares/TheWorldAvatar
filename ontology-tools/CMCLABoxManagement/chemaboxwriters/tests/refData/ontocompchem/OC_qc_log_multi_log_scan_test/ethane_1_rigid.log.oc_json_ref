@@ -133,7 +133,7 @@
         6
     ],
     "SpeciesIRI": "test_species_iri",
-    "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
+    "EntryIRI": "G09_testID-111-111-111",
     "EntryUUID": "testID-111-111-111",
     "Unique_Atoms": [
         "C",
