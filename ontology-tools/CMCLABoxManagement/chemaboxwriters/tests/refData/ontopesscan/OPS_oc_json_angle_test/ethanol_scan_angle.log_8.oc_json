@@ -1,5 +1,5 @@
 {
-    "Empirical formula": "C2H6O1",
+    "Empirical formula": "C2H6O",
     "Atom counts": {
         "C": 2,
         "H": 6,
@@ -33,53 +33,6 @@
     "Spin multiplicity": 1,
     "Formal charge": 0,
     "Formal charge unit": "atomic",
-    "Geometry": [
-        [
-            -1.21935,
-            -0.269264,
-            0.0
-        ],
-        [
-            0.062987,
-            0.558408,
-            0.0
-        ],
-        [
-            1.18085,
-            -0.248099,
-            0.0
-        ],
-        [
-            -1.260236,
-            -0.90881,
-            -0.886861
-        ],
-        [
-            -2.098271,
-            0.385772,
-            1e-06
-        ],
-        [
-            -1.260234,
-            -0.908811,
-            0.88686
-        ],
-        [
-            0.070694,
-            1.219523,
-            -0.883028
-        ],
-        [
-            0.070694,
-            1.219523,
-            0.883028
-        ],
-        [
-            1.968728,
-            -0.757271,
-            1e-06
-        ]
-    ],
     "Geometry unit": "Angstroms",
     "Geometry type": "nonlinear",
     "Rotational constants": [
@@ -108,7 +61,62 @@
     ],
     "Scan Points": 177.06349,
     "Log file name": "ethanol_scan_angle.log",
-    "SpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983",
+    "CoordinateX": [
+        -1.21935,
+        0.062987,
+        1.18085,
+        -1.260236,
+        -2.098271,
+        -1.260234,
+        0.070694,
+        0.070694,
+        1.968728
+    ],
+    "CoordinateY": [
+        -0.269264,
+        0.558408,
+        -0.248099,
+        -0.90881,
+        0.385772,
+        -0.908811,
+        1.219523,
+        1.219523,
+        -0.757271
+    ],
+    "CoordinateZ": [
+        0.0,
+        0.0,
+        0.0,
+        -0.886861,
+        1e-06,
+        0.88686,
+        -0.883028,
+        0.883028,
+        1e-06
+    ],
+    "AtomsIndices": [
+        1,
+        2,
+        1,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+    ],
+    "SpeciesIRI": null,
     "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_OCtestID-111-111-111",
-    "EntryUUID": "OCtestID-111-111-111"
+    "EntryUUID": "OCtestID-111-111-111",
+    "Unique_Atoms": [
+        "C",
+        "H",
+        "O"
+    ],
+    "Total_Atom_Counts": [
+        2,
+        6,
+        1
+    ],
+    "Rotational_Constants_String": "35.7358851 9.2270945 8.0732518"
 }
