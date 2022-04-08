@@ -47,9 +47,6 @@ COORD_X = "CoordinateX"
 COORD_Y = "CoordinateY"
 COORD_Z = "CoordinateZ"
 
-HANDLER_PREFIXES = {
-    "spec_pref": {"required": True},
-}
 
 HANDLER_PARAMETERS = {
     "random_id": {"required": False},
@@ -75,7 +72,6 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             name="QC_JSON_TO_OS_JSON",
             in_stage=OS_ABOX_STAGES.qc_json,  # type: ignore
             out_stage=OS_ABOX_STAGES.os_json,  # type: ignore
-            prefixes=HANDLER_PREFIXES,
             handler_params=HANDLER_PARAMETERS,
         )
 
@@ -103,8 +99,6 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
 
     def _os_jsonwriter(self, file_path: str, output_file_path: str) -> None:
 
-        spec_pref = self.get_prefix_value(name="spec_pref")
-
         random_id = self.get_parameter_value(name="random_id")
         enth_of_form = self.get_parameter_value(name="enth_of_form")
         enth_of_form_unit = self.get_parameter_value(name="enth_of_form_unit")
@@ -126,13 +120,19 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         smiles = obconverter.obConvert(xyz, "xyz", "smi")
         data_out[INCHI] = inchi
         data_out[SMILES] = smiles
-        data_out[EMP_FORMULA] = utilsfunc.clean_qc_json_emp_formula(emp_formula=data[EMP_FORMULA])
+        data_out[EMP_FORMULA] = utilsfunc.clean_qc_json_emp_formula(
+            emp_formula=data[EMP_FORMULA]
+        )
         data_out[ATOM_TYPES] = data[ATOM_TYPES]
         data_out[GEOM] = data[GEOM]
         data_out[SPIN_MULT] = data[SPIN_MULT]
-        data_out[ATOM_INDICES] = utilsfunc.get_atom_indices_from_qc_json(data[ATOM_TYPES])
+        data_out[ATOM_INDICES] = utilsfunc.get_atom_indices_from_qc_json(
+            data[ATOM_TYPES]
+        )
 
-        coord_x, coord_y, coord_z = utilsfunc.split_qc_json_geom_to_xyz_coords(data[GEOM])
+        coord_x, coord_y, coord_z = utilsfunc.split_qc_json_geom_to_xyz_coords(
+            data[GEOM]
+        )
         data_out[COORD_X] = coord_x
         data_out[COORD_Y] = coord_y
         data_out[COORD_Z] = coord_z
@@ -185,7 +185,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             random_id = utilsfunc.get_random_id()
 
         data_out[params.ENTRY_UUID] = random_id
-        data_out[params.ENTRY_IRI] = f"{spec_pref}Species_{random_id}"
+        data_out[params.ENTRY_IRI] = random_id
 
         utilsfunc.write_dict_to_file(dict_data=data_out, dest_path=output_file_path)
 

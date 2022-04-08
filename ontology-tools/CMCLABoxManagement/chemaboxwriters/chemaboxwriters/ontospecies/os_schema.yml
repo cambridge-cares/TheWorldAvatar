@@ -23,7 +23,7 @@ schema_to_json_vars:
     MOL_WEIGHT: {'required': True, 'jsonKey': 'MolecularWeight'}
     FORM_CHARGE: {'required': True, 'jsonKey': 'Formal charge'}
     GEOM_STRING: {'required': True, 'jsonKey': 'GeometryString'}
-    BOND_STRING: {'required': True, 'jsonKey': 'BondString'}    
+    BOND_STRING: {'required': True, 'jsonKey': 'BondString'}
     PUBCHEM_ALT_LABEL: {'required': True, 'jsonKey': 'PubchemAlternativeLabel'}
     PUBCHEM_CAS: {'required': True, 'jsonKey': 'CAS'}
     PUBCHEM_CID: {'required': True, 'jsonKey': 'PubchemCID'}
@@ -49,47 +49,47 @@ abox_schema:
         ]
     - # main instance
         [
-            '<INS> ${ENTRY_IRI} rdf:type Species',
-            '<INS> ${ENTRY_IRI} rdf:type onto_spec:#Species',
-            '<DAT> ${ENTRY_IRI} dc:identifier ${ENTRY_IRI}',
-            '<DAT> ${ENTRY_IRI} rdfs:#label ${EMP_FORMULA}',
+            '<INS> spec_pref:Species_${ENTRY_IRI} rdf:type Species',
+            '<INS> spec_pref:Species_${ENTRY_IRI} rdf:type onto_spec:#Species',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} dc:identifier spec_pref:Species_${ENTRY_IRI}',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} rdfs:#label ${EMP_FORMULA}',
         ]
     - # PubChem altlabel
         [
-            '<DAT> ${ENTRY_IRI} skos:#altLabel ${PUBCHEM_ALT_LABEL}',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} skos:#altLabel ${PUBCHEM_ALT_LABEL}',
         ]
     - # PubChemAlt CID
         [
-            '<DAT> ${ENTRY_IRI} onto_spec:#pubChemCID ${PUBCHEM_CID}',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#pubChemCID ${PUBCHEM_CID}',
         ]
     - # PubChemAlt CAS
         [
-            '<DAT> ${ENTRY_IRI} onto_spec:#casRegistryID ${PUBCHEM_CAS}',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#casRegistryID ${PUBCHEM_CAS}',
         ]
     - # SMILES
         [
-            '<DAT> ${ENTRY_IRI} onto_spec:#SMILES "${SMILES}"',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#SMILES "${SMILES}"',
         ]
     - # SMILES
         [
-            '<DAT> ${ENTRY_IRI} onto_spec:#inChI "${INCHI}"',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#inChI "${INCHI}"',
         ]
     - # Bond string
         [
-            '<DAT> ${ENTRY_IRI} onto_spec:#hasAtomicBond "${BOND_STRING}"',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasAtomicBond "${BOND_STRING}"',
         ]
     - # Geom string
         [
-            '<DAT> ${ENTRY_IRI} onto_spec:#hasGeometry "${GEOM_STRING}"',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasGeometry "${GEOM_STRING}"',
         ]
     - # Spin mult
         [
-            '<DAT> ${ENTRY_IRI} onto_spec:#spinMultiplicity ${SPIN_MULT}',
+            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#spinMultiplicity ${SPIN_MULT}',
         ]
     - # Basic atoms info
         [
             '<INS> Atom_${ENTRY_ID}_${ATOM_TYPES}_${ATOMS_INDICES} rdf:type gain_pref:Atom',
-            '<OBJ> ${ENTRY_IRI} gain_pref:hasAtom Atom_${ENTRY_ID}_${ATOM_TYPES}_${ATOMS_INDICES}',
+            '<OBJ> spec_pref:Species_${ENTRY_IRI} gain_pref:hasAtom Atom_${ENTRY_ID}_${ATOM_TYPES}_${ATOMS_INDICES}',
             '<OBJ> Atom_${ENTRY_ID}_${ATOM_TYPES}_${ATOMS_INDICES} gain_pref:isElement table_pref:#${ATOM_TYPES}',
         ]
     - # Atoms XYZ info
@@ -110,14 +110,14 @@ abox_schema:
     - # Total Charge Info
         [
             '<INS> Charge_${ENTRY_ID} rdf:type onto_spec:#Charge',
-            '<OBJ> ${ENTRY_IRI} onto_spec:#hasCharge Charge_${ENTRY_ID}',
+            '<OBJ> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasCharge Charge_${ENTRY_ID}',
             '<DAT> Charge_${ENTRY_ID} onto_spec:#value ${FORM_CHARGE}',
             '<DAT> Charge_${ENTRY_ID} onto_spec:#units e',
         ]
     - # Mol Formula
         [
             '<INS> MolecularFormula_${ENTRY_ID} rdf:type onto_spec:#MolecularFormula',
-            '<OBJ> ${ENTRY_IRI} onto_spec:#hasMolecularFormula MolecularFormula_${ENTRY_ID}',
+            '<OBJ> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasMolecularFormula MolecularFormula_${ENTRY_ID}',
 
         ]
     - # Mol Formula per atoms
@@ -132,14 +132,14 @@ abox_schema:
     - # Mol Weights
         [
             '<INS> MolecularWeight_${ENTRY_ID} rdf:type onto_spec:#MolecularWeight',
-            '<OBJ> ${ENTRY_IRI} onto_spec:#hasMolecularWeight MolecularWeight_${ENTRY_ID}',
+            '<OBJ> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasMolecularWeight MolecularWeight_${ENTRY_ID}',
             '<DAT> MolecularWeight_${ENTRY_ID} onto_spec:#value ${MOL_WEIGHT}',
             '<DAT> MolecularWeight_${ENTRY_ID} onto_spec:#units g/mol',
         ]
     - # Enthalpy data
         [
             '<INS> StandardEnthalpyOfFormation_${ENTRY_ID} rdf:type onto_spec:#StandardEnthalpyOfFormation',
-            '<OBJ> ${ENTRY_IRI} onto_spec:#hasStandardEnthalpyOfFormation StandardEnthalpyOfFormation_${ENTRY_ID}',
+            '<OBJ> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasStandardEnthalpyOfFormation StandardEnthalpyOfFormation_${ENTRY_ID}',
             '<DAT> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#value ${ENTH_FORM}',
             '<DAT> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#units ${ENTH_FORM_UNIT}',
 
