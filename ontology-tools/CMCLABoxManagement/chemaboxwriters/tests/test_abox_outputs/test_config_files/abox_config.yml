@@ -1,34 +1,3 @@
-prefixes:
-    # these configs define any prefixes to be used when writing the aboxes
-    # the settings are then passed to the relevant handlers.
-    #
-    # TWA ontology prefixes - needed for object and data properties
-    onto_comp: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"
-    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"
-    onto_mops: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl"
-    onto_pes:  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl"
-    onto_kin: "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"
-    # used to create iris of instances
-    spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
-    spec_pref_no_slash: "http://www.theworldavatar.com/kb/ontospecies"
-    mops_pref: "http://www.theworldavatar.com/kb/ontomops/"
-    comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
-    comp_pref_no_slash: "http://www.theworldavatar.com/kb/ontocompchem"
-    pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/"
-    pes_pref_no_slash: "http://www.theworldavatar.com/kb/ontopesscan"
-    # used to create iris of instances of any reference files
-    # so far only defined for ontocompchem to reference associated log files
-    ocompchem_data_pref: "http://www.theworldavatar.com/data/ontocompchem/"
-    # other prefixes
-    inst_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"
-    has_spec: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpecies"
-    gain_pref: "http://purl.org/gc/"
-    table_pref: "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl"
-    unit_pref: "http://data.nasa.gov/qudt/owl/"
-    rdf_pref: "http://www.w3.org/2000/01/rdf-schema"
-    uom_pref: "http://www.ontology-of-units-of-measure.org/resource/om-2/"
-    unres_pref: "http://theworldavatar.com/resource/ontouom/"
-    omops_entry_prefix: "MetalOrganicPolyhedra_"
 # this section defines what type of files should be uploaded to the file server
 ocompchem: {}
 ospecies: {}

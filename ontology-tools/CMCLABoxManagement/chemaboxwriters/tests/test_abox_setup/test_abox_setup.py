@@ -95,11 +95,6 @@ def test_abox_writer_handlers_setup(endpoints_config_file: str):
                 configs=handler_configs,
             )
 
-            check_prefixes_configs(
-                handler_prefixes=handler._handler_prefixes._parameters,
-                configs=handler_configs,
-            )
-
             check_handler_kwargs_configs(
                 handler_kwargs=handler._handler_params._parameters,
                 configs=handler_configs,
@@ -154,18 +149,6 @@ def check_query_configs(
 
     for query_prefix, query_endpoint in handler_query_configs.items():
         assert store_client_container.query_endpoints[query_prefix] == query_endpoint
-
-
-def check_prefixes_configs(handler_prefixes: Dict, configs: Dict) -> None:
-
-    handler_prefix_configs = configs.get(abconf.WRITERS_PREFIXES_KEY)
-    if handler_prefix_configs is None:
-        return
-
-    for prefix_name, prefix_value in handler_prefix_configs.items():
-        assert prefix_name in handler_prefixes
-
-        assert handler_prefixes[prefix_name]["value"] == prefix_value
 
 
 def check_handler_kwargs_configs(handler_kwargs: Dict, configs: Dict) -> None:

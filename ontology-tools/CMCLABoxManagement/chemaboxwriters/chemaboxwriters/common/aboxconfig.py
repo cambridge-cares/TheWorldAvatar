@@ -8,7 +8,6 @@ FILE_SERVER = "file server"
 TRIPLE_STORE = "triple store"
 
 QUERY_SETTINGS_KEY = "kg_query_endpoints"
-WRITERS_PREFIXES_KEY = "prefixes"
 HANDLER_KWARGS = "handler_kwargs"
 
 FS_UPLOAD_SETTINGS_KEY = "file_server_upload_settings"
@@ -23,7 +22,6 @@ CONFIG_GROUPS = [
     FS_UPLOAD_SETTINGS_KEY,
     TS_UPLOAD_SETTINGS_KEY,
     QUERY_SETTINGS_KEY,
-    WRITERS_PREFIXES_KEY,
     HANDLER_KWARGS,
 ]
 

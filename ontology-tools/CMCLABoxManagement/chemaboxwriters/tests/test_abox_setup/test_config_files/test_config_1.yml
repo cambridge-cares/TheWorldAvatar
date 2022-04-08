@@ -28,9 +28,6 @@ ocompchem:
             upload_file_types:
                 - qc_log
     oc_json_to_oc_csv:
-        prefixes:
-            pref1: pref1_value
-            pref2: pref2_value
         handler_kwargs:
             kwarg1: kwarg1_value
             kwarg2: kwarg2_value
@@ -130,9 +127,6 @@ test_results:
                 omops_query_endpoint: omops
                 ocompchem_query_endpoint: ocompchem
                 opsscan_query_endpoint: opsscan
-            prefixes:
-                pref1: pref1_value
-                pref2: pref2_value
             handler_kwargs:
                 kwarg1: kwarg1_value
                 kwarg2: kwarg2_value

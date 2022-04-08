@@ -84,7 +84,6 @@ class Handler(ABC):
         name: str,
         in_stage: str,
         out_stage: str,
-        prefixes: Optional[Dict] = None,
         handler_params: Optional[Dict] = None,
     ) -> None:
 
@@ -92,11 +91,6 @@ class Handler(ABC):
         self.written_files = []
         self._in_stage = in_stage
         self._out_stage = out_stage
-        self._handler_prefixes = Handler_Parameters(
-            name="prefix", handler_name=self.name
-        )
-        if prefixes is not None:
-            self._handler_prefixes.add_parameters_from_dict(parameters_dict=prefixes)
         self._handler_params = Handler_Parameters(
             name="parameter", handler_name=self.name
         )
@@ -139,24 +133,14 @@ class Handler(ABC):
     def get_parameter_value(self, name: str) -> Optional[str]:
         return self._handler_params.get_parameter_value(name=name)
 
-    def get_prefix_value(self, name: str) -> Optional[str]:
-        return self._handler_prefixes.get_parameter_value(name=name)
-
     def set_parameter_value(self, name: str, value: Optional[str] = None) -> None:
         self._handler_params.set_parameter_value(name=name, value=value)
-
-    def set_prefix_value(self, name: str, value: Optional[str] = None) -> None:
-        self._handler_prefixes.set_parameter_value(name=name, value=value)
 
     def is_parameter_required(self, name: str) -> bool:
         return self._handler_params.is_parameter_required(name=name)
 
-    def is_prefix_required(self, name: str) -> bool:
-        return self._handler_prefixes.is_parameter_required(name=name)
-
     def check_configs(self) -> None:
         self._handler_params.check_configs()
-        self._handler_prefixes.check_configs()
 
     def init_fs_uploads_history(
         self,
@@ -296,8 +280,6 @@ class Handler(ABC):
         print(f"handler: {self.name}")
         print(f"in_stages: {self._in_stage}")
         print(f"out_stage: {self._out_stage}")
-        print("prefixes:")
-        print(pformat(self._handler_prefixes.info()))
         print("handler_kwargs:")
         print(pformat(self._handler_params.info()))
         if self._file_server_uploader is not None:
@@ -353,7 +335,6 @@ class Handler(ABC):
         file_server_upload_settings = config_dict.get("file_server_upload_settings")
         triple_store_upload_settings = config_dict.get("triple_store_upload_settings")
         query_endpoints = config_dict.get("kg_query_endpoints")
-        prefixes = config_dict.get("prefixes")
         handler_kwargs = config_dict.get("handler_kwargs")
 
         if file_server_upload_settings is not None:
@@ -370,10 +351,6 @@ class Handler(ABC):
             self._configure_remote_store_client_from_dict(
                 query_endpoints=query_endpoints
             )
-
-        if prefixes is not None:
-            for name, value in prefixes.items():
-                self.set_prefix_value(name=name, value=value)
 
         if handler_kwargs is not None:
             for name, value in handler_kwargs.items():
