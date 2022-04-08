@@ -19,6 +19,7 @@ import time
 import chemaboxwriters.common.params as params
 from chemaboxwriters.common.handler import Handler
 from chemaboxwriters.ontospecies.abox_stages import OS_ABOX_STAGES
+from chemaboxwriters.ontospecies import OS_SCHEMA
 from typing import List, Optional, Dict, Any
 import logging
 
@@ -185,7 +186,11 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
             random_id = utilsfunc.get_random_id()
 
         data_out[params.ENTRY_UUID] = random_id
-        data_out[params.ENTRY_IRI] = random_id
+
+        main_inst_pref = utilsfunc.read_main_pref_from_schema(
+            schema_file=OS_SCHEMA, main_pref_name="main_inst_pref"
+        )
+        data_out[params.ENTRY_IRI] = f"{main_inst_pref}{random_id}"
 
         utilsfunc.write_dict_to_file(dict_data=data_out, dest_path=output_file_path)
 

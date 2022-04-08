@@ -10,6 +10,7 @@ prefixes:
     pes_pref_no_slash: "http://www.theworldavatar.com/kb/ontopesscan"
     onto_kin: "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"
     spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
+    main_inst_pref: "http://www.theworldavatar.com/kb/ontospecies/Species_"
     gain_pref: "http://purl.org/gc/"
     unit_pref: "http://data.nasa.gov/qudt/owl/"
 #
@@ -49,47 +50,47 @@ abox_schema:
         ]
     - # main instance
         [
-            '<INS> spec_pref:Species_${ENTRY_IRI} rdf:type Species',
-            '<INS> spec_pref:Species_${ENTRY_IRI} rdf:type onto_spec:#Species',
-            '<DAT> spec_pref:Species_${ENTRY_IRI} dc:identifier spec_pref:Species_${ENTRY_IRI}',
-            '<DAT> spec_pref:Species_${ENTRY_IRI} rdfs:#label ${EMP_FORMULA}',
+            '<INS> ${ENTRY_IRI} rdf:type Species',
+            '<INS> ${ENTRY_IRI} rdf:type onto_spec:#Species',
+            '<DAT> ${ENTRY_IRI} dc:identifier ${ENTRY_IRI}',
+            '<DAT> ${ENTRY_IRI} rdfs:#label ${EMP_FORMULA}',
         ]
     - # PubChem altlabel
         [
-            '<DAT> spec_pref:Species_${ENTRY_IRI} skos:#altLabel ${PUBCHEM_ALT_LABEL}',
+            '<DAT> ${ENTRY_IRI} skos:#altLabel ${PUBCHEM_ALT_LABEL}',
         ]
     - # PubChemAlt CID
         [
-            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#pubChemCID ${PUBCHEM_CID}',
+            '<DAT> ${ENTRY_IRI} onto_spec:#pubChemCID ${PUBCHEM_CID}',
         ]
     - # PubChemAlt CAS
         [
-            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#casRegistryID ${PUBCHEM_CAS}',
+            '<DAT> ${ENTRY_IRI} onto_spec:#casRegistryID ${PUBCHEM_CAS}',
         ]
     - # SMILES
         [
-            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#SMILES "${SMILES}"',
+            '<DAT> ${ENTRY_IRI} onto_spec:#SMILES "${SMILES}"',
         ]
     - # SMILES
         [
-            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#inChI "${INCHI}"',
+            '<DAT> ${ENTRY_IRI} onto_spec:#inChI "${INCHI}"',
         ]
     - # Bond string
         [
-            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasAtomicBond "${BOND_STRING}"',
+            '<DAT> ${ENTRY_IRI} onto_spec:#hasAtomicBond "${BOND_STRING}"',
         ]
     - # Geom string
         [
-            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasGeometry "${GEOM_STRING}"',
+            '<DAT> ${ENTRY_IRI} onto_spec:#hasGeometry "${GEOM_STRING}"',
         ]
     - # Spin mult
         [
-            '<DAT> spec_pref:Species_${ENTRY_IRI} onto_spec:#spinMultiplicity ${SPIN_MULT}',
+            '<DAT> ${ENTRY_IRI} onto_spec:#spinMultiplicity ${SPIN_MULT}',
         ]
     - # Basic atoms info
         [
             '<INS> Atom_${ENTRY_ID}_${ATOM_TYPES}_${ATOMS_INDICES} rdf:type gain_pref:Atom',
-            '<OBJ> spec_pref:Species_${ENTRY_IRI} gain_pref:hasAtom Atom_${ENTRY_ID}_${ATOM_TYPES}_${ATOMS_INDICES}',
+            '<OBJ> ${ENTRY_IRI} gain_pref:hasAtom Atom_${ENTRY_ID}_${ATOM_TYPES}_${ATOMS_INDICES}',
             '<OBJ> Atom_${ENTRY_ID}_${ATOM_TYPES}_${ATOMS_INDICES} gain_pref:isElement table_pref:#${ATOM_TYPES}',
         ]
     - # Atoms XYZ info
@@ -110,14 +111,14 @@ abox_schema:
     - # Total Charge Info
         [
             '<INS> Charge_${ENTRY_ID} rdf:type onto_spec:#Charge',
-            '<OBJ> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasCharge Charge_${ENTRY_ID}',
+            '<OBJ> ${ENTRY_IRI} onto_spec:#hasCharge Charge_${ENTRY_ID}',
             '<DAT> Charge_${ENTRY_ID} onto_spec:#value ${FORM_CHARGE}',
             '<DAT> Charge_${ENTRY_ID} onto_spec:#units e',
         ]
     - # Mol Formula
         [
             '<INS> MolecularFormula_${ENTRY_ID} rdf:type onto_spec:#MolecularFormula',
-            '<OBJ> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasMolecularFormula MolecularFormula_${ENTRY_ID}',
+            '<OBJ> ${ENTRY_IRI} onto_spec:#hasMolecularFormula MolecularFormula_${ENTRY_ID}',
 
         ]
     - # Mol Formula per atoms
@@ -132,14 +133,14 @@ abox_schema:
     - # Mol Weights
         [
             '<INS> MolecularWeight_${ENTRY_ID} rdf:type onto_spec:#MolecularWeight',
-            '<OBJ> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasMolecularWeight MolecularWeight_${ENTRY_ID}',
+            '<OBJ> ${ENTRY_IRI} onto_spec:#hasMolecularWeight MolecularWeight_${ENTRY_ID}',
             '<DAT> MolecularWeight_${ENTRY_ID} onto_spec:#value ${MOL_WEIGHT}',
             '<DAT> MolecularWeight_${ENTRY_ID} onto_spec:#units g/mol',
         ]
     - # Enthalpy data
         [
             '<INS> StandardEnthalpyOfFormation_${ENTRY_ID} rdf:type onto_spec:#StandardEnthalpyOfFormation',
-            '<OBJ> spec_pref:Species_${ENTRY_IRI} onto_spec:#hasStandardEnthalpyOfFormation StandardEnthalpyOfFormation_${ENTRY_ID}',
+            '<OBJ> ${ENTRY_IRI} onto_spec:#hasStandardEnthalpyOfFormation StandardEnthalpyOfFormation_${ENTRY_ID}',
             '<DAT> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#value ${ENTH_FORM}',
             '<DAT> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#units ${ENTH_FORM_UNIT}',
 

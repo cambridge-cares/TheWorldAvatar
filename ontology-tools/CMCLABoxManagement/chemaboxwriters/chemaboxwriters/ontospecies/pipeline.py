@@ -2,13 +2,12 @@ from chemaboxwriters.common.pipeline import get_pipeline, Pipeline
 import chemaboxwriters.common.handlers as hnds
 from chemaboxwriters.ontospecies.abox_stages import OS_ABOX_STAGES
 from chemaboxwriters.ontospecies.handlers import QC_JSON_TO_OS_JSON_Handler
-import pkg_resources
+from chemaboxwriters.ontospecies import OS_SCHEMA
 import logging
 
 logger = logging.getLogger(__name__)
 
 OS_PIPELINE = "ospecies"
-OS_SCHEMA = pkg_resources.resource_filename(__name__, "os_schema.yml")
 
 
 def assemble_os_pipeline() -> Pipeline:
