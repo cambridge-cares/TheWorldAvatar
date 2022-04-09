@@ -106,15 +106,21 @@ def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
     return triples
 
 
-def all_instantiated_observations():
-    # Returns query to retrieve all instantiated observation types per station
+def instantiated_observations(station_iris: list = None):
+    # Returns query to retrieve (all) instantiated observation types per station
+    if station_iris:
+        iris = ', '.join(['<'+iri+'>' for iri in station_iris])
+        substring = f"""FILTER (?station IN ({iris}) ) """
+    else:
+        substring = f"""
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
     query = f"""
         SELECT ?station ?stationID ?quantityType
         WHERE {{
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-                     <{EMS_HAS_IDENTIFIER}> ?stationID ;
+            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
                      <{EMS_REPORTS}> ?quantity .
+            {substring}                     
             ?quantity <{OM_HAS_VALUE}> ?measure ;
                       <{RDF_TYPE}> ?quantityType .
         }}
@@ -123,15 +129,21 @@ def all_instantiated_observations():
     return query
 
 
-def all_instantiated_forecasts():
-    # Returns query to retrieve all instantiated forecast types per station
+def instantiated_forecasts(station_iris: list = None):
+    # Returns query to retrieve (all) instantiated forecast types per station
+    if station_iris:
+        iris = ', '.join(['<'+iri+'>' for iri in station_iris])
+        substring = f"""FILTER (?station IN ({iris}) ) """
+    else:
+        substring = f"""
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
     query = f"""
         SELECT ?station ?stationID ?quantityType
         WHERE {{
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-                     <{EMS_HAS_IDENTIFIER}> ?stationID ;
+            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
                      <{EMS_REPORTS}> ?quantity .
+            {substring} 
             ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?forecast ;
                       <{RDF_TYPE}> ?quantityType .
         }}
@@ -140,18 +152,25 @@ def all_instantiated_forecasts():
     return query
 
 
-def all_instantiated_observation_timeseries():
-    # Returns query to retrieve all instantiated observation time series per station
-    query = f"""
-        SELECT ?station ?stationID ?quantityType ?dataIRI ?tsIRI
-        WHERE {{
+def instantiated_observation_timeseries(station_iris: list = None):
+    # Returns query to retrieve (all) instantiated observation time series per station
+    if station_iris:
+        iris = ', '.join(['<'+iri+'>' for iri in station_iris])
+        substring = f"""FILTER (?station IN ({iris}) ) """
+    else:
+        substring = f"""
             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-                     <{EMS_HAS_IDENTIFIER}> ?stationID ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
+    query = f"""
+        SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI 
+        WHERE {{
+            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
                      <{EMS_REPORTS}> ?quantity .
+            {substring} 
             ?quantity <{OM_HAS_VALUE}> ?dataIRI ;
                       <{RDF_TYPE}> ?quantityType .
-            ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI .   
+            ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI ;   
+                     <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit .
             ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
         }}
         ORDER BY ?tsIRI
@@ -159,18 +178,25 @@ def all_instantiated_observation_timeseries():
     return query
 
 
-def all_instantiated_forecast_timeseries():
-    # Returns query to retrieve all instantiated forecast time series per station
-    query = f"""
-        SELECT ?station ?stationID ?quantityType ?dataIRI ?tsIRI
-        WHERE {{
+def instantiated_forecast_timeseries(station_iris: list = None):
+    # Returns query to retrieve (all) instantiated forecast time series per station
+    if station_iris:
+        iris = ', '.join(['<'+iri+'>' for iri in station_iris])
+        substring = f"""FILTER (?station IN ({iris}) ) """
+    else:
+        substring = f"""
             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-                     <{EMS_HAS_IDENTIFIER}> ?stationID ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
+    query = f"""
+        SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI
+        WHERE {{
+            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
                      <{EMS_REPORTS}> ?quantity .
+            {substring} 
             ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?dataIRI ;
                       <{RDF_TYPE}> ?quantityType .
-            ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI .   
+            ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI ;
+                     <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit .
             ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
         }}
         ORDER BY ?tsIRI

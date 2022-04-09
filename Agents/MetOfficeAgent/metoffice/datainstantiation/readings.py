@@ -73,8 +73,10 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     
     # Retrieve information about instantiated time series from KG
     #logger.info('Retrieving time series triples from KG ...')
-    instantiated_obs = get_all_instantiated_observation_timeseries()
-    instantiated_fcs = get_all_instantiated_forecast_timeseries()
+    instantiated_obs = get_instantiated_observation_timeseries(query_endpoint=query_endpoint,
+                                                               update_endpoint=update_endpoint)
+    instantiated_fcs = get_instantiated_forecast_timeseries(query_endpoint=query_endpoint,
+                                                            update_endpoint=update_endpoint)
 
     # Keep only the relevant subset for instantiated_ts_iris
     if instantiated_ts_iris:
@@ -207,10 +209,10 @@ def instantiate_station_readings(instantiated_sites_list: list,
     timeUnit = []
 
     # Get already instantiated observations and forecasts (across all stations)
-    instantiated_obs = get_all_instantiated_observations(query_endpoint, 
-                                                         update_endpoint)
-    instantiated_fcs = get_all_instantiated_forecasts(query_endpoint, 
-                                                      update_endpoint)
+    instantiated_obs = get_instantiated_observations(query_endpoint=query_endpoint, 
+                                                     update_endpoint=update_endpoint)
+    instantiated_fcs = get_instantiated_forecasts(query_endpoint=query_endpoint, 
+                                                  update_endpoint=update_endpoint)
     # Get short version of variable type from full quantity type
     instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
     instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])                                                        

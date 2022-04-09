@@ -8,6 +8,7 @@ import pytest
 from testcontainers.core.container import DockerContainer
 
 from metoffice.datainstantiation.stations import *
+from metoffice.dataretrieval.readings import *
 from metoffice.errorhandling.exceptions import InvalidInput
 from tests.utils import *
 
@@ -71,3 +72,30 @@ def test_get_all_metoffice_stations(initialise_triple_store):
                                           circle_radius='100')
         assert len(res) == 1
         assert list(res.keys())[0] == station_data['station1']['id']
+
+
+@pytest.mark.parametrize("station_iris, expected_query", \
+[
+(None, '\n        SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI \n        WHERE {\n            ?station <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasIdentifier> ?stationID ;\n                     <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#reports> ?quantity .\n            \n            ?station <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation> ;\n                     <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#dataSource> "Met Office DataPoint" .  \n            ?quantity <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> ?dataIRI ;\n                      <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?quantityType .\n            ?dataIRI <https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries> ?tsIRI ;   \n                     <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit>/<http://www.ontology-of-units-of-measure.org/resource/om-2/symbol> ?unit .\n            ?tsIRI <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries> .\n        }\n        ORDER BY ?tsIRI\n    '),
+(['Station_IRI1', 'Station_IRI2'], '\n        SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI \n        WHERE {\n            ?station <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasIdentifier> ?stationID ;\n                     <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#reports> ?quantity .\n            FILTER (?station IN (<Station_IRI1>, <Station_IRI2>) )  \n            ?quantity <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> ?dataIRI ;\n                      <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?quantityType .\n            ?dataIRI <https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries> ?tsIRI ;   \n                     <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit>/<http://www.ontology-of-units-of-measure.org/resource/om-2/symbol> ?unit .\n            ?tsIRI <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries> .\n        }\n        ORDER BY ?tsIRI\n    ')
+]
+)
+def test_instantiated_observation_timeseries(station_iris, expected_query):
+
+    # Create query
+    query = instantiated_observation_timeseries(station_iris)
+    assert query == expected_query
+
+
+@pytest.mark.parametrize("t1, t2, expectedMsg", \
+[
+('2022-03', None, f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}'),
+(None, 'test', f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}'),
+]
+)
+def test_get_time_series_data_exceptions(t1, t2, expectedMsg):
+    with pytest.raises(InvalidInput) as excinfo:
+    # Check correct exception type
+        get_time_series_data(tmin=t1, tmax=t2)
+    # Check correct exception message
+    assert expectedMsg in str(excinfo.value)
