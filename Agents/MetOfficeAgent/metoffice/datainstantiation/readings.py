@@ -19,8 +19,6 @@ from metoffice.kgutils.querytemplates import *
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.timeseries import TSClient
 from metoffice.errorhandling.exceptions import APIException
-from metoffice.datamodel.utils import create_sparql_prefix
-from metoffice.datamodel.utils import PREFIXES
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
 from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, \
                                              TIME_FORMAT, DATACLASS, VISIBILITY
@@ -65,17 +63,16 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     # Create MetOffice client to retrieve readings via API
     try:
         metclient = metoffer.MetOffer(api_key)
-    except Exception as ex:
-        #logger.error("MetOffer client could not be created to retrieve station readings. " + ex)
+    except:
+        #logger.error("MetOffer client could not be created to retrieve station readings.")
         raise APIException("MetOffer client could not be created to retrieve station readings.")        
     
     # Load available observations and forecasts from API
     #logger.info('Retrieving time series data from API ...')
     available_obs, available_fcs, issue_time = retrieve_readings_concepts_per_station(metclient, only_keys=False)
-
     
-    #logger.info('Retrieving time series triples from KG ...')
     # Retrieve information about instantiated time series from KG
+    #logger.info('Retrieving time series triples from KG ...')
     instantiated_obs = get_all_instantiated_observation_timeseries()
     instantiated_fcs = get_all_instantiated_forecast_timeseries()
 
@@ -86,7 +83,6 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     # Get short version of variable type from full quantity type
     instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
     instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])   
-
 
     # Initialise update query for creation time
     query_string = f"""
@@ -99,15 +95,14 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
             FILTER ( ?forecast IN (
     """
 
-
     # Initialise TimeSeriesClient
     ts_client = TSClient.tsclient_with_default_settings()
 
     added_obs = 0
     added_fcs = 0
     
-    #logger.info('Adding observation time series data to bulkadd list ...')
     # Loop through all observation timeseries
+    #logger.info('Adding observation time series data to bulkadd list ...')
     ts_list = []
     for tsiri in list(instantiated_obs['tsIRI'].unique()): 
         # Extract relevant data      
@@ -131,8 +126,8 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     ts_client.bulkaddTimeSeriesData(ts_list)
     #logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
     
-    #logger.info('Adding forecast time series data to bulkadd list ...')
     # Loop through all forecast timeseries
+    #logger.info('Adding forecast time series data to bulkadd list ...')
     ts_list = []
     for tsiri in list(instantiated_fcs['tsIRI'].unique()):  
         # Extract relevant data      
@@ -191,7 +186,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
         
         Arguments:
             instantiated_sites_list - list of dictionaries with instantiated
-                                        stations/sites in the form [{id : iri},]
+                                      stations/sites in the form [{id : iri},]
     """
 
     # Create MetOffice client to retrieve readings via API
@@ -213,9 +208,9 @@ def instantiate_station_readings(instantiated_sites_list: list,
 
     # Get already instantiated observations and forecasts (across all stations)
     instantiated_obs = get_all_instantiated_observations(query_endpoint, 
-                                                            update_endpoint)
+                                                         update_endpoint)
     instantiated_fcs = get_all_instantiated_forecasts(query_endpoint, 
-                                                        update_endpoint)
+                                                      update_endpoint)
     # Get short version of variable type from full quantity type
     instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
     instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])                                                        
@@ -410,9 +405,9 @@ def add_readings_for_station(station_iri: str,
         # Add triples to instantiate
         comment = quantity_comments[i] if quantity_comments else None
         triples += add_om_quantity(station_iri, quantity_iri, quantity_type,
-                                  data_iri, data_iri_type, unit, symbol,
-                                  is_observation, creation_time=creation_time, 
-                                  comment=comment)
+                                   data_iri, data_iri_type, unit, symbol,
+                                   is_observation, creation_time=creation_time, 
+                                   comment=comment)
 
         # Get data to bulkInit time series
         dataIRIs.append(data_iri)

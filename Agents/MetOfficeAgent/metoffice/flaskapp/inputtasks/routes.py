@@ -1,4 +1,9 @@
-from flask import Blueprint, request, jsonify, make_response
+###############################################
+# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
+# Date: 08 Apr 2022                           #
+###############################################
+
+from flask import Blueprint, request, jsonify
 
 #import agentlogging
 from metoffice.datainstantiation.stations import instantiate_all_stations

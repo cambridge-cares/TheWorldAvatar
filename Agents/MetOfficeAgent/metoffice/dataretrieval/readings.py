@@ -21,6 +21,13 @@ def get_all_instantiated_observations(query_endpoint: str = QUERY_ENDPOINT,
                                       update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of all instantiated observations in KG
+        
+        Columns: ['station', 'stationID', 'quantityType', 'dataIRI', 'reading']
+            station: station IRI
+            stationID: unique Met Office ID for that station
+            quantityType: IRI of OntoEMS quantity, e.g. http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature
+            dataIRI: IRI of quantity instance to which time series is attached
+            reading: shorthand of OntoEMS quantity, e.g. AirTemperature
     """
 
     # Construct KG client and execute query
@@ -28,7 +35,7 @@ def get_all_instantiated_observations(query_endpoint: str = QUERY_ENDPOINT,
     kg_client = KGClient(query_endpoint, update_endpoint)
     results = kg_client.performQuery(query=query_string)
     # Parse results into DataFrame
-    df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
+    df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI'])
     df = df.append(results)
     # Add column with shorthand of quantity type
     df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
@@ -40,6 +47,13 @@ def get_all_instantiated_forecasts(query_endpoint: str = QUERY_ENDPOINT,
                                    update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of all instantiated forecasts in KG
+
+        Columns: ['station', 'stationID', 'quantityType', 'dataIRI', 'reading']
+            station: station IRI
+            stationID: unique Met Office ID for that station
+            quantityType: IRI of OntoEMS quantity, e.g. http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature
+            dataIRI: IRI of quantity instance to which time series is attached
+            reading: shorthand of OntoEMS quantity, e.g. AirTemperature
     """
 
     # Construct KG client and execute query
@@ -47,7 +61,7 @@ def get_all_instantiated_forecasts(query_endpoint: str = QUERY_ENDPOINT,
     kg_client = KGClient(query_endpoint, update_endpoint)
     results = kg_client.performQuery(query=query_string)
     # Parse results into DataFrame
-    df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
+    df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI'])
     df = df.append(results)
     # Add column with shorthand of quantity type
     df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
@@ -59,6 +73,14 @@ def get_all_instantiated_observation_timeseries(query_endpoint: str = QUERY_ENDP
                                                 update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of all instantiated observation timeseries in KG
+
+        Columns: ['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI', 'reading']
+            station: station IRI
+            stationID: unique Met Office ID for that station
+            quantityType: IRI of OntoEMS quantity, e.g. http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature
+            dataIRI: IRI of quantity instance to which time series is attached
+            tsIRI: IRI of time series instance
+            reading: shorthand of OntoEMS quantity, e.g. AirTemperature
     """
 
     # Construct KG client and execute query
@@ -78,6 +100,14 @@ def get_all_instantiated_forecast_timeseries(query_endpoint: str = QUERY_ENDPOIN
                                              update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of all instantiated observation timeseries in KG
+
+        Columns: ['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI', 'reading']
+            station: station IRI
+            stationID: unique Met Office ID for that station
+            quantityType: IRI of OntoEMS quantity, e.g. http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature
+            dataIRI: IRI of quantity instance to which time series is attached
+            tsIRI: IRI of time series instance
+            reading: shorthand of OntoEMS quantity, e.g. AirTemperature
     """
 
     # Construct KG client and execute query
@@ -92,5 +122,6 @@ def get_all_instantiated_forecast_timeseries(query_endpoint: str = QUERY_ENDPOIN
     
     return df
 
+if __name__ == '__main__':
 
-#def get_timeseries
+    observation = get_all_instantiated_observations()
