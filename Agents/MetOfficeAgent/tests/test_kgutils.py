@@ -43,16 +43,16 @@ def test_add_station_data():
 	}
     # Define expected results
     result1 = None
-    result2 = "<test_iri> rdf:type ems:ReportingStation . " \
-                + "<test_iri> ems:dataSource \"test_source\"^^xsd:string . " \
-                + "<test_iri> rdfs:comment \"test_comment\"^^xsd:string . " \
-                + "<test_iri> ems:hasIdentifier \"test_id\"^^xsd:string . " \
-                + "<test_iri> ems:hasObservationLocation \"test_location\"^^geolit:lat-lon . " \
-                + "<test_iri> ems:hasObservationElevation \"1.23\"^^xsd:float . "
-    result3 = "<test_iri> rdf:type ems:ReportingStation . " \
-                + "<test_iri> ems:dataSource \"test_source\"^^xsd:string . " \
-                + "<test_iri> rdfs:comment \"test_comment\"^^xsd:string . " \
-                + "<test_iri> ems:hasIdentifier \"test_id\"^^xsd:string . "   
+    result2 = "<test_iri> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation> . " \
+            + "<test_iri> <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#dataSource> \"test_source\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
+            + "<test_iri> <http://www.w3.org/2000/01/rdf-schema#comment> \"test_comment\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
+            + "<test_iri> <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasIdentifier> \"test_id\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
+            + "<test_iri> <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasObservationLocation> \"test_location\"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon> . " \
+            + "<test_iri> <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasObservationElevation> \"1.23\"^^<http://www.w3.org/2001/XMLSchema#float> . "
+    result3 = "<test_iri> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation> . " \
+            + "<test_iri> <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#dataSource> \"test_source\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
+            + "<test_iri> <http://www.w3.org/2000/01/rdf-schema#comment> \"test_comment\"^^<http://www.w3.org/2001/XMLSchema#string> . " \
+            + "<test_iri> <http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasIdentifier> \"test_id\"^^<http://www.w3.org/2001/XMLSchema#string> . " 
     # Tests
     test1 = templates.add_station_data(**data1)
     assert test1 == result1
