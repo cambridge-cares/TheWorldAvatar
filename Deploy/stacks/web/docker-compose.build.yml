@@ -100,3 +100,17 @@ services:
         description: "Server to display geospatial data for the CReDo visualisation."
         hash: "${HASH}"
       target: ${MODE}
+      
+  # Public FTP Server
+  public-ftp:
+    image: docker.cmclinnovations.com/public-ftp:1.0.0
+    build:
+      context: "./public-ftp"
+      dockerfile: "./Dockerfile"
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "FTP server to host public JavaScript libraries and associated resources."
+        hash: "${HASH}"
+   
+  

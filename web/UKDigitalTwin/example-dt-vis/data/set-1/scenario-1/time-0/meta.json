@@ -1,0 +1,45 @@
+{
+    "dataSets": [
+        {
+            "name": "assets-1",
+            "dataType": "geojson",
+            "dataLocation": "assets-1.geojson",
+            "locationType": "point",
+            "metaFiles": ["assets-1-meta.json"],
+            "timeseriesFiles": ["assets-1-timeseries.json"]
+        },
+        {
+            "name": "assets-2",
+            "dataType": "geojson",
+            "dataLocation": "assets-2.geojson",
+            "locationType": "point",
+            "metaFiles": ["assets-2-meta.json"],
+            "timeseriesFiles": ["assets-2-timeseries.json"]
+        },
+        {
+            "name": "assets-3",
+            "dataType": "geojson",
+            "dataLocation": "assets-3.geojson",
+            "locationType": "symbol"
+        },
+        {
+            "name": "assets-1-connections",
+            "dataType": "geojson",
+            "dataLocation": "lines-1.geojson",
+            "metaFiles": ["lines-1-meta.json"],
+            "locationType": "line"
+        },
+        {
+            "name": "assets-2-connections",
+            "dataType": "geojson",
+            "dataLocation": "lines-2.geojson",
+            "locationType": "line"
+        },
+        {
+            "name": "inter-asset-connections",
+            "dataType": "geojson",
+            "dataLocation": "lines-3.geojson",
+            "locationType": "line"
+        }
+    ]
+}
