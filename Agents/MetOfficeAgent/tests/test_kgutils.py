@@ -6,7 +6,7 @@
 import pytest
 
 # Import module(s) under test from metoffice
-import metoffice.kgutils.prefixes as prefix
+import metoffice.datamodel.utils as prefix
 import metoffice.kgutils.querytemplates as templates
 
 

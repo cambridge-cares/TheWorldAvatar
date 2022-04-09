@@ -158,8 +158,8 @@ def test_instantiate_all_stations_webapp(client, mocker):
     assert new_stations == 0
 
 
-@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
-                          as well as blank RDB as defined in properties file")
+#@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
+#                          as well as blank RDB as defined in properties file")
 def test_update_all_stations_webapp(client, mocker):
     # Integration test for expected behavior of updating all stations and readings
     # via webapp (requires (local) blazegraph running at endpoints specified
@@ -191,7 +191,7 @@ def test_update_all_stations_webapp(client, mocker):
 
     # Verify that knowledge base is empty
     res = get_all_metoffice_station_ids(query_endpoint=QUERY_ENDPOINT)
-    assert len(res) == 0
+    #assert len(res) == 0
    
     # Update all stations and readings
     route = '/api/metofficeagent/update/all'

@@ -19,8 +19,8 @@ from metoffice.kgutils.querytemplates import *
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.timeseries import TSClient
 from metoffice.errorhandling.exceptions import APIException
-from metoffice.kgutils.prefixes import create_sparql_prefix
-from metoffice.kgutils.prefixes import PREFIXES
+from metoffice.datamodel.utils import create_sparql_prefix
+from metoffice.datamodel.utils import PREFIXES
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
 from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, \
                                              TIME_FORMAT, DATACLASS, VISIBILITY
@@ -90,14 +90,12 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
 
     # Initialise update query for creation time
     query_string = f"""
-        {create_sparql_prefix('xsd')}
-        {create_sparql_prefix('ems')}
         DELETE {{
-	        ?forecast ems:createdOn ?old }}
+	        ?forecast <{EMS_CREATED_ON}> ?old }}
         INSERT {{
-	        ?forecast ems:createdOn \"{issue_time}\"^^xsd:dateTime }}
+	        ?forecast <{EMS_CREATED_ON}> \"{issue_time}\"^^<{XSD_DATETIME}> }}
         WHERE {{
-	        ?forecast ems:createdOn ?old .
+	        ?forecast <{EMS_CREATED_ON}> ?old .
             FILTER ( ?forecast IN (
     """
 
@@ -205,13 +203,6 @@ def instantiate_station_readings(instantiated_sites_list: list,
     
     # Initialise update query
     query_string = f"""
-        {create_sparql_prefix('rdf')}
-        {create_sparql_prefix('rdfs')}
-        {create_sparql_prefix('xsd')}
-        {create_sparql_prefix('ems')}
-        {create_sparql_prefix('kb')}
-        {create_sparql_prefix('om')}
-        {create_sparql_prefix('ts')}
         INSERT DATA {{
     """
 
@@ -397,20 +388,20 @@ def add_readings_for_station(station_iri: str,
     for i in range(len(readings)):
         r = readings[i]
         # Create IRI for reported quantity
-        quantity_type = PREFIXES['ems'] + r
+        quantity_type = EMS + r
         if not readings_iris:
-            quantity_iri = PREFIXES['kb'] + r + '_' + str(uuid.uuid4())
+            quantity_iri = KB + r + '_' + str(uuid.uuid4())
             created_reading_iris.append(quantity_iri)
         else:
             quantity_iri = readings_iris[i]
         # Create Measure / Forecast IRI
         if is_observation:
-            data_iri = PREFIXES['kb'] + 'Measure_' + str(uuid.uuid4())
-            data_iri_type = PREFIXES['om'] + 'Measure'
+            data_iri = KB + 'Measure_' + str(uuid.uuid4())
+            data_iri_type = OM_MEASURE
             creation_time = None
         else:
-            data_iri = PREFIXES['kb'] + 'Forecast_' + str(uuid.uuid4())
-            data_iri_type = PREFIXES['ems'] + 'Forecast'
+            data_iri = KB + 'Forecast_' + str(uuid.uuid4())
+            data_iri_type = EMS_FORECAST
             creation_time = t
 
         unit = UNITS_MAPPING[r][0]
@@ -446,9 +437,9 @@ def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
         # Load OBSERVATIONS data
         try:
             obs = metclient.loc_observations(station_id)
-        except Exception as ex:
-            #logger.error('Error while retrieving observation data from DataPoint API: ' + ex.msg)
-            raise APIException('Error while retrieving observation data from DataPoint API: ' + ex.msg)
+        except:
+            #logger.error('Error while retrieving observation data from DataPoint API')
+            raise APIException('Error while retrieving observation data from DataPoint API')
         observations = readings_dict_gen(obs)
         available_obs = {key: condition_readings_data(observations[key], only_keys) for key in observations}
         if only_keys:
@@ -461,9 +452,9 @@ def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
         try:
             fc = metclient.loc_forecast(station_id, metoffer.THREE_HOURLY)
             creation_time = fc['SiteRep']['DV']['dataDate']
-        except Exception as ex:
-            #logger.error('Error while retrieving observation data from DataPoint API: ' + ex.msg)
-            raise APIException('Error while retrieving observation data from DataPoint API: ' + ex.msg)
+        except:
+            #logger.error('Error while retrieving observation data from DataPoint API')
+            raise APIException('Error while retrieving observation data from DataPoint API')
         forecasts = readings_dict_gen(fc)
         available_fcs = {key: condition_readings_data(forecasts[key], only_keys) for key in forecasts}
         if only_keys:

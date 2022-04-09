@@ -3,34 +3,32 @@
 # Date: 31 Mar 2022                           #
 ###############################################
 
-# The purpose of this module is to provide a function which eases
-# the inclusion of prefixes into SPARQL queries
+# The purpose of this module is to provide functionality which eases handling
+# of IRIs and PREFIXES while creating SPARQL queries
 
 #import agentlogging
+from metoffice.datamodel.iris import *
 
 # Initialise logger
 #logger = agentlogging.get_logger("dev")
 
 
-# Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
+# Define PREFIXES for SPARQL queries
 PREFIXES = {
-    # External ontologies
-    'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
-    'xsd': 'http://www.w3.org/2001/XMLSchema#',
-    'geo': 'http://www.bigdata.com/rdf/geospatial#',
-    'geolit': 'http://www.bigdata.com/rdf/geospatial/literals/v1#',
-    'om' : 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
-    'owl': 'http://www.w3.org/2002/07/owl#',
-    'm3l': 'http://purl.org/iot/vocab/m3-lite#',
-    'weather': 'https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#',
-    'sio': 'http://semanticscience.org/resource/',
-    # CoMo / CARES ontologies
-    'ems': 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#',
-    'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
-    # Knowledge base
-    'kb': 'http://www.theworldavatar.com/kb/ontoems/',
-    'tsa': 'http://www.theworldavatar.com/kb/ontotimeseries/',
+    'rdf':  RDF,
+    'rdfs': RDFS,
+    'xsd':  XSD,
+    'geo':  GEO,
+    'geolit': GEOLIT,
+    'om' :  OM,
+    'owl':  OWL,
+    'm3l':  M3L,
+    'weather': WEATHER,
+    'sio':  SIO,
+    'ems':  EMS,
+    'ts':   TS,
+    'kb':   KB,
+    'tsa':  TSA,
 }
 
 

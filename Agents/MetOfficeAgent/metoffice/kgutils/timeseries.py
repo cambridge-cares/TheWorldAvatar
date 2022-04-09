@@ -3,7 +3,6 @@
 
 import os
 from pathlib import Path
-from tkinter import EXCEPTION
 
 #import agentlogging
 from metoffice.errorhandling.exceptions import TSException

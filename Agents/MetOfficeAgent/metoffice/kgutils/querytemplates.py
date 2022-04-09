@@ -6,19 +6,17 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
-from metoffice.kgutils.prefixes import create_sparql_prefix
+from metoffice.datamodel import *
 
 
 def all_metoffice_station_ids() -> str:
     # Returns query to retrieve all identifiers of instantiated stations
     query = f"""
-        {create_sparql_prefix('rdf')}
-        {create_sparql_prefix('ems')}
         SELECT ?id
         WHERE {{
-            ?station rdf:type ems:ReportingStation ;
-                     ems:dataSource "Met Office DataPoint" ;
-                     ems:hasIdentifier ?id 
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                     <{EMS_HAS_IDENTIFIER}> ?id 
               }}
     """
     return query
@@ -30,34 +28,29 @@ def all_metoffice_stations(circle_center: str = None,
     if not circle_center and not circle_radius:
         # Retrieve all stations
         query = f"""
-            {create_sparql_prefix('rdf')}
-            {create_sparql_prefix('ems')}
             SELECT ?id ?station
             WHERE {{
-                ?station rdf:type ems:ReportingStation ;
-                        ems:dataSource "Met Office DataPoint" ;
-                        ems:hasIdentifier ?id 
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                     <{EMS_HAS_IDENTIFIER}> ?id 
                 }}
         """
     else:
         # Retrieve only stations in provided circle (radius in km)
         query = f"""
-            {create_sparql_prefix('rdf')}
-            {create_sparql_prefix('ems')}
             {create_sparql_prefix('geo')}
-            {create_sparql_prefix('geolit')}
             SELECT ?id ?station
             WHERE {{
                   SERVICE geo:search {{
                     ?station geo:search "inCircle" .
-                    ?station geo:predicate ems:hasObservationLocation .
-                    ?station geo:searchDatatype geolit:lat-lon .
+                    ?station geo:predicate <{EMS_HAS_OBSERVATION_LOCATION}> .
+                    ?station geo:searchDatatype <{GEOLIT_LAT_LON}> .
                     ?station geo:spatialCircleCenter "{circle_center}" .
                     ?station geo:spatialCircleRadius "{circle_radius}" . 
                 }}
-                ?station rdf:type ems:ReportingStation ;
-                         ems:dataSource "Met Office DataPoint" ;
-                         ems:hasIdentifier ?id 
+                ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                        <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                        <{EMS_HAS_IDENTIFIER}> ?id 
                 }}
         """
     
@@ -69,12 +62,12 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
                      elevation: float = None) -> str:
     if station_iri:
         # Returns triples to instantiate a measurement station according to OntoEMS
-        triples = f"<{station_iri}> rdf:type ems:ReportingStation . "
-        if dataSource: triples += f"<{station_iri}> ems:dataSource \"{dataSource}\"^^xsd:string . "
-        if comment: triples += f"<{station_iri}> rdfs:comment \"{comment}\"^^xsd:string . "
-        if id: triples += f"<{station_iri}> ems:hasIdentifier \"{id}\"^^xsd:string . "
-        if location: triples += f"<{station_iri}> ems:hasObservationLocation \"{location}\"^^geolit:lat-lon . "
-        if elevation: triples += f"<{station_iri}> ems:hasObservationElevation \"{elevation}\"^^xsd:float . "
+        triples = f"<{station_iri}> <{RDF_TYPE}> <{EMS_REPORTING_STATION}> . "
+        if dataSource: triples += f"<{station_iri}> <{EMS_DATA_SOURCE}> \"{dataSource}\"^^<{XSD_STRING}> . "
+        if comment: triples += f"<{station_iri}> <{RDFS_COMMENT}> \"{comment}\"^^<{XSD_STRING}> . "
+        if id: triples += f"<{station_iri}> <{EMS_HAS_IDENTIFIER}> \"{id}\"^^<{XSD_STRING}> . "
+        if location: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_LOCATION}> \"{location}\"^^<{GEOLIT_LAT_LON}> . "
+        if elevation: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_ELEVATION}> \"{elevation}\"^^<{XSD_FLOAT}> . "
     else:
         triples = None
     
@@ -89,25 +82,26 @@ def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
     """
     # Create triple for measure vs. forecast
     if is_observation:
-        triple = f"""<{quantity_iri}> om:hasValue <{data_iri}> . """
+        triple = f"""<{quantity_iri}> <{OM_HAS_VALUE}> <{data_iri}> . """
         
     else:
-        triple = f"<{quantity_iri}> ems:hasForecastedValue <{data_iri}> . "
-        if creation_time: triple += f"<{data_iri}> ems:createdOn \"{creation_time}\"^^xsd:dateTime . "
+        triple = f"<{quantity_iri}> <{EMS_HAS_FORECASTED_VALUE}> <{data_iri}> . "
+        if creation_time: triple += f"<{data_iri}> <{EMS_CREATED_ON}> \"{creation_time}\"^^<{XSD_DATETIME}> . "
 
     # Create triples to instantiate station measurement according to OntoEMS
     triples = f"""
-        <{station_iri}> ems:reports <{quantity_iri}> . 
-        <{quantity_iri}> rdf:type <{quantity_type}> .
-        <{data_iri}> rdf:type <{data_iri_type}> .
-        <{data_iri}> om:hasUnit {unit} .
-        {unit} om:symbol "{symbol}"^^xsd:string .
+        <{station_iri}> <{EMS_REPORTS}> <{quantity_iri}> . 
+        <{quantity_iri}> <{RDF_TYPE}> <{quantity_type}> . 
+        <{data_iri}> <{RDF_TYPE}> <{data_iri_type}> . 
+        <{data_iri}> <{OM_HAS_UNIT}> <{unit}> . 
+        <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . 
+        <{unit}> <{OM_SYMBOL}> "{symbol}"^^<{XSD_STRING}> . 
     """
     triples += triple
 
     # Create optional comment to quantity
     if comment:
-        triples += f"""<{quantity_iri}> rdfs:comment "{comment}"^^xsd:string . """
+        triples += f"""<{quantity_iri}> <{RDFS_COMMENT}> "{comment}"^^<{XSD_STRING}> . """
 
     return triples
 
@@ -115,17 +109,14 @@ def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
 def all_instantiated_observations():
     # Returns query to retrieve all instantiated observation types per station
     query = f"""
-        {create_sparql_prefix('rdf')}
-        {create_sparql_prefix('om')}
-        {create_sparql_prefix('ems')}
         SELECT ?station ?stationID ?quantityType
         WHERE {{
-            ?station rdf:type ems:ReportingStation ;
-                     ems:dataSource "Met Office DataPoint" ;
-                     ems:hasIdentifier ?stationID ;
-                     ems:reports ?quantity .
-            ?quantity om:hasValue ?measure ;
-                      rdf:type ?quantityType .
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                     <{EMS_HAS_IDENTIFIER}> ?stationID ;
+                     <{EMS_REPORTS}> ?quantity .
+            ?quantity <{OM_HAS_VALUE}> ?measure ;
+                      <{RDF_TYPE}> ?quantityType .
         }}
         ORDER BY ?station
     """
@@ -135,17 +126,14 @@ def all_instantiated_observations():
 def all_instantiated_forecasts():
     # Returns query to retrieve all instantiated forecast types per station
     query = f"""
-        {create_sparql_prefix('rdf')}
-        {create_sparql_prefix('om')}
-        {create_sparql_prefix('ems')}
         SELECT ?station ?stationID ?quantityType
         WHERE {{
-            ?station rdf:type ems:ReportingStation ;
-                     ems:dataSource "Met Office DataPoint" ;
-                     ems:hasIdentifier ?stationID ;
-                     ems:reports ?quantity .
-            ?quantity ems:hasForecastedValue ?forecast ;
-                      rdf:type ?quantityType .
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                     <{EMS_HAS_IDENTIFIER}> ?stationID ;
+                     <{EMS_REPORTS}> ?quantity .
+            ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?forecast ;
+                      <{RDF_TYPE}> ?quantityType .
         }}
         ORDER BY ?station
     """
@@ -155,19 +143,16 @@ def all_instantiated_forecasts():
 def all_instantiated_observation_timeseries():
     # Returns query to retrieve all instantiated observation time series per station
     query = f"""
-        {create_sparql_prefix('rdf')}
-        {create_sparql_prefix('om')}
-        {create_sparql_prefix('ems')}
-        {create_sparql_prefix('ts')}
         SELECT ?station ?stationID ?quantityType ?dataIRI ?tsIRI
         WHERE {{
-            ?station rdf:type ems:ReportingStation ;
-                     ems:dataSource "Met Office DataPoint" ;
-                     ems:hasIdentifier ?stationID ;
-                     ems:reports ?quantity .
-            ?quantity om:hasValue ?dataIRI ;
-                      rdf:type ?quantityType .
-            ?dataIRI ts:hasTimeSeries ?tsIRI .   
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                     <{EMS_HAS_IDENTIFIER}> ?stationID ;
+                     <{EMS_REPORTS}> ?quantity .
+            ?quantity <{OM_HAS_VALUE}> ?dataIRI ;
+                      <{RDF_TYPE}> ?quantityType .
+            ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI .   
+            ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
         }}
         ORDER BY ?tsIRI
     """
@@ -177,19 +162,16 @@ def all_instantiated_observation_timeseries():
 def all_instantiated_forecast_timeseries():
     # Returns query to retrieve all instantiated forecast time series per station
     query = f"""
-        {create_sparql_prefix('rdf')}
-        {create_sparql_prefix('om')}
-        {create_sparql_prefix('ems')}
-        {create_sparql_prefix('ts')}
         SELECT ?station ?stationID ?quantityType ?dataIRI ?tsIRI
         WHERE {{
-            ?station rdf:type ems:ReportingStation ;
-                     ems:dataSource "Met Office DataPoint" ;
-                     ems:hasIdentifier ?stationID ;
-                     ems:reports ?quantity .
-            ?quantity ems:hasForecastedValue ?dataIRI ;
-                      rdf:type ?quantityType .
-            ?dataIRI ts:hasTimeSeries ?tsIRI .   
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                     <{EMS_HAS_IDENTIFIER}> ?stationID ;
+                     <{EMS_REPORTS}> ?quantity .
+            ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?dataIRI ;
+                      <{RDF_TYPE}> ?quantityType .
+            ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI .   
+            ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
         }}
         ORDER BY ?tsIRI
     """

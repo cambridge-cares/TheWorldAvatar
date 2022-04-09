@@ -11,11 +11,11 @@ import metoffer
 
 #import agentlogging
 from metoffice.kgutils.querytemplates import *
-from metoffice.kgutils.prefixes import create_sparql_prefix
+from metoffice.datamodel.utils import create_sparql_prefix
 from metoffice.dataretrieval.stations import get_all_metoffice_station_ids
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.errorhandling.exceptions import APIException
-from metoffice.kgutils.prefixes import PREFIXES
+from metoffice.datamodel.utils import PREFIXES
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
 
 # Initialise logger
@@ -35,11 +35,6 @@ def instantiate_stations(station_data: list,
     
     # Initialise update query
     query_string = f"""
-        {create_sparql_prefix('geolit')}
-        {create_sparql_prefix('rdf')}
-        {create_sparql_prefix('rdfs')}
-        {create_sparql_prefix('xsd')}
-        {create_sparql_prefix('ems')}
         {create_sparql_prefix('kb')}
         INSERT DATA {{
     """

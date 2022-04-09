@@ -72,3 +72,10 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
     res = dict(res)
     
     return res
+
+
+if __name__ == '__main__':
+
+    #get_all_metoffice_station_ids()
+
+    get_all_metoffice_stations(circle_center='57.5#-3.5', circle_radius='1000')

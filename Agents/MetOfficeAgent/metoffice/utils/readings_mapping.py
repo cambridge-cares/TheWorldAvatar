@@ -9,39 +9,41 @@
 
 from math import nan
 
+from metoffice.datamodel.observation_types import *
+from metoffice.datamodel.iris import *
 from metoffice.kgutils.javagateway import jpsBaseLibGW
 
 
 # Mapping of observation variables to OntoEMS concepts
 READINGS_MAPPING = {
-    'Temperature': 'AirTemperature',
-    'Pressure': 'AtmosphericPressure',
-    'Dew Point': 'DewPoint',
-    'Feels Like Temperature': 'FeelsLikeTemperature',
-    'Precipitation Probability': 'PrecipitationProbability',  
-    'Screen Relative Humidity': 'RelativeHumidity',
-    'Max UV Index':'UVIndex',
-    'Visibility': 'Visibility',
+    'Temperature': AIR_TEMPERATURE,
+    'Pressure': ATMOSPHERIC_PRESSURE,
+    'Dew Point': DEW_POINT,
+    'Feels Like Temperature': FEELS_LIKE_TEMPERATURE,
+    'Precipitation Probability': PRECIPITATION_PROBABILITY,  
+    'Screen Relative Humidity': RELATIVE_HUMIDITY,
+    'Max UV Index': UV_INDEX,
+    'Visibility': VISIBILITY,
     # Wind direction is measured relative to true north (not magnetic north) 
     # and is reported from where the wind is blowing
-    'Wind Direction': 'WindDirection',
-    'Wind Speed': 'WindSpeed',
-    'Wind Gust': 'WindGust'
+    'Wind Direction': WIND_DIRECTION,
+    'Wind Speed': WIND_SPEED,
+    'Wind Gust': WIND_GUST
 }
 
 # Mapping of units to OM units and symbols
 UNITS_MAPPING = {
-    'AirTemperature': ('om:degreeCelsius', '&#x00B0;C'), # °C
-    'FeelsLikeTemperature': ('om:degreeCelsius', '&#x00B0;C'), # °C
-    'DewPoint': ('om:degreeCelsius', '&#x00B0;C'), # °C
-    'AtmosphericPressure': ('om:hectopascal', 'hPa'),
-    'PrecipitationProbability': ('om:percent', '%'),
-    'RelativeHumidity': ('om:percent', '%'),
-    'Visibility': ('om:metre', 'm'),
-    'WindSpeed': ('om:mile-StatutePerHour', 'mi/h'),
-    'WindGust': ('om:mile-StatutePerHour', 'mi/h'),
-    'WindDirection': ('om:degree', '&#x00B0;'),   # °
-    'UVIndex': ('om:one', '1')
+     AIR_TEMPERATURE: (OM_DEGREE_C, '&#x00B0;C'), # °C
+     FEELS_LIKE_TEMPERATURE: (OM_DEGREE_C, '&#x00B0;C'), # °C
+     DEW_POINT: (OM_DEGREE_C, '&#x00B0;C'), # °C
+     ATMOSPHERIC_PRESSURE: (OM_HECTO_PASCAL, 'hPa'),
+     PRECIPITATION_PROBABILITY: (OM_PERCENT, '%'),
+     RELATIVE_HUMIDITY: (OM_PERCENT, '%'),
+     VISIBILITY: (OM_METRE, 'm'),
+     WIND_SPEED: (OM_MPH, 'mi/h'),
+     WIND_GUST: (OM_MPH, 'mi/h'),
+     WIND_DIRECTION: (OM_DEGREE, '&#x00B0;'),   # °
+     UV_INDEX: (OM_UNITLESS, '1')
 }
 
 # Mapping of 16 wind direction readings to angles wrt true north
