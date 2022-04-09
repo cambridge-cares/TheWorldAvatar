@@ -7,6 +7,8 @@
 # observation variables from Met Office (via metoffer) to corresponding
 # concepts and units as defined in OntoEMS
 
+from math import nan
+
 from metoffice.kgutils.javagateway import jpsBaseLibGW
 
 
@@ -64,7 +66,7 @@ COMPASS = {
 
 # Visibility is provided as a mix of values and textual codes
 VISIBILITY = {
-    'UN': None,      # Unknown
+    'UN': nan,       # Unknown
     'VP': 1000.0,    # Very poor - Less than 1 km
     'PO': 4000.0,    # Poor - Between 1-4 km
     'MO': 10000.0,   # Moderate - Between 4-10 km

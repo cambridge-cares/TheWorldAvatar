@@ -9,6 +9,7 @@
 import uuid
 import metoffer
 import datetime as dt
+from math import nan
 
 #import agentlogging
 from metoffice.dataretrieval.readings import *
@@ -70,7 +71,7 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     
     # Load available observations and forecasts from API
     #logger.info('Retrieving time series data from API ...')
-    available_obs, available_fcs, issue_time = retrieve_readings_concepts_per_station(metclient, only_keys=False)    
+    available_obs, available_fcs, issue_time = retrieve_readings_concepts_per_station(metclient, only_keys=False)
 
     
     #logger.info('Retrieving time series triples from KG ...')
@@ -117,7 +118,12 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         # Construct time series object to be added
         times = available_obs[station_id]['times']
         dataIRIs = data['dataIRI'].to_list()
-        values = [available_obs[station_id]['readings'][i] for i in data['reading'].to_list()]
+        # Get instantiated, but potentially missing quantity for reported interval
+        # and fill missing values with nans
+        missing_data = [i for i in data['reading'].to_list() if i not in available_obs[station_id]['readings'].keys()]
+        missing = dict(zip(missing_data, [[nan]*len(times)]*len(missing_data)))
+        readings = {**available_obs[station_id]['readings'], **missing}
+        values = [readings[i] for i in data['reading'].to_list()]
         # Potentially split time series data addition if None/nan exist in some readings
         times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
         for i in range(len(times_list)):
@@ -137,7 +143,12 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         # Construct time series object to be added
         times = available_fcs[station_id]['times']
         dataIRIs = data['dataIRI'].to_list()
-        values = [available_fcs[station_id]['readings'][i] for i in data['reading'].to_list()]
+        # Get instantiated, but potentially missing quantity for reported interval
+        # and fill missing values with nans
+        missing_data = [i for i in data['reading'].to_list() if i not in available_fcs[station_id]['readings'].keys()]
+        missing = dict(zip(missing_data, [[nan]*len(times)]*len(missing_data)))
+        readings = {**available_fcs[station_id]['readings'], **missing}
+        values = [readings[i] for i in data['reading'].to_list()]
         # Potentially split time series data addition if None/nan exist in some readings
         times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
         for i in range(len(times_list)):
@@ -494,7 +505,7 @@ def readings_dict_gen(returned_data):
                     try:
                         # -99 is used by the Met Office as a value where no data is held.
                         weather[data_key[n]['text']] = (
-                        int(rep[n]) if rep[n] != "-99" else None, data_key[n]['units'], n)
+                        int(rep[n]) if rep[n] != "-99" else nan, data_key[n]['units'], n)
                     except(ValueError):
                         try:
                             weather[data_key[n]['text']] = (float(rep[n]), data_key[n]['units'], n)

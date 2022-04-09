@@ -46,6 +46,39 @@ def read_station_data():
     return stations
 
 
+def read_readings_locations():
+    # Files with location data for observations and forecasts
+    fp1 = os.path.join(Path(__file__).parent, "data", "observation_locs.json")
+    fp2 = os.path.join(Path(__file__).parent, "data", "forecast_locs.json")
+    files = [fp1, fp2]
+    data = []
+    for f in files:
+        with open(f, 'r') as file:
+            readings = json.load(file)
+            data.append(readings)
+    return data
+
+
+def read_readings_timeseries():
+    # Files fp1 is as retrieved from DataPoint API
+    fp1 = os.path.join(Path(__file__).parent, "data", "observation_readings.json")
+    # File fp2 is as retrieved from DataPoint; however for station 25
+    # 1) 1 reported quantity has been removed completely for all time steps
+    # 2) 1 reported quantity has been removed except for 1 time step
+    fp2 = os.path.join(Path(__file__).parent, "data", "forecast_readings1.json")
+    # File fp3 is basically a copy of fp2 as initially retrieved
+    # however a few missing data entry (-99) are included for station 25
+    fp3 = os.path.join(Path(__file__).parent, "data", "forecast_readings2.json")
+    files = [fp1, fp2, fp3]
+    data = []
+    for f in files:
+        with open(f, 'r') as file:
+            readings = json.load(file)
+            data.append(readings)
+
+    return data
+
+
 def create_blazegraph_namespace(endpoint):
     """
         Creates new Blazegraph namespace with name as specified in 'endpoint'

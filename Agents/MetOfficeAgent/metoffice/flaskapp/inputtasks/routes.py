@@ -1,14 +1,14 @@
 from flask import Blueprint, request, jsonify, make_response
 
-##import agentlogging
+#import agentlogging
 from metoffice.datainstantiation.stations import instantiate_all_stations
 from metoffice.datainstantiation.readings import instantiate_all_station_readings
 from metoffice.datainstantiation.readings import add_all_readings_timeseries
 from metoffice.datainstantiation.readings import update_all_stations
 
 
-# # Initialise logger
-# #logger = agentlogging.get_logger("dev")
+# Initialise logger
+#logger = agentlogging.get_logger("dev")
 
 inputtasks_bp = Blueprint(
     'inputtasks_bp', __name__

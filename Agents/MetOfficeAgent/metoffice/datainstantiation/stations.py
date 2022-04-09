@@ -83,7 +83,7 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
             sites = metclient.loc_observations(metoffer.SITELIST)
             obs_sites = sites['Locations']['Location']
             # 2) Get all forecasts sites
-            sites = metclient.loc_forecast(metoffer.SITELIST, step=metoffer.THREE_HOURLY)
+            sites = metclient.loc_forecast(metoffer.SITELIST, metoffer.THREE_HOURLY)
             fcs_sites = sites['Locations']['Location']
         except Exception as ex:
             #logger.error("Error while retrieving station data from DataPoint.")

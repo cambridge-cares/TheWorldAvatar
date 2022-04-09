@@ -30,6 +30,8 @@ def get_all_instantiated_observations(query_endpoint: str = QUERY_ENDPOINT,
     # Parse results into DataFrame
     df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
+    # Add column with shorthand of quantity type
+    df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
     
     return df
 
@@ -47,6 +49,8 @@ def get_all_instantiated_forecasts(query_endpoint: str = QUERY_ENDPOINT,
     # Parse results into DataFrame
     df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
+    # Add column with shorthand of quantity type
+    df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
     
     return df
 
@@ -64,6 +68,8 @@ def get_all_instantiated_observation_timeseries(query_endpoint: str = QUERY_ENDP
     # Parse results into DataFrame
     df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
+    # Add column with shorthand of quantity type
+    df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
     
     return df
 
@@ -81,5 +87,10 @@ def get_all_instantiated_forecast_timeseries(query_endpoint: str = QUERY_ENDPOIN
     # Parse results into DataFrame
     df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
+    # Add column with shorthand of quantity type
+    df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
     
     return df
+
+
+#def get_timeseries
