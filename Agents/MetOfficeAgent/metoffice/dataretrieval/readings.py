@@ -27,6 +27,7 @@ def get_instantiated_observations(stations: list = None,
                                       update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of (all) instantiated observations in KG
+        (data for all stations is returned if no stations list is provided)
 
         Arguments:
             stations - list of ReportingStation IRIs (WITHOUT trailing '<' and '>'
@@ -58,6 +59,7 @@ def get_instantiated_forecasts(stations: list = None,
                                    update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of (all) instantiated forecasts in KG
+        (data for all stations is returned if no stations list is provided)
 
         Arguments:
             stations - list of ReportingStation IRIs (WITHOUT trailing '<' and '>'
@@ -89,6 +91,7 @@ def get_instantiated_observation_timeseries(stations: list = None,
                                             update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of (all) instantiated observation timeseries in KG
+        (data for all stations is returned if no stations list is provided)
 
         Arguments:
             stations - list of ReportingStation IRIs (WITHOUT trailing '<' and '>'
@@ -122,6 +125,7 @@ def get_instantiated_forecast_timeseries(stations: list = None,
                                          update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of (all) instantiated forecast timeseries in KG
+        (data for all stations is returned if no stations list is provided)
         
         Arguments:
             stations - list of ReportingStation IRIs (WITHOUT trailing '<' and '>'

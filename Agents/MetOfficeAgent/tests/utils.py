@@ -11,6 +11,7 @@ import requests
 from pathlib import Path
 
 from metoffice.kgutils.kgclient import KGClient
+from metoffice.utils.properties import QUERY_ENDPOINT
 
 
 def get_sparql_endpoint(docker_container):
@@ -23,7 +24,7 @@ def get_sparql_endpoint(docker_container):
     return endpoint
 
 
-def get_number_of_triples(query_endpoint):
+def get_number_of_triples(query_endpoint=QUERY_ENDPOINT):
     # Construct KG client with correct query
     kg_client = KGClient(query_endpoint, query_endpoint)
     query_string = \
@@ -60,14 +61,19 @@ def read_readings_locations():
 
 
 def read_readings_timeseries():
-    # Files fp1 is as retrieved from DataPoint API
+    # Observation readings as retrieved from DataPoint API
     fp1 = os.path.join(Path(__file__).parent, "data", "observation_readings.json")
-    # File fp2 is as retrieved from DataPoint; however for station 25
-    # 1) 1 reported quantity has been removed completely for all time steps
-    # 2) 1 reported quantity has been removed except for 1 time step
+    # Forecast readings as retrieved from DataPoint; however for station 25
+    # 1) "AirTemperature"" has been removed completely for all time steps
+    # 2) "RelativeHumidity"" has been removed completely except for 1st time step
+    # 3) "WindSpeed" has been set to missing (-99) for time steps 4 & 5
+    # 4) "Visibility" has been set to missing (-99) for time step 5
     fp2 = os.path.join(Path(__file__).parent, "data", "forecast_readings1.json")
-    # File fp3 is basically a copy of fp2 as initially retrieved
-    # however a few missing data entry (-99) are included for station 25
+    # Forecast readings as retrieved from DataPoint; however for station 25
+    # 1) "WindSpeed" and "Visibility" again set to missing for very same time steps
+    #    (otherwise previously missing data would get filled now)
+    # 2) "RelativeHumidity"" still removed completely except for 1st time step
+    # 3) "AirTemperature" now included in forecast readings
     fp3 = os.path.join(Path(__file__).parent, "data", "forecast_readings2.json")
     files = [fp1, fp2, fp3]
     data = []
