@@ -2,12 +2,13 @@ version: "3.8"
 
 services:
 
-  grunt:
+  # Live development environment
+  dtvf-devel:
     image: huli/grunt
-    container_name: "grunt"
+    container_name: "dtvf-devel"
     restart: "no"
-    working_dir: "/app/grunt"
-    entrypoint: "/bin/sh -c 'npm install && grunt package'"
+    working_dir: "/app"
+    entrypoint: "/bin/sh -c 'npm install && tail -f /dev/null'"
     volumes:
       - type: bind
         source: ./
