@@ -63,7 +63,7 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
     if not circle_center and not circle_radius:
         # Retrieve all stations
         query = f"""
-            SELECT ?stationID ?station ?comment ?latlon ?elevation ?dataIRI
+            SELECT ?stationID ?station ?comment ?latlon ?elevation ?dataIRI_obs ?dataIRI_fc
             WHERE {{
             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
@@ -71,8 +71,8 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
             OPTIONAL {{ ?station <{RDFS_COMMENT}> ?comment }}
             OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
             OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
-            OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
-            OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI }}
+            OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
+            OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI_fc }}
 
                 }}
         """
@@ -80,7 +80,7 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
         # Retrieve only stations in provided circle (radius in km)
         query = f"""
             {create_sparql_prefix('geo')}
-            SELECT ?stationID ?station ?comment ?latlon ?elevation ?dataIRI
+            SELECT ?stationID ?station ?comment ?latlon ?elevation ?dataIRI_obs ?dataIRI_fc
             WHERE {{
                   SERVICE geo:search {{
                     ?station geo:search "inCircle" .
@@ -95,8 +95,8 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
                 OPTIONAL {{ ?station <{RDFS_COMMENT}> ?comment }}
                 OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
                 OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
-                OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
-                OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI }}
+                OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
+                OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI_fc }}
                 }}
         """
     

@@ -216,7 +216,7 @@ def get_time_series_data(station_iris: list = None,
             raise InvalidInput(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
 
     # Get DataFrames for observation and forecast time series
-    df1 = get_instantiated_observation_timeseries(station_iris,query_endpoint, update_endpoint)
+    df1 = get_instantiated_observation_timeseries(station_iris, query_endpoint, update_endpoint)
     df1['reading_type'] = ' observation'
     df2 = get_instantiated_forecast_timeseries(station_iris, query_endpoint, update_endpoint)
     df2['reading_type'] = ' forecast'

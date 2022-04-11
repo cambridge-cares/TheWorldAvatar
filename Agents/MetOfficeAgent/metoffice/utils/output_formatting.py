@@ -6,15 +6,7 @@
 # The purpose of this module is to provide functionality to structure
 # output information retrieved from the KG in DTVF suitable formats
 
-import os
-import copy
-
-#import agentlogging
-from configobj import ConfigObj
-from pathlib import Path
-
-# Initialise logger
-#logger = agentlogging.get_logger("dev")
+from math import nan
 
 
 # Define default properties for station features in geojson 
@@ -37,7 +29,7 @@ def geojson_initialise_dict():
 
 
 def geojson_add_point_feature(feature_id: int, properties: dict, 
-                              longitude: float, latitude: float,):
+                              longitude: float, latitude: float):
     # Define new GeoJSON point feature
     # GeoJSON requires coordinates as [longitude, latitude]
     feature = {'type': 'Feature',
@@ -75,35 +67,68 @@ def create_geojson_output(station_data, color: str = '#ff0000'):
 
     # Append GeoJSON features
     for index, row in data.iterrows():
-        # Retrieve data from DataFrame
-        dtvf_id = int(row['dtvf_id'])
-        lat, lon = row['latlon'].split('#')
-        lat = float(lat)
-        lon = float(lon)
-        props = geojson_props.copy()
-        props['displayName'] = row['comment']
-        # Append data to GeoJSON
-        # Blazegraph stores coordinates as lat#lon; however GeoJSON requires
-        # reversed order, i.e. longitude first
-        output['features'].append(geojson_add_point_feature(dtvf_id, props, lon, lat))
+        if row['latlon'] and row['latlon'] is not nan:
+            # Retrieve data from DataFrame
+            dtvf_id = int(row['dtvf_id'])
+            lat, lon = row['latlon'].split('#')
+            lat = float(lat)
+            lon = float(lon)
+            props = geojson_props.copy()
+            props['displayName'] = row['comment'] if row['comment'] and \
+                                   row['comment'] is not nan else 'n/a'
+            # Append data to GeoJSON
+            # Blazegraph stores coordinates as lat#lon; however GeoJSON requires
+            # reversed order, i.e. longitude first
+            output['features'].append(geojson_add_point_feature(dtvf_id, props, lon, lat))
     
     return output
 
 
+def json_add_metadata(feature_id: int, name: str, station_id: str, 
+                      longitude: float, latitude: float, elevation: float):
+    # Define metadata dictionary
+    metadata = {'id': feature_id,
+                'Station name': name if name and name is not nan else 'n/a',
+                'Data provider': "UK Met Office",                
+                'Met Office Station ID': station_id,
+                'Latitude': latitude,
+                'Longitude': longitude,
+                'Elevation': f'{elevation} m' if elevation and elevation \
+                             is not nan else 'n/a',
+                }
+    return metadata
 
 
+def create_metadata_output(station_data):
+    """
+        Create JSON file with metadata for Met Office stations
 
+        Arguments
+            station_data - DataFrame with details about MetOffice stations
+                           (['stationID', 'station', 'comment', 'latlon', 'elevation'])
+    """
 
+    # Initialise geojson dict
+    output = []
 
-# def json_add_metadata(feature_id, lon, lat, elec, water, gas):
-#     # Define metadata dictionary
-#     metadata = { 'id': feature_id,
-#                  'Data provider': "UK Met Office",
-#                  'Station name': lat,
-#                  'Met Office Station ID':
-#                  'Latitude': elec,
-#                  'Longitude': water,
-#                  'Elevation': 'm',
-#                  }
-#     return metadata
+    # Get unique stations
+    data = station_data.drop_duplicates(subset='station')
 
+    # Append JSON features
+    for index, row in data.iterrows():
+        # Retrieve data from DataFrame
+        dtvf_id = int(row['dtvf_id'])
+        name = row['comment']
+        metoffice_id = row['stationID']
+        if '#' in row['latlon']:
+            lat, lon = row['latlon'].split('#')
+            lat = float(lat)
+            lon = float(lon)
+        else:
+            lat =  lon = 'n/a'
+        elev = float(row['elevation'])        
+        # Append data to metadata JSON
+        output.append(json_add_metadata(dtvf_id, name, metoffice_id, lon,
+                                        lat, elev))
+    
+    return output

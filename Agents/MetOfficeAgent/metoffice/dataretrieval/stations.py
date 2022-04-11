@@ -18,8 +18,8 @@ from metoffice.kgutils.timeseries import TSClient
 from metoffice.kgutils.querytemplates import *
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.errorhandling.exceptions import InvalidInput
-from metoffice.utils.output_formatting import create_geojson_output
 from metoffice.dataretrieval.readings import get_time_series_data
+from metoffice.utils.output_formatting import create_geojson_output, create_metadata_output
 
 # Initialise logger
 #logger = agentlogging.get_logger("dev")
@@ -113,8 +113,15 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     # Execute query
     results = kg_client.performQuery(query=query_string)
     # Parse results into DataFrame
-    df = pd.DataFrame(columns=['stationID', 'station', 'comment', 'latlon', 'elevation', 'dataIRI'])
+    df = pd.DataFrame(columns=['stationID', 'station', 'comment', 'latlon', 
+                               'elevation', 'dataIRI_obs', 'dataIRI_fc'])
     df = df.append(results)
+    # Consolidate dataIRI columns
+    df['dataIRI'] = df[['dataIRI_obs', 'dataIRI_fc']].values.tolist()
+    df = df.drop(columns=['dataIRI_obs', 'dataIRI_fc'])
+    df = df.explode('dataIRI').reset_index(drop=True)
+    df = df.dropna(subset=['dataIRI'])
+    df = df.drop_duplicates()
 
     return df
 
@@ -146,9 +153,9 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
         #logger.error('Provided output directory does not exist.')
         raise InvalidInput('Provided output directory does not exist.')
     else:
-        fp_geojson = os.path.join(pathlib.Path(outdir), 'metoffice_stations.geojson')
-        fp_metadata = os.path.join(pathlib.Path(outdir), 'metoffice_stations-meta.json')
-        fp_timeseries = os.path.join(pathlib.Path(outdir), 'metoffice_stations-timeseries.json')
+        fp_geojson = os.path.join(pathlib.Path(outdir), 'metoffice_stations2.geojson')
+        fp_metadata = os.path.join(pathlib.Path(outdir), 'metoffice_stations2-meta.json')
+        fp_timeseries = os.path.join(pathlib.Path(outdir), 'metoffice_stations2-timeseries.json')
 
     # Retrieve KG data
     # 1) Get details for instantiated stations
@@ -161,22 +168,21 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
                                                        update_endpoint)
 
     # Assign ids to stations (required for DTVF)
-    stations = list(station_details['station'].unique())
-    dtvf_ids =dict(zip(stations, range(len(stations))))
+    dtvf_ids =dict(zip(station_iris, range(len(station_iris))))
     station_details['dtvf_id'] = station_details['station'].map(dtvf_ids)
 
     # 1) Create GeoJSON file for ReportingStations
     geojson = create_geojson_output(station_details)
 
     # 2) Create JSON file for ReportingStations metadata
-
+    metadata = create_metadata_output(station_details)
 
     # 3) Create Time series output    
     ts_client = TSClient.tsclient_with_default_settings()
     # Get List of corresponding dtvf ids for list of time series
     # (to assign time series output to correct station in DTVF)
     dataIRIs = [ts.getDataIRIs()[0] for ts in ts_data]
-    id_list = [int(station_details.loc[station_details['dataIRI'] == i, 'dtvf_id'].values[0]) for i in dataIRIs]
+    id_list = [int(station_details.loc[station_details['dataIRI'] == i, 'dtvf_id'].values) for i in dataIRIs]
     timeseries = ts_client.convertToJSON(ts_data, id_list, ts_units, ts_names)
      # Make JSON file readable in Python
     timeseries = json.loads(timeseries.toString())
@@ -184,10 +190,10 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
     # Write output files
     with open(fp_geojson, 'w') as f:
         json.dump(geojson, indent=4, fp=f)
+    with open(fp_metadata, 'w') as f:
+        json.dump(metadata, indent=4, fp=f)
     with open(fp_timeseries, 'w') as f:
         json.dump(timeseries, indent=4, fp=f)
-
-    print('')
 
 
 if __name__ == '__main__':
@@ -196,4 +202,9 @@ if __name__ == '__main__':
 
     #get_all_stations_with_details(circle_center='57.5#-3.5', circle_radius='1000')
 
-    create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output')
+    # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
+    #                          circle_center='52.75#0.4', circle_radius='100')
+
+    create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
+                             circle_center='52.75#0.4', circle_radius='100',
+                             observation_types=['AirTemperature'])
