@@ -74,30 +74,28 @@ abox_schema:
     - # Init
         [
             '<INS> comp_pref:InitializationModule_${ENTRY_ID} rdf:type onto_comp:#InitializationModule',
-            '<OBJ> ${ENTRY_IRI} onto_comp:#hasInitialization comp_pref:InitializationModule_${ENTRY_ID}',
             '<INS> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule rdf:type gain_pref:SourcePackage',
-            '<OBJ> ${ENTRY_IRI} onto_comp:#hasEnvironment comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule',
             '<INS> comp_pref:MoleculeProperty_${ENTRY_ID} rdf:type gain_pref:MoleculeProperty',
+            '<OBJ> ${ENTRY_IRI} onto_comp:#hasInitialization comp_pref:InitializationModule_${ENTRY_ID}',
+            '<OBJ> ${ENTRY_IRI} onto_comp:#hasEnvironment comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule',
             '<OBJ> comp_pref:InitializationModule_${ENTRY_ID} gain_pref:hasMoleculeProperty comp_pref:MoleculeProperty_${ENTRY_ID}',
         ]
     - # Molecule / atom entries
         [
             '<INS> comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} rdf:type gain_pref:Molecule',
-            '<OBJ> comp_pref:MoleculeProperty_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:hasMolecule comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS}',
-            '<INS> comp_pref:Atom_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} rdf:type gain_pref:Atom',
-            '<OBJ> comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:hasAtom comp_pref:Atom_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS}',
-            '<INS> table_pref:#${UNIQUE_ATOMS} rdf:type table_pref:#Element',
-            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:isElement table_pref:#${UNIQUE_ATOMS}',
-            '<DAT> comp_pref:Atom_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:hasNumberOfAtoms ${TOTAL_ATOMS_COUNTS} Integer',
+            '<INS> comp_pref:Atom_unique_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} rdf:type gain_pref:Atom',
+            '<OBJ> comp_pref:MoleculeProperty_${ENTRY_ID} gain_pref:hasMolecule comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS}',
+            '<OBJ> comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:hasAtom comp_pref:Atom_unique_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS}',
+            '<OBJ> comp_pref:Atom_unique_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:isElement table_pref:#${UNIQUE_ATOMS}',
+            '<DAT> comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:hasNumberOfAtoms ${TOTAL_ATOMS_COUNTS} Integer',
         ]
     - # Lvl of theory
         [
             '<INS> comp_pref:LevelOfTheory_${ENTRY_ID} rdf:type onto_comp:#LevelOfTheory',
             '<INS> comp_pref:MethodologyFeature_${ENTRY_ID}_LevelofTheoryParameter rdf:type gain_pref:MethodologyFeature',
+            '<INS> comp_pref:BasisSet_${ENTRY_ID} rdf:type gain_pref:BasisSet',
             '<OBJ> comp_pref:InitializationModule_${ENTRY_ID} gain_pref:hasParameter comp_pref:MethodologyFeature_${ENTRY_ID}_LevelofTheoryParameter',
             '<DAT> comp_pref:MethodologyFeature_${ENTRY_ID}_LevelofTheoryParameter onto_comp:#hasLevelOfTheory "${LVL_OF_THEORY}"',
-
-            '<INS> comp_pref:BasisSet_${ENTRY_ID} rdf:type gain_pref:BasisSet',
             '<OBJ> comp_pref:InitializationModule_${ENTRY_ID} gain_pref:hasParameter comp_pref:BasisSet_${ENTRY_ID}',
             "<DAT> comp_pref:BasisSet_${ENTRY_ID} gain_pref:hasBasisSet \"\"\"${BASIS_SET}\"\"",
         ]
@@ -108,12 +106,12 @@ abox_schema:
     - # Freq string
         [
             '<INS> comp_pref:VibrationalAnalysis_${ENTRY_ID} rdf:type gain_pref:VibrationalAnalysis',
-            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:VibrationalAnalysis_${ENTRY_ID}',
             '<INS> comp_pref:Frequency_${ENTRY_ID} rdf:type gain_pref:Frequency',
+            '<INS> gain_pref:cm-1 rdf:type unit_pref:qudt#FrequencyUnit',
+            '<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:VibrationalAnalysis_${ENTRY_ID}',
             '<OBJ> comp_pref:VibrationalAnalysis_${ENTRY_ID} gain_pref:hasResult comp_pref:Frequency_${ENTRY_ID}',
             '<DAT> comp_pref:Frequency_${ENTRY_ID} onto_comp:#hasFrequencies "${FREQ_STRING}"',
             '<DAT> comp_pref:Frequency_${ENTRY_ID} gain_pref:hasVibrationCount ${FREQ_NR}',
-            '<INS> gain_pref:cm-1 rdf:type unit_pref:qudt#FrequencyUnit',
             '<OBJ> comp_pref:Frequency_${ENTRY_ID} gain_pref:hasUnit gain_pref:cm-1',
         ]
     - # Rotational data
