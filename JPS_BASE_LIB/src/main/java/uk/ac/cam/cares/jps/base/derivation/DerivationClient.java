@@ -656,8 +656,10 @@ public class DerivationClient {
 				}
 
 				// add IRI of the matched instance and the derivation it should connect to
-				newInputs.add(matchingEntity.get(0).getIri());
-				derivationsToReconnect.add(oldInput.getInputOf().getIri());
+				oldInput.getInputOf().forEach(d -> {
+					newInputs.add(matchingEntity.get(0).getIri());
+					derivationsToReconnect.add(d.getIri());
+				});
 			}
 			// reconnect within the triple store
 			this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);
@@ -1010,12 +1012,14 @@ public class DerivationClient {
 							}
 
 							// update cached data
-							Derivation derivationToReconnect = oldInput.getInputOf();
-							derivationToReconnect.addInput(matchingEntity.get(0));
-							derivationToReconnect.removeInput(oldInput);
+							oldInput.getInputOf().forEach(d -> {
+								Derivation derivationToReconnect = d;
+								derivationToReconnect.addInput(matchingEntity.get(0));
+								derivationToReconnect.removeInput(oldInput);
 
-							newInputs.add(matchingEntity.get(0).getIri());
-							derivationsToReconnect.add(derivationToReconnect.getIri());
+								newInputs.add(matchingEntity.get(0).getIri());
+								derivationsToReconnect.add(derivationToReconnect.getIri());
+							});
 						}
 						// update triple-store and cached data
 						this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);
@@ -1129,12 +1133,16 @@ public class DerivationClient {
 							}
 
 							// update cached data
-							Derivation derivationToReconnect = oldInput.getInputOf();
-							derivationToReconnect.addInput(matchingEntity.get(0));
-							derivationToReconnect.removeInput(oldInput);
+							// TODO below lines are only changed to make the code compile
+							// TODO its functions are NOT tested due to marked as Deprecated
+							oldInput.getInputOf().forEach(d -> {
+								Derivation derivationToReconnect = d;
+								derivationToReconnect.addInput(matchingEntity.get(0));
+								derivationToReconnect.removeInput(oldInput);
 
-							newInputs.add(matchingEntity.get(0).getIri());
-							derivationsToReconnect.add(derivationToReconnect.getIri());
+								newInputs.add(matchingEntity.get(0).getIri());
+								derivationsToReconnect.add(derivationToReconnect.getIri());
+							});
 						}
 						// update triple-store and cached data
 						this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);

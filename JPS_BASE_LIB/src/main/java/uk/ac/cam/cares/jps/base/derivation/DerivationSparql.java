@@ -1407,16 +1407,22 @@ public class DerivationSparql {
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-		List<Entity> entities = new ArrayList<>();
+		Map<String, Entity> entityMap = new HashMap<>();
 		for (int i = 0; i < queryResult.length(); i++) {
-			Entity e = new Entity(queryResult.getJSONObject(i).getString(entityQueryKey));
-			e.setRdfType(queryResult.getJSONObject(i).getString(rdfTypeQueryKey));
-			e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(downstreamDevQueryKey),
+			String eiri = queryResult.getJSONObject(i).getString(entityQueryKey);
+			if (!entityMap.containsKey(eiri)) {
+				Entity e = new Entity(eiri);
+				e.setRdfType(queryResult.getJSONObject(i).getString(rdfTypeQueryKey));
+				e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(downstreamDevQueryKey),
 					queryResult.getJSONObject(i).getString(downsDevRdfTypeQueryKey)));
-			entities.add(e);
+			} else {
+				entityMap.get(eiri)
+						.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(downstreamDevQueryKey),
+								queryResult.getJSONObject(i).getString(downsDevRdfTypeQueryKey)));
+			}
 		}
 
-		return entities;
+		return new ArrayList<>(entityMap.values());
 	}
 
 	Map<String, String> getDownstreamDerivationForNewInfo(String derivation) {

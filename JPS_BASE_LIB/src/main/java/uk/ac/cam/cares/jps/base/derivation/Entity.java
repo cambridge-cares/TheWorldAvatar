@@ -1,11 +1,15 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Entity {
 	private String iri;
 	private String rdfType;
 	private Derivation belongsTo; // belongsTo this derivation
 	private boolean hasBelongsTo;
-	private Derivation inputOf; // input of this derivation
+	private List<Derivation> inputOf; // input of this derivation
 	private boolean isInputToDerivation;
 	private Long timestamp; // only if this is a pure input
 
@@ -25,11 +29,23 @@ public class Entity {
 	}
 
 	public void setAsInput(Derivation derivation) {
-		this.inputOf = derivation;
-		this.isInputToDerivation = true;
+		if (this.isInputToDerivation) {
+			if (this.inputOf.stream().allMatch(d -> d.getIri() != derivation.getIri())) {
+				this.inputOf.add(derivation);
+			}
+		} else {
+			this.inputOf = new ArrayList<>(Arrays.asList(derivation));
+			this.isInputToDerivation = true;
+		}
 	}
 
-	public Derivation getInputOf() {
+	public void setAsInput(List<Derivation> derivations) {
+		derivations.forEach(d -> {
+			this.setAsInput(d);
+		});
+	}
+
+	public List<Derivation> getInputOf() {
 		return this.inputOf;
 	}
 

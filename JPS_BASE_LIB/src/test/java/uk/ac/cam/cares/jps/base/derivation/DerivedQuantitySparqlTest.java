@@ -1595,7 +1595,7 @@ public class DerivedQuantitySparqlTest {
 	// graph, but MIGHT NOT reflect the true situation in the knowledge graph
 	public List<Derivation> collectDistinctImmediateDownstreamDerivations(Derivation d) {
 		return d.getEntities().stream().filter(en -> Objects.nonNull(en.getInputOf())).map(en -> en.getInputOf())
-				.distinct().collect(Collectors.toList());
+				.flatMap(Collection::stream).distinct().collect(Collectors.toList());
 	}
 
 	public boolean equalLists(List<String> a, List<String> b) {
