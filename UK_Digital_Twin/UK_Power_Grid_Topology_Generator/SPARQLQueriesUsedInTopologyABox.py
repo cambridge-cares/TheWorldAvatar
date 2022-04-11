@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 22 Nov 2021          #
+# Last Update Date: 07 April 2022        #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Topology A-boxes"""
@@ -11,6 +11,7 @@ from rdflib.store import NO_STORE
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
+from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion
 from collections import Counter
 from shapely.wkt import loads
 from shapely.geometry import mapping
@@ -18,6 +19,33 @@ import geojson
 import ast
 
 qres = []
+
+## query the ElectricitySystemIRI
+def queryElectricitySystemIRI(endpoint_label, ElectricitySystemName):
+    try:
+        LACode = str(LACodeOfOfficialRegion[ElectricitySystemName])
+    except KeyError:
+        print("!!!Please provide a valid name of the ElectricitySystemName, which can be ", LACodeOfOfficialRegion.keys())
+    
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    SELECT DISTINCT ?ElectricitySystemIRI 
+    WHERE
+    {
+    ?ElectricitySystemIRI rdf:type ontoenergysystem:ElectricPowerSystem .
+    ?ElectricitySystemIRI ontoenergysystem:hasRelevantPlace/ontoenergysystem:hasLocalAuthorityCode "%s" . 
+    }
+    """ % (LACode)
+    print("...Querying ElectricitySystemIRI...")
+    try:
+        ElectricitySystemIRI = json.loads(performQuery(endpoint_label, queryStr))[0]['ElectricitySystemIRI']  
+        print("...Querying ElectricitySystemIRI is done...")
+    except IndexError: 
+        print("!!!The seleced area does not exist any electricity system.!!!")
+    else:
+        return str(ElectricitySystemIRI)
+
 
 # query the GPS location of both from bus node and to bus node of a branch
 def queryConnectedBusGPS(remoteEndPoint, SleepycatPath, numOfBus, numOfBranch, FromBus_iri, ToBus_iri, localQuery):
@@ -490,9 +518,11 @@ if __name__ == '__main__':
     # ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-001"
     # res = queryConnectedBusGPS('ukdigitaltwin', None, 10, 14, FromBus_iri, ToBus_iri, False)
     # res = queryConnectedBusGPS('ukdigitaltwin', None, 29, 99, FromBus_iri, ToBus_iri, False)
-    res = queryCardiffBound('ons')
+    # res = queryCardiffBound('ons')
     # res = queryifWithin('E12000007', 'K03000001', 'ons')
     # print(res, len(res), type(res))
+    
+    res = queryElectricitySystemIRI('ukdigitaltwin_test2', 'Great_Britain')
     print(res, len(res))
     
    

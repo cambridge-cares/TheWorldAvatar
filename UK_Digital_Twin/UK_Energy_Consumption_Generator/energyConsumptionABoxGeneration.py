@@ -59,8 +59,6 @@ ukec_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consump
 # UKDigitalTwinURL = UKDT.nodeURIGenerator(1, dt.topNode, None)
 UKElectricitySystem = UKDT.nodeURIGenerator(2, dt.electricitySystem, None)
 
-print(UKElectricitySystem)
-
 ### Functions ### 
 """ The Energy Consumption DataProperty Instance constructor"""
 def createEnergyConsumptionDataPropertyInstance(version):
@@ -70,13 +68,10 @@ def createEnergyConsumptionDataPropertyInstance(version):
     root_node = ukElectricityConsumption
     fileNum = len(elecConDataArrays)  # substruct the first header line 
     
-    print(root_node)
-    
     return engconsump, elecConDataArrays, root_node, ukElectricityConsumption, fileNum
 
 """Main function: Add Triples to the regional and local nodes"""
-def addUKElectricityConsumptionTriples(UKElectricitySystemIRI, GBElectricitySystemIRI, NIElectricitySystemIRI, \
-                                       version, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):
+def addUKElectricityConsumptionTriples(ElectricitySystemIRI, version, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):
     print('Starts adding regional and local nodes.')
     ukec = UKec.UKEnergyConsumption(version)
     defaultStoredPath = ukec.StoreGeneratedOWLs
@@ -106,8 +101,8 @@ def addUKElectricityConsumptionTriples(UKElectricitySystemIRI, GBElectricitySyst
     
     # IRIs
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())  # root_node + dt.GB
-    ## GBElectricitySystemIRI = UKElectricitySystem + dt.GB 
-    # Create rdf graph with identifier, regional nodes are named graphs including its local nodes
+    
+    ## Create rdf graph with identifier, regional nodes are named graphs including its local nodes
     graph = Graph(store = store, identifier = URIRef(ontologyIRI)) # graph(store='default', identifier)
     
     # Import T-boxes
@@ -116,9 +111,6 @@ def addUKElectricityConsumptionTriples(UKElectricitySystemIRI, GBElectricitySyst
     graph.set((graph.identifier, RDFS.comment, Literal('This ontology represents the local energy consumption of Great Britain.')))
     graph.set((graph.identifier, RDFS.label, Literal('UK Digital Twin - Energy Consumption - Electricity Consumption - ' + dt.GB)))
    
-    # Add connection between its father node                               
-   ## graph.add((URIRef(GBElectricitySystemIRI), RDF.type, URIRef(t_box.ontoenergysystem + 'ElectricPowerSystem'))) 
-    
     for elecConData in elecConDataArrays:
         print('*********************************************************')         
         print('The place is:', elecConData[0].strip('\n').replace('|',','))
@@ -141,7 +133,7 @@ def addUKElectricityConsumptionTriples(UKElectricitySystemIRI, GBElectricitySyst
                
         # type of the root node                              
         graph.add((URIRef(ec_root_node), RDF.type, URIRef(ontoenergysystem.TotalElectricityConsumption.iri)))
-        graph.add((URIRef(GBElectricitySystemIRI), URIRef(ontoenergysystem.enablesElectricityConsumptionOf.iri), URIRef(ec_root_node)))    
+        graph.add((URIRef(ElectricitySystemIRI), URIRef(ontoenergysystem.enablesElectricityConsumptionOf.iri), URIRef(ec_root_node)))    
         
         # Specify the time period of the current data and its start time 
         graph.add((URIRef(ec_root_node), URIRef(t_box.ontocape_derived_SI_units + 'hasTimePeriod'), URIRef(timeperiod_uri))) # T-box undefined
@@ -189,7 +181,10 @@ def addUKElectricityConsumptionTriples(UKElectricitySystemIRI, GBElectricitySyst
         graph.add((URIRef(observed_AdministrativeDivision_uri), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(str(elecConData[index_LACode]))))
         graph.add((URIRef(observed_AdministrativeDivision_uri), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
         graph.add((URIRef(observed_AdministrativeDivision_uri), OWL_NS['sameAs'], URIRef(observed_place_uri)))
-                    
+        
+        # print(graph.serialize(format="turtle").decode("utf-8"))
+
+            
     # generate/update OWL files
     if updateLocalOWLFile == True:
          # Store/update the generated owl files      
@@ -205,5 +200,5 @@ def addUKElectricityConsumptionTriples(UKElectricitySystemIRI, GBElectricitySyst
 
 if __name__ == '__main__':
     path = "C:\\Users\\wx243\\Desktop\\test\\new_elec_consump\\"
-    addUKElectricityConsumptionTriples(2017, None, True, 'default')
+    addUKElectricityConsumptionTriples("http://www.theworldavatar.com/kb/ontoenergysystem/ElectricPowerSystem_3043aaed-752f-4dcf-9eb8-d6fd5fa5b966", 2017, None, True, 'default')
     print('terminated')

@@ -50,7 +50,7 @@ class UKDigitalTwinTBox:
     ontopowsys_PowSysPerformance = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#"
     
     """OntoSDG"""
-    ontosdgNmae = "ontosdg"
+    ontosdgName = "ontosdg"
     ontoSDG = "http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl#"
     
     """OntoSpecies"""

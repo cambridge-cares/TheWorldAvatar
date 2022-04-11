@@ -13,9 +13,15 @@ class UKPowerGridTopology:
     endpoint = EndPointConfigAndBlazegraphRepoLabel.UKGridTopologylKG
     
     """Node keys"""
-    EquipmentConnection_EBusKey = "EquipmentConnection_EBus-"
-    PowerFlow_ELineKey = "PowerFlow_ELine-"
-    PowerGeneration_EGenKey = "PowerGeneration_EGen-"
+    ## Decommissioned: OLD ## 
+    # EquipmentConnection_EBusKey = "EquipmentConnection_EBus-"
+    # PowerFlow_ELineKey = "PowerFlow_ELine-"
+    # PowerGeneration_EGenKey = "PowerGeneration_EGen-"
+    ## Decommissioned: OLD ## 
+    
+    BusNodeKey = "BusNode_"
+    PowerGeneratorKey = "PowerGenerator_"
+    OverheadLineKey = "OverheadLine_"
     
     """Elines attributes"""
     ShapeKey = "Shape_"

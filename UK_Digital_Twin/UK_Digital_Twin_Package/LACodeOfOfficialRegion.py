@@ -20,3 +20,5 @@ LACodeOfOfficialRegion = {
     'United_Kingdom': 'K02000001',
     "Great_Britain": 'K03000001'
     }
+if __name__ == '__main__':
+    print(LACodeOfOfficialRegion["s"])

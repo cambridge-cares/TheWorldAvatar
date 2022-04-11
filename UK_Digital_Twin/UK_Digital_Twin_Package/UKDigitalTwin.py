@@ -82,7 +82,7 @@ def nodeURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName
               return _secondLevelNode
         elif nodeIdentifier == UKDigitalTwin.thirdLevelNode:
               if (nodeName == UKDigitalTwin.gridTopology or nodeName == UKDigitalTwin.powerGridModel) and dataOrModelVersion in UKDigitalTwin.Model.keys():
-                  _thirdLevelNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.SLASH + nodeName + UKDigitalTwin.SLASH + UKDigitalTwin.Model[dataOrModelVersion] + UKDigitalTwin.SLASH
+                  _thirdLevelNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.SLASH + nodeName + UKDigitalTwin.UNDERSCORE # + UKDigitalTwin.SLASH + UKDigitalTwin.Model[dataOrModelVersion] + UKDigitalTwin.SLASH
                   return _thirdLevelNode
               else:
                   raise Exception('Cannot construct the nodeLevel 3 URI, please check the input data.')
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     uri_grid_10_model_Ebus = nodeURIGenerator(4, UKDigitalTwin.powerGridModel, 10, "EBus") 
     
     ukElectricityConsumption = nodeURIGenerator(3, UKDigitalTwin.energyConsumption, 2017)
-    print(uri_pp)
+    print(uri_pp, uri_topo_10)
     # print(uri_grid_10_model_Egen, uri_grid_10_model_Eline, uri_grid_10_model_Ebus )
     
     

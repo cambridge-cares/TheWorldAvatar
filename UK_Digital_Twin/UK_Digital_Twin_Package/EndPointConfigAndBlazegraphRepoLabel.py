@@ -50,11 +50,17 @@ lookupTable = {
     'endpoint_iri' : "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql"}
 
 """UK digital twin in Blazegraph"""
+# ukdigitaltwin = {
+#     'lable': 'ukdigitaltwin_test1',
+#     'endpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql",
+#     'queryendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql",
+#     'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"}
+
 ukdigitaltwin = {
-    'lable': 'ukdigitaltwin_test1',
-    'endpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql",
-    'queryendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql",
-    'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"}
+    'lable': 'ukdigitaltwin_test2',
+    'endpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql",
+    'queryendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql",
+    'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"}
 
 # # The original one 
 # ukdigitaltwin = {
