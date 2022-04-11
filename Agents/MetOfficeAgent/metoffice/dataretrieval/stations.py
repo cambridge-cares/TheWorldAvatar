@@ -147,6 +147,7 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
         raise InvalidInput('Provided output directory does not exist.')
     else:
         fp_geojson = os.path.join(pathlib.Path(outdir), 'metoffice_stations.geojson')
+        fp_metadata = os.path.join(pathlib.Path(outdir), 'metoffice_stations-meta.json')
         fp_timeseries = os.path.join(pathlib.Path(outdir), 'metoffice_stations-timeseries.json')
 
     # Retrieve KG data
@@ -167,9 +168,12 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
     # 1) Create GeoJSON file for ReportingStations
     geojson = create_geojson_output(station_details)
 
+    # 2) Create JSON file for ReportingStations metadata
+
+
     # 3) Create Time series output    
     ts_client = TSClient.tsclient_with_default_settings()
-    # Get List of correspondingdtvf ids for list of time series
+    # Get List of corresponding dtvf ids for list of time series
     # (to assign time series output to correct station in DTVF)
     dataIRIs = [ts.getDataIRIs()[0] for ts in ts_data]
     id_list = [int(station_details.loc[station_details['dataIRI'] == i, 'dtvf_id'].values[0]) for i in dataIRIs]

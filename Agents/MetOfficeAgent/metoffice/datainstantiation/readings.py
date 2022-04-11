@@ -199,9 +199,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
         raise APIException("MetOffer client could not be created to retrieve station readings.")
     
     # Initialise update query
-    query_string = f"""
-        INSERT DATA {{
-    """
+    triples = f""
 
     # Initialise lists for TimeSeriesClient's bulkInit function
     dataIRIs = []
@@ -272,10 +270,10 @@ def instantiate_station_readings(instantiated_sites_list: list,
                 instantiated += len(fcs)
 
             # Add triples to INSERT DATA query
-            query_string += triples1
-            query_string += triples2
-            query_string += triples3
-            query_string += triples4
+            triples += triples1
+            triples += triples2
+            triples += triples3
+            triples += triples4
 
             # Append lists to overarching TimeSeriesClient input lists
             if dataIRIs1 + dataIRIs3:
@@ -289,13 +287,15 @@ def instantiate_station_readings(instantiated_sites_list: list,
 
             #logger.info(f'Readings for station {id:>6} successfully added to query.')
 
-    # Close query
-    query_string += f"}}"
+    # Split triples to instantiate into several chunks of max size
+    queries = split_insert_query(triples, max=100000)
 
     # Instantiate all non-time series triples
     kg_client = KGClient(query_endpoint, update_endpoint)
-    kg_client.performUpdate(query_string)
-    #logger.info('Insert query successfully performed.')
+    # Perform SPARQL update query in chunks to avoid heap size/memory issues
+    for query in queries:
+        kg_client.performUpdate(query)
+        #logger.info('Insert query successfully performed.')
 
     if dataIRIs:
         # Instantiate all time series triples
@@ -562,3 +562,17 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
                 conditioned['readings'][READINGS_MAPPING[c]] = df[c].to_list()
 
     return conditioned
+
+
+if __name__ == '__main__':
+
+    # response = instantiate_all_station_readings()
+    # print(f"Number of instantiated readings: {response}")
+
+    # response = add_all_readings_timeseries()
+    # print(f"Number of updated time series readings: {response}")
+
+    response = update_all_stations()
+    print(f"Number of instantiated stations: {response[0]}")
+    print(f"Number of instantiated readings: {response[1]}")
+    print(f"Number of updated time series readings: {response[2]}")

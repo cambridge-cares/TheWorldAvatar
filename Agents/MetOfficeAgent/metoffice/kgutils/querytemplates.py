@@ -248,3 +248,35 @@ def instantiated_forecast_timeseries(station_iris: list = None):
         ORDER BY ?tsIRI
     """
     return query
+
+
+def split_insert_query(triples: str, max: int):
+    """"
+        Split large SPARQL insert query into list of smaller chunks (primarily
+        to avoid heap size/memory issues when executing large SPARQL updated)
+
+        Arguments
+            triples - original SPARQL update string with individual triples 
+                      separated by " . ", i.e. in the form
+                      <s1> <p1> <o1> .
+                      <s2> <p2> <o2> . 
+                      ...
+            max - maximum number of triples per SPARQL update
+
+    """
+
+    # Initialise list of return queries
+    queries = []
+
+    # Split original query every max'th occurrence of " . " and append queries list
+    splits = triples.split(' . ')
+    cutoffs = list(range(0, len(splits), max))
+    cutoffs.append(len(splits))
+    for i in range(len(cutoffs)-1):
+        start = cutoffs[i]
+        end = cutoffs[i+1]
+        query = ' . '.join([t for t in splits[start:end]])
+        query = " INSERT DATA { " + query + " } "
+        queries.append(query)
+    
+    return queries

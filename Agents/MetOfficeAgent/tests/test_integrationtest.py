@@ -24,8 +24,8 @@ def client():
     with app.test_client() as client:
         yield client
 
-#@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
-#                          as well as blank RDB as defined in properties file")
+@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
+                          as well as blank RDB as defined in properties file")
 def test_update_all_stations_webapp(client, mocker):
     # Integration test for expected behavior of updating all stations and readings
     # via webapp (requires (local) blazegraph running at endpoints specified
