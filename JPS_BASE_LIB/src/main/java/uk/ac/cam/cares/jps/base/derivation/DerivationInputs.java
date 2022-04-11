@@ -70,4 +70,9 @@ public class DerivationInputs {
 		// TODO do we need to throw exception when there's no key rdfType?
 		return this.getInputs().get(rdfType);
 	}
+
+	@Override
+	public String toString() {
+		return this.getInputs().toString();
+	}
 }
