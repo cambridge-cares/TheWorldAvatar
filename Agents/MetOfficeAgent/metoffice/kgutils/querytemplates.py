@@ -22,8 +22,8 @@ def all_metoffice_station_ids() -> str:
     return query
 
 
-def all_metoffice_stations(circle_center: str = None,
-                           circle_radius: str = None) -> str:
+def instantiated_metoffice_stations(circle_center: str = None,
+                                    circle_radius: str = None) -> str:
     # Returns query to retrieve identifiers and IRIs of instantiated stations
     if not circle_center and not circle_radius:
         # Retrieve all stations
@@ -49,8 +49,54 @@ def all_metoffice_stations(circle_center: str = None,
                     ?station geo:spatialCircleRadius "{circle_radius}" . 
                 }}
                 ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                        <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-                        <{EMS_HAS_IDENTIFIER}> ?id 
+                         <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                         <{EMS_HAS_IDENTIFIER}> ?id 
+                }}
+        """
+    
+    return query
+
+
+def instantiated_metoffice_stations_with_details(circle_center: str = None,
+                                                 circle_radius: str = None) -> str:
+    # Returns query to retrieve all instantiated station details
+    if not circle_center and not circle_radius:
+        # Retrieve all stations
+        query = f"""
+            SELECT ?stationID ?station ?comment ?latlon ?elevation ?dataIRI
+            WHERE {{
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                     <{EMS_HAS_IDENTIFIER}> ?stationID .
+            OPTIONAL {{ ?station <{RDFS_COMMENT}> ?comment }}
+            OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
+            OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
+            OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
+            OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI }}
+
+                }}
+        """
+    else:
+        # Retrieve only stations in provided circle (radius in km)
+        query = f"""
+            {create_sparql_prefix('geo')}
+            SELECT ?stationID ?station ?comment ?latlon ?elevation ?dataIRI
+            WHERE {{
+                  SERVICE geo:search {{
+                    ?station geo:search "inCircle" .
+                    ?station geo:predicate <{EMS_HAS_OBSERVATION_LOCATION}> .
+                    ?station geo:searchDatatype <{GEOLIT_LAT_LON}> .
+                    ?station geo:spatialCircleCenter "{circle_center}" .
+                    ?station geo:spatialCircleRadius "{circle_radius}" . 
+                }}
+                ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                         <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
+                         <{EMS_HAS_IDENTIFIER}> ?stationID .
+                OPTIONAL {{ ?station <{RDFS_COMMENT}> ?comment }}
+                OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
+                OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
+                OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
+                OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI }}
                 }}
         """
     

@@ -147,10 +147,3 @@ def _condition_metoffer_data(station_data: dict) -> dict:
         print(f"Station {station_data['id']} does not have location data.")
     
     return conditioned
-
-
-if __name__ == '__main__':
-
-    response = instantiate_all_stations()
-    print(f"Number of instantiated stations: {response}")
-    

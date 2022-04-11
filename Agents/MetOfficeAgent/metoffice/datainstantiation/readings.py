@@ -562,17 +562,3 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
                 conditioned['readings'][READINGS_MAPPING[c]] = df[c].to_list()
 
     return conditioned
-
-
-if __name__ == '__main__':
-
-    # response = instantiate_all_station_readings()
-    # print(f"Number of instantiated readings: {response}")
-
-    # response = add_all_readings_timeseries()
-    # print(f"Number of updated time series readings: {response}")
-
-    response = update_all_stations()
-    print(f"Number of instantiated stations: {response[0]}")
-    print(f"Number of instantiated readings: {response[1]}")
-    print(f"Number of updated time series readings: {response[2]}")
