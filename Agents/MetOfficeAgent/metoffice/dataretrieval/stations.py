@@ -14,10 +14,12 @@ import pandas as pd
 
 #import agentlogging
 from metoffice.kgutils.kgclient import KGClient
+from metoffice.kgutils.timeseries import TSClient
 from metoffice.kgutils.querytemplates import *
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.errorhandling.exceptions import InvalidInput
 from metoffice.utils.output_formatting import create_geojson_output
+from metoffice.dataretrieval.readings import get_time_series_data
 
 # Initialise logger
 #logger = agentlogging.get_logger("dev")
@@ -120,7 +122,9 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
 def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
                              update_endpoint: str = UPDATE_ENDPOINT,
                              circle_center: str = None,
-                             circle_radius: str = None):
+                             circle_radius: str = None,
+                             observation_types: list = None,
+                             tmin: str = None, tmax: str = None,):
     """
         Creates output files required by Digital Twin Visualisation Framework,
         i.e. geojson file with station locations, json file with metadata about
@@ -131,6 +135,10 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
             circle_center - center for Blazegraph's geo:search "inCircle" mode
                             in WGS84 coordinates as 'latitude#longitude'
             circle_radius - radius for geo:search in km
+            observation_types - list of observation types (e.g., AirTemperature)
+                                for which to retrieve data (all if None)
+            tmin - oldest time step for which to retrieve data
+            tmax - latest time step for which to retrieve data
     """
 
     # Validate input
@@ -139,22 +147,41 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
         raise InvalidInput('Provided output directory does not exist.')
     else:
         fp_geojson = os.path.join(pathlib.Path(outdir), 'metoffice_stations.geojson')
+        fp_timeseries = os.path.join(pathlib.Path(outdir), 'metoffice_stations-timeseries.json')
 
-    # Get details for instantiated stations
+    # Retrieve KG data
+    # 1) Get details for instantiated stations
     station_details = get_all_stations_with_details(query_endpoint, update_endpoint,
                                                     circle_center, circle_radius)
-    
+    # 2) Get time series data
+    station_iris = list(station_details['station'].unique())
+    ts_data, ts_names, ts_units = get_time_series_data(station_iris, observation_types, 
+                                                       tmin, tmax, query_endpoint, 
+                                                       update_endpoint)
+
     # Assign ids to stations (required for DTVF)
     stations = list(station_details['station'].unique())
     dtvf_ids =dict(zip(stations, range(len(stations))))
     station_details['dtvf_id'] = station_details['station'].map(dtvf_ids)
 
-    # Create GeoJSON file for ReportingStations
+    # 1) Create GeoJSON file for ReportingStations
     geojson = create_geojson_output(station_details)
+
+    # 3) Create Time series output    
+    ts_client = TSClient.tsclient_with_default_settings()
+    # Get List of correspondingdtvf ids for list of time series
+    # (to assign time series output to correct station in DTVF)
+    dataIRIs = [ts.getDataIRIs()[0] for ts in ts_data]
+    id_list = [int(station_details.loc[station_details['dataIRI'] == i, 'dtvf_id'].values[0]) for i in dataIRIs]
+    timeseries = ts_client.convertToJSON(ts_data, id_list, ts_units, ts_names)
+     # Make JSON file readable in Python
+    timeseries = json.loads(timeseries.toString())
 
     # Write output files
     with open(fp_geojson, 'w') as f:
         json.dump(geojson, indent=4, fp=f)
+    with open(fp_timeseries, 'w') as f:
+        json.dump(timeseries, indent=4, fp=f)
 
     print('')
 
