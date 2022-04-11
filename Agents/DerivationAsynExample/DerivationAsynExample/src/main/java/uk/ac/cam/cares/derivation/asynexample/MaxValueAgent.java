@@ -46,6 +46,8 @@ public class MaxValueAgent extends DerivationAgent {
 	
 	@Override
 	public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
+		LOGGER.debug("MaxValueAgent received derivationInputs: " + derivationInputs.toString());
+
 		// get the input from the KG
 		String listOfRandomPoints_iri = derivationInputs
 				.getIris(SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints)).get(0);
@@ -74,6 +76,7 @@ public class MaxValueAgent extends DerivationAgent {
 		
 		if (this.kbClient == null) {
 			this.kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
+			this.sparqlClient = new SparqlClient(this.kbClient);
 		}
 		MaxValueAgent maxAgent = new MaxValueAgent(this.kbClient, Config.derivationInstanceBaseURL);
 		

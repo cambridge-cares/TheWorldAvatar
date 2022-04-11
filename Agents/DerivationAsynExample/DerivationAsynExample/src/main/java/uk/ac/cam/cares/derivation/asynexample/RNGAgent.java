@@ -2,6 +2,7 @@ package uk.ac.cam.cares.derivation.asynexample;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -49,13 +50,18 @@ public class RNGAgent extends DerivationAgent {
 	
 	@Override
 	public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
+		LOGGER.debug("RNGAgent received derivationInputs: " + derivationInputs.toString());
+
 		// get the input from the KG
 		String upperLimitIRI = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.UpperLimit)).get(0);
+		LOGGER.debug(upperLimitIRI);
 		Integer upperLimit = sparqlClient.getValue(upperLimitIRI);
 		String lowerLimitIRI = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.LowerLimit)).get(0);
+		LOGGER.debug(lowerLimitIRI);
 		Integer lowerLimit = sparqlClient.getValue(lowerLimitIRI);
 		String numberOfPointsIRI = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.NumberOfPoints))
 				.get(0);
+		LOGGER.debug(numberOfPointsIRI);
 		Integer numberOfPoints = sparqlClient.getValue(numberOfPointsIRI);
 		
 		if (upperLimit >= lowerLimit) {
@@ -92,6 +98,7 @@ public class RNGAgent extends DerivationAgent {
 		
 		if (this.kbClient == null) {
 			this.kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
+			this.sparqlClient = new SparqlClient(this.kbClient);
 		}
 		RNGAgent rngAgent = new RNGAgent(this.kbClient, Config.derivationInstanceBaseURL);
 		

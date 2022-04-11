@@ -35,7 +35,8 @@ public class InitialiseInstances extends JPSAgent {
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
 		
-		JSONObject response = initialise(sparqlClient, devClient);
+		// JSONObject response = initialise(sparqlClient, devClient);
+		JSONObject response = initialisePureSync(sparqlClient, devClient);
 
 		// invoke all asynchronous agents so that they can be initialised
 		AgentCaller.executeGet(Config.agentHttpUrlRNG);
@@ -134,6 +135,109 @@ public class InitialiseInstances extends JPSAgent {
 		// response.put("MinValue instance", minValue);
 		response.put("Difference Derivation", diff_dev);
 		// response.put("Difference instance", difference);
+
+		return response;
+	}
+
+	JSONObject initialisePureSync(SparqlClient sparqlClient, DerivationClient devClient) {
+
+		// clear KG when initialising
+		LOGGER.info("Initialising new instances, all existing instances will get deleted");
+		sparqlClient.clearKG();
+
+		// get the IRIs
+		String ul_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.UpperLimit);
+		String ll_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.LowerLimit);
+		String np_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.NumberOfPoints);
+		String lp_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints);
+		String maxv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
+		String minv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
+		String diff_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.Difference);
+
+		// create ontoagent instances
+		sparqlClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
+				Arrays.asList(ul_rdf_type, ll_rdf_type, np_rdf_type), Arrays.asList(lp_rdf_type));
+		sparqlClient.createOntoAgentInstance(Config.agentIriMaxValue, Config.agentHttpUrlMaxValue,
+				Arrays.asList(lp_rdf_type), Arrays.asList(maxv_rdf_type));
+		sparqlClient.createOntoAgentInstance(Config.agentIriMinValue, Config.agentHttpUrlMinValue,
+				Arrays.asList(lp_rdf_type), Arrays.asList(minv_rdf_type));
+		sparqlClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
+				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_rdf_type));
+
+		// create upperlimit, lowerlimit, numberofpoints
+		String upperLimit = sparqlClient.createUpperLimit();
+		String ul_value = sparqlClient.addValueInstance(upperLimit, 20);
+		devClient.addTimeInstance(upperLimit);
+		devClient.updateTimestamp(upperLimit);
+		LOGGER.info("Created UpperLimit instance <" + upperLimit + ">");
+
+		String lowerLimit = sparqlClient.createLowerLimit();
+		String ll_value = sparqlClient.addValueInstance(lowerLimit, 3);
+		devClient.addTimeInstance(lowerLimit);
+		devClient.updateTimestamp(lowerLimit);
+		LOGGER.info("Created LowerLimit instance <" + lowerLimit + ">");
+
+		String numOfPoints = sparqlClient.createNumberOfPoints();
+		String np_value = sparqlClient.addValueInstance(numOfPoints, 6);
+		devClient.addTimeInstance(numOfPoints);
+		devClient.updateTimestamp(numOfPoints);
+		LOGGER.info("Created NumberOfPoints instance <" + numOfPoints + ">");
+
+		// create listofrandompoints, points
+		String listOfRandomPoints = sparqlClient.createListOfRandomPoints(null);
+		LOGGER.info("Created ListOfRandomPoints instance <" + listOfRandomPoints + ">");
+
+		// create maxvalue, minvalue
+		String maxValue = sparqlClient.createMaxValue();
+		String max = sparqlClient.addValueInstance(maxValue, 0);
+		LOGGER.info("Created MaxValue instance <" + maxValue + ">");
+
+		String minValue = sparqlClient.createMinValue();
+		String min = sparqlClient.addValueInstance(minValue, 0);
+		LOGGER.info("Created MinValue instance <" + minValue + ">");
+
+		// create difference
+		String difference = sparqlClient.createDifference();
+		String diff = sparqlClient.addValueInstance(difference, 0);
+		LOGGER.info("Created Difference instance <" + difference + ">");
+
+		// create chain of derivation
+		String rng_dev = devClient.createDerivation(Arrays.asList(listOfRandomPoints), Config.agentIriRNG,
+				Arrays.asList(upperLimit, lowerLimit, numOfPoints));
+		String max_dev = devClient.createDerivation(Arrays.asList(maxValue), Config.agentIriMaxValue,
+				Arrays.asList(listOfRandomPoints));
+		String min_dev = devClient.createDerivation(Arrays.asList(minValue), Config.agentIriMinValue,
+				Arrays.asList(listOfRandomPoints));
+		String diff_dev = devClient.createDerivation(Arrays.asList(difference), Config.agentIriDifference,
+				Arrays.asList(maxValue, minValue));
+
+		// check all connections between the derived quantities
+		// as the validate method traverse down, checking difference derivation checks
+		// all other derivations in the chain
+		// TODO update validateDerivations for NEW_INFO mode
+		// LOGGER.info("Validating derivations: " + rng_dev + ", " + max_dev + ", " +
+		// min_dev + ", and " + diff_dev);
+		// try {
+		// devClient.validateDerivations();
+		// LOGGER.info("Validated chain of derivations successfully");
+		// } catch (Exception e) {
+		// LOGGER.error("Validation failure for chain of derivations: " +
+		// e.getMessage());
+		// throw new JPSRuntimeException(e);
+		// }
+
+		JSONObject response = new JSONObject();
+		response.put("UpperLimit instance", upperLimit);
+		response.put("LowerLimit instance", lowerLimit);
+		response.put("NumberOfPoints instance", numOfPoints);
+		response.put("RandomNumberGeneration Derivation", rng_dev);
+		response.put("ListOfRandomPoints instance", listOfRandomPoints);
+		response.put("MaxValue Derivation", max_dev);
+		response.put("MaxValue instance", maxValue);
+		response.put("MinValue Derivation", min_dev);
+		response.put("MinValue instance", minValue);
+		response.put("Difference Derivation", diff_dev);
+		response.put("Difference instance", difference);
 
 		return response;
 	}

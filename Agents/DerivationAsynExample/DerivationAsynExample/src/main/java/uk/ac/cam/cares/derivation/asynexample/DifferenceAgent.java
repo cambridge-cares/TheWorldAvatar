@@ -45,6 +45,8 @@ public class DifferenceAgent extends DerivationAgent {
 	
 	@Override
 	public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
+		LOGGER.debug("DifferenceAgent received derivationInputs: " + derivationInputs.toString());
+
 		// get the input from the KG
 		String maxvalue_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue)).get(0);
 		String minvalue_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MinValue)).get(0);
@@ -73,6 +75,7 @@ public class DifferenceAgent extends DerivationAgent {
 		
 		if (this.kbClient == null) {
 			this.kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
+			this.sparqlClient = new SparqlClient(this.kbClient);
 		}
 		DifferenceAgent diffAgent = new DifferenceAgent(this.kbClient, Config.derivationInstanceBaseURL);
 		
