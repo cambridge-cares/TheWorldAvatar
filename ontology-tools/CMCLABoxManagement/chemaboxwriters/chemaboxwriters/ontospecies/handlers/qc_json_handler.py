@@ -1,22 +1,9 @@
-import chemutils.obabelutils.obconverter as obconverter
-import chemutils.obabelutils.obutils as obutils
-import compchemparser.helpers.utils as ccparse_utils
+import chemaboxwriters.ontospecies.handlers.os_json_keys as os_keys
 import chemaboxwriters.common.utilsfunc as utilsfunc
-from compchemparser.parsers.ccgaussian_parser import (
-    ATOM_MASSES,
-    FORMAL_CHARGE,
-    ATOM_TYPES,
-    EMP_FORMULA,
-    GEOM,
-    SPIN_MULT,
-)
-from compchemparser.helpers.elements_data import get_molwt_from_atom_types
 import pubchempy as pcp
-from collections import Counter
 import json
 import re
 import time
-import chemaboxwriters.common.params as params
 from chemaboxwriters.common.handler import Handler
 from chemaboxwriters.ontospecies.abox_stages import OS_ABOX_STAGES
 from chemaboxwriters.ontospecies import OS_SCHEMA
@@ -26,27 +13,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 cas_re = re.compile(r"(\d{2,7}-\d\d-\d)")
-
-MOLWT = "MolecularWeight"
-INCHI = "InChi"
-SMILES = "Smiles"
-GEOM_STRING = "GeometryString"
-BOND_STRING = "BondString"
-PUBCHEM_ALT_LABEL = "PubchemAlternativeLabel"
-CAS_NUMBER = "CAS"
-PUBCHEM_CID = "PubchemCID"
-ATOM_LIST = "AtomsList"
-ATOM_COUNTS = "AtomsCounts"
-ENTH_FORM = "StandardEnthalpyOfFormation"
-ENTH_UNIT = "StandardEnthalpyOfFormationUnit"
-ENTH_PHASE = "StandardEnthalpyOfFormationPhase"
-ENTH_REFTEMP = "ReferenceTemperature"
-ENTH_REFTEMP_UNIT = "ReferenceTemperatureUnit"
-ENTH_PROV = "StandardEnthalpyofFormationProvenance"
-ATOM_INDICES = "AtomsIndices"
-COORD_X = "CoordinateX"
-COORD_Y = "CoordinateY"
-COORD_Z = "CoordinateZ"
 
 
 HANDLER_PARAMETERS = {
@@ -100,7 +66,9 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
 
     def _os_jsonwriter(self, file_path: str, output_file_path: str) -> None:
 
-        random_id = self.get_parameter_value(name="random_id")
+        random_id = self.get_parameter_value(
+            name="random_id", default=utilsfunc.get_random_id()
+        )
         enth_of_form = self.get_parameter_value(name="enth_of_form")
         enth_of_form_unit = self.get_parameter_value(name="enth_of_form_unit")
         enth_of_form_phase = self.get_parameter_value(name="enth_of_form_phase")
@@ -113,107 +81,43 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         )
 
         with open(file_path, "r") as file_handle:
-            data = json.load(file_handle)
+            qc_data_in = json.load(file_handle)
 
-        data_out = {}
-        xyz = ccparse_utils.get_xyz_from_parsed_json(data)
-        inchi = obconverter.obConvert(xyz, "xyz", "inchi")
-        smiles = obconverter.obConvert(xyz, "xyz", "smi")
-        data_out[INCHI] = inchi
-        data_out[SMILES] = smiles
-        data_out[EMP_FORMULA] = utilsfunc.clean_qc_json_emp_formula(
-            emp_formula=data[EMP_FORMULA]
-        )
-        data_out[ATOM_TYPES] = data[ATOM_TYPES]
-        data_out[GEOM] = data[GEOM]
-        data_out[SPIN_MULT] = data[SPIN_MULT]
-        data_out[ATOM_INDICES] = utilsfunc.get_atom_indices_from_qc_json(
-            data[ATOM_TYPES]
-        )
+        # create an empty os json out dict
+        data_out = dict.fromkeys(os_keys.OS_JSON_KEYS, None)
 
-        coord_x, coord_y, coord_z = utilsfunc.split_qc_json_geom_to_xyz_coords(
-            data[GEOM]
-        )
-        data_out[COORD_X] = coord_x
-        data_out[COORD_Y] = coord_y
-        data_out[COORD_Z] = coord_z
+        # populate the selected os json entries with the qc json data
+        # apply any defined post processing steps
+        # --------------------------------------------------
+        for os_key, qc_os_map in os_keys.OS_JSON_TO_QC_JSON_KEYS_MAP.items():
+            qc_values = [qc_data_in.get(key) for key in qc_os_map["cckeys"]]
+            data_out[os_key] = qc_os_map["postproc_func"](qc_values)
 
-        if enth_of_form is not None:
-            data_out[ENTH_FORM] = enth_of_form
-        if enth_of_form_unit is not None:
-            data_out[ENTH_UNIT] = enth_of_form_unit
-        if enth_of_form_phase is not None:
-            data_out[ENTH_PHASE] = enth_of_form_phase
-        if enth_of_form_ref_temp is not None:
-            data_out[ENTH_REFTEMP] = enth_of_form_ref_temp
-        if enth_of_form_ref_temp_unit is not None:
-            data_out[ENTH_REFTEMP_UNIT] = enth_of_form_ref_temp_unit
-        if enth_of_form_provenance is not None:
-            data_out[ENTH_PROV] = enth_of_form_provenance
+        # add any enthalpy data
+        data_out[os_keys.STANDARD_ENTH_FORM] = enth_of_form
+        data_out[os_keys.STANDARD_ENTH_FORM_UNIT] = enth_of_form_unit
+        data_out[os_keys.STANDARD_ENTH_FORM_PHASE] = enth_of_form_phase
+        data_out[os_keys.STANDARD_ENTH_FORM_REF_TEMP] = enth_of_form_ref_temp
+        data_out[os_keys.STANDARD_ENTH_FORM_REF_TEMP_UNIT] = enth_of_form_ref_temp_unit
+        data_out[os_keys.STANDARD_ENTH_FORM_PROVENANCE] = enth_of_form_provenance
 
-        if ATOM_MASSES not in data.keys():
-            data_out[MOLWT] = get_molwt_from_atom_types(data_out[ATOM_TYPES])
-        else:
-            data_out[MOLWT] = sum(data[ATOM_MASSES])
+        # add any punchem data
+        if data_out[os_keys.INCHI] is not None:
+            pubchem_data = _get_pubchem_data(
+                inchi=data_out[os_keys.INCHI], max_attempts=PUBCHEM_QUERY_ATTEMPTS
+            )
+            data_out[os_keys.PUBCHEM_ALT_LABEL] = pubchem_data.get("alt_labels")
+            data_out[os_keys.CAS_NUMBER] = pubchem_data.get("casid")
+            data_out[os_keys.PUBCHEM_CID] = pubchem_data.get("cid")
 
-        if FORMAL_CHARGE not in data.keys():
-            # use openbable to find the charge?
-            data_out[FORMAL_CHARGE] = 0
-        else:
-            data_out[FORMAL_CHARGE] = data[FORMAL_CHARGE]
-
-        data_out[GEOM_STRING] = self._geom_info(data)
-        bonds_info = obutils.obGetMolBonds(xyz)
-        bonds_info_line = [
-            f"{bond['beginAtom']['atomId']} {bond['endAtom']['atomId']} {bond['order']}"
-            for bond in bonds_info
-        ]
-        data_out[BOND_STRING] = " ".join(bonds_info_line)
-
-        pubchem_data = _get_pubchem_data(
-            inchi=data_out[INCHI], max_attempts=PUBCHEM_QUERY_ATTEMPTS
-        )
-
-        data_out[PUBCHEM_ALT_LABEL] = pubchem_data.get("alt_labels")
-        data_out[CAS_NUMBER] = pubchem_data.get("casid")
-        data_out[PUBCHEM_CID] = pubchem_data.get("cid")
-
-        atom_list, atom_counts = self._atom_constructor(data_out[ATOM_TYPES])
-        data_out[ATOM_LIST] = atom_list
-        data_out[ATOM_COUNTS] = atom_counts
-
-        if not random_id:
-            random_id = utilsfunc.get_random_id()
-
-        data_out[params.ENTRY_UUID] = random_id
-
+        # write entry id and iri
+        data_out[os_keys.ENTRY_ID] = random_id
         main_inst_pref = utilsfunc.read_main_pref_from_schema(
             schema_file=OS_SCHEMA, main_pref_name="main_inst_pref"
         )
-        data_out[params.ENTRY_IRI] = f"{main_inst_pref}{random_id}"
+        data_out[os_keys.ENTRY_IRI] = f"{main_inst_pref}{random_id}"
 
         utilsfunc.write_dict_to_file(dict_data=data_out, dest_path=output_file_path)
-
-    @staticmethod
-    def _geom_info(data):
-        atoms = data["Atom types"]
-        coords = data["Geometry"]
-        geom_out = []
-        for k in range(len(atoms)):
-            atom = atoms[k]
-            x = coords[k][0]
-            y = coords[k][1]
-            z = coords[k][2]
-            geom_out.append(f"{atom} {x} {y} {z}")
-        geom_string = " ".join(geom_out)
-        return geom_string
-
-    @staticmethod
-    def _atom_constructor(atom_list):
-        pruned_atoms = list(dict.fromkeys(atom_list))
-        c = Counter(atom_list)
-        atom_counts = [c[x] for x in pruned_atoms]
-        return pruned_atoms, atom_counts
 
 
 def _get_pubchem_data(inchi: str, max_attempts: int = 3) -> Dict:

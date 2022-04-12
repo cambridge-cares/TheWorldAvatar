@@ -1,55 +1,49 @@
 {
-    "InChi": "InChI=1S/HO/h1H",
-    "Smiles": "[OH]",
-    "Empirical formula": "HO",
-    "Atom types": [
-        "O",
-        "H"
-    ],
-    "Geometry": [
-        [
-            0.0,
-            0.0,
-            0.1065
-        ],
-        [
-            0.0,
-            0.0,
-            -0.852
-        ]
-    ],
-    "Spin multiplicity": 2,
-    "AtomsIndices": [
+    "Empirical_Formula": "HO",
+    "Atom_Total_Counts": [
         1,
         1
     ],
-    "CoordinateX": [
+    "Per_Atom_Type_Indices": [
+        1,
+        1
+    ],
+    "Atom_List": [
+        "O",
+        "H"
+    ],
+    "Elements": [
+        "O",
+        "H"
+    ],
+    "Molecular_Weight": 17.007321,
+    "Spin_Multiplicity": 2,
+    "Total_Charge": 0,
+    "Geometry_String": "O 0.0 0.0 0.1065 H 0.0 0.0 -0.852",
+    "X_Atoms_Coordinates": [
         0.0,
         0.0
     ],
-    "CoordinateY": [
+    "Y_Atoms_Coordinates": [
         0.0,
         0.0
     ],
-    "CoordinateZ": [
+    "Z_Atoms_Coordinates": [
         0.1065,
         -0.852
     ],
-    "MolecularWeight": 17.007321,
-    "Formal charge": 0,
-    "GeometryString": "O 0.0 0.0 0.1065 H 0.0 0.0 -0.852",
-    "BondString": "2 1 1",
-    "PubchemAlternativeLabel": "1111-11-1",
-    "CAS": "1111-11-1",
-    "PubchemCID": 1111,
-    "AtomsList": [
-        "O",
-        "H"
-    ],
-    "AtomsCounts": [
-        1,
-        1
-    ],
-    "EntryUUID": "testID-111-111-111",
-    "EntryIRI": "http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111"
+    "Bond_String": "2 1 1",
+    "Inchi": "InChI=1S/HO/h1H",
+    "Smiles": "[OH]",
+    "Pubchem_Alternative_Label": "1111-11-1",
+    "CAS_Number": "1111-11-1",
+    "Pubchem_CID": 1111,
+    "Standard_Enthalpy_Formation": null,
+    "Standard_Enthalpy_Formation_Unit": null,
+    "Standard_Enthalpy_Formation_Phase": null,
+    "Standard_Enthalpy_Formation_Ref_Temperature": null,
+    "Standard_Enthalpy_Formation_Ref_Temperature_Unit": null,
+    "Standard_Enthalpy_Formation_Provenance": null,
+    "Entry_IRI": "http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111",
+    "Entry_ID": "testID-111-111-111"
 }
