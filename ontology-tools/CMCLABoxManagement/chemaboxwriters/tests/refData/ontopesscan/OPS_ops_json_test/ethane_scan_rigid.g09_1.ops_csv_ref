@@ -34,10 +34,10 @@ http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_4,In
 http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_4,Instance,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_4,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue,,
 http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_4,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_1,,1 2,String
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_1,,1.53074,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_1,,1.531,String
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_2,,1 2,String
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_2,,1.63074,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_2,,1.631,String
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_3,,1 2,String
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_3,,1.73074,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_3,,1.731,String
 http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasInputAtomIds,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanPoint_OPStestID-111-111-11_4,,1 2,String
-http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_4,,1.83074,String
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontopesscan/ScanCoordinateValue_OPStestID-111-111-11_4,,1.831,String
