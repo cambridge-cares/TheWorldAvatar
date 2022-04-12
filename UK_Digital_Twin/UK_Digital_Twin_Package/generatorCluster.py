@@ -1,6 +1,6 @@
 ###################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)             #
-# Last Update Date: 13 Jan 2022                   #
+# Last Update Date: 12 April 2022                 #
 ###################################################
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,24 +24,27 @@ class generatorCluster(object):
     """"This cluster is firstly appoled in the 10-bus model (UK) as a simplest generator allocation principle, 
     which is to assign the genenrators to the bus who locatates in the same region. 
     However, when the same region has more than one bus, this cluster method may not be suitable anymore."""   
-    def sameRegionWithBus(self, res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggregatedBusList):     
-        # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon[], Bus_LACode ]
+    def sameRegionWithBus(self, busInfoList, res_queryPowerPlantAttributes, aggregatedBusList):     
+        # res_queryBusTopologicalInformation = [Bus_node, Bus_lat_lon[], Bus_LACode ]
         # res_queryPowerPlantAttributes = [PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology]
         ons_label = endpointList.ONS['lable']
         # Find the located region of each bus
-        res_queryBusTopologicalInformation = busLocatedRegionFinder(res_queryBusTopologicalInformation, ons_label, 'Bus_lat_lon')
-        
+        res_queryBusTopologicalInformation = busLocatedRegionFinder(busInfoList, ons_label, 'Bus_lat_lon')
         # identify the aggragatedBus: same bus but represents different areas (regions)
         if len(aggregatedBusList) != 0:
-            for aggregatedBus in aggregatedBusList:               
-                for bus in res_queryBusTopologicalInformation:
-                    if int(bus['Bus_node'].split('_EBus-')[1]) == int(aggregatedBus[0]):
+            for aggregatedBus in aggregatedBusList:
+                i = 0
+                while i <= len(res_queryBusTopologicalInformation):
+                #for bus in res_queryBusTopologicalInformation:
+                    if i == int(aggregatedBus[0]) - 1:
+                        bus = res_queryBusTopologicalInformation[i]
                         aggregatedBusDict = {}
                         aggregatedBusDict = {**bus, **aggregatedBusDict} # dictionary cannot be renamed, merge a blank dict with an exisiting one equals to rename the dict
                         aggregatedBusDict['Bus_LACode'] = str(aggregatedBus[1])
                         res_queryBusTopologicalInformation.append(aggregatedBusDict)
                         break
-   
+                    i += 1
+                    
         # check one region has at most one bus as this cluster method can only be used in this occasion 
         region = [ str(r['Bus_LACode']) for r in res_queryBusTopologicalInformation ]
         duplicatesOfRegion = [k for k, v in Counter(region).items() if v > 1]
@@ -59,14 +62,14 @@ class generatorCluster(object):
             # pp['PP_lat_lon'] = [float(pp['PP_lat_lon'].split('#')[0]), float(pp['PP_lat_lon'].split('#')[1])]
             powerPlantAndBusPair = {}
             for bus in res_queryBusTopologicalInformation:
-                if str(pp['LACode_PP']) == str(bus['Bus_LACode']):
+                if pp['LACode_PP'].strip() == bus['Bus_LACode'].strip():
                     powerPlantAndBusPair = {**pp, **bus}
                     del powerPlantAndBusPair['Bus_LocatedRegionBoundary']
                     powerPlantAndBusPairList.append(powerPlantAndBusPair) 
                     break
             if len(powerPlantAndBusPair) == 0: # if the length of pp has not changed which means no region being found in the bus node from the above loop
                 pp_within_region = str(query_topo.queryWithinRegion(pp['LACode_PP'], ons_label)) # if the LA code attached to the pp is under the region level in hierarchy
-                if str(pp_within_region) != str(None): 
+                if str(pp_within_region).strip() != str(None): 
                     print('###########The LA code attached to the power plant is under the region level in hierarchy###########')
                     for bus in res_queryBusTopologicalInformation:
                           if bus['Bus_LACode'] in pp_within_region:
@@ -87,7 +90,7 @@ class generatorCluster(object):
                             break
                     if len(powerPlantAndBusPair) == 0:
                         print('###########The point cannot be found in the boundaries of the given buses###########')
-                        if str(pp['GenerationTechnology'].split('#')[1]) == 'WindOffshore': # the offshore wind turbine is outside the landmass boundaries
+                        if "WindOffshore" in str(pp['GenerationTechnology']).strip(): # the offshore wind turbine is outside the landmass boundaries
                             raise Exception('This is a WindOffshore power plant, ', pp['PowerGenerator'], 'which may not being included in any landmass boundaries.')
                         elif len(region) < 12: 
                             print('This power plant may located in the other regions which are not be served by the given bus list, mostly likely located in Northern Ireland.')
@@ -104,133 +107,34 @@ class generatorCluster(object):
     However, it may generate some unpractical design. For example, a generator located in Walse will be allocated to a bus across the Bristol channel,
     which is aginst the reality."""
     # This function is modified from: John Atherton (ja685@cam.ac.uk) #   
-    def closestBus_longestRunTime(self, res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggregatedBusList):  
+    def closestBus(self, busInfoList, res_queryPowerPlantAttributes, aggregatedBusList):  
       print('****The cluster principle is closestBus****')
-      # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon (LA code region) ]
-      # res_queryPowerPlantAttributes = [PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology]
-      ons_label = endpointList.ONS['lable']
-      # Find which country (landmass) the bus locates in, GB or Norther Ireland
-      res_queryBusTopologicalInformation = busLocatedCountryFinder(res_queryBusTopologicalInformation, ons_label, 'Bus_lat_lon')
-      
-      powerPlantAndBusPairList = [] 
-      busNumberArray = list(range(1, len(res_queryBusTopologicalInformation) + 1))     
-      for pp in res_queryPowerPlantAttributes: 
-           powerPlantAndBusPair = {}
-           distances = [65534]*len(res_queryBusTopologicalInformation) # the large number is the earth's circumference
-           # pp['PP_lat_lon'] = [float(pp['PP_lat_lon'].split('#')[0]), float(pp['PP_lat_lon'].split('#')[1])]
-           j = 0
-           for bus in res_queryBusTopologicalInformation:
-              pp_within_flag = query_topo.queryifWithin(pp['LACode_PP'], bus['Bus_LocatedCountry'], ons_label)
-              if pp_within_flag == True or pp['LACode_PP'] == bus['Bus_LocatedCountry']:  
-                  GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
-                  distances[j] = GPS_distance(GPSLocationPair)
-                  j += 1
-              elif pp['LACode_PP'][0] == 'K02000001': # incase the power plant being attached with a LA code which represents UK
-                  pp_lonlat_point = shapely.geometry.Point(pp['PP_lat_lon'][1], pp['PP_lat_lon'][0])
-                  interior_pp = bus['Bus_LocatedCountry'].intersects(pp_lonlat_point)
-                  if interior_pp == True:
-                      GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
-                      distances[j] = GPS_distance(GPSLocationPair)
-                      j += 1
-                  
-           if min(distances) == 65534: # The power plant is not located in any area which the buses located in, like the pp in NI
-               print('######', pp['PowerGenerator'], pp['LACode_PP'])
-               print('######The power plant is not located in any area which the buses located in.')
-           else:
-               bus_index = distances.index(min(distances))    
-               powerPlantAndBusPair = {**res_queryBusTopologicalInformation[bus_index], **pp} 
-               del powerPlantAndBusPair['Bus_LocatedCountry']
-               powerPlantAndBusPairList.append(powerPlantAndBusPair) 
-               #check if all buses are connected with generators 
-               busNo = int(powerPlantAndBusPair['Bus_node'].split("EBus-")[1])
-               if busNo in busNumberArray:
-                  busNumberArray.remove(busNo)
-      if len(busNumberArray) != 0:
-          print("WARNING: There are buses not being connected by the generators, which are number:", busNumberArray)
-      else:
-          print("************All buses are connected with generators************") 
-      return powerPlantAndBusPairList 
-    ###########################################################
-    ##### use some pre known to avoid the multiple queries ####
-    def closestBus_withPreKnown(self, res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggregatedBusList):  
-      print('****The cluster principle is closestBus****')
-      # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon (LA code region) ]
-      # res_queryPowerPlantAttributes = [PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology]
-      ons_label = endpointList.ONS['lable']
-      # Find which country (landmass) the bus locates in, GB or Norther Ireland
-      res_queryBusTopologicalInformation = busLocatedCountryFinder(res_queryBusTopologicalInformation, ons_label, 'Bus_lat_lon')
-    
-      powerPlantAndBusPairList = [] 
-      busNumberArray = list(range(1, len(res_queryBusTopologicalInformation) + 1)) 
-      print('The total number of power plants is:', len(res_queryPowerPlantAttributes))
-      for pp in res_queryPowerPlantAttributes: 
-           # print(pp['PowerGenerator'])
-           powerPlantAndBusPair = {}
-           distances = [65534]*len(res_queryBusTopologicalInformation) # the large number is the earth's circumference
-           #pp['PP_lat_lon'] = [float(pp['PP_lat_lon'].split('#')[0]), float(pp['PP_lat_lon'].split('#')[1])]
-           j = 0
-           for bus in res_queryBusTopologicalInformation:
-              if str(bus['Bus_LocatedCountry']) == 'K03000001': # bus in GB
-                  if str(pp['LACode_PP'][0]) in ['S', 'W', 'E'] or str(pp['LACode_PP']) in ['K03000001', 'K04000001']:
-                      GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
-                      distances[j] = GPS_distance(GPSLocationPair)
-                      j += 1
-              elif str(bus['Bus_LocatedCountry']) == 'N92000002': #bus in NI   
-                  if str(pp['LACode_PP'][0]) =='N':
-                      GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
-                      distances[j] = GPS_distance(GPSLocationPair)
-                      j += 1
-              elif pp['LACode_PP'][0] == 'K02000001': # in case the power plant being attached with a LA code which represents UK
-                  pp_lonlat_point = shapely.geometry.Point(pp['PP_lat_lon'][1], pp['PP_lat_lon'][0])
-                  interior_pp = bus['Bus_LocatedCountry'].intersects(pp_lonlat_point)
-                  if interior_pp == True:
-                      GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
-                      distances[j] = GPS_distance(GPSLocationPair)
-                      j += 1
-     
-           if min(distances) == 65534: # The power plant is not located in any area which the buses located in, like the pp in NI
-               print('######', pp['PowerGenerator'], pp['LACode_PP'])
-               print('######The power plant is not located in any area where the buses located in.')
-           else:
-               bus_index = distances.index(min(distances))    
-               powerPlantAndBusPair = {**res_queryBusTopologicalInformation[bus_index], **pp} 
-               del powerPlantAndBusPair['Bus_LocatedCountry']
-               powerPlantAndBusPairList.append(powerPlantAndBusPair) 
-               #check if all buses are connected with generators 
-               busNo = int(powerPlantAndBusPair['Bus_node'].split("EBus-")[1])
-               if busNo in busNumberArray:
-                  busNumberArray.remove(busNo)
-      if len(busNumberArray) != 0:
-          print("WARNING: There are buses not being connected by the generators, which are number:", busNumberArray)
-      else:
-          print("************All buses are connected with generators************") 
-      return powerPlantAndBusPairList
-  
-    #######################################################################################################################################
-    def closestBus(self, res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggregatedBusList):  
-      print('****The cluster principle is closestBus****')
-      # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon (LA code region) ]
+      # busInfoList = [Bus_node, Bus_lat_lon (LA code region) ]
       # res_queryPowerPlantAttributes = [PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology]
       ons_label = endpointList.ONS['lable']
       # detect the location of the bus, in GB or in NI
-      busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(res_queryBusTopologicalInformation, ons_label)
+      busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(busInfoList, ons_label)
       
       powerPlantAndBusPairList = [] 
-      busNumberArray = list(range(1, len(res_queryBusTopologicalInformation) + 1))     
+      busNumberArray = []
+      # busNumberArray = list(range(1, len(busInfoList) + 1)) 
+      for bus in busInfoList:
+          busNumberArray.append(str(bus["Bus_node"]))
+      
       for pp in res_queryPowerPlantAttributes: 
            powerPlantAndBusPair = {}
            if len(busInGB) > 0:
-               pp_within_flag = query_topo.queryifWithin(pp['LACode_PP'], 'K03000001', ons_label)
+               pp_within_flag = query_topo.queryifWithin(pp['LACode_PP'].strip(), 'K03000001', ons_label)
                j = 0
                distances = [65534]*len(busInGB) # the large number is the earth's circumference
                BusPowerPlantGPSPairList = []
-               if pp_within_flag == True or pp['LACode_PP'] == 'K03000001': # power plant located in GB
+               if pp_within_flag == True or pp['LACode_PP'].strip() == 'K03000001': # power plant located in GB
                   for bus in busInGB:
                       GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
                       distances[j] = GPS_distance(GPSLocationPair)
                       BusPowerPlantGPSPairList.append(GPSLocationPair)
                       j += 1
-               elif pp['LACode_PP'] == 'K02000001': # in case the power plant being attached with a LA code which represents UK
+               elif pp['LACode_PP'].strip() == 'K02000001': # in case the power plant being attached with a LA code which represents UK
                       pp_lonlat_point = shapely.geometry.Point(pp['PP_lat_lon'][1], pp['PP_lat_lon'][0])
                       interior_pp = countryBoundaryDict['K03000001'].intersects(pp_lonlat_point)
                       if interior_pp == True:
@@ -247,20 +151,20 @@ class generatorCluster(object):
                    powerPlantAndBusPair = {**busInGB[bus_index], **pp} 
                    powerPlantAndBusPairList.append(powerPlantAndBusPair) 
                    # check if all buses are connected with generators 
-                   busNo = int(powerPlantAndBusPair['Bus_node'].split("EBus-")[1])
-                   if busNo in busNumberArray:
-                      busNumberArray.remove(busNo)
+                   # busNo = int(powerPlantAndBusPair['Bus_node'].split("EBus-")[1])
+                   if powerPlantAndBusPair['Bus_node'] in busNumberArray:
+                      busNumberArray.remove(powerPlantAndBusPair['Bus_node'])
                    continue # if the power plant is within GB, then it is not necessary to check its distance from the buses located in NI, jump from the current loop
            if len(busInNorthernIreland) > 0:
                j = 0
                distances = [65534]*len(busInNorthernIreland) # the large number is the earth's circumference
-               pp_within_flag = query_topo.queryifWithin(pp['LACode_PP'], 'N07000001', ons_label)
-               if pp_within_flag == True or pp['LACode_PP'] == 'N92000002' or pp['LACode_PP'] == 'N07000001': # power plant located in NI
+               pp_within_flag = query_topo.queryifWithin(pp['LACode_PP'].strip(), 'N07000001', ons_label)
+               if pp_within_flag == True or pp['LACode_PP'].strip() == 'N92000002' or pp['LACode_PP'].strip() == 'N07000001': # power plant located in NI
                   for bus in busInNorthernIreland:
                       GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
                       distances[j] = GPS_distance(GPSLocationPair)
                       j += 1
-               elif pp['LACode_PP'] == 'K02000001': # in case the power plant being attached with a LA code which represents UK
+               elif pp['LACode_PP'].strip() == 'K02000001': # in case the power plant being attached with a LA code which represents UK
                       pp_lonlat_point = shapely.geometry.Point(pp['PP_lat_lon'][1], pp['PP_lat_lon'][0])
                       interior_pp = countryBoundaryDict['N92000002'].intersects(pp_lonlat_point)
                       if interior_pp == True:
@@ -277,11 +181,11 @@ class generatorCluster(object):
                    powerPlantAndBusPair = {**busInNorthernIreland[bus_index], **pp}                    
                    powerPlantAndBusPairList.append(powerPlantAndBusPair) 
                    #check if all buses are connected with generators busLocatedCountryFinder
-                   busNo = int(powerPlantAndBusPair['Bus_node'].split("EBus-")[1])
-                   if busNo in busNumberArray:
-                      busNumberArray.remove(busNo)
+                   # busNo = int(powerPlantAndBusPair['Bus_node'].split("EBus-")[1])
+                   if powerPlantAndBusPair['Bus_node'] in busNumberArray:
+                      busNumberArray.remove(powerPlantAndBusPair['Bus_node'])
       if len(busNumberArray) != 0:
-          print("WARNING: There are buses not being connected by the generators, which are number:", busNumberArray)
+          print("WARNING: There are buses not being connected by the generators, which are:", busNumberArray)
       else:
           print("************All buses are connected with generators************") 
       return powerPlantAndBusPairList 

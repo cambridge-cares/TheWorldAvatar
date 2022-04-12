@@ -23,7 +23,7 @@ Bus_lat_lon_key (str): the ket of the dictionary whose the value is the lat-lon 
 """
 def busLocatedRegionFinder(busInfoList, ons_label, Bus_lat_lon_key):
     time.gmtime(0) 
-    res_regionalBoundary = list(query_topo.queryRegionBoundaries(ons_label)) # [LACode_area, Geo_InfoList]       
+    res_regionalBoundary = list(query_topo.queryRegionBoundaries(ons_label)) # [LACode_area, Geo_InfoList]    
     for bus in busInfoList:
         lengthBusDict = len(bus)
         bus_lonlat_point = shapely.geometry.Point(float(bus[Bus_lat_lon_key][1]), float(bus[Bus_lat_lon_key][0]))
