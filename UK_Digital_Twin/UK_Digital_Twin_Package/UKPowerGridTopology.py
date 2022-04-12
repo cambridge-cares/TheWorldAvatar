@@ -24,16 +24,16 @@ class UKPowerGridTopology:
     OverheadLineKey = "OverheadLine_"
     
     """Elines attributes"""
-    ShapeKey = "Shape_"
-    LengthKey = "Length_"
-    OHLKey = "OHL_"
+    ShapeKey = "Cylinder_"
+    LengthKey = "Height_"
+    OHLKey = "OverheadLine_"
     
     CoordinateSystemKey = "CoordinateSystem_"
     
     LongitudeKey = "x_coordinate_" 
     LantitudeKey = "y_coordinate_" 
     
-    valueKey = "value_"
+    valueKey = "ScalarValue_"
     NumberOfKey = "Number_of_"
 
     def __init__(self, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
