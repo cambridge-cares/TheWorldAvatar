@@ -1,49 +1,25 @@
 import chemaboxwriters.kgoperations.querytemplates as querytemplates
 import chemutils.obabelutils.obconverter as obconverter
 from compchemparser.helpers.utils import get_xyz_from_parsed_json
-import chemaboxwriters.common.params as params
-from compchemparser.parsers.ccgaussian_parser import (
-    PROGRAM_NAME,
-    PROGRAM_VERSION,
-    ATOM_COUNTS,
-    FREQ,
-    ROT_CONST,
-    ELECTRONIC_ENERGY,
-    ELECTRONIC_ZPE_ENERGY,
-    EMP_FORMULA,
-    ATOM_TYPES,
-    GEOM,
-    ROT_SYM_NR,
-)
+import chemaboxwriters.ontocompchem.handlers.oc_json_keys as oc_keys
 from chemaboxwriters.common.handler import Handler
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import chemaboxwriters.kgoperations.remotestore_client as rsc
 from chemaboxwriters.ontocompchem.abox_stages import OC_ABOX_STAGES
 import json
-from typing import List
+from typing import List, Optional
 from chemaboxwriters.ontocompchem import OC_SCHEMA
 import logging
 
 
 logger = logging.getLogger(__name__)
 
+
 HANDLER_PARAMETERS = {
     "random_id": {"required": False},
     "ontospecies_IRI": {"required": False},
     "generate_png": {"required": False},
 }
-
-PNG_SOURCE_LOCATION = "png_source_location"
-XML_SOURCE_LOCATION = "xml_source_location"
-UNIQUE_ATOMS = "Unique_Atoms"
-TOTAL_ATOMS_COUNTS = "Total_Atom_Counts"
-FREQ_STRING = "Frequencies_String"
-ROT_CONST_STRING = "Rotational_Constants_String"
-ZPE_ENERGY = "Zero_Point_Energy"
-ATOM_INDICES = "AtomsIndices"
-COORD_X = "CoordinateX"
-COORD_Y = "CoordinateY"
-COORD_Z = "CoordinateZ"
 
 
 class QC_JSON_TO_OC_JSON_Handler(Handler):
@@ -90,84 +66,95 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         dry_run: bool,
     ) -> None:
 
-        random_id = self.get_parameter_value(name="random_id")
-        ontospecies_IRI = self.get_parameter_value(name="ontospecies_IRI")
-        generate_png = self.get_parameter_value(name="generate_png")
+        # get handler params
+        random_id = self.get_parameter_value(
+            name="random_id", default=utilsfunc.get_random_id()
+        )
+        generate_png = self.get_parameter_value(name="generate_png", default=False)
 
-        if random_id is None:
-            random_id = utilsfunc.get_random_id()
-
+        # read in the incoming qc json data file
         with open(file_path, "r") as file_handle:
-            data = json.load(file_handle)
+            data_in = json.load(file_handle)
 
-        xyz = get_xyz_from_parsed_json(data)
-        inchi = obconverter.obConvert(xyz, "xyz", "inchi")
+        # create an empty oc json out dict
+        data_out = dict.fromkeys(oc_keys.OC_JSON_KEYS, None)
 
-        if ROT_SYM_NR in data:
-            data[ROT_SYM_NR] = int(data[ROT_SYM_NR])
+        # populate the selected oc json entries with the qc json data
+        # apply any defined post processing steps
+        # --------------------------------------------------
+        for oc_key, qc_oc_map in oc_keys.OC_JSON_TO_QC_JSON_KEYS_MAP.items():
+            qc_values = [data_in.get(key) for key in qc_oc_map["cckeys"]]
+            data_out[oc_key] = qc_oc_map["postproc_func"](qc_values)
+
+        # now add any remaining oc json data entries
+        # --------------------------------------------------
+        inchi = obconverter.obConvert(get_xyz_from_parsed_json(data_in), "xyz", "inchi")
+
+        data_out[oc_keys.SPECIES_IRI] = self.get_parameter_value(
+            name="ontospecies_IRI", default=self._search_ontospecies_iri(inchi=inchi)
+        )
 
         if generate_png is True:
-            png_out_path = f"{output_file_path}.png"
-            utilsfunc.generate_molecule_png(inchi=inchi, out_path=png_out_path)
-            self.do_fs_uploads(
-                inputs=[png_out_path],
-                input_type="oc_png",
-                dry_run=dry_run,
+            data_out[oc_keys.PNG_SOURCE_LOCATION] = self._process_png_input(
+                inchi=inchi, output_file_path=output_file_path, dry_run=dry_run
             )
-            png_file_loc = self.get_fs_upload_location(upload_file=png_out_path)
-            if png_file_loc is not None:
-                data[PNG_SOURCE_LOCATION] = png_file_loc
-            self.written_files.append(png_out_path)
-
-        if ontospecies_IRI is None:
-            response = self.do_remote_store_query(
-                endpoint_prefix="ospecies",
-                store_client_class=rsc.SPARQLWrapperRemoteStoreClient,
-                query_str=querytemplates.spec_inchi_query(inchi),
-            )
-            if response:
-                ontospecies_IRI = response[0]["speciesIRI"]
 
         # at the moment we only support gaussian
-        jobType = ""
-        if "Gaussian" in data[PROGRAM_NAME]:
-            if PROGRAM_VERSION in data:
-                jobType = "G" + data[PROGRAM_VERSION][2:4]
-            else:
-                jobType = "Gxx"
-
-        data[EMP_FORMULA] = utilsfunc.clean_qc_json_emp_formula(
-            emp_formula=data[EMP_FORMULA]
+        jobType = self._get_job_type(
+            program_name=data_out[oc_keys.PROGRAM_NAME],
+            program_version=data_out[oc_keys.PROGRAM_VERSION],
         )
-
-        coord_x, coord_y, coord_z = utilsfunc.split_qc_json_geom_to_xyz_coords(
-            data.pop(GEOM)
-        )
-        data[COORD_X] = coord_x
-        data[COORD_Y] = coord_y
-        data[COORD_Z] = coord_z
-
-        data[ATOM_INDICES] = utilsfunc.get_atom_indices_from_qc_json(data[ATOM_TYPES])
-
-        data[params.SPECIES_IRI] = ontospecies_IRI
 
         main_inst_pref = utilsfunc.read_main_pref_from_schema(
             schema_file=OC_SCHEMA, main_pref_name="main_inst_pref"
         )
-        data[params.ENTRY_IRI] = f"{main_inst_pref}{jobType}_{random_id}"
-        data[params.ENTRY_UUID] = random_id
+        data_out[oc_keys.ENTRY_IRI] = f"{main_inst_pref}{jobType}_{random_id}"
+        data_out[oc_keys.ENTRY_ID] = random_id
 
-        if ATOM_COUNTS in data:
-            data[UNIQUE_ATOMS] = list(data[ATOM_COUNTS].keys())
-            data[TOTAL_ATOMS_COUNTS] = list(data[ATOM_COUNTS].values())
+        utilsfunc.write_dict_to_file(dict_data=data_out, dest_path=output_file_path)
 
-        if FREQ in data:
-            data[FREQ_STRING] = " ".join(str(i) for i in data[FREQ])
+    def _process_png_input(
+        self, inchi: str, output_file_path: str, dry_run: bool
+    ) -> Optional[str]:
+        png_out_path = f"{output_file_path}.png"
+        self._generate_molecule_png(output_file_path=png_out_path, inchi=inchi)
+        png_file_loc = self._upload_mol_png(png_out_path=png_out_path, dry_run=dry_run)
 
-        if ROT_CONST in data:
-            data[ROT_CONST_STRING] = " ".join(str(i) for i in data[ROT_CONST])
+        return png_file_loc
 
-        if ELECTRONIC_ZPE_ENERGY in data and ELECTRONIC_ENERGY in data:
-            data[ZPE_ENERGY] = data.pop(ELECTRONIC_ZPE_ENERGY) - data[ELECTRONIC_ENERGY]
+    def _generate_molecule_png(self, output_file_path: str, inchi: str) -> None:
+        utilsfunc.generate_molecule_png(inchi=inchi, out_path=output_file_path)
+        self.written_files.append(output_file_path)
 
-        utilsfunc.write_dict_to_file(dict_data=data, dest_path=output_file_path)
+    def _upload_mol_png(self, png_out_path: str, dry_run: bool) -> Optional[str]:
+        self.do_fs_uploads(
+            inputs=[png_out_path],
+            input_type="oc_png",
+            dry_run=dry_run,
+        )
+        return self.get_fs_upload_location(upload_file=png_out_path)
+
+    def _search_ontospecies_iri(self, inchi: str) -> Optional[str]:
+        ontospecies_IRI = None
+        response = self.do_remote_store_query(
+            endpoint_prefix="ospecies",
+            store_client_class=rsc.SPARQLWrapperRemoteStoreClient,
+            query_str=querytemplates.spec_inchi_query(inchi),
+        )
+        if response:
+            ontospecies_IRI = response[0]["speciesIRI"]
+        return ontospecies_IRI
+
+    def _get_job_type(
+        self, program_name: Optional[str], program_version: Optional[str]
+    ) -> str:
+        job_type = ""
+        if program_name is None:
+            return job_type
+        if "Gaussian" in program_name:
+            if program_version is not None:
+                # the way we extract job type here is ugly and needs to be fixed at some point..
+                job_type = "G" + program_version[2:4]
+            else:
+                job_type = "Gxx"
+        return job_type

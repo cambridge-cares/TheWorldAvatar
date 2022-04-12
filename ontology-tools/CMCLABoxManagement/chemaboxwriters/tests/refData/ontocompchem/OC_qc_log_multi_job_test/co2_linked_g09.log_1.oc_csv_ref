@@ -55,6 +55,12 @@ http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111,Instance,ht
 http://www.theworldavatar.com/kb/ontocompchem/ZeroPointEnergy_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_ZeroPointEnergy,http://purl.org/gc/hasElectronicEnergy,,
 http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_ZeroPointEnergy,Instance,http://data.nasa.gov/qudt/owl/unit#Hartree,http://purl.org/gc/hasUnit,,
 http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_ZeroPointEnergy,,0.011717763999996578,String
+http://www.theworldavatar.com/kb/ontocompchem/ElectronicAndZPEEnergy_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#ElectronicAndZPEEnergy,,,
+http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_ElectronicAndZPEEnergy,Instance,http://purl.org/gc/FloatValue,,,
+http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/ElectronicAndZPEEnergy_testID-111-111-111,http://purl.org/gc/isCalculationOn,,
+http://www.theworldavatar.com/kb/ontocompchem/ElectronicAndZPEEnergy_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_ElectronicAndZPEEnergy,http://purl.org/gc/hasElectronicEnergy,,
+http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_ElectronicAndZPEEnergy,Instance,http://data.nasa.gov/qudt/owl/unit#Hartree,http://purl.org/gc/hasUnit,,
+http://purl.org/gc/hasValue,Data Property,http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_ElectronicAndZPEEnergy,,-188.629421,String
 http://www.theworldavatar.com/kb/ontocompchem/ScfEnergy_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#ScfEnergy,,,
 http://www.theworldavatar.com/kb/ontocompchem/FloatValue_testID-111-111-111_ScfEnergy,Instance,http://purl.org/gc/FloatValue,,,
 http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/ScfEnergy_testID-111-111-111,http://purl.org/gc/isCalculationOn,,

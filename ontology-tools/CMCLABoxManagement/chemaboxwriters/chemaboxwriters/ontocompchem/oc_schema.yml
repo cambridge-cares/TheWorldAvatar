@@ -15,47 +15,50 @@ prefixes:
     main_inst_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
 #
 schema_to_json_vars:
-    ENTRY_IRI: {'required': True, 'jsonKey': 'EntryIRI'}
-    ENTRY_ID: {'required': True, 'jsonKey': 'EntryUUID'}
-    EMP_FORMULA: {'required': True, 'jsonKey': 'Empirical formula'}
-    ATOM_TYPES: {'required': True, 'jsonKey': 'Atom types'}
-    GEOMETRY: {'required': True, 'jsonKey': 'Geometry'}
-    SPIN_MULT: {'required': True, 'jsonKey': 'Spin multiplicity'}
-    MOL_WEIGHT: {'required': True, 'jsonKey': 'MolecularWeight'}
-    ATOM_MASSES: {'required': True, 'jsonKey': 'Atomic masses'}
-    FORM_CHARGE: {'required': True, 'jsonKey': 'Formal charge'}
-    SPECIES_IRI: {'required': True, 'jsonKey': 'SpeciesIRI'}
-    LVL_OF_THEORY: {'required': True, 'jsonKey': 'Method'}
-    BASIS_SET: {'required': True, 'jsonKey': 'Basis set'}
-    PROGRAM_NAME: {'required': True, 'jsonKey': 'Program name'}
-    PROGRAM_VERSION: {'required': True, 'jsonKey': 'Program version'}
-    RUN_DATE: {'required': True, 'jsonKey': 'Run date'}
-    CCLOG_SOURCE_LOCATION: {'required': True, 'jsonKey': 'cclog_source_location'}
-    PNG_SOURCE_LOCATION: {'required': True, 'jsonKey': 'png_source_location'}
-    XML_SOURCE_LOCATION: {'required': True, 'jsonKey': 'xml_source_location'}
-    FREQ_STRING: {'required': True, 'jsonKey': 'Frequencies_String'}
-    FREQ_NR: {'required': True, 'jsonKey': 'Frequencies number'}
-    ROT_CONST_STRING: {'required': True, 'jsonKey': 'Rotational_Constants_String'}
-    ROT_CONST_NR: {'required': True, 'jsonKey': 'Rotational constants number'}
-    ROT_CONST_SYM_NR: {'required': True, 'jsonKey': 'Rotational symmetry number'}
-    GEOM_TYPE: {'required': True, 'jsonKey': 'Geometry type'}
-    ZPE_ENERGY: {'required': True, 'jsonKey': 'Zero_Point_Energy'}
-    ELEC_AND_ZPE_ENERGY: {'required': True, 'jsonKey': 'Electronic and ZPE energy'}
-    ELEC_ENERGY: {'required': True, 'jsonKey': 'Electronic energy'}
-    HOMO_ENERGY: {'required': True, 'jsonKey': 'HOMO energy'}
-    HOMO_MIN1_ENERGY: {'required': True, 'jsonKey': 'HOMO-1 energy'}
-    HOMO_MIN2_ENERGY: {'required': True, 'jsonKey': 'HOMO-2 energy'}
-    LUMO_ENERGY: {'required': True, 'jsonKey': 'LUMO energy'}
-    LUMO_ADD1_ENERGY: {'required': True, 'jsonKey': 'LUMO+1 energy'}
-    LUMO_ADD2_ENERGY: {'required': True, 'jsonKey': 'LUMO+2 energy'}
-    ATOMS_LIST: {'required': True, 'jsonKey': 'AtomsList'}
-    ATOMS_COUNTS: {'required': True, 'jsonKey': 'AtomsCounts'}
-    ATOMS_INDICES: {'required': True, 'jsonKey': 'AtomsIndices'}
-    UNIQUE_ATOMS: {'required': True, 'jsonKey': 'Unique_Atoms'}
-    TOTAL_ATOMS_COUNTS: {'required': True, 'jsonKey': 'Total_Atom_Counts'}
-    COORD_X: {'required': True, 'jsonKey': 'CoordinateX'}
-    COORD_Y: {'required': True, 'jsonKey': 'CoordinateY'}
-    COORD_Z: {'required': True, 'jsonKey': 'CoordinateZ'}
+    # formula, atoms, indices
+    EMP_FORMULA: {"required": True, "jsonKey": "Empirical_Formula"}
+    TOTAL_ATOMS_COUNTS: {"required": True, "jsonKey": "Atom_Total_Counts"}
+    ATOM_LIST: {"required": True, "jsonKey": "Atom_List"}
+    ATOM_MASSES: {"required": True, "jsonKey": "Atom_Masses"}
+    ELEMENTS: {"required": True, "jsonKey": "Elements"}
+    # lvl of theory, basis set, charge, spin
+    LVL_OF_THEORY: {"required": True, "jsonKey": "Level_of_Theory"}
+    BASIS_SET: {"required": True, "jsonKey": "Basis_Set"}
+    SPIN_MULT: {"required": True, "jsonKey": "Spin_Multiplicity"}
+    FORM_CHARGE: {"required": True, "jsonKey": "Total_Charge"}
+    # geom type, x,y,z coords
+    GEOM_TYPE: {"required": True, "jsonKey": "Geometry_Type"}
+    COORD_X: {"required": True, "jsonKey": "X_Atoms_Coordinates"}
+    COORD_Y: {"required": True, "jsonKey": "Y_Atoms_Coordinates"}
+    COORD_Z: {"required": True, "jsonKey": "Z_Atoms_Coordinates"}
+    # rot consts
+    ROT_CONST_STRING: {"required": True, "jsonKey": "Rotational_Constants_String"}
+    ROT_CONST_NR: {"required": True, "jsonKey": "Rotational_Constants_Number"}
+    ROT_CONST_SYM_NR: {"required": True, "jsonKey": "Rotational_Symmetry_Number"}
+    # freqs
+    FREQ_STRING: {"required": True, "jsonKey": "Frequencies_String"}
+    FREQ_NR: {"required": True, "jsonKey": "Frequencies_Number"}
+    # energies
+    ZPE_ENERGY: {"required": True, "jsonKey": "ZPE_Energy"}
+    ELEC_AND_ZPE_ENERGY: {"required": True, "jsonKey": "Electronic_And_ZPE_Energy"}
+    ELEC_ENERGY: {"required": True, "jsonKey": "Electronic_Energy"}
+    HOMO_ENERGY: {"required": True, "jsonKey": "Homo_Energy"}
+    HOMO_MIN1_ENERGY: {"required": True, "jsonKey": "Homo-1_Energy"}
+    HOMO_MIN2_ENERGY: {"required": True, "jsonKey": "Homo-2_Energy"}
+    LUMO_ENERGY: {"required": True, "jsonKey": "Lumo_Energy"}
+    LUMO_ADD1_ENERGY: {"required": True, "jsonKey": "Lumo+1_Energy"}
+    LUMO_ADD2_ENERGY: {"required": True, "jsonKey": "Lumo+2_Energy"}
+    # metadata
+    PROGRAM_NAME: {"required": True, "jsonKey": "Program_Name"}
+    PROGRAM_VERSION: {"required": True, "jsonKey": "Program_Version"}
+    RUN_DATE: {"required": True, "jsonKey": "Run_Date"}
+    CCLOG_SOURCE_LOCATION: {"required": True, "jsonKey": "CCLOG_source_location"}
+    PNG_SOURCE_LOCATION: {"required": True, "jsonKey": "PNG_source_location"}
+    # ospecies link
+    SPECIES_IRI: {"required": True, "jsonKey": "Species_IRI"}
+    # main entry
+    ENTRY_IRI: {"required": True, "jsonKey": "Entry_IRI"}
+    ENTRY_ID: {"required": True, "jsonKey": "Entry_ID"}
 abox_schema:
     - # imports
         [
@@ -82,12 +85,12 @@ abox_schema:
         ]
     - # Molecule / atom entries
         [
-            '<INS> comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} rdf:type gain_pref:Molecule',
-            '<INS> comp_pref:Atom_unique_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} rdf:type gain_pref:Atom',
-            '<OBJ> comp_pref:MoleculeProperty_${ENTRY_ID} gain_pref:hasMolecule comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS}',
-            '<OBJ> comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:hasAtom comp_pref:Atom_unique_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS}',
-            '<OBJ> comp_pref:Atom_unique_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:isElement table_pref:#${UNIQUE_ATOMS}',
-            '<DAT> comp_pref:Molecule_${ENTRY_ID}_${UNIQUE_ATOMS}${TOTAL_ATOMS_COUNTS} gain_pref:hasNumberOfAtoms ${TOTAL_ATOMS_COUNTS} Integer',
+            '<INS> comp_pref:Molecule_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} rdf:type gain_pref:Molecule',
+            '<INS> comp_pref:Atom_unique_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} rdf:type gain_pref:Atom',
+            '<OBJ> comp_pref:MoleculeProperty_${ENTRY_ID} gain_pref:hasMolecule comp_pref:Molecule_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS}',
+            '<OBJ> comp_pref:Molecule_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} gain_pref:hasAtom comp_pref:Atom_unique_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS}',
+            '<OBJ> comp_pref:Atom_unique_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} gain_pref:isElement table_pref:#${ELEMENTS}',
+            '<DAT> comp_pref:Molecule_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} gain_pref:hasNumberOfAtoms ${TOTAL_ATOMS_COUNTS} Integer',
         ]
     - # Lvl of theory
         [
@@ -235,30 +238,30 @@ abox_schema:
         ]
     - # Atom types
         [
-            '<INS> comp_pref:Atom_${ENTRY_ID}_${ATOM_TYPES}%{i} rdf:type gain_pref:Atom',
-            '<OBJ> comp_pref:Molecule_${ENTRY_ID} gain_pref:hasAtom comp_pref:Atom_${ENTRY_ID}_${ATOM_TYPES}%{i}',
-            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_TYPES}%{i} gain_pref:isElement table_pref:#${ATOM_TYPES}',
+            '<INS> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} rdf:type gain_pref:Atom',
+            '<OBJ> comp_pref:Molecule_${ENTRY_ID} gain_pref:hasAtom comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i}',
+            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:isElement table_pref:#${ATOM_LIST}',
         ]
     - # Atom xyz coords
         [
-            '<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_x3Coordinate rdf:type gain_pref:FloatValue',
-            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_TYPES}%{i} gain_pref:hasAtomCoordinateX comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_x3Coordinate',
-            '<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_x3Coordinate gain_pref:hasValue ${COORD_X}',
+            '<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_x3Coordinate rdf:type gain_pref:FloatValue',
+            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:hasAtomCoordinateX comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_x3Coordinate',
+            '<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_x3Coordinate gain_pref:hasValue ${COORD_X}',
 
-            '<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_y3Coordinate rdf:type gain_pref:FloatValue',
-            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_TYPES}%{i} gain_pref:hasAtomCoordinateY comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_y3Coordinate',
-            '<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_y3Coordinate gain_pref:hasValue ${COORD_Y}',
+            '<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_y3Coordinate rdf:type gain_pref:FloatValue',
+            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:hasAtomCoordinateY comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_y3Coordinate',
+            '<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_y3Coordinate gain_pref:hasValue ${COORD_Y}',
 
-            '<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_z3Coordinate rdf:type gain_pref:FloatValue',
-            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_TYPES}%{i} gain_pref:hasAtomCoordinateZ comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_z3Coordinate',
-            '<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_z3Coordinate gain_pref:hasValue ${COORD_Z}',
+            '<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_z3Coordinate rdf:type gain_pref:FloatValue',
+            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:hasAtomCoordinateZ comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_z3Coordinate',
+            '<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_z3Coordinate gain_pref:hasValue ${COORD_Z}',
         ]
     - # Atom mass
         [
-            '<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_Mass rdf:type gain_pref:FloatValue',
-            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_TYPES}%{i} gain_pref:hasMass comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_Mass',
-            '<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_Mass gain_pref:hasValue ${ATOM_MASSES}',
-            '<OBJ> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_TYPES}%{i}_Mass gain_pref:hasUnit unit_pref:unit#Dalton',
+            '<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_Mass rdf:type gain_pref:FloatValue',
+            '<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:hasMass comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_Mass',
+            '<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_Mass gain_pref:hasValue ${ATOM_MASSES}',
+            '<OBJ> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_Mass gain_pref:hasUnit unit_pref:unit#Dalton',
         ]
     - # Program name
         [
@@ -279,8 +282,4 @@ abox_schema:
     - # png location
         [
             '<OBJ> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule onto_comp:#hasOutputFile ${PNG_SOURCE_LOCATION}',
-        ]
-    - # xml location
-        [
-            '<OBJ> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule onto_comp:#hasOutputFile ${XML_SOURCE_LOCATION}',
         ]

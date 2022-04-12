@@ -11,10 +11,10 @@ from chemaboxwriters.common.handler import Handler
 from chemaboxwriters.ontopesscan.abox_stages import OPS_ABOX_STAGES
 from chemaboxwriters.ontopesscan import OPS_SCHEMA
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
-from chemaboxwriters.ontocompchem.handlers.qc_json_handler import (
-    COORD_X,
-    COORD_Y,
-    COORD_Z,
+from chemaboxwriters.ontocompchem.handlers.oc_json_keys import (
+    X_ATOMS_COORDINATES,
+    Y_ATOMS_COORDINATES,
+    Z_ATOMS_COORDINATES,
 )
 from typing import List
 
@@ -107,7 +107,13 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
             ontoCompChemJobs.append(data_item[params.ENTRY_IRI])
 
             xyz = np.array(
-                list(zip(data_item[COORD_X], data_item[COORD_Y], data_item[COORD_Z]))
+                list(
+                    zip(
+                        data_item[X_ATOMS_COORDINATES],
+                        data_item[Y_ATOMS_COORDINATES],
+                        data_item[Z_ATOMS_COORDINATES],
+                    )
+                )
             )
             scanAtomsPos = xyz[oc_atoms_pos_ids]
 
