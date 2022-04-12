@@ -2,8 +2,8 @@ import json
 import yaml
 import re
 import csv
-import chemaboxwriters.common.utilsfunc as utilsfunc
-from typing import Dict, List, Optional
+import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
+from typing import Dict, List, Optional, Literal
 
 ENTRY_TYPES = {
     "<IMP>": "imports",
@@ -11,6 +11,172 @@ ENTRY_TYPES = {
     "<OBJ>": "obj_prop",
     "<DAT>": "dat_prop",
 }
+
+
+class Abox_CSV_Builder:
+    def __init__(self, file_path: str, configs: Optional[Dict] = None) -> None:
+        self.file_path = file_path
+        self._num_cols = 6
+        if configs is None:
+            configs = {}
+        self.instance_field = configs.get("instance", "Instance")
+        self.data_property_field = configs.get("data_property", "Data Property")
+        self.object_property_field = configs.get("object_property", "Instance")
+        self.ontology_field = configs.get("ontology", "Ontology")
+        self.default_prefix = configs.get("prefix", "")
+        self._current_inst = None
+        self._prefixes = {}
+        self._current_name = None
+        self._write_history = []
+
+    def register_prefix(self, name: str, value: str) -> None:
+        self._prefixes[name] = value
+
+    def write_header(self) -> "Abox_CSV_Builder":
+        self._write_row(
+            "Source",
+            "Type",
+            "Target",
+            "Relation",
+            "Value",
+            "Data Type",
+        )
+        return self
+
+    def write_imports(
+        self,
+        name: str,
+        importing: str,
+        rel: Optional[str] = None,
+        store_name: bool = True,
+    ) -> "Abox_CSV_Builder":
+        if rel is None:
+            rel = "http://www.w3.org/2002/07/owl#imports"
+
+        name, rel, importing = self._apply_prefixes(name, rel, importing)
+        self._write_row(name, self.ontology_field, importing, rel)
+
+        if store_name:
+            self._current_name = name
+        return self
+
+    def write_inst(
+        self, iri: str, type: str, rel: str = "", store_inst: bool = True
+    ) -> "Abox_CSV_Builder":
+
+        iri, rel, type = self._apply_prefixes(iri, rel, type)
+
+        self._write_row(iri, self.instance_field, type, rel)
+        if store_inst:
+            self._current_inst = iri
+        return self
+
+    def write_data_prop(
+        self,
+        iri: str,
+        rel: str,
+        value: str,
+        data_type: Literal["String", "Integer", "Float"] = "String",
+        store_inst: bool = True,
+    ) -> "Abox_CSV_Builder":
+
+        iri, rel, value = self._apply_prefixes(iri, rel, value)
+        self._write_row(rel, self.data_property_field, iri, "", value, str(data_type))
+
+        if store_inst:
+            self._current_inst = iri
+        return self
+
+    def write_obj_prop(
+        self,
+        src_iri: str,
+        rel: str,
+        trg_iri: str,
+        store_inst: Literal["src", "trg", ""] = "",
+    ) -> "Abox_CSV_Builder":
+
+        src_iri, rel, trg_iri = self._apply_prefixes(src_iri, rel, trg_iri)
+
+        self._write_row(src_iri, self.object_property_field, trg_iri, rel)
+        if store_inst == "src":
+            self._current_inst = src_iri
+        elif store_inst == "trg":
+            self._current_inst = trg_iri
+        return self
+
+    def add_obj_prop(
+        self, rel: str, iri: str, store_inst: bool = False, reverse: bool = False
+    ) -> "Abox_CSV_Builder":
+        if self._current_inst is None:
+            raise app_exceptions.MissingInstance(
+                "No instance created. Cannont add object property."
+            )
+
+        src_iri, trg_iri = iri, self._current_inst
+        if reverse:
+            src_iri, trg_iri = self._current_inst, iri
+
+        store_inst_lit = "src" if store_inst else ""
+
+        self.write_obj_prop(
+            src_iri=src_iri, rel=rel, trg_iri=trg_iri, store_inst=store_inst_lit
+        )
+        return self
+
+    def add_data_prop(
+        self,
+        rel: str,
+        value: str,
+        data_type: Literal["String", "Integer", "Float"] = "String",
+    ) -> "Abox_CSV_Builder":
+
+        if self._current_inst is None:
+            raise app_exceptions.MissingInstance(
+                "No instance created. Can not add data property."
+            )
+        self.write_data_prop(
+            iri=self._current_inst, rel=rel, value=value, data_type=data_type
+        )
+        return self
+
+    def add_imports(
+        self, importing: str, rel: Optional[str] = None
+    ) -> "Abox_CSV_Builder":
+
+        if self._current_name is None:
+            raise app_exceptions.MissingOntologyName(
+                "No ontology name defined. Can not add import statement."
+            )
+
+        self.write_imports(name=self._current_name, importing=importing, rel=rel)
+        return self
+
+    def _write_row(self, *args: str) -> None:
+        content = [args[i] if i < len(args) else "" for i in range(self._num_cols)]
+        # if content not in self._write_history:
+        self.csvwriter.writerow(content)
+        #    self._write_history.append(content)
+
+    def _apply_prefixes(self, *args: str) -> List[str]:
+        items = []
+        for item in args:
+            prefix_name = item.split(":")[0]
+            prefix_value = self._prefixes.get(prefix_name)
+            if prefix_value is not None:
+                item = item.replace(f"{prefix_name}:", prefix_value)
+            items.append(item)
+        return items
+
+    def __enter__(self):
+        self._file_obj = open(self.file_path, "w", newline="").__enter__()
+        self.csvwriter = csv.writer(
+            self._file_obj, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+        )
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback) -> bool:
+        self._file_obj.__exit__(exc_type, exc_value, exc_traceback)
+        return True
 
 
 class Schema_Entry:
@@ -121,7 +287,7 @@ class Schema_Entry:
                 self.loop_range = range(len(var_value))
                 return
 
-    def _write_entry(self, writer: utilsfunc.Abox_csv_writer) -> None:
+    def _write_entry(self, writer: Abox_CSV_Builder) -> None:
         for imp in self.imports_write:
             name, rel, importing = imp.split()
             writer.write_imports(name=name, importing=importing, rel=rel)
@@ -182,7 +348,7 @@ class JSON_TO_CSV_CONVERTER:
         self._write_csv(out_file=out_file)
 
     def _write_csv(self, out_file: str) -> None:
-        with utilsfunc.Abox_csv_writer(file_path=out_file) as writer:
+        with Abox_CSV_Builder(file_path=out_file) as writer:
             writer.write_header()
             prefixes = self._schema.get("prefixes", {})
             for prefix_key, prefix_value in prefixes.items():

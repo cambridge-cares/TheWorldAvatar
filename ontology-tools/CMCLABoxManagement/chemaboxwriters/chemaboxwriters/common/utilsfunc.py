@@ -1,191 +1,22 @@
-import chemaboxwriters.common.params as params
 from chemaboxwriters.common.abox_stages import ABOX_STAGES_COMMON
 import chemutils.rdkitutils.rdkitmolutils as rdkitutils
 import chemutils.rdkitutils.rdkitconverters as rdkitconverters
 import chemutils.obabelutils.obutils as obutils
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
-from entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF import (
-    convert_csv_string_into_rdf,
-)
 import os
 import glob
-from typing import List, Optional, Dict, Literal, Tuple
+from typing import List, Optional, Dict, Tuple
 import uuid
 import logging
 import json
 import re
 import pathlib
-import csv
 import yaml
 import numpy as np
 
 FORMULA_CLEAN_RE = re.compile("(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)")
-
-
-class Abox_csv_writer:
-    def __init__(self, file_path: str, configs: Optional[Dict] = None) -> None:
-        self.file_path = file_path
-        self._num_cols = 6
-        if configs is None:
-            configs = {}
-        self.instance_field = configs.get("instance", "Instance")
-        self.data_property_field = configs.get("data_property", "Data Property")
-        self.object_property_field = configs.get("object_property", "Instance")
-        self.ontology_field = configs.get("ontology", "Ontology")
-        self.default_prefix = configs.get("prefix", "")
-        self._current_inst = None
-        self._prefixes = {}
-        self._current_name = None
-        self._write_history = []
-
-    def register_prefix(self, name: str, value: str) -> None:
-        self._prefixes[name] = value
-
-    def write_header(self) -> "Abox_csv_writer":
-        self._write_row(
-            "Source",
-            "Type",
-            "Target",
-            "Relation",
-            "Value",
-            "Data Type",
-        )
-        return self
-
-    def write_imports(
-        self,
-        name: str,
-        importing: str,
-        rel: Optional[str] = None,
-        store_name: bool = True,
-    ) -> "Abox_csv_writer":
-        if rel is None:
-            rel = "http://www.w3.org/2002/07/owl#imports"
-
-        name, rel, importing = self._apply_prefixes(name, rel, importing)
-        self._write_row(name, self.ontology_field, importing, rel)
-
-        if store_name:
-            self._current_name = name
-        return self
-
-    def write_inst(
-        self, iri: str, type: str, rel: str = "", store_inst: bool = True
-    ) -> "Abox_csv_writer":
-
-        iri, rel, type = self._apply_prefixes(iri, rel, type)
-
-        self._write_row(iri, self.instance_field, type, rel)
-        if store_inst:
-            self._current_inst = iri
-        return self
-
-    def write_data_prop(
-        self,
-        iri: str,
-        rel: str,
-        value: str,
-        data_type: Literal["String", "Integer", "Float"] = "String",
-        store_inst: bool = True,
-    ) -> "Abox_csv_writer":
-
-        iri, rel, value = self._apply_prefixes(iri, rel, value)
-        self._write_row(rel, self.data_property_field, iri, "", value, str(data_type))
-
-        if store_inst:
-            self._current_inst = iri
-        return self
-
-    def write_obj_prop(
-        self,
-        src_iri: str,
-        rel: str,
-        trg_iri: str,
-        store_inst: Literal["src", "trg", ""] = "",
-    ) -> "Abox_csv_writer":
-
-        src_iri, rel, trg_iri = self._apply_prefixes(src_iri, rel, trg_iri)
-
-        self._write_row(src_iri, self.object_property_field, trg_iri, rel)
-        if store_inst == "src":
-            self._current_inst = src_iri
-        elif store_inst == "trg":
-            self._current_inst = trg_iri
-        return self
-
-    def add_obj_prop(
-        self, rel: str, iri: str, store_inst: bool = False, reverse: bool = False
-    ) -> "Abox_csv_writer":
-        if self._current_inst is None:
-            raise app_exceptions.MissingInstance(
-                "No instance created. Cannont add object property."
-            )
-
-        src_iri, trg_iri = iri, self._current_inst
-        if reverse:
-            src_iri, trg_iri = self._current_inst, iri
-
-        store_inst_lit = "src" if store_inst else ""
-
-        self.write_obj_prop(
-            src_iri=src_iri, rel=rel, trg_iri=trg_iri, store_inst=store_inst_lit
-        )
-        return self
-
-    def add_data_prop(
-        self,
-        rel: str,
-        value: str,
-        data_type: Literal["String", "Integer", "Float"] = "String",
-    ) -> "Abox_csv_writer":
-
-        if self._current_inst is None:
-            raise app_exceptions.MissingInstance(
-                "No instance created. Can not add data property."
-            )
-        self.write_data_prop(
-            iri=self._current_inst, rel=rel, value=value, data_type=data_type
-        )
-        return self
-
-    def add_imports(
-        self, importing: str, rel: Optional[str] = None
-    ) -> "Abox_csv_writer":
-
-        if self._current_name is None:
-            raise app_exceptions.MissingOntologyName(
-                "No ontology name defined. Can not add import statement."
-            )
-
-        self.write_imports(name=self._current_name, importing=importing, rel=rel)
-        return self
-
-    def _write_row(self, *args: str) -> None:
-        content = [args[i] if i < len(args) else "" for i in range(self._num_cols)]
-        # if content not in self._write_history:
-        self.csvwriter.writerow(content)
-        #    self._write_history.append(content)
-
-    def _apply_prefixes(self, *args: str) -> List[str]:
-        items = []
-        for item in args:
-            prefix_name = item.split(":")[0]
-            prefix_value = self._prefixes.get(prefix_name)
-            if prefix_value is not None:
-                item = item.replace(f"{prefix_name}:", prefix_value)
-            items.append(item)
-        return items
-
-    def __enter__(self):
-        self._file_obj = open(self.file_path, "w", newline="").__enter__()
-        self.csvwriter = csv.writer(
-            self._file_obj, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
-        )
-        return self
-
-    def __exit__(self, exc_type, exc_value, exc_traceback) -> bool:
-        self._file_obj.__exit__(exc_type, exc_value, exc_traceback)
-        return True
+# default cc log extensions
+CC_LOG_EXT = "qc_log,log,out,g03,g09,g16"
 
 
 def config_logging(
@@ -220,7 +51,7 @@ def get_stage_files(
     file_ext_str: str = ""
     if file_ext is None:
         if in_stage == ABOX_STAGES_COMMON.qc_log:
-            file_ext_str = params.CC_LOG_EXT
+            file_ext_str = CC_LOG_EXT
         else:
             file_ext_str = in_stage.lower()
     else:
@@ -253,11 +84,6 @@ def readFile(file_path: str) -> str:
 
 def fileExists(path: str) -> bool:
     return os.path.isfile(os.path.abspath(path))
-
-
-def csv2rdf_wrapper(file_path: str) -> List[str]:
-    csv_string = readFile(file_path)
-    return [convert_csv_string_into_rdf(csv_string)]
 
 
 def getRefName(filepath: str, jobIndex: int, numJobs: int, extension: str) -> str:
