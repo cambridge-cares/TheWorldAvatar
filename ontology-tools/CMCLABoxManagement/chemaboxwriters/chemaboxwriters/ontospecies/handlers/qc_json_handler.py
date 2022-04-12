@@ -101,7 +101,7 @@ class QC_JSON_TO_OS_JSON_Handler(Handler):
         data_out[os_keys.STANDARD_ENTH_FORM_REF_TEMP_UNIT] = enth_of_form_ref_temp_unit
         data_out[os_keys.STANDARD_ENTH_FORM_PROVENANCE] = enth_of_form_provenance
 
-        # add any punchem data
+        # add any pubchem data
         if data_out[os_keys.INCHI] is not None:
             pubchem_data = _get_pubchem_data(
                 inchi=data_out[os_keys.INCHI], max_attempts=PUBCHEM_QUERY_ATTEMPTS
