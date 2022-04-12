@@ -3,7 +3,7 @@ import chemaboxwriters.kgoperations.remotestore_client as rsc
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from abc import ABC, abstractmethod
 from pprint import pformat
-from typing import List, Tuple, Dict, Optional, Any
+from typing import List, Tuple, Dict, Optional, Any, Union
 import logging
 
 
@@ -130,8 +130,13 @@ class Handler(ABC):
 
         return self._triple_store_uploader.get_upload_configs()
 
-    def get_parameter_value(self, name: str) -> Optional[str]:
-        return self._handler_params.get_parameter_value(name=name)
+    def get_parameter_value(
+        self, name: str, default: Union[str, bool, None] = None
+    ) -> Union[str, bool, None]:
+        value = self._handler_params.get_parameter_value(name=name)
+        if value is not None:
+            return value
+        return default
 
     def set_parameter_value(self, name: str, value: Optional[str] = None) -> None:
         self._handler_params.set_parameter_value(name=name, value=value)
