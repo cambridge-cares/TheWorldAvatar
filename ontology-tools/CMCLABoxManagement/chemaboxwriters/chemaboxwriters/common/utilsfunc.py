@@ -2,6 +2,7 @@ import chemaboxwriters.common.params as params
 from chemaboxwriters.common.abox_stages import ABOX_STAGES_COMMON
 import chemutils.rdkitutils.rdkitmolutils as rdkitutils
 import chemutils.rdkitutils.rdkitconverters as rdkitconverters
+import chemutils.obabelutils.obutils as obutils
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF import (
     convert_csv_string_into_rdf,
@@ -340,3 +341,34 @@ def read_main_pref_from_schema(schema_file: str, main_pref_name: str) -> str:
     prefixes = schema_dict.get("prefixes", {})
 
     return prefixes.get(main_pref_name, "")
+
+
+def construct_xyz_file_string_from_atoms_and_coords(
+    atoms: List[str], coords: List[List[str]]
+) -> str:
+    num_ats = len(atoms)
+    xyz_coords = f"{num_ats}\n\n"
+    for atom, xyz in zip(atoms, coords):
+        xyz_coords = f"{xyz_coords}{atom} {xyz[0]} {xyz[1]} {xyz[2]}\n"
+    xyz_coords = xyz_coords.rstrip()
+    return xyz_coords
+
+
+def construct_xyz_string_from_atoms_and_coords(
+    atoms: List[str], coords: List[List[str]]
+) -> str:
+    xyz_coords = ""
+    for atom, xyz in zip(atoms, coords):
+        xyz_coords = f"{xyz_coords}{atom} {xyz[0]} {xyz[1]} {xyz[2]}\n"
+    xyz_coords = xyz_coords.rstrip()
+    return xyz_coords
+
+
+def construct_bond_string(atoms: List[str], coords: List[List[str]]) -> str:
+    xyz_string = construct_xyz_file_string_from_atoms_and_coords(atoms, coords)
+    bonds_info = obutils.obGetMolBonds(xyz_string)
+    bonds_info_line = [
+        f"{bond['beginAtom']['atomId']} {bond['endAtom']['atomId']} {bond['order']}"
+        for bond in bonds_info
+    ]
+    return " ".join(bonds_info_line)
