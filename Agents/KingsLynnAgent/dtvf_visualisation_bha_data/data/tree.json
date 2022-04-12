@@ -8,5 +8,10 @@
         "layerName": "Flood areas",
         "defaultState": "visible",
         "layerIDs": ["flood-areas", "flood-warnings"]
+    },
+	{
+        "layerName": "Met Office stations",
+        "defaultState": "visible",
+        "layerIDs": ["metoffice"]
     }
 ]

@@ -15,6 +15,10 @@
             {
                 "name": "Flood warnings",
                 "directory": "flood_warnings"
+            },
+            {
+                "name": "Met Office stations",
+                "directory": "metoffice"
             }
         ]
     }
