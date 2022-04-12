@@ -76,7 +76,8 @@ class OMINP_JSON_TO_OM_JSON_Handler(Handler):
             data_out[om_key] = ominp_om_map["postproc_func"](ominp_values)
 
         data_out[om_keys.MOPS_XYZ_GEOMETRY_FILE_URL] = self._handle_xyz_file_data(
-            xyz_file=ominp_data_in.get("Mops_XYZ_coordinates_file"), dry_run=dry_run
+            xyz_file=ominp_data_in.get(ominp_keys.MOPS_XYZ_COORDINATES_FILE),
+            dry_run=dry_run,
         )
 
         main_inst_pref = utilsfunc.read_main_pref_from_schema(

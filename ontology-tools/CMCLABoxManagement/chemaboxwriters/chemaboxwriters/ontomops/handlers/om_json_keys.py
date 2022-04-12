@@ -1,5 +1,5 @@
 import chemaboxwriters.ontomops.handlers.ominp_json_keys as ominp_keys
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 # OM_JSON_KEYS
 # -------------------------
