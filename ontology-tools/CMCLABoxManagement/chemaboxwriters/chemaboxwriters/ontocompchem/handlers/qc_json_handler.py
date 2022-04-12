@@ -153,7 +153,8 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
             return job_type
         if "Gaussian" in program_name:
             if program_version is not None:
-                # the way we extract job type here is ugly and needs to be fixed at some point..
+                # the way we extract job type here is ugly and needs to be fixed at
+                #  some point..
                 job_type = "G" + program_version[2:4]
             else:
                 job_type = "Gxx"
