@@ -24,15 +24,10 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
         )
 
     def handle_input(
-        self,
-        inputs: List[str],
-        out_dir: str,
-        input_type: str,
-        dry_run: bool,
+        self, inputs: List[str], out_dir: str, *args, **kwargs
     ) -> List[str]:
 
         outputs: List[str] = []
-        # cclog_upload_loc = None
         for cclog_file_path in inputs:
             cclog_upload_loc = self.get_fs_upload_location(upload_file=cclog_file_path)
 
@@ -78,11 +73,7 @@ class JSON_TO_CSV_Handler(Handler):
         self.schema_file = schema_file
 
     def handle_input(
-        self,
-        inputs: List[str],
-        out_dir: str,
-        input_type: str,
-        dry_run: bool,
+        self, inputs: List[str], out_dir: str, *args, **kwargs
     ) -> List[str]:
 
         outputs: List[str] = []
@@ -121,11 +112,7 @@ class CSV_TO_OWL_Handler(Handler):
         )
 
     def handle_input(
-        self,
-        inputs: List[str],
-        out_dir: str,
-        input_type: str,
-        dry_run: bool,
+        self, inputs: List[str], out_dir: str, *args, **kwargs
     ) -> List[str]:
 
         outputs: List[str] = []

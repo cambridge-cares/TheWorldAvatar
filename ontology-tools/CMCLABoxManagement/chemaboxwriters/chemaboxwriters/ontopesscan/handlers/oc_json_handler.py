@@ -10,14 +10,6 @@ from chemaboxwriters.ontopesscan import OPS_SCHEMA
 from typing import List, Tuple
 
 
-SCAN_COORDINATE_ATOMS_IRIS = "ScanCoordinateAtomsIRIs"
-SCAN_COORDINATE_TYPE = "ScanCoordinateType"
-SCAN_COORDINATE_UNIT = "ScanCoordinateUnit"
-SCAN_COORDINATE_VALUE = "ScanCoordinateValue"
-SCAN_POINTS_JOBS = "ScanPointsJobs"
-SCAN_ATOM_IDS = "ScanAtomIDs"
-
-
 HANDLER_PARAMETERS = {
     "os_iris": {"required": True},
     "os_atoms_iris": {"required": True},
@@ -41,11 +33,7 @@ class OC_JSON_TO_OPS_JSON_Handler(Handler):
         )
 
     def handle_input(
-        self,
-        inputs: List[str],
-        out_dir: str,
-        input_type: str,
-        dry_run: bool,
+        self, inputs: List[str], out_dir: str, *args, **kwargs
     ) -> List[str]:
 
         outputs: List[str] = []

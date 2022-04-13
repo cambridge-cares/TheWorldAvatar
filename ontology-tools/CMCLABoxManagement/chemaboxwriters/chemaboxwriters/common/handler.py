@@ -223,9 +223,7 @@ class Handler(ABC):
         self.do_fs_uploads(inputs=inputs, input_type=input_type, dry_run=dry_run)
         self.do_ts_uploads(inputs=inputs, input_type=input_type, dry_run=dry_run)
 
-        outputs = self.handle_input(
-            inputs=inputs, out_dir=out_dir, input_type=input_type, dry_run=dry_run
-        )
+        outputs = self.handle_input(inputs=inputs, out_dir=out_dir, dry_run=dry_run)
         self.written_files.extend(outputs)
 
         self.do_fs_uploads(inputs=outputs, input_type=self._out_stage, dry_run=dry_run)
@@ -332,7 +330,8 @@ class Handler(ABC):
         inputs: List[str],
         out_dir: str,
         dry_run: bool,
-        input_type: str,
+        *args,
+        **kwargs,
     ) -> List[str]:
         pass
 

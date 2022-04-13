@@ -37,11 +37,7 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
         )
 
     def handle_input(
-        self,
-        inputs: List[str],
-        out_dir: str,
-        input_type: str,
-        dry_run: bool,
+        self, inputs: List[str], out_dir: str, dry_run: bool, *args, **kwargs
     ) -> List[str]:
 
         outputs: List[str] = []
