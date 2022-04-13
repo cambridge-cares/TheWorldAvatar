@@ -156,6 +156,8 @@ def get_instantiated_forecast_timeseries(stations: list = None,
 
 def get_time_series_data(station_iris: list = None,
                          observation_types: list = None,
+                         observations: bool = True,
+                         forecasts: bool = True,
                          tmin: str = None, tmax: str = None,
                          query_endpoint: str = QUERY_ENDPOINT,
                          update_endpoint: str = UPDATE_ENDPOINT):
@@ -163,10 +165,12 @@ def get_time_series_data(station_iris: list = None,
         Retrieve time series data for provided observation types and stations from KG
 
         Arguments
-            station_iris - list of IRIs for which to retrieve time series data
-                           (retrieve ts data for all stations if None)
+            station_iris - list of station IRIs for which to retrieve time series data
+                           (all stations if None)
             observation_types - list of observation types (e.g., AirTemperature)
                                 for which to retrieve data (all if None)
+            observations - boolean flag whether or not to retrieve observation data
+            forecasts - boolean flag whether or not to retrieve forecast data
             tmin - oldest time step for which to retrieve data
             tmax - latest time step for which to retrieve data
 
@@ -201,7 +205,11 @@ def get_time_series_data(station_iris: list = None,
         # Return properly formatted time string if format could be derived
         return dt.datetime.strftime(t, TIME_FORMAT)
     
-    # Validate format of provided tmin and tmax
+    # Validate inputs
+    # Requested time series data
+    if not observations and not forecasts:
+        return [], [], []
+    # Format of provided tmin and tmax
     if tmin:
         try:
             tmin = _validate_time_format(tmin)
@@ -216,12 +224,19 @@ def get_time_series_data(station_iris: list = None,
             raise InvalidInput(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
 
     # Get DataFrames for observation and forecast time series
-    df1 = get_instantiated_observation_timeseries(station_iris, query_endpoint, update_endpoint)
-    df1['reading_type'] = ' observation'
-    df2 = get_instantiated_forecast_timeseries(station_iris, query_endpoint, update_endpoint)
-    df2['reading_type'] = ' forecast'
-    # Merge DataFrames
-    df = pd.concat([df1, df2], ignore_index=True)
+    if observations and forecasts:
+        df1 = get_instantiated_observation_timeseries(station_iris, query_endpoint, update_endpoint)
+        df1['reading_type'] = ' observation'
+        df2 = get_instantiated_forecast_timeseries(station_iris, query_endpoint, update_endpoint)
+        df2['reading_type'] = ' forecast'
+        # Merge DataFrames
+        df = pd.concat([df1, df2], ignore_index=True)
+    elif observations:
+        df = get_instantiated_observation_timeseries(station_iris, query_endpoint, update_endpoint)
+        df['reading_type'] = ' observation'
+    elif forecasts:
+        df = get_instantiated_forecast_timeseries(station_iris, query_endpoint, update_endpoint)
+        df['reading_type'] = ' forecast'
 
     # Get relevant subset of available time series data
     if observation_types:

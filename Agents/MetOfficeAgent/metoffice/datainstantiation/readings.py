@@ -94,15 +94,7 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])   
 
     # Initialise update query for creation time
-    query_string = f"""
-        DELETE {{
-	        ?forecast <{EMS_CREATED_ON}> ?old }}
-        INSERT {{
-	        ?forecast <{EMS_CREATED_ON}> \"{issue_time}\"^^<{XSD_DATETIME}> }}
-        WHERE {{
-	        ?forecast <{EMS_CREATED_ON}> ?old .
-            FILTER ( ?forecast IN (
-    """
+    query_string = update_forecast_creation_datetime(issue_time)
 
     # Initialise TimeSeriesClient
     ts_client = TSClient.tsclient_with_default_settings()
@@ -157,7 +149,7 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         # Potentially split time series data addition if None/nan exist in some readings
         times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
         for i in range(len(times_list)):
-            added_fcs += len(dataIRIs_list[i])
+            added_fcs += len(dataIRIs_list[i])            
             ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
             ts_list.append(ts)
             for iri in dataIRIs_list[i]:
@@ -464,9 +456,9 @@ def add_readings_for_station(station_iri: str,
 
 
 def retrieve_readings_data_per_station(metclient, station_id: str = None,
-                                           observations: bool = True,
-                                           forecasts: bool = True,
-                                           only_keys: bool = True):
+                                       observations: bool = True,
+                                       forecasts: bool = True,
+                                       only_keys: bool = True):
     """
         Retrieve station readings via Metoffer client (if station_id is provided, 
         retrieve readings for given station, otherwise or for ALL stations)

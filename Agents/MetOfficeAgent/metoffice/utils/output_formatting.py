@@ -45,7 +45,8 @@ def geojson_add_point_feature(feature_id: int, properties: dict,
     return feature
 
 
-def create_geojson_output(station_data, color: str = '#ff0000'):
+def create_geojson_output(station_data, color: str = '#C0392B',
+                          opacity: float = 0.66):
     """
         Create GeoJSON file with geospatial data for Met Office stations
 
@@ -61,6 +62,7 @@ def create_geojson_output(station_data, color: str = '#ff0000'):
     # Set geojson plotting properties
     geojson_props = GEOJSON_STATION_PROPERTIES.copy()
     geojson_props['circle-color'] = color
+    geojson_props['circle-opacity'] = opacity
 
     # Get unique stations
     data = station_data.drop_duplicates(subset='station')

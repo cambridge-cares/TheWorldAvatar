@@ -280,3 +280,18 @@ def split_insert_query(triples: str, max: int):
         queries.append(query)
     
     return queries
+
+
+def update_forecast_creation_datetime(issue_time: str):
+    # Returns beginning of update query to update forecast creation times
+    query = f"""
+        DELETE {{
+	        ?forecast <{EMS_CREATED_ON}> ?old }}
+        INSERT {{
+	        ?forecast <{EMS_CREATED_ON}> \"{issue_time}\"^^<{XSD_DATETIME}> }}
+        WHERE {{
+	        ?forecast <{EMS_CREATED_ON}> ?old .
+            FILTER ( ?forecast IN (
+    """
+
+    return query

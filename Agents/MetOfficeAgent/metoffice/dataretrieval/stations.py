@@ -87,7 +87,8 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
                                   circle_radius: str = None):
     """
         Returns DataFrame with all instantiated Met Office station details
-        (['stationID', 'station', 'comment', 'latlon', 'elevation', 'dataIRI'])
+        (['stationID', 'station', 'comment', 'latlon', 'elevation', 
+          'obs_station', 'fcs_station', 'dataIRI'])
 
         Arguments:
             circle_center - center for Blazegraph's geo:search "inCircle" mode
@@ -117,6 +118,9 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     df = pd.DataFrame(columns=['stationID', 'station', 'comment', 'latlon', 
                                'elevation', 'dataIRI_obs', 'dataIRI_fc'])
     df = df.append(results)
+    # Add station classification (one hot encoded)
+    df['obs_station'] = df['dataIRI_obs'].isna().apply(lambda x: 0 if x else 1)
+    df['fcs_station'] = df['dataIRI_fc'].isna().apply(lambda x: 0 if x else 1)
     # Consolidate dataIRI columns
     df['dataIRI'] = df[['dataIRI_obs', 'dataIRI_fc']].values.tolist()
     df = df.drop(columns=['dataIRI_obs', 'dataIRI_fc'])
@@ -127,12 +131,11 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     return df
 
 
-def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
-                             update_endpoint: str = UPDATE_ENDPOINT,
-                             circle_center: str = None,
-                             circle_radius: str = None,
-                             observation_types: list = None,
-                             tmin: str = None, tmax: str = None,):
+def create_json_output_files(outdir: str, observation_types: list = None, 
+                             split_obs_fcs: bool = True, circle_center: str = None,
+                             circle_radius: str = None, tmin: str = None, 
+                             tmax: str = None, query_endpoint: str = QUERY_ENDPOINT,
+                             update_endpoint: str = UPDATE_ENDPOINT):
     """
         Creates output files required by Digital Twin Visualisation Framework,
         i.e. geojson file with station locations, json file with metadata about
@@ -140,13 +143,16 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
 
         Arguments:
             outdir - absolute path to output directory for (geo)json files
-            circle_center - center for Blazegraph's geo:search "inCircle" mode
-                            in WGS84 coordinates as 'latitude#longitude'
-            circle_radius - radius for geo:search in km
             observation_types - list of observation types (e.g., AirTemperature)
                                 for which to retrieve data (all if None)
+            split_obs_fcs - boolean flag whether to create joint output files for
+                            observations and forecasts or 2 separate sets 
+            circle_center - center for Blazegraph's geo:search "inCircle" mode
+                            in WGS84 coordinates as 'latitude#longitude'
+            circle_radius - radius for geo:search in km            
             tmin - oldest time step for which to retrieve data
             tmax - latest time step for which to retrieve data
+            split_obs_fcs - boolean flag
     """
 
     # Validate input
@@ -154,10 +160,27 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
         #logger.error('Provided output directory does not exist.')
         raise InvalidInput('Provided output directory does not exist.')
     else:
-        fp_geojson = os.path.join(pathlib.Path(outdir), 'metoffice_stations.geojson')
-        fp_metadata = os.path.join(pathlib.Path(outdir), 'metoffice_stations-meta.json')
-        fp_timeseries = os.path.join(pathlib.Path(outdir), 'metoffice_stations-timeseries.json')
-   
+        if not split_obs_fcs:
+            fp_geojson = [os.path.join(pathlib.Path(outdir), 'metoffice_stations.geojson')]
+            fp_metadata = [os.path.join(pathlib.Path(outdir), 'metoffice_stations-meta.json')]
+            fp_timeseries = [os.path.join(pathlib.Path(outdir), 'metoffice_stations-timeseries.json')]
+            colors = ['#C0392B']
+            opacities = [0.66]
+        else:
+            fp_geojson = [os.path.join(pathlib.Path(outdir), 'metoffice_observation_stations.geojson'),
+                          os.path.join(pathlib.Path(outdir), 'metoffice_forecast_stations.geojson')]
+            fp_metadata = [os.path.join(pathlib.Path(outdir), 'metoffice_observation_stations-meta.json'),
+                           os.path.join(pathlib.Path(outdir), 'metoffice_forecast_stations-meta.json')]
+            fp_timeseries = [os.path.join(pathlib.Path(outdir), 'metoffice_observation_stations-timeseries.json'),
+                             os.path.join(pathlib.Path(outdir), 'metoffice_forecast_stations-timeseries.json')]
+            colors = ['#C0392B', '#2471A3']
+            opacities = [0.5, 0.5]
+    
+    # Initialise output/collection lists
+    stat_details = []
+    ts_data, ts_names, ts_units = [], [], []
+    geojson, metadata, timeseries = [], [], []
+
     #
     ###---  Retrieve KG data  ---###
     #
@@ -171,73 +194,103 @@ def create_json_output_files(outdir: str, query_endpoint: str = QUERY_ENDPOINT,
     diff = t2-t1
     print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
     #logger.info('Stations successfully retrieved.')
-
+    
+    # Extract station IRIs of interest
+    station_iris = list(station_details['station'].unique())
+    # Assign ids to stations (required for DTVF)
+    dtvf_ids =dict(zip(station_iris, range(len(station_iris))))
+    station_details['dtvf_id'] = station_details['station'].map(dtvf_ids)
+   
     # 2) Get time series data
     print('Retrieving time series data from KG ...')
     #logger.info('Retrieving time series data from KG ...')
     t1 = time.time()
-    station_iris = list(station_details['station'].unique())
-    ts_data, ts_names, ts_units = get_time_series_data(station_iris, observation_types, 
-                                                       tmin, tmax, query_endpoint, 
-                                                       update_endpoint)
+    # Potentially split stations into forecast and observation station sets
+    if split_obs_fcs:
+        # Observations data (1st list element)
+        stat_details.append(station_details[station_details['obs_station'] == 1])
+        obs = get_time_series_data(station_iris, observation_types, True, False,
+                                   tmin, tmax, query_endpoint, update_endpoint)
+        ts_data.append(obs[0]); ts_names.append(obs[1]); ts_units.append(obs[2])
+        # Forecast data (2nd list element)
+        stat_details.append(station_details[station_details['fcs_station'] == 1])
+        fcs = get_time_series_data(station_iris, observation_types, False, True,
+                                   tmin, tmax, query_endpoint, update_endpoint)
+        ts_data.append(fcs[0]); ts_names.append(fcs[1]); ts_units.append(fcs[2])
+    else:
+        stat_details.append(station_details)
+        obs_fcs = get_time_series_data(station_iris, observation_types, True, True,
+                                       tmin, tmax, query_endpoint, update_endpoint)
+        ts_data.append(obs_fcs[0]); ts_names.append(obs_fcs[1]); ts_units.append(obs_fcs[2])
     t2 = time.time()
     diff = t2-t1
     print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
     #logger.info('Time series successfully retrieved.')
 
-    # Convert ontology of units of measure symbols into suitable format to DTVF
-    for units in ts_units:
-        units.update((k, v.replace('&#x00B0;','°')) for k, v in units.items())
-
     #
     ###---  Create output files  ---###
     #
-    print('Creating output files (geojson, metadata, timeseries) ...')
-    #logger.info('Creating output files (geojson, metadata, timeseries) ...')
-    t1 = time.time()
-    # Assign ids to stations (required for DTVF)
-    dtvf_ids =dict(zip(station_iris, range(len(station_iris))))
-    station_details['dtvf_id'] = station_details['station'].map(dtvf_ids)
-
-    # 1) Create GeoJSON file for ReportingStations
-    geojson = create_geojson_output(station_details)
-
-    # 2) Create JSON file for ReportingStations metadata
-    metadata = create_metadata_output(station_details)
-
-    # 3) Create Time series output    
+    # Initialise time series client   
     ts_client = TSClient.tsclient_with_default_settings()
-    # Get List of corresponding dtvf ids for list of time series
-    # (to assign time series output to correct station in DTVF)
-    dataIRIs = [ts.getDataIRIs()[0] for ts in ts_data]
-    id_list = [int(station_details.loc[station_details['dataIRI'] == i, 'dtvf_id'].values) for i in dataIRIs]
-    timeseries = ts_client.convertToJSON(ts_data, id_list, ts_units, ts_names)
-     # Make JSON file readable in Python
-    timeseries = json.loads(timeseries.toString())
-    t2 = time.time()
-    diff = t2-t1
-    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-    #logger.info('Output files successfully created.')
+    # Create output file for each set of retrieved time series data
+    for i in range(len(ts_data)):
+        # Get output data
+        ts = ts_data[i]
+        units = ts_units[i]
+        names = ts_names[i]    
+        stations = stat_details[i]
+        # Get plotting properties
+        co = colors[i]
+        op = opacities[i]
+
+        # Convert unintelligible ontology of units of measure symbols for DTVF
+        for u in units:
+            u.update((k, v.replace('&#x00B0;','°')) for k, v in u.items())
+
+        print('Creating output files (geojson, metadata, timeseries) ...')
+        #logger.info('Creating output files (geojson, metadata, timeseries) ...')
+        t1 = time.time()
+
+        # 1) Create GeoJSON file for ReportingStations
+        geojson.append(create_geojson_output(stations, co, op))
+
+        # 2) Create JSON file for ReportingStations metadata
+        metadata.append(create_metadata_output(stations))
+
+        # 3) Create Time series output    
+        # Get List of corresponding dtvf ids for list of time series
+        # (to assign time series output to correct station in DTVF)
+        dataIRIs = [t.getDataIRIs()[0] for t in ts]
+        id_list = [int(stations.loc[stations['dataIRI'] == i, 'dtvf_id'].values) for i in dataIRIs]
+        tsjson = ts_client.convertToJSON(ts, id_list, units, names)
+        # Make JSON file readable in Python
+        timeseries.append(json.loads(tsjson.toString()))
+        t2 = time.time()
+        diff = t2-t1
+        print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+        #logger.info('Output files successfully created.')
 
     #
     ###---  Write output files  ---###
     #
     print('Writing output files ...')
     #logger.info('Writing output files ...')
-    with open(fp_geojson, 'w') as f:
-        json.dump(geojson, indent=4, fp=f)
-    with open(fp_metadata, 'w') as f:
-        json.dump(metadata, indent=4, fp=f)
-    with open(fp_timeseries, 'w') as f:
-        json.dump(timeseries, indent=4, fp=f)
+    for i in range(len(fp_geojson)):
+        with open(fp_geojson[i], 'w') as f:
+            json.dump(geojson[i], indent=4, fp=f)
+        with open(fp_metadata[i], 'w') as f:
+            json.dump(metadata[i], indent=4, fp=f)
+        with open(fp_timeseries[i], 'w') as f:
+            json.dump(timeseries[i], indent=4, fp=f)
 
 
 if __name__ == '__main__':
 
-    # get_all_metoffice_station_ids()
+    # Create 1 joint time series output file
+    # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
+    #                          split_obs_fcs=False)
 
-    # get_all_stations_with_details(circle_center='57.5#-3.5', circle_radius='1000')
-
+    # Create 2 separate time series output file
     create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output')
 
     # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
