@@ -1,4 +1,5 @@
 import compchemparser.parsers.ccgaussian_parser as ccparser
+import chemaboxwriters.common.handlers as handlers
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import numpy as np
 
@@ -240,6 +241,10 @@ OC_JSON_TO_QC_JSON_KEYS_MAP = {
     RUN_DATE: {"cckeys": [ccparser.RUN_DATE], "postproc_func": lambda x: x[0]},
     LOG_FILE_NAME: {
         "cckeys": [ccparser.LOG_FILE_NAME],
+        "postproc_func": lambda x: x[0],
+    },
+    CCLOG_SOURCE_LOCATION: {
+        "cckeys": [handlers.CCLOG_SOURCE_LOCATION],
         "postproc_func": lambda x: x[0],
     },
 }

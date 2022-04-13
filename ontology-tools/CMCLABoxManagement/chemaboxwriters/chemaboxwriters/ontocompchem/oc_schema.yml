@@ -52,8 +52,8 @@ schema_to_json_vars:
     PROGRAM_NAME: {"required": True, "jsonKey": "Program_Name"}
     PROGRAM_VERSION: {"required": True, "jsonKey": "Program_Version"}
     RUN_DATE: {"required": True, "jsonKey": "Run_Date"}
-    CCLOG_SOURCE_LOCATION: {"required": True, "jsonKey": "CCLOG_source_location"}
-    PNG_SOURCE_LOCATION: {"required": True, "jsonKey": "PNG_source_location"}
+    CCLOG_SOURCE_LOCATION: {"required": True, "jsonKey": "CCLOG_Source_Location"}
+    PNG_SOURCE_LOCATION: {"required": True, "jsonKey": "PNG_Source_Location"}
     # ospecies link
     SPECIES_IRI: {"required": True, "jsonKey": "Species_IRI"}
     # main entry
