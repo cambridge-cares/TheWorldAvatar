@@ -86,9 +86,6 @@ def createDUKESDataPropertyInstance(version):
     gpslocationArrays    = readFile(dukes.GPSLocation)
     regionArrays         = readFile(dukes.Region)
     
-    # uriSplit = UKDT.nodeURIGenerator(3, dt.powerPlant, dukes.VERSION).split('.owl') 
-    # root_uri = uriSplit[0]
-    
     root_uri = UKDT.nodeURIGenerator(2, dt.powerPlant, None)
     
     fileNum = len(plantnameArrays)

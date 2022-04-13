@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 April 2022        #
+# Last Update Date: 13 April 2022        #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
@@ -104,9 +104,8 @@ def rootNodeAndNameSpace(numOfBus, numOfBranch, endpoint_label, ElectricitySyste
     # gridModelNodeSegment = UKDT.nodeURIGenerator(3, dt.powerGridModel, numOfBus).split(OWL)[0] 
     ontopowsys_namespace = dt.baseURL + SLASH + t_box.ontopowsysName + SLASH
     topology_root_node = root_node + str(uuid.uuid4())
-    ElectricitySystemIRI = query_topo.queryElectricitySystemIRI(endpoint_label, ElectricitySystemName) #TODO: decide if it is necessary
-    topoConfig = {'root_node': root_node,
-                  'ontopowsys_namespace': ontopowsys_namespace,
+    ElectricitySystemIRI = query_topo.queryElectricitySystemIRI(endpoint_label, ElectricitySystemName)
+    topoConfig = {'ontopowsys_namespace': ontopowsys_namespace,
                   'topology_root_node': topology_root_node,
                   'numOfBus': numOfBus,
                   'numOfBranch': numOfBranch,
@@ -122,11 +121,10 @@ def createTopologicalInformationPropertyInstance(numOfBus, numOfBranch, voltageL
     return topo_info, busInfoArrays, branchTopoInfoArrays
 
 """Main function: create the sub graph represents the Topology"""
-def createTopologyGraph(storeType, localQuery, topoConfig:dir, generatorClusterFunctionName, voltageLevel, OWLFileStoragePath, updateLocalOWLFile = True):
+def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLevel, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):
     ## The configration of the topology
     numOfBus = topoConfig['numOfBus']
     numOfBranch = topoConfig['numOfBranch']
-    root_node = topoConfig['root_node']
     ontopowsys_namespace = topoConfig['ontopowsys_namespace']
     topology_root_node = topoConfig['topology_root_node']
     ElectricitySystemIRI = topoConfig['ElectricitySystemIRI']
@@ -176,11 +174,15 @@ def createTopologyGraph(storeType, localQuery, topoConfig:dir, generatorClusterF
     aggregatedBusList = checkaggregatedBus(numOfBus, numOfBranch)
     
     ## create the bus nodes
-    graph, orderedBusList, orderedLatlon = addBusTopologyNodes(graph, numOfBus, numOfBranch, topo_info.headerBusTopologicalInformation, busInfoArrays, root_node, ontopowsys_namespace, topology_root_node, uk_topo)
+    graph, orderedBusList, orderedLatlon = addBusTopologyNodes(graph, numOfBus, numOfBranch, topo_info.headerBusTopologicalInformation, busInfoArrays, ontopowsys_namespace, topology_root_node, uk_topo)
+    
     ## create branch nodes
-    graph = addBranchTopologyNodes(graph, numOfBus, numOfBranch, topo_info.headerBranchTopologicalInformation, branchTopoInfoArrays, orderedBusList, orderedLatlon, root_node, ontopowsys_namespace, topology_root_node, uk_topo)
+    graph = addBranchTopologyNodes(graph, numOfBus, numOfBranch, topo_info.headerBranchTopologicalInformation, branchTopoInfoArrays, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo)
+    
     ## create tehe generator nodes
-    graph = addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, root_node, ontopowsys_namespace, topology_root_node, uk_topo)
+    graph = addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo)
+    
+    # print(graph.serialize(format="turtle").decode("utf-8"))
     
     ## generate/update OWL files
     if updateLocalOWLFile == True:  
@@ -195,7 +197,7 @@ def createTopologyGraph(storeType, localQuery, topoConfig:dir, generatorClusterF
     return
 
 
-def addBusTopologyNodes(graph, numOfBus, numOfBranch, busTopoheader, busDataArray, root_node, ontopowsys_namespace, topology_root_node, uk_topo): 
+def addBusTopologyNodes(graph, numOfBus, numOfBranch, busTopoheader, busDataArray, ontopowsys_namespace, topology_root_node, uk_topo): 
     print('****************Start adding bus node triples in the topology graph****************')
     
     ## Check the bus data header
@@ -215,7 +217,7 @@ def addBusTopologyNodes(graph, numOfBus, numOfBranch, busTopoheader, busDataArra
         bus_node = ontopowsys_namespace + uk_topo.BusNodeKey + str(uuid.uuid4()) # uk_topo.EquipmentConnection_EBusKey + busTopoData[0].zfill(3) 
         latlon = (str(busTopoData[4].strip('\n')) + '#' + str(busTopoData[3].strip('\n'))).strip(' ').replace(' ', '').replace('\xa0', '')
         ## Link bus node with root node and specify its type
-        graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(topology_root_node)))
+        graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(bus_node)))
         graph.add((URIRef(bus_node), RDF.type, URIRef(ontopowsys_PowSysRealization.BusNode.iri)))
         ## Add GPS attribute tp BusNode
         graph.add((URIRef(bus_node), URIRef(ontoenergysystem.hasWGS84LatitudeLongitude.iri), Literal(latlon, datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
@@ -224,7 +226,7 @@ def addBusTopologyNodes(graph, numOfBus, numOfBranch, busTopoheader, busDataArra
         counter += 1     
     return graph, orderedBusList, orderedLatlon
 
-def addBranchTopologyNodes(graph, numOfBus, numOfBranch, branchTopoHeader, branchTopoArray, orderedBusList, orderedLatlon, root_node, ontopowsys_namespace, topology_root_node, uk_topo): 
+def addBranchTopologyNodes(graph, numOfBus, numOfBranch, branchTopoHeader, branchTopoArray, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo): 
     print("****************Adding the triples of ELine of the grid topology.****************") 
     ## check the branch topology data header
     for header in branchTopoArray[0]:
@@ -251,7 +253,7 @@ def addBranchTopologyNodes(graph, numOfBus, numOfBranch, branchTopoHeader, branc
         branch_node = ontopowsys_namespace + uk_topo.OverheadLineKey + str(uuid.uuid4())
        
         ## Link line node with root node and specify its type
-        graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(branch_node)))
+        graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(branch_node)))
         graph.add((URIRef(branch_node), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
         
         ## link with leaves(from) bus and enters(to) bus
@@ -300,7 +302,7 @@ def addBranchTopologyNodes(graph, numOfBus, numOfBranch, branchTopoHeader, branc
     
     return graph
     
-def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, root_node, ontopowsys_namespace, topology_root_node, uk_topo):    
+def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo):    
     print('****************Adding the triples of Generator of the grid topology.****************')
     counter = 1 
     if modelFactorArrays[0] != ukmf.headerModelFactor:
@@ -333,14 +335,14 @@ def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClu
                              
     for busGen in bus_generator_assignment_list: # Bus_node, EBus, Bus_lat_lon[], Bus_LACode; PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology
         ## Link the generator_node, EGen_node and their PowerGenerator of the power plant
-        graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(busGen['PowerGenerator'])))
+        graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(busGen['PowerGenerator'])))
         graph.add((URIRef(busGen['PowerGenerator']), URIRef(meta_model_topology.hasOutput.iri), URIRef(busGen['Bus_node'])))
        
         ## Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
         graph = AddCostAttributes(graph, counter, busGen['PrimaryFuel'], busGen['GenerationTechnology'], busGen['PowerGenerator'], modelFactorArrays, ontopowsys_namespace, uk_topo)
         counter += 1               
      
-    print(graph.serialize(format="turtle").decode("utf-8"))
+    # print(graph.serialize(format="turtle").decode("utf-8"))
     return graph
 
 """This function is designed for added the attributes to the generator cost function"""
@@ -415,66 +417,13 @@ def checkaggregatedBus(numOfBus, numOfBranch):
             aggregatedBusList.append(aggregatedBus)
     return aggregatedBusList
 
-# """Add nodes represent Branches"""
-# #generatorClusterFunctionName is the name of the cluster function in the class generatorCluster 
-# def addEGenNodes(graph, numOfBus, numOfBranch, aggregatedBusList, generatorClusterFunctionName, ConjunctiveGraph, modelFactorArrays, localQuery, \
-#                  root_node, root_uri, tp_namespace, uk_topo): 
-#     print("Adding the triples of EGen of the grid topology.")
-#     print('#########START addEGenNodes for', numOfBus, '-bus model##############')
-#     nodeName = "EGen"
-#     counter = 1 
-#     if modelFactorArrays[0] != ukmf.headerModelFactor:
-#         raise Exception('The bus model factor data header is not matched, please check the data file')
-        
-#     # query the Bus Topological Information and power plant attributes  
-#     #### Bus: Bus_node, Bus_lat, Bus_lon (The located region of the bus cannot be returned from the query, will use the ONS data to check its located area)#### 
-#     res_queryBusTopologicalInformation = list(query_topo.queryBusTopologicalInformation(numOfBus, numOfBranch, ConjunctiveGraph, localQuery, endpoint_label))
-#     #### power plant: PowerGenerator, Region, lat, lon, PrimaryFuel, GenerationTechnology ####
-#     res_queryPowerPlantAttributes = list(query_topo.queryPowerPlantAttributes(endpoint_label))
-#     # create an instance of class generatorCluster
-#     gc = genCluster.generatorCluster()
-#     # get the cluster method via getattr function 
-#     genClusterMethod = getattr(gc, generatorClusterFunctionName)
-#     # pass the arrguments to the cluster method
-#     bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggregatedBusList)
-    
-#     # check if the allocator method is applicable
-#     while bus_generator_assignment_list == None:
-#         generatorClusterFunctionName = str(input('The current generator cluster is not applicable. Please choose another cluster: '))
-#         # get the load allocation method via getattr function 
-#         genClusterMethod = getattr(gc, generatorClusterFunctionName)
-#         # pass the arrguments to the cluster method
-#         bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggregatedBusList)    
-                             
-#     for busGen in bus_generator_assignment_list: # Bus_node, EBus, Bus_lat_lon[], Bus_LACode; PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology
-#         # busGen: busGen[0]: generator; busGen[1]: bus node; busGen[2]: PrimaryFuel; busGen[3]: GenerationTechnology
-#         # build up iris
-#         generator_context_locator = uk_topo.PowerGeneration_EGenKey + str(counter).zfill(3) 
-#         generator_node = tp_namespace + generator_context_locator
-#         EGen_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, numOfBus).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
-#         EGen_context_locator = uk_egen_model.EGenKey + str(counter).zfill(3)
-#         EGen_node = EGen_namespace + EGen_context_locator
-        
-#         # Link the generator_node, EGen_node and their PowerGenerator of the power plant
-#         graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(generator_node)))
-#         graph.add((URIRef(generator_node), URIRef(meta_model_topology.isConnectedTo.iri), URIRef(busGen['Bus_node'])))
-#         graph.add((URIRef(generator_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerGeneration.iri)))
-#         graph.add((URIRef(generator_node), URIRef(ontoecape_technical_system.isRealizedBy.iri), URIRef(EGen_node)))
-#         graph.add((URIRef(EGen_node), RDF.type, URIRef(ontopowsys_PowSysRealization.PowerGenerator.iri)))
-#         graph.add((URIRef(EGen_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(busGen['PowerGenerator'])))
-#         # Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
-#         graph = AddCostAttributes(graph, counter, busGen['PrimaryFuel'].split('#')[1], busGen['GenerationTechnology'].split('#')[1], modelFactorArrays, numOfBus, uk_topo)
-#         counter += 1               
-#     return graph, nodeName   
-
-
-
 if __name__ == '__main__': 
-    topoConfig = rootNodeAndNameSpace(10, 14, 'ukdigitaltwin_test2', 'Great_Britain')
+    # topoConfig = rootNodeAndNameSpace(10, 14, 'ukdigitaltwin_test2', 'Great_Britain')
     # print(topoConfig)
-    createTopologyGraph('default', False, topoConfig, 'sameRegionWithBus', ["275", "400"], None, True)
+    createTopologyGraph(topoConfig, 'sameRegionWithBus', ["275", "400"], None, False, 'default')
     
-    # topoConfig = rootNodeAndNameSpace(29, 99, 'ukdigitaltwin_test2', 'Great_Britain')
-    # createTopologyGraph('default', False, topoConfig, 'closestBus', [], None, False)
+    topoConfig = rootNodeAndNameSpace(29, 99, 'ukdigitaltwin_test2', 'Great_Britain')
+    print(topoConfig)
+    createTopologyGraph(topoConfig, 'closestBus', [], None, True, 'default')
     
     print('**************Terminated**************')
