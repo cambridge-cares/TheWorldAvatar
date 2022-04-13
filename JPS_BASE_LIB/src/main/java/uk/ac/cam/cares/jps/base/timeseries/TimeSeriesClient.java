@@ -1,10 +1,7 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -580,25 +577,24 @@ public class TimeSeriesClient<T> {
 	    	JSONArray values = new JSONArray();
 	    	JSONArray valuesClass = new JSONArray();
 	    	for (int j = 0; j < dataIRIs.size(); j++) {
-	    		List<?> valueslist = ts.getValues(dataIRIs.get(j));
-	    		values.put(valueslist);
-	    		if (valueslist.size() > 0) {
-	    			// Initialise value class (in case no class can be determined due to missing data)
-					String vClass = "Unknown";
-					for (int k = 0; k < valueslist.size(); k++) {
-						// Get values class from first not null value
-						if (valueslist.get(k) != null) {
-							if (valueslist.get(k) instanceof Number) {
-								vClass = Number.class.getSimpleName();
-							} else {
-								vClass = valueslist.get(k).getClass().getSimpleName();
-							}
-							break;
+				List<?> valueslist = ts.getValues(dataIRIs.get(j));
+				values.put(valueslist);
+				// Initialise value class (in case no class can be determined due to missing data)
+				String vClass = "Unknown";
+				Iterator<?> listIterator = valueslist.iterator();
+				while (listIterator.hasNext()) {
+					// Get values class from first not null value
+					if (listIterator.next() != null) {
+						if (listIterator.next() instanceof Number) {
+							vClass = Number.class.getSimpleName();
+						} else {
+							vClass = listIterator.next().getClass().getSimpleName();
 						}
+						break;
 					}
-					valuesClass.put(vClass);
-	    		}
-	    	}
+				}
+				valuesClass.put(vClass);
+			}
 	    	
 	    	ts_jo.put("values", values);
 	    	ts_jo.put("valuesClass", valuesClass);
