@@ -132,6 +132,10 @@ class QC_JSON_TO_OC_JSON_Handler(Handler):
 
     def _search_ontospecies_iri(self, inchi: str) -> Optional[str]:
         ontospecies_IRI = None
+        # note that in this query we use the SPARQLWrapper remote
+        # store client rather than the JPS one. This is because
+        # it was impossible for me to get the JPS client to work
+        # with the inchi query...
         response = self.do_remote_store_query(
             endpoint_prefix="ospecies",
             store_client_class=rsc.SPARQLWrapperRemoteStoreClient,
