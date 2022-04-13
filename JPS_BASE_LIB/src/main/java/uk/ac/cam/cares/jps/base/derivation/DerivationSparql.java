@@ -27,16 +27,12 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import jena.query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,7 +56,9 @@ public class DerivationSparql {
 	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
 
 	// placeholder string used by method getAllDerivations()
-	private static final String PLACEHOLDER = "This is a placeholder string.";
+	private static final String PLACEHOLDER = "http://This_is_a_placeholder_string";
+	// placeholder Iri used by method getDerivation(String rootDerivationIRI)
+	private static final Iri PLACEHOLDER_IRI = iri(PLACEHOLDER);
 
 	// status concepts
 	private static String REQUESTED = "Requested";
@@ -626,7 +624,7 @@ public class DerivationSparql {
 	 * @param storeClient
 	 * @param derivation
 	 */
-	void markAsRequested(String derivation) {
+	String markAsRequested(String derivation) {
 		deleteStatus(derivation);
 		ModifyQuery modify = Queries.MODIFY();
 
@@ -639,6 +637,7 @@ public class DerivationSparql {
 		modify.prefix(p_derived).insert(insert_tp_rdf_type);
 
 		storeClient.executeUpdate(modify.getQueryString());
+		return statusIRI;
 	}
 
 	/**
@@ -1415,6 +1414,7 @@ public class DerivationSparql {
 				e.setRdfType(queryResult.getJSONObject(i).getString(rdfTypeQueryKey));
 				e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(downstreamDevQueryKey),
 					queryResult.getJSONObject(i).getString(downsDevRdfTypeQueryKey)));
+				entityMap.put(eiri, e);
 			} else {
 				entityMap.get(eiri)
 						.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(downstreamDevQueryKey),
@@ -1422,7 +1422,7 @@ public class DerivationSparql {
 			}
 		}
 
-		return new ArrayList<>(entityMap.values());
+		return new ArrayList<Entity>(entityMap.values());
 	}
 
 	Map<String, String> getDownstreamDerivationForNewInfo(String derivation) {
@@ -1866,24 +1866,34 @@ public class DerivationSparql {
 						.andHas(PropertyPaths.path(isDerivedUsing, hasOperation, hasHttpUrl), agentURL)
 						.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
 						.andIsA(derivationType));
-		GraphPattern entityPattern = entity.has(belongsTo, derivation);
+		// compared to the function getDerivations(), entityPattern is is combined with
+		// entityTypePattern and made within one optional clause, this is to accommodate
+		// the situation where derivations are created for new information so no outputs
+		// are provided
+		GraphPattern entityPattern = GraphPatterns.and(entity.has(belongsTo, derivation),
+				entity.isA(entityType).optional().filter(Expressions.and(entityTypeFilters))).optional();
 		GraphPattern inputTimestampPattern = input.has(
 				PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp).optional();
-		GraphPattern inputTypePattern = input.isA(inputType).optional().filter(Expressions.and(inputTypeFilters));
-		GraphPattern entityTypePattern = entity.isA(entityType).optional().filter(Expressions.and(entityTypeFilters));
+		// compared to the function getDerivations(), the inputTypePattern is compulsory
+		GraphPattern inputTypePattern = input.isA(inputType).filter(Expressions.and(inputTypeFilters));
 
 		// compared to the function getDerivations(), this part is added to decide
 		// whether to query ALL derivations in the KG or just those upstream of root
 		// also here we alter the depth of the queried DAG by using upstreamPath
 		if (!rootDerivationIRI.equals(PLACEHOLDER)) {
-			GraphPattern rootDerivationPattern = iri(rootDerivationIRI).has(upstreamPath, derivation);
-			query.where(rootDerivationPattern);
+			if (!upstreamPath.equals(PLACEHOLDER_IRI)) {
+				GraphPattern rootDerivationPattern = iri(rootDerivationIRI).has(upstreamPath, derivation);
+				query.where(rootDerivationPattern);
+			} else {
+				ValuesPattern rootDerivationPattern = new ValuesPattern(derivation,
+						Arrays.asList(iri(rootDerivationIRI)));
+				query.where(rootDerivationPattern);
+			}
 		}
 
 		query.select(derivation, input, entity, agentURL, derivationTimestamp, inputTimestamp, derivationType,
 				inputType, entityType)
-				.where(derivationPattern, entityPattern, inputTimestampPattern, inputTypePattern,
-						entityTypePattern)
+				.where(derivationPattern, entityPattern, inputTimestampPattern, inputTypePattern)
 				.prefix(p_derived, p_time, p_agent);
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
@@ -1894,9 +1904,9 @@ public class DerivationSparql {
 		for (int i = 0; i < queryResult.length(); i++) {
 			String derivationIRI = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
 			String inputIRI = queryResult.getJSONObject(i).getString(input.getQueryString().substring(1));
-			String entityIRI = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
 			String urlString = queryResult.getJSONObject(i).getString(agentURL.getQueryString().substring(1));
 			String derivedType = queryResult.getJSONObject(i).getString(derivationType.getQueryString().substring(1));
+			String input_rdf_type = queryResult.getJSONObject(i).getString(inputType.getQueryString().substring(1));
 			long derivedTimestamp = queryResult.getJSONObject(i)
 					.getLong(derivationTimestamp.getQueryString().substring(1));
 
@@ -1909,45 +1919,58 @@ public class DerivationSparql {
 				derivationList.add(derived);
 			}
 
-			// input of this derivation
+			// input of this derivation, it can be an entity or a derivation
 			Entity input_entity;
-			if (entitiesMap.containsKey(inputIRI)) {
-				input_entity = entitiesMap.get(inputIRI);
-			} else {
-				input_entity = new Entity(inputIRI);
-				entitiesMap.put(inputIRI, input_entity);
+			Derivation directUpstream;
+			if (derivationTypes.contains(input_rdf_type)) { // the input might be a derivation
+				if (derivationsMap.containsKey(inputIRI)) {
+					directUpstream = derivationsMap.get(inputIRI);
+				} else {
+					directUpstream = new Derivation(inputIRI, input_rdf_type);
+					derivationsMap.put(inputIRI, directUpstream);
+					derivationList.add(directUpstream);
+				}
+				// make the connection between the derivation and the upstream derivation
+				derived.setDirectedUpstreams(directUpstream);
+			} else { // this is a normal entity
+				if (entitiesMap.containsKey(inputIRI)) {
+					input_entity = entitiesMap.get(inputIRI);
+				} else {
+					input_entity = new Entity(inputIRI);
+					entitiesMap.put(inputIRI, input_entity);
+				}
+				input_entity.setRdfType(input_rdf_type);
+				// if it's a pure input/derivation it will have a timestamp
+				if (queryResult.getJSONObject(i).has(inputTimestamp.getQueryString().substring(1))) {
+					long input_timestamp = queryResult.getJSONObject(i)
+							.getLong(inputTimestamp.getQueryString().substring(1));
+					input_entity.setTimestamp(input_timestamp);
+				}
+				derived.addInput(input_entity);
 			}
 
-			// if rdf type exists
-			if (queryResult.getJSONObject(i).has(inputType.getQueryString().substring(1))) {
-				input_entity
-						.setRdfType(queryResult.getJSONObject(i).getString(inputType.getQueryString().substring(1)));
-			}
+			// compared to the function getDerivations(), the output entity is made
+			// optional, thus, here we check first if output exists
+			if (queryResult.getJSONObject(i).has(entity.getQueryString().substring(1))) {
+				String entityIRI = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+				Entity entity_entity;
+				if (entitiesMap.containsKey(entityIRI)) {
+					entity_entity = entitiesMap.get(entityIRI);
+				} else {
+					entity_entity = new Entity(entityIRI);
+					entitiesMap.put(entityIRI, entity_entity);
+				}
 
-			// if it's a pure input it will have a timestamp
-			if (queryResult.getJSONObject(i).has(inputTimestamp.getQueryString().substring(1))) {
-				long input_timestamp = queryResult.getJSONObject(i)
-						.getLong(inputTimestamp.getQueryString().substring(1));
-				input_entity.setTimestamp(input_timestamp);
-			}
-
-			Entity entity_entity;
-			if (entitiesMap.containsKey(entityIRI)) {
-				entity_entity = entitiesMap.get(entityIRI);
-			} else {
-				entity_entity = new Entity(entityIRI);
-				entitiesMap.put(entityIRI, entity_entity);
-			}
-
-			// if rdf type exists
-			if (queryResult.getJSONObject(i).has(entityType.getQueryString().substring(1))) {
-				entity_entity
-						.setRdfType(queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1)));
+				// if rdf type exists
+				if (queryResult.getJSONObject(i).has(entityType.getQueryString().substring(1))) {
+					entity_entity
+							.setRdfType(
+									queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1)));
+				}
+				derived.addEntity(entity_entity);
 			}
 
 			// set properties of derivation
-			derived.addEntity(entity_entity);
-			derived.addInput(input_entity);
 			derived.setAgentURL(urlString);
 			derived.setTimestamp(derivedTimestamp);
 		}
@@ -1991,7 +2014,7 @@ public class DerivationSparql {
 	 */
 	Derivation getDerivation(String rootDerivationIRI) {
 		List<Derivation> derivations = getDerivations(rootDerivationIRI, derivationTypes,
-				zeroOrOne(isDerivedFrom));
+				PLACEHOLDER_IRI);
 		Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(rootDerivationIRI))
 				.findFirst().get();
 		return derivation;
