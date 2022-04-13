@@ -305,19 +305,7 @@ public class DerivationClient {
 	 * @param derivationIRI
 	 */
 	public void updatePureSyncDerivation(String derivationIRI) {
-		// the graph object makes sure that there is no circular dependency
-		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<String, DefaultEdge>(
-				DefaultEdge.class);
-		List<Derivation> derivations = this.sparqlClient.getRootAndAllTargetUpstreamDerivations(derivationIRI,
-				DerivationSparql.derivationTypes);
-		Derivation derivation = derivations.stream().filter(d -> d.getIri().equals(derivationIRI))
-				.findFirst().get();
-		try {
-			updatePureSyncDerivation(derivation, graph);
-		} catch (Exception e) {
-			LOGGER.fatal(e.getMessage());
-			throw new JPSRuntimeException(e);
-		}
+		updatePureSyncDerivations(Arrays.asList(derivationIRI));
 	}
 
 	/**
@@ -386,7 +374,7 @@ public class DerivationClient {
 				updateMixedAsyncDerivation(derivationIRI);
 			} else {
 				// update pure sync derivations
-				updatePureSyncDerivation(derivationIRI);
+				updatePureSyncDerivations(Arrays.asList(derivationIRI));
 			}
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
