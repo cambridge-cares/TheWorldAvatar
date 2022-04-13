@@ -528,8 +528,8 @@ public class TimeSeriesClient<T> {
 	 * please do not modify without consulting the visualisation team at CMCL
 	 * @param ts_list
 	 * @param id
-	 * @param units
-	 * @param table_header
+	 * @param units_map
+	 * @param table_header_map
 	 * @return
 	 */
 	public JSONArray convertToJSON(List<TimeSeries<T>> ts_list, List<Integer> id,
@@ -583,11 +583,20 @@ public class TimeSeriesClient<T> {
 	    		List<?> valueslist = ts.getValues(dataIRIs.get(j));
 	    		values.put(valueslist);
 	    		if (valueslist.size() > 0) {
-	    			if (valueslist.get(0) instanceof Number) {
-	    				valuesClass.put(Number.class.getSimpleName());
-	    			} else {
-	    				valuesClass.put(valueslist.get(0).getClass().getSimpleName());
-	    			}
+	    			// Initialise value class (in case no class can be determined due to missing data)
+					String vClass = "Unknown";
+					for (int k = 0; k < valueslist.size(); k++) {
+						// Get values class from first not null value
+						if (valueslist.get(k) != null) {
+							if (valueslist.get(k) instanceof Number) {
+								vClass = Number.class.getSimpleName();
+							} else {
+								vClass = valueslist.get(k).getClass().getSimpleName();
+							}
+							break;
+						}
+					}
+					valuesClass.put(vClass);
 	    		}
 	    	}
 	    	
