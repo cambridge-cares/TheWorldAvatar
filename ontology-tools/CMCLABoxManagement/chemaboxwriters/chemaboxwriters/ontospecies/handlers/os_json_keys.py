@@ -4,6 +4,11 @@ import chemaboxwriters.common.utilsfunc as utilsfunc
 import chemutils.obabelutils.obconverter as obconverter
 import numpy as np
 
+__doc__ = """
+This module defines all the os json file keys and the mapping 
+on how to populate os json entries with the qc json entries.
+"""
+
 # OS_JSON_KEYS
 # -------------------------
 # atoms, molecules etc

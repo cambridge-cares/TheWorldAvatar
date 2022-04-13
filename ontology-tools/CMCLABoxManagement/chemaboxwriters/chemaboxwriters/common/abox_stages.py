@@ -1,4 +1,10 @@
 class Abox_Writer_Stage:
+    """This is a main class that would keep all possible
+    handlers input / output stages. Here, only two
+    common stages are registered. Pipeline specific stages
+    are registered in appropriate pipeline modules.
+    """
+
     def __init__(self) -> None:
         self._stages = {}
 

@@ -1,3 +1,7 @@
+__doc__ = """
+This module defines all the ops json file keys.
+"""
+
 # on species
 SPECIES_IRI = "Species_IRI"
 SCAN_ATOMS_IRIS = "Scan_Atoms_Iris"

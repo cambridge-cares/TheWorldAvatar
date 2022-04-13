@@ -2,14 +2,17 @@ from typing import Dict, List
 import yaml
 import logging
 
+__doc__ = """
+This module stores all allowed keys that are used in the abox config file
+together with the code that processes it.
+"""
+
 logger = logging.getLogger(__name__)
 
 FILE_SERVER = "file server"
 TRIPLE_STORE = "triple store"
-
 QUERY_SETTINGS_KEY = "kg_query_endpoints"
 HANDLER_KWARGS = "handler_kwargs"
-
 FS_UPLOAD_SETTINGS_KEY = "file_server_upload_settings"
 TS_UPLOAD_SETTINGS_KEY = "triple_store_upload_settings"
 URL_ENDPOINT_KEY = "url"
@@ -27,6 +30,7 @@ CONFIG_GROUPS = [
 
 
 def cascade_configs(configs: Dict, cascade_fields: List[str] = CONFIG_GROUPS) -> None:
+    """Performs config cascade going from global->pipeline->handler levels"""
     subconfigs = [name for name in configs.keys() if name not in cascade_fields]
 
     for configs_group in subconfigs:
@@ -40,13 +44,11 @@ def cascade_configs(configs: Dict, cascade_fields: List[str] = CONFIG_GROUPS) ->
                 configs=configs[configs_group], cascade_fields=cascade_fields
             )
 
-
 def _merge_config_groups(
     merge_from: Dict, merge_to: Dict, merge_fields: List[str]
 ) -> None:
     for key in merge_fields:
         _merge_config_field(merge_from=merge_from, merge_to=merge_to, merge_on=key)
-
 
 def _merge_config_field(merge_from: Dict, merge_to: Dict, merge_on: str) -> None:
     merge_from_configs = merge_from.get(merge_on)
@@ -62,10 +64,8 @@ def _merge_config_field(merge_from: Dict, merge_to: Dict, merge_on: str) -> None
 
     merge_to[merge_on] = merge_to_configs
 
-
 def _merge_configs(merge_into: Dict, merge_from: Dict) -> Dict:
     return {**merge_from, **merge_into}
-
 
 def read_config_file(config_file: str) -> Dict:
     config_dict = {}

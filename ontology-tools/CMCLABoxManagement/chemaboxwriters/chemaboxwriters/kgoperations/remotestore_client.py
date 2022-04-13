@@ -11,6 +11,8 @@ jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
 
 
 class RemoteStoreClient(ABC):
+    """Abstract remote store client interface."""
+
     def __init__(self, endpoint_url) -> None:
         self._store_client = self._create_store_client(endpoint_url)
 
@@ -24,6 +26,8 @@ class RemoteStoreClient(ABC):
 
 
 class JPSRemoteStoreClient(RemoteStoreClient):
+    """JPS remote store client."""
+
     def _create_store_client(self, endpoint_url: str) -> Any:
 
         return jpsBaseLib_view.RemoteStoreClient(endpoint_url)
@@ -34,6 +38,8 @@ class JPSRemoteStoreClient(RemoteStoreClient):
 
 
 class SPARQLWrapperRemoteStoreClient(RemoteStoreClient):
+    """PARQLWrapper remote store client."""
+
     def _create_store_client(self, endpoint_url: str) -> Any:
         store_client = SPARQLWrapper(endpoint_url)
         store_client.setReturnFormat(JSON)
@@ -61,6 +67,12 @@ TRemoteStoreClient = Type[RemoteStoreClient]
 
 
 class RemoteStoreClientContainer:
+    """Remote store client container. Used to store multiple
+    store clients. Its get_store_client method creates
+    a store client of a given type if not present, otherwise
+    it returns an existing store client instance.
+    """
+
     def __init__(self, query_endpoints: Optional[Dict[str, str]]):
         self.query_endpoints = {}
         self.store_clients = {}
@@ -76,6 +88,8 @@ class RemoteStoreClientContainer:
         print(pformat(self.query_endpoints))
 
     def register_query_endpoint(self, endpoint_prefix: str, endpoint_url: str) -> None:
+        # this only registers endpoints, creation of store clients happens in the
+        # get_store_client call.
         self.query_endpoints[endpoint_prefix] = endpoint_url
         self.store_clients[endpoint_prefix] = {}
 
@@ -97,6 +111,11 @@ class RemoteStoreClientContainer:
         endpoint_prefix: str,
         store_client_class: TRemoteStoreClient = JPSRemoteStoreClient,
     ) -> RemoteStoreClient:
+        """Gets the store client for a given endpoint (via tis prefix) if exists,
+        otherwise it creates one. Raises a MissingQueryEndpoint if the endpoint
+        prefix is not registered. By default it creates the JPS remote store client.
+        """
+
         endpoint_url = self.query_endpoints.get(endpoint_prefix)
 
         if endpoint_url is None:

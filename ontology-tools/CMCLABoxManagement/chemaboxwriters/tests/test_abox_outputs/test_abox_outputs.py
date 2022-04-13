@@ -13,6 +13,13 @@ from chemaboxwriters.ontopesscan.pipeline import OPS_PIPELINE
 from pytest_mock import MockerFixture
 from typing import List, Dict, Callable
 
+# NOTE
+#
+# In all the tests the resulting owl files are not checked. This is because
+# it is enough to check the csv files. As long as csv files are the same then,
+# thanks to the entityrdfizer, all the owl files should be the same.
+# Owl files, however, are checked for their existance.
+#
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 ABOX_CONFIG_FILE = os.path.join(THIS_DIR, "test_config_files", "abox_config.yml")

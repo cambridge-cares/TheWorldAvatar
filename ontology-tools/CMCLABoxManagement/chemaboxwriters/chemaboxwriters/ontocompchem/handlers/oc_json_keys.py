@@ -3,6 +3,11 @@ import chemaboxwriters.common.handlers as handlers
 import chemaboxwriters.common.utilsfunc as utilsfunc
 import numpy as np
 
+__doc__ = """
+This module defines all the oc json file keys and the mapping 
+on how to populate oc json entries with the qc json entries.
+"""
+
 # OC_JSON_KEYS
 # -------------------------
 # atoms, molecules etc
@@ -89,7 +94,7 @@ OC_JSON_KEYS = [
 ]
 
 
-# this defines on how assign the oc json data using the qc json data
+# this defines on how to assign the oc json data using the qc json data
 # note that the following entries are skipped as they are not required
 # for the oc abox:
 #
@@ -99,7 +104,8 @@ OC_JSON_KEYS = [
 # ccparser.ROT_CONST_UNIT
 # ccparser.FREQ_UNIT
 #
-#
+# In the future it would be usefule to introduce a map object that would
+# do some intermediate results caching as atm there is some repetition
 OC_JSON_TO_QC_JSON_KEYS_MAP = {
     EMPIRICAL_FORMULA: {
         "cckeys": [ccparser.EMP_FORMULA],

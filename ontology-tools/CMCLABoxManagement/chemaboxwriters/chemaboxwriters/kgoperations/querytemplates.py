@@ -1,6 +1,4 @@
 import chemaboxwriters.kgoperations.remotestore_client as rsc
-
-# from py4j.java_gateway import Py4JJavaError
 import logging
 import re
 from typing import Optional, List, Dict
@@ -32,27 +30,6 @@ def spec_inchi_query(inchi_string):
         "#inchi_string_non_standard#", inchi_string_non_standard
     )
     return query
-
-
-def get_species_iri(
-    inchi: str,
-    store_client: rsc.RemoteStoreClient,
-) -> Optional[str]:
-    # Query OntoSpecies to find Species IRI that corresponds to a given InChI.
-    speciesIRI = None
-    results = []
-    try:
-        results = store_client.execute_query(
-            query_str=spec_inchi_query(inchi),
-        )
-    except Exception:
-        logger.warning("Warning: get_species_iri query failed.")
-    if results:
-        bindings = results["results"]["bindings"][0]  # type: ignore
-        target = bindings.get("speciesIRI")
-        if target is not None:
-            speciesIRI = target.get("value")
-    return speciesIRI
 
 
 def get_assemblyModel(gbu_properties: List[Dict], mops_symmetry: str):

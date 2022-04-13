@@ -1,6 +1,11 @@
 import chemaboxwriters.ontomops.handlers.ominp_json_keys as ominp_keys
 from typing import List, Optional
 
+__doc__ = """
+This module defines all the om json file keys and the mapping 
+on how to populate om json entries with the ominp json entries.
+"""
+
 # OM_JSON_KEYS
 # -------------------------
 MOPS_MOLECULAR_WEIGHT = "Mops_Molecular_Weight"

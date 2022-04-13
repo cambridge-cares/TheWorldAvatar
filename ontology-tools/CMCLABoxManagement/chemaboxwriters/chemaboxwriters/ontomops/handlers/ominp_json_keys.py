@@ -1,4 +1,8 @@
-# OM_JSON_KEYS
+__doc__ = """
+This module defines all the ominp json file keys.
+"""
+
+# OMINP_JSON_KEYS
 # -------------------------
 MOPS_MOLECULAR_WEIGHT = "Mops_Molecular_Weight"
 MOPS_POLYHEDRAL_SHAPE = "Mops_Polyhedral_Shape"

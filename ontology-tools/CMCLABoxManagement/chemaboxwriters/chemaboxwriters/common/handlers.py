@@ -7,6 +7,10 @@ from chemaboxwriters.common.abox_stages import ABOX_STAGES_COMMON
 from chemaboxwriters.common.json_to_csv_mapper import JSON_TO_CSV_CONVERTER
 import json
 
+__doc__ = """
+This module defines three common handlers that are used by most of the pipelines.
+"""
+
 CCLOG_SOURCE_LOCATION = "cclog_source_location"
 
 
@@ -29,13 +33,34 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
 
         outputs: List[str] = []
         for cclog_file_path in inputs:
+            # if defined, the gaussian log files are uploaded onto the triple store
+            # atm, it is only done in the ontocompchem pipeline
+            # the call below retrieves the log file location on the file server
+            # (if it was uploaded)
             cclog_upload_loc = self.get_fs_upload_location(upload_file=cclog_file_path)
 
+            # call to the compchemparser
+            # note that the return value is a list of json strings, this is because
+            # a given gaussian log can sometimes contain multiple jobs, either
+            # via Link1 command or in case of scan jobs.
+            # so this is a situation where one input file produces multiple outputs
             cclog_parsed_jobs = qcparser.parseLog(cclog_file_path)
 
+            # process all the outputs
             for i, cclog_parsed_job in enumerate(cclog_parsed_jobs):
+                # the outputs need to be eventually written to a file, it is then
+                # important to picj unique names for these files. Here a file
+                # suffix is defined based on the nr of outputs
                 inp_file_suffix = f"_{i+1}" if len(cclog_parsed_jobs) > 1 else ""
 
+                # this creates the final output file name, note the replace_last_ext
+                # flag. It is set to false so that the log file extention will be included
+                # in the output file. This covers a case where there could be multiple
+                # log files, whose names are the same but extensions are different, e.g.
+                # ethanol.log, ethanol.g09
+                # Although such situations are very unlikely we cannot completely rule them
+                # out. If the extensions were stripped there could be a name clash in the
+                # resulting output files.
                 out_file_path = utilsfunc.get_out_file_path(
                     input_file_path=f"{cclog_file_path}{inp_file_suffix}",
                     file_extension=self._out_stage.lower(),
@@ -43,6 +68,9 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
                     replace_last_ext=False,
                 )
                 cclog_dict_data = json.loads(cclog_parsed_job)
+
+                # this adds extra information to the produced json files, namely the lcoation
+                # of the uploaded log files (if uploaded at all)
                 if cclog_upload_loc is not None:
                     cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc
 

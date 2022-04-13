@@ -6,11 +6,16 @@ from pprint import pformat
 from typing import List, Tuple, Dict, Optional, Any, Union
 import logging
 
+__doc__ = """
+This module stores the base Handler implementation.
+"""
 
 logger = logging.getLogger(__name__)
 
 
 class Handler_Parameters:
+    """Helper / support class handling Handler parameters."""
+
     def __init__(self, name: str, handler_name: str) -> None:
         self.name = name
         self.handler_name = handler_name
@@ -76,7 +81,8 @@ class Handler_Parameters:
 
 class Handler(ABC):
     """
-    The Handler interface provides methods to handle file inputs.
+    Base Handler implementation. Each specific handler should inherit from it
+    and override the handle_input method.
     """
 
     def __init__(
@@ -145,13 +151,21 @@ class Handler(ABC):
         return self._handler_params.is_parameter_required(name=name)
 
     def check_configs(self) -> None:
+        """Checks if required handler configs been set.
+        Raises the MissingRequiredInput exception if that is not the case.
+        """
         self._handler_params.check_configs()
 
     def init_fs_uploads_history(
         self,
         uploads_history: Dict,
     ) -> None:
-
+        """This sets the handlers file server upload_history dict. Once set, all handlers
+        uploads will be added to that dictionary. This method is currently called
+        when pipeline is assembled passing pipeline upload_history dict. This allows
+        for all handlers to write the uploads to a common place so that each handler
+        can see the uploads done by all other handlers.
+        """
         self._init_uploads_history(
             uploader=self._file_server_uploader, uploads_history=uploads_history
         )
@@ -160,7 +174,12 @@ class Handler(ABC):
         self,
         uploads_history: Dict,
     ) -> None:
-
+        """This sets the handlers triple store upload_history dict. Once set, all handlers
+        uploads will be added to that dictionary. This method is currently called
+        when pipeline is assembled passing pipeline upload_history dict. This allows
+        for all handlers to write the uploads to a common place so that each handler
+        can see the uploads done by all other handlers.
+        """
         self._init_uploads_history(
             uploader=self._triple_store_uploader, uploads_history=uploads_history
         )
@@ -178,7 +197,9 @@ class Handler(ABC):
     def get_fs_upload_location(
         self, upload_file: str, upload_stage: Optional[str] = None
     ) -> Optional[str]:
-
+        """Retrieves the file server upload location of a given file
+        taking its name and stage info.
+        """
         location = self._get_upload_location(
             uploader=self._file_server_uploader,
             upload_file=upload_file,
@@ -189,6 +210,9 @@ class Handler(ABC):
     def get_ts_upload_location(
         self, upload_file: str, upload_stage: Optional[str] = None
     ) -> Optional[str]:
+        """Retrieves the triple store upload location of a given file
+        taking its name and stage info.
+        """
 
         return self._get_upload_location(
             uploader=self._triple_store_uploader,
@@ -217,15 +241,23 @@ class Handler(ABC):
         out_dir: str,
         dry_run: bool,
     ) -> Tuple[List[str], str]:
+        """Runs the handler on a given set of inputs."""
 
+        # check if all required configs are set, if not, this will raise an exception
         self.check_configs()
 
+        # attempt to upload inputs to file server and triple store
+        # do_fs/ts_uploads function checks if files should be uploaded
         self.do_fs_uploads(inputs=inputs, input_type=input_type, dry_run=dry_run)
         self.do_ts_uploads(inputs=inputs, input_type=input_type, dry_run=dry_run)
 
+        # main call that handles inputs
         outputs = self.handle_input(inputs=inputs, out_dir=out_dir, dry_run=dry_run)
+        # add produced files to the handlers written_files log
         self.written_files.extend(outputs)
 
+        # attempt to upload outputs to file server and triple store
+        # do_fs/ts_uploads function checks if files should be uploaded
         self.do_fs_uploads(inputs=outputs, input_type=self._out_stage, dry_run=dry_run)
         self.do_ts_uploads(inputs=outputs, input_type=self._out_stage, dry_run=dry_run)
 
@@ -279,6 +311,8 @@ class Handler(ABC):
         return uploads
 
     def info(self) -> None:
+        """Prints handlers info."""
+
         print("----------------------------------------------------------------------")
         print(f"handler: {self.name}")
         print(f"in_stages: {self._in_stage}")
@@ -293,6 +327,7 @@ class Handler(ABC):
             self._remote_store_client.info()
 
     def clean_written_files(self) -> None:
+        """Resets handlers written_files log."""
         self.written_files = []
 
     def do_remote_store_query(
@@ -301,6 +336,10 @@ class Handler(ABC):
         query_str: str,
         store_client_class: rsc.TRemoteStoreClient = rsc.JPSRemoteStoreClient,
     ) -> List[Dict[str, Any]]:
+        """Proxy that handles any KG queries. It is possible to pass the type
+           of the remote store client. By default it uses the JPS client, but
+           some queries require Python's SparqlWrapper client.
+        """
 
         results = []
         if self._remote_store_client is None:
@@ -336,6 +375,8 @@ class Handler(ABC):
         pass
 
     def configure_from_dict(self, config_dict: Dict) -> None:
+        """Configre handler params from dictionary"""
+
         file_server_upload_settings = config_dict.get("file_server_upload_settings")
         triple_store_upload_settings = config_dict.get("triple_store_upload_settings")
         query_endpoints = config_dict.get("kg_query_endpoints")

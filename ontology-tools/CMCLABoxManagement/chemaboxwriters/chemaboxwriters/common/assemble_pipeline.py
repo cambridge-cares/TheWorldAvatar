@@ -12,6 +12,7 @@ def assemble_pipeline(
     config_file: Optional[str] = None,
     config_dict: Optional[Dict] = None,
 ) -> Pipeline:
+    """Factory function that assembles each of the supported pipelines."""
 
     if pipeline_type.upper() == OC_PIPELINE.upper():
         pipeline = assemble_oc_pipeline()

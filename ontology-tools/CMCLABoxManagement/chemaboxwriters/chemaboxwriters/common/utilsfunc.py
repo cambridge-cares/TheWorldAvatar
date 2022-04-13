@@ -14,6 +14,10 @@ import pathlib
 import yaml
 import numpy as np
 
+__doc__ = """
+This module contains a collection of functions that are used throughout the code.
+"""
+
 FORMULA_CLEAN_RE = re.compile("(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)")
 # default cc log extensions
 CC_LOG_EXT = "qc_log,log,out,g03,g09,g16"
@@ -84,15 +88,6 @@ def readFile(file_path: str) -> str:
 
 def fileExists(path: str) -> bool:
     return os.path.isfile(os.path.abspath(path))
-
-
-def getRefName(filepath: str, jobIndex: int, numJobs: int, extension: str) -> str:
-
-    if numJobs > 1:
-        refName = filepath + "_" + str(jobIndex + 1) + extension
-    else:
-        refName = filepath + extension
-    return refName
 
 
 def get_random_id():
