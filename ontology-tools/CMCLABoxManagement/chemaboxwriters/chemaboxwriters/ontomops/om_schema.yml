@@ -108,15 +108,15 @@ abox_schema:
             # CBU Formula
             '<DAT> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasCBUFormula ${CBU_FORMULAS}',
             # CBU Binding direction
-            '<INS> mops_pref:${CBU_BINDING_DIRS}Binding_${ENTRY_ID} rdf:type onto_mops:${CBU_BINDING_DIRS}Binding',
-            '<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasBindingDirection mops_pref:${CBU_BINDING_DIRS}Binding_${ENTRY_ID}',
+            '<INS> mops_pref:${CBU_BINDING_DIRS}Binding_${ENTRY_ID}_%{i} rdf:type onto_mops:${CBU_BINDING_DIRS}Binding',
+            '<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasBindingDirection mops_pref:${CBU_BINDING_DIRS}Binding_${ENTRY_ID}_%{i}',
             # CBU OntoSpecies link
             '<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_spec:hasUniqueSpecies ${SPECIES_IRIS}',
             # CBU Binding site
-            '<INS> mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID} rdf:type onto_mops:${CBU_BINDING_SITES}Site',
-            '<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasBindingSite mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID}',
-            '<DAT> mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID} rdfs:label ${CBU_BINDING_SITE_LABELS}',
-            '<DAT> mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID} onto_mops:hasOuterCoordinationNumber ${CBU_BINDING_SITE_COORD_NUMBERS}',
+            '<INS> mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID}_%{i} rdf:type onto_mops:${CBU_BINDING_SITES}Site',
+            '<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasBindingSite mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID}_%{i}',
+            '<DAT> mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID}_%{i} rdfs:label ${CBU_BINDING_SITE_LABELS}',
+            '<DAT> mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID}_%{i} onto_mops:hasOuterCoordinationNumber ${CBU_BINDING_SITE_COORD_NUMBERS}',
             # CBU Core
             '<INS> mops_pref:Core_${ENTRY_ID}_%{i} rdf:type onto_mops:Core',
             '<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasCore mops_pref:Core_${ENTRY_ID}_%{i}',

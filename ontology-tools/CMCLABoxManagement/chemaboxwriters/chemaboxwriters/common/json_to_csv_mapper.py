@@ -5,6 +5,11 @@ import csv
 import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
 from typing import Dict, List, Optional, Literal
 
+__doc__ = """
+This module contains classes that are used to abstract abox csv file
+creation using the json data file and the schema file.
+"""
+
 ENTRY_TYPES = {
     "<IMP>": "imports",
     "<INS>": "instance",
@@ -14,6 +19,44 @@ ENTRY_TYPES = {
 
 
 class Abox_CSV_Builder:
+    """
+    This class implements an abox csv builder that simplifies the abox csv
+    file creation. Any write_ methods require all the iris to be passed and then
+    store the main instance iri for the later use in the add_ methods. The builder
+    can be then used as follows:
+
+    with Abox_CSV_Builder(file_path=out_file) as writer:
+        writer.register_prefix(name=prefix_key, value=prefix_value) # register prefixes
+        writer.write_header() # writes the main abox csv header line
+
+        # imports chaining example
+        writer.write_imports( # writes the imports line and stores the abox name for
+            name=abox_name,   # the next add_imports call
+            importing=ontology1_to_import,
+            rel=import_relation,
+            store_name=True
+        ).add_imports(       # this is how to chain the import statements
+            importing=ontology2_to_import, # the add_imports call re-uses stored
+            rel=import_relation,           # abox_name, import relation is optional
+        )
+        # instance obj chaining exmaple
+        writer.write_inst(
+            iri=instance_iri,
+            type=instance_type,
+            store_inst=True
+        ).add_obj_prop(             # adds the following triple:
+            target_iri=target_iri,  # instance_iri rel target_iri
+            rel=obj_rel,            # if reverse True, then the triple is:
+            reverse=False,          # target_iri rel instance_iri
+            store_target_inst=False # if store_target_inst is True
+        )                           # then the stored instance will be
+                                    # the target instance from now on
+        # note that reverse and store_target_inst are False by default so there is
+        # no need to pass them, unless one wishes to change them to True
+        # similarly one could attach add_data_prop to the above chain which would
+        # also reuse the stored instances_iri
+    """
+
     def __init__(self, file_path: str, configs: Optional[Dict] = None) -> None:
         self.file_path = file_path
         self._num_cols = 6
@@ -33,6 +76,7 @@ class Abox_CSV_Builder:
         self._prefixes[name] = value
 
     def write_header(self) -> "Abox_CSV_Builder":
+        """Writes the abox csv file header."""
         self._write_row(
             "Source",
             "Type",
@@ -50,6 +94,8 @@ class Abox_CSV_Builder:
         rel: Optional[str] = None,
         store_name: bool = True,
     ) -> "Abox_CSV_Builder":
+        """Writes an import statement. If rel is missing it uses a default one."""
+
         if rel is None:
             rel = "http://www.w3.org/2002/07/owl#imports"
 
@@ -61,12 +107,15 @@ class Abox_CSV_Builder:
         return self
 
     def write_inst(
-        self, iri: str, type: str, rel: str = "", store_inst: bool = True
+        self, iri: str, type: str, store_inst: bool = True
     ) -> "Abox_CSV_Builder":
+        """Writes an instance statement. It stores the instances iri by default
+        so that any add_ method call can automatically reuse it.
+        """
 
-        iri, rel, type = self._apply_prefixes(iri, rel, type)
+        iri, type = self._apply_prefixes(iri, type)
 
-        self._write_row(iri, self.instance_field, type, rel)
+        self._write_row(iri, self.instance_field, type)
         if store_inst:
             self._current_inst = iri
         return self
@@ -105,18 +154,22 @@ class Abox_CSV_Builder:
         return self
 
     def add_obj_prop(
-        self, rel: str, iri: str, store_inst: bool = False, reverse: bool = False
+        self,
+        target_iri: str,
+        rel: str,
+        store_target_inst: bool = False,
+        reverse: bool = False,
     ) -> "Abox_CSV_Builder":
         if self._current_inst is None:
             raise app_exceptions.MissingInstance(
                 "No instance created. Cannont add object property."
             )
 
-        src_iri, trg_iri = iri, self._current_inst
+        src_iri, trg_iri = self._current_inst, target_iri
         if reverse:
-            src_iri, trg_iri = self._current_inst, iri
+            src_iri, trg_iri = target_iri, self._current_inst
 
-        store_inst_lit = "src" if store_inst else ""
+        store_inst_lit = "trg" if store_target_inst else ""
 
         self.write_obj_prop(
             src_iri=src_iri, rel=rel, trg_iri=trg_iri, store_inst=store_inst_lit
@@ -153,9 +206,9 @@ class Abox_CSV_Builder:
 
     def _write_row(self, *args: str) -> None:
         content = [args[i] if i < len(args) else "" for i in range(self._num_cols)]
-        # if content not in self._write_history:
-        self.csvwriter.writerow(content)
-        #    self._write_history.append(content)
+        if content not in self._write_history:
+            self.csvwriter.writerow(content)
+            self._write_history.append(content)
 
     def _apply_prefixes(self, *args: str) -> List[str]:
         items = []
@@ -180,6 +233,8 @@ class Abox_CSV_Builder:
 
 
 class Schema_Entry:
+    """Encapsulates a single schema entry and provides methods processing it."""
+
     def __init__(self):
         self.imports = []
         self.instances = []
@@ -221,6 +276,9 @@ class Schema_Entry:
                     self.variables.append(var)
 
     def process(self, schema_variables: Dict) -> None:
+        """Process the entry, checking if it contains any list
+        variables and if so, determines the loop range.
+        """
         self._find_loop_range(schema_variables)
         if self.loop_range is None:
             self._process_entries(schema_variables)
@@ -231,6 +289,9 @@ class Schema_Entry:
     def _process_entries(
         self, schema_variables: Dict, loop_iter: Optional[int] = None
     ) -> None:
+        """This processes the entry, replacing all the variables with their actual
+        values. In case of loop entries, it expands them.
+        """
         for imp in self.imports:
             self._replace_variables(
                 write_entry=self.imports_write,
@@ -270,15 +331,18 @@ class Schema_Entry:
         schema_variables: Dict,
         loop_iter: Optional[int],
     ) -> None:
+        """Replaces variables with their values"""
         for var_key, var_value in schema_variables.items():
             if var_key not in self.variables:
                 continue
             if loop_iter is not None:
                 if isinstance(var_value, list):
                     var_value = var_value[loop_iter]
+                # replaces a special %{i} loop variable with the current loop
+                # index, starting from 1
                 entry_item = re.sub(r"\%\{(i)\}", str(loop_iter + 1), entry_item)
+            # replaces variable with their value
             entry_item = re.sub(r"\$\{(" + var_key + r")\}", str(var_value), entry_item)
-        # if entry_item not in write_entry:
         write_entry.append(entry_item)
 
     def _find_loop_range(self, schema_variables: Dict) -> None:
@@ -294,11 +358,8 @@ class Schema_Entry:
 
         for inst in self.instances_write:
             inst_splitted = self._split_line(inst)
-            iri, rel, _type = inst_splitted[0], inst_splitted[1], inst_splitted[2]
-
-            if rel == "rdf:type":
-                rel = ""
-            writer.write_inst(iri=iri, type=_type, rel=rel)
+            iri, _type = inst_splitted[0], inst_splitted[2]
+            writer.write_inst(iri=iri, type=_type)
 
         for obj_prop in self.obj_prop_write:
             obj_prop_splitted = self._split_line(obj_prop)
@@ -330,6 +391,8 @@ class Schema_Entry:
 
 
 class JSON_TO_CSV_CONVERTER:
+    """Main class that perofmrs json to csv conversion based on the schem file"""
+
     def __init__(self, schema_yml_file: str) -> None:
         with open(schema_yml_file, "r") as stream:
             schema_dict = yaml.safe_load(stream)
@@ -348,23 +411,28 @@ class JSON_TO_CSV_CONVERTER:
         self._write_csv(out_file=out_file)
 
     def _write_csv(self, out_file: str) -> None:
+        """Use Abox_CSV_Builder to write the abox csv file."""
+
         with Abox_CSV_Builder(file_path=out_file) as writer:
             writer.write_header()
             prefixes = self._schema.get("prefixes", {})
             for prefix_key, prefix_value in prefixes.items():
                 writer.register_prefix(name=prefix_key, value=prefix_value)
 
+            # write each schema entry one by one
             for entry in self._schema_entries:
                 if entry.write_entry:
                     entry._write_entry(writer=writer)
 
     def _set_schema_variables(self) -> None:
+        """Sets dictionary storing all schema variable names and their values."""
         schema_variables = self._schema.get("schema_to_json_vars")
         self._schema_variables = {}
         for var, var_info in schema_variables.items():
             self._schema_variables[var] = self._abox_data.get(var_info["jsonKey"])
 
     def _set_schema_entries(self) -> None:
+        """Converts schema entries into Schem_Entry objects."""
         abox_schema = self._schema.get("abox_schema")
         self._schema_entries = []
         for abox_entries in abox_schema:
@@ -391,6 +459,11 @@ class JSON_TO_CSV_CONVERTER:
         return list(set(entry_variables))
 
     def _process_schema_entries(self) -> None:
+        """Process all schema entries. By the end each entry will have all
+        the variables replaces. In case of loop entries, lines will be
+        expanded according to the loop range. This does not yet write the
+        csv file.
+        """
         for entry in self._schema_entries:
             if self._all_entry_vars_present(entry=entry):
                 entry.process(self._schema_variables)
