@@ -1,6 +1,7 @@
 from pyuploader.uploaders import TS_UPLOADER, FS_UPLOADER
 import pyuploader.uploaders.uploader_factory as uploader_factory
-from typing import Literal, List, Dict, Optional
+from pyuploader.uploaders.uploader import Uploader
+from typing import List, Dict, Optional
 
 
 Upload_History = Dict[str, Dict[str, str]]
@@ -9,6 +10,7 @@ Upload_History = Dict[str, Dict[str, str]]
 class UploaderClient:
     def __init__(
         self,
+        uploader: Uploader,
         uploader_type: str,
         upload_file_types: List[str],
         url: str,
@@ -22,13 +24,7 @@ class UploaderClient:
         self._auth_file = auth_file
         self._no_auth = no_auth
         self._subdirs = subdirs
-        self._uploader = uploader_factory.get_uploader(
-            uploader_type=self._uploader_type,
-            url=self._url,
-            auth_file=self._auth_file,
-            no_auth=self._no_auth,
-            subdirs=self._subdirs,
-        )
+        self._uploader = uploader
         self._uploads = {}
 
     def info(self) -> None:
@@ -99,8 +95,16 @@ def get_triple_store_uploader(
     no_auth: bool = False,
 ) -> UploaderClient:
 
+    uploader = uploader_factory.get_uploader(
+        uploader_type=TS_UPLOADER,
+        url=url,
+        auth_file=auth_file,
+        no_auth=no_auth,
+    )
+
     return _get_uploader_client(
-        uploader_type="triple_store",
+        uploader = uploader,
+        uploader_type=TS_UPLOADER,
         upload_file_types=upload_file_types,
         url=url,
         auth_file=auth_file,
@@ -116,8 +120,17 @@ def get_file_server_uploader(
     subdirs: Optional[str] = None,
 ) -> UploaderClient:
 
+    uploader = uploader_factory.get_uploader(
+        uploader_type=FS_UPLOADER,
+        url=url,
+        auth_file=auth_file,
+        no_auth=no_auth,
+        subdirs=subdirs,
+    )
+
     return _get_uploader_client(
-        uploader_type="file_server",
+        uploader = uploader,
+        uploader_type=FS_UPLOADER,
         upload_file_types=upload_file_types,
         url=url,
         auth_file=auth_file,
@@ -127,7 +140,8 @@ def get_file_server_uploader(
 
 
 def _get_uploader_client(
-    uploader_type: Literal["triple_store", "file_server"],
+    uploader: Uploader,
+    uploader_type: str,
     upload_file_types: List[str],
     url: str,
     auth_file: Optional[str] = None,
@@ -135,13 +149,10 @@ def _get_uploader_client(
     subdirs: Optional[str] = None,
 ) -> UploaderClient:
 
-    if uploader_type == "triple_store":
-        _uploader_type = TS_UPLOADER
-    else:
-        _uploader_type = FS_UPLOADER
 
     return UploaderClient(
-        uploader_type=_uploader_type,
+        uploader = uploader,
+        uploader_type=uploader_type,
         upload_file_types=upload_file_types,
         url=url,
         auth_file=auth_file,
