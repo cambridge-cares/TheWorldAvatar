@@ -12,6 +12,12 @@ import org.json.JSONObject;
 public class Derivation {
 	private String iri;
 	private List<Entity> inputs; // isDerivedFrom
+	// isDerivedFrom upstream derivations - when new info generation
+	private List<Derivation> directedUpstreams;
+	private boolean hasDirectedUpstreams = false;
+	// downstream derivations isDerivedFrom - when new info generation
+	private List<Derivation> directedDownstreams;
+	private boolean hasDirectedDownstreams = false;
 	private Long timestamp;
 	private String agentURL; // isDerivedUsing
 	private List<Entity> entities; // entities belongsTo this derivation
@@ -23,6 +29,8 @@ public class Derivation {
 		this.rdfType = rdfType;
 		entities = new ArrayList<Entity>();
 		inputs = new ArrayList<Entity>();
+		directedUpstreams = new ArrayList<Derivation>();
+		directedDownstreams = new ArrayList<Derivation>();
 	}
 
 	public String getIri() {
@@ -167,5 +175,68 @@ public class Derivation {
 
 	public boolean getUpdateStatus() {
 		return this.updated;
+	}
+
+	/**
+	 * @return List<Derivation> return the directedUpstreams
+	 */
+	public List<Derivation> getDirectedUpstreams() {
+		return directedUpstreams;
+	}
+
+	public void setDirectedUpstreams(Derivation directedUpstream) {
+		if (this.hasDirectedUpstreams) {
+			if (this.directedUpstreams.stream().allMatch(d -> d.getIri() != directedUpstream.getIri())) {
+				this.directedUpstreams.add(directedUpstream);
+			}
+		} else {
+			this.directedUpstreams.add(directedUpstream);
+			this.hasDirectedUpstreams = true;
+		}
+		// also make the reverse connection
+		directedUpstream.setDirectedDownstreams(this);
+	}
+
+	/**
+	 * @param directedUpstreams the directedUpstreams to set
+	 */
+	public void setDirectedUpstreams(List<Derivation> directedUpstreams) {
+		directedUpstreams.forEach(d -> {
+			this.setDirectedUpstreams(d);
+		});
+	}
+
+	/**
+	 * @return List<Derivation> return the directedDownstreams
+	 */
+	public List<Derivation> getDirectedDownstreams() {
+		return directedDownstreams;
+	}
+
+	/**
+	 * This method should NOT be called directly by developers.
+	 * 
+	 * @param directedDownstream
+	 */
+	public void setDirectedDownstreams(Derivation directedDownstream) {
+		if (this.hasDirectedDownstreams) {
+			if (this.directedDownstreams.stream().allMatch(d -> d.getIri() != directedDownstream.getIri())) {
+				this.directedDownstreams.add(directedDownstream);
+			}
+		} else {
+			this.directedDownstreams.add(directedDownstream);
+			this.hasDirectedDownstreams = true;
+		}
+	}
+
+	/**
+	 * This method should NOT be called directly by developers.
+	 * 
+	 * @param directedDownstreams the directedDownstreams to set
+	 */
+	public void setDirectedDownstreams(List<Derivation> directedDownstreams) {
+		directedDownstreams.forEach(d -> {
+			this.setDirectedDownstreams(d);
+		});
 	}
 }
