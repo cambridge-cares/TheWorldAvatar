@@ -119,6 +119,7 @@ def test_ocompchem_abox_writer(
     regenerate_result: bool,
     clean_tests: bool,
     cleanup_test_data: Callable,
+    mocker: MockerFixture,
     regenerate_all_results: bool = False,
 ):
     print("========================================================")
@@ -139,6 +140,11 @@ def test_ocompchem_abox_writer(
             }
         }
     )
+
+    # mocker.patch(
+    #    "chemaboxwriters.common.uploaders.uploader_factory._uploader.get_uploader",
+    #    return_value=Dummy_Uploader",
+    # )
 
     write_abox(
         pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type

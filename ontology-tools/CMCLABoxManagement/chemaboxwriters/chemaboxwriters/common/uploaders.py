@@ -1,5 +1,5 @@
 from pyuploader.uploaders import TS_UPLOADER, FS_UPLOADER
-from pyuploader.uploaders.uploader_factory import get_uploader
+import pyuploader.uploaders.uploader_factory as uploader_factory
 from typing import Literal, List, Dict, Optional
 
 
@@ -22,7 +22,7 @@ class UploaderClient:
         self._auth_file = auth_file
         self._no_auth = no_auth
         self._subdirs = subdirs
-        self._uploader = get_uploader(
+        self._uploader = uploader_factory.get_uploader(
             uploader_type=self._uploader_type,
             url=self._url,
             auth_file=self._auth_file,
