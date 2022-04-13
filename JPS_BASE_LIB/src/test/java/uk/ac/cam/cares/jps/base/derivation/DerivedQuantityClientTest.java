@@ -20,8 +20,17 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * integration tests for updateInstance is provided at
+ * integration tests for updateAllSyncDerivations is provided at
  * TheWorldAvater/Agents/DerivationExample
+ * 
+ * integration tests for updateMixedAsyncDerivation, updatePureSyncDerivations,
+ * and unifiedUpdateDerivation is provided at
+ * TheWorldAvater/Agents/DerivationAsynExample
+ * 
+ * unit tests for getAgentUrl, getDerivationsOf, getStatusType,
+ * getNewDerivedIRI, getDerivations(String agentIRI),
+ * getDerivationsAndStatusType are provided in
+ * DerivedQuantitySparqlTest.java
  * 
  * @author Kok Foong Lee
  * @author Jiaru Bai
@@ -618,5 +627,30 @@ public class DerivedQuantityClientTest {
 		for (String input : inputs) {
 			Assert.assertNull(testKG.getIndividual(input));
 		}
+	}
+
+	@Test
+	public void testRetrieveAgentInputIRIs() {
+
+	}
+
+	@Test
+	public void testUpdateStatusAtJobCompletion() {
+
+	}
+
+	@Test
+	public void testcheckImmediateUpstreamDerivation() {
+
+	}
+
+	@Test
+	public void testGroupSyncDerivationsToUpdate() {
+
+	}
+
+	@Test
+	public void testCleanUpFinishedDerivationUpdate() {
+
 	}
 }
