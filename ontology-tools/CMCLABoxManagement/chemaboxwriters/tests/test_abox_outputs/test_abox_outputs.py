@@ -1,5 +1,6 @@
 from chemaboxwriters.app import write_abox
 from chemaboxwriters.common.utilsfunc import readFile, fileExists
+import chemaboxwriters.common.uploaders as uploaders
 import pytest
 import shutil
 import re
@@ -56,6 +57,41 @@ class DummyPubchemComp:
         self.cid = cid
         self.synonyms = synonyms
 
+class Dummy_Uploader:
+    def upload(self, file_ext: str, file_or_dir: str, dry_run: bool) -> Dict[str,str]:
+        if dry_run:
+            return {}
+        return {
+            file_or_dir: f"dummy_location/{os.path.basename(file_or_dir)}"
+            }
+
+def _stub_get_fs_uploader(
+    upload_file_types: List[str],
+    *args,
+    **kwargs
+    ):
+
+    return uploaders._get_uploader_client(
+        uploader = Dummy_Uploader(), # type: ignore
+        uploader_type=uploaders.FS_UPLOADER,
+        upload_file_types=upload_file_types,
+        *args,
+        **kwargs
+    )
+
+def _stub_get_ts_uploader(
+    upload_file_types: List[str],
+    *args,
+    **kwargs
+    ):
+
+    return uploaders._get_uploader_client(
+        uploader = Dummy_Uploader(), # type: ignore
+        uploader_type=uploaders.TS_UPLOADER,
+        upload_file_types=upload_file_types,
+        *args,
+        **kwargs
+    )
 
 def compare_results(
     pipeline: asp.Pipeline,
@@ -128,6 +164,13 @@ def test_ocompchem_abox_writer(
     print()
     print()
 
+    mocker.patch(
+       "chemaboxwriters.common.uploaders.get_triple_store_uploader",
+       side_effect=_stub_get_ts_uploader)
+    mocker.patch(
+       "chemaboxwriters.common.uploaders.get_file_server_uploader",
+       side_effect=_stub_get_fs_uploader)
+
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR, inp_file_or_dir)
     pipeline = asp.assemble_pipeline(
         pipeline_type=OC_PIPELINE, config_file=ABOX_CONFIG_FILE
@@ -141,13 +184,8 @@ def test_ocompchem_abox_writer(
         }
     )
 
-    # mocker.patch(
-    #    "chemaboxwriters.common.uploaders.uploader_factory._uploader.get_uploader",
-    #    return_value=Dummy_Uploader",
-    # )
-
     write_abox(
-        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type
+        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type, dry_run = False
     )
 
     fileExts = ["oc_json", "oc_csv"]
@@ -188,12 +226,18 @@ def test_ospecies_abox_writer(
     print()
     print()
 
-    inp_file_or_dir = os.path.join(OSPECIES_REF_DIR, inp_file_or_dir)
     mocker.patch(
         "chemaboxwriters.ontospecies.handlers.qc_json_handler.pcp.get_compounds",
         return_value=[DummyPubchemComp(cid=1111, synonyms=["1111-11-1"])],
     )
+    mocker.patch(
+       "chemaboxwriters.common.uploaders.get_triple_store_uploader",
+       side_effect=_stub_get_ts_uploader)
+    mocker.patch(
+       "chemaboxwriters.common.uploaders.get_file_server_uploader",
+       side_effect=_stub_get_fs_uploader)
 
+    inp_file_or_dir = os.path.join(OSPECIES_REF_DIR, inp_file_or_dir)
     pipeline = asp.assemble_pipeline(
         pipeline_type=OS_PIPELINE, config_file=ABOX_CONFIG_FILE
     )
@@ -246,6 +290,7 @@ def test_opsscan_abox_writer(
     regenerate_result: bool,
     clean_tests: bool,
     cleanup_test_data: Callable,
+    mocker: MockerFixture,
     regenerate_all_results: bool = False,
 ):
     print("========================================================")
@@ -254,8 +299,14 @@ def test_opsscan_abox_writer(
     print()
     print()
 
-    inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR, inp_file_or_dir)
+    mocker.patch(
+       "chemaboxwriters.common.uploaders.get_triple_store_uploader",
+       side_effect=_stub_get_ts_uploader)
+    mocker.patch(
+       "chemaboxwriters.common.uploaders.get_file_server_uploader",
+       side_effect=_stub_get_fs_uploader)
 
+    inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR, inp_file_or_dir)
     pipeline = asp.assemble_pipeline(
         pipeline_type=OPS_PIPELINE, config_file=ABOX_CONFIG_FILE
     )
@@ -291,6 +342,7 @@ def test_omops_abox_writer(
     regenerate_result: bool,
     clean_tests: bool,
     cleanup_test_data: Callable,
+    mocker: MockerFixture,
     regenerate_all_results: bool = False,
 ):
     print("========================================================")
@@ -299,8 +351,14 @@ def test_omops_abox_writer(
     print()
     print()
 
-    inp_file_or_dir = os.path.join(OMOPS_REF_DIR, inp_file_or_dir)
+    mocker.patch(
+       "chemaboxwriters.common.uploaders.get_triple_store_uploader",
+       side_effect=_stub_get_ts_uploader)
+    mocker.patch(
+       "chemaboxwriters.common.uploaders.get_file_server_uploader",
+       side_effect=_stub_get_fs_uploader)
 
+    inp_file_or_dir = os.path.join(OMOPS_REF_DIR, inp_file_or_dir)
     pipeline = asp.assemble_pipeline(
         pipeline_type=OMOPS_PIPELINE, config_file=ABOX_CONFIG_FILE
     )

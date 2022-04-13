@@ -83,7 +83,7 @@
     "Log_File_Name": "ethane_3_rigid.log",
     "Species_IRI": "test_species_iri",
     "Entry_IRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
-    "PNG_Source_Location": null,
-    "CCLOG_Source_Location": null,
+    "PNG_Source_Location": "dummy_location/ethane_3_rigid.log.oc_json.png",
+    "CCLOG_Source_Location": "dummy_location/ethane_3_rigid.log",
     "Entry_ID": "testID-111-111-111"
 }
