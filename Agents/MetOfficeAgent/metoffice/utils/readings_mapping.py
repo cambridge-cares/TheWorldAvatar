@@ -34,9 +34,9 @@ READINGS_MAPPING = {
 # Mapping of units to OM units and symbols
 UNITS_MAPPING = {
      # original OM symbol for °C: '&#x00B0;C'
-     AIR_TEMPERATURE: (OM_DEGREE_C, '°C'),     
-     FEELS_LIKE_TEMPERATURE: (OM_DEGREE_C, '°C'),
-     DEW_POINT: (OM_DEGREE_C, '°C'),
+     AIR_TEMPERATURE: (OM_DEGREE_C, '&#x00B0;C'),     
+     FEELS_LIKE_TEMPERATURE: (OM_DEGREE_C, '&#x00B0;C'),
+     DEW_POINT: (OM_DEGREE_C, '&#x00B0;C'),
      ATMOSPHERIC_PRESSURE: (OM_HECTO_PASCAL, 'hPa'),
      PRECIPITATION_PROBABILITY: (OM_PERCENT, '%'),
      RELATIVE_HUMIDITY: (OM_PERCENT, '%'),
@@ -44,7 +44,7 @@ UNITS_MAPPING = {
      WIND_SPEED: (OM_MPH, 'mi/h'),
      WIND_GUST: (OM_MPH, 'mi/h'),
      # original OM symbol for °: '&#x00B0;'
-     WIND_DIRECTION: (OM_DEGREE, '°'),
+     WIND_DIRECTION: (OM_DEGREE, '&#x00B0;'),
      UV_INDEX: (OM_UNITLESS, '1')
 }
 

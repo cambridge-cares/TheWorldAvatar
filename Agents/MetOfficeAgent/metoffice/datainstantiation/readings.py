@@ -10,6 +10,7 @@ import uuid
 import metoffer
 import datetime as dt
 from math import nan
+import time
 
 #import agentlogging
 from metoffice.dataretrieval.readings import *
@@ -68,15 +69,21 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         raise APIException("MetOffer client could not be created to retrieve station readings.")        
     
     # Load available observations and forecasts from API
+    print('Retrieving time series data from API ...')
     #logger.info('Retrieving time series data from API ...')
-    available_obs, available_fcs, issue_time = retrieve_readings_concepts_per_station(metclient, only_keys=False)
+    available_obs, available_fcs, issue_time = retrieve_readings_data_per_station(metclient, only_keys=False)
+    print('Time series data successfully retrieved.')
+    #logger.info('Time series data successfully retrieved.')
     
     # Retrieve information about instantiated time series from KG
+    print('Retrieving time series triples from KG ...')
     #logger.info('Retrieving time series triples from KG ...')
     instantiated_obs = get_instantiated_observation_timeseries(query_endpoint=query_endpoint,
                                                                update_endpoint=update_endpoint)
     instantiated_fcs = get_instantiated_forecast_timeseries(query_endpoint=query_endpoint,
                                                             update_endpoint=update_endpoint)
+    print('Time series triples successfully retrieved.')
+    #logger.info('Time series triples successfully retrieved.')
 
     # Keep only the relevant subset for instantiated_ts_iris
     if instantiated_ts_iris:
@@ -104,7 +111,8 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     added_fcs = 0
     
     # Loop through all observation timeseries
-    #logger.info('Adding observation time series data to bulkadd list ...')
+    print('Adding observation time series data ...')
+    #logger.info('Adding observation time series data ...')
     ts_list = []
     for tsiri in list(instantiated_obs['tsIRI'].unique()): 
         # Extract relevant data      
@@ -126,10 +134,12 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
             ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
             ts_list.append(ts)
     ts_client.bulkaddTimeSeriesData(ts_list)
+    print(f'Time series data for {added_obs} observations successfully added to KG.')
     #logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
     
     # Loop through all forecast timeseries
-    #logger.info('Adding forecast time series data to bulkadd list ...')
+    print('Adding forecast time series data ...')
+    #logger.info('Adding forecast time series data ...')
     ts_list = []
     for tsiri in list(instantiated_fcs['tsIRI'].unique()):  
         # Extract relevant data      
@@ -153,6 +163,7 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
             for iri in dataIRIs_list[i]:
                 query_string += f"<{iri}> , "
     ts_client.bulkaddTimeSeriesData(ts_list)
+    print(f'Time series data for {added_fcs} forecasts successfully added.')
     #logger.info(f'Time series data for {added_fcs} forecasts successfully added.')
 
     # Strip trailing comma and close & perform creation date update query
@@ -207,16 +218,25 @@ def instantiate_station_readings(instantiated_sites_list: list,
     timeUnit = []
 
     # Get already instantiated observations and forecasts (across all stations)
+    print('Retrieving instantiated observation/forecast triples from KG ...')
+    #logger.info('Retrieving instantiated observation/forecast triples from KG ...')
     instantiated_obs = get_instantiated_observations(query_endpoint=query_endpoint, 
                                                      update_endpoint=update_endpoint)
     instantiated_fcs = get_instantiated_forecasts(query_endpoint=query_endpoint, 
                                                   update_endpoint=update_endpoint)
+    print('Observation/forecast triples successfully retrieved.')
+    #logger.info('Observation/forecast triples successfully retrieved.')
+
     # Get short version of variable type from full quantity type
     instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
     instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])                                                        
 
     # Load available observations and forecasts from API
-    available_obs, available_fcs, _ = retrieve_readings_concepts_per_station(metclient)
+    print('Retrieving available observations/forecasts from API ...')
+    #logger.info('Retrieving available observations/forecasts from API ...')
+    available_obs, available_fcs, _ = retrieve_readings_data_per_station(metclient)
+    print('Available observations/forecasts successfully retrieved.')
+    #logger.info('Available observations/forecasts successfully retrieved.')
 
     # Initialise number of instantiated readings
     instantiated = 0
@@ -293,14 +313,20 @@ def instantiate_station_readings(instantiated_sites_list: list,
     # Instantiate all non-time series triples
     kg_client = KGClient(query_endpoint, update_endpoint)
     # Perform SPARQL update query in chunks to avoid heap size/memory issues
+    print(f'Instantiate static observation/forecast triples in {len(queries)} chunks ...')
+    #logger.info(f'Instantiate static observation/forecast triples in {len(queries)} chunks ...')
     for query in queries:
         kg_client.performUpdate(query)
-        #logger.info('Insert query successfully performed.')
+    print('Observations/forecasts successfully instantiated/updated.')
+    #logger.info('Insert query successfully performed.')
 
     if dataIRIs:
+        print('Instantiate static time series triples ...')
+        #logger.info('Instantiate static time series triples ...')
         # Instantiate all time series triples
         ts_client = TSClient.tsclient_with_default_settings()
         ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
+        print('Time series triples successfully added.')
         #logger.info('Time series triples successfully added.')
 
     return instantiated
@@ -327,14 +353,33 @@ def update_all_stations(api_key: str = DATAPOINT_API_KEY,
     
     # Instantiate all available stations (ONLY not already existing stations
     # will be newly instantiated)
+    print('\nUpdate instantiated stations: ')
+    #logger.info('Update instantiated stations ...')
+    t1 = time.time()
     new_stations = instantiate_all_stations(api_key, query_endpoint, update_endpoint)
+    t2 = time.time()
+    diff = t2-t1
+    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+
 
     # Instantiate all available station readings (ONLY not already existing
     # readings will be newly instantiated)
+    print('\nUpdate instantiated station readings: ')
+    #logger.info('Update instantiated station readings ...')
+    t1 = time.time()
     new_readings = instantiate_all_station_readings(api_key, query_endpoint, update_endpoint)
+    t2 = time.time()
+    diff = t2-t1
+    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
 
     # Add latest readings time series to instantiated reading quantities
+    print('\nUpdate station readings time series data: ')
+    #logger.info('Update station readings time series data ...')
+    t1 = time.time()
     updated_ts = add_all_readings_timeseries(api_key, query_endpoint, update_endpoint)
+    t2 = time.time()
+    diff = t2-t1
+    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
 
     return new_stations, new_readings, updated_ts
 
@@ -418,7 +463,7 @@ def add_readings_for_station(station_iri: str,
     return triples, created_reading_iris, dataIRIs, dataClasses, timeUnit
 
 
-def retrieve_readings_concepts_per_station(metclient, station_id: str = None,
+def retrieve_readings_data_per_station(metclient, station_id: str = None,
                                            observations: bool = True,
                                            forecasts: bool = True,
                                            only_keys: bool = True):
@@ -565,12 +610,6 @@ def condition_readings_data(readings_data: list, only_keys: bool = True) -> dict
 
 
 if __name__ == '__main__':
-
-    # response = instantiate_all_station_readings()
-    # print(f"Number of instantiated readings: {response}")
-
-    # response = add_all_readings_timeseries()
-    # print(f"Number of updated time series readings: {response}")
 
     response = update_all_stations()
     print(f"Number of instantiated stations: {response[0]}")
