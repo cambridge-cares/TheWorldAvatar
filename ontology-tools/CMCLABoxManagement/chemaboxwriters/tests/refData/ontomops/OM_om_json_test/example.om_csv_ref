@@ -5,6 +5,7 @@ http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-1
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111,,someLabel,String
 http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasMOPFormula,Data Property,http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111,,someFormula,String
 http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasCCDCNumber,Data Property,http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111,,someLabel,String
+http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasXYZGeometryFile,Data Property,http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111,,dummy_location/dummy_mops.xyz,String
 http://www.theworldavatar.com/kb/ontomops/Provenance_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#Provenance,,,
 http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontomops/Provenance_testID-111-111-111,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasProvenance,,
 http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasReferenceDOI,Data Property,http://www.theworldavatar.com/kb/ontomops/Provenance_testID-111-111-111,,someDOI,String

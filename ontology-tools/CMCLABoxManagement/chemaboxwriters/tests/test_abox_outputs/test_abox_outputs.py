@@ -57,41 +57,35 @@ class DummyPubchemComp:
         self.cid = cid
         self.synonyms = synonyms
 
+
 class Dummy_Uploader:
-    def upload(self, file_ext: str, file_or_dir: str, dry_run: bool) -> Dict[str,str]:
+    def upload(self, file_ext: str, file_or_dir: str, dry_run: bool) -> Dict[str, str]:
         if dry_run:
             return {}
-        return {
-            file_or_dir: f"dummy_location/{os.path.basename(file_or_dir)}"
-            }
+        return {file_or_dir: f"dummy_location/{os.path.basename(file_or_dir)}"}
 
-def _stub_get_fs_uploader(
-    upload_file_types: List[str],
-    *args,
-    **kwargs
-    ):
+
+def _stub_get_fs_uploader(upload_file_types: List[str], *args, **kwargs):
 
     return uploaders._get_uploader_client(
-        uploader = Dummy_Uploader(), # type: ignore
+        uploader=Dummy_Uploader(),  # type: ignore
         uploader_type=uploaders.FS_UPLOADER,
         upload_file_types=upload_file_types,
         *args,
-        **kwargs
+        **kwargs,
     )
 
-def _stub_get_ts_uploader(
-    upload_file_types: List[str],
-    *args,
-    **kwargs
-    ):
+
+def _stub_get_ts_uploader(upload_file_types: List[str], *args, **kwargs):
 
     return uploaders._get_uploader_client(
-        uploader = Dummy_Uploader(), # type: ignore
+        uploader=Dummy_Uploader(),  # type: ignore
         uploader_type=uploaders.TS_UPLOADER,
         upload_file_types=upload_file_types,
         *args,
-        **kwargs
+        **kwargs,
     )
+
 
 def compare_results(
     pipeline: asp.Pipeline,
@@ -165,11 +159,13 @@ def test_ocompchem_abox_writer(
     print()
 
     mocker.patch(
-       "chemaboxwriters.common.uploaders.get_triple_store_uploader",
-       side_effect=_stub_get_ts_uploader)
+        "chemaboxwriters.common.uploaders.get_triple_store_uploader",
+        side_effect=_stub_get_ts_uploader,
+    )
     mocker.patch(
-       "chemaboxwriters.common.uploaders.get_file_server_uploader",
-       side_effect=_stub_get_fs_uploader)
+        "chemaboxwriters.common.uploaders.get_file_server_uploader",
+        side_effect=_stub_get_fs_uploader,
+    )
 
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR, inp_file_or_dir)
     pipeline = asp.assemble_pipeline(
@@ -185,7 +181,10 @@ def test_ocompchem_abox_writer(
     )
 
     write_abox(
-        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type, dry_run = False
+        pipeline=pipeline,
+        file_or_dir=inp_file_or_dir,
+        input_file_type=inp_file_type,
+        dry_run=False,
     )
 
     fileExts = ["oc_json", "oc_csv"]
@@ -231,11 +230,13 @@ def test_ospecies_abox_writer(
         return_value=[DummyPubchemComp(cid=1111, synonyms=["1111-11-1"])],
     )
     mocker.patch(
-       "chemaboxwriters.common.uploaders.get_triple_store_uploader",
-       side_effect=_stub_get_ts_uploader)
+        "chemaboxwriters.common.uploaders.get_triple_store_uploader",
+        side_effect=_stub_get_ts_uploader,
+    )
     mocker.patch(
-       "chemaboxwriters.common.uploaders.get_file_server_uploader",
-       side_effect=_stub_get_fs_uploader)
+        "chemaboxwriters.common.uploaders.get_file_server_uploader",
+        side_effect=_stub_get_fs_uploader,
+    )
 
     inp_file_or_dir = os.path.join(OSPECIES_REF_DIR, inp_file_or_dir)
     pipeline = asp.assemble_pipeline(
@@ -252,6 +253,7 @@ def test_ospecies_abox_writer(
         pipeline=pipeline,
         file_or_dir=inp_file_or_dir,
         input_file_type=inp_file_type,
+        dry_run=False,
     )
 
     fileExts = ["os_json", "os_csv"]
@@ -300,11 +302,13 @@ def test_opsscan_abox_writer(
     print()
 
     mocker.patch(
-       "chemaboxwriters.common.uploaders.get_triple_store_uploader",
-       side_effect=_stub_get_ts_uploader)
+        "chemaboxwriters.common.uploaders.get_triple_store_uploader",
+        side_effect=_stub_get_ts_uploader,
+    )
     mocker.patch(
-       "chemaboxwriters.common.uploaders.get_file_server_uploader",
-       side_effect=_stub_get_fs_uploader)
+        "chemaboxwriters.common.uploaders.get_file_server_uploader",
+        side_effect=_stub_get_fs_uploader,
+    )
 
     inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR, inp_file_or_dir)
     pipeline = asp.assemble_pipeline(
@@ -313,7 +317,10 @@ def test_opsscan_abox_writer(
     pipeline.set_handlers_parameters(handlers_params_config=handler_kwargs)
 
     write_abox(
-        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type
+        pipeline=pipeline,
+        file_or_dir=inp_file_or_dir,
+        input_file_type=inp_file_type,
+        dry_run=False,
     )
 
     fileExts = ["ops_json", "ops_csv"]
@@ -352,11 +359,13 @@ def test_omops_abox_writer(
     print()
 
     mocker.patch(
-       "chemaboxwriters.common.uploaders.get_triple_store_uploader",
-       side_effect=_stub_get_ts_uploader)
+        "chemaboxwriters.common.uploaders.get_triple_store_uploader",
+        side_effect=_stub_get_ts_uploader,
+    )
     mocker.patch(
-       "chemaboxwriters.common.uploaders.get_file_server_uploader",
-       side_effect=_stub_get_fs_uploader)
+        "chemaboxwriters.common.uploaders.get_file_server_uploader",
+        side_effect=_stub_get_fs_uploader,
+    )
 
     inp_file_or_dir = os.path.join(OMOPS_REF_DIR, inp_file_or_dir)
     pipeline = asp.assemble_pipeline(
@@ -369,7 +378,10 @@ def test_omops_abox_writer(
     )
 
     write_abox(
-        pipeline=pipeline, file_or_dir=inp_file_or_dir, input_file_type=inp_file_type
+        pipeline=pipeline,
+        file_or_dir=inp_file_or_dir,
+        input_file_type=inp_file_type,
+        dry_run=False,
     )
 
     fileExts = ["om_json", "om_csv"]

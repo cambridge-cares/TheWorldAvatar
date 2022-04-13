@@ -9,7 +9,7 @@
     "Mops_Cavity_Volume": "someVolume",
     "Mops_CCDC_Number": "someLabel",
     "Mops_Reference_DOI": "someDOI",
-    "Mops_XYZ_Geometry_File_URL": null,
+    "Mops_XYZ_Geometry_File_URL": "dummy_location/dummy_mops.xyz",
     "Species_IRIs": [
         "IRI1",
         "IRI2"
