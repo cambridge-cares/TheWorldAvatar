@@ -111,7 +111,7 @@ public class IntegrationTest extends TestCase {
 
         // the response is a JSON object containing the IRIs of the initialised instances, refer to InitialiseInstances for the keys
         InitialiseInstances initialisation = new InitialiseInstances();
-        response = initialisation.initialise(sparqlClient, devClient);
+        response = initialisation.initialise6(sparqlClient, devClient);
 
         // create the instance of the asyn agents, init() method will be called later in the test case
         rngAgent = new RNGAgent(storeClient, Config.derivationInstanceBaseURL);
