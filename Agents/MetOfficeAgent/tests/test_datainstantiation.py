@@ -128,7 +128,8 @@ def test_instantiate_all_stations(initialise_triple_store, mocker):
         assert triples == 15
 
 
-@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph")
+@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
+                          as TimeSeriesClient reads required inputs directly from properties file")
 def test_instantiate_all_stations_webapp(client, mocker):
     # Integration test for expected behavior of instantiation of all stations
     # via webapp (requires (local) blazegraph running at endpoints specified

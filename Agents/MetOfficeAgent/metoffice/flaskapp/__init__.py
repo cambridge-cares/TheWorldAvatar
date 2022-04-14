@@ -9,12 +9,14 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     with app.app_context():
-        # Import parts of our application
+        # Import parts of application
         import metoffice.flaskapp.home.routes as home
         import metoffice.flaskapp.inputtasks.routes as inputtasks
+        import metoffice.flaskapp.outputtasks.routes as outputtasks
 
         # Register Blueprints
         app.register_blueprint(home.home_bp)
         app.register_blueprint(inputtasks.inputtasks_bp)
+        app.register_blueprint(outputtasks.outputtasks_bp)
 
     return app

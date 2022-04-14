@@ -268,11 +268,3 @@ def get_time_series_data(station_iris: list = None,
         ts_units.append(dict(zip(df_sub['dataIRI'], df_sub['unit'])))
 
     return ts_data, ts_names, ts_units
-
-
-if __name__ == '__main__':
-
-    #obs = get_all_instantiated_observations()
-    #bs_ts = all_instantiated_observation_timeseries()
-
-    get_time_series_data()

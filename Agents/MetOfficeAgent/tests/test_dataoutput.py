@@ -24,7 +24,7 @@ def test_output_data():
                 "id": 0,
                 "properties": {
                     "displayName": "Scatsta",
-                    "circle-color": "#ff0000",
+                    "circle-color": "#C0392B",
                     "circle-stroke-width": 1,
                     "circle-stroke-color": "#000000",
                     "circle-stroke-opacity": 0.75,
@@ -43,7 +43,7 @@ def test_output_data():
                 "id": 1,
                 "properties": {
                     "displayName": "Humberside Airport",
-                    "circle-color": "#ff0000",
+                    "circle-color": "#C0392B",
                     "circle-stroke-width": 1,
                     "circle-stroke-color": "#000000",
                     "circle-stroke-opacity": 0.75,
@@ -62,7 +62,7 @@ def test_output_data():
                 "id": 2,
                 "properties": {
                     "displayName": "Carlisle Airport",
-                    "circle-color": "#ff0000",
+                    "circle-color": "#C0392B",
                     "circle-stroke-width": 1,
                     "circle-stroke-color": "#000000",
                     "circle-stroke-opacity": 0.75,

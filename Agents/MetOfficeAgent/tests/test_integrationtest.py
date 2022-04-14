@@ -25,7 +25,8 @@ def client():
         yield client
 
 @pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
-                          as well as blank RDB as defined in properties file")
+                          as well as blank RDB as TimeSeriesClient reads required inputs directly \
+                          from properties file")
 def test_update_all_stations_webapp(client, mocker):
     # Integration test for expected behavior of updating all stations and readings
     # via webapp (requires (local) blazegraph running at endpoints specified
@@ -65,7 +66,7 @@ def test_update_all_stations_webapp(client, mocker):
     updated = response.json
     assert updated['stations'] == 6
     assert updated['readings'] == 50
-    assert updated['timeseries'] == 50
+    assert updated['reading_timeseries'] == 50
     # Verify creation of 3 observation and 3 forecast time series (1 per station)
     obs = get_instantiated_observation_timeseries()
     assert len(obs['tsIRI'].unique()) == 3
@@ -78,7 +79,7 @@ def test_update_all_stations_webapp(client, mocker):
     updated = response.json
     assert updated['stations'] == 0
     assert updated['readings'] == 1
-    assert updated['timeseries'] == 51
+    assert updated['reading_timeseries'] == 51
     # Verify creation of additional forecast time series (for initially missing AirTemperature)    
     obs = get_instantiated_observation_timeseries()
     assert len(obs['tsIRI'].unique()) == 3
@@ -91,7 +92,7 @@ def test_update_all_stations_webapp(client, mocker):
     updated = response.json
     assert updated['stations'] == 0
     assert updated['readings'] == 0
-    assert updated['timeseries'] == 51
+    assert updated['reading_timeseries'] == 51
 
     # Get test reference data (forecast for station 25)
     data = readings_dict_gen(copy.deepcopy(readings_data[2]))

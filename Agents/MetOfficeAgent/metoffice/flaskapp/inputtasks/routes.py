@@ -74,7 +74,7 @@ def api_add_all_readings_timeseries():
         # Instantiate stations
         response = add_all_readings_timeseries()
         print(f"Number of updated time series readings: {response}")
-        return jsonify({"timeseries": response})
+        return jsonify({"reading_timeseries": response})
 
     except Exception as ex:
         print(ex)
@@ -96,9 +96,9 @@ def api_update_all_stations():
         response = update_all_stations()
         print(f"Number of instantiated stations: {response[0]}")
         print(f"Number of instantiated readings: {response[1]}")
-        print(f"Number of updated time series readings: {response[2]}")
+        print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
         return jsonify({"stations": response[0], "readings": response[1], 
-                        "timeseries": response[2]})
+                        "reading_timeseries": response[2]})
 
     except Exception as ex:
         print(ex)

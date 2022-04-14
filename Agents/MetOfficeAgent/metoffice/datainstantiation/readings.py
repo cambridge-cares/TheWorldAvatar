@@ -9,8 +9,8 @@
 import uuid
 import metoffer
 import datetime as dt
-from math import nan
 import time
+from math import nan
 
 #import agentlogging
 from metoffice.dataretrieval.readings import *
@@ -233,7 +233,9 @@ def instantiate_station_readings(instantiated_sites_list: list,
     # Initialise number of instantiated readings
     instantiated = 0
 
-    # Loop over all sites
+    # Loop over all sites   
+    print('Create triples to instantiate static observation/forecast information ...')
+    #logger.info('Create triples to instantiate static observation/forecast information ...')
     for id in instantiated_sites_list:
         
         # Get lists of instantiated readings for current station
@@ -461,7 +463,7 @@ def retrieve_readings_data_per_station(metclient, station_id: str = None,
                                        only_keys: bool = True):
     """
         Retrieve station readings via Metoffer client (if station_id is provided, 
-        retrieve readings for given station, otherwise or for ALL stations)
+        retrieve readings for given station, otherwise for ALL stations)
     """
 
     # Retrieve data for particular station or ALL stations
@@ -606,4 +608,4 @@ if __name__ == '__main__':
     response = update_all_stations()
     print(f"Number of instantiated stations: {response[0]}")
     print(f"Number of instantiated readings: {response[1]}")
-    print(f"Number of updated time series readings: {response[2]}")
+    print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
