@@ -14,48 +14,48 @@ prefixes: {
     unit_pref: "http://data.nasa.gov/qudt/owl/",
 }
 schema_to_json_vars:
-    ENTRY_IRI: {'required': False, 'jsonKey': 'Entry_IRI'}
-    ENTRY_ID: {'required': False, 'jsonKey': 'Entry_ID'}
-    SPEC_IRI: {'required': False, 'jsonKey': 'Species_IRI'}
-    SCAN_COORD_TYPE: {'required': False, 'jsonKey': 'Scan_Coordinate_Type'}
-    SCAN_COORD_VALUE: {'required': False, 'jsonKey': 'Scan_Coordinate_Values'}
-    SCAN_ATOMS_POS: {'required': False, 'jsonKey': 'Scan_Atoms_Ccjob_Positions'}
-    SCAN_COORD_ATOMS_IRI: {'required': False, 'jsonKey': 'Scan_Atoms_Iris'}
-    SCAN_COORD_UNIT: {'required': False, 'jsonKey': 'Scan_Coordinate_Unit'}
-    SCAN_POINT_JOBS_IRIS: {'required': False, 'jsonKey': 'Scan_Point_Jobs_Iris'}
+    ENTRY_IRI: {"required": False, "jsonKey": "Entry_IRI"}
+    ENTRY_ID: {"required": False, "jsonKey": "Entry_ID"}
+    SPEC_IRI: {"required": False, "jsonKey": "Species_IRI"}
+    SCAN_COORD_TYPE: {"required": False, "jsonKey": "Scan_Coordinate_Type"}
+    SCAN_COORD_VALUE: {"required": False, "jsonKey": "Scan_Coordinate_Values"}
+    SCAN_ATOMS_POS: {"required": False, "jsonKey": "Scan_Atoms_Ccjob_Positions"}
+    SCAN_COORD_ATOMS_IRI: {"required": False, "jsonKey": "Scan_Atoms_Iris"}
+    SCAN_COORD_UNIT: {"required": False, "jsonKey": "Scan_Coordinate_Unit"}
+    SCAN_POINT_JOBS_IRIS: {"required": False, "jsonKey": "Scan_Point_Jobs_Iris"}
 abox_schema:
     - # main entry
         [
-            '<IMP> ABoxOntoPESSscan base_import: onto_pes: ',
-            '<IMP> ABoxOntoPESSscan base pes_pref_no_slash: ',
+            "<IMP> ABoxOntoPESSscan base_import: onto_pes:",
+            "<IMP> ABoxOntoPESSscan base pes_pref_no_slash:",
         ]
     - # main entry
         [
-            '<INS> ${ENTRY_IRI} rdf:type onto_pes:#PotentialEnergySurfaceScan'
+            "<INS> ${ENTRY_IRI} onto_pes:#PotentialEnergySurfaceScan"
         ]
     - # onSpecies entry
         [
-            '<OBJ> ${ENTRY_IRI} onto_pes:#onSpecies spec_pref:${SPEC_IRI}'
+            "<OBJ> ${ENTRY_IRI} onto_pes:#onSpecies spec_pref:${SPEC_IRI}"
         ]
     - # scanCoordType entry
         [
-            '<INS> pes_pref:${SCAN_COORD_TYPE}_${ENTRY_ID} rdf:type onto_pes:#${SCAN_COORD_TYPE}',
-            '<OBJ> ${ENTRY_IRI} onto_pes:#hasScanCoordinate pes_pref:${SCAN_COORD_TYPE}_${ENTRY_ID}',
+            "<INS> pes_pref:${SCAN_COORD_TYPE}_${ENTRY_ID} onto_pes:#${SCAN_COORD_TYPE}",
+            "<OBJ> ${ENTRY_IRI} onto_pes:#hasScanCoordinate pes_pref:${SCAN_COORD_TYPE}_${ENTRY_ID}",
         ]
     - # scanCoordAtoms entry
         [
-            '<INS> spec_pref:${SCAN_COORD_ATOMS_IRI} rdf:type gain_pref:Atom',
-            '<OBJ> pes_pref:${SCAN_COORD_TYPE}_${ENTRY_ID} onto_pes:#hasScanAtom spec_pref:${SCAN_COORD_ATOMS_IRI}',
+            "<INS> spec_pref:${SCAN_COORD_ATOMS_IRI} gain_pref:Atom",
+            "<OBJ> pes_pref:${SCAN_COORD_TYPE}_${ENTRY_ID} onto_pes:#hasScanAtom spec_pref:${SCAN_COORD_ATOMS_IRI}",
         ]
     -  # scanPoints
         [
-            '<INS> pes_pref:ScanPoint_${ENTRY_ID}_%{i} rdf:type onto_pes:#ScanPoint',
-            '<OBJ> ${ENTRY_IRI} onto_pes:#hasScanPoint pes_pref:ScanPoint_${ENTRY_ID}_%{i}',
-            '<OBJ> pes_pref:ScanPoint_${ENTRY_ID}_%{i} onto_pes:#hasCalculation ${SCAN_POINT_JOBS_IRIS}',
-            '<DAT> pes_pref:ScanPoint_${ENTRY_ID}_%{i} onto_pes:#hasInputAtomIds "${SCAN_ATOMS_POS}"',
-            '<INS> pes_pref:ScanCoordinateValue_${ENTRY_ID}_%{i} rdf:type onto_pes:#ScanCoordinateValue',
-            '<OBJ> pes_pref:ScanPoint_${ENTRY_ID}_%{i} onto_pes:#hasScanCoordinateValue pes_pref:ScanCoordinateValue_${ENTRY_ID}_%{i}',
-            '<DAT> pes_pref:ScanCoordinateValue_${ENTRY_ID}_%{i} gain_pref:hasValue ${SCAN_COORD_VALUE}',
-            '<OBJ> pes_pref:ScanCoordinateValue_${ENTRY_ID}_%{i} gain_pref:hasUnit unit_pref:unit#${SCAN_COORD_UNIT}',
+            "<INS> pes_pref:ScanPoint_${ENTRY_ID}_%{i} onto_pes:#ScanPoint",
+            "<OBJ> ${ENTRY_IRI} onto_pes:#hasScanPoint pes_pref:ScanPoint_${ENTRY_ID}_%{i}",
+            "<OBJ> pes_pref:ScanPoint_${ENTRY_ID}_%{i} onto_pes:#hasCalculation ${SCAN_POINT_JOBS_IRIS}",
+            "<DAT> pes_pref:ScanPoint_${ENTRY_ID}_%{i} onto_pes:#hasInputAtomIds ${SCAN_ATOMS_POS}",
+            "<INS> pes_pref:ScanCoordinateValue_${ENTRY_ID}_%{i} onto_pes:#ScanCoordinateValue",
+            "<OBJ> pes_pref:ScanPoint_${ENTRY_ID}_%{i} onto_pes:#hasScanCoordinateValue pes_pref:ScanCoordinateValue_${ENTRY_ID}_%{i}",
+            "<DAT> pes_pref:ScanCoordinateValue_${ENTRY_ID}_%{i} gain_pref:hasValue ${SCAN_COORD_VALUE}",
+            "<OBJ> pes_pref:ScanCoordinateValue_${ENTRY_ID}_%{i} gain_pref:hasUnit unit_pref:unit#${SCAN_COORD_UNIT}",
         ]
 

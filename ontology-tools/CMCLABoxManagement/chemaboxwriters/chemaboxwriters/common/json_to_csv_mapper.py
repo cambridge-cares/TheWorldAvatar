@@ -292,45 +292,44 @@ class Schema_Entry:
         """This processes the entry, replacing all the variables with their actual
         values. In case of loop entries, it expands them.
         """
-        for imp in self.imports:
-            self._replace_variables(
-                write_entry=self.imports_write,
-                entry_item=imp,
-                schema_variables=schema_variables,
-                loop_iter=loop_iter,
-            )
+        entries_to_process = [
+            self.imports,
+            self.instances,
+            self.obj_prop,
+            self.data_prop,
+        ]
+        entries_to_accumulate = [
+            self.imports_write,
+            self.instances_write,
+            self.obj_prop_write,
+            self.data_prop_write,
+        ]
 
-        for inst in self.instances:
-            self._replace_variables(
-                write_entry=self.instances_write,
-                entry_item=inst,
-                schema_variables=schema_variables,
-                loop_iter=loop_iter,
-            )
-
-        for obj_prop in self.obj_prop:
-            self._replace_variables(
-                write_entry=self.obj_prop_write,
-                entry_item=obj_prop,
-                schema_variables=schema_variables,
-                loop_iter=loop_iter,
-            )
-
-        for data_prop in self.data_prop:
-            self._replace_variables(
-                write_entry=self.data_prop_write,
-                entry_item=data_prop,
-                schema_variables=schema_variables,
-                loop_iter=loop_iter,
-            )
+        # spliting schema entry line first and then replacing all vars in it is deliberate
+        # I know that one could replace all vars first and then split, however, that could
+        # cause problems if e.g. some variables contain special characters such as double
+        # quotes or commas, as then it would be tricky to split such strings after the
+        # replacement has been done.
+        for entry_list, entry_write in zip(entries_to_process, entries_to_accumulate):
+            for entry in entry_list:
+                entry_splitted = self._split_line(entry)
+                entry_piece_processed = []
+                for entry_piece in entry_splitted:
+                    entry_piece_processed.append(
+                        self._replace_variables(
+                            entry_item=entry_piece,
+                            schema_variables=schema_variables,
+                            loop_iter=loop_iter,
+                        )
+                    )
+                entry_write.append(entry_piece_processed)
 
     def _replace_variables(
         self,
-        write_entry: List[str],
         entry_item: str,
         schema_variables: Dict,
         loop_iter: Optional[int],
-    ) -> None:
+    ) -> str:
         """Replaces variables with their values"""
         for var_key, var_value in schema_variables.items():
             if var_key not in self.variables:
@@ -341,9 +340,8 @@ class Schema_Entry:
                 # replaces a special %{i} loop variable with the current loop
                 # index, starting from 1
                 entry_item = re.sub(r"\%\{(i)\}", str(loop_iter + 1), entry_item)
-            # replaces variable with their value
             entry_item = re.sub(r"\$\{(" + var_key + r")\}", str(var_value), entry_item)
-        write_entry.append(entry_item)
+        return entry_item
 
     def _find_loop_range(self, schema_variables: Dict) -> None:
         for var_key, var_value in schema_variables.items():
@@ -353,40 +351,31 @@ class Schema_Entry:
 
     def _write_entry(self, writer: Abox_CSV_Builder) -> None:
         for imp in self.imports_write:
-            name, rel, importing = imp.split()
+            name, rel, importing = imp
             writer.write_imports(name=name, importing=importing, rel=rel)
 
         for inst in self.instances_write:
-            inst_splitted = self._split_line(inst)
-            iri, _type = inst_splitted[0], inst_splitted[2]
+            iri, _type = inst
             writer.write_inst(iri=iri, type=_type)
 
         for obj_prop in self.obj_prop_write:
-            obj_prop_splitted = self._split_line(obj_prop)
-            src_iri, rel, trg_iri = (
-                obj_prop_splitted[0],
-                obj_prop_splitted[1],
-                obj_prop_splitted[2],
-            )
+            src_iri, rel, trg_iri = obj_prop
             writer.write_obj_prop(src_iri=src_iri, rel=rel, trg_iri=trg_iri)
 
         for dat_prop in self.data_prop_write:
-            dat_prop_splitted = self._split_line(dat_prop)
-            iri, rel, value = (
-                dat_prop_splitted[0],
-                dat_prop_splitted[1],
-                dat_prop_splitted[2],
-            )
-            data_type = dat_prop_splitted[3] if len(dat_prop_splitted) > 3 else "String"
+            iri, rel, value = dat_prop[:3]
+            data_type = "String"
+            if len(dat_prop) > 3:
+                data_type = dat_prop[3]
             writer.write_data_prop(
                 iri=iri, rel=rel, value=value, data_type=data_type  # type: ignore
             )
 
     @staticmethod
-    def _split_line(line: str, delimiter: str = " ") -> List[str]:
-        splitted_line = []
-        for row in csv.reader([line], delimiter=delimiter):
-            splitted_line = row
+    def _split_line(line: str) -> List[str]:
+        splitted_line = [
+            p for p in re.split("( |\\\".*?\\\"|'.*?')", line) if p.strip()
+        ]
         return splitted_line
 
 
