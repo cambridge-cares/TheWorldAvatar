@@ -86,3 +86,9 @@ class MissingUploadEndpointAuthorisation(Exception):
     "Missing upload endpoint authorisation."
 
     pass
+
+
+class MismatchedSchemaListVariablesLength(Exception):
+    "Schema list variables have different lengths."
+
+    pass

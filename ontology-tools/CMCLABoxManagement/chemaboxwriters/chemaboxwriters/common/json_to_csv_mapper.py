@@ -125,7 +125,7 @@ class Abox_CSV_Builder:
         iri: str,
         rel: str,
         value: str,
-        data_type: Literal["String", "Integer", "Float"] = "String",
+        data_type: Literal["String", "Integer", "Float", "Literal"] = "String",
         store_inst: bool = True,
     ) -> "Abox_CSV_Builder":
 
@@ -180,7 +180,7 @@ class Abox_CSV_Builder:
         self,
         rel: str,
         value: str,
-        data_type: Literal["String", "Integer", "Float"] = "String",
+        data_type: Literal["String", "Integer", "Float", "Literal"] = "String",
     ) -> "Abox_CSV_Builder":
 
         if self._current_inst is None:
@@ -344,10 +344,25 @@ class Schema_Entry:
         return entry_item
 
     def _find_loop_range(self, schema_variables: Dict) -> None:
+        loop_lengths = []
+        loop_vars = []
         for var_key, var_value in schema_variables.items():
             if var_key in self.variables and isinstance(var_value, list):
-                self.loop_range = range(len(var_value))
-                return
+                loop_lengths.append(len(var_value))
+                loop_vars.append(var_key)
+        if loop_lengths:
+            if len(set(loop_lengths)) > 1:
+                var_lengths = {
+                    var: length for var, length in zip(loop_vars, loop_lengths)
+                }
+                raise app_exceptions.MismatchedSchemaListVariablesLength(
+                    (
+                        f"Schema subsection contains list variables with different "
+                        f"lengths: {var_lengths}."
+                    )
+                )
+
+            self.loop_range = range(loop_lengths[0])
 
     def _write_entry(self, writer: Abox_CSV_Builder) -> None:
         for imp in self.imports_write:
