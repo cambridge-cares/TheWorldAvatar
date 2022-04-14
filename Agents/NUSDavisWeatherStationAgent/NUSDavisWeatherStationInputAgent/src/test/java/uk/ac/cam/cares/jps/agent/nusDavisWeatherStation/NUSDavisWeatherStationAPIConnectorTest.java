@@ -1,0 +1,194 @@
+package uk.ac.cam.cares.jps.agent.nusDavisWeatherStation;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.json.JSONObject;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
+public class NUSDavisWeatherStationAPIConnectorTest {
+
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
+    // Fields used for the mock API calls
+    private static final int PORT = 8089;
+    private static final String TEST_URL = "http://localhost:" + PORT + "/";
+    // Mocking objects to mock weather station API calls
+    @Rule
+    public WireMockRule nusDavisWeatherStationAPIMock = new WireMockRule(PORT);
+
+    private NUSDavisWeatherStationAPIConnector testConnector;
+
+    @Before
+    public void initializeTestConnector() {
+        testConnector= new NUSDavisWeatherStationAPIConnector("key","secret",TEST_URL,123456);
+    }
+
+    @After
+    public void resetAPIMock(){
+        nusDavisWeatherStationAPIMock.resetAll();
+    }
+
+    @Test
+    public void NUSDavisWeatherStationConstructorTest() throws NoSuchFieldException, IOException, IllegalAccessException {
+
+        NUSDavisWeatherStationAPIConnector connector=new NUSDavisWeatherStationAPIConnector("key","secret","url",123456);
+        String propertiesFile = Paths.get(folder.getRoot().toString(), "api.properties").toString();
+        writePropertyFile(propertiesFile, Arrays.asList("weather.api_key=key", "weather.api_secret=secret","weather.api_url=url","weather.stationId=123456" ));
+
+        NUSDavisWeatherStationAPIConnector connectorFile= new NUSDavisWeatherStationAPIConnector(propertiesFile);
+        Field apiKeyField = NUSDavisWeatherStationAPIConnector.class.getField("api_key");
+        apiKeyField.setAccessible(true);
+        Assert.assertEquals("key", apiKeyField.get(connector));
+        Assert.assertEquals("key", apiKeyField.get(connectorFile));
+
+        Field apiSecretField = NUSDavisWeatherStationAPIConnector.class.getField("api_secret");
+        apiSecretField.setAccessible(true);
+        Assert.assertEquals("secret", apiSecretField.get(connector));
+        Assert.assertEquals("secret", apiSecretField.get(connectorFile));
+
+        Field apiUrlField = NUSDavisWeatherStationAPIConnector.class.getField("api_url");
+        apiUrlField.setAccessible(true);
+        Assert.assertEquals("url", apiUrlField.get(connector));
+        Assert.assertEquals("url", apiUrlField.get(connectorFile));
+
+        Field stationIdField = NUSDavisWeatherStationAPIConnector.class.getField("api_stationId");
+        stationIdField.setAccessible(true);
+        Assert.assertEquals(123456, stationIdField.get(connector));
+        Assert.assertEquals(123456, stationIdField.get(connectorFile));
+
+    }
+
+    @Test
+    public void loadAPIConfigsTest() throws IOException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
+        // Filepath to not yet created file in temporary test folder
+        String filepath = Paths.get(folder.getRoot().toString(), "weather.properties").toString();
+        // Error messages
+        String fileNotFound = "There was no properties file found in the specified path: " + filepath;
+        String noAPIKey = "The properties file is missing \"weather.api_key=<api_key>\"";
+        String noAPISecret= "The properties file is missing \"weather.api_secret=<api_secret>\"";
+        String noURL = "The properties file is missing \"weather.api_url=<api_url>\"";
+        String noStationId = "The properties file is missing \"weather.stationId=<stationId>\"";
+
+        // Set private method to be accessible
+        Method loadAPIConfig = NUSDavisWeatherStationAPIConnector.class.getDeclaredMethod("loadAPIconfigs", String.class);
+        loadAPIConfig.setAccessible(true);
+        // Test for non-existing properties file
+        try {
+            loadAPIConfig.invoke(testConnector, filepath);
+            Assert.fail();
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            Assert.assertEquals(FileNotFoundException.class, e.getCause().getClass());
+            Assert.assertEquals(fileNotFound, e.getCause().getMessage());
+        }
+
+        // Test for missing api_key by creating a file only containing stationId
+        writePropertyFile(filepath, Collections.singletonList("weather.api_secret=secret"));
+        // Try loading RDB configs
+        try {
+            loadAPIConfig.invoke(testConnector, filepath);
+            Assert.fail();
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            Assert.assertEquals(IOException.class, e.getCause().getClass());
+            Assert.assertEquals(noAPIKey, e.getCause().getMessage());
+        }
+
+        // Test for missing api_secret by creating a file only containing api_key
+        writePropertyFile(filepath, Collections.singletonList("weather.api_key=key"));
+        // Try loading RDB configs
+        try {
+            loadAPIConfig.invoke(testConnector, filepath);
+            Assert.fail();
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            Assert.assertEquals(IOException.class, e.getCause().getClass());
+            Assert.assertEquals(noAPISecret, e.getCause().getMessage());
+        }
+
+        // Test for missing URL by creating a file only containing api_key and api_secret
+        writePropertyFile(filepath, Arrays.asList("weather.api_key=key", "weather.api_secret=secret"));
+        // Try loading RDB configs
+        try {
+            loadAPIConfig.invoke(testConnector, filepath);
+            Assert.fail();
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            Assert.assertEquals(IOException.class, e.getCause().getClass());
+            Assert.assertEquals(noURL, e.getCause().getMessage());
+        }
+
+        // Test for missing stationId by creating a file only containing api_key, api_secret and api_url
+        writePropertyFile(filepath, Arrays.asList("weather.api_key=key", "weather.api_secret=secret", "weather.api_url=url"));
+        // Try loading RDB configs
+        try {
+            loadAPIConfig.invoke(testConnector, filepath);
+            Assert.fail();
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            Assert.assertEquals(IOException.class, e.getCause().getClass());
+            Assert.assertEquals(noStationId, e.getCause().getMessage());
+        }
+
+        // Test for proper api_key, api_secret, url and stationId
+        writePropertyFile(filepath, Arrays.asList("weather.api_key=test_key", "weather.api_secret=test_secret", "weather.api_url=test_url","weather.stationId=123456"));
+        // Try loading RDB configs
+        try {
+            loadAPIConfig.invoke(testConnector, filepath);
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
+        // Retrieve private fields for apiKey, stationId and api_url. Check that they were set correctly
+        Field apiKeyField =NUSDavisWeatherStationAPIConnector.class.getDeclaredField("api_key");
+        apiKeyField.setAccessible(true);
+        Assert.assertEquals("test_key", apiKeyField.get(testConnector));
+
+        Field apiSecretField =NUSDavisWeatherStationAPIConnector.class.getDeclaredField("api_secret");
+        apiSecretField.setAccessible(true);
+        Assert.assertEquals("test_secret", apiSecretField.get(testConnector));
+
+        Field UrlField =NUSDavisWeatherStationAPIConnector.class.getDeclaredField("api_url");
+        UrlField.setAccessible(true);
+        Assert.assertEquals("test_url", UrlField.get(testConnector));
+
+        Field stationIdField =NUSDavisWeatherStationAPIConnector.class.getDeclaredField("stationId");
+        stationIdField.setAccessible(true);
+        Assert.assertEquals("test_id", stationIdField.get(testConnector));
+    }
+    @Test
+    public void testGetWeatherDataReadings(){
+
+        // API returns a response
+        JSONObject responseBody = new JSONObject();
+        JSONObject asset = new JSONObject();
+        double val=77.2;
+        asset.put("testval", val);
+        responseBody.put("testObject",asset);
+
+        nusDavisWeatherStationAPIMock.stubFor(get(urlEqualTo("123456?api-key=key&t=1558729481&start-timestamp=1561964400&end-timestamp=1562050800&api-signature=fbe025018d78d7b13bb09eb36c6c2d7b1461b33253bf3d291b1ed37826599e8"))
+                .willReturn(ok().withBody(responseBody.toString())));
+
+        Assert.assertEquals(responseBody.toString(), testConnector.getWeatherReadings().toString());
+    }
+    private void writePropertyFile(String filepath, List<String> properties) throws IOException {
+        // Overwrite potentially existing properties file
+        FileWriter writer = new FileWriter(filepath, false);
+        // Populate file
+        for (String s : properties) {
+            writer.write(s + "\n");
+        }
+        // Close the file and return the file
+        writer.close();
+    }
+
+
+}
