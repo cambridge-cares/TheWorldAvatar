@@ -21,21 +21,21 @@ Options:
 --file-or-dir=<dir>     Path to the input file or directory.
 --inp-file-type=<type>  Types of the allowed input files to the:
                           * ospecies aboxwriter
-                            - quantum calculation log (defualt)  [qc_log]
+                            - quantum calculation log (default)  [qc_log]
                             - quantum calculation json           [qc_json]
                             - ontospecies meta json              [os_json]
                             - ontospecies meta csv               [os_csv]
                           * ocompchem aboxwriter
-                            - quantum calculation log (defualt)  [qc_log]
+                            - quantum calculation log (default)  [qc_log]
                             - quantum calculation json           [qc_json]
                             - ontocompchem meta json             [oc_json]
                             - ontocompchem meta csv              [oc_csv]
                           * omops aboxwriter
-                            - omops input json file (defualt)    [ominp_json]
+                            - omops input json file (default)    [ominp_json]
                             - omops processed json file          [omops_json]
                             - omops meta csv                     [omops_csv]
                           * opsscan aboxwriter
-                            - ontocompchem meta json (defualt)   [oc_json]
+                            - ontocompchem meta json (default)   [oc_json]
                             - ontopesscan meta json              [ops_json]
                             - ontopesscan meta csv               [ops_csv]
 --file-ext=<ext>        Extensions of the input files,
@@ -55,7 +55,7 @@ Options:
                         input file.
 --log-file-name=<name>  Name of the generated log file.
 --log-file-dir=<dir>    Path to the abox writer log file.
-                        If not provided defults to the
+                        If not provided defaults to the
                         directory of the input file.
 --no-file-logging       No logging to a file flag.
 --dry-run=<dry_run>     Run the abox writer tool in a dry        [default: True]

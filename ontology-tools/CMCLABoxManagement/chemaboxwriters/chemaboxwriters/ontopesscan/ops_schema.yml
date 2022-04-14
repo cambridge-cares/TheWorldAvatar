@@ -1,18 +1,17 @@
-prefixes: {
-    main_inst_pref: "http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_",
-    base_import: http://www.w3.org/2002/07/owl#imports,
-    pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/",
-    pes_pref_no_slash: http://www.theworldavatar.com/kb/ontopesscan,
-    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl",
-    onto_pes:  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl",
+prefixes:
+    main_inst_pref: "http://www.theworldavatar.com/kb/ontopesscan/PotentialEnergySurfaceScan_"
+    base_import: "http://www.w3.org/2002/07/owl#imports"
+    pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/"
+    pes_pref_no_slash: "http://www.theworldavatar.com/kb/ontopesscan"
+    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"
+    onto_pes:  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl"
     # used to create iris of instances
-    spec_pref: "http://www.theworldavatar.com/kb/ontospecies/",
-    comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/",
-    comp_pref_no_slash: "http://www.theworldavatar.com/kb/ontocompchem",
+    spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
+    comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
+    comp_pref_no_slash: "http://www.theworldavatar.com/kb/ontocompchem"
     # other prefixes
-    gain_pref: "http://purl.org/gc/",
-    unit_pref: "http://data.nasa.gov/qudt/owl/",
-}
+    gain_pref: "http://purl.org/gc/"
+    unit_pref: "http://data.nasa.gov/qudt/owl/"
 schema_to_json_vars:
     ENTRY_IRI: {"required": False, "jsonKey": "Entry_IRI"}
     ENTRY_ID: {"required": False, "jsonKey": "Entry_ID"}

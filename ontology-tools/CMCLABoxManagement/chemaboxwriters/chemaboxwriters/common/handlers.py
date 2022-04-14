@@ -33,7 +33,7 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
 
         outputs: List[str] = []
         for cclog_file_path in inputs:
-            # if defined, the gaussian log files are uploaded onto the triple store
+            # if defined, the gaussian log files are uploaded onto the file server,
             # atm, it is only done in the ontocompchem pipeline
             # the call below retrieves the log file location on the file server
             # (if it was uploaded)
@@ -49,7 +49,7 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
             # process all the outputs
             for i, cclog_parsed_job in enumerate(cclog_parsed_jobs):
                 # the outputs need to be eventually written to a file, it is then
-                # important to picj unique names for these files. Here a file
+                # important to pick unique names for these files. Here a file
                 # suffix is defined based on the nr of outputs
                 inp_file_suffix = f"_{i+1}" if len(cclog_parsed_jobs) > 1 else ""
 
@@ -69,10 +69,13 @@ class QC_LOG_TO_QC_JSON_Handler(Handler):
                 )
                 cclog_dict_data = json.loads(cclog_parsed_job)
 
-                # this adds extra information to the produced json files, namely the lcoation
+                # this adds extra information to the produced json files, namely the location
                 # of the uploaded log files (if uploaded at all)
-                if cclog_upload_loc is not None:
-                    cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc
+                # so the qc json file content is extended here by an extra key, I thought it is
+                # ok to add this info here. It is important to note that all qc json files taken
+                # directly from the compchem parser wont have this extra field. One would need
+                # to add it manually or simply start from the qc log file.
+                cclog_dict_data[CCLOG_SOURCE_LOCATION] = cclog_upload_loc
 
                 utilsfunc.write_dict_to_file(
                     dict_data=cclog_dict_data,

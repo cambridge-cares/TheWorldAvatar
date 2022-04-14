@@ -1,14 +1,13 @@
-prefixes: {
-    main_inst_pref: "http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_",
-    base_import: "http://www.w3.org/2002/07/owl#imports",
-    mops_pref: "http://www.theworldavatar.com/kb/ontomops/",
-    onto_mops: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#",
-    onto_mops_no_hash: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl",
-    rdfs: "http://www.w3.org/2000/01/rdf-schema#",
-    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#",
-    uom_pref: "http://www.ontology-of-units-of-measure.org/resource/om-2/",
+prefixes: 
+    main_inst_pref: "http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_"
+    base_import: "http://www.w3.org/2002/07/owl#imports"
+    mops_pref: "http://www.theworldavatar.com/kb/ontomops/"
+    onto_mops: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#"
+    onto_mops_no_hash: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl"
+    rdfs: "http://www.w3.org/2000/01/rdf-schema#"
+    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
+    uom_pref: "http://www.ontology-of-units-of-measure.org/resource/om-2/"
     unres_pref: "http://theworldavatar.com/resource/ontouom/"
-}
 schema_to_json_vars:
     MOPS_MOLWT: {"required": False, "jsonKey": "Mops_Molecular_Weight"}
     MOPS_POL_SHAPE: {"required": False, "jsonKey": "Mops_Polyhedral_Shape"}

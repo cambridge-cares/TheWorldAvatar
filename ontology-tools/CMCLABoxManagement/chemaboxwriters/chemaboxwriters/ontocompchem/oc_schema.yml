@@ -1,4 +1,5 @@
 prefixes:
+    main_inst_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
     base_import: "http://www.w3.org/2002/07/owl#imports"
     onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"
     spec_pref_no_slash: "http://www.theworldavatar.com/kb/ontospecies"
@@ -12,7 +13,6 @@ prefixes:
     onto_comp: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"
     comp_pref_no_slash: "http://www.theworldavatar.com/kb/ontocompchem"
     comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
-    main_inst_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
 #
 schema_to_json_vars:
     # formula, atoms, indices
