@@ -581,14 +581,13 @@ public class TimeSeriesClient<T> {
 				values.put(valueslist);
 				// Initialise value class (in case no class can be determined due to missing data)
 				String vClass = "Unknown";
-				Iterator<?> listIterator = valueslist.iterator();
-				while (listIterator.hasNext()) {
+				for (Object value: valueslist) {
 					// Get values class from first not null value
-					if (listIterator.next() != null) {
-						if (listIterator.next() instanceof Number) {
+					if (value != null) {
+						if (value instanceof Number) {
 							vClass = Number.class.getSimpleName();
 						} else {
-							vClass = listIterator.next().getClass().getSimpleName();
+							vClass = value.getClass().getSimpleName();
 						}
 						break;
 					}
