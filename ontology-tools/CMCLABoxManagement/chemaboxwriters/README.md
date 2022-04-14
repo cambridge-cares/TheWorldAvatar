@@ -40,7 +40,7 @@ The ontospecies abox writer creates and uploads the ontospecies aboxes. The writ
     - enth_of_form_phase (str) OPTIONAL - phase that the enthalpy of formation entry corresponds to, not included in the abox if omitted
     - enth_of_form_ref_temp (str) OPTIONAL - enthalpy of formation reference temperature, not included in the abox if omitted
     - enth_of_form_ref_temp_unit (str) OPTIONAL - enthalpy of formation reference temperature unit, not included in the abox if omitted
-    - enth_of_form_provenance (str) OPTIONAL - enthalpy of formation provencance, not included in the abox if omitted
+    - enth_of_form_provenance (str) OPTIONAL - enthalpy of formation provenance, not included in the abox if omitted
 - OS_JSON_TO_OS_CSV
   - input type: OS_JSON
   - output type: OS_CSV - an intermediate ontospecies csv file
@@ -66,7 +66,7 @@ The ontocompchem abox writer creates and uploads the ontocompchem aboxes. The wr
   - output type: OC_JSON - an intermediate ontocompchem meta json file
   - handler_kwargs:
     - random_id (str) OPTIONAL
-    - ontospecies_IRI (str) OPTIONAL - IRI of an ontospecies entry to link to. If not provied a query based on inchi will be made to find the ontospecies IRI. If that fails, the ontospecies link is not included in the ontocompchem abox
+    - ontospecies_IRI (str) OPTIONAL - IRI of an ontospecies entry to link to. If not provided a query based on inchi will be made to find the ontospecies IRI. If that fails, the ontospecies link is not included in the ontocompchem abox
     - generate_png (bool) OPTIONAL - generate png files representing the molecules, by default false
 - OC_JSON_TO_OC_CSV
   - input type: OC_JSON
@@ -253,6 +253,9 @@ ocompchem:
     qc_json_to_oc_json:
         file_server_upload_settings:
             # this enables molecules png files upload (if files are present)
+            # note that oc_png is an internal qc_json_to_oc_json handler stage
+            # as the png files are produced in this handler (if enabled) and
+            # are not passed anywhere else.
             upload_file_types:
                 - oc_png
         handler_kwargs:
@@ -295,6 +298,7 @@ omops:
     ominp_json_to_om_json:
         file_server_upload_settings:
             upload_file_types:
+            # not that ominp_xyz is an internal ominp_json_to_om_json handler
                 - ominp_xyz
     om_csv_to_om_owl:
         triple_store_upload_settings:
@@ -312,6 +316,10 @@ opsscan:
     #-----------------------------------------
     oc_json_to_ops_json:
       # example handler parameters for a bond scan
+      # note that if you run the opsscan handler on a directory of files
+      # the same handler kwargs will be applied to each, therefore this
+      # handler should only be run on files containing information about
+      # the same scan
       handler_kwargs:
           os_iris: Species_11-111-111
           os_atoms_iris: Atom_11-11-111_C1,Atom_11-11-111_C2
@@ -339,21 +347,21 @@ Options:
 --file-or-dir=<dir>     Path to the input file or directory.
 --inp-file-type=<type>  Types of the allowed input files to the:
                           * ospecies aboxwriter
-                            - quantum calculation log (defualt)  [qc_log]
+                            - quantum calculation log (default)  [qc_log]
                             - quantum calculation json           [qc_json]
                             - ontospecies meta json              [os_json]
                             - ontospecies meta csv               [os_csv]
                           * ocompchem aboxwriter
-                            - quantum calculation log (defualt)  [qc_log]
+                            - quantum calculation log (default)  [qc_log]
                             - quantum calculation json           [qc_json]
                             - ontocompchem meta json             [oc_json]
                             - ontocompchem meta csv              [oc_csv]
                           * omops aboxwriter
-                            - omops input json file (defualt)    [ominp_json]
+                            - omops input json file (default)    [ominp_json]
                             - omops processed json file          [omops_json]
                             - omops meta csv                     [omops_csv]
                           * opsscan aboxwriter
-                            - ontocompchem meta json (defualt)   [oc_json]
+                            - ontocompchem meta json (default)   [oc_json]
                             - ontopesscan meta json              [ops_json]
                             - ontopesscan meta csv               [ops_csv]
 --file-ext=<ext>        Extensions of the input files,
@@ -373,7 +381,7 @@ Options:
                         input file.
 --log-file-name=<name>  Name of the generated log file.
 --log-file-dir=<dir>    Path to the abox writer log file.
-                        If not provided defults to the
+                        If not provided defaults to the
                         directory of the input file.
 --no-file-logging       No logging to a file flag.
 --dry-run=<dry_run>     Run the abox writer tool in a dry        [default: True]
@@ -507,7 +515,72 @@ opsscan:
         ...
 ```
 
+# Note on JSON to CSV translation
 
+As can be seen, all supported pipelines contain a handler that transforms input JSON files into the abox CSV files. The translation happens according to the schema YAML file. The schema is a simple, yet powerful mapping language that contains the rules on how a given piece of JSON data is transformed into appropriate imports, instance, object property or data property rows in the resulting abox CSV file. Below a short description of the schema YAML syntax is provided.
+
+The schema YAML file must contain three main sections. These are: `prefixes`, `schema_to_json_vars` and `abox_schema`. The `prefixes` section defines any prefixes to be used during the translation. Prefixes are TBOX dependent and are mostly optional, as one can always write IRIs in full. However, the `main_inst_pref` prefix is required and defines the prefix for the main abox instance. This prefix is read and used in the JSON handler so that the resulting json files contain a full IRI of the main instance. Requiring json files to contain the main entry IRI was deliberate as it makes sure that easy to read json file contains all the information about the created abox and opens a possibility to use one json file as an input to the other (e.g. oc_json files are one of possible inputs to the opsscan pipeline, where the IRIs stored in the oc_json files define scan point jobs in the opsscan abox).
+
+The `schema_to_json_vars` defines all the json variables used in the schema. The variables can be aliased with a different name and marked as required or optional. As an example:
+```yaml
+schema_to_json_vars:
+    # formula, atoms, indices
+    EMP_FORMULA: {"required": False, "jsonKey": "Empirical_Formula"}
+```
+
+The above section defines that the json `Empirical_Formula` key is aliased as `EMP_FORMULA` in the schema and that it is optional (`required: False`). Aliasing json variables with different names helps to keep the schema file changes minimal in case there is a change in the associated json file. If the `Empirical_Formula` key was changed in the future in the json file only one change in the schema file would be needed. Also note that the code would raise an exception if there are any missing json variables (either not present or with null values) that are required.
+
+The `abox_schema` is the last section and defines how the json data are decorated with the semantic information to finally form an abox csv file. The section can be split into an arbitrary number of subsections (list items) each defining a particular translation for a set of json data into the resulting csv file. Each subsection can contain an arbitrary number of items, where each item should start with one of the four predefined tags: `<IMP>`, `<INS>`, `<OBJ>` and `<DAT>` indicating that it defines an import, instance, object property or data property statement. The syntax of each item line was defined to be as close to the triple syntax as possible. Furthermore, any variable defined in the `schema_to_json_vars` section can appear in any place in the item line after the main tag, and must be surrounded within the `${}` characters. As an example, inserting the `ENTRY_ID` and `EMP_FORMULA` variables into the schema item line would look like this:
+```yaml
+"<DAT> comp_pref:MoleculeProperty_${ENTRY_ID} gain_pref:hasName ${EMP_FORMULA}",
+```
+Schema snippet below, expands the above example:
+
+```yaml
+abox_schema:
+    - # imports
+        [
+            "<IMP> ABoxOntoCompChem base_import: onto_comp:",
+            "<IMP> ABoxOntoCompChem base comp_pref_no_slash:",
+        ]
+    - # main instance
+        [
+            "<INS> ${ENTRY_IRI} onto_comp:#G09",
+        ]
+    - # Ontospecies link
+        [
+            "<INS> ${SPECIES_IRI} onto_spec:#Species",
+            "<OBJ> ${ENTRY_IRI} onto_comp:#hasUniqueSpecies ${SPECIES_IRI}",
+        ]
+    - # Emp Formula
+        [
+            "<DAT> comp_pref:MoleculeProperty_${ENTRY_ID} gain_pref:hasName ${EMP_FORMULA}",
+        ]
+```
+
+Note that the import statement `<IMP>`, apart from the import tag, must contain three components. These are the abox name, import predicate and what is being imported. In the example above, two import statements are defined. Note how prefixes are used to simplify these statements.
+
+The instance statement `<INS>` must contain two components. These are the instance IRI and the instance type. Note that the `rdf:type` predicate is omitted.
+
+The object property statement `<OBJ>` must contain three components. These are the subject IRI, predicate and object IRI respectively.
+
+The data property statement `<DAT>` must contain from three to four components. These are the subject IRI, predicate, data value and optionally the data value type chosen from "String", "Integer", "Float" or "Literal" list. If no value type is provided, the "String" type is used by default.
+
+The rules for writing the abox csv rows from the schema subsections are rather simple. The subsection is transformed into the csv lines if all its variables are present in the json file and their values are not null. As an example, if the `SPECIES_IRI` variable was null in the json file then the `Ontospecies link` subsection would be skipped. This behaviour may offer some guide on how to write the schema files. As an example, defining as many subsections as possible, each for a single piece of json data would allow to modularise the abox writing, where the resulting abox would only contain information that is present in the json file. This would allow to e.g. inject new information into existing aboxes. One example could be adding enthalpy of formation data to ontospecies instances. It would be enough to manually create the os_json file containing the desired species full IRI and only the enthalpy of formation data. Then the resulting abox would only contain the enthalpy information, and when uploaded would update the ontospecies instance with the new content.
+
+Another important rule is how the list variables are written. This is best explained with an example:
+
+```yaml
+    - # Atom types
+        [
+            "<INS> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:Atom",
+            "<OBJ> comp_pref:Molecule_${ENTRY_ID} gain_pref:hasAtom comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i}",
+            "<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:isElement table_pref:#${ATOM_LIST}",
+        ]
+```
+This yaml schema snippet shows how the atom types are translated into the ontocompchem csv abox. The `ATOM_LIST` json variable is a list containing the atom types, e.g. ['C', 'O', 'C', 'H', ...]. If a list variable is detected in a schema subsection then all its items are repeated as many times as the number of items on the list. In each iteration, the list variable is replaced with its next item. If the schema subsection contains multiple lists, they all must be of the same length, otherwise an exception is raised. Apart from that, for list schema subsections an extra iteration index variable %{i} can be used in all of the entries. This allows, in some cases, to create unique IRIs. The index starts from 1. Note also that any duplicate schema lines, either added manually or arising from the list variables expansion are automatically skipped when translated into csv lines.
+
+The schema yaml file is a simple, yet powerful way of defining the resulting abox schema given the json data. Its main advantage is decoupling the abox writing code from the abox schema, as there is now only one code that writes all aboxes based on the file input. If there is ever a need to change on how the abox file is written, only its schema file needs to be modified. However, given the translation complexity and the fact that one of the main requirements was to keep the schema file simple, there are also some limitations. The main limitation is the structure of the json data file. The json file must only contain simple key: value pairs, where value can be a single item or a list of values. No nested dictionaries or multidimensional lists are allowed. However, in case of json data containing the forbidden entries, it would be a rather simple task to `flatten` them in the pre-processing step. As an example, the molecule geometry x, y, z coordinates in the qc_json file are encoded as a nested list. This is then split into three lists each holding atoms x, y and z coordinates in the oc_json file.
 
 # Authors #
 Daniel Nurkowski (danieln@cmclinnovations.com)
