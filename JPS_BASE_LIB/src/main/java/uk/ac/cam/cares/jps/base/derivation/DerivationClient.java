@@ -890,13 +890,15 @@ public class DerivationClient {
 		}
 
 		for (Derivation upstream : immediateUpstreamDerivations) {
-			if (graph.addVertex(upstream.getIri()) && (null != graph.addEdge(derivation.getIri(), upstream.getIri()))) {
+			if (graph.addVertex(upstream.getIri()) & (null != graph.addEdge(derivation.getIri(), upstream.getIri()))) {
 				// (1) graph.addVertex(input) will try to add input as vertex if not already
 				// exist in the graph
 				// (2) (null != graph.addEdge(instance, input)) will throw an error here if
 				// there is circular dependency; addEdge will return 'null' if the edge has
 				// already been added as DAGs can't have duplicated edges so we can stop
 				// traversing this branch.
+				// NOTE both (1) and (2) will execute as here we are using Non-short-circuit
+				// Operator "&", instead of short-circuit operator "&&"
 				// Only when both (1) and (2) are true, we can update input, otherwise, node
 				// <D1> will be traversed multiple times if we have below DAG of derivations
 				// and we run updateMixedAsyncDerivation(<D3>, graph):
@@ -941,7 +943,7 @@ public class DerivationClient {
 		}
 
 		for (Derivation upstream : upstreamDerivations) {
-			if (graph.addVertex(upstream.getIri()) && (null != graph.addEdge(derivation.getIri(), upstream.getIri()))) {
+			if (graph.addVertex(upstream.getIri()) & (null != graph.addEdge(derivation.getIri(), upstream.getIri()))) {
 				// NOTE difference 1 - resolve multiple traverse problem
 				// the above line is different from the checking in method
 				// updateDerivation(Derivation derivation, DirectedAcyclicGraph<String,
