@@ -16,37 +16,37 @@ prefixes:
 #
 schema_to_json_vars:
     # atoms types, list, etc
-    EMP_FORMULA: {'required': True, 'jsonKey': 'Empirical_Formula'}
-    TOTAL_ATOMS_COUNTS: {'required': True, 'jsonKey': 'Atom_Total_Counts'}
-    ATOM_TYPES: {'required': True, 'jsonKey': 'Atom_List'}
-    ELEMENTS: {'required': True, 'jsonKey': 'Elements'}
-    PER_ATOM_TYPE_INDICES: {'required': True, 'jsonKey': 'Per_Atom_Type_Indices'}
-    MOL_WEIGHT: {'required': True, 'jsonKey': 'Molecular_Weight'}
+    EMP_FORMULA: {'required': False, 'jsonKey': 'Empirical_Formula'}
+    TOTAL_ATOMS_COUNTS: {'required': False, 'jsonKey': 'Atom_Total_Counts'}
+    ATOM_TYPES: {'required': False, 'jsonKey': 'Atom_List'}
+    ELEMENTS: {'required': False, 'jsonKey': 'Elements'}
+    PER_ATOM_TYPE_INDICES: {'required': False, 'jsonKey': 'Per_Atom_Type_Indices'}
+    MOL_WEIGHT: {'required': False, 'jsonKey': 'Molecular_Weight'}
     # spin, charge
-    SPIN_MULT: {'required': True, 'jsonKey': 'Spin_Multiplicity'}
-    FORM_CHARGE: {'required': True, 'jsonKey': 'Total_Charge'}
+    SPIN_MULT: {'required': False, 'jsonKey': 'Spin_Multiplicity'}
+    FORM_CHARGE: {'required': False, 'jsonKey': 'Total_Charge'}
     # geometry
-    GEOM_STRING: {'required': True, 'jsonKey': 'Geometry_String'}
-    BOND_STRING: {'required': True, 'jsonKey': 'Bond_String'}
-    COORD_X: {'required': True, 'jsonKey': 'X_Atoms_Coordinates'}
-    COORD_Y: {'required': True, 'jsonKey': 'Y_Atoms_Coordinates'}
-    COORD_Z: {'required': True, 'jsonKey': 'Z_Atoms_Coordinates'}
+    GEOM_STRING: {'required': False, 'jsonKey': 'Geometry_String'}
+    BOND_STRING: {'required': False, 'jsonKey': 'Bond_String'}
+    COORD_X: {'required': False, 'jsonKey': 'X_Atoms_Coordinates'}
+    COORD_Y: {'required': False, 'jsonKey': 'Y_Atoms_Coordinates'}
+    COORD_Z: {'required': False, 'jsonKey': 'Z_Atoms_Coordinates'}
     # identifiers
-    SMILES: {'required': True, 'jsonKey': 'Smiles'}
-    INCHI: {'required': True, 'jsonKey': 'Inchi'}
-    PUBCHEM_ALT_LABEL: {'required': True, 'jsonKey': 'Pubchem_Alternative_Label'}
-    PUBCHEM_CAS: {'required': True, 'jsonKey': 'CAS_Number'}
-    PUBCHEM_CID: {'required': True, 'jsonKey': 'Pubchem_CID'}
+    SMILES: {'required': False, 'jsonKey': 'Smiles'}
+    INCHI: {'required': False, 'jsonKey': 'Inchi'}
+    PUBCHEM_ALT_LABEL: {'required': False, 'jsonKey': 'Pubchem_Alternative_Label'}
+    PUBCHEM_CAS: {'required': False, 'jsonKey': 'CAS_Number'}
+    PUBCHEM_CID: {'required': False, 'jsonKey': 'Pubchem_CID'}
     # enthalpy
-    ENTH_FORM: {'required': True, 'jsonKey': 'Standard_Enthalpy_Formation'}
-    ENTH_FORM_UNIT: {'required': True, 'jsonKey': 'Standard_Enthalpy_Formation_Unit'}
-    ENTH_FORM_REFTEMP: {'required': True, 'jsonKey': 'Standard_Enthalpy_Formation_Ref_Temperature'}
-    ENTH_FORM_REFTEMP_UNIT: {'required': True, 'jsonKey': 'Standard_Enthalpy_Formation_Ref_Temperature_Unit'}
-    ENTH_FORM_PHASE: {'required': True, 'jsonKey': 'Standard_Enthalpy_Formation_Phase'}
-    ENTH_FORM_PROV: {'required': True, 'jsonKey': 'Standard_Enthalpy_Formation_Provenance'}
+    ENTH_FORM: {'required': False, 'jsonKey': 'Standard_Enthalpy_Formation'}
+    ENTH_FORM_UNIT: {'required': False, 'jsonKey': 'Standard_Enthalpy_Formation_Unit'}
+    ENTH_FORM_REFTEMP: {'required': False, 'jsonKey': 'Standard_Enthalpy_Formation_Ref_Temperature'}
+    ENTH_FORM_REFTEMP_UNIT: {'required': False, 'jsonKey': 'Standard_Enthalpy_Formation_Ref_Temperature_Unit'}
+    ENTH_FORM_PHASE: {'required': False, 'jsonKey': 'Standard_Enthalpy_Formation_Phase'}
+    ENTH_FORM_PROV: {'required': False, 'jsonKey': 'Standard_Enthalpy_Formation_Provenance'}
     # other
-    ENTRY_IRI: {'required': True, 'jsonKey': 'Entry_IRI'}
-    ENTRY_ID: {'required': True, 'jsonKey': 'Entry_ID'}
+    ENTRY_IRI: {'required': False, 'jsonKey': 'Entry_IRI'}
+    ENTRY_ID: {'required': False, 'jsonKey': 'Entry_ID'}
 abox_schema:
     - # imports
         [

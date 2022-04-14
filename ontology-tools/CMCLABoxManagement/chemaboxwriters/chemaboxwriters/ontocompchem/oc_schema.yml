@@ -16,49 +16,49 @@ prefixes:
 #
 schema_to_json_vars:
     # formula, atoms, indices
-    EMP_FORMULA: {"required": True, "jsonKey": "Empirical_Formula"}
-    TOTAL_ATOMS_COUNTS: {"required": True, "jsonKey": "Atom_Total_Counts"}
-    ATOM_LIST: {"required": True, "jsonKey": "Atom_List"}
-    ATOM_MASSES: {"required": True, "jsonKey": "Atom_Masses"}
-    ELEMENTS: {"required": True, "jsonKey": "Elements"}
+    EMP_FORMULA: {"required": False, "jsonKey": "Empirical_Formula"}
+    TOTAL_ATOMS_COUNTS: {"required": False, "jsonKey": "Atom_Total_Counts"}
+    ATOM_LIST: {"required": False, "jsonKey": "Atom_List"}
+    ATOM_MASSES: {"required": False, "jsonKey": "Atom_Masses"}
+    ELEMENTS: {"required": False, "jsonKey": "Elements"}
     # lvl of theory, basis set, charge, spin
-    LVL_OF_THEORY: {"required": True, "jsonKey": "Level_of_Theory"}
-    BASIS_SET: {"required": True, "jsonKey": "Basis_Set"}
-    SPIN_MULT: {"required": True, "jsonKey": "Spin_Multiplicity"}
-    FORM_CHARGE: {"required": True, "jsonKey": "Total_Charge"}
+    LVL_OF_THEORY: {"required": False, "jsonKey": "Level_of_Theory"}
+    BASIS_SET: {"required": False, "jsonKey": "Basis_Set"}
+    SPIN_MULT: {"required": False, "jsonKey": "Spin_Multiplicity"}
+    FORM_CHARGE: {"required": False, "jsonKey": "Total_Charge"}
     # geom type, x,y,z coords
-    GEOM_TYPE: {"required": True, "jsonKey": "Geometry_Type"}
-    COORD_X: {"required": True, "jsonKey": "X_Atoms_Coordinates"}
-    COORD_Y: {"required": True, "jsonKey": "Y_Atoms_Coordinates"}
-    COORD_Z: {"required": True, "jsonKey": "Z_Atoms_Coordinates"}
+    GEOM_TYPE: {"required": False, "jsonKey": "Geometry_Type"}
+    COORD_X: {"required": False, "jsonKey": "X_Atoms_Coordinates"}
+    COORD_Y: {"required": False, "jsonKey": "Y_Atoms_Coordinates"}
+    COORD_Z: {"required": False, "jsonKey": "Z_Atoms_Coordinates"}
     # rot consts
-    ROT_CONST_STRING: {"required": True, "jsonKey": "Rotational_Constants_String"}
-    ROT_CONST_NR: {"required": True, "jsonKey": "Rotational_Constants_Number"}
-    ROT_CONST_SYM_NR: {"required": True, "jsonKey": "Rotational_Symmetry_Number"}
+    ROT_CONST_STRING: {"required": False, "jsonKey": "Rotational_Constants_String"}
+    ROT_CONST_NR: {"required": False, "jsonKey": "Rotational_Constants_Number"}
+    ROT_CONST_SYM_NR: {"required": False, "jsonKey": "Rotational_Symmetry_Number"}
     # freqs
-    FREQ_STRING: {"required": True, "jsonKey": "Frequencies_String"}
-    FREQ_NR: {"required": True, "jsonKey": "Frequencies_Number"}
+    FREQ_STRING: {"required": False, "jsonKey": "Frequencies_String"}
+    FREQ_NR: {"required": False, "jsonKey": "Frequencies_Number"}
     # energies
-    ZPE_ENERGY: {"required": True, "jsonKey": "ZPE_Energy"}
-    ELEC_AND_ZPE_ENERGY: {"required": True, "jsonKey": "Electronic_And_ZPE_Energy"}
-    ELEC_ENERGY: {"required": True, "jsonKey": "Electronic_Energy"}
-    HOMO_ENERGY: {"required": True, "jsonKey": "Homo_Energy"}
-    HOMO_MIN1_ENERGY: {"required": True, "jsonKey": "Homo-1_Energy"}
-    HOMO_MIN2_ENERGY: {"required": True, "jsonKey": "Homo-2_Energy"}
-    LUMO_ENERGY: {"required": True, "jsonKey": "Lumo_Energy"}
-    LUMO_ADD1_ENERGY: {"required": True, "jsonKey": "Lumo+1_Energy"}
-    LUMO_ADD2_ENERGY: {"required": True, "jsonKey": "Lumo+2_Energy"}
+    ZPE_ENERGY: {"required": False, "jsonKey": "ZPE_Energy"}
+    ELEC_AND_ZPE_ENERGY: {"required": False, "jsonKey": "Electronic_And_ZPE_Energy"}
+    ELEC_ENERGY: {"required": False, "jsonKey": "Electronic_Energy"}
+    HOMO_ENERGY: {"required": False, "jsonKey": "Homo_Energy"}
+    HOMO_MIN1_ENERGY: {"required": False, "jsonKey": "Homo-1_Energy"}
+    HOMO_MIN2_ENERGY: {"required": False, "jsonKey": "Homo-2_Energy"}
+    LUMO_ENERGY: {"required": False, "jsonKey": "Lumo_Energy"}
+    LUMO_ADD1_ENERGY: {"required": False, "jsonKey": "Lumo+1_Energy"}
+    LUMO_ADD2_ENERGY: {"required": False, "jsonKey": "Lumo+2_Energy"}
     # metadata
-    PROGRAM_NAME: {"required": True, "jsonKey": "Program_Name"}
-    PROGRAM_VERSION: {"required": True, "jsonKey": "Program_Version"}
-    RUN_DATE: {"required": True, "jsonKey": "Run_Date"}
-    CCLOG_SOURCE_LOCATION: {"required": True, "jsonKey": "CCLOG_Source_Location"}
-    PNG_SOURCE_LOCATION: {"required": True, "jsonKey": "PNG_Source_Location"}
+    PROGRAM_NAME: {"required": False, "jsonKey": "Program_Name"}
+    PROGRAM_VERSION: {"required": False, "jsonKey": "Program_Version"}
+    RUN_DATE: {"required": False, "jsonKey": "Run_Date"}
+    CCLOG_SOURCE_LOCATION: {"required": False, "jsonKey": "CCLOG_Source_Location"}
+    PNG_SOURCE_LOCATION: {"required": False, "jsonKey": "PNG_Source_Location"}
     # ospecies link
-    SPECIES_IRI: {"required": True, "jsonKey": "Species_IRI"}
+    SPECIES_IRI: {"required": False, "jsonKey": "Species_IRI"}
     # main entry
-    ENTRY_IRI: {"required": True, "jsonKey": "Entry_IRI"}
-    ENTRY_ID: {"required": True, "jsonKey": "Entry_ID"}
+    ENTRY_IRI: {"required": False, "jsonKey": "Entry_IRI"}
+    ENTRY_ID: {"required": False, "jsonKey": "Entry_ID"}
 abox_schema:
     - # imports
         [

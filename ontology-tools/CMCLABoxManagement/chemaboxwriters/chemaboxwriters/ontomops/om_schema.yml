@@ -10,33 +10,33 @@ prefixes: {
     unres_pref: "http://theworldavatar.com/resource/ontouom/"
 }
 schema_to_json_vars:
-    MOPS_MOLWT: {'required': True, 'jsonKey': 'Mops_Molecular_Weight'}
-    MOPS_POL_SHAPE: {'required': True, 'jsonKey': 'Mops_Polyhedral_Shape'}
-    MOPS_POL_SHAPE_SYMBOL: {'required': True, 'jsonKey': 'Mops_Polyhedral_Shape_Symbol'}
-    MOPS_SYM_POINT_GROUP: {'required': True, 'jsonKey': 'Mops_Symmetry_Point_Group'}
-    MOPS_CHARGE: {'required': True, 'jsonKey': 'Mops_Charge'}
-    MOPS_FORMULA: {'required': True, 'jsonKey': 'Mops_Formula'}
-    MOPS_LABEL: {'required': True, 'jsonKey': 'Mops_Label'}
-    MOPS_CAV_VOL: {'required': True, 'jsonKey': 'Mops_Cavity_Volume'}
-    MOPS_CCDC: {'required': True, 'jsonKey': 'Mops_CCDC_Number'}
-    MOPS_REF_DOI: {'required': True, 'jsonKey': 'Mops_Reference_DOI'}
-    MOPS_ASSEM_MOD_ID: {'required': True, 'jsonKey': 'Assembly_Model_ID'}
-    SPECIES_IRIS: {'required': True, 'jsonKey': 'Species_IRIs'}
-    CBU_FORMULAS: {'required': True, 'jsonKey': 'CBU_Formulas'}
-    CBU_BINDING_SITES: {'required': True, 'jsonKey': 'CBU_Binding_Sites'}
-    CBU_BINDING_SITE_LABELS: {'required': True, 'jsonKey': 'CBU_Binding_Site_Labels'}
-    CBU_BINDING_SITE_COORD_NUMBERS: {'required': True, 'jsonKey': 'CBU_Binding_Site_Coord_Numbers'}
-    CBU_CORE_LABELS: {'required': True, 'jsonKey': 'CBU_Core_Labels'}
-    CBU_CORE_SUB_LABELS: {'required': True, 'jsonKey': 'CBU_Core_Substituent_Labels'}
-    CBU_SPACER_LABELS: {'required': True, 'jsonKey': 'CBU_Spacer_Labels'}
-    CBU_SPACER_SUB_LABELS: {'required': True, 'jsonKey': 'CBU_Spacer_Substituent_Labels'}
-    CBU_BINDING_DIRS: {'required': True, 'jsonKey': 'CBU_Binding_Directions'}
-    GBU_PLANARITIES: {'required': True, 'jsonKey': 'GBU_Planarities'}
-    GBU_MODULARITIES: {'required': True, 'jsonKey': 'GBU_Modularities'}
-    GBU_UNIT_NUMBERS: {'required': True, 'jsonKey': 'GBU_Numbers'}
-    MOPS_XYZ_GEOMETRY_FILE_URL: {'required': True, 'jsonKey': 'Mops_XYZ_Geometry_File_URL'}
-    ENTRY_IRI: {'required': True, 'jsonKey': 'Entry_IRI'}
-    ENTRY_ID: {'required': True, 'jsonKey': 'Entry_ID'}
+    MOPS_MOLWT: {'required': False, 'jsonKey': 'Mops_Molecular_Weight'}
+    MOPS_POL_SHAPE: {'required': False, 'jsonKey': 'Mops_Polyhedral_Shape'}
+    MOPS_POL_SHAPE_SYMBOL: {'required': False, 'jsonKey': 'Mops_Polyhedral_Shape_Symbol'}
+    MOPS_SYM_POINT_GROUP: {'required': False, 'jsonKey': 'Mops_Symmetry_Point_Group'}
+    MOPS_CHARGE: {'required': False, 'jsonKey': 'Mops_Charge'}
+    MOPS_FORMULA: {'required': False, 'jsonKey': 'Mops_Formula'}
+    MOPS_LABEL: {'required': False, 'jsonKey': 'Mops_Label'}
+    MOPS_CAV_VOL: {'required': False, 'jsonKey': 'Mops_Cavity_Volume'}
+    MOPS_CCDC: {'required': False, 'jsonKey': 'Mops_CCDC_Number'}
+    MOPS_REF_DOI: {'required': False, 'jsonKey': 'Mops_Reference_DOI'}
+    MOPS_ASSEM_MOD_ID: {'required': False, 'jsonKey': 'Assembly_Model_ID'}
+    SPECIES_IRIS: {'required': False, 'jsonKey': 'Species_IRIs'}
+    CBU_FORMULAS: {'required': False, 'jsonKey': 'CBU_Formulas'}
+    CBU_BINDING_SITES: {'required': False, 'jsonKey': 'CBU_Binding_Sites'}
+    CBU_BINDING_SITE_LABELS: {'required': False, 'jsonKey': 'CBU_Binding_Site_Labels'}
+    CBU_BINDING_SITE_COORD_NUMBERS: {'required': False, 'jsonKey': 'CBU_Binding_Site_Coord_Numbers'}
+    CBU_CORE_LABELS: {'required': False, 'jsonKey': 'CBU_Core_Labels'}
+    CBU_CORE_SUB_LABELS: {'required': False, 'jsonKey': 'CBU_Core_Substituent_Labels'}
+    CBU_SPACER_LABELS: {'required': False, 'jsonKey': 'CBU_Spacer_Labels'}
+    CBU_SPACER_SUB_LABELS: {'required': False, 'jsonKey': 'CBU_Spacer_Substituent_Labels'}
+    CBU_BINDING_DIRS: {'required': False, 'jsonKey': 'CBU_Binding_Directions'}
+    GBU_PLANARITIES: {'required': False, 'jsonKey': 'GBU_Planarities'}
+    GBU_MODULARITIES: {'required': False, 'jsonKey': 'GBU_Modularities'}
+    GBU_UNIT_NUMBERS: {'required': False, 'jsonKey': 'GBU_Numbers'}
+    MOPS_XYZ_GEOMETRY_FILE_URL: {'required': False, 'jsonKey': 'Mops_XYZ_Geometry_File_URL'}
+    ENTRY_IRI: {'required': False, 'jsonKey': 'Entry_IRI'}
+    ENTRY_ID: {'required': False, 'jsonKey': 'Entry_ID'}
 abox_schema:
     - # imports
         [

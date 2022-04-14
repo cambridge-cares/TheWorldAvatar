@@ -14,15 +14,15 @@ prefixes: {
     unit_pref: "http://data.nasa.gov/qudt/owl/",
 }
 schema_to_json_vars:
-    ENTRY_IRI: {'required': True, 'jsonKey': 'Entry_IRI'}
-    ENTRY_ID: {'required': True, 'jsonKey': 'Entry_ID'}
-    SPEC_IRI: {'required': True, 'jsonKey': 'Species_IRI'}
-    SCAN_COORD_TYPE: {'required': True, 'jsonKey': 'Scan_Coordinate_Type'}
-    SCAN_COORD_VALUE: {'required': True, 'jsonKey': 'Scan_Coordinate_Values'}
-    SCAN_ATOMS_POS: {'required': True, 'jsonKey': 'Scan_Atoms_Ccjob_Positions'}
-    SCAN_COORD_ATOMS_IRI: {'required': True, 'jsonKey': 'Scan_Atoms_Iris'}
-    SCAN_COORD_UNIT: {'required': True, 'jsonKey': 'Scan_Coordinate_Unit'}
-    SCAN_POINT_JOBS_IRIS: {'required': True, 'jsonKey': 'Scan_Point_Jobs_Iris'}
+    ENTRY_IRI: {'required': False, 'jsonKey': 'Entry_IRI'}
+    ENTRY_ID: {'required': False, 'jsonKey': 'Entry_ID'}
+    SPEC_IRI: {'required': False, 'jsonKey': 'Species_IRI'}
+    SCAN_COORD_TYPE: {'required': False, 'jsonKey': 'Scan_Coordinate_Type'}
+    SCAN_COORD_VALUE: {'required': False, 'jsonKey': 'Scan_Coordinate_Values'}
+    SCAN_ATOMS_POS: {'required': False, 'jsonKey': 'Scan_Atoms_Ccjob_Positions'}
+    SCAN_COORD_ATOMS_IRI: {'required': False, 'jsonKey': 'Scan_Atoms_Iris'}
+    SCAN_COORD_UNIT: {'required': False, 'jsonKey': 'Scan_Coordinate_Unit'}
+    SCAN_POINT_JOBS_IRIS: {'required': False, 'jsonKey': 'Scan_Point_Jobs_Iris'}
 abox_schema:
     - # main entry
         [

@@ -395,16 +395,18 @@ class JSON_TO_CSV_CONVERTER:
 
     def __init__(self, schema_yml_file: str) -> None:
         with open(schema_yml_file, "r") as stream:
-            schema_dict = yaml.safe_load(stream)
-        self._schema = schema_dict
+            self._schema = yaml.safe_load(stream)
         self._schema_variables = {}
         self._schema_entries: List[Schema_Entry] = []
+        self._schem_file = schema_yml_file
+        self._json_data_file = None
 
     def json_to_csv(self, json_data_file: str, out_file: str) -> None:
         with open(json_data_file, "r") as fjson:
             abox_data = json.load(fjson)
 
         self._abox_data = abox_data
+        self._json_data_file = json_data_file
         self._set_schema_variables()
         self._set_schema_entries()
         self._process_schema_entries()
@@ -429,7 +431,25 @@ class JSON_TO_CSV_CONVERTER:
         schema_variables = self._schema.get("schema_to_json_vars")
         self._schema_variables = {}
         for var, var_info in schema_variables.items():
-            self._schema_variables[var] = self._abox_data.get(var_info["jsonKey"])
+            var_required = var_info.get("required", False)
+            var_name = var_info.get("jsonKey")
+            if var_name is None:
+                raise app_exceptions.MissingRequiredInput(
+                    (
+                        f"Error: Missing jsonKey for {var} variable "
+                        f"in the {self._schem_file} file."
+                    )
+                )
+            var_value = self._abox_data.get(var_name)
+
+            if var_required and var_value is None:
+                raise app_exceptions.MissingRequiredInput(
+                    (
+                        f"Error: Undefined required variable {var} "
+                        f"in the {self._json_data_file} file."
+                    )
+                )
+            self._schema_variables[var] = var_value
 
     def _set_schema_entries(self) -> None:
         """Converts schema entries into Schem_Entry objects."""
