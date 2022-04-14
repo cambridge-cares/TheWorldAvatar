@@ -1,15 +1,18 @@
 {
     "compilerOptions": {
-        "noImplicitAny": true,
+        "target": "es6",
+        "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": false,
-        "outDir": "../../output"
+        "suppressImplicitAnyIndexErrors": true,
+        "outDir": "./output"
     },
     "include": [
-        "**/*"
+        "src/**/*"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "**/*.spec.ts"
     ]
 }

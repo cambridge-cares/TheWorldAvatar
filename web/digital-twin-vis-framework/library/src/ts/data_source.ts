@@ -1,7 +1,7 @@
 /**
  * This class represents a single source of geographical data within the visualisation.
  */
-class DataSource {
+abstract class DataSource {
 
     /**
      * Unique name/id for this source.
@@ -41,11 +41,17 @@ class DataSource {
             throw new TypeError("'json' must contain a 'type' property with a value supported by the 'DataType' enum.");
         }
 
-        this.#definition = json;
-        this.#name = json["name"];
+        this.definition = json;
+        this.name = json["name"];
+    }    
+
+    hasData() {
+        return !(this.data === null);
     }
 
+    abstract canLoadData(): boolean;
     
+    abstract loadData();
 }
 
 

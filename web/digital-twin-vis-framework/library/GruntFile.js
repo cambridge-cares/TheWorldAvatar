@@ -4,16 +4,7 @@ module.exports = function (grunt) {
         concat: {
             dist: {
                 src: [
-                    "./src/js/control_handler.js",
-                    "./src/js/data_registry.js",
-                    "./src/js/icon_handler.js",
-                    "./src/js/interaction_handler.js",
-                    "./src/js/json_tree.js",
-                    "./src/js/layer_handler.js",
-                    "./src/js/manager.js",
-                    "./src/js/panel_handler.js",
-                    "./src/js/source_handler.js",
-                    "./src/js/timeseries_handler.js"
+                    "./output/**/*.js"
                 ],
                 dest: "./output/dtvf.temp.js"
             }
