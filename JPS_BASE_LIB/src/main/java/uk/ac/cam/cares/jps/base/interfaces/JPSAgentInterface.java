@@ -48,4 +48,10 @@ public interface JPSAgentInterface {
      * @param sparqlUpdate
      */
     void updateStore(String targetResourceID, String sparqlUpdate);
+
+    //Agent Routing
+    
+    String callAgentWithGet(String agentID, JSONObject jsonParameters);
+    
+    String callAgentWithPost(String agentID, String body);
 }

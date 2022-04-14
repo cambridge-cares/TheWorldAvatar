@@ -30,4 +30,6 @@ public interface IKeys {
 	
 	String URL_STOREROUTER_ENDPOINT = "url.storerouter.endpoint";
 	String URL_ACCESSAGENT_HOST = "url.accessagent.host";
+	
+	String URL_AGENTROUTER_ENDPOINT = "url.agentrouter.endpoint";
 }

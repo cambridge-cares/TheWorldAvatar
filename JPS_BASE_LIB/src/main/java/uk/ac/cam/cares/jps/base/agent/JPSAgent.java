@@ -99,4 +99,14 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     public void update(String targetResourceID, String sparqlUpdate) {
     	AccessAgentCaller.update(targetResourceID, sparqlUpdate);
     }
+    
+    // Agent routing
+    
+    public String callAgentWithGet(String agentID, JSONObject jsonParameters) {
+    	return new AgentCaller().getWithJsonParameter(agentID, jsonParameters);
+    }
+    
+    public String callAgentWithPost(String agentID, String body) {
+    	return new AgentCaller().post(agentID, body);
+    }
 }
