@@ -57,6 +57,7 @@ public class DerivedQuantityClientTest {
 	private String entity5 = "http://entity5";
 	private String p_agent = "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#";
 	private String hasOperation = p_agent + "hasOperation";
+	private String hasHttpUrl = p_agent + "hasHttpUrl";
 	private String hasInput = p_agent + "hasInput";
 	private String hasMandatoryPart = p_agent + "hasMandatoryPart";
 	private String hasType = p_agent + "hasType";
@@ -68,6 +69,8 @@ public class DerivedQuantityClientTest {
 	private String input2RdfType = "http://input2/rdftype";
 	private String input1ParentRdfType = "http://input1/parent_rdftype";
 	private String input2ParentRdfType = "http://input2/parent_rdftype";
+	private String derivedAgentOperation2 = "http://derivedagent2/Operation";
+	private List<String> allInstances = Arrays.asList(input1, input2, entity1, entity2, entity3, entity4, entity5);
 
 	@Before
 	public void initialiseSparqlClient() {
@@ -546,13 +549,19 @@ public class DerivedQuantityClientTest {
 
 	@Test
 	public void testValidateDerived() {
-		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
-		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
+		// initialise rdf:type of all instances, so that derivations can be cached
+		OntModel testKG = mockClient.getKnowledgeBase();
+		initRdfType(testKG);
 
-		// inputs do not have timestamps yet
+		// 1. inputs do not have timestamps yet
+		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI,
+				derivedAgentURL, inputs);
+		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2,
+				derivedAgentURL2, Arrays.asList(entity1));
 		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
 
+		// test should pass after added timestamp to pure inputs
 		for (String input : inputs) {
 			devClient.addTimeInstance(input);
 		}
@@ -562,7 +571,7 @@ public class DerivedQuantityClientTest {
 		devClient.dropAllDerivations();
 		devClient.dropAllTimestamps();
 
-		// intentionally create a circular dependency
+		// 2. intentionally create a circular dependency
 		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
 		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
 		devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
@@ -572,7 +581,7 @@ public class DerivedQuantityClientTest {
 		devClient.dropAllDerivations();
 		devClient.dropAllTimestamps();
 
-		// pure inputs part of a derivation
+		// 3. pure inputs part of a derivation
 		for (String input : inputs) {
 			devClient.addTimeInstance(input);
 		}
@@ -580,6 +589,95 @@ public class DerivedQuantityClientTest {
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(
 				e.getMessage().contains("Entities belonging to a derivation should not have timestamps attached"));
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+
+		// 4. sync derivation depend on async - should throw exception
+		devClient.createAsyncDerivation(Arrays.asList(entity1), derivedAgentIRI, inputs, true);
+		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
+		// add triples about agent1 that monitors the async derivation
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation),
+				ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasHttpUrl),
+				ResourceFactory.createResource(derivedAgentURL));
+		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
+		Assert.assertTrue(
+				e.getMessage().contains("depends on asynchronous derivation"));
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+
+		// 5. pure async derivation form a chain for new information
+		// create first asynchronous derivation1
+		String upstreamDerivationIRI = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, inputs);
+		// add triples about agent1 that monitors the async derivation
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation),
+				ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasHttpUrl),
+				ResourceFactory.createResource(derivedAgentURL));
+		// add triples about agent2 that monitors the derivation2 which is one
+		// derivation downstream compared to the derivation1
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI2), ResourceFactory.createProperty(hasOperation),
+				ResourceFactory.createResource(derivedAgentOperation2));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation2), ResourceFactory.createProperty(hasHttpUrl),
+				ResourceFactory.createResource(derivedAgentURL2));
+
+		// now we create the second derivation given the upstream derivation
+		List<String> inputsOfDownstreamDerivation = Arrays.asList(input1, input2, upstreamDerivationIRI);
+		devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2,
+				inputsOfDownstreamDerivation);
+
+		// validation should fail as no timestamp were added for the pure inputs
+		// this is also to check the validateDerivations actually pulled derivaitons
+		// from KG and performed the checks (i.e. entered the recursive loop)
+		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
+		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
+
+		// after added timestamps for pure inputs, validateDerivations should also work
+		// for this type of derivation structure
+		for (String input : inputs) {
+			devClient.addTimeInstance(input);
+		}
+		Assert.assertTrue(devClient.validateDerivations());
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+
+		// 6. mixed a-/sync derivations form a DAG
+		String d0 = devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
+		// create the first async derivaiton (new info) depending on sync derivation d0
+		devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, Arrays.asList(entity1));
+		// add triples about agent1 that monitors the async derivation
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation),
+				ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasHttpUrl),
+				ResourceFactory.createResource(derivedAgentURL));
+		// add triples about agent2 that monitors the derivation2 which is one
+		// derivation downstream compared to the derivation1
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI2), ResourceFactory.createProperty(hasOperation),
+				ResourceFactory.createResource(derivedAgentOperation2));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation2), ResourceFactory.createProperty(hasHttpUrl),
+				ResourceFactory.createResource(derivedAgentURL2));
+
+		// now we create the second derivation given the upstream derivation d0
+		devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, Arrays.asList(entity1));
+
+		// validation should fail as no timestamp were added for the pure inputs
+		// this is also to check the validateDerivations actually pulled derivaitons
+		// from KG and performed the checks (i.e. entered the recursive loop)
+		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
+		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
+
+		// after added timestamps for pure inputs, validateDerivations should also work
+		// for this type of derivation structure
+		for (String input : inputs) {
+			devClient.addTimeInstance(input);
+		}
+		Assert.assertTrue(devClient.validateDerivations());
+
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
 	}
 
 	@Test
@@ -596,21 +694,82 @@ public class DerivedQuantityClientTest {
 		Assert.assertNull(testKG.getIndividual(derivation));
 
 		// case 2: with time series
-		derivation = devClient.createDerivationWithTimeSeries(entities, derivation, derivation, inputs);
+		derivation = devClient.createDerivationWithTimeSeries(entities, derivedAgentIRI, derivedAgentURL, inputs);
 		Assert.assertNotNull(testKG.getIndividual(derivation));
 		devClient.dropAllDerivations();
 		Assert.assertNull(testKG.getIndividual(derivation));
 
-		// case 3: both types present
+		// case 3: async derivation
+		derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI,
+				inputs, true);
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		devClient.dropAllDerivations();
+		Assert.assertNull(testKG.getIndividual(derivation));
+
+		// case 3: all three types present
 		derivation = devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL,
 				Arrays.asList(input1));
-		String derivation2 = devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI, derivedAgentURL,
-				Arrays.asList(input2));
+		String derivation2 = devClient.createDerivationWithTimeSeries(Arrays.asList(entity2), derivedAgentIRI,
+				derivedAgentURL, Arrays.asList(input2));
+		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2,
+				Arrays.asList(entity1, entity2));
 		Assert.assertNotNull(testKG.getIndividual(derivation));
 		Assert.assertNotNull(testKG.getIndividual(derivation2));
+		Assert.assertNotNull(testKG.getIndividual(derivation3));
 		devClient.dropAllDerivations();
 		Assert.assertNull(testKG.getIndividual(derivation));
 		Assert.assertNull(testKG.getIndividual(derivation2));
+		Assert.assertNull(testKG.getIndividual(derivation3));
+	}
+
+	@Test
+	public void testDropDerivationsNotOntoAgent() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+
+		// case 1: standard derivation
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		for (String input : inputs) {
+			devClient.addTimeInstance(input);
+		}
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		devClient.dropAllDerivationsNotOntoAgent();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		// triples about agentIRI should not be deleted
+		Assert.assertNotNull(testKG.getIndividual(derivedAgentIRI));
+
+		// case 2: with time series
+		derivation = devClient.createDerivationWithTimeSeries(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		devClient.dropAllDerivationsNotOntoAgent();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		// triples about agentIRI should not be deleted
+		Assert.assertNotNull(testKG.getIndividual(derivedAgentIRI));
+
+		// case 3: async derivation
+		derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI,
+				inputs, true);
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		devClient.dropAllDerivationsNotOntoAgent();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		// triples about agentIRI should not be deleted
+		Assert.assertNotNull(testKG.getIndividual(derivedAgentIRI));
+
+		// case 3: all three types present
+		derivation = devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL,
+				Arrays.asList(input1));
+		String derivation2 = devClient.createDerivationWithTimeSeries(Arrays.asList(entity2), derivedAgentIRI,
+				derivedAgentURL, Arrays.asList(input2));
+		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI,
+				Arrays.asList(entity1, entity2));
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		Assert.assertNotNull(testKG.getIndividual(derivation2));
+		Assert.assertNotNull(testKG.getIndividual(derivation3));
+		devClient.dropAllDerivationsNotOntoAgent();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		Assert.assertNull(testKG.getIndividual(derivation2));
+		Assert.assertNull(testKG.getIndividual(derivation3));
+		// triples about agentIRI should not be deleted
+		Assert.assertNotNull(testKG.getIndividual(derivedAgentIRI));
 	}
 
 	@Test
@@ -652,5 +811,21 @@ public class DerivedQuantityClientTest {
 	@Test
 	public void testCleanUpFinishedDerivationUpdate() {
 
+	}
+
+	////////////////////////////////////////////////////////////
+	// Below are utility functions to reduce code-duplication //
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * This method is requried as now the rdf:type of inputs of derivations are made
+	 * compulsory.
+	 * 
+	 * @param testKG
+	 */
+	public void initRdfType(OntModel testKG) {
+		for (String i : allInstances) {
+			testKG.add(ResourceFactory.createResource(i), RDF.type, ResourceFactory.createResource(i + "/rdftype"));
+		}
 	}
 }

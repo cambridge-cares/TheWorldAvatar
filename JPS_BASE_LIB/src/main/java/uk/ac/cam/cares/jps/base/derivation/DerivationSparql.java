@@ -2244,14 +2244,87 @@ public class DerivationSparql {
 		GraphPattern gp = status.has(hasNewDerivedIRI, newDerivedIRI).optional();
 		GraphPattern asyncStatusGP = GraphPatterns.and(tp1, tp2, gp).optional();
 
-		GraphPattern queryPattern = GraphPatterns.and(belongsToTp, isDerivedFromTp,
-				timestampTp1, timeTpAll1, timeTpAll2,
-				agentTp1, agentTp2, agentTp3, derivationTypeTp, new ValuesPattern(derivationType, derivationTypes),
-				asyncStatusGP);
+		// NOTE: belongsToTp is made optional to accommodate the situation where async
+		// derivations are created for new info, so no outputs are generated yet at the
+		// point we would like to drop all derivations
+		// NOTE: agentTp2 and agentTp3 were made optional to relax the query and update
+		// - this applies when async derivation were generated when no instances about
+		// OntoAgent were written to the KG
+		GraphPattern queryPattern = GraphPatterns.and(
+				new ValuesPattern(derivationType, derivationTypes),
+				isDerivedFromTp, timestampTp1, timeTpAll1, timeTpAll2,
+				agentTp1, derivationTypeTp, agentTp2.optional(), agentTp3.optional(),
+				belongsToTp.optional(), asyncStatusGP);
 
 		modify.delete(belongsToTp, isDerivedFromTp,
 				timestampTp1, timeTpAll1, timeTpAll2,
 				agentTp1, agentTp2, agentTp3, derivationTypeTp, tp1, tp2, tp3).where(queryPattern)
+				.prefix(p_time, p_derived, p_agent);
+
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
+	/**
+	 * works with the Derivation, DerivationWithTimeSeries, and DerivationAsyn
+	 * does not remove timestamps of inputs (technically outside derivation)
+	 * 
+	 * NOTE: compared to method dropAllDerivations(), this method does NOT remove
+	 * triples agent.isA(Service).andHas(hasOperation, operation) and
+	 * operation.isA(Operation).andHas(hasHttpUrl, url) - these triples are part of
+	 * OntoAgent instances that might be needed outside of derivation framework
+	 * 
+	 */
+	void dropAllDerivationsNotOntoAgent() {
+		List<Iri> derivationTypes = Arrays.asList(Derivation, DerivationWithTimeSeries, DerivationAsyn);
+		ModifyQuery modify = Queries.MODIFY();
+
+		SubSelect query = GraphPatterns.select();
+		Variable inputs = query.var();
+		Variable entities = query.var();
+		Variable derivation = query.var();
+		Variable time = query.var();
+		Variable time_unix_iri = query.var();
+		Variable timestamp = query.var();
+		Variable trs = query.var();
+		Variable agent = query.var();
+		Variable derivationType = query.var();
+
+		TriplePattern belongsToTp = entities.has(belongsTo, derivation);
+		TriplePattern isDerivedFromTp = derivation.has(isDerivedFrom, inputs);
+		TriplePattern derivationTypeTp = derivation.isA(derivationType);
+
+		// timestamp
+		TriplePattern timestampTp1 = derivation.has(hasTime, time);
+
+		TriplePattern timeTpAll1 = time.isA(InstantClass).andHas(inTimePosition, time_unix_iri);
+		TriplePattern timeTpAll2 = time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS,
+				trs);
+
+		// agent
+		TriplePattern agentTp1 = derivation.has(isDerivedUsing, agent);
+
+		// DerivationAsyn Status related variables and triples
+		Variable status = query.var();
+		Variable statusType = query.var();
+		Variable newDerivedIRI = query.var();
+		TriplePattern tp1 = derivation.has(hasStatus, status);
+		TriplePattern tp2 = status.isA(statusType);
+		TriplePattern tp3 = status.has(hasNewDerivedIRI, newDerivedIRI);
+		GraphPattern gp = status.has(hasNewDerivedIRI, newDerivedIRI).optional();
+		GraphPattern asyncStatusGP = GraphPatterns.and(tp1, tp2, gp).optional();
+
+		// NOTE: belongsToTp is made optional to accommodate the situation where async
+		// derivations are created for new info, so no outputs are generated yet at the
+		// point we would like to drop all derivations
+
+		GraphPattern queryPattern = GraphPatterns.and(
+				new ValuesPattern(derivationType, derivationTypes),
+				isDerivedFromTp, timestampTp1, timeTpAll1, timeTpAll2,
+				agentTp1, derivationTypeTp, belongsToTp.optional(), asyncStatusGP);
+
+		modify.delete(belongsToTp, isDerivedFromTp,
+				timestampTp1, timeTpAll1, timeTpAll2,
+				agentTp1, derivationTypeTp, tp1, tp2, tp3).where(queryPattern)
 				.prefix(p_time, p_derived, p_agent);
 
 		storeClient.executeUpdate(modify.getQueryString());

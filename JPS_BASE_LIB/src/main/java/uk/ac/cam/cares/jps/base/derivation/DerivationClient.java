@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -465,14 +466,24 @@ public class DerivationClient {
 		if (!this.sparqlClient.validatePureInputs()) {
 			throw new JPSRuntimeException("Entities belonging to a derivation should not have timestamps attached");
 		}
-		List<Derivation> derivations = this.sparqlClient.getDerivations();
+		List<Derivation> derivations = this.sparqlClient.getAllDerivationsInKG();
 
-		// find derivations with entities that are not input of anything (the top nodes)
+		// find derivations (the top nodes) if it meet below criteria
+		// (1) with entities that are not input of anything
+		// (2) don't have any outputs (entities), also no directedDownstream derivations
 		List<Derivation> topNodes = new ArrayList<>();
 		for (Derivation derivation : derivations) {
-			// all entities need to match the condition
-			if (derivation.getEntities().stream().allMatch(e -> !e.isInputToDerivation())) {
-				topNodes.add(derivation);
+			// if derivation has entities, then all entities need to match the condition
+			if (!derivation.getEntities().isEmpty()) {
+				if (derivation.getEntities().stream().allMatch(e -> !e.isInputToDerivation())) {
+					topNodes.add(derivation);
+				}
+			} else {
+				// if the derivation doesn't have entities (outputs), then it MUST not
+				// have any directedDownstream derivations
+				if (derivation.getDirectedDownstreams().isEmpty()) {
+					topNodes.add(derivation);
+				}
 			}
 		}
 
@@ -518,12 +529,30 @@ public class DerivationClient {
 	}
 
 	/**
+	 * drops absolutely everything except for triples with OntoAgent
+	 */
+	public void dropAllDerivationsAndTimestampsNotOntoAgent() {
+		dropAllDerivationsNotOntoAgent();
+		dropAllTimestamps();
+	}
+
+	/**
 	 * clears all derivations from the kg, only removes timestamps directly attached
 	 * to derivations, does not remove timestamps of pure inputs
 	 */
 	public void dropAllDerivations() {
 		this.sparqlClient.dropAllDerivations();
 		LOGGER.info("Dropped all derivations");
+	}
+
+	/**
+	 * clears all derivations from the kg, only removes timestamps directly attached
+	 * to derivations, does not remove timestamps of pure inputs, does not remove
+	 * triples that can be part of OntoAgent
+	 */
+	public void dropAllDerivationsNotOntoAgent() {
+		this.sparqlClient.dropAllDerivationsNotOntoAgent();
+		LOGGER.info("Dropped all derivations but not OntoAgent triples");
 	}
 
 	/**
@@ -1145,27 +1174,37 @@ public class DerivationClient {
 	}
 
 	private void validateDerivation(Derivation derivation, DirectedAcyclicGraph<String, DefaultEdge> graph) {
-		List<Derivation> inputsWithBelongsTo = derivation.getInputsWithBelongsTo();
+		// we also need to consider the derivations that are created for new information
+		// here we assume that the directedUpstream derivation doesn't have outptus yet
+		List<Derivation> allUpstreamDerivations = Stream
+				.concat(derivation.getInputsWithBelongsTo().stream(), derivation.getDirectedUpstreams().stream())
+				.distinct().collect(Collectors.toList());
 
 		if (!graph.containsVertex(derivation.getIri())) {
 			graph.addVertex(derivation.getIri());
 		}
 
-		for (Derivation input : inputsWithBelongsTo) {
-			if (!derivation.isDerivationAsyn() && input.isDerivationAsyn()) {
+		for (Derivation upstream : allUpstreamDerivations) {
+			if (!derivation.isDerivationAsyn() && upstream.isDerivationAsyn()) {
 				// this checking is added to raise an error when a sync derivation is depending
 				// on an async derivation
 				throw new JPSRuntimeException("Synchronous derivation <" + derivation.getIri()
-						+ "> depends on asynchronous derivation <" + input.getIri() + ">.");
+						+ "> depends on asynchronous derivation <" + upstream.getIri() + ">.");
 			}
-			if (!graph.containsVertex(input.getIri())) {
-				graph.addVertex(input.getIri());
-			}
-			if (null != graph.addEdge(derivation.getIri(), input.getIri())) { // will throw an error here if there is
-																				// circular dependency
-				// addEdge will return 'null' if the edge has already been added as DAGs can't
-				// have duplicated edges so we can stop traversing this branch.
-				validateDerivation(input, graph);
+
+			if (graph.addVertex(upstream.getIri()) & (null != graph.addEdge(derivation.getIri(), upstream.getIri()))) {
+				// NOTE the changes made here combined the two condition check into one, this
+				// is to prevent the multiple traverse of the upstream derivation in a DAG
+				// structure as demonstrated in the comments of method
+				// updateMixedAsyncDerivation(Derivation derivation,
+				// DirectedAcyclicGraph<String, DefaultEdge> graph)
+
+				// NOTE Non-short-circuit Operator "&", instead of short-circuit operator "&&"
+				// was used here so that the second condition will ALWAYS be checked, so will
+				// throw an error here if there is circular dependency
+				// addEdge will return 'null' if the edge has already been added as DAGs
+				// can't have duplicated edges so we can stop traversing this branch.
+				validateDerivation(upstream, graph);
 			}
 		}
 
