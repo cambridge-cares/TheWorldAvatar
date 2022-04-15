@@ -1,8 +1,15 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
@@ -11,6 +18,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,7 +37,9 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * 
  * unit tests for getAgentUrl, getDerivationsOf, getStatusType,
  * getNewDerivedIRI, getDerivations(String agentIRI),
- * getDerivationsAndStatusType are provided in
+ * getDerivationsAndStatusType, updateStatusAtJobCompletion,
+ * checkImmediateUpstreamDerivation (wrapper function of method
+ * getUpstreamDerivationsNeedUpdate in DerivationSparql) are provided in
  * DerivedQuantitySparqlTest.java
  * 
  * @author Kok Foong Lee
@@ -56,9 +66,15 @@ public class DerivedQuantityClientTest {
 	private String entity4 = "http://entity4";
 	private String entity5 = "http://entity5";
 	private String p_agent = "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#";
+	private String p_time = "http://www.w3.org/2006/time#";
+	private String OntoAgent_Service = p_agent + "Service";
+	private String OntoAgent_Operation = p_agent + "Operation";
+	private String OntoAgent_MessageContent = p_agent + "MessageContent";
+	private String OntoAgent_MessagePart = p_agent + "MessagePart";
 	private String hasOperation = p_agent + "hasOperation";
 	private String hasHttpUrl = p_agent + "hasHttpUrl";
 	private String hasInput = p_agent + "hasInput";
+	private String hasOutput = p_agent + "hasOutput";
 	private String hasMandatoryPart = p_agent + "hasMandatoryPart";
 	private String hasType = p_agent + "hasType";
 	private String derivedAgentOperation = "http://derivedagent1/Operation";
@@ -647,7 +663,7 @@ public class DerivedQuantityClientTest {
 		// 6. mixed a-/sync derivations form a DAG
 		String d0 = devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
 		// create the first async derivaiton (new info) depending on sync derivation d0
-		devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, Arrays.asList(entity1));
+		String d1 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, Arrays.asList(entity1));
 		// add triples about agent1 that monitors the async derivation
 		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation),
 				ResourceFactory.createResource(derivedAgentOperation));
@@ -661,7 +677,10 @@ public class DerivedQuantityClientTest {
 				ResourceFactory.createResource(derivedAgentURL2));
 
 		// now we create the second derivation given the upstream derivation d0
-		devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, Arrays.asList(entity1));
+		String d2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, Arrays.asList(entity1));
+
+		// and third derivation given the two upstream derivation
+		String d3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI3, Arrays.asList(d1, d2));
 
 		// validation should fail as no timestamp were added for the pure inputs
 		// this is also to check the validateDerivations actually pulled derivaitons
@@ -790,27 +809,365 @@ public class DerivedQuantityClientTest {
 
 	@Test
 	public void testRetrieveAgentInputIRIs() {
-
-	}
-
-	@Test
-	public void testUpdateStatusAtJobCompletion() {
-
-	}
-
-	@Test
-	public void testcheckImmediateUpstreamDerivation() {
-
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// add triples about agent
+		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation),
+				ResourceFactory.createResource(derivedAgentOperation));
+		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput),
+				ResourceFactory.createResource(derivedAgentInputMsgCont));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
+				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
+		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
+				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType),
+				ResourceFactory.createResource(input1));
+		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType),
+				ResourceFactory.createResource(input2));
+		// create async derivation
+		String derivationIRI = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, false);
+		String statusIRI = devClient.sparqlClient.markAsRequested(derivationIRI);
+		JSONObject agentInputs = devClient.retrieveAgentInputIRIs(derivationIRI, derivedAgentIRI);
+		Assert.assertTrue(agentInputs.has(DerivationClient.AGENT_INPUT_KEY));
+		Assert.assertEquals(input1, agentInputs.getJSONObject(DerivationClient.AGENT_INPUT_KEY).getString(input1));
+		Assert.assertEquals(input2, agentInputs.getJSONObject(DerivationClient.AGENT_INPUT_KEY).getString(input2));
+		// async derivation should be marked as InProgress, also has a retrievedInputsAt
+		// timestamp
+		long currentTimestamp = Instant.now().getEpochSecond();
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
+				ResourceFactory.createResource(statusIRI)));
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
+				ResourceFactory.createProperty(RDF.type.getURI()),
+				ResourceFactory.createResource(DerivationSparql.derivednamespace + "InProgress")));
+		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivationIRI),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
+				.asLiteral().getLong();
+		Assert.assertTrue(retrievedInputsAt >= currentTimestamp);
 	}
 
 	@Test
 	public void testGroupSyncDerivationsToUpdate() {
+		List<String> normalD = Arrays.asList("http://d0", "http://d1");
+		List<String> dTS = Arrays.asList("http://d2", "http://d3");
+		List<String> dSync = Stream.concat(normalD.stream(), dTS.stream()).collect(Collectors.toList());
+		List<String> dAsyn = Arrays.asList("http://d4");
 
+		Map<String, List<String>> derivationsToUpdate = new HashMap<>();
+		List<String> syncDerivations = devClient.groupSyncDerivationsToUpdate(derivationsToUpdate);
+		// syncDerivations is empty as nothing are passed
+		Assert.assertTrue(syncDerivations.isEmpty());
+
+		// put only normal Derivation
+		derivationsToUpdate.put(DerivationSparql.ONTODERIVATION_DERIVATION, normalD);
+		syncDerivations = devClient.groupSyncDerivationsToUpdate(derivationsToUpdate);
+		Assert.assertTrue(equalLists(normalD, syncDerivations));
+
+		// put only DerivationWithTimeSeries
+		derivationsToUpdate = new HashMap<>();
+		derivationsToUpdate.put(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES, dTS);
+		syncDerivations = devClient.groupSyncDerivationsToUpdate(derivationsToUpdate);
+		Assert.assertTrue(equalLists(dTS, syncDerivations));
+
+		// put both Derivation and DerivationWithTimeSeries
+		derivationsToUpdate = new HashMap<>();
+		derivationsToUpdate.put(DerivationSparql.ONTODERIVATION_DERIVATION, normalD);
+		derivationsToUpdate.put(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES, dTS);
+		syncDerivations = devClient.groupSyncDerivationsToUpdate(derivationsToUpdate);
+		Assert.assertTrue(equalLists(dSync, syncDerivations));
+
+		// put only DerivationAsyn, nothing should be added
+		derivationsToUpdate = new HashMap<>();
+		derivationsToUpdate.put(DerivationSparql.ONTODERIVATION_DERIVATIONASYN, dAsyn);
+		syncDerivations = devClient.groupSyncDerivationsToUpdate(derivationsToUpdate);
+		Assert.assertTrue(syncDerivations.isEmpty());
+
+		// put DerivationAsyn with normal Derivation and DerivationWithTimeSeries
+		derivationsToUpdate = new HashMap<>();
+		derivationsToUpdate.put(DerivationSparql.ONTODERIVATION_DERIVATION, normalD);
+		derivationsToUpdate.put(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES, dTS);
+		derivationsToUpdate.put(DerivationSparql.ONTODERIVATION_DERIVATIONASYN, dAsyn);
+		syncDerivations = devClient.groupSyncDerivationsToUpdate(derivationsToUpdate);
+		Assert.assertTrue(equalLists(dSync, syncDerivations));
 	}
 
 	@Test
-	public void testCleanUpFinishedDerivationUpdate() {
+	public void testCleanUpFinishedDerivationUpdate_Case1() {
+		// case 1: no downstream derivation, replace existing outputs
 
+		// initialise triples for test
+		OntModel testKG = mockClient.getKnowledgeBase();
+		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+
+		// create derivation
+		String derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, true);
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
+				.asLiteral().getLong();
+
+		// execute clean up
+		devClient.cleanUpFinishedDerivationUpdate(derivation);
+
+		// tests:
+		// there should be no status
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		Assert.assertNull(testKG.getIndividual(statusIRI));
+		// there should be no retrievedTimestampAt
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")));
+		// outputs should be replaced
+		for (String iri : newDerivedIRI) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(iri),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivation)));
+		}
+		// old outputs should be deleted
+		for (String iri : entities) {
+			Assert.assertNull(testKG.getIndividual(iri));
+		}
+		// timestamp should be the same as the one assigned to retrievedInputsAt
+		long newtime = testKG.getIndividual(derivation)
+				.getProperty(ResourceFactory.createProperty(p_time + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "numericPosition")).getLong();
+		Assert.assertEquals(retrievedInputsAt, newtime);
+	}
+
+	@Test
+	public void testCleanUpFinishedDerivationUpdate_Case2() {
+		// case 2: no downstream derivation, generate new info
+
+		// initialise triples for test
+		OntModel testKG = mockClient.getKnowledgeBase();
+		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+
+		// create derivation
+		String derivation = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, inputs);
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
+				.asLiteral().getLong();
+
+		// execute clean up
+		devClient.cleanUpFinishedDerivationUpdate(derivation);
+
+		// tests:
+		// there should be no status
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		Assert.assertNull(testKG.getIndividual(statusIRI));
+		// there should be no retrievedTimestampAt
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")));
+		// outputs should be generated
+		for (String iri : newDerivedIRI) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(iri),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivation)));
+		}
+		// no old outputs were appended to derivation, so they should still exist
+		for (String iri : entities) {
+			Assert.assertNotNull(testKG.getIndividual(iri));
+		}
+		// timestamp should be the same as the one assigned to retrievedInputsAt
+		long newtime = testKG.getIndividual(derivation)
+				.getProperty(ResourceFactory.createProperty(p_time + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "numericPosition")).getLong();
+		Assert.assertEquals(retrievedInputsAt, newtime);
+	}
+
+	@Test
+	public void testCleanUpFinishedDerivationUpdate_Case3() {
+		// case 3: two downstream derivations isDerivedFrom/belongsTo outputs of this
+		// derivation
+
+		// initialise triples for test
+		OntModel testKG = mockClient.getKnowledgeBase();
+		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+
+		// create derivation
+		String derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, true);
+		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, entities);
+		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, entities);
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
+				.asLiteral().getLong();
+
+		// execute clean up
+		devClient.cleanUpFinishedDerivationUpdate(derivation);
+
+		// tests:
+		// there should be no status
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		Assert.assertNull(testKG.getIndividual(statusIRI));
+		// there should be no retrievedTimestampAt
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")));
+		// outputs should be replaced (also connected to the downstream derivations)
+		for (String iri : newDerivedIRI) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(iri),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivation)));
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation2),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(iri)));
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation3),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(iri)));
+		}
+		// old outputs should be deleted
+		for (String iri : entities) {
+			Assert.assertNull(testKG.getIndividual(iri));
+		}
+		// timestamp should be the same as the one assigned to retrievedInputsAt
+		long newtime = testKG.getIndividual(derivation)
+				.getProperty(ResourceFactory.createProperty(p_time + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "numericPosition")).getLong();
+		Assert.assertEquals(retrievedInputsAt, newtime);
+	}
+
+	@Test
+	public void testCleanUpFinishedDerivationUpdate_Case4() {
+		// case 6: directed downstream derivation isDerivedFrom (new info generation)
+
+		// initialise triples for test
+		OntModel testKG = mockClient.getKnowledgeBase();
+		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+
+		// create derivation
+		String derivation = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, inputs);
+		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, Arrays.asList(derivation));
+		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, Arrays.asList(derivation));
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
+				.asLiteral().getLong();
+
+		// execute clean up
+		devClient.cleanUpFinishedDerivationUpdate(derivation);
+
+		// tests:
+		// there should be no status
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		Assert.assertNull(testKG.getIndividual(statusIRI));
+		// there should be no retrievedTimestampAt
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")));
+		// outputs should be generated
+		for (String iri : newDerivedIRI) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(iri),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivation)));
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation2),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(iri)));
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation3),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(iri)));
+		}
+		// no old outputs were appended to derivation, so they should still exist
+		for (String iri : entities) {
+			Assert.assertNotNull(testKG.getIndividual(iri));
+		}
+		// direct connection between derivation2/derivation3 and derivation should be
+		// deleted
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation2),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+				ResourceFactory.createResource(derivation)));
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation3),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+				ResourceFactory.createResource(derivation)));
+		// timestamp should be the same as the one assigned to retrievedInputsAt
+		long newtime = testKG.getIndividual(derivation)
+				.getProperty(ResourceFactory.createProperty(p_time + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "numericPosition")).getLong();
+		Assert.assertEquals(retrievedInputsAt, newtime);
+	}
+
+	@Test
+	public void testCleanUpFinishedDerivationUpdate_Case5() {
+		// case 5: normal and directed downstream derivation co-exist (which should not
+		// exist if the derivations were created correctly by developer, but just in
+		// case)
+
+		// initialise triples for test
+		OntModel testKG = mockClient.getKnowledgeBase();
+		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+
+		// create derivation
+		String derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, true);
+		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, entities);
+		// NOTE here the developer should create derivation3 with entities (only entity1
+		// and entity2) as its inputs, but NOT derivation - this is in fact duplicated
+		// declaration
+		// here we just create it anyway, and see if the framework is able to handle the
+		// situation (correctly update after Finished)
+		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2,
+				Arrays.asList(derivation, entity1, entity2));
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
+				.asLiteral().getLong();
+
+		// execute clean up
+		devClient.cleanUpFinishedDerivationUpdate(derivation);
+
+		// tests:
+		// there should be no status
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		Assert.assertNull(testKG.getIndividual(statusIRI));
+		// there should be no retrievedTimestampAt
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")));
+		// outputs should be replaced
+		for (String iri : newDerivedIRI) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(iri),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivation)));
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation2),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(iri)));
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation3),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(iri)));
+		}
+		// direct connection between derivation3 and derivation should be deleted
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation3),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+				ResourceFactory.createResource(derivation)));
+		// old outputs should be deleted
+		for (String iri : entities) {
+			Assert.assertNull(testKG.getIndividual(iri));
+		}
+		// timestamp should be the same as the one assigned to retrievedInputsAt
+		long newtime = testKG.getIndividual(derivation)
+				.getProperty(ResourceFactory.createProperty(p_time + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(p_time + "numericPosition")).getLong();
+		Assert.assertEquals(retrievedInputsAt, newtime);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -827,5 +1184,91 @@ public class DerivedQuantityClientTest {
 		for (String i : allInstances) {
 			testKG.add(ResourceFactory.createResource(i), RDF.type, ResourceFactory.createResource(i + "/rdftype"));
 		}
+	}
+
+	/**
+	 * This method creates the OntoAgent instances in the KG given information about
+	 * the agent I/O signature.
+	 * 
+	 * @param testKG
+	 * @param service
+	 * @param httpUrl
+	 * @param inputTypes
+	 * @param outputTypes
+	 */
+	public void createOntoAgentInstance(OntModel testKG, String service, String httpUrl, List<String> inputTypes,
+			List<String> outputTypes) {
+		String operation = "http://" + "Operation_" + UUID.randomUUID().toString();
+		String mcInput = "http://" + "MCInput_" + UUID.randomUUID().toString();
+		String mcOutput = "http://" + "MCOutput_" + UUID.randomUUID().toString();
+
+		testKG.add(ResourceFactory.createResource(service), RDF.type,
+				ResourceFactory.createResource(OntoAgent_Service));
+		testKG.add(ResourceFactory.createResource(service), ResourceFactory.createProperty(hasOperation),
+				ResourceFactory.createResource(operation));
+		testKG.add(ResourceFactory.createResource(operation), RDF.type,
+				ResourceFactory.createResource(OntoAgent_Operation));
+		testKG.add(ResourceFactory.createResource(operation), ResourceFactory.createProperty(hasInput),
+				ResourceFactory.createResource(mcInput));
+		testKG.add(ResourceFactory.createResource(operation), ResourceFactory.createProperty(hasOutput),
+				ResourceFactory.createResource(mcOutput));
+		testKG.add(ResourceFactory.createResource(operation), ResourceFactory.createProperty(hasHttpUrl),
+				ResourceFactory.createResource(httpUrl));
+
+		testKG.add(ResourceFactory.createResource(mcInput), RDF.type,
+				ResourceFactory.createResource(OntoAgent_MessageContent));
+		for (String input : inputTypes) {
+			String mpInput = "http://" + "MPInput_" + UUID.randomUUID().toString();
+			testKG.add(ResourceFactory.createResource(mcInput), ResourceFactory.createProperty(hasMandatoryPart),
+					ResourceFactory.createResource(mpInput));
+
+			testKG.add(ResourceFactory.createResource(mpInput), RDF.type,
+					ResourceFactory.createResource(OntoAgent_MessagePart));
+			testKG.add(ResourceFactory.createResource(mpInput), ResourceFactory.createProperty(hasType),
+					ResourceFactory.createResource(input));
+		}
+
+		testKG.add(ResourceFactory.createResource(mcOutput), RDF.type,
+				ResourceFactory.createResource(OntoAgent_MessageContent));
+		for (String output : outputTypes) {
+			String mpOutput = "http://" + "MPOutput_" + UUID.randomUUID().toString();
+			testKG.add(ResourceFactory.createResource(mcOutput), ResourceFactory.createProperty(hasMandatoryPart),
+					ResourceFactory.createResource(mpOutput));
+
+			testKG.add(ResourceFactory.createResource(mpOutput), RDF.type,
+					ResourceFactory.createResource(OntoAgent_MessagePart));
+			testKG.add(ResourceFactory.createResource(mpOutput), ResourceFactory.createProperty(hasType),
+					ResourceFactory.createResource(output));
+		}
+	}
+
+	public List<String> initForCleanUpTests(OntModel testKG) {
+		initRdfType(testKG);
+		String entity1_new = entity1 + "new";
+		String entity2_new = entity2 + "new";
+		List<String> newDerivedIRI = Arrays.asList(entity1_new, entity2_new);
+		testKG.add(ResourceFactory.createResource(entity1_new), RDF.type,
+				ResourceFactory.createResource(entity1 + "/rdftype"));
+		testKG.add(ResourceFactory.createResource(entity2_new), RDF.type,
+				ResourceFactory.createResource(entity2 + "/rdftype"));
+		createOntoAgentInstance(testKG, derivedAgentIRI, derivedAgentURL,
+				Arrays.asList(input1 + "/rdftype", input2 + "/rdftype"),
+				Arrays.asList(entity1 + "/rdftype", entity2 + "/rdftype"));
+		createOntoAgentInstance(testKG, derivedAgentIRI2, derivedAgentURL2,
+				Arrays.asList(entity1 + "/rdftype", entity2 + "/rdftype"),
+				Arrays.asList(entity3 + "/rdftype", entity4 + "/rdftype"));
+		return newDerivedIRI;
+	}
+
+	public boolean equalLists(List<String> a, List<String> b) {
+		if (a == null && b == null) {
+			return true;
+		}
+		if ((a == null && b != null) || (a != null && b == null) || (a.size() != b.size())) {
+			return false;
+		}
+		Collections.sort(a);
+		Collections.sort(b);
+		return a.equals(b);
 	}
 }
