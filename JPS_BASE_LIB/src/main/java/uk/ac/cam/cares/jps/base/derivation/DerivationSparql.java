@@ -1772,6 +1772,63 @@ public class DerivationSparql {
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 
+	/**
+	 * This method reconnects inputs to derivations, updates the timestamp of the
+	 * given derivation with given value, also delete the status of the given
+	 * derivation if the status exist.
+	 * 
+	 * @param inputs
+	 * @param derivations
+	 * @param derivation
+	 * @param timestamp
+	 */
+	void reconnectInputsUpdateTimestampDeleteStatus(List<String> inputs, List<String> derivations, String derivation,
+			Long timestamp) {
+		if (inputs.size() != derivations.size()) {
+			throw new JPSRuntimeException("reconnectInputsUpdateTimestampDeleteStatus has incorrect inputs");
+		}
+
+		ModifyQuery modify = Queries.MODIFY();
+
+		// prepare the inputs to be connected with derivations
+		for (int i = 0; i < inputs.size(); i++) {
+			modify.insert(iri(derivations.get(i)).has(isDerivedFrom, iri(inputs.get(i))));
+		}
+
+		// obtain time IRI and status IRI through sub query
+		SubSelect sub = GraphPatterns.select();
+
+		Variable timeIRI = sub.var();
+		Variable unixtimeIRI = SparqlBuilder.var("timeIRI");
+		Variable oldvalue = SparqlBuilder.var("oldvalue");
+		Variable status = SparqlBuilder.var("status");
+		Variable type = SparqlBuilder.var("statusType");
+		Variable newDerivedIRI = SparqlBuilder.var("newDerivedIRI");
+
+		// timestamp query pattern
+		GraphPattern tsQueryPattern = GraphPatterns.and(iri(derivation).has(hasTime, timeIRI),
+				timeIRI.has(inTimePosition, unixtimeIRI),
+				unixtimeIRI.has(numericPosition, oldvalue));
+		// status-related patterns
+		TriplePattern tp1 = iri(derivation).has(hasStatus, status);
+		TriplePattern tp2 = status.isA(type);
+		TriplePattern tp3 = status.has(hasNewDerivedIRI, newDerivedIRI);
+		GraphPattern statusQueryPattern = GraphPatterns.and(tp1, tp2, tp3.optional());
+
+		// timestamp-related triples to add and delete
+		TriplePattern delete_tp = unixtimeIRI.has(numericPosition, oldvalue);
+		TriplePattern insert_tp = unixtimeIRI.has(numericPosition, timestamp);
+
+		sub.select(unixtimeIRI, oldvalue, status, type, newDerivedIRI).where(tsQueryPattern,
+				statusQueryPattern.optional()); // statusQueryPattern is made optional
+
+		modify.prefix(p_time, p_derived).delete(delete_tp, tp1, tp2, tp3).insert(insert_tp).where(sub);
+
+		System.out.println(modify.getQueryString());
+		storeClient.setQuery(modify.getQueryString());
+		storeClient.executeUpdate();
+	}
+
 	void deleteDirectConnectionBetweenDerivations(Map<String, String> derivationPairMap) {
 		ModifyQuery modify = Queries.MODIFY();
 		derivationPairMap.forEach((downstream, upstream) -> {

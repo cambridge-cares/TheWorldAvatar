@@ -989,7 +989,7 @@ public class DerivationClient {
 				derivation.setTimestamp(agentResponse.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY));
 
 				// if it is a derived quantity with time series, there will be no changes to the
-				// instances
+				// instances, only timestamp will be updated
 				if (!derivation.isDerivationWithTimeSeries()) {
 					// collect new instances created by agent
 					List<String> newEntitiesString = derivationOutputs.getNewDerivedIRI();
@@ -1040,17 +1040,20 @@ public class DerivationClient {
 								derivationsToReconnect.add(derivationToReconnect.getIri());
 							});
 						}
-						// update triple-store and cached data
-						this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);
+						// NOTE difference 4 - update timestamp after the update of every derivation
+						// so here we reconnect inputs to derivation instances, update timestamp, delete
+						// status (for sync in mixed type DAGs) in one-go
+						this.sparqlClient.reconnectInputsUpdateTimestampDeleteStatus(newInputs, derivationsToReconnect,
+								derivation.getIri(), derivation.getTimestamp());
+						// also update cached data
 						derivation.replaceEntities(newEntities);
 					}
+				} else {
+					// NOTE difference 5 - update timestamp of DerivationWithTimeSeries after the
+					// update, also delete status if there's any (for sync in mixed type DAGs)
+					this.sparqlClient.reconnectInputsUpdateTimestampDeleteStatus(new ArrayList<>(), new ArrayList<>(),
+							derivation.getIri(), derivation.getTimestamp());
 				}
-				// NOTE difference 4 - update timestamp after the update of every derivation
-				Map<String, Long> derivationTime_map = new HashMap<>();
-				derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
-				this.sparqlClient.updateTimestamps(derivationTime_map);
-				// NOTE difference 5 - delete status if there's any (for sync in mixed)
-				this.sparqlClient.deleteStatus(derivation.getIri());
 				// if there are no errors, assume update is successful
 				derivation.setUpdateStatus(true);
 			}
