@@ -49,6 +49,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class DerivedQuantityClientTest {
 	private MockDevStoreClient mockClient;
 	private DerivationClient devClient;
+	private final String derivationInstanceBaseURL = "http://derivationclient/test/";
 	private String entity1 = "http://entity1";
 	private String entity2 = "http://entity2";
 	private List<String> entities = Arrays.asList(entity1, entity2);
@@ -92,7 +93,7 @@ public class DerivedQuantityClientTest {
 	public void initialiseSparqlClient() {
 		OntModel kb = ModelFactory.createOntologyModel();
 		mockClient = new MockDevStoreClient(kb);
-		devClient = new DerivationClient(mockClient);
+		devClient = new DerivationClient(mockClient, derivationInstanceBaseURL);
 	}
 
 	@After
@@ -103,7 +104,7 @@ public class DerivedQuantityClientTest {
 	@Test
 	public void testConstructor() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		RemoteStoreClient kbClient = new RemoteStoreClient();
-		DerivationClient client = new DerivationClient(kbClient);
+		DerivationClient client = new DerivationClient(kbClient, derivationInstanceBaseURL);
 		// Retrieve the value of the private field 'kbClient' of the client
 		Field kbc = client.getClass().getDeclaredField("kbClient");
 		kbc.setAccessible(true);
