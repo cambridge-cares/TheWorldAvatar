@@ -40,7 +40,9 @@ public class InitialiseInstances extends JPSAgent{
 	
 	private static String average_agent_iri = SparqlClient.namespace + "average_agent";
  	private static String average_agent_url = baseURL + AverageAgent.URL_AVERAGE;
-	
+
+	public static final String derivationInstanceBaseURL = "http://derivationexample.com/triplestore/repository/";
+
 	private static final Logger LOGGER = LogManager.getLogger(InitialiseInstances.class);
     
 	@Override
@@ -48,7 +50,7 @@ public class InitialiseInstances extends JPSAgent{
 		Config.initProperties();
     	RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
     	SparqlClient sparqlClient = new SparqlClient(storeClient);
-    	DerivationClient devClient = new DerivationClient(storeClient);
+		DerivationClient devClient = new DerivationClient(storeClient, derivationInstanceBaseURL);
     	
     	LOGGER.info("Initialising new instances, all existing instances will get deleted");
     	sparqlClient.clearKG();

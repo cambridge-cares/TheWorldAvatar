@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.derivation.example;
 
-import java.util.Arrays;
-
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +22,7 @@ public class UpdateDerivations extends JPSAgent{
     public JSONObject processRequestParameters(JSONObject requestParams) {
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-		DerivationClient devClient = new DerivationClient(storeClient);
+		DerivationClient devClient = new DerivationClient(storeClient, InitialiseInstances.derivationInstanceBaseURL);
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		
 		// method updateAllSyncDerivations makes use of DerivationInputs/DerivationOutputs/DerivationAgent

@@ -76,7 +76,7 @@ public class IntegrationTest {
 		String derived_diff = initResponse.getString("derivation of difference");
 		String derived_average = initResponse.getString("derivation of average");
 		
-		DerivationSparql devClient = new DerivationSparql(storeClient);
+		DerivationSparql devClient = new DerivationSparql(storeClient, InitialiseInstances.derivationInstanceBaseURL);
 		
 		Method getTimestamp = devClient.getClass().getDeclaredMethod("getTimestamp", String.class);
 		getTimestamp.setAccessible(true);
