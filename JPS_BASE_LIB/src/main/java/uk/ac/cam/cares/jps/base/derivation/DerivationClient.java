@@ -966,28 +966,33 @@ public class DerivationClient {
 				// calling agent to create a new instance
 				String agentURL = derivation.getAgentURL();
 				JSONObject requestParams = new JSONObject();
-				// NOTE difference 6 - pass in the derivation agent inputs
+				// NOTE difference 2 - pass in the derivation agent inputs
 				JSONObject inputsMapJson = derivation.getAgentInputsMap();
 				requestParams.put(AGENT_INPUT_KEY, inputsMapJson);
 				requestParams.put(BELONGSTO_KEY, derivation.getEntitiesIri()); // IRIs of belongsTo
 
 				LOGGER.debug("Updating <" + derivation.getIri() + "> using agent at <" + agentURL
 						+ "> with http request " + requestParams);
-				// NOTE difference 2 - timestamp is now recorded at the agent side when it
+				// NOTE difference 3 - timestamp is now recorded at the agent side when it
 				// receives request
 				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
 
 				LOGGER.debug("Obtained http response from agent: " + response);
 
-				// NOTE difference 7 - the response is processed as Derivation outputs for both
+				// NOTE difference 4 - the response is processed as Derivation outputs for both
 				// Derivation and DerivationWithTimeSeries
 				JSONObject agentResponse = new JSONObject(response);
 				DerivationOutputs derivationOutputs = new DerivationOutputs(
 					agentResponse.getJSONObject(AGENT_OUTPUT_KEY));
-				// NOTE difference 3 - the timestamp is read from the agent response
+				// NOTE difference 5 - the timestamp is read from the agent response
 				// set the timestamp
 				derivation.setTimestamp(agentResponse.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY));
 
+				// NOTE difference 6 - here we create lists to be used when reconnecting
+				// inputs and updating cached data
+				List<String> newInputs = new ArrayList<>();
+				List<String> derivationsToReconnect = new ArrayList<>();
+				List<Entity> newEntities = new ArrayList<>();
 				// if it is a derived quantity with time series, there will be no changes to the
 				// instances, only timestamp will be updated
 				if (!derivation.isDerivationWithTimeSeries()) {
@@ -1007,16 +1012,16 @@ public class DerivationClient {
 					List<Entity> inputToAnotherDerivation = derivation.getEntities()
 							.stream().filter(e -> e.isInputToDerivation()).collect(Collectors.toList());
 
-					List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
-
 					if (inputToAnotherDerivation.size() > 0) {
+						// NOTE difference 7 - initialiseNewEntities will only be called if
+						// inputToAnotherDerivation.size() > 0, as it is not used under other situations
+						newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
 						LOGGER.debug(
 								"This derivation contains at least one entity which is an input to another derivation");
 						LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
 						// after deleting the old entity, we need to make sure that it remains linked to
 						// the appropriate derived instance
-						List<String> newInputs = new ArrayList<>();
-						List<String> derivationsToReconnect = new ArrayList<>();
+
 						for (Entity oldInput : inputToAnotherDerivation) {
 							// find within new Entities with the same rdf:type
 							List<Entity> matchingEntity = newEntities.stream()
@@ -1040,19 +1045,16 @@ public class DerivationClient {
 								derivationsToReconnect.add(derivationToReconnect.getIri());
 							});
 						}
-						// NOTE difference 4 - update timestamp after the update of every derivation
-						// so here we reconnect inputs to derivation instances, update timestamp, delete
-						// status (for sync in mixed type DAGs) in one-go
-						this.sparqlClient.reconnectInputsUpdateTimestampDeleteStatus(newInputs, derivationsToReconnect,
-								derivation.getIri(), derivation.getTimestamp());
-						// also update cached data
-						derivation.replaceEntities(newEntities);
 					}
-				} else {
-					// NOTE difference 5 - update timestamp of DerivationWithTimeSeries after the
-					// update, also delete status if there's any (for sync in mixed type DAGs)
-					this.sparqlClient.reconnectInputsUpdateTimestampDeleteStatus(new ArrayList<>(), new ArrayList<>(),
-							derivation.getIri(), derivation.getTimestamp());
+				}
+				// NOTE difference 8 - update timestamp after the update of every derivation
+				// so here we reconnect inputs to derivation instances, update timestamp, delete
+				// status (for sync in mixed type DAGs) in one-go
+				this.sparqlClient.reconnectInputsUpdateTimestampDeleteStatus(newInputs, derivationsToReconnect,
+						derivation.getIri(), derivation.getTimestamp());
+				// also update cached data if newEntities were generated
+				if (!newEntities.isEmpty()) {
+					derivation.replaceEntities(newEntities);
 				}
 				// if there are no errors, assume update is successful
 				derivation.setUpdateStatus(true);
