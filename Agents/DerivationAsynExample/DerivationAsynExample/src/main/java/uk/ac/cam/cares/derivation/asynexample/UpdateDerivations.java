@@ -51,17 +51,4 @@ public class UpdateDerivations extends JPSAgent {
 		
 		return response;
 	}
-
-	public static void main(String[] args) {
-		String kgUrl = "http://localhost:62232/blazegraph/namespace/kb/sparql";
-		RemoteStoreClient storeClient;
-		DerivationClient devClient;
-		SparqlClient sparqlClient;
-		Config.initProperties();
-		storeClient = new RemoteStoreClient(kgUrl, kgUrl);
-		devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
-		sparqlClient = new SparqlClient(storeClient);
-		UpdateDerivations updateDerivations = new UpdateDerivations();
-		updateDerivations.updateDerivations(sparqlClient, devClient);
-	}
 }

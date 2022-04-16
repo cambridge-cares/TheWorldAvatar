@@ -23,7 +23,6 @@ public class UpdateDerivations extends JPSAgent{
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 		DerivationClient devClient = new DerivationClient(storeClient, InitialiseInstances.derivationInstanceBaseURL);
-		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		
 		// method updateAllSyncDerivations makes use of DerivationInputs/DerivationOutputs/DerivationAgent
 		devClient.updateAllSyncDerivations();
@@ -34,22 +33,5 @@ public class UpdateDerivations extends JPSAgent{
 		JSONObject response = new JSONObject();
 		response.put("status", res_msg);
 		return response;
-	}
-
-	public static void main(String[] args) {
-		Config.initProperties();
-		String endpoint = "http://localhost:8889/blazegraph/namespace/kb/sparql";
-		RemoteStoreClient storeClient = new RemoteStoreClient(endpoint,endpoint,Config.kguser,Config.kgpassword);
-		DerivationClient devClient = new DerivationClient(storeClient);
-		SparqlClient sparqlClient = new SparqlClient(storeClient);
-		
-		// method updateAllSyncDerivations makes use of DerivationInputs/DerivationOutputs/DerivationAgent
-		devClient.updateAllSyncDerivations();
-		
-		String res_msg = "Updated derivations";
-		LOGGER.info(res_msg);
-		
-		JSONObject response = new JSONObject();
-		response.put("status", res_msg);
 	}
 }

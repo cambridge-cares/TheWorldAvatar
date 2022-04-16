@@ -1824,7 +1824,6 @@ public class DerivationSparql {
 
 		modify.prefix(p_time, p_derived).delete(delete_tp, tp1, tp2, tp3).insert(insert_tp).where(sub);
 
-		System.out.println(modify.getQueryString());
 		storeClient.setQuery(modify.getQueryString());
 		storeClient.executeUpdate();
 	}

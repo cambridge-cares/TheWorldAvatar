@@ -1808,11 +1808,8 @@ public class DerivedQuantitySparqlTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
 
-		System.out.println(derivationIRIs);
 		for (int i = 0; i < derivationIRIs.size(); i++) {
-			System.out.println(derivationIRIs.get(i));
 			List<Derivation> ds = devClient.getAllDerivationsInKG();
-			System.out.println(ds);
 			Derivation derivation = devClient.getDerivation(derivationIRIs.get(i));
 			// inputs
 			Assert.assertTrue(equalLists(inputsListDAG5.get(i), derivation.getAgentInputs()));

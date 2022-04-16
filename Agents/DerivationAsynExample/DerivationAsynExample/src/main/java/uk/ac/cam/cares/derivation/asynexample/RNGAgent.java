@@ -2,7 +2,6 @@ package uk.ac.cam.cares.derivation.asynexample;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -111,14 +110,5 @@ public class RNGAgent extends DerivationAgent {
 		}, Config.initDelayAgentRNG, Config.periodAgentRNG, TimeUnit.SECONDS);
 		LOGGER.info("\n---------------------- Random Number Generator (RNG) Agent is monitoring derivation instance ----------------------\n");
 		System.out.println("\n---------------------- Random Number Generator (RNG) Agent is monitoring derivation instance ----------------------\n");
-	}
-
-	public static void main(String[] args) {
-		String endpoint = "http://localhost:53180/blazegraph/namespace/kb/sparql";
-		StoreClientInterface storeClient = new RemoteStoreClient(endpoint, endpoint);
-		String derivationInstanceBaseURL = "https://www.derivationasynexample.com/triplestore/repository/";
-		RNGAgent agent = new RNGAgent(storeClient, derivationInstanceBaseURL);
-		String agentIRI = "http://www.theworldavatar.com/kb/agents/Service__RNG#Service";
-		agent.monitorDerivation(agentIRI);
 	}
 }

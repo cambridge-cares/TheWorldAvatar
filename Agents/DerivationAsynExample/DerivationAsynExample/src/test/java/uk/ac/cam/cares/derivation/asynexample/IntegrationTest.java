@@ -182,23 +182,11 @@ public class IntegrationTest extends TestCase {
         Assert.assertEquals(currentTimestamp_minvalue_derivation, 0);
         Assert.assertEquals(currentTimestamp_rng_derivation, 0);
 
-        // // get IRIs of initialise instances, the keys are located in the servlet InitialiseInstances
-        // // instances
-        // String listofrandompoints_instance = response.getString("ListOfRandomPoints instance");
-        // String maxvalue_instance = response.getString("MaxValue instance");
-        // String minvalue_instance = response.getString("MinValue instance");
-        // String difference_instance = response.getString("Difference instance");
-        
         // test that NO instance should be created for each type of derived quantities
         Assert.assertTrue(sparqlClient.getListOfRandomPointsIRI().isEmpty());
         Assert.assertTrue(sparqlClient.getMaxValueIRI().isEmpty());
         Assert.assertTrue(sparqlClient.getMinValueIRI().isEmpty());
         Assert.assertTrue(sparqlClient.getDifferenceIRI().isEmpty());
-        
-        // // test if the derived quantities are initiliased with predefined value
-        // Assert.assertEquals(0, sparqlClient.getValue(maxvalue_instance));
-        // Assert.assertEquals(0, sparqlClient.getValue(minvalue_instance));
-        // Assert.assertEquals(0, sparqlClient.getValue(difference_instance));
 
         // test if all derivations were marked as Requested
         Assert.assertEquals(StatusType.REQUESTED, (StatusType) getStatusType.invoke(devSparql, difference_derivation));

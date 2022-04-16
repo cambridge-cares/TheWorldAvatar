@@ -2,20 +2,14 @@ package uk.ac.cam.cares.derivation.example;
 
 import javax.ws.rs.BadRequestException;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;

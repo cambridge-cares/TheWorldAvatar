@@ -89,13 +89,4 @@ public class DifferenceAgent extends DerivationAgent {
 		LOGGER.info("\n---------------------- Difference Agent is monitoring derivation instance ----------------------\n");
 		System.out.println("\n---------------------- Difference Agent is monitoring derivation instance ----------------------\n");
 	}
-
-	public static void main(String[] args) {
-		String endpoint = "http://localhost:54506/blazegraph/namespace/kb/sparql";
-		StoreClientInterface storeClient = new RemoteStoreClient(endpoint, endpoint);
-		String derivationInstanceBaseURL = "https://www.derivationasynexample.com/triplestore/repository/";
-		DifferenceAgent agent = new DifferenceAgent(storeClient, derivationInstanceBaseURL);
-		String agentIRI = "http://www.theworldavatar.com/kb/agents/Service__Difference#Service";
-		agent.monitorDerivation(agentIRI);
-	}
 }

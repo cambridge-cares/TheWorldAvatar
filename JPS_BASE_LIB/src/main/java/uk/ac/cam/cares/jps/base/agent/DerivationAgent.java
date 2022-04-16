@@ -1,18 +1,11 @@
 package uk.ac.cam.cares.jps.base.agent;
 
 import java.time.Instant;
-import java.io.IOException;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
-import org.apache.http.client.methods.HttpGet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -58,31 +51,6 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 		this.storeClient = storeClient;
 		this.devClient = new DerivationClient(storeClient, derivationInstanceBaseURL);
 	}
-
-	// @Override
-	// protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws
-	// ServletException, IOException {
-	// System.out.println(req.toString());
-	// JSONObject requestJson = processHttpServletRequest(req);
-	// if (validateInput(requestJson)) {
-	// // serialises DerivationInputs objects from JSONObject
-	// DerivationInputs inputs = new DerivationInputs(requestJson);
-	// long timestamp = Instant.now().getEpochSecond();
-	// // apply agent logic to convert inputs to outputs
-	// DerivationOutputs outputs = processRequestParameters(inputs);
-	// // set timestamp before the outputs were returned
-	// outputs.setRetrievedInputsAt(timestamp);
-	// // deserialises DerivationOutputs objects to JSONObject as HTTP response
-	// resp.getWriter().write(outputs.toJson().toString());
-	// }
-	// }
-
-	// private JSONObject processHttpServletRequest(HttpServletRequest req) {
-	// if (req.getMethod().equals(HttpGet.METHOD_NAME)) {
-	// return new JSONObject(req.getParameter(DerivationClient.AGENT_INPUT_KEY));
-	// }
-	// return new JSONObject();
-	// }
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -136,7 +104,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 		// sync derivations <isDerivedUsing> agentIRI will be handled as HTTP requests
 		Map<String, StatusType> derivationsAndStatusType = devClient.getDerivationsAndStatusType(agentIRI);
 		if (derivationsAndStatusType.isEmpty()) {
-			LOGGER.info("Currently, no derivation <isDerivedUsing> <" + agentIRI + ">.");
+			LOGGER.info("Currently, no asynchronous derivation <isDerivedUsing> <" + agentIRI + ">.");
 		} else {
 			LOGGER.info("A list of derivations that <isDerivedUsing> <" + agentIRI + "> are retrieved: "
 					+ derivationsAndStatusType.toString() + ".");
@@ -154,7 +122,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 							.containsKey(DerivationSparql.ONTODERIVATION_DERIVATIONASYN)) {
 						// if any of upstream async derivations are still outdated, skip
 						LOGGER.info("Derivation <" + derivation
-								+ "> has a list of immediate upstream derivations to be updated: "
+								+ "> has a list of immediate upstream asynchronous derivations to be updated: "
 								+ immediateUpstreamDerivationToUpdate.toString());
 					} else {
 						// here implies all the immediate upstream async derivations are up-to-date
@@ -200,17 +168,5 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 					break;
 			}
 		});
-	}
-
-	public static void main(String[] args) {
-		Map<String, List<String>> map = new HashMap<>();
-		System.out.println(map.containsKey("arg0"));
-		System.out.println(map);
-		System.out.println(map.isEmpty());
-		if (map.containsKey("arg0")) {
-			System.out.println("yes");
-		} else {
-			System.out.println("no");
-		}
 	}
 }

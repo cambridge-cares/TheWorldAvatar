@@ -90,13 +90,4 @@ public class MaxValueAgent extends DerivationAgent {
 		LOGGER.info("\n---------------------- Max Value Agent is monitoring derivation instance ----------------------\n");
 		System.out.println("\n---------------------- Max Value Agent is monitoring derivation instance ----------------------\n");
 	}
-
-	public static void main(String[] args) {
-		String endpoint = "http://localhost:53226/blazegraph/namespace/kb/sparql";
-		StoreClientInterface storeClient = new RemoteStoreClient(endpoint, endpoint);
-		String derivationInstanceBaseURL = "https://www.derivationasynexample.com/triplestore/repository/";
-		MaxValueAgent agent = new MaxValueAgent(storeClient, derivationInstanceBaseURL);
-		String agentIRI = "http://www.theworldavatar.com/kb/agents/Service__MaxValue#Service";
-		agent.monitorDerivation(agentIRI);
-	}
 }
