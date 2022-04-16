@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -39,21 +40,21 @@ public class InitialiseInstances extends JPSAgent {
 	static final String API_PATTERN_5 = "/InitialiseInstances_5";
 	static final String API_PATTERN_6 = "/InitialiseInstances_6";
 
-	private final int upper_limit_value = 20;
-	private final int lower_limit_value = 3;
-	private final int number_of_points = 6;
+	public static final int upper_limit_value = 20;
+	public static final int lower_limit_value = 3;
+	public static final int number_of_points = 6;
 
-	private static final String upper_limit_instance_key = "UpperLimit instance";
-	private static final String lower_limit_instance_key = "LowerLimit instance";
-	private static final String num_of_pts_instance_key = "NumberOfPoints instance";
-	private static final String list_rand_pts_instance_key = "ListOfRandomPoints instance";
-	private static final String maxvalue_instance_key = "MaxValue instance";
-	private static final String minvalue_instance_key = "MinValue instance";
-	private static final String difference_instance_key = "Difference instance";
-	private static final String rng_dev_key = "RandomNumberGeneration Derivation";
-	private static final String max_dev_key = "MaxValue Derivation";
-	private static final String min_dev_key = "MinValue Derivation";
-	private static final String diff_dev_key = "Difference Derivation";
+	public static final String upper_limit_instance_key = "UpperLimit instance";
+	public static final String lower_limit_instance_key = "LowerLimit instance";
+	public static final String num_of_pts_instance_key = "NumberOfPoints instance";
+	public static final String list_rand_pts_instance_key = "ListOfRandomPoints instance";
+	public static final String maxvalue_instance_key = "MaxValue instance";
+	public static final String minvalue_instance_key = "MinValue instance";
+	public static final String difference_instance_key = "Difference instance";
+	public static final String rng_dev_key = "RandomNumberGeneration Derivation";
+	public static final String max_dev_key = "MaxValue Derivation";
+	public static final String min_dev_key = "MinValue Derivation";
+	public static final String diff_dev_key = "Difference Derivation";
 
 	private static final String PATTERN_NOT_SUPPORTED_KEY = "Pattern not supported";
 
@@ -89,20 +90,19 @@ public class InitialiseInstances extends JPSAgent {
 				response.put(PATTERN_NOT_SUPPORTED_KEY, "Servlet pattern NOT supported.");
 		}
 
-		// check all connections between the derived quantities
-		// as the validate method traverse down, checking difference derivation checks
-		// all other derivations in the chain
-		// TODO update validateDerivations for NEW_INFO mode
-		// LOGGER.info("Validating derivations: " + rng_dev + ", " + max_dev + ", " +
-		// min_dev + ", and " + diff_dev);
-		// try {
-		// devClient.validateDerivations();
-		// LOGGER.info("Validated chain of derivations successfully");
-		// } catch (Exception e) {
-		// LOGGER.error("Validation failure for chain of derivations: " +
-		// e.getMessage());
-		// throw new JPSRuntimeException(e);
-		// }
+		// check all connections between all derivations
+		// the method validateDerivations() validates all derivations in the KG
+		LOGGER.info(
+				"Validating derivations: " + response.getString(rng_dev_key) + ", " + response.getString(max_dev_key)
+						+ ", " + response.getString(min_dev_key) + ", and " + response.getString(diff_dev_key));
+		try {
+			devClient.validateDerivations();
+			LOGGER.info("Validated chain of derivations successfully");
+		} catch (Exception e) {
+			LOGGER.error("Validation failure for chain of derivations: " +
+					e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
 
 		// invoke all asynchronous agents so that they can be initialised
 		AgentCaller.executeGet(Config.agentHttpUrlRNG);
