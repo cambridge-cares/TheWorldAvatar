@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,6 +10,8 @@ import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class DerivationInputs {
 	private Map<String, List<String>> inputs;
@@ -33,7 +36,10 @@ public class DerivationInputs {
 			if (val instanceof JSONArray) {
 				map.put(key, ((JSONArray) val).toList().stream().map(iri -> (String) iri).collect(Collectors.toList()));
 			} else if (val instanceof String) {
-				map.put(key, Arrays.asList((String) val));
+				map.put(key, new ArrayList<>(Arrays.asList((String) val)));
+			} else {
+				throw new JPSRuntimeException("Serilise the given JSONObject to DerivationInputs is not supported:"
+						+ mappedInputs.toString());
 			}
 		}
 		this.inputs = map;
@@ -50,13 +56,13 @@ public class DerivationInputs {
 			if (map.containsKey(entity.getRdfType())) {
 				map.get(entity.getRdfType()).add(entity.getIri());
 			} else {
-				map.put(entity.getRdfType(), Arrays.asList(entity.getIri()));
+				map.put(entity.getRdfType(), new ArrayList<>(Arrays.asList(entity.getIri())));
 			}
 		}
 		this.inputs = map;
 	}
 
-	private Map<String, List<String>> getInputs() {
+	public Map<String, List<String>> getInputs() {
 		return this.inputs;
 	}
 
@@ -69,6 +75,18 @@ public class DerivationInputs {
 	public List<String> getIris(String rdfType) {
 		// TODO do we need to throw exception when there's no key rdfType?
 		return this.getInputs().get(rdfType);
+	}
+
+	public void addToInputs(String rdfType, List<String> iris) {
+		if (!this.inputs.containsKey(rdfType)) {
+			this.inputs.put(rdfType, new ArrayList<>(iris));
+		} else {
+			this.inputs.get(rdfType).addAll(iris);
+		}
+	}
+
+	public void addToInputs(String rdfType, String iri) {
+		this.addToInputs(rdfType, Arrays.asList(iri));
 	}
 
 	@Override

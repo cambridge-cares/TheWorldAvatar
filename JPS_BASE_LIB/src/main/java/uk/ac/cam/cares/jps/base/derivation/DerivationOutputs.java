@@ -1,16 +1,17 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class DerivationOutputs {
 	public static final String RETRIEVED_INPUTS_TIMESTAMP_KEY = "retrievedInputsAt";
@@ -22,24 +23,32 @@ public class DerivationOutputs {
 		Iterator<String> keys = mappedInstances.keys();
 		while (keys.hasNext()) {
 			String key = keys.next();
-			JSONArray arr = mappedInstances.getJSONArray(key);
-			map.put(key, toList(arr));
+			Object val = mappedInstances.get(key);
+			if (val instanceof JSONArray) {
+				map.put(key, ((JSONArray) val).toList().stream().map(iri -> (String) iri).collect(Collectors.toList()));
+			} else if (val instanceof String) {
+				map.put(key, new ArrayList<>(Arrays.asList((String) val)));
+			} else {
+				throw new JPSRuntimeException("Serilise the given JSONObject to DerivationOutputs is not supported:"
+						+ mappedInstances.toString());
+			}
 		}
 		this.outputs = map;
 	}
 
 	public DerivationOutputs(String rdfType, List<String> iris) {
 		this.outputs = new HashMap<>();
-		this.outputs.put(rdfType, iris);
+		this.outputs.put(rdfType, new ArrayList<>(iris));
 	}
 
 	public DerivationOutputs(String rdfType, String iri) {
 		this.outputs = new HashMap<>();
-		this.outputs.put(rdfType, Arrays.asList(iri));
+		this.outputs.put(rdfType, new ArrayList<>(Arrays.asList(iri)));
 	}
 
 	public DerivationOutputs(Map<String, List<String>> outputs) {
-		this.outputs = outputs;
+		this.outputs = new HashMap<>();
+		outputs.forEach((key, lst) -> this.outputs.put(key, new ArrayList<>(lst)));
 	}
 
 	public void setRetrievedInputsAt(long timestamp) {
@@ -52,7 +61,7 @@ public class DerivationOutputs {
 
 	public void addToOutputs(String rdfType, List<String> iris) {
 		if (!this.outputs.containsKey(rdfType)) {
-			this.outputs.put(rdfType, iris);
+			this.outputs.put(rdfType, new ArrayList<>(iris));
 		} else {
 			this.outputs.get(rdfType).addAll(iris);
 		}
@@ -64,10 +73,6 @@ public class DerivationOutputs {
 
 	public Map<String, List<String>> getOutputs() {
 		return this.outputs;
-	}
-
-	private static List<String> toList(JSONArray arr) throws JSONException {
-		return IntStream.range(0, arr.length()).mapToObj(i -> arr.getString(i)).collect(Collectors.toList());
 	}
 
 	public List<String> getNewDerivedIRI() {
