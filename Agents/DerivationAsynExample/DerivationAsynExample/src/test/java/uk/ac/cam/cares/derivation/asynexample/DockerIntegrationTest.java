@@ -33,9 +33,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  * 
  */
-// @Testcontainers
 @TestMethodOrder(OrderAnnotation.class)
-public class IntegrationTestAll extends TestCase {
+public class DockerIntegrationTest extends TestCase {
 	// static JSONObject response;
 	static RemoteStoreClient storeClient;
 	static DerivationSparql devSparql;
