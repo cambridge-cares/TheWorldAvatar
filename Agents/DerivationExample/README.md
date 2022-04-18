@@ -1,7 +1,7 @@
 # Derivation Example
 
 ## Purpose
-This example demonstrates the usage of the DerivationClient class from jps-base-lib.
+This example demonstrates the usage of the derivation framework (DerivationInputs, DerivationOutputs, DerivationAgent, DerivationClient, and DerivationSparql class) from jps-base-lib.
 
 ## Setup
 This example uses a docker stack with three containers:
@@ -64,7 +64,11 @@ docker cp derivationexample:root/.jps/ .
 ```
 
 ## Initialisation
-There are two key demonstrations in this example, the input instance is shared between the two examples. Assuming the stack is up and running, the instances can be initialised by running the following command:
+There are two key demonstrations in this example, the input instance is shared between the two examples. A more visual illustration can be found below:
+
+![Alt text](DerivationExample.svg?raw=true)
+
+Assuming the stack is up and running, the instances can be initialised by running the following command:
 ```
 curl http://localhost:8081/DerivationExample/InitialiseInstances
 ```
@@ -156,8 +160,8 @@ The derivation instance:
 <derivation_of_max> <:isDerivedUsing> <MaxValueAgent>
 ```
 The agent for this instance, `MaxValueAgent`, receives HTTP responses in the form of:
-```
-{"agent_input": [input]}
+```json
+{"agent_input": {"http://derivation_example#InputData":[input]}}
 ```
 queries the maximum value from the given input using the TimeSeriesClient, and writes a new instance, e.g.
 ```
@@ -167,7 +171,7 @@ queries the maximum value from the given input using the TimeSeriesClient, and w
 ```
 And returns a HTTP response in the form of:
 ```json
-{"agent_output": [new_max, newMaxValue]}
+{"agent_output": {"http://derived_example#MaxValue":[new_max]}, "retrievedInputsAt": timestamp}
 ```
 
 ### Minimum value
@@ -205,7 +209,7 @@ The derivation instance contains two inputs - the minimum value and maximum valu
 ```
 The `DifferenceAgent` receives HTTP requests in the form of:
 ```json
-{"agent_input": [min,max]}
+{"agent_input": {"http://derived_example#MaxValue":[max], "http://derived_example#MinValue": [min]}}
 ```
 It then queries the values using the given IRIs and calculate the difference between the values. The agent creates a new instance
 ```
@@ -215,6 +219,6 @@ It then queries the values using the given IRIs and calculate the difference bet
 ```
 and returns a HTTP response in the form of:
 ```json
-{"agent_output": [new_diff,newDiffValue]}
+{"agent_output": {"http://derived_example#Difference": [new_diff]}, "retrievedInputsAt": timestamp}
 ```
 
