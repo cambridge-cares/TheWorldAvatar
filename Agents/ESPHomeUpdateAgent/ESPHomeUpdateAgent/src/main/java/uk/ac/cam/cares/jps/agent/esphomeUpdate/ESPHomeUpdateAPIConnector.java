@@ -81,7 +81,12 @@ public class ESPHomeUpdateAPIConnector {
                         throw new JSONException("No assets available in returned JSON Object.");
 	            	}
 	            	else {
+	            		try {
 	            		state = responseBody.getString("State");
+	            		}
+	            		catch (JSONException e) {
+	            			throw new JPSRuntimeException("Unable to check status of the component.");
+	            		}
 	            	}
 	            }
 	            else {

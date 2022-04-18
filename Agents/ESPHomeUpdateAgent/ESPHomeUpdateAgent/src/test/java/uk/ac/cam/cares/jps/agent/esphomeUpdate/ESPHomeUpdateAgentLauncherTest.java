@@ -157,7 +157,7 @@ public class ESPHomeUpdateAgentLauncherTest {
                 Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).setTsClient(Mockito.any());
                 // Ensure that the initialization was invoked once
                 Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).initializeTimeSeriesIfNotExist();
-                Assert.assertEquals("Could not construct the ThingsBoard API connector needed to interact with the API!", e.getMessage());
+                Assert.assertEquals("Could not construct the ESPHome API connector needed to interact with the API!", e.getMessage());
             }
         }
 
@@ -177,7 +177,7 @@ public class ESPHomeUpdateAgentLauncherTest {
                     Assert.fail();
                 }
                 catch (Exception e) {
-                    Assert.assertEquals("Could not establish connection with ESPHome web server.", e.getMessage());
+                    Assert.assertEquals("Could not establish connection with ESPHome web server and unable to retrieve status of component.", e.getMessage());
                     Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
                     Assert.assertEquals("exception", e.getCause().getMessage());
                 }

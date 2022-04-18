@@ -77,7 +77,7 @@ public class ESPHomeUpdateAgent{
             mappingFolder = System.getenv(prop.getProperty("esphome.mappingfolder"));
             }
             catch (NullPointerException e) {
-            	throw new IOException ("The key thingsboard.mappingfolder cannot be found in the properties file.");
+            	throw new IOException ("The key esphome.mappingfolder cannot be found in the properties file.");
             }
             if (mappingFolder == null) {
                 throw new InvalidPropertiesFormatException("The properties file does not contain the key esphome.mappingfolder " +
@@ -322,11 +322,8 @@ public class ESPHomeUpdateAgent{
                 	Object value = timeSeriesEntry.get("value");
                 //The values are of string type in the JSON Object, convert them to double
                 	try {
-                    	value = Double.valueOf(timeSeriesEntry.get("value").toString());
+                    	value = timeSeriesEntry.get("value");
                     	}
-                	catch (NumberFormatException e) {
-                		value = Double.NaN;
-                	}
                 	catch (NullPointerException e) {
                 		value = "NA";
                 	}
@@ -365,7 +362,7 @@ public class ESPHomeUpdateAgent{
      * @param TimestampReadings The timestamps as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
-    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> ElectricalTemperatureHumidityReadings,
+    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> StatusReadings,
                                                                         Map<String, List<?>> TimestampReadings
                                                                         )
             throws  NoSuchElementException {
@@ -384,8 +381,8 @@ public class ESPHomeUpdateAgent{
             for(String key: mapping.getAllJSONKeys()) {
                 // Add IRI
                 iris.add(mapping.getIRI(key));
-                if (ElectricalTemperatureHumidityReadings.containsKey(key)) {
-                    values.add(ElectricalTemperatureHumidityReadings.get(key));
+                if (StatusReadings.containsKey(key)) {
+                    values.add(StatusReadings.get(key));
                 }
                 // Will create a problem as length of iris and values do not match when creating the time series.
                 // Could add an empty list, but the length of the list needs to match length of times. So what values to
@@ -460,15 +457,10 @@ public class ESPHomeUpdateAgent{
      * @return The corresponding class as Class<?> object.
      */
     private Class<?> getClassFromJSONKey(String jsonKey) {
-        if (jsonKey.contains(timestampKey))
-        	//The timestamp has been converted from unix timestamp in milliseconds to date time format
-        	//As such it should be a String
+       
         	return String.class;
-        else {
-        	//Default is Double since ThingsBoard main purpose is to store measurements from sensors
-        	//As such there should not be any readings stored in ThingsBoard that is considered to be boolean, String or integer
-        	return Double.class;
+        
         }
     }
-}
+
 

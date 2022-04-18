@@ -59,7 +59,7 @@ public class ESPHomeUpdateAgentTest {
         writePropertyFile(mappingFile, mappings);
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
-        writePropertyFile(propertiesFile, Collections.singletonList("thingsboard.mappingfolder=TEST_MAPPINGS"));
+        writePropertyFile(propertiesFile, Collections.singletonList("esphome.mappingfolder=TEST_MAPPINGS"));
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
         // To mock the environment variable, a try catch need to be used
         try {
@@ -217,18 +217,6 @@ public class ESPHomeUpdateAgentTest {
     }
 
     @Test
-    public void testTimeSeriesExistAllOneIRIFalse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        // Make method accessible
-        Method timeSeriesExist = ESPHomeUpdateAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
-        timeSeriesExist.setAccessible(true);
-        // Set the mock to return false on second IRI
-        Mockito.when(mockTSClient.checkDataHasTimeSeries(iris.get(0))).thenReturn(true);
-        Mockito.when(mockTSClient.checkDataHasTimeSeries(iris.get(1))).thenReturn(false);
-        // Should return false as second IRIs is not attached (based on the mock)
-        Assert.assertFalse((Boolean) timeSeriesExist.invoke(testAgent, iris));
-    }
-
-    @Test
     public void testTimeSeriesExistAllIRIFalse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make method accessible
         Method timeSeriesExist = ESPHomeUpdateAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
@@ -286,8 +274,7 @@ public class ESPHomeUpdateAgentTest {
             Assert.fail();
         }
         catch (IllegalArgumentException e) {
-            Assert.assertEquals("Readings can not be converted to proper time series!", e.getMessage());
-            Assert.assertEquals(NoSuchElementException.class, e.getCause().getClass());
+            Assert.assertEquals("Readings can not be empty!", e.getMessage());
         }
         
     }
@@ -344,40 +331,7 @@ public class ESPHomeUpdateAgentTest {
         uniqueKeys.addAll(allReadings.keySet());
         Assert.assertEquals(uniqueKeys.size(), numIRIs);
     }
-    
-    @Test
-    public void testUpdateDataPrune() {
-        // Set up the mock client
-        // Use a max time that is overlapping with the readings
-        int numEntriesToKeep = 2;
-        assert allReadings.getJSONArray(keys[0]).length() > numEntriesToKeep;
-        long timestamp = allReadings.getJSONArray(keys[0]).getJSONObject(allReadings.getJSONArray(keys[0]).length()-2)
-                .getLong(ESPHomeUpdateAgent.timestampKey);
-        Date date = new java.util.Date(timestamp);
-    	SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    	String maxTime = sdf.format(date);
-    	
-        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(OffsetDateTime.parse(maxTime+"+00:00"));
-        // Run the update
-        testAgent.updateData(allReadings);
-        // Capture the arguments that the add data method was called with
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<TimeSeries<OffsetDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
-        // Ensure that the update was called for each time series
-        Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries())).addTimeSeriesData(timeSeriesArgument.capture());
-        // Ensure that the timeseries objects have the correct structure
-        int numIRIs = 0;
-        for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
-            // Check that number of timestamps is correct
-            Assert.assertEquals(numEntriesToKeep, ts.getTimes().size());
-            numIRIs = numIRIs + ts.getDataIRIs().size();
-        }
-        // Number of unique keys in both readings should match the number of IRIs
-        Set<String> uniqueKeys = new HashSet<>(allReadings.keySet());
-       
-        Assert.assertEquals(uniqueKeys.size(), numIRIs);
-    }
-    
+   
     @Test
     public void testUpdateDataPruneAll() {
         // Use a max time that is past max time of readings
@@ -434,6 +388,7 @@ public class ESPHomeUpdateAgentTest {
         	JSONArray tsAndValues = allReadings.getJSONArray(key);
             Assert.assertEquals(tsAndValues.length(), readings.get(key).size());
         }
+        Assert.assertEquals(readings.keySet().contains("generic_output"), true);
         Assert.assertEquals(readings.get(keys[0]).get(0), allReadings.getJSONArray(keys[0]).getJSONObject(0).get("value"));
         // Check that all keys from the JSON Object have a corresponding entry
         for (Iterator<String> it = allReadings.keys(); it.hasNext();) {

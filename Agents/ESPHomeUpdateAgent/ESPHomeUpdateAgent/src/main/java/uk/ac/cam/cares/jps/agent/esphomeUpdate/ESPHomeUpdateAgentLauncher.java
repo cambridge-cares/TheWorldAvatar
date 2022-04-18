@@ -41,7 +41,7 @@ public class ESPHomeUpdateAgentLauncher extends JPSAgent {
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the ESPHome API connector needed to interact with the API!";
-    private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
+    private static final String CHECK_STATUS_ERROR_MSG = "Could not establish connection with ESPHome web server and unable to retrieve status of component.";
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -174,8 +174,8 @@ public class ESPHomeUpdateAgentLauncher extends JPSAgent {
         	statusAndTimeStamp = connector.checkStatus();
         }
         catch (Exception e) {
-            LOGGER.error(GET_READINGS_ERROR_MSG, e);
-            throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
+            LOGGER.error(CHECK_STATUS_ERROR_MSG, e);
+            throw new JPSRuntimeException(CHECK_STATUS_ERROR_MSG, e);
         }
         LOGGER.info(String.format("Retrieved %d status of component.",
         		statusAndTimeStamp.length()));
