@@ -282,6 +282,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
             json.dump(metadata[i], indent=4, fp=f)
         with open(fp_timeseries[i], 'w') as f:
             json.dump(timeseries[i], indent=4, fp=f)
+    print('Finished!\n')
 
 
 if __name__ == '__main__':
