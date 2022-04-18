@@ -22,7 +22,7 @@ outputtasks_bp = Blueprint(
 
 # Define route for API request to retrieve station and reading data and create
 # output files for Digital Twin Visualisation Framework
-# All query parameter are expected as SINGLE JSOn object 'query' (to follow
+# All query parameters are expected as SINGLE JSON object 'query' (to follow
 # the convention introduced in the JPS_BASE_LIB)
 @outputtasks_bp.route('/api/metofficeagent/retrieve/all', methods=['GET'])
 def api_update_all_stations():

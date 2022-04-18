@@ -110,21 +110,23 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         # Extract relevant data      
         data = instantiated_obs[instantiated_obs['tsIRI'] == tsiri]
         station_id = data['stationID'].iloc[0]
-        # Construct time series object to be added
-        times = available_obs[station_id]['times']
-        dataIRIs = data['dataIRI'].to_list()
-        # Get instantiated, but potentially missing quantity for reported interval
-        # and fill missing values with nans
-        missing_data = [i for i in data['reading'].to_list() if i not in available_obs[station_id]['readings'].keys()]
-        missing = dict(zip(missing_data, [[nan]*len(times)]*len(missing_data)))
-        readings = {**available_obs[station_id]['readings'], **missing}
-        values = [readings[i] for i in data['reading'].to_list()]
-        # Potentially split time series data addition if None/nan exist in some readings
-        times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
-        for i in range(len(times_list)):
-            added_obs += len(dataIRIs_list[i])
-            ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
-            ts_list.append(ts)
+        # Construct time series object to be added (skip if previously
+        # instantiated time series not present in latest retrieved data)
+        if station_id in available_obs.keys():
+            times = available_obs[station_id]['times']
+            dataIRIs = data['dataIRI'].to_list()
+            # Get instantiated, but potentially missing quantity for reported interval
+            # and fill missing values with nans
+            missing_data = [i for i in data['reading'].to_list() if i not in available_obs[station_id]['readings'].keys()]
+            missing = dict(zip(missing_data, [[nan]*len(times)]*len(missing_data)))
+            readings = {**available_obs[station_id]['readings'], **missing}
+            values = [readings[i] for i in data['reading'].to_list()]
+            # Potentially split time series data addition if None/nan exist in some readings
+            times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
+            for i in range(len(times_list)):
+                added_obs += len(dataIRIs_list[i])
+                ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
+                ts_list.append(ts)
     ts_client.bulkaddTimeSeriesData(ts_list)
     print(f'Time series data for {added_obs} observations successfully added to KG.')
     #logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
@@ -137,23 +139,25 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         # Extract relevant data      
         data = instantiated_fcs[instantiated_fcs['tsIRI'] == tsiri]
         station_id = data['stationID'].iloc[0]
-        # Construct time series object to be added
-        times = available_fcs[station_id]['times']
-        dataIRIs = data['dataIRI'].to_list()
-        # Get instantiated, but potentially missing quantity for reported interval
-        # and fill missing values with nans
-        missing_data = [i for i in data['reading'].to_list() if i not in available_fcs[station_id]['readings'].keys()]
-        missing = dict(zip(missing_data, [[nan]*len(times)]*len(missing_data)))
-        readings = {**available_fcs[station_id]['readings'], **missing}
-        values = [readings[i] for i in data['reading'].to_list()]
-        # Potentially split time series data addition if None/nan exist in some readings
-        times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
-        for i in range(len(times_list)):
-            added_fcs += len(dataIRIs_list[i])            
-            ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
-            ts_list.append(ts)
-            for iri in dataIRIs_list[i]:
-                query_string += f"<{iri}> , "
+        # Construct time series object to be added (skip if previously
+        # instantiated time series not present in latest retrieved data)
+        if station_id in available_fcs.keys():
+            times = available_fcs[station_id]['times']
+            dataIRIs = data['dataIRI'].to_list()
+            # Get instantiated, but potentially missing quantity for reported interval
+            # and fill missing values with nans
+            missing_data = [i for i in data['reading'].to_list() if i not in available_fcs[station_id]['readings'].keys()]
+            missing = dict(zip(missing_data, [[nan]*len(times)]*len(missing_data)))
+            readings = {**available_fcs[station_id]['readings'], **missing}
+            values = [readings[i] for i in data['reading'].to_list()]
+            # Potentially split time series data addition if None/nan exist in some readings
+            times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
+            for i in range(len(times_list)):
+                added_fcs += len(dataIRIs_list[i])            
+                ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
+                ts_list.append(ts)
+                for iri in dataIRIs_list[i]:
+                    query_string += f"<{iri}> , "
     ts_client.bulkaddTimeSeriesData(ts_list)
     print(f'Time series data for {added_fcs} forecasts successfully added.')
     #logger.info(f'Time series data for {added_fcs} forecasts successfully added.')
@@ -333,10 +337,13 @@ def instantiate_all_station_readings(api_key: str = DATAPOINT_API_KEY,
         Instantiates all readings for all instantiated stations
     """
 
-    stations = get_all_metoffice_stations(query_endpoint, update_endpoint)
+    stations = get_all_metoffice_stations(query_endpoint=query_endpoint,
+                                          update_endpoint=update_endpoint)
     
-    instantiated = instantiate_station_readings(stations, api_key, query_endpoint,
-                                                update_endpoint)
+    instantiated = instantiate_station_readings(instantiated_sites_list=stations,
+                                                api_key=api_key, 
+                                                query_endpoint=query_endpoint,
+                                                update_endpoint=update_endpoint)
 
     return instantiated
 

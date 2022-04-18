@@ -20,10 +20,5 @@ setup(
         'py4jps==1.0.17', 
         'requests~=2.27',
         'metoffer @ git+https://github.com/sludgedesk/metoffer#egg=MetOffer',
-    ],
-    entry_points={
-        'console_scripts': [
-            'metoffice=metoffice.driver:main',
-        ],
-    }
+    ]
 )

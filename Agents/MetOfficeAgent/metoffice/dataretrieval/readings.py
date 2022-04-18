@@ -23,8 +23,8 @@ from metoffice.utils.readings_mapping import TIME_FORMAT
 
 
 def get_instantiated_observations(stations: list = None,
-                                      query_endpoint: str = QUERY_ENDPOINT,
-                                      update_endpoint: str = UPDATE_ENDPOINT):
+                                  query_endpoint: str = QUERY_ENDPOINT,
+                                  update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of (all) instantiated observations in KG
         (data for all stations is returned if no stations list is provided)
@@ -55,8 +55,8 @@ def get_instantiated_observations(stations: list = None,
 
 
 def get_instantiated_forecasts(stations: list = None,
-                                   query_endpoint: str = QUERY_ENDPOINT,
-                                   update_endpoint: str = UPDATE_ENDPOINT):
+                               query_endpoint: str = QUERY_ENDPOINT,
+                               update_endpoint: str = UPDATE_ENDPOINT):
     """
         Returns DataFrame of (all) instantiated forecasts in KG
         (data for all stations is returned if no stations list is provided)
