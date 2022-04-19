@@ -1,6 +1,6 @@
 import random
 
-from pyasyncagent import AsyncAgent
+from pyderivationagent import AsyncAgent
 from tests.sparql_client_for_test import PySparqlClientForTest, RANDOM_EXAMPLE_NUMOFPOINTS, RANDOM_EXAMPLE_UPPERLIMIT, RANDOM_EXAMPLE_LOWERLIMIT
 
 class RandomAgent(AsyncAgent):

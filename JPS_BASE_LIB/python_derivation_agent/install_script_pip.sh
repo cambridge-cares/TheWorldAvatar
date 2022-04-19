@@ -4,10 +4,10 @@
 AUTHOR="Jiaru Bai <jb2197@cam.ac.uk>, based on https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_wrapper/install_script_pip.sh provided by Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 CREATE_VENV='n'
-VENV_NAME='pyasyncagent_venv'
+VENV_NAME='pyderivationagent_venv'
 VENV_DIR=$SPATH
 DEV_INSTALL=''
-PROJ_NAME='pyasyncagent'
+PROJ_NAME='pyderivationagent'
 
 function usage {
     echo "==============================================================================================================="
@@ -120,7 +120,7 @@ function install_agentlogging_workaround {
     echo "links, so we could NOT add package agentlogging"
     echo "from 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'"
     echo "as dependency, therefore, in order to pass the"
-    echo "run_pyasyncagent_tests() and release_to_pypi(),"
+    echo "run_pyderivationagent_tests() and release_to_pypi(),"
     echo " we here introduce a workaround here to install"
     echo "agentlogging to the virtual environment but NOT"
     echo "as dependency in the setup.py"

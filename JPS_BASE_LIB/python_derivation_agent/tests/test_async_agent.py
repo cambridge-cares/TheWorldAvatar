@@ -7,7 +7,7 @@ from flask import Flask
 from pathlib import Path
 import time
 
-from pyasyncagent.data_model import *
+from pyderivationagent.data_model import *
 
 from tests.random_agent import *
 from tests.sparql_client_for_test import PySparqlClientForTest

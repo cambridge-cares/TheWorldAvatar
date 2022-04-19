@@ -1,4 +1,4 @@
-from pyasyncagent.kg_operations import *
+from pyderivationagent.kg_operations import *
 import uuid
 
 # Random number generation TBox

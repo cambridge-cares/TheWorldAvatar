@@ -2,9 +2,9 @@ from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
 import json
 
-from pyasyncagent.kg_operations.gateway import jpsBaseLibGW
+from pyderivationagent.kg_operations.gateway import jpsBaseLibGW
 
-from pyasyncagent.data_model import *
+from pyderivationagent.data_model import *
 
 class PySparqlClient:
     def __init__(self, query_endpoint, update_endpoint, kg_user=None, kg_password=None) -> None:

@@ -4,7 +4,7 @@ import json
 
 import agentlogging
 
-from pyasyncagent.kg_operations import *
+from pyderivationagent.kg_operations import *
 
 class FlaskConfig(object):
     """
@@ -12,7 +12,7 @@ class FlaskConfig(object):
     """
     SCHEDULER_API_ENABLED = True
 
-class AsyncAgent(object):
+class DerivationAgent(object):
     def __init__(
         self,
         agent_iri: str,
@@ -25,11 +25,11 @@ class AsyncAgent(object):
         flask_config: FlaskConfig = FlaskConfig(),
         logger_name: str = "dev"):
         """
-            This method initialises the asynchronous agent.
+            This method initialises the instance of DerivationAgent.
 
             Arguments:
                 app - flask app object, an example: app = Flask(__name__)
-                agent_iri - OntoAgent:Service IRI of the asynchronous agent, an example: "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
+                agent_iri - OntoAgent:Service IRI of the derivation agent, an example: "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
                 time_interval - time interval between two runs of derivation monitoring job (in SECONDS)
                 derivation_instance_base_url - namespace to be used when creating derivation instance, an example: "http://www.example.com/triplestore/repository/"
                 kg_url - SPARQL query/update endpoint, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
@@ -69,14 +69,14 @@ class AsyncAgent(object):
 
         self.logger = agentlogging.get_logger(logger_name)
         self.logger.info(
-            "AsyncAgent <%s> is initialised to monitor derivations in triple store <%s> with a time interval of %d seconds." % (self.agentIRI, self.kgUrl, self.time_interval)
+            "DerivationAgent <%s> is initialised to monitor derivations in triple store <%s> with a time interval of %d seconds." % (self.agentIRI, self.kgUrl, self.time_interval)
         )
 
     def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['GET'], *args, **kwargs):
         """
-            This method is a wrapper of add_url_rule method of Flask object that adds customised URL Pattern to asynchronous agent.
+            This method is a wrapper of add_url_rule method of Flask object that adds customised URL Pattern to derivation agent.
             For more information, visit https://flask.palletsprojects.com/en/2.0.x/api/#flask.Flask.add_url_rule.
-            WARNING: Use of this is STRONGLY discouraged. The design intention of an asynchronous agent is to communicate via the KNOWLEDGE GRAPH, and NOT via HTTP requests.
+            WARNING: Use of this is STRONGLY discouraged. The design intention of an derivation agent is to communicate via the KNOWLEDGE GRAPH, and NOT via HTTP requests.
 
             Arguments:
                 url_pattern - the endpoint url to associate with the rule and view function
@@ -89,7 +89,7 @@ class AsyncAgent(object):
 
     def monitorDerivations(self):
         """
-            This method monitors the status of the derivation that "isDerivedUsing" AsyncAgent.
+            This method monitors the status of the derivation that "isDerivedUsing" DerivationAgent.
 
             When it detects the status is "PendingUpdate", the agent will check its immediate upstream derivations.
             Once all its immediate upstream derivations are up-to-date, the agent marks the status as "Requested".
@@ -109,7 +109,7 @@ class AsyncAgent(object):
         # Below codes follow the logic as defined in AsynAgent.java in JPS_BASE_LIB
         # for more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/agent/AsynAgent.java
 
-        # Retrieves a list of derivations and their status type that "isDerivedUsing" AsyncAgent
+        # Retrieves a list of derivations and their status type that "isDerivedUsing" DerivationAgent
         derivationAndStatusType = self.derivationClient.getDerivationsAndStatusType(self.agentIRI)
         if bool(derivationAndStatusType):
             self.logger.info("A list of derivations that <isDerivedUsing> <%s> are retrieved: %s." % (self.agentIRI, derivationAndStatusType))
@@ -170,7 +170,7 @@ class AsyncAgent(object):
 
     def setupJob(self, agentInputs) -> list:
         """
-            This method sets up the job to update the derivation. Developer shall override this when writing new asynchronous agent based on AsyncAgent class.
+            This method sets up the job to update the derivation. Developer shall override this when writing new derivation agent based on DerivationAgent class.
 
             Arguments:
                 agentInputs - a JSON/dictionary of the derivation inputs, an example:

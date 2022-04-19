@@ -1,13 +1,13 @@
 #!/bin/bash
 # J. Bai (jb2197@cam.ac.uk), based on https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_wrapper/release_py4jps_to_pypi.sh provided by D. Nurkowski (danieln@cmclinnovations.com)
 #
-# pyasyncagent release script
+# pyderivationagent release script
 #
 AUTHOR="Jiaru Bai <jb2197@cam.ac.uk>, based on https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_wrapper/release_py4jps_to_pypi.sh provided by Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-VENV_NAME='pyasyncagent_venv'
+VENV_NAME='pyderivationagent_venv'
 TEST_VENV_NAME='test_venv'
-PROJECT_NAME='pyasyncagent'
+PROJECT_NAME='pyderivationagent'
 TEST_PYPI="https://test.pypi.org/legacy/"
 STEP_NR=1
 NEXT_VERSION=''
@@ -27,7 +27,7 @@ usage() {
 	echo "  -h              : Print this usage message."
     echo ""
 	echo "Example usage:"
-    echo "./release_pyasyncagent_to_pypi.sh -v 0.0.5   - release version 0.0.5"
+    echo "./release_pyderivationagent_to_pypi.sh -v 0.0.5   - release version 0.0.5"
 	echo "==============================================================================================================="
 	read -n 1 -s -r -p "Press any key to continue"
     exit
@@ -35,9 +35,9 @@ usage() {
 
 main() {
     install_packages_for_building
-    bump_pyasyncagent_version_number
-    install_pyasyncagent_and_test
-    build_pyasyncagent_for_release
+    bump_pyderivationagent_version_number
+    install_pyderivationagent_and_test
+    build_pyderivationagent_for_release
     release_to_pypi test-pypi
     test_release test-pypi
     release_to_pypi main-pypi
@@ -56,7 +56,7 @@ install_packages_for_building() {
     STEP_NR=$((STEP_NR+1))
 }
 
-bump_pyasyncagent_version_number() {
+bump_pyderivationagent_version_number() {
     echo "-------------------------------------------------------------------------"
     echo "$STEP_NR. Bumping the $PROJECT_NAME version number to $NEXT_VERSION"
     echo "-------------------------------------------------------------------------"
@@ -68,15 +68,15 @@ bump_pyasyncagent_version_number() {
     STEP_NR=$((STEP_NR+1))
 }
 
-clean_pyasyncagent_repository() {
+clean_pyderivationagent_repository() {
     rm -rf $SPATH/build $SPATH/dist $SPATH/.eggs $SPATH/*egg-info $SPATH/*venv
 }
 
-install_pyasyncagent() {
+install_pyderivationagent() {
     echo "-------------------------------"
     echo "Installing $PROJECT_NAME"
     echo "-------------------------------"
-    clean_pyasyncagent_repository
+    clean_pyderivationagent_repository
     sleep .5
     venv_name_local=$1
     venv_dir_local=$2
@@ -92,7 +92,7 @@ install_pyasyncagent() {
     fi
 }
 
-run_pyasyncagent_tests() {
+run_pyderivationagent_tests() {
     echo "-------------------------------"
     echo "Running the $PROJECT_NAME tests"
     echo "-------------------------------"
@@ -110,26 +110,26 @@ run_pyasyncagent_tests() {
     fi
 }
 
-install_pyasyncagent_and_test() {
+install_pyderivationagent_and_test() {
     echo "-------------------------------------------------------------------------"
     echo "$STEP_NR. Packaging the $PROJECT_NAME project"
     echo "-------------------------------------------------------------------------"
     echo
     echo
-    install_pyasyncagent $VENV_NAME $SPATH
+    install_pyderivationagent $VENV_NAME $SPATH
 
-    run_pyasyncagent_tests $PYTHON_EXEC
+    run_pyderivationagent_tests $PYTHON_EXEC
 
     STEP_NR=$((STEP_NR+1))
 }
 
-build_pyasyncagent_for_release() {
+build_pyderivationagent_for_release() {
     echo "-------------------------------------------------------------------------"
     echo "$STEP_NR. Building the $PROJECT_NAME for the release"
     echo "-------------------------------------------------------------------------"
     echo
     echo
-    clean_pyasyncagent_repository
+    clean_pyderivationagent_repository
     sleep .5
     python setup.py sdist bdist_wheel
     if [ $? -eq 0 ]; then
@@ -215,7 +215,7 @@ test_release() {
     $PYTHON_EXEC -m pip install testcontainers
     $PYTHON_EXEC -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils"
 
-    run_pyasyncagent_tests $PYTHON_EXEC
+    run_pyderivationagent_tests $PYTHON_EXEC
 
     echo "Removing test venv."
     rm -rf $SPATH/../$TEST_VENV_NAME
