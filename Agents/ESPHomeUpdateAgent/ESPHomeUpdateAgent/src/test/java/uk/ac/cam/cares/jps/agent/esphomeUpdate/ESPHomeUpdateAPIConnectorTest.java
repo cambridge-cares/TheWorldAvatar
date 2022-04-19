@@ -54,7 +54,7 @@ public class ESPHomeUpdateAPIConnectorTest {
     
 
     @Test
-    public void ThingsBoardAPIConnectorConstructorTest() throws NoSuchFieldException, IllegalAccessException, IOException {
+    public void ESPHomeUpdateAPIConnectorConstructorTest() throws NoSuchFieldException, IllegalAccessException, IOException {
         // One connector constructed using the username, password, auth_url, api_url and device token directly
         ESPHomeUpdateAPIConnector connector = new ESPHomeUpdateAPIConnector("path_url", "domain", "ID");
         // One connector constructed using a properties file

@@ -82,11 +82,11 @@ public class ESPHomeUpdateAPIConnector {
 	            	}
 	            	else {
 	            		try {
-	            		state = responseBody.getString("State");
-	            		}
-	            		catch (JSONException e) {
-	            			throw new JPSRuntimeException("Unable to check status of the component.");
-	            		}
+		            		state = responseBody.getString("state");
+		            		}
+		            		catch (JSONException e) {
+		            			throw new JPSRuntimeException("Unable to check status of the component.");
+		            		}
 	            	}
 	            }
 	            else {

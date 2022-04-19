@@ -423,7 +423,7 @@ public class ESPHomeUpdateAgentTest {
         // Create an agent with mappings of small size //
         // Create a folder inside the temporary folder in which the mapping files will be
         File mappingFolder= folder.newFolder("mappings_test");
-        // Define three sets of mappings
+        
         String[] allTypesKeys = {"generic_output"};
        
         Map<String, String[]> keys = new HashMap<>();
