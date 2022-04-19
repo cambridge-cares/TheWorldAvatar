@@ -9,7 +9,7 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests")),
     url="",
-    python_requires='>=3.5',
+    python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
         'apscheduler~=3.9',
