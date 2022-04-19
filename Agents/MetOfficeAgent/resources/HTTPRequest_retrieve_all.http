@@ -18,26 +18,28 @@
 //                      a particular area of interest if both are provided)
 
 // Retrieve all available stations and time series data as of 14 days back
+GET http://localhost:5050/api/metofficeagent/retrieve/all
+Content-Type: application/json
+
+{ "query": {
+      "outDir": "/app/output",
+      "daysBack": "14" 
+    }
+}
+
+#"outDir": "C:\\TheWorldAvatar-git\\Agents\\MetOfficeAgent\\output",
+
+
+// Retrieve only selected stations and time series data as of 14 days back
 # GET http://localhost:5000/api/metofficeagent/retrieve/all
 # Content-Type: application/json
 
 # { "query": {
 #       "outDir": "C:\\TheWorldAvatar-git\\Agents\\MetOfficeAgent\\output",
-#       "daysBack": "14" 
+#       "daysBack": 7,
+#       "observationTypes": ["AirTemperature", "<http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindGust>"],
+#       "splitObsFcs": true,
+#       "circleCenter": "52.75#0.4",
+#       "circleRadius": 100
 #     }
 # }
-
-
-// Retrieve only selected stations and time series data as of 14 days back
-GET http://localhost:5000/api/metofficeagent/retrieve/all
-Content-Type: application/json
-
-{ "query": {
-      "outDir": "C:\\TheWorldAvatar-git\\Agents\\MetOfficeAgent\\output",
-      "daysBack": 7,
-      "observationTypes": ["AirTemperature", "<http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindGust>"],
-      "splitObsFcs": true,
-      "circleCenter": "52.75#0.4",
-      "circleRadius": 100
-    }
-}

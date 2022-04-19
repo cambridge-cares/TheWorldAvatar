@@ -55,9 +55,6 @@ Note that installing the project for in-place development (setting the `-e` flag
 
 The `MetOffice` agent can be used as a simple command line tool or as a web agent.
 
-## Command line usage
-
-
 ## Web agent usage
 
 In order to use the `MetOffice` as a web agent, simply start a server with the following app entry point:
@@ -67,6 +64,34 @@ In order to use the `MetOffice` as a web agent, simply start a server with the f
 ```cmd
 (stdc_venv) $ set FLASK_APP=metoffice\flaskapp\wsgi.py & flask run
 ```
+
+## Dockerized agent
+
+
+### Debugging
+
+`launch.json`
+```
+        {
+            "name": "Python: Remote Attach",
+            "type": "python",
+            "request": "attach",
+            "connect": {
+                "host": "127.0.0.1",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/metoffice/flaskapp/",
+                    "remoteRoot": "/app/metoffice/flaskapp/"
+                }
+            ]
+        }
+```
+
+
+### Production
+
 
 # Notes on tests
 
