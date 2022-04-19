@@ -33,6 +33,7 @@ import java.util.TimeZone;
 /**
  * This test class is to test the ThingsBoard input agent with a running KG and postgres database.
  */
+
 @Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 
@@ -69,7 +70,7 @@ public class ESPHomeUpdateAgentIntegrationTest {
     
 
     // Values created as example readings
-    private ArrayList<Double> Values;
+    private ArrayList<String> Values;
 
     // Readings used by several tests
     JSONObject allReadings;
@@ -135,7 +136,8 @@ public class ESPHomeUpdateAgentIntegrationTest {
     public void createExampleReadings() {
 
         allReadings = new JSONObject();
-        Values = new ArrayList<>();
+        Values = new ArrayList<String>();
+        Values.add("ON");
         
         //create a list that contains the mock timestamps with the latest timestamp at the top
         long ts01 = 123456;
@@ -154,22 +156,18 @@ public class ESPHomeUpdateAgentIntegrationTest {
         }
         
         for(String key: keys) {
-        	double value = 0.0;
+        	String status = "ON";
         	JSONArray values = new JSONArray();
         	for (int i = 0; i < ts.length; i++) {
         		JSONObject tsAndValue = new JSONObject();
         		tsAndValue.put(ESPHomeUpdateAgent.timestampKey, ts[i]);
-        		tsAndValue.put("value", value);
+        		tsAndValue.put("value", status);
         		values.put(tsAndValue);
-        		value++;
+        	
         	}
         	allReadings.put(key, values);
         
-        }
-        double value = 3.0;
-        for (int i = 0; i < ts.length; i++) {
-        	Values.add(value);
-        	value--;
+       
         }
         }
        
@@ -310,8 +308,8 @@ public class ESPHomeUpdateAgentIntegrationTest {
     }
 
     private void insertTimeSeries() {
-        // Insert particle time-series
-        List<Class<?>> classes = Collections.nCopies(IRIs.size(), Double.class);
+        // Insert time-series
+        List<Class<?>> classes = Collections.nCopies(IRIs.size(), String.class);
         tsClient.initTimeSeries(IRIs, classes, "timeUnit");
         // Insert gas time-series
     }

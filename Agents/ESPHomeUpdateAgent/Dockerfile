@@ -12,7 +12,7 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
-WORKDIR /root/ThingsBoardInputAgent
+WORKDIR /root/ESPHomeUpdateAgent
 RUN mvn package
 
 #==================================================================================================
@@ -27,27 +27,27 @@ WORKDIR /app
 COPY ./config/agent.properties /root/agent.properties
 
 # Set the required environment variable
-ENV THINGSBOARD_AGENTPROPERTIES="/root/agent.properties"
+ENV ESPHOME_UPDATE_AGENTPROPERTIES="/root/agent.properties"
 
 # Copy in the properties file
 COPY ./config/api.properties /root/api.properties
 
 # Set the required environment variable
-ENV THINGSBOARD_APIPROPERTIES="/root/api.properties"
+ENV ESPHOME_UPDATE_APIPROPERTIES="/root/api.properties"
 
 # Copy in the properties file
 COPY ./config/client.properties /root/client.properties
 
 # Set the required environment variable
-ENV THINGSBOARD_CLIENTPROPERTIES="/root/client.properties"
+ENV ESPHOME_UPDATE_CLIENTPROPERTIES="/root/client.properties"
 
 # Copy in the mapping folder
 COPY ./config/mappings /root/mappings
 
 # Set the required environment variable
-ENV THINGSBOARD_AGENT_MAPPINGS="/root/mappings"
+ENV ESPHOME_UPDATE_AGENT_MAPPINGS="/root/mappings"
 
-COPY --from=builder /root/ThingsBoardInputAgent/output/thingsboard-agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/ESPHomeUpdateAgent/output/esphome-update-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

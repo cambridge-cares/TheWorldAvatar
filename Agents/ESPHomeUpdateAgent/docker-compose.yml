@@ -1,10 +1,10 @@
 version: "3.8"
 
 services:
-  thingsboard-agent:
-    image: thingsboard-agent:1.0.0-SNAPSHOT
+  esphome-update-agent:
+    image: esphome-update-agent:1.0.0
     build: .
-    container_name: thingsboard-agent
+    container_name: esphome-update-agent
     pull_policy: if_not_present
     ports:
-      - "1010:8080"
+      - "1012:8080"

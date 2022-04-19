@@ -110,7 +110,7 @@ public class ESPHomeUpdateAgentLauncher extends JPSAgent {
     
  // TODO: Use proper argument parsing
     /**
-     * Main method that runs through all steps to update the data received from the ThingsBoard API.
+     * Main method that runs through all steps to update the data received from the ESPHome API.
      * defined in the provided properties file.
      * @param args The command line arguments. Three properties files should be passed here in order: 1) input agent
      *             2) time series client 3) API connector.
@@ -179,7 +179,7 @@ public class ESPHomeUpdateAgentLauncher extends JPSAgent {
         }
         LOGGER.info(String.format("Retrieved %d status of component.",
         		statusAndTimeStamp.length()));
-        jsonMessage.accumulate("Result", "Retrieved .");
+        jsonMessage.accumulate("Result", "Retrieved status of component.");
         // If readings are not empty there is new data
         if(!statusAndTimeStamp.isEmpty()) {
             // Update the data
