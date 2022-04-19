@@ -10,7 +10,7 @@
 	"Mops_Cavity_Volume": "someVolume",
 	"Mops_CCDC_Number": "someLabel",
 	"Mops_Reference_DOI": "someDOI",
-	"Mops_XYZ_Coordinates_File": "tests\\refData\\ontomops\\OM_om_json_test\\dummy_mops.xyz",
+	"Mops_XYZ_Coordinates_File": "tests/refData/ontomops/OM_om_json_test/dummy_mops.xyz",
 	"Mops_Chemical_Building_Units":[
 		{"Species_IRI":"IRI1",
 		 "CBU_Formula":"Some_formula",
