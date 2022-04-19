@@ -10,11 +10,23 @@ services:
       target: debug
     ports:
       # Mapping of container port to host (host:container)
-      - "5050:5000"
+      - "5000:5000"
       - "5678:5678"
     volumes:
       # Link container working dir with local dir to allow flask hot-reload functionality
       # Link container output directory to local directory to access output files
       # (local dir : dir in container)
-      - "./metoffice:/app/metoffice"
-      - ".:/app/output"
+      - ./metoffice:/app/metoffice      
+      - ./output:/app/output
+  
+  metoffice_agent_production:
+    container_name: metoffice_agent_production
+    image: docker.cmclinnovations.com/metoffice_agent_production:1.0.0-SNAPSHOT
+    build:
+      context: .
+      target: prod
+    ports:
+      - "5000:5000"
+    volumes:
+      # Link container output directory to local directory to access output files
+      - ./output:/app/output

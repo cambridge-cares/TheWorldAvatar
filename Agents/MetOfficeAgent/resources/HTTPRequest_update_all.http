@@ -1,4 +1,4 @@
 // This is an example HTTP request to update all Met Office stations
 
-GET http://localhost:5050/api/metofficeagent/update/all
+GET http://localhost:5000/api/metofficeagent/update/all
 Content-Type: application/json

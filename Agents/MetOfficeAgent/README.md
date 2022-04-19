@@ -70,6 +70,11 @@ In order to use the `MetOffice` as a web agent, simply start a server with the f
 
 ### Debugging
 
+```
+docker-compose -f "docker-compose.yml" up -d --build metoffice_agent_debug
+```
+attach debugger to start process
+send requests, execute scheduled tasks
 `launch.json`
 ```
         {
@@ -92,6 +97,7 @@ In order to use the `MetOffice` as a web agent, simply start a server with the f
 
 ### Production
 
+docker-compose -f "docker-compose.yml" up -d --build metoffice_agent_production
 
 # Notes on tests
 

@@ -27,6 +27,7 @@ COPY ./tmp ./tmp
 
 # Install Python package and the required libraries
 RUN pip install -e .
+#RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 # TODO remove updating of py4jps once the latest release is out
 RUN jpsrm uninstall JpsBaseLib
 RUN jpsrm install JpsBaseLib ./tmp
@@ -49,20 +50,19 @@ ENV FLASK_ENV=development
 WORKDIR /app/metoffice/flaskapp/
 CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
-# COPY ./metoffice ./metoffice
-# COPY ./resources/metoffice.properties ./resources/metoffice.properties
-# COPY ./app_entry_point.sh .
 
+#------------------------------------------------------
+# Production image reusing the base
+#------------------------------------------------------
+FROM base as prod
+# Install additional dependencies
+RUN pip install gunicorn
 
-# # Install Python package and the required libraries
-# RUN pip install -e .
-# RUN pip install gunicorn
-# # TODO remove updating of py4jps once the latest release is out
-# RUN jpsrm uninstall JpsBaseLib
-# RUN jpsrm install JpsBaseLib ./tmp
+# Copy required source code (as code is not attached as volume)
+WORKDIR /app
+COPY ./metoffice ./metoffice
+COPY ./app_entry_point.sh .
 
-
-# RUN pip install gunicorn
-# # Set the entrypoint
-# ENTRYPOINT ./app_entry_point.sh
+# Set the entrypoint
+ENTRYPOINT ./app_entry_point.sh
 #==================================================================================================

@@ -18,7 +18,7 @@
 //                      a particular area of interest if both are provided)
 
 // Retrieve all available stations and time series data as of 14 days back
-GET http://localhost:5050/api/metofficeagent/retrieve/all
+GET http://localhost:5000/api/metofficeagent/retrieve/all
 Content-Type: application/json
 
 { "query": {
