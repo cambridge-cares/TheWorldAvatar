@@ -477,7 +477,7 @@ aboxwriter <awriter> --file-or-dir source_dir --inp-file-type <type> --file-ext 
 # example ocompchem writer usage
 # this would run the ocompchem abox writer with the
 # --inp-file-type set to default qc_log and
-# --file-ext set to defualt "qc_log,log,out,g03,g09,g16"
+# --file-ext set to default "qc_log,log,out,g03,g09,g16"
 # thus it is not necessary to provide these extra arguments
 
 aboxwriter ocompchem --file-or-dir source_dir
@@ -581,6 +581,22 @@ Another important rule is how the list variables are written. This is best expla
 This yaml schema snippet shows how the atom types are translated into the ontocompchem csv abox. The `ATOM_LIST` json variable is a list containing the atom types, e.g. ['C', 'O', 'C', 'H', ...]. If a list variable is detected in a schema subsection then all its items are repeated as many times as the number of items on the list. In each iteration, the list variable is replaced with its next item. If the schema subsection contains multiple lists, they all must be of the same length, otherwise an exception is raised. Apart from that, for list schema subsections an extra iteration index variable %{i} can be used in all of the entries. This allows, in some cases, to create unique IRIs. The index starts from 1. Note also that any duplicate schema lines, either added manually or arising from the list variables expansion are automatically skipped when translated into csv lines.
 
 The schema yaml file is a simple, yet powerful way of defining the resulting abox schema given the json data. Its main advantage is decoupling the abox writing code from the abox schema, as there is now only one code that writes all aboxes based on the file input. If there is ever a need to change on how the abox file is written, only its schema file needs to be modified. However, given the translation complexity and the fact that one of the main requirements was to keep the schema file simple, there are also some limitations. The main limitation is the structure of the json data file. The json file must only contain simple key: value pairs, where value can be a single item or a list of values. No nested dictionaries or multidimensional lists are allowed. However, in case of json data containing the forbidden entries, it would be a rather simple task to `flatten` them in the pre-processing step. As an example, the molecule geometry x, y, z coordinates in the qc_json file are encoded as a nested list. This is then split into three lists each holding atoms x, y and z coordinates in the oc_json file.
+
+
+# Testing
+
+Testing is done using `pytest`. To run all enabled tests use the following command:
+```sh
+pytest tests
+```
+from the project root.
+
+There are three main types of tests provided. These are `test_abox_outputs`, `test_abox_setup` and `test_abox_uploads`. The first set of tests, checks the content and / or existence of all files generated upon execution of the supported abox writer. In this test suite, all external dependencies are either disabled or mocked (e.g. file server and triple store uploads). Note that the final `owl` files are only checked for existence, whereas their content is not checked, as it is enough to check the content of the `csv` files from the previous stage and rely on the `entityrdifizer` for the correct conversion. The second set of tests checks the correctness of the abox writers setup from the config YAML file. Finally, the last set of tests, checks the file server and triple store upload functionality by running the local versions of the file server and triple store services in a docker container. These tests require docker and a pull access to the `docker.cmclinnovations.com` repository, therefore are disabled by default adding the `-k no test_abox_uploads` argument in the `pytest.ini` file. In order to run these tests, make sure you have docker installed and running and you have pull access to the cmcl docker repository and that you successfully logged in to it at least once. Then run the upload tests via the following command:
+
+```sh
+pytest tests/test_abox_uploads
+```
+
 
 # Authors #
 Daniel Nurkowski (danieln@cmclinnovations.com)
