@@ -19,7 +19,7 @@ from Utils.jpsSingletons import jpsBaseLibView
 # Get settings and functions from utils module
 import Utils.utils as utils
 # Import sensor coordinates download function from Markus H's module
-from Utils.MIDAS_get_sensor_coordinates_wind import get_sensor_coords
+from uk_wind_sensor_coordinates import get_sensor_coords
 
 # ===============================================================================
 
