@@ -1,0 +1,58 @@
+[
+    {
+        "id": 1,
+        "connectionNumber": "CN0001",
+        "connectionPropertyA": "Alpha",
+        "connectionPropertyB": "Beta",
+        "connectionPropertyC": "Charlie"
+    },
+    {
+        "id": 2,
+        "connectionNumber": "CN0002",
+        "connectionPropertyA": "Alpha",
+        "connectionPropertyB": "Beta",
+        "connectionPropertyC": "Charlie"
+    },
+    {
+        "id": 3,
+        "connectionNumber": "CN0003",
+        "connectionPropertyA": "Alpha",
+        "connectionPropertyB": "Beta",
+        "connectionPropertyC": "Charlie"
+    },
+    {
+        "id": 4,
+        "connectionNumber": "CN0004",
+        "connectionPropertyA": "Alpha",
+        "connectionPropertyB": "Beta",
+        "connectionPropertyC": "Charlie"
+    },
+    {
+        "id": 5,
+        "connectionNumber": "CN0005",
+        "connectionPropertyA": "Alpha",
+        "connectionPropertyB": "Beta",
+        "connectionPropertyC": "Charlie"
+    },
+    {
+        "id": 6,
+        "connectionNumber": "CN0006",
+        "connectionPropertyA": "Alpha",
+        "connectionPropertyB": "Beta",
+        "connectionPropertyC": "Charlie"
+    },
+    {
+        "id": 7,
+        "connectionNumber": "CN0007",
+        "connectionPropertyA": "Alpha",
+        "connectionPropertyB": "Beta",
+        "connectionPropertyC": "Charlie"
+    },
+    {
+        "id": 8,
+        "connectionNumber": "CN0008",
+        "connectionPropertyA": "Alpha",
+        "connectionPropertyB": "Beta",
+        "connectionPropertyC": "Charlie"
+    }
+]
