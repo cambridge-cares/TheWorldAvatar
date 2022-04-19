@@ -10,10 +10,12 @@ public class LRUCache<K,V> implements CacheInterface<K,V>{
 	private final int capacity;
 	private Map<K,V> cache;
 	
+	//TODO set default value?
+	
 	//Constructor
 	public LRUCache(int size) {
 		this.capacity = size;
-		this.cache = new LinkedHashMap<K,V>(){
+		this.cache = new LinkedHashMap<K,V>(size, 0.75f, true){
 			@Override
 			protected boolean removeEldestEntry(Map.Entry eldest) {
 				return size() > capacity;
@@ -23,15 +25,12 @@ public class LRUCache<K,V> implements CacheInterface<K,V>{
 	
 	@Override
 	public boolean set(K key, V value) {
-		if(cache.containsKey(key)) {
-			cache.remove(key);
-		}
 		cache.put(key, value);
 		return false;
 	}
 
 	@Override
-	public V get(K key) {
+	public V get(K key) {	
 		return cache.getOrDefault(key, null);
 	}
 
