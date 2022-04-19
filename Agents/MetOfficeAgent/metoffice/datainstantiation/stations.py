@@ -109,7 +109,6 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
     # Get all available stations from API
     # MetOffice station IDs as unique references for stations
     available = retrieve_station_data_from_api(api_key)
-    available = available[:10]
     available_ids = [s['id'] for s in available]
 
     # Get already instantiated stations
