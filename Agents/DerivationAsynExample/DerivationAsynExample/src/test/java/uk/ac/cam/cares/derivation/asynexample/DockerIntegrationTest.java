@@ -184,12 +184,17 @@ public class DockerIntegrationTest extends TestCase {
 		executeAndTestUpdateDerivations(response);
 	}
 
-	// TODO testMaxMinDiffAsync is commented out from test cases as issue with
-	// concurrent HTTP request, this test can be brought back to life once the
-	// concurrent HTTP request issue is addressed
-	// @Test
-	// @Timeout(value = 180, unit = TimeUnit.SECONDS)
-	// @Order(6)
+	// TODO testMaxMinDiffAsync can pass with the naive work-around by setting
+	// initial.delay.agent.minvalue=7 and period.agent.minvalue=7 in
+	// src/main/resources/agents.properties to avoid the concurrent HTTP request
+	// issue (for more details, please refer to
+	// https://github.com/cambridge-cares/TheWorldAvatar/issues/184), to test if
+	// this issue is addressed properly, one may change both
+	// initial.delay.agent.minvalue and period.agent.minvalue back to 5 and run test
+	// again
+	@Test
+	@Timeout(value = 180, unit = TimeUnit.SECONDS)
+	@Order(6)
 	public void testMaxMinDiffAsync()
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
 		////////////////////////////////////////////////////////////
