@@ -21,6 +21,8 @@ def get_sparql_endpoint(docker_container):
                + docker_container.get_exposed_port(9999)
     # 'kb' is default namespace in Blazegraph
     endpoint += '/blazegraph/namespace/test_kb/sparql'
+    # Clear logger at the end of the test
+    clear_loggers()
     return endpoint
 
 
@@ -36,7 +38,7 @@ def get_number_of_triples(query_endpoint=QUERY_ENDPOINT):
     results = kg_client.performQuery(query=query_string)
     # Extract results
     res = int(results[0]['count'])
-    
+
     return res
 
 
@@ -44,6 +46,8 @@ def read_station_data():
     fp = os.path.join(Path(__file__).parent, "data", "station_data.json")
     with open(fp, 'r') as file:
         stations = json.load(file)
+    # Clear logger at the end of the test
+    clear_loggers()
     return stations
 
 
@@ -57,6 +61,8 @@ def read_readings_locations():
         with open(f, 'r') as file:
             readings = json.load(file)
             data.append(readings)
+    # Clear logger at the end of the test
+    clear_loggers()
     return data
 
 
@@ -81,7 +87,8 @@ def read_readings_timeseries():
         with open(f, 'r') as file:
             readings = json.load(file)
             data.append(readings)
-
+    # Clear logger at the end of the test
+    clear_loggers()
     return data
 
 
@@ -122,3 +129,14 @@ def create_blazegraph_namespace(endpoint):
         print('Namespace \"{}\" already exists\n'.format(ns))
     else:
         print('Request status code: {}\n'.format(response.status_code))
+
+
+# method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
+def clear_loggers():
+    """Remove handlers from all loggers"""
+    import logging
+    loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
+    for logger in loggers:
+        handlers = getattr(logger, 'handlers', [])
+        for handler in handlers:
+            logger.removeHandler(handler)

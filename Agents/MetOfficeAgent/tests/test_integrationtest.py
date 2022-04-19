@@ -24,6 +24,7 @@ def client():
     with app.test_client() as client:
         yield client
 
+
 @pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
                           as well as blank RDB as TimeSeriesClient reads required inputs directly \
                           from properties file")

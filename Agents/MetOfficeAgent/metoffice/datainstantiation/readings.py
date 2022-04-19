@@ -12,7 +12,7 @@ import datetime as dt
 import time
 from math import nan
 
-#import agentlogging
+import agentlogging
 from metoffice.dataretrieval.readings import *
 from metoffice.dataretrieval.stations import *
 from metoffice.datainstantiation.stations import *
@@ -25,7 +25,7 @@ from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, CO
                                              TIME_FORMAT, DATACLASS, VISIBILITY
 
 # Initialise logger
-#logger = agentlogging.get_logger("dev")
+logger = agentlogging.get_logger("prod")
 
 
 def add_readings_timeseries(instantiated_ts_iris: list = None,
@@ -65,25 +65,25 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     try:
         metclient = metoffer.MetOffer(api_key)
     except:
-        #logger.error("MetOffer client could not be created to retrieve station readings.")
+        logger.error("MetOffer client could not be created to retrieve station readings.")
         raise APIException("MetOffer client could not be created to retrieve station readings.")        
     
     # Load available observations and forecasts from API
     print('Retrieving time series data from API ...')
-    #logger.info('Retrieving time series data from API ...')
+    logger.info('Retrieving time series data from API ...')
     available_obs, available_fcs, issue_time = retrieve_readings_data_per_station(metclient, only_keys=False)
     print('Time series data successfully retrieved.')
-    #logger.info('Time series data successfully retrieved.')
+    logger.info('Time series data successfully retrieved.')
     
     # Retrieve information about instantiated time series from KG
     print('Retrieving time series triples from KG ...')
-    #logger.info('Retrieving time series triples from KG ...')
+    logger.info('Retrieving time series triples from KG ...')
     instantiated_obs = get_instantiated_observation_timeseries(query_endpoint=query_endpoint,
                                                                update_endpoint=update_endpoint)
     instantiated_fcs = get_instantiated_forecast_timeseries(query_endpoint=query_endpoint,
                                                             update_endpoint=update_endpoint)
     print('Time series triples successfully retrieved.')
-    #logger.info('Time series triples successfully retrieved.')
+    logger.info('Time series triples successfully retrieved.')
 
     # Keep only the relevant subset for instantiated_ts_iris
     if instantiated_ts_iris:
@@ -104,7 +104,7 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     
     # Loop through all observation timeseries
     print('Adding observation time series data ...')
-    #logger.info('Adding observation time series data ...')
+    logger.info('Adding observation time series data ...')
     ts_list = []
     for tsiri in list(instantiated_obs['tsIRI'].unique()): 
         # Extract relevant data      
@@ -129,11 +129,11 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
                 ts_list.append(ts)
     ts_client.bulkaddTimeSeriesData(ts_list)
     print(f'Time series data for {added_obs} observations successfully added to KG.')
-    #logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
+    logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
     
     # Loop through all forecast timeseries
     print('Adding forecast time series data ...')
-    #logger.info('Adding forecast time series data ...')
+    logger.info('Adding forecast time series data ...')
     ts_list = []
     for tsiri in list(instantiated_fcs['tsIRI'].unique()):  
         # Extract relevant data      
@@ -160,14 +160,14 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
                     query_string += f"<{iri}> , "
     ts_client.bulkaddTimeSeriesData(ts_list)
     print(f'Time series data for {added_fcs} forecasts successfully added.')
-    #logger.info(f'Time series data for {added_fcs} forecasts successfully added.')
+    logger.info(f'Time series data for {added_fcs} forecasts successfully added.')
 
     # Strip trailing comma and close & perform creation date update query
     query_string = query_string[:-2]
     query_string += f") ) }}"
     kg_client = KGClient(query_endpoint, update_endpoint)
     kg_client.performUpdate(query_string)
-    #logger.info('Creation time triples successfully updated.')
+    logger.info('Creation time triples successfully updated.')
 
     return added_obs + added_fcs
 
@@ -202,7 +202,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
     try:
         metclient = metoffer.MetOffer(api_key)
     except Exception as ex:
-        #logger.error("MetOffer client could not be created to retrieve station readings. " + ex)
+        logger.error("MetOffer client could not be created to retrieve station readings. " + ex)
         raise APIException("MetOffer client could not be created to retrieve station readings.")
     
     # Initialise update query
@@ -215,13 +215,13 @@ def instantiate_station_readings(instantiated_sites_list: list,
 
     # Get already instantiated observations and forecasts (across all stations)
     print('Retrieving instantiated observation/forecast triples from KG ...')
-    #logger.info('Retrieving instantiated observation/forecast triples from KG ...')
+    logger.info('Retrieving instantiated observation/forecast triples from KG ...')
     instantiated_obs = get_instantiated_observations(query_endpoint=query_endpoint, 
                                                      update_endpoint=update_endpoint)
     instantiated_fcs = get_instantiated_forecasts(query_endpoint=query_endpoint, 
                                                   update_endpoint=update_endpoint)
     print('Observation/forecast triples successfully retrieved.')
-    #logger.info('Observation/forecast triples successfully retrieved.')
+    logger.info('Observation/forecast triples successfully retrieved.')
 
     # Get short version of variable type from full quantity type
     instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
@@ -229,17 +229,17 @@ def instantiate_station_readings(instantiated_sites_list: list,
 
     # Load available observations and forecasts from API
     print('Retrieving available observations/forecasts from API ...')
-    #logger.info('Retrieving available observations/forecasts from API ...')
+    logger.info('Retrieving available observations/forecasts from API ...')
     available_obs, available_fcs, _ = retrieve_readings_data_per_station(metclient)
     print('Available observations/forecasts successfully retrieved.')
-    #logger.info('Available observations/forecasts successfully retrieved.')
+    logger.info('Available observations/forecasts successfully retrieved.')
 
     # Initialise number of instantiated readings
     instantiated = 0
 
     # Loop over all sites   
     print('Create triples to instantiate static observation/forecast information ...')
-    #logger.info('Create triples to instantiate static observation/forecast information ...')
+    logger.info('Create triples to instantiate static observation/forecast information ...')
     for id in instantiated_sites_list:
         
         # Get lists of instantiated readings for current station
@@ -303,7 +303,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
                 dataClasses.append(dataClasses2 + dataClasses4)
                 timeUnit.append(timeUnit4)
 
-            #logger.info(f'Readings for station {id:>6} successfully added to query.')
+            logger.info(f'Readings for station {id:>6} successfully added to query.')
 
     # Split triples to instantiate into several chunks of max size
     queries = split_insert_query(triples, max=100000)
@@ -312,20 +312,20 @@ def instantiate_station_readings(instantiated_sites_list: list,
     kg_client = KGClient(query_endpoint, update_endpoint)
     # Perform SPARQL update query in chunks to avoid heap size/memory issues
     print(f'Instantiate static observation/forecast triples in {len(queries)} chunks ...')
-    #logger.info(f'Instantiate static observation/forecast triples in {len(queries)} chunks ...')
+    logger.info(f'Instantiate static observation/forecast triples in {len(queries)} chunks ...')
     for query in queries:
         kg_client.performUpdate(query)
     print('Observations/forecasts successfully instantiated/updated.')
-    #logger.info('Insert query successfully performed.')
+    logger.info('Insert query successfully performed.')
 
     if dataIRIs:
         print('Instantiate static time series triples ...')
-        #logger.info('Instantiate static time series triples ...')
+        logger.info('Instantiate static time series triples ...')
         # Instantiate all time series triples
         ts_client = TSClient.tsclient_with_default_settings()
         ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
         print('Time series triples successfully added.')
-        #logger.info('Time series triples successfully added.')
+        logger.info('Time series triples successfully added.')
 
     return instantiated
 
@@ -355,7 +355,7 @@ def update_all_stations(api_key: str = DATAPOINT_API_KEY,
     # Instantiate all available stations (ONLY not already existing stations
     # will be newly instantiated)
     print('\nUpdate instantiated stations: ')
-    #logger.info('Update instantiated stations ...')
+    logger.info('Update instantiated stations ...')
     t1 = time.time()
     new_stations = instantiate_all_stations(api_key, query_endpoint, update_endpoint)
     t2 = time.time()
@@ -366,7 +366,7 @@ def update_all_stations(api_key: str = DATAPOINT_API_KEY,
     # Instantiate all available station readings (ONLY not already existing
     # readings will be newly instantiated)
     print('\nUpdate instantiated station readings: ')
-    #logger.info('Update instantiated station readings ...')
+    logger.info('Update instantiated station readings ...')
     t1 = time.time()
     new_readings = instantiate_all_station_readings(api_key, query_endpoint, update_endpoint)
     t2 = time.time()
@@ -375,7 +375,7 @@ def update_all_stations(api_key: str = DATAPOINT_API_KEY,
 
     # Add latest readings time series to instantiated reading quantities
     print('\nUpdate station readings time series data: ')
-    #logger.info('Update station readings time series data ...')
+    logger.info('Update station readings time series data ...')
     t1 = time.time()
     updated_ts = add_all_readings_timeseries(api_key, query_endpoint, update_endpoint)
     t2 = time.time()
@@ -412,7 +412,7 @@ def add_readings_for_station(station_iri: str,
     """
 
     if readings_iris and (len(readings) != len(readings_iris)):
-        #logger.error("Length or readings and readings_iris does not match.")
+        logger.error("Length or readings and readings_iris does not match.")
         raise ValueError("Length or readings and readings_iris does not match.")
 
     # Initialise "creation" time for forecasts
@@ -481,7 +481,7 @@ def retrieve_readings_data_per_station(metclient, station_id: str = None,
         try:
             obs = metclient.loc_observations(station_id)
         except:
-            #logger.error('Error while retrieving observation data from DataPoint API')
+            logger.error('Error while retrieving observation data from DataPoint API')
             raise APIException('Error while retrieving observation data from DataPoint API')
         observations = readings_dict_gen(obs)
         available_obs = {key: condition_readings_data(observations[key], only_keys) for key in observations}
@@ -496,7 +496,7 @@ def retrieve_readings_data_per_station(metclient, station_id: str = None,
             fc = metclient.loc_forecast(station_id, metoffer.THREE_HOURLY)
             creation_time = fc['SiteRep']['DV']['dataDate']
         except:
-            #logger.error('Error while retrieving observation data from DataPoint API')
+            logger.error('Error while retrieving observation data from DataPoint API')
             raise APIException('Error while retrieving observation data from DataPoint API')
         forecasts = readings_dict_gen(fc)
         available_fcs = {key: condition_readings_data(forecasts[key], only_keys) for key in forecasts}

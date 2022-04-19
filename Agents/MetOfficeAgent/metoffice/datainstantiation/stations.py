@@ -9,7 +9,7 @@
 import uuid
 import metoffer
 
-#import agentlogging
+import agentlogging
 from metoffice.kgutils.querytemplates import *
 from metoffice.datamodel.utils import create_sparql_prefix
 from metoffice.dataretrieval.stations import get_all_metoffice_station_ids
@@ -19,7 +19,7 @@ from metoffice.datamodel.utils import PREFIXES
 from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
 
 # Initialise logger
-#logger = agentlogging.get_logger("dev")
+logger = agentlogging.get_logger("prod")
 
 
 def instantiate_stations(station_data: list,
@@ -67,7 +67,7 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
 
     # Create MetOffice client
     if not api_key:
-        #logger.error("No Met Office DataPoint API key provided.")
+        logger.error("No Met Office DataPoint API key provided.")
         raise APIException("No Met Office DataPoint API key provided.")
     else:
         # Initialise MetOffer client
@@ -75,7 +75,7 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
         obs_sites = fcs_sites = []
         try:
             print('Retrieving station data from API ...')
-            #logger.info('Retrieving station data from API ...')
+            logger.info('Retrieving station data from API ...')
             # 1) Get all observations sites
             sites = metclient.loc_observations(metoffer.SITELIST)
             obs_sites = sites['Locations']['Location']
@@ -83,9 +83,9 @@ def retrieve_station_data_from_api(api_key: str = None) -> list:
             sites = metclient.loc_forecast(metoffer.SITELIST, metoffer.THREE_HOURLY)
             fcs_sites = sites['Locations']['Location']
             print('Station data successfully retrieved.')
-            #logger.info('Station data successfully retrieved.')
+            logger.info('Station data successfully retrieved.')
         except Exception as ex:
-            #logger.error("Error while retrieving station data from DataPoint.")
+            logger.error("Error while retrieving station data from DataPoint.")
             raise APIException("Error while retrieving station data from DataPoint")
         sites = []
         sites += obs_sites 
@@ -109,6 +109,7 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
     # Get all available stations from API
     # MetOffice station IDs as unique references for stations
     available = retrieve_station_data_from_api(api_key)
+    available = available[:10]
     available_ids = [s['id'] for s in available]
 
     # Get already instantiated stations
@@ -120,12 +121,12 @@ def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,
 
     # Instantiate missing stations
     print('Instantiate/update stations in KG ...')
-    #logger.info('Instantiate/update stations in KG ...')
+    logger.info('Instantiate/update stations in KG ...')
     instantiate_stations(station_data=to_instantiate,
                          query_endpoint=query_endpoint,
                          update_endpoint=update_endpoint)
     print('Stations successfully instantiated/updated.')
-    #logger.info('Stations successfully instantiated/updated.')
+    logger.info('Stations successfully instantiated/updated.')
     
     return len(missing_ids)
 
@@ -151,7 +152,7 @@ def _condition_metoffer_data(station_data: dict) -> dict:
     if ('latitude' in station_data.keys()) and ('longitude' in station_data.keys()):
         conditioned['location'] = station_data['latitude'] + '#' + station_data['longitude']
     else:
-        #logger.warning(f"Station {station_data['id']} does not have location data.")
+        logger.warning(f"Station {station_data['id']} does not have location data.")
         print(f"Station {station_data['id']} does not have location data.")
     
     return conditioned
