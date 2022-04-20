@@ -215,7 +215,7 @@ public class ESPHomeUpdateAgentIntegrationTest {
 
     @Test
     public void testInitializeTimeSeriesIfNotExistsWithExistingTimeSeries() {
-        // Insert particle time-series
+       
         ArrayList<String> iris = new ArrayList<>();
         ArrayList<Class<?>> classes = new ArrayList<>();
         for (String key: keys) {
@@ -281,7 +281,7 @@ public class ESPHomeUpdateAgentIntegrationTest {
     @Test
     public void testUpdateTimeSeriesWithPruning() {
         insertTimeSeries();
-        // Add data for gas readings up to last reading
+      
         List<OffsetDateTime> times = new ArrayList<>();
         for(int i = 0; i < timestamps.length ; i++) {
             if (i < (timestamps.length-1)) {
@@ -311,6 +311,6 @@ public class ESPHomeUpdateAgentIntegrationTest {
         // Insert time-series
         List<Class<?>> classes = Collections.nCopies(IRIs.size(), String.class);
         tsClient.initTimeSeries(IRIs, classes, "timeUnit");
-        // Insert gas time-series
+        
     }
 }

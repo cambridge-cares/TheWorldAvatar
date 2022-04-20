@@ -115,7 +115,7 @@ public class ESPHomeUpdateAgentLauncherTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertEquals("The ThingsBoard input agent could not be constructed!", e.getMessage());
+            Assert.assertEquals("The ESPHome update agent could not be constructed!", e.getMessage());
         }
     }
 

@@ -41,10 +41,9 @@ public class ESPHomeUpdateAPIConnector {
     
     /**
      * Standard constructor
-     * @param username the username to access ThingsBoard API
-     * @param password the password to access ThingsBoarrd API
-     * @param path_url the port that is hosting the ThingsBoard server
-     * @param device_token the token required to retrieve readings from a specific device
+     * @param path_url the IP address or URL of where the ESPHome server is located
+     * @param domain the type of component
+     * @param ID the ID of the component
      */
     public ESPHomeUpdateAPIConnector(String path_url, String domain, String ID) {
         this.path_url = path_url;
@@ -108,8 +107,8 @@ public class ESPHomeUpdateAPIConnector {
 	}
     
     /**
-     * Reads the username, password, auth_url, api_url and device_token needed to connect to the API from a properties file and saves it in fields.
-     * @param filepath Path to the properties file from which to read the username, password, auth_url, api_url and device_id
+     * Reads the path URL, domain, domain ID needed to connect to the API from a properties file and saves it in fields.
+     * @param filepath Path to the properties file from which to read the path URL, domain and domain ID
      */
     private void loadAPIConfigs(String filepath) throws IOException {
         // Check whether properties file exists at specified location
@@ -125,7 +124,7 @@ public class ESPHomeUpdateAPIConnector {
             Properties prop = new Properties();
             prop.load(input);
 
-            // Get username, password, auth_url, api_url and device_token from properties file
+            // Get path URL, domain and domain ID from properties file
             if (prop.containsKey("path.url")) {
                 this.path_url = prop.getProperty("path.url");
             } else {

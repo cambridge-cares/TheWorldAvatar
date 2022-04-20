@@ -191,9 +191,9 @@ public class ESPHomeUpdateAgentTest {
         // Make private method accessible
         Method getClassFromJSONKey = ESPHomeUpdateAgent.class.getDeclaredMethod("getClassFromJSONKey", String.class);
         getClassFromJSONKey.setAccessible(true);
-        // No specific key should return the string class
+        // ts should return the string class
         Assert.assertEquals(String.class, getClassFromJSONKey.invoke(testAgent, "ts"));
-        // Environment conditions should be double class
+        // component status should be string class
         Assert.assertEquals(String.class, getClassFromJSONKey.invoke(testAgent, "generic_output"));
         
     }

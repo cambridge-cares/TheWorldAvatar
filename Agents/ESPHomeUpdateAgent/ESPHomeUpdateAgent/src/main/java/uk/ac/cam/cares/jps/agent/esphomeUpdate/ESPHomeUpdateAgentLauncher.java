@@ -37,7 +37,7 @@ public class ESPHomeUpdateAgentLauncher extends JPSAgent {
      * Logging / error messages
      */
     private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.";
-    private static final String AGENT_ERROR_MSG = "The ThingsBoard input agent could not be constructed!";
+    private static final String AGENT_ERROR_MSG = "The ESPHome update agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the ESPHome API connector needed to interact with the API!";

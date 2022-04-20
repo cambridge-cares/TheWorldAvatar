@@ -178,7 +178,7 @@ public class ESPHomeUpdateAgent{
 
     /**
      * Updates the database with new readings.
-     * @param ElectricalTemperatureHumidityReadings The readings received from the ThingsBoard API
+     * @param statusAndTimeStamp contains the status of the component and the corresponding timestamp values
      */
     public void updateData(JSONObject statusAndTimeStamp)throws IllegalArgumentException {
         // Transform readings in hashmap containing a list of objects for each JSON key,
@@ -299,7 +299,7 @@ public class ESPHomeUpdateAgent{
     
     /**
      * Transform a JSON Object into a Map, where values per key are gathered into a list.
-     * The JSON Object has key-value pairs where the keys are Current, Voltage, Power etc and the values are JSON Arrays.
+     * The JSON Object has key-value pairs where the keys are the domain IDs and the values are JSON Arrays.
      * Each JSON Array consist of multiple JSON Objects. Each JSON Objects consist of two key-value pairs with the keys being ts and value.
      * @param readings The JSON Object to convert
      * @return The readings in form of a Map
@@ -312,7 +312,7 @@ public class ESPHomeUpdateAgent{
             // Iterate through the keys of the JSON object
             for (Iterator<String> it = readings.keys(); it.hasNext();) {
                 String key = it.next();                
-                //Each key such as Current, Voltage etc has JSON arrays as its own value consisting
+                //Each key has JSON arrays as its own value consisting
                 //of multiple JSON objects {"ts"= ...,"value" = ... } separated by a comma
                 JSONArray tsAndValue = readings.getJSONArray(key);
                 //Go through the JSON objects in the array one by one
@@ -358,17 +358,17 @@ public class ESPHomeUpdateAgent{
 
     /**
      * Converts the readings in form of maps to time series' using the mappings from JSON key to IRI.
-     * @param ElectricalTemperatureHumidityReadings The readings as map.
-     * @param TimestampReadings The timestamps as map.
+     * @param statusReadings The status as map.
+     * @param timestampReadings The timestamps as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
-    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> StatusReadings,
-                                                                        Map<String, List<?>> TimestampReadings
+    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> statusReadings,
+                                                                        Map<String, List<?>> timestampReadings
                                                                         )
             throws  NoSuchElementException {
         // Extract the timestamps by mapping the private conversion method on the list items
         // that are supposed to be string (toString() is necessary as the map contains lists of different types)
-        List<OffsetDateTime> allTimestamps = TimestampReadings.get(ESPHomeUpdateAgent.timestampKey).stream()
+        List<OffsetDateTime> allTimestamps = timestampReadings.get(ESPHomeUpdateAgent.timestampKey).stream()
                 .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
         // Construct a time series object for each mapping
         List<TimeSeries<OffsetDateTime>> timeSeries = new ArrayList<>();
@@ -381,8 +381,8 @@ public class ESPHomeUpdateAgent{
             for(String key: mapping.getAllJSONKeys()) {
                 // Add IRI
                 iris.add(mapping.getIRI(key));
-                if (StatusReadings.containsKey(key)) {
-                    values.add(StatusReadings.get(key));
+                if (statusReadings.containsKey(key)) {
+                    values.add(statusReadings.get(key));
                 }
                 // Will create a problem as length of iris and values do not match when creating the time series.
                 // Could add an empty list, but the length of the list needs to match length of times. So what values to

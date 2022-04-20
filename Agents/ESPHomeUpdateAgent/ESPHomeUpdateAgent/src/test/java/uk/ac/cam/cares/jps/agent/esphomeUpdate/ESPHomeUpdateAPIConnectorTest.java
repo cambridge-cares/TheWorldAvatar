@@ -34,7 +34,7 @@ public class ESPHomeUpdateAPIConnectorTest {
     private static final int PORT = 8089;
     private static final String PATH_URL = "http://localhost:" + PORT + "/";
 
-    // Mocking objects to mock AQMesh API calls
+    // Mocking objects to mock ESPHome API calls
     @Rule
     public WireMockRule esphomeAPIMock = new WireMockRule(PORT);
 
@@ -55,14 +55,13 @@ public class ESPHomeUpdateAPIConnectorTest {
 
     @Test
     public void ESPHomeUpdateAPIConnectorConstructorTest() throws NoSuchFieldException, IllegalAccessException, IOException {
-        // One connector constructed using the username, password, auth_url, api_url and device token directly
+        // One connector constructed using the path url, domain and domain ID directly
         ESPHomeUpdateAPIConnector connector = new ESPHomeUpdateAPIConnector("path_url", "domain", "ID");
         // One connector constructed using a properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "api.properties").toString();
         writePropertyFile(propertiesFile, Arrays.asList("path.url=path_url", "esphome.domain=domain", "domain.ID=ID"));
         ESPHomeUpdateAPIConnector connectorFile = new ESPHomeUpdateAPIConnector(propertiesFile);
 
-        // Retrieve private fields for username and password and check that they were set correctly
         Field pathUrlField = ESPHomeUpdateAPIConnector.class.getDeclaredField("path_url");
         pathUrlField.setAccessible(true);
         Assert.assertEquals("path_url", pathUrlField.get(connector));
@@ -83,7 +82,7 @@ public class ESPHomeUpdateAPIConnectorTest {
     @Test
     public void loadAPIConfigsTest() throws NoSuchMethodException, IllegalAccessException, IOException, NoSuchFieldException {
         // Filepath to not yet created file in temporary test folder
-        String filepath = Paths.get(folder.getRoot().toString(), "thingsboard.properties").toString();
+        String filepath = Paths.get(folder.getRoot().toString(), "esphome.properties").toString();
         // Error messages
         String fileNotFound = "No properties file found at specified filepath: " + filepath;
         String noPathURL = "Properties file is missing \"path.url=<path_url>\"";
@@ -103,7 +102,7 @@ public class ESPHomeUpdateAPIConnectorTest {
             Assert.assertEquals(fileNotFound, e.getCause().getMessage());
         }
 
-        // Test for missing URL by creating a file only containing user and password
+        // Test for missing URL by creating a file only containing domain and domain ID
         writePropertyFile(filepath, Arrays.asList("esphome.domain=domain", "domain.ID=ID"));
         // Try loading RDB configs
         try {
@@ -113,7 +112,7 @@ public class ESPHomeUpdateAPIConnectorTest {
             Assert.assertEquals(IOException.class, e.getCause().getClass());
             Assert.assertEquals(noPathURL, e.getCause().getMessage());
         }
-        
+     // Test for missing domain by creating a file only containing path URL and domain ID
         writePropertyFile(filepath, Arrays.asList("path.url=path_url", "domain.ID=ID"));
         
         try {
@@ -124,6 +123,7 @@ public class ESPHomeUpdateAPIConnectorTest {
             Assert.assertEquals(noDomain, e.getCause().getMessage());
         }
         
+     // Test for missing domain ID by creating a file only containing path URL and domain
         writePropertyFile(filepath, Arrays.asList("path.url=path_url", "esphome.domain=domain"));
       
         try {
@@ -134,7 +134,7 @@ public class ESPHomeUpdateAPIConnectorTest {
             Assert.assertEquals(noID, e.getCause().getMessage());
         }
 
-        // Test for proper username and password
+        // Test for proper path URL, domain and domain ID
         writePropertyFile(filepath, Arrays.asList("path.url=path_url", "esphome.domain=domain", "domain.ID=ID"));
        
         try {
