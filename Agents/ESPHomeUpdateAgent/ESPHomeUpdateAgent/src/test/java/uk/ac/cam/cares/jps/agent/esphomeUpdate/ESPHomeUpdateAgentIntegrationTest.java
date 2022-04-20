@@ -33,10 +33,10 @@ import java.util.TimeZone;
 /**
  * This test class is to test the ThingsBoard input agent with a running KG and postgres database.
  */
-
+/*
 @Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
-
+*/
 @Testcontainers
 public class ESPHomeUpdateAgentIntegrationTest {
 
@@ -293,7 +293,7 @@ public class ESPHomeUpdateAgentIntegrationTest {
         tsClient.addTimeSeriesData(ts);
         // Update data through agent
         agent.updateData(allReadings);
-        // Check that database was updated and existing gas data is untouched
+        // Check that database was updated and existing data is untouched
         ts = tsClient.getTimeSeries(IRIs);
         Assert.assertEquals(allReadings.getJSONArray(keys[0]).length(),ts.getTimes().size());
         // Check that data content is correct
