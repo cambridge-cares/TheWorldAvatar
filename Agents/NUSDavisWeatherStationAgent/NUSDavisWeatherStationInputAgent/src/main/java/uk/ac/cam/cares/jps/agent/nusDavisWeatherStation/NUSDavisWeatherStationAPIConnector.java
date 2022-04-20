@@ -11,7 +11,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.weatherlink;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -26,7 +25,7 @@ class NUSDavisWeatherStationAPIConnector{
     private String api_url="https://api.weatherlink.com/v2/current/";
     private int stationId;
     private String api_Signature=" ";
-    private long current_timestamp= Instant.now().getEpochSecond();
+    private Long current_timestamp= Instant.now().getEpochSecond();
 
 
 

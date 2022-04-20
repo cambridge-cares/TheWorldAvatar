@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
+
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -192,7 +193,7 @@ public class NUSDavisWeatherStationAPIConnectorTest {
         Field timestamp=testConnector2.getClass().getField("current_timestamp");
         timestamp.setAccessible(true);
 
-        Method setSign=testConnector2.getClass().getMethod("setAPISignature", long.class);
+        Method setSign=testConnector2.getClass().getMethod("setAPISignature",null);
         setSign.setAccessible(true);
         setSign.invoke(testConnector2,"timestamp").toString();
 
