@@ -18,8 +18,8 @@ from Utils.data_reader_module import get_df_selected_rows, get_df_column_data
 from Utils.jpsSingletons import jpsBaseLibView
 # Get settings and functions from utils module
 import Utils.utils as utils
-# Import sensor coordinates download function from Markus H's module
-from Utils.uk_wind_sensor_coordinates import get_sensor_coords
+# Import sensor coordinates download function
+from Utils.met_office_wind_sensor_coordinates import get_sensor_coords
 
 # ===============================================================================
 

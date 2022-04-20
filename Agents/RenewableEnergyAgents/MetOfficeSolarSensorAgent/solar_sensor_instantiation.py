@@ -19,7 +19,7 @@ from Utils.jpsSingletons import jpsBaseLibView
 # Get settings and functions from utils module
 import Utils.utils as utils
 # Import sensor coordinates download function from Markus H's module
-from Utils.MIDAS_get_sensor_coordinates_solar import get_sensor_coords
+from Utils.met_office_solar_sensor_coordinates import get_sensor_coords
 
 # ===============================================================================
 
@@ -27,7 +27,7 @@ def get_coords():
     '''Returns a dictionary of sensor coordinates from the
     file downloaded by the get_sensor_coords function.
     '''
-    station_loc = pd.read_csv('../Data/MIDAS_solar_data/stationlocationssolar.csv')
+    station_loc = pd.read_csv('./Data/MIDAS_solar_data/stationlocationssolar.csv')
     lat_list = station_loc['Latitude']
     lon_list = station_loc['Longitude']
     id_list = station_loc['src_id']
@@ -44,12 +44,12 @@ def merge_midas():
     create a new file (data downloaded using seperate script).
     '''
     # convert txt file to csv file
-    file = pd.read_csv (r'../Data/MIDAS_solar_data/midas_radtob_202101-202112.txt')
-    file.to_csv (r'../Data/MIDAS_solar_data/midas_radtob_202101-202112.csv', index=None)
+    file = pd.read_csv (r'./Data/MIDAS_solar_data/midas_radtob_202101-202112.txt')
+    file.to_csv (r'./Data/MIDAS_solar_data/midas_radtob_202101-202112.csv', index=None)
 
     # load data
-    headers = pd.read_csv('../Data/MIDAS_solar_data/RO_Column_Headers.csv')
-    data = pd.read_csv('../Data/MIDAS_solar_data/midas_radtob_202101-202112.csv', header=None)
+    headers = pd.read_csv('./Data/MIDAS_solar_data/RO_Column_Headers.csv')
+    data = pd.read_csv('./Data/MIDAS_solar_data/midas_radtob_202101-202112.csv', header=None)
 
     # condition data
     data_extract = data.iloc[:, :20]
@@ -60,7 +60,7 @@ def merge_midas():
     combined.columns = headers_extract
 
     # write data to combined file
-    combined.to_csv('../Data/MIDAS_solar_data/MIDASsolar.csv', index=False)
+    combined.to_csv('./Data/MIDAS_solar_data/MIDASsolar.csv', index=False)
 
 def extract_data(coordinates):
     '''Returns a dictionary containing all desired data for each sensor.
@@ -68,22 +68,14 @@ def extract_data(coordinates):
     Data extracted from the data file created by the merge_midas funtion,
     and the coordinates dictionary created by the get_coords function.
     '''
-    solar_data = pd.read_csv('../Data/MIDAS_solar_data/MIDASsolar.csv')
+    solar_data = pd.read_csv('./Data/MIDAS_solar_data/MIDASsolar.csv')
 
     # extracting a list of unique sensor IDs
     sensor_ids = solar_data['SRC_ID']
     sensor_list = []
-    which_data = input("Do you want all data? (y/n) ")
-    if which_data == 'n':
-        which_sensor = int(input("Which sensor do you want? "))
-        sensor_list.append(which_sensor)
-    elif which_data == 'y':
-        for sensor_id in sensor_ids:
-            if sensor_id not in sensor_list:
-                sensor_list.append(sensor_id)
-    else:
-        print("Invalid choice")
-        exit()
+    for sensor_id in sensor_ids:
+        if sensor_id not in sensor_list:
+            sensor_list.append(sensor_id)
     # Producing a dictionary of sensors and their corresponding data
     sensor_data = {}
     for sensor in sensor_list:
