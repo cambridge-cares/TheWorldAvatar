@@ -66,7 +66,7 @@ def optimal_turbine(v_op, gust_speeds):
         return '-'
 
 
-    turbine_data = pd.read_csv('../Data/turbine_data/turbine_data.csv')
+    turbine_data = pd.read_csv('./Data/turbine_data/turbine_data.csv')
     rated_speeds = turbine_data['Rated speed']
     turbine_heights = turbine_data['Turbine height']
     survival_speeds = turbine_data['Survival speed']
