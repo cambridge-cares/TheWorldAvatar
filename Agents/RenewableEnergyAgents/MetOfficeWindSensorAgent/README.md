@@ -8,6 +8,6 @@ The agent processes UK Mean Wind Data (MIDAS) downloaded as a CSV file to repres
 
 Python modules developed for data instantiation and query are briefly described below.
 
-* midas_wind_sensor_instantiation.py: This script instantiates wind sensor-generated time series data attached to geospatial reference within the KG using the [TimeSeriesClient].
+* wind_sensor_instantiation.py: This script instantiates wind sensor-generated time series data attached to geospatial reference within the KG using the [TimeSeriesClient].
 
-* midas_wind_sensor_query.py: This script queries the KG and visualises this data using the Digital Twin Visualisation Framework ([DTVF]). To interact with the [TheWorldAvatar] (TWA) code base (mainly) written in Java, the [py4jps] Python wrapper is used.
+* wind_sensor_query.py: This script queries the KG and visualises this data using the Digital Twin Visualisation Framework ([DTVF]). To interact with the [TheWorldAvatar] (TWA) code base (mainly) written in Java, the [py4jps] Python wrapper is used.
