@@ -165,7 +165,7 @@ public class NUSDavisWeatherStationAPIConnectorTest {
         Assert.assertEquals("test_id", stationIdField.get(testConnector));
     }
     @Test
-    public void testGetWeatherDataReadings(){
+    public void testGetWeatherDataReadings()  {
 
         // API returns a response
         JSONObject responseBody = new JSONObject();
@@ -174,10 +174,32 @@ public class NUSDavisWeatherStationAPIConnectorTest {
         asset.put("testval", val);
         responseBody.put("testObject",asset);
 
-        nusDavisWeatherStationAPIMock.stubFor(get(urlEqualTo("123456?api-key=key&t=1558729481&start-timestamp=1561964400&end-timestamp=1562050800&api-signature=fbe025018d78d7b13bb09eb36c6c2d7b1461b33253bf3d291b1ed37826599e8"))
+        NUSDavisWeatherStationAPIConnector testConnector1= new NUSDavisWeatherStationAPIConnector("987654321","ABC123",TEST_URL,123456,1558729481);
+
+        //signature calculated using the online tool: freeformatter.com/hmac-generator
+        String signature="c1bd80b57a887aa35ed48f71dc66c64825328ad42a0344949cb9c510d318b36e";
+
+        nusDavisWeatherStationAPIMock.stubFor(get(urlEqualTo("123456?api-key=987654321&t=1558729481&api-signature="+signature))
                 .willReturn(ok().withBody(responseBody.toString())));
 
-        Assert.assertEquals(responseBody.toString(), testConnector.getWeatherReadings().toString());
+        Assert.assertEquals(responseBody.toString(), testConnector1.getWeatherReadings().toString());
+    }
+
+    @Test
+    public void testSetAPISignature() throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        NUSDavisWeatherStationAPIConnector testConnector2= new NUSDavisWeatherStationAPIConnector("987654321","ABC123",TEST_URL,123456,1558729481);
+
+        Field timestamp=testConnector2.getClass().getField("current_timestamp");
+        timestamp.setAccessible(true);
+
+        Method setSign=testConnector2.getClass().getMethod("setAPISignature", long.class);
+        setSign.setAccessible(true);
+        setSign.invoke(testConnector2,"timestamp").toString();
+
+        Field api_sign=testConnector2.getClass().getField("api_Signature");
+        api_sign.setAccessible(true);
+        //expected signature calculated using the online tool: freeformatter.com/hmac-generator
+        Assert.assertEquals("c1bd80b57a887aa35ed48f71dc66c64825328ad42a0344949cb9c510d318b36e",api_sign);
     }
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
         // Overwrite potentially existing properties file

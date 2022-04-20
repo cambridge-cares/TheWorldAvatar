@@ -23,11 +23,11 @@ import java.util.Properties;
 class NUSDavisWeatherStationAPIConnector{
     private String api_key;
     private String api_secret;
-    private String api_url="https://api.weatherlink.com/v2/historic/";
+    private String api_url="https://api.weatherlink.com/v2/current/";
     private int stationId;
     private String api_Signature=" ";
-    private long end_timestamp= Instant.now().getEpochSecond();
-    private long start_timestamp= end_timestamp-1800;//assuming starting time is half an hour before the end time.
+    private long current_timestamp= Instant.now().getEpochSecond();
+
 
 
     private static final String ERR_MSG="Weather data could not be retrieved";
@@ -40,13 +40,12 @@ class NUSDavisWeatherStationAPIConnector{
         this.stationId=my_stationId;
     }
 
-    public NUSDavisWeatherStationAPIConnector(String my_key, String my_secret, String my_url, int my_stationId,long start,long end){
+    public NUSDavisWeatherStationAPIConnector(String my_key, String my_secret, String my_url, int my_stationId,long current){
         this.api_key=my_key;
         this.api_secret=my_secret;
         this.api_url=my_url;
         this.stationId=my_stationId;
-        this.start_timestamp=start;
-        this.end_timestamp=end;
+        this.current_timestamp=current;
     }
 
     public NUSDavisWeatherStationAPIConnector(String filepath)throws IOException {
@@ -57,9 +56,9 @@ class NUSDavisWeatherStationAPIConnector{
     * Method for setting the API signature. It uses the SDK given by the API provider: weatherlink.
     * The HMAC SHA-256 algorithm is used to generate the API signature.
     * */
-    private void setAPISignature(long requestTimestamp) throws SignatureException {
+    private void setAPISignature() throws SignatureException {
         SignatureCalculator sc=new SignatureCalculator();
-        String signature= sc.calculateHistoricSignature(api_key,api_secret,requestTimestamp,stationId,start_timestamp,end_timestamp);
+        String signature=sc.calculateCurrentSignature(api_key,api_secret,current_timestamp,stationId);
         this.api_Signature=signature;
     }
 
@@ -83,12 +82,11 @@ class NUSDavisWeatherStationAPIConnector{
      * @return Readings in a JSON Object with multiple key-value pairs
      */
     private JSONObject retrieveWeatherReadings() throws SignatureException, IOException {
-        long unix_timestamp = Instant.now().getEpochSecond();
         if (api_Signature == " ")
-            setAPISignature(unix_timestamp);
+            setAPISignature();
         //Sample path taken from the documentation using mock values
-        //https://api.weatherlink.com/v2/historic/96230?api-key=987654321&t=1558729481&start-timestamp=1561964400&end-timestamp=1562050800&api-signature=fbe025018d78d7b13bb09eb36c6c2d7b1461b33253bf3d291b1ed37826599e8e
-        String path = api_url + stationId + "?api-key=" + api_key + "&t=" + unix_timestamp + "&start-timestamp=" + start_timestamp + "&end-timestamp=" + end_timestamp + "api-signature=" + api_Signature;
+        //https://api.weatherlink.com/v2/current/96230?api-key=987654321&t=1558729481&api-signature=c818f075283713f1a133c30e27984032e19ca6dd37c33160d1c8f1edbaa509e4
+        String path = api_url + stationId + "?api-key=" + api_key + "&t=" + current_timestamp + "api-signature=" + api_Signature;
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet readingRequest = new HttpGet(path);
             try (CloseableHttpResponse response = httpclient.execute(readingRequest)) {
