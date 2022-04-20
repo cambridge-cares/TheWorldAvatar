@@ -291,14 +291,6 @@ def instantiate_timeseries(ts, description, units, sensorIRI, KGClient):
     print('Triples independent of Java TimeSeriesClient successfully instantiated.')
     return dataIRI
 
-
-#def initialise_knowledge_graph():
-    '''Initialises the knowledge graph.'''
-    # Create specified PostgreSQL database
-    #utils.create_postgres_db()
-    # Create specified Blazegraph namespace
-    #utils.create_blazegraph_namespace()
-
 def process_weather_sensor_data():
     '''Retrieves all desired data and returns a formatted dictionary
     of sensor data, along with the units for each measurement.
@@ -330,8 +322,10 @@ def instantiate_all_data(sensor_instances, units):
         instantiate_weather_sensor(sensor, units, KGClient, instant_class, double_class)
 
 def instantiate_midas_wind():
-    '''Extracts and instantiates all MIDAS solar data'''
-    #initialise_knowledge_graph()
+    
+    # Creates a triple store and a database to represent data and knowledge about wind data
+    utils.create_knowledge_graph()
+    #Extracts and instantiates all wind data reported by MET Office
     sensor_instances, units = process_weather_sensor_data()
     instantiate_all_data(sensor_instances, units)
     print('All data successfully instantiated')

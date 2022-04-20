@@ -9,10 +9,12 @@ import requests
 from configobj import ConfigObj
 from pathlib import Path
 
+# Define location of properties file (with Triple Store and RDB settings)
+PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "renewable_energy_agents.properties"))
+
 # Initialise global variables to be read from properties file
 global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR, MAPBOX_APIKEY
 global DB_URL, DB_USER, DB_PASSWORD
-global PROPERTIES_FILE
 
 # Define format of time series time entries: Year-Month-Day T hour:minute:second Z
 FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -41,16 +43,13 @@ PREFIXES = {
 }
 
 
-def read_properties_file(filename):
+def read_properties_file(filepath):
     """
         Reads SPARQL endpoints and output directory from properties file (as global variables).
 
         Arguments:
             filepath - absolute file path to properties file.
     """
-
-    # Define location of properties file (with Triple Store and RDB settings)
-    PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", filename))
 
     # Define global scope for global variables
     global OUTPUT_DIR, QUERY_ENDPOINT, UPDATE_ENDPOINT, MAPBOX_APIKEY, DB_URL, DB_USER, DB_PASSWORD
@@ -171,6 +170,13 @@ def set_mapbox_apikey():
     with open(fp, 'w') as f:
         f.write(new_html)
 
+def create_knowledge_graph():
+    '''Creates data and knowledge storage facility in the specified triple store and database.'''
+
+    # Creates specified Blazegraph namespace
+    create_blazegraph_namespace()
+    # Creates specified PostgreSQL database
+    create_postgres_db()
 
 def create_postgres_db():
     """
@@ -239,3 +245,7 @@ def create_blazegraph_namespace():
         print('Namespace \"{}\" already exists\n'.format(ns))
     else:
         print('Request status code: {}\n'.format(response.status_code))
+
+
+# Run when module is imported
+read_properties_file(PROPERTIES_FILE)
