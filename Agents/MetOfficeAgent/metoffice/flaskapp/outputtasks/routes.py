@@ -106,4 +106,4 @@ def api_retrieve_all_stations():
 
     except Exception as ex:
         print(ex)
-        return jsonify({"status": '500', 'errormsg': 'Update failed'})
+        return jsonify({"status": '500', 'errormsg': 'Retrieving outputs failed'})

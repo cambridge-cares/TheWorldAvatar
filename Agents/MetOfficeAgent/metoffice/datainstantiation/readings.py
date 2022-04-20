@@ -523,6 +523,9 @@ def readings_dict_gen(returned_data):
         for i in returned_reps:
             y, m, d = i['value'][:-1].split("-")
             date = dt.datetime(int(y), int(m), int(d))
+            if 'Rep' not in i.keys():
+                # Skip entries with missing readings block
+                continue
             ureps = i['Rep']
             if type(ureps) != list:
                 ureps = [i['Rep']]
