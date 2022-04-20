@@ -86,17 +86,9 @@ def extract_data(coordinates):
     # Extract a list of the desired unique sensor IDs
     sensor_ids = wind_data['SRC_ID']
     sensor_list = []
-    which_data = input('Do you want all data? (y/n) ')
-    if which_data == 'n':
-        which_sensor = int(input('Which sensor do you want? '))
-        sensor_list.append(which_sensor)
-    elif which_data == 'y':
-        for sensor_id in sensor_ids:
-            if sensor_id not in sensor_list:
-                sensor_list.append(sensor_id)
-    else:
-        print('Invalid choice')
-        exit()
+    for sensor_id in sensor_ids:
+        if sensor_id not in sensor_list:
+            sensor_list.append(sensor_id)
 
     # Produce a dictionary of sensors and their corresponding data
     sensor_data = {}
