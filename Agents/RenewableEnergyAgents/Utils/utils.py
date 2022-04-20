@@ -10,7 +10,7 @@ from configobj import ConfigObj
 from pathlib import Path
 
 # Define location of properties file (with Triple Store and RDB settings)
-PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "renewable_energy_agents.properties"))
+PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent.parent, "resources", "renewable_energy_agents.properties"))
 
 # Initialise global variables to be read from properties file
 global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR, MAPBOX_APIKEY

@@ -19,7 +19,7 @@ from Utils.jpsSingletons import jpsBaseLibView
 # Get settings and functions from utils module
 import Utils.utils as utils
 # Import sensor coordinates download function from Markus H's module
-from uk_wind_sensor_coordinates import get_sensor_coords
+from Utils.uk_wind_sensor_coordinates import get_sensor_coords
 
 # ===============================================================================
 
@@ -40,7 +40,7 @@ def get_coords():
     '''Returns a dictionary of sensor coordinates from the
     file downloaded by the get_sensor_coords function.
     '''
-    station_loc = pd.read_csv('../Data/MIDAS_wind_data/stationlocations2.csv')
+    station_loc = pd.read_csv('./Data/MIDAS_wind_data/stationlocations2.csv')
     lat_list = station_loc['Latitude']
     lon_list = station_loc['Longitude']
     id_list = station_loc['src_id']
@@ -57,12 +57,12 @@ def merge_midas():
     create a new file (data downloaded using seperate script).
     '''
     # Convert txt file to csv file
-    file = pd.read_csv (r'../Data/MIDAS_wind_data/midas_wind_202101-202112.txt')
-    file.to_csv(r'../Data/MIDAS_wind_data/midas_wind_202101-202112.csv', index=None)
+    file = pd.read_csv (r'./Data/MIDAS_wind_data/midas_wind_202101-202112.txt')
+    file.to_csv(r'./Data/MIDAS_wind_data/midas_wind_202101-202112.csv', index=None)
 
     # Load data
-    headers = pd.read_csv('../Data/MIDAS_wind_data/WM_Column_Headers.csv')
-    data = pd.read_csv('../Data/MIDAS_wind_data/midas_wind_202101-202112.csv', header=None)
+    headers = pd.read_csv('./Data/MIDAS_wind_data/WM_Column_Headers.csv')
+    data = pd.read_csv('./Data/MIDAS_wind_data/midas_wind_202101-202112.csv', header=None)
 
     # Condition data
     data_extract = data.iloc[:, :20]
@@ -73,7 +73,7 @@ def merge_midas():
     combined.columns = headers_extract
 
     # Write data to combined file
-    combined.to_csv('../Data/MIDAS_wind_data/MIDASwind.csv', index=False)
+    combined.to_csv('./Data/MIDAS_wind_data/MIDASwind.csv', index=False)
 
 def extract_data(coordinates):
     '''Returns a dictionary containing all desired data for each sensor.
@@ -81,7 +81,7 @@ def extract_data(coordinates):
     Data extracted from the data file created by the merge_midas funtion,
     and the coordinates dictionary created by the get_coords function.
     '''
-    wind_data = pd.read_csv('../Data/MIDAS_wind_data/MIDASwind.csv')
+    wind_data = pd.read_csv('./Data/MIDAS_wind_data/MIDASwind.csv')
 
     # Extract a list of the desired unique sensor IDs
     sensor_ids = wind_data['SRC_ID']
