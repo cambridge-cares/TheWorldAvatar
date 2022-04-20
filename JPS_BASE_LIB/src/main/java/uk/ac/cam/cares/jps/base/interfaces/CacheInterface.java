@@ -1,8 +1,15 @@
 package uk.ac.cam.cares.jps.base.interfaces;
 
+/**
+ * Interface for cache
+ * @author csl37
+ *
+ * @param <K>
+ * @param <V>
+ */
 public interface CacheInterface<K, V> {
 
-	boolean set(K key, V value);
+	V put(K key, V value);
     V get(K key);
     boolean isEmpty();
     void clear();

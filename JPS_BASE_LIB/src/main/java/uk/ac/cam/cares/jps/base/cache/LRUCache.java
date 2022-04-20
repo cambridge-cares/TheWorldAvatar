@@ -3,14 +3,31 @@ package uk.ac.cam.cares.jps.base.cache;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 
+/**
+ * Least Recently Used (LRU) cache Implementation of CacheInterface\
+ * using a LinkedHashMap
+ * @author csl37
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class LRUCache<K,V> implements CacheInterface<K,V>{
 
-	private final int capacity;
-	private Map<K,V> cache;
+	/**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(LRUCache.class);
 	
-	//TODO set default value?
+    //Default value to return if there is no mapping
+    private final V DEFAULT_VALUE = null;
+    
+	private final int capacity;
+	private LinkedHashMap<K,V> cache;
 	
 	//Constructor
 	public LRUCache(int size) {
@@ -24,16 +41,15 @@ public class LRUCache<K,V> implements CacheInterface<K,V>{
 	}
 	
 	@Override
-	public boolean set(K key, V value) {
-		cache.put(key, value);
-		return false;
+	public V put(K key, V value) {
+		return cache.put(key, value);
 	}
 
 	@Override
 	public V get(K key) {	
-		return cache.getOrDefault(key, null);
+		return cache.getOrDefault(key, DEFAULT_VALUE);
 	}
-
+	
 	@Override
 	public boolean isEmpty() {
 		return cache.size()==0;
