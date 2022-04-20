@@ -17,8 +17,7 @@ setup(
         'docopt~=0.6',
         'flask~=2.1',
         'pandas~=1.3',
-        # TODO update py4jps version to include latest base lib changes
-        'py4jps==1.0.17', 
+        'py4jps==1.0.19', 
         'requests~=2.27',
         'metoffer @ git+https://github.com/sludgedesk/metoffer#egg=MetOffer',
     ]

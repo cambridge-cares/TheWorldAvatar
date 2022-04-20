@@ -125,6 +125,9 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     df['dataIRI'] = df[['dataIRI_obs', 'dataIRI_fc']].values.tolist()
     df = df.drop(columns=['dataIRI_obs', 'dataIRI_fc'])
     df = df.explode('dataIRI').reset_index(drop=True)
+    # Overwrite NaNs in dataIRI column for stations without any attached dataIRIs
+    mask=(df['obs_station'] + df['fcs_station'] == 0)
+    df.loc[mask, 'dataIRI'] = ''
     df = df.dropna(subset=['dataIRI'])
     df = df.drop_duplicates()
 
@@ -161,18 +164,24 @@ def create_json_output_files(outdir: str, observation_types: list = None,
         raise InvalidInput('Provided output directory does not exist.')
     else:
         if not split_obs_fcs:
-            fp_geojson = [os.path.join(pathlib.Path(outdir), 'metoffice_stations.geojson')]
-            fp_metadata = [os.path.join(pathlib.Path(outdir), 'metoffice_stations-meta.json')]
-            fp_timeseries = [os.path.join(pathlib.Path(outdir), 'metoffice_stations-timeseries.json')]
+            fp_geojson = [os.path.join(pathlib.Path(outdir), 'metoffice_stations.geojson'),
+                          os.path.join(pathlib.Path(outdir), 'metoffice_stations_woTS.geojson')]
+            fp_metadata = [os.path.join(pathlib.Path(outdir), 'metoffice_stations-meta.json'),
+                           os.path.join(pathlib.Path(outdir), 'metoffice_stations_woTS-meta.json')]
+            fp_timeseries = [os.path.join(pathlib.Path(outdir), 'metoffice_stations-timeseries.json'),
+                             os.path.join(pathlib.Path(outdir), 'metoffice_stations_woTS-timeseries.json')]
             colors = ['#C0392B']
             opacities = [0.66]
         else:
             fp_geojson = [os.path.join(pathlib.Path(outdir), 'metoffice_observation_stations.geojson'),
-                          os.path.join(pathlib.Path(outdir), 'metoffice_forecast_stations.geojson')]
+                          os.path.join(pathlib.Path(outdir), 'metoffice_forecast_stations.geojson'),
+                          os.path.join(pathlib.Path(outdir), 'metoffice_stations_woTS.geojson')]
             fp_metadata = [os.path.join(pathlib.Path(outdir), 'metoffice_observation_stations-meta.json'),
-                           os.path.join(pathlib.Path(outdir), 'metoffice_forecast_stations-meta.json')]
+                           os.path.join(pathlib.Path(outdir), 'metoffice_forecast_stations-meta.json'),
+                           os.path.join(pathlib.Path(outdir), 'metoffice_stations_woTS-meta.json')]
             fp_timeseries = [os.path.join(pathlib.Path(outdir), 'metoffice_observation_stations-timeseries.json'),
-                             os.path.join(pathlib.Path(outdir), 'metoffice_forecast_stations-timeseries.json')]
+                             os.path.join(pathlib.Path(outdir), 'metoffice_forecast_stations-timeseries.json'),
+                             os.path.join(pathlib.Path(outdir), 'metoffice_stations_woTS-timeseries.json')]
             colors = ['#C0392B', '#2471A3']
             opacities = [0.5, 0.5]
     
@@ -218,7 +227,8 @@ def create_json_output_files(outdir: str, observation_types: list = None,
                                    tmin, tmax, query_endpoint, update_endpoint)
         ts_data.append(fcs[0]); ts_names.append(fcs[1]); ts_units.append(fcs[2])
     else:
-        stat_details.append(station_details)
+        stat_details.append(station_details[(station_details['obs_station'] == 1) |
+                                            (station_details['fcs_station'] == 1)])
         obs_fcs = get_time_series_data(station_iris, observation_types, True, True,
                                        tmin, tmax, query_endpoint, update_endpoint)
         ts_data.append(obs_fcs[0]); ts_names.append(obs_fcs[1]); ts_units.append(obs_fcs[2])
@@ -232,7 +242,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     #
     # Initialise time series client   
     ts_client = TSClient.tsclient_with_default_settings()
-    # Create output file for each set of retrieved time series data
+    # Create output files for each set of retrieved time series data
     for i in range(len(ts_data)):
         # Get output data
         ts = ts_data[i]
@@ -269,6 +279,12 @@ def create_json_output_files(outdir: str, observation_types: list = None,
         diff = t2-t1
         print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
         logger.info('Output files successfully created.')
+    # Create output files for stations without any time series data
+    stations = station_details[(station_details['obs_station'] == 0) & 
+                               (station_details['fcs_station'] == 0)]
+    geojson.append(create_geojson_output(stations, '#C0392B', 0.66))
+    metadata.append(create_metadata_output(stations))
+    timeseries.append([])
 
     #
     ###---  Write output files  ---###

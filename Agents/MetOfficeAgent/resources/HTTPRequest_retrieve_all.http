@@ -22,12 +22,10 @@ GET http://localhost:5000/api/metofficeagent/retrieve/all
 Content-Type: application/json
 
 { "query": {
-      "outDir": "/app/output",
-      "daysBack": "14" 
+      "outDir": "C:\\TheWorldAvatar-git\\Agents\\MetOfficeAgent\\output",
+      "daysBack": "14"
     }
 }
-
-#"outDir": "C:\\TheWorldAvatar-git\\Agents\\MetOfficeAgent\\output",
 
 
 // Retrieve only selected stations and time series data as of 14 days back
