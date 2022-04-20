@@ -6,11 +6,11 @@
 # The purpose of this module is to provide functionality which eases handling
 # of IRIs and PREFIXES while creating SPARQL queries
 
-import agentlogging
+#import agentlogging
 from metoffice.datamodel.iris import *
 
 # Initialise logger
-logger = agentlogging.get_logger("prod")
+#logger = agentlogging.get_logger("prod")
 
 
 # Define PREFIXES for SPARQL queries
@@ -47,7 +47,7 @@ def create_sparql_prefix(abbreviation):
 
     # Raise key error if given namespace abbreviation has not been specified
     if abbreviation not in PREFIXES.keys():
-        logger.error('Prefix: "' + abbreviation + '" has not been specified')
+        #logger.error('Prefix: "' + abbreviation + '" has not been specified')
         raise KeyError('Prefix: "' + abbreviation + '" has not been specified')
 
     # Get full IRI from pre-specified prefixes dictionary

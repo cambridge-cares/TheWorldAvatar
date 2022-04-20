@@ -13,7 +13,7 @@ import time
 import pathlib
 import pandas as pd
 
-import agentlogging
+#import agentlogging
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.timeseries import TSClient
 from metoffice.kgutils.querytemplates import *
@@ -23,7 +23,7 @@ from metoffice.dataretrieval.readings import get_time_series_data
 from metoffice.utils.output_formatting import create_geojson_output, create_metadata_output
 
 # Initialise logger
-logger = agentlogging.get_logger("prod")
+#logger = agentlogging.get_logger("prod")
 
 
 def get_all_metoffice_station_ids(query_endpoint: str = QUERY_ENDPOINT,
@@ -59,12 +59,12 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
     # Validate input
     if circle_center and not circle_radius or \
        circle_radius and not circle_center:
-        logger.error("Circle center or radius is missing for geo:search.")
+        #logger.error("Circle center or radius is missing for geo:search.")
         raise InvalidInput("Circle center or radius is missing for geo:search.")
     if circle_center:
         if not re.findall(r'[\w\-\.]*#[\w\-\.]*', circle_center):
-            logger.error("Circle center coordinates shall be provided as " \
-                          +"\"latitude#longitude\" in WGS84 coordinates.")
+            #logger.error("Circle center coordinates shall be provided as " \
+            #              +"\"latitude#longitude\" in WGS84 coordinates.")
             raise InvalidInput("Circle center coordinates shall be provided as " \
                                +"\"latitude#longitude\" in WGS84 coordinates.")
 
@@ -99,12 +99,12 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     # Validate input
     if circle_center and not circle_radius or \
        circle_radius and not circle_center:
-        logger.error("Circle center or radius is missing for geo:search.")
+        #logger.error("Circle center or radius is missing for geo:search.")
         raise InvalidInput("Circle center or radius is missing for geo:search.")
     if circle_center:
         if not re.findall(r'[\w\-\.]*#[\w\-\.]*', circle_center):
-            logger.error("Circle center coordinates shall be provided as " \
-                          +"\"latitude#longitude\" in WGS84 coordinates.")
+            #logger.error("Circle center coordinates shall be provided as " \
+            #              +"\"latitude#longitude\" in WGS84 coordinates.")
             raise InvalidInput("Circle center coordinates shall be provided as " \
                                +"\"latitude#longitude\" in WGS84 coordinates.")
 
@@ -160,7 +160,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
 
     # Validate input
     if not pathlib.Path.exists(pathlib.Path(outdir)):
-        logger.error('Provided output directory does not exist.')
+        #logger.error('Provided output directory does not exist.')
         raise InvalidInput('Provided output directory does not exist.')
     else:
         if not split_obs_fcs:
@@ -195,14 +195,14 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     #
     # 1) Get details for instantiated stations
     print('Retrieving instantiated stations from KG ...')
-    logger.info('Retrieving instantiated stations from KG ...')
+    #logger.info('Retrieving instantiated stations from KG ...')
     t1 = time.time()
     station_details = get_all_stations_with_details(query_endpoint, update_endpoint,
                                                     circle_center, circle_radius)
     t2 = time.time()
     diff = t2-t1
     print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-    logger.info('Stations successfully retrieved.')
+    #logger.info('Stations successfully retrieved.')
     
     # Extract station IRIs of interest
     station_iris = list(station_details['station'].unique())
@@ -212,7 +212,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
    
     # 2) Get time series data
     print('Retrieving time series data from KG ...')
-    logger.info('Retrieving time series data from KG ...')
+    #logger.info('Retrieving time series data from KG ...')
     t1 = time.time()
     # Potentially split stations into forecast and observation station sets
     if split_obs_fcs:
@@ -235,7 +235,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     t2 = time.time()
     diff = t2-t1
     print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-    logger.info('Time series successfully retrieved.')
+    #logger.info('Time series successfully retrieved.')
 
     #
     ###---  Create output files  ---###
@@ -258,7 +258,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
             u.update((k, v.replace('&#x00B0;','°')) for k, v in u.items())
 
         print('Creating output files (geojson, metadata, timeseries) ...')
-        logger.info('Creating output files (geojson, metadata, timeseries) ...')
+        #logger.info('Creating output files (geojson, metadata, timeseries) ...')
         t1 = time.time()
 
         # 1) Create GeoJSON file for ReportingStations
@@ -278,7 +278,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
         t2 = time.time()
         diff = t2-t1
         print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-        logger.info('Output files successfully created.')
+        #logger.info('Output files successfully created.')
     # Create output files for stations without any time series data
     stations = station_details[(station_details['obs_station'] == 0) & 
                                (station_details['fcs_station'] == 0)]
@@ -290,7 +290,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     ###---  Write output files  ---###
     #
     print('Writing output files ...')
-    logger.info('Writing output files ...')
+    #logger.info('Writing output files ...')
     for i in range(len(fp_geojson)):
         with open(fp_geojson[i], 'w') as f:
             json.dump(geojson[i], indent=4, fp=f)

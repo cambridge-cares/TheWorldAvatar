@@ -22,15 +22,11 @@ WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
 COPY ./resources/metoffice.properties ./resources/metoffice.properties
-# TODO remove copying of latest JPS Base Lib
-COPY ./tmp ./tmp
 
 # Install Python package and the required libraries
 RUN pip install -e .
+# Installation of agentlogging currently suspended due to performance issues
 #RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
-# TODO remove updating of py4jps once the latest release is out
-RUN jpsrm uninstall JpsBaseLib
-RUN jpsrm install JpsBaseLib ./tmp
 
 # Expose port
 EXPOSE 5000
