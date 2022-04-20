@@ -3,9 +3,6 @@ package uk.ac.cam.cares.jps.base.cache;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 
 /**
@@ -17,11 +14,6 @@ import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
  * @param <V>
  */
 public class LRUCache<K,V> implements CacheInterface<K,V>{
-
-	/**
-     * Logger for error output.
-     */
-    private static final Logger LOGGER = LogManager.getLogger(LRUCache.class);
 	
     //Default value to return if there is no mapping
     private final V DEFAULT_VALUE = null;
@@ -51,6 +43,11 @@ public class LRUCache<K,V> implements CacheInterface<K,V>{
 	}
 	
 	@Override
+	public boolean contains(K key) {
+		return cache.containsKey(key);
+	}
+	
+	@Override
 	public boolean isEmpty() {
 		return cache.size()==0;
 	}
@@ -58,5 +55,10 @@ public class LRUCache<K,V> implements CacheInterface<K,V>{
 	@Override
 	public void clear() {
 		cache.clear();
+	}
+	
+	@Override
+	public int capacity() {
+		return capacity;
 	}
 }
