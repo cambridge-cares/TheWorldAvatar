@@ -10,9 +10,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 
+import uk.ac.cam.cares.jps.base.cache.AbstractCachedRouter;
+import uk.ac.cam.cares.jps.base.cache.LRUCache;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
-import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -23,11 +24,14 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author CLIN01
  *
  */
-public class AgentRouter {
-	
-	private static final Logger LOGGER = LogManager.getLogger(AgentRouter.class);
+public class AgentRouter extends AbstractCachedRouter<String, String> {
 
-	String AGENTROUTER_ENDPOINT;
+	private static final Logger LOGGER = LogManager.getLogger(AgentRouter.class);
+	
+	private final static int CACHE_SIZE = 100;
+	private final static LRUCache<String, String> cache = new LRUCache<String,String>(CACHE_SIZE);
+	
+	private String AGENTROUTER_ENDPOINT;
 	
 	//Variables for sparql query
 	final Var varS = Var.alloc("s");
@@ -38,39 +42,37 @@ public class AgentRouter {
 	final String rdfType = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
 
 	public AgentRouter() {
-		// Default endpoint from jps.properties file
+		super(cache);
 		AGENTROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_AGENTROUTER_ENDPOINT);
+		LOGGER.info("Agent router instantiated with router endpoint: "+AGENTROUTER_ENDPOINT);
 	}
 	
 	public AgentRouter(String endpoint) {
+		super(cache);
 		AGENTROUTER_ENDPOINT = endpoint;
+		LOGGER.info("Agent router instantiated with router endpoint: "+AGENTROUTER_ENDPOINT);
 	}
 	
 	/**
-	 * Get the URL of the agent matching agentID from the ontoagentrouter 
+	 * Get the URL of an agent matching agentID from the store client
 	 * @param agentID
-	 * @return
+	 * @return url
 	 */
-	public String getUrl(String agentID) {
-
-		StoreClientInterface storeClient = new RemoteStoreClient(AGENTROUTER_ENDPOINT);
+	@Override
+	protected String getFromStore(String agentID) {
 		
-		return getUrl(storeClient, agentID);
-	}
-	
-	/**
-	 * Get the URL of an agent matching agentID from the supplied store client
-	 * @param storeClient
-	 * @param agentID
-	 * @return
-	 */
-	public String getUrl(StoreClientInterface storeClient, String agentID) {
-	
+		LOGGER.debug("Get URL from triple store. AgentID="+agentID);
+		
 		String query = getQuery(agentID);
+		
+		StoreClientInterface storeClient = new RemoteStoreClient(AGENTROUTER_ENDPOINT);
 		JSONArray result = storeClient.executeQuery(query);
 		
 		//TODO parse multiple results?
 		String firstURL = result.getJSONObject(0).getString(strO);
+		
+		LOGGER.debug("URL="+firstURL);
+		
 		return firstURL;
 	}
 	
