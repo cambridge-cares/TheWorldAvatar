@@ -22,6 +22,7 @@ public final class MoDSBackend {
     private final Path workingDir;
 
     private final long timeout;
+    private final long killTimeout = 10;
 
     private Process process;
 
@@ -30,14 +31,17 @@ public final class MoDSBackend {
 
         this.simDir = simDir;
 
-        allDir = simDir.resolve("All");
-        Files.createDirectory(allDir);
-        initialDir = simDir.resolve("Initial");
-        Files.createDirectory(initialDir);
-        workingDir = simDir.resolve("Working_dir");
-        Files.createDirectory(workingDir);
+        allDir = createSubDir("All");
+        initialDir = createSubDir("Initial");
+        workingDir = createSubDir("Working_dir");
 
         this.timeout = timeout;
+    }
+
+    public Path createSubDir(String subDirName) throws IOException {
+        Path subDirPath = simDir.resolve(subDirName);
+        Files.createDirectory(subDirPath);
+        return subDirPath;
     }
 
     public void run() throws IOException {
@@ -49,24 +53,35 @@ public final class MoDSBackend {
                     "Process with job ID '" + jobID + "' already running.");
         }
 
-        ProcessBuilder pb = new ProcessBuilder(MODS_EXE_FILENAME, "--gui");
-        pb.directory(simDir.toFile());
-        pb.inheritIO();
+        process = new ProcessBuilder(MODS_EXE_FILENAME, "--gui")
+                .directory(simDir.toFile())
+                .inheritIO()
+                .start();
 
-        process = pb.start();
-
-        Runnable timoutEnforcer = () -> {
+        Thread timoutEnforcer = new Thread(() -> {
             try {
-                process.waitFor(timeout, TimeUnit.SECONDS); // let the process run for 5 seconds
-                process.destroy(); // tell the process to stop
-                process.waitFor(10, TimeUnit.SECONDS); // give it a chance to stop
-                process.destroyForcibly(); // tell the OS to kill the process
-                process.waitFor(); // the process is now dead
+                if (!process.waitFor(timeout, TimeUnit.SECONDS)) { // let the process run for 'timeout' seconds
+                    LOGGER.error("MoDS process has timed out after '{}' seconds so will be killed.", timeout);
+                    process.destroy(); // tell the process to stop
+                    if (!process.waitFor(killTimeout, TimeUnit.SECONDS)) { // give it a chance to stop
+                        LOGGER.error("MoDS process could not be killed within '{}' seconds so will be killed forcibly.",
+                                killTimeout);
+                        process.destroyForcibly(); // tell the OS to kill the process
+                        process.waitFor(); // the process is now dead
+                    }
+                } else {
+                    long exitValue = Integer.toUnsignedLong(process.exitValue());
+                    if (0L == exitValue) {
+                        LOGGER.info("MoDS process finished successfully.");
+                    } else {
+                        LOGGER.error("MoDS process exited with error code '{}'.", exitValue);
+                    }
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // set the flag back to true
             }
-        };
-        timoutEnforcer.run();
+        }, "timout-enforcer-" + jobID);
+        timoutEnforcer.start();
     }
 
     public void checkState() {

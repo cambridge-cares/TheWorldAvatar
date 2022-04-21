@@ -47,7 +47,7 @@ public class ModsSimpleAgentApplication {
         ObjectMapper mapper = new ObjectMapper();
         Request request = mapper.readValue(config, Request.class);
 
-        Simulation sim = Simulation.createSimulation(request.getSimulationType());
+        Simulation sim = Simulation.createSimulation(request);
 
         sim.run();
 
