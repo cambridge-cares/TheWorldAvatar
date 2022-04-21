@@ -9,7 +9,7 @@ import uk.ac.cam.cares.jps.base.cache.LRUCache;
 class LRUCacheTest {
 
 	@Test
-	void testConstructor() throws NoSuchFieldException, SecurityException {
+	void testConstructor() {
 		
 		int size = 100;
 		LRUCache<String,String> lruCache = new LRUCache<String,String>(size);
