@@ -77,7 +77,7 @@ the knowledge graph and the Postgres database. It should contain the following k
 More information can be found in the example property file `client.properties` in the `config` folder.
 
 #### API properties
-The API properties contain the parameters needed to get the status of the components via ESPHome API (see the [API description](#thingsboard-api)),
+The API properties contain the parameters needed to get the status of the components via ESPHome API (see the [API description](#esphome-api)),
 the port number and keys. It should contain the following keys:
 - `esphome.domain` the domain which indicate the type of component (switch, sensor, light etc).
 - `domain.ID` the ID or name of the component.
