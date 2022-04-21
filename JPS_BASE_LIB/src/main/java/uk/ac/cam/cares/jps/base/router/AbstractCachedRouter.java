@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.cache;
+package uk.ac.cam.cares.jps.base.router;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,9 +6,8 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 
 /**
- * This defines an abstract CachedRouter class. 
- * The extending class must initialize the cache in 
- * its constructor and implement the getFromStore 
+ * This defines an abstract CachedRouter class. The extending class must 
+ * initialize the cache in its constructor and implement the getFromStore 
  * method to fetch data from the router triple store.
  * The get method should be used to retrieve routing data.
  * @author csl37
@@ -47,5 +46,10 @@ public abstract class AbstractCachedRouter<K, V> {
 		return value;
 	}
 	
+	/**
+	 * Extending class to implement logic for getting value(s) from triple store
+	 * @param key
+	 * @return
+	 */
 	abstract protected V getFromStore(K key);	
 }

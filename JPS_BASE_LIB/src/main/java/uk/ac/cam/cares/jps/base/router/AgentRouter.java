@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.agent;
+package uk.ac.cam.cares.jps.base.router;
 
 import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.cache.AbstractCachedRouter;
 import uk.ac.cam.cares.jps.base.cache.LRUCache;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
@@ -19,9 +18,9 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
  * This class is designed to get the URL of a requested agent
- * from the ontoagentrouter triple store.
+ * from the ontoagent triple store.
  * 
- * @author CLIN01
+ * @author csl37
  *
  */
 public class AgentRouter extends AbstractCachedRouter<String, String> {
@@ -29,28 +28,27 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	private static final Logger LOGGER = LogManager.getLogger(AgentRouter.class);
 	
 	private final static int CACHE_SIZE = 100;
-	private final static LRUCache<String, String> cache = new LRUCache<String,String>(CACHE_SIZE);
 	
-	private String AGENTROUTER_ENDPOINT;
+	private String agentRouterEndpoint;
 	
 	//Variables for sparql query
-	final Var varS = Var.alloc("s");
-	final String strO = "o";
-	final Var varO = Var.alloc(strO);
-	final String MSMhasHttpUrl = "<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl>";
-	final String MSMOperation = "<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation>";
-	final String rdfType = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
+	final static Var VAR_S = Var.alloc("s");
+	final static String STR_O = "o";
+	final static Var VAR_O = Var.alloc(STR_O);
+	final static String MSM_HAS_HTTP_URL = "<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl>";
+	final static String MSM_OPERATION = "<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation>";
+	final static String RDF_TYPE = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
 
 	public AgentRouter() {
-		super(cache);
-		AGENTROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_AGENTROUTER_ENDPOINT);
-		LOGGER.info("Agent router instantiated with router endpoint: "+AGENTROUTER_ENDPOINT);
+		super(new LRUCache<String,String>(CACHE_SIZE));
+		agentRouterEndpoint = KeyValueMap.getInstance().get(IKeys.URL_AGENTROUTER_ENDPOINT);
+		LOGGER.info("Agent router instantiated with router endpoint: "+agentRouterEndpoint);
 	}
 	
 	public AgentRouter(String endpoint) {
-		super(cache);
-		AGENTROUTER_ENDPOINT = endpoint;
-		LOGGER.info("Agent router instantiated with router endpoint: "+AGENTROUTER_ENDPOINT);
+		super(new LRUCache<String,String>(CACHE_SIZE));
+		agentRouterEndpoint = endpoint;
+		LOGGER.info("Agent router instantiated with router endpoint: "+agentRouterEndpoint);
 	}
 	
 	/**
@@ -65,11 +63,11 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 		
 		String query = getQuery(agentID);
 		
-		StoreClientInterface storeClient = new RemoteStoreClient(AGENTROUTER_ENDPOINT);
+		StoreClientInterface storeClient = new RemoteStoreClient(agentRouterEndpoint);
 		JSONArray result = storeClient.executeQuery(query);
 		
-		//TODO parse multiple results?
-		String firstURL = result.getJSONObject(0).getString(strO);
+		//TODO logic for multiple results
+		String firstURL = result.getJSONObject(0).getString(STR_O);
 		
 		LOGGER.debug("URL="+firstURL);
 		
@@ -91,19 +89,19 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 		//		FILTER(CONTAINS(STR(?s), agentName))
 		//	}
 		
-		// match agent name in subject
+		// match agent name in rdf subject
 		ExprFactory exprFactory = new ExprFactory();
-		ExprVar exprS = new ExprVar(varS);
+		ExprVar exprS = new ExprVar(VAR_S);
 		Expr exprMatch = exprFactory.asExpr(agentName);
 		Expr SContains = exprFactory.contains(exprFactory.str(exprS), exprMatch);
 		
 		WhereBuilder where = new WhereBuilder()
-				.addWhere(varS, rdfType, MSMOperation)
-				.addWhere(varS, MSMhasHttpUrl, varO)
+				.addWhere(VAR_S, RDF_TYPE, MSM_OPERATION)
+				.addWhere(VAR_S, MSM_HAS_HTTP_URL, VAR_O)
 				.addFilter(SContains);
 		
 		SelectBuilder select = new SelectBuilder()
-				.addVar(varO)
+				.addVar(VAR_O)
 				.addWhere(where);
 		
 		return select.buildString();

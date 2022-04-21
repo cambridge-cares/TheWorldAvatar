@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.cam.cares.jps.base.agent.AgentRouter;
+import uk.ac.cam.cares.jps.base.router.AgentRouter;
 
 
 class AgentRouterTest {
