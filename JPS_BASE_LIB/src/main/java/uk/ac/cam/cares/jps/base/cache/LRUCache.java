@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.cache;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,17 +20,18 @@ public class LRUCache<K,V> implements CacheInterface<K,V>{
     private final V DEFAULT_VALUE = null;
     
 	private final int capacity;
-	private LinkedHashMap<K,V> cache;
+	private Map<K,V> cache;
 	
 	//Constructor
 	public LRUCache(int size) {
 		this.capacity = size;
-		this.cache = new LinkedHashMap<K,V>(size, 0.75f, true){
-			@Override
-			protected boolean removeEldestEntry(Map.Entry eldest) {
-				return size() > capacity;
-			}
-        };
+		this.cache = Collections.synchronizedMap(
+			new LinkedHashMap<K,V>(size, 0.75f, true){
+				@Override
+				protected boolean removeEldestEntry(Map.Entry eldest) {
+					return size() > capacity;
+				}
+			});
 	}
 	
 	@Override
