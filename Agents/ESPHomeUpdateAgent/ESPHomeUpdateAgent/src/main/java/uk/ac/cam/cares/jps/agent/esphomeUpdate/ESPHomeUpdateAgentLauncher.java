@@ -156,7 +156,7 @@ public class ESPHomeUpdateAgentLauncher extends JPSAgent {
             throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
         }
 
-        // Create the connector to interact with the ThingsBoard API
+        // Create the connector to interact with the ESPHome API
         ESPHomeUpdateAPIConnector connector;
         try {
             connector = new ESPHomeUpdateAPIConnector(args[2]);

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
- * This test class is to test the ThingsBoard input agent with a running KG and postgres database.
+ * This test class is to test the ESPHome Update agent with a running KG and postgres database.
  */
 
 @Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
@@ -53,7 +53,7 @@ public class ESPHomeUpdateAgentIntegrationTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    // ThingsBoard Input Agent
+    // ESPHome Update Agent
     private ESPHomeUpdateAgent agent;
     // Time series client for connection with KG and database
     private TimeSeriesClient<OffsetDateTime> tsClient;
