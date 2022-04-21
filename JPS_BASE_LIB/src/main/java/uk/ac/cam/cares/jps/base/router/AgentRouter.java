@@ -17,9 +17,15 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * This class is designed to get the URL of a requested agent
- * from the ontoagent triple store.
+ * This class is designed to get the URL 
+ * of a requested agent from the ontoagent triple store:
+ * <pre>
+ * AgentRouter.getInstance().get(agent_name)
+ * </pre>
  * 
+ * This class extends the AbstractCachedRouter class and uses
+ * a LRUCache to cache results. If a result is not in the cache,
+ * the router will query the ontoagent triple store for the data.
  * @author csl37
  *
  */
@@ -39,16 +45,31 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	final static String MSM_OPERATION = "<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation>";
 	final static String RDF_TYPE = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
 
-	public AgentRouter() {
+	//Singleton
+	private static AgentRouter instance = null;
+	
+	private AgentRouter() {
+		//Instantiate router with LRUcache 
 		super(new LRUCache<String,String>(CACHE_SIZE));
+		//Get default ontoagent endpoint from jps.properties file
 		agentRouterEndpoint = KeyValueMap.getInstance().get(IKeys.URL_AGENTROUTER_ENDPOINT);
 		LOGGER.info("Agent router instantiated with router endpoint: "+agentRouterEndpoint);
 	}
 	
-	public AgentRouter(String endpoint) {
-		super(new LRUCache<String,String>(CACHE_SIZE));
+	public static synchronized AgentRouter getInstance() {
+		if (instance == null) {
+			instance = new AgentRouter();
+		}
+		return instance;	
+	}
+	
+	/**
+	 * Change the AgentRouter endpoint
+	 * @param endpoint
+	 */
+	public void setRouterEndpoint(String endpoint) {
 		agentRouterEndpoint = endpoint;
-		LOGGER.info("Agent router instantiated with router endpoint: "+agentRouterEndpoint);
+		LOGGER.info("Agent router endpoint set to: "+agentRouterEndpoint);
 	}
 	
 	/**

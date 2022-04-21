@@ -63,6 +63,6 @@ public class AgentCaller {
 	}
 
 	private String getAgentUrl(String agentID) {
-		return new AgentRouter().getUrl(agentID);
+		return AgentRouter.getInstance().get(agentID);
 	}
 }
