@@ -6,7 +6,7 @@ import java.util.Map;
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 
 /**
- * Least Recently Used (LRU) cache Implementation of CacheInterface\
+ * Least Recently Used (LRU) Cache implementation of CacheInterface
  * using a LinkedHashMap
  * @author csl37
  *
