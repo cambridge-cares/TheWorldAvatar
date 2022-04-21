@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 25 Nov 2021          #
+# Last Update Date: 19 April 2022        #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
@@ -24,6 +24,35 @@ qres_ = []
 capa_PrimaryFuel = []
 qres_capa = []
 allCapacity = []
+
+#####UPDATED#####
+def queryBusTopologicalInformation(topologyNodeIRI, endpoint_label):
+    
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>  
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    SELECT DISTINCT ?BusNodeIRI ?BusLatLon
+    WHERE
+    {
+    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?BusNodeIRI . 
+    ?BusNodeIRI rdf:type ontopowsys_PowSysRealization:BusNode . 
+    
+    ?BusNodeIRI ontoenergysystem:hasWGS84LatitudeLongitude ?BusLatLon .  
+    }
+    """ % (topologyNodeIRI)
+    
+    print('...remoteQuery queryBusTopologicalInformation...')
+    res = json.loads(performQuery(endpoint_label, queryStr))
+    print('...queryBusTopologicalInformation is done...')
+    
+    for r in res:
+        r['BusLatLon'] = [float(r['BusLatLon'].split('#')[0]), float(r['BusLatLon'].split('#')[1])]
+    
+    numOfBus = len(res)
+    
+    return res, numOfBus
 
 ###############EGen#############
 # Query the located country of the digital twin
@@ -327,9 +356,9 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigital
     }
     """% (startTime_of_EnergyConsumption)
      
-    print('stars queryElectricityConsumption_Region')     
+    print('...stars queryElectricityConsumption_Region...')     
     res = json.loads(performFederatedQuery(queryStr, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri))
-    print('queryElectricityConsumption_Region is done') 
+    print('...queryElectricityConsumption_Region is done...') 
     for r in res:
         for key in r.keys():
            if '\"^^' in  r[key] :
@@ -375,9 +404,10 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKDigi
     
     }GROUP BY ?Area_LACode ?v_TotalELecConsumption
     """% (startTime_of_EnergyConsumption)
-    print('Query ElectricityConsumption_LocalArea')
+    
+    print('...Query ElectricityConsumption_LocalArea...')
     res = json.loads(performFederatedQuery(queryStr, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri)) 
-    print('Query ElectricityConsumption_LocalArea is done')
+    print('...Query ElectricityConsumption_LocalArea is done...')
           
     for r in res:
       for key in r.keys():
@@ -509,9 +539,9 @@ if __name__ == '__main__':
     # sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
     # iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'   
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
-    ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
+    ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
     
-    res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin_test1")
+    # res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin_test1")
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
     # res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
@@ -524,8 +554,8 @@ if __name__ == '__main__':
     # geo = res[0]['Geo_InfoList']
     #print(geo.geom_type)   
     # res = queryTotalElecConsumptionofGBOrUK( "ukdigitaltwin", 10, 14, "2017-01-31")
-    print(res, len(res))
+    
     # for r in res:
     #     print(r['ELine'])
-    
-
+    res = queryBusTopologicalInformation("http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_10fe8504-f3bb-403c-9363-34b258d59711", "ukdigitaltwin_test2")
+    print(res, len(res)) 

@@ -40,6 +40,7 @@ class UKDigitalTwinTBox:
     ontoeip_upper_level_system_v1 = "http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
     ontoeip_system_performance = "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#"
     ontoeip_system_requirement = "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#" # Undefined 
+    ontopowsys = "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#"
 
 
     """OntoPowSys"""

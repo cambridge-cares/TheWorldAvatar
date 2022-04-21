@@ -25,8 +25,8 @@ class demandLoadAllocator(object):
     """"This allocation principle is firstly appoled in the 10-bus model (UK) as a most strightforward way. 
     which is to assign the regional demanding to the bus who locatates in the same region. 
     However, when the same region has more than one bus, this method may not be suitable anymore."""   
-    def regionalDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, numOfBranch):
-        # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon[]]
+    def regionalDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus):
+        # res_queryBusTopologicalInformation = [BusNodeIRI, BusLatLon[]]
         # res_queryElectricityConsumption_Region = [RegionOrCountry_LACode, v_TotalELecConsumption]
 
         # The query endpoints
@@ -35,8 +35,10 @@ class demandLoadAllocator(object):
         ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
         # query regional consumption
         res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
-        # Find the located region of each bus
-        res_queryBusTopologicalInformation = busLocatedRegionFinder(res_queryBusTopologicalInformation, ons_label, 'Bus_lat_lon')   
+        # Find the located region of each bus 
+        busLatLonKey = str(res_queryBusTopologicalInformation[0].keys()[0])
+        res_queryBusTopologicalInformation = busLocatedRegionFinder(res_queryBusTopologicalInformation, ons_label, busLatLonKey)
+        
         # Check one region has at most one bus as this cluster method can only be used in this occasion 
         region = [ str(r['Bus_LACode']) for r in res_queryBusTopologicalInformation]
         duplicatesOfRegion = [k for k, v in Counter(region).items() if v > 1]
@@ -48,14 +50,15 @@ class demandLoadAllocator(object):
             raise Exception('The total number of the region exceeds 12.')
         
         # check the aggregatedBus 
-        aggregatedBusList = checkaggregatedBus(numOfBus, numOfBranch)  
+        aggregatedBusList = checkaggregatedBus(numOfBus)  
         aggregatedBusFlag = False
         # identify the aggregatedBus: same bus but represents different areas (regions)
         if len(aggregatedBusList) != 0:
             aggregatedBusFlag = True
             for aggregatedBus in aggregatedBusList:               
                 for bus in res_queryBusTopologicalInformation:
-                    if int(bus['Bus_node'].split('_EBus-')[1]) == int(aggregatedBus[0]):
+                    print("...................", bus[busLatLonKey], [aggregatedBus[2], aggregatedBus[3]])
+                    if bus[busLatLonKey] == [aggregatedBus[2], aggregatedBus[3]]:
                         aggregatedBusDict = {}
                         aggregatedBusDict = {**bus, **aggregatedBusDict} # dictionary cannot be renamed, merge a blank dict with an exisiting one equals to rename the dict
                         aggregatedBusDict['Bus_LACode'] = str(aggregatedBus[1])
@@ -81,8 +84,8 @@ class demandLoadAllocator(object):
     However, it may generate some unpractical design. For example, a place located in Walse will be allocated to a bus across the Bristol channel,
     which is aginst the reality."""
     # This function is modified from: John Atherton (ja685@cam.ac.uk) #   
-    def closestDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, numOfBranch):
-      # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon[]]
+    def closestDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus):
+      # res_queryBusTopologicalInformation = [BusNodeIRI, BusLatLon[]]
       # res_queryElectricityConsumption_LocalArea = [Area_LACode, v_TotalELecConsumption, Geo_InfoList]
       ons_label = endpointList.ONS['lable']
       ons_iri = endpointList.ONS['queryendpoint_iri']
@@ -104,7 +107,9 @@ class demandLoadAllocator(object):
       busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(res_queryBusTopologicalInformation, ons_label)   
 
       busAndDemandPairList = []
-      busNumberArray = list(range(1, len(res_queryBusTopologicalInformation) + 1)) 
+      busNumberArray = [] #list(range(1, len(res_queryBusTopologicalInformation) + 1)) 
+      for bus in res_queryBusTopologicalInformation:
+          busNumberArray.append(str(bus["BusNodeIRI"]))
       for ec in res_queryElectricityConsumption_LocalArea:
         busAndDemandPair = {}  
         if len(busInGB) > 0: 
@@ -113,7 +118,7 @@ class demandLoadAllocator(object):
                 j = 0
                 distances = [65534]*len(busInGB) # the large number is the earth's circumference
                 for bus in busInGB:
-                  GPSLocationPair = [float(ec['Geo_InfoList'][0]), float(ec['Geo_InfoList'][1]), float(bus['Bus_lat_lon'][0]), float(bus['Bus_lat_lon'][1])]    
+                  GPSLocationPair = [float(ec['Geo_InfoList'][0]), float(ec['Geo_InfoList'][1]), float(bus['BusLatLon'][0]), float(bus['BusLatLon'][1])]    
                   distances[j] = GPS_distance(GPSLocationPair)
                   j += 1
                 bus_index = distances.index(min(distances))  
@@ -121,7 +126,7 @@ class demandLoadAllocator(object):
                 if len(busAndDemandPairList) != 0:
                     hitFlag = False
                     for bd in busAndDemandPairList: 
-                        if str(busAndDemandPair['Bus_node']) == bd['Bus_node']:
+                        if str(busAndDemandPair['BusNodeIRI']) == bd['BusNodeIRI']:
                             bd['v_TotalELecConsumption'] = round((float(bd['v_TotalELecConsumption'])+ float(busAndDemandPair['v_TotalELecConsumption'])), 4)
                             hitFlag = True
                             break
@@ -130,9 +135,9 @@ class demandLoadAllocator(object):
                 else: 
                     busAndDemandPairList.append(busAndDemandPair) 
                     
-                busNo = int(busAndDemandPair['Bus_node'].split("EBus-")[1])
-                if busNo in busNumberArray:
-                   busNumberArray.remove(busNo)
+                # busNo = int(busAndDemandPair['Bus_node'].split("EBus-")[1])
+                if busAndDemandPair['BusNodeIRI'] in busNumberArray:
+                   busNumberArray.remove(busAndDemandPair['BusNodeIRI'])
                 continue # if the demand area is within GB, then it is not necessary to check its distance from the buses located in NI, jump from the current loop
      
         if len(busInNorthernIreland) > 0:       
@@ -141,7 +146,7 @@ class demandLoadAllocator(object):
                 j = 0
                 distances = [65534]*len(busInNorthernIreland) # the large number is the earth's circumference
                 for bus in busInNorthernIreland:
-                  GPSLocationPair = [float(ec['Geo_InfoList'][0]), float(ec['Geo_InfoList'][1]), float(bus['Bus_lat_lon'][0]), float(bus['Bus_lat_lon'][1])]    
+                  GPSLocationPair = [float(ec['Geo_InfoList'][0]), float(ec['Geo_InfoList'][1]), float(bus['BusLatLon'][0]), float(bus['BusLatLon'][1])]    
                   distances[j] = GPS_distance(GPSLocationPair)
                   j += 1
                 
@@ -159,18 +164,20 @@ class demandLoadAllocator(object):
                 else: 
                     busAndDemandPairList.append(busAndDemandPair)   
                     
-                busNo = int(busAndDemandPair['Bus_node'].split("EBus-")[1])
-                if busNo in busNumberArray:
-                   busNumberArray.remove(busNo)
+                if busAndDemandPair['BusNodeIRI'] in busNumberArray:
+                   busNumberArray.remove(busAndDemandPair['BusNodeIRI'])
       
       # check if all buses are assigned with loads  
       if len(busNumberArray) != 0:
-          print("WARNING: There are buses not being assigned with any load, which are number:", busNumberArray)
+          print("WARNING: There are buses not being assigned with any load, which are:", busNumberArray)
       else:
           print("************All buses are assigned with demand loads************") 
       aggregatedBusFlag = False      
       return busAndDemandPairList, aggregatedBusFlag
- 
+
+    
+
+############################################THE FOLLOWING ARE NOT IN USE######################################################################################################################
  #TODO: Add boundary checking    
     def closestDemandLoad_withEWSBoundCheck(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, numOfBranch):
       # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon[]]

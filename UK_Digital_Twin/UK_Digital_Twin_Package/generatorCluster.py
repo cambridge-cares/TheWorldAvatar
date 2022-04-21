@@ -117,7 +117,6 @@ class generatorCluster(object):
       
       powerPlantAndBusPairList = [] 
       busNumberArray = []
-      # busNumberArray = list(range(1, len(busInfoList) + 1)) 
       for bus in busInfoList:
           busNumberArray.append(str(bus["Bus_node"]))
       

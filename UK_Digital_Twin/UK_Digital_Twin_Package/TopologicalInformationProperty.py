@@ -7,11 +7,10 @@
 
 class TopologicalInformation:
     
-     def __init__(self, numOfBus = 10, numOfBranch = 14, voltageLevel = ["275", "400"]):
+     def __init__(self, numOfBus:int, voltageLevel = ["275", "400"]):
         """ File path """
         self.DataPath = '../Data files/PowerGridTopology/'
         self.EBus_num = numOfBus
-        self.ELine_num = numOfBranch
         self.Name = str(self.EBus_num) + '_bus_topology'
         self.BusInfo =  self.DataPath + str(self.EBus_num) + '_bus/bus_topological_info.csv'
         self.BranchInfo =  self.DataPath + str(self.EBus_num) + '_bus/branch_topological_info.csv'

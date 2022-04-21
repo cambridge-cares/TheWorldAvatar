@@ -36,7 +36,7 @@ def busLocatedRegionFinder(busInfoList, ons_label, Bus_lat_lon_key):
         if len(bus) == lengthBusDict:
             raise Exception('Cannot find the located region of the given bus node', bus, 'please check the lat-lon attribute of the bus.')      
     final_time = time.time_ns()
-    print('####################The total running time of busLocatedRegionFinder', final_time, 'ns.')
+    print('####################The total running time of busLocatedRegionFinder', final_time, 'ns.####################')
     return busInfoList
 
 
@@ -46,7 +46,7 @@ Arguments of this function are described below:
 busInfoList(list[{}]): the query results which is formated as a list with the element as a dictionary. This list needs to provide bus uri and bus location in lat-lon sequernce.
             example: [{'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-001', 'Bus_lat_lon': [57.46987, -4.49067]}]  
 ons_label(str): the ONS database query endpoint, http://statistics.data.gov.uk/sparql.json
-Bus_lat_lon_key (str): the ket of the dictionary whose the value is the lat-lon pair  
+Bus_lat_lon_key (str): the key of the dictionary whose the value is the lat-lon pair  
 """
 def busLocatedCountryFinder(busInfoList, ons_label, Bus_lat_lon_key):
     res_GBOrNIBoundary = list(query_topo.queryGBOrNIBoundary(ons_label)) # [LACode_area, Geo_InfoList]       

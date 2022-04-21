@@ -60,10 +60,10 @@ ukmf = ModelFactor.ModelFactor()
 """Create an object of Class UKEnergyConsumption"""
 ukec = UKec.UKEnergyConsumption()
 
-"""Create an object of Class UKPowerGridModel"""
-uk_ebus_model = UK_PG.UKEbusModel()
-uk_eline_model = UK_PG.UKElineModel()
-uk_egen_model = UK_PG.UKEGenModel()
+# """Create an object of Class UKPowerGridModel"""
+# uk_ebus_model = UK_PG.UKEbusModel()
+# uk_eline_model = UK_PG.UKElineModel()
+# uk_egen_model = UK_PG.UKEGenModel()
 
 """Blazegraph UK digital tiwn"""
 endpoint_label = endpointList.ukdigitaltwin['lable']
@@ -171,7 +171,7 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
     
     
     ## check the aggregatedBus and return aggregatedBusList
-    aggregatedBusList = checkaggregatedBus(numOfBus, numOfBranch)
+    aggregatedBusList = checkaggregatedBus(numOfBus)
     
     ## create the bus nodes
     graph, orderedBusList, orderedLatlon = addBusTopologyNodes(graph, numOfBus, numOfBranch, topo_info.headerBusTopologicalInformation, busInfoArrays, ontopowsys_namespace, topology_root_node, uk_topo)
@@ -331,7 +331,7 @@ def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClu
         # get the load allocation method via getattr function 
         genClusterMethod = getattr(gc, generatorClusterFunctionName)
         # pass the arrguments to the cluster method
-        bus_generator_assignment_list = genClusterMethod(res_queryPowerPlantAttributes, orderedBusList, orderedLatlon, aggregatedBusList)    
+        bus_generator_assignment_list = genClusterMethod(busInfoList, res_queryPowerPlantAttributes, aggregatedBusList)    
                              
     for busGen in bus_generator_assignment_list: # Bus_node, EBus, Bus_lat_lon[], Bus_LACode; PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology
         ## Link the generator_node, EGen_node and their PowerGenerator of the power plant
@@ -403,24 +403,24 @@ def AddCostAttributes(graph, counter, fuelType, genTech, generatorNodeIRI, model
     graph.add((URIRef(value_EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelTypeIndex][4].strip('\n')))))
     return graph
 
-
+# TODO: if number the bus?
 """Check the aggregated bus"""
-def checkaggregatedBus(numOfBus, numOfBranch):
-    topo_info = TopoInfo.TopologicalInformation(numOfBus, numOfBranch)  
+def checkaggregatedBus(numOfBus):
+    topo_info = TopoInfo.TopologicalInformation(numOfBus)  
     busInfoArrays = readFile(topo_info.BusInfo)
     aggregatedBusList = []
     for busInfo in busInfoArrays:
         if str(busInfo[5]).strip('\n') == str(topo_info.headerBusTopologicalInformation[5].strip('\n')):
             continue
         elif str(busInfo[5].strip('\n') ) != str(None):  
-            aggregatedBus = [str(busInfo[0]).strip('\n'), str(busInfo[5]).strip('\n')]
+            aggregatedBus = [str(busInfo[0]).strip('\n'), str(busInfo[5]).strip('\n'), float(busInfo[4].strip('\n')), float(busInfo[3].strip('\n'))] # busNumber, aggregated LA code, lat, lon
             aggregatedBusList.append(aggregatedBus)
     return aggregatedBusList
 
 if __name__ == '__main__': 
     # topoConfig = rootNodeAndNameSpace(10, 14, 'ukdigitaltwin_test2', 'Great_Britain')
     # print(topoConfig)
-    createTopologyGraph(topoConfig, 'sameRegionWithBus', ["275", "400"], None, False, 'default')
+    # createTopologyGraph(topoConfig, 'sameRegionWithBus', ["275", "400"], None, False, 'default')
     
     topoConfig = rootNodeAndNameSpace(29, 99, 'ukdigitaltwin_test2', 'Great_Britain')
     print(topoConfig)

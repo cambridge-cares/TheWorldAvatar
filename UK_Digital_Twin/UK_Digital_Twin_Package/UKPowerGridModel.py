@@ -6,16 +6,31 @@
 """This module declare the properties of generating UK power grid model A-boxes"""
 
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
-
+from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
+from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from pypower import idx_bus
 from pypower import idx_brch
 from pypower import idx_gen 
 import collections
 
-valueKey = "value_"
+valueKey = "ScalarValue_"
+ModelVariableSpecificationKey = "ModelVariableSpecification_"
+
+powerSystemModelKey = "PowerSystemModel_"
+
+SLASH = '/'
+
+"""Create an object of Class UKDigitalTwinTBox"""
+t_box = T_BOX.UKDigitalTwinTBox()
+
+"""Create an instance of Class UKDigitalTwin"""
+dt = UKDT.UKDigitalTwin()
 
 """Default remote endpoint"""
 endpoint = EndPointConfigAndBlazegraphRepoLabel.UKPowerGridModelKG
+
+"""The namespace of ontopoesys"""
+ontopowsys_namespace = dt.baseURL + SLASH + t_box.ontopowsysName + SLASH
 
 class UKEbusModel:
     
@@ -23,39 +38,34 @@ class UKEbusModel:
     DataPath = '../Data files/PowerGridModelInitialisation/'
     
     """EBus Node keys"""
-    EBusKey = "EBus-"
-    ModelEBusKey = "Model_EBus-"
+    ModelEBusKey = "ElectricalBusModel_"
     
     """Model variable keys"""
     BUSNUMKey = "BusNumber_"
     BUSTYPEKey = "BusType_"
-    PD_INPUTKey = "InputVariable_Pd_"
-    GD_INPUTKey = "InputVariable_Gd_"
+    PD_INPUTKey = "PdBus_"
+    GD_INPUTKey = "GdBus_"
     GSKey = "Gs_"
     BSKey = "Bs_"
     AREAKey = "Area_"
-    VM_INPUTKey = "InputVariable_Vm_"
-    VA_INPUTKey = "InputVariable_Va_"
-    VM_OUTPUTKey = "StateVariable_Vm_"
-    VA_OUTPUTKey = "StateVariable_Va_"
-    BASEKVKey = "BaseKV_"
+    VM_INPUTKey = "Vm_"
+    VA_INPUTKey = "Va_"
+    BASEKVKey = "baseKV_"
     ZONEKey = "Zone_"
     VMAXKey = "VmMax_"
     VMINKey = "VmMin_"
-    PDGENKey = "Pd_Gen_"
-    GDGENKey = "Gd_Gen_"
     
     """Model output keys"""
-    PD_OUTPUTKey = "Output_Pd_"
-    GD_OUTPUTKey = "Output_Gd_"
-    VM_OUTPUTKey = "Output_Vm_"
-    VA_OUTPUTKey = "Output_Va_"
+    PD_OUTPUTKey = "PdBus_"
+    GD_OUTPUTKey = "GdBus_"
+    VM_OUTPUTKey = "Vm_"
+    VA_OUTPUTKey = "Va_"
     PG_OUTPUTKey = "Generation_Pg_"
     GG_OUTPUTKey = "Generation_Gg_"
     
     
     """Data file header"""
-    headerBusModel = ["Bus", "Type", "Pd", "Gd", "Gs", "Bs", "area", "Vm", "Va", "basekV", "zone", "Vmax", "Vmin\n"]
+    headerBusModel = ["Bus", "Type", "Pd", "Gd", "Gs", "Bs", "area", "Vm", "Va", "basekV", "zone", "Vmax", "Vmin", "x-axis", "y-axis\n"]
     
     # Map with the bus indices of the pypower package
     
@@ -95,14 +105,14 @@ class UKEbusModel:
     
     # {"BUS":"BUS_I", "TYPE": "BUS_TYPE", "PD_INPUT": "PD", "GD_INPUT": "QD", "GS": "GS", "BS": "BS", "AREA": "BUS_AREA", "VM_INPUT": "VM", "VA_INPUT": "VA", "BASEKV": "BASE_KV", "ZONE": "ZONE", "VMAX":"VMAX", "VMIN": "VMIN" }
     
-    def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
+    def __init__(self, numOfBus:int):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\Sleepycat_EBus"
         self.BusModelInitialisation = UKEbusModel.DataPath + str(numOfBus) + '_bus/BusModelInitialisation.csv'        
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\Sleepycat_EBus"
-        self.DUKESVersion = DUKESVersion
-        self.numOfBus = numOfBus
-        self.location = Location
+        # self.DUKESVersion = DUKESVersion
+        # self.numOfBus = numOfBus
+        # self.location = Location
         
         # Model input
         self.BUS = None # BUS
