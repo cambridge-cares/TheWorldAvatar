@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
@@ -96,6 +97,19 @@ public final class BackendInputFile implements FileGenerator {
             addDetail(alg.getDetails(), "optimisable_param_subtypes", inputVarSubtypes);
             addDetail(alg.getDetails(), "response_param_subtypes", outputVarSubtypes);
         }
+    }
+
+    public void configureMOOAlgorithm(String algorithmName, Map<String, List<String>> partitionedSubtypes) {
+        modsObject.getAlgorithms().getAlgorithm().stream()
+                .filter(alg -> alg.getName().equals(algorithmName))
+                .forEach(alg -> {
+                    Details details = alg.getDetails();
+                    partitionedSubtypes.entrySet().forEach(
+                            varEntry -> varEntry.getValue().forEach(
+                                    subtype -> addDetail(
+                                            details, subtype + ":objective_function", varEntry.getKey())));
+                });
+
     }
 
     public void addCase(String name, List<String> modelNames) {

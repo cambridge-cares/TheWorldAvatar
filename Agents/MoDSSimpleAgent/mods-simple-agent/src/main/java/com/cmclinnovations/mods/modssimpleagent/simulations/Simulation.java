@@ -23,10 +23,14 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 
 public class Simulation {
 
-    public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
+    public static final String DATA_ALGORITHM_NAME = "Data_Algorithm";
+    public static final String DEFAULT_MOO_ALGORITHM_NAME = "MOOAlg";
+
     public static final String DEFAULT_CASE_NAME = "Case";
     public static final String DEFAULT_CASEGROUP_NAME = "CaseGroup";
-    public static final String DATA_ALGORITHM_NAME = "Data_Algorithm";
+
+    public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
+
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
 
     private final Request request;
@@ -76,7 +80,15 @@ public class Simulation {
 
     }
 
-    private void populateAlgorithmNodes(List<Variable> variables) {
+    protected void populateMOOAlgorithmNode(String mooAlgName, List<Variable> variables) {
+        Map<String, List<String>> partitionedSubtypes = variables.stream()
+                .filter(variable -> variable.getType().equals("output"))
+                .collect(Collectors.groupingBy(Variable::getObjective,
+                        Collectors.mapping(Variable::getSubtype, Collectors.toList())));
+        inputFile.configureMOOAlgorithm(mooAlgName, partitionedSubtypes);
+    }
+
+    protected void populateAlgorithmNodes(List<Variable> variables) {
         Map<String, List<String>> partitionedVars = variables.stream().collect(
                 Collectors.groupingBy(Variable::getType,
                         Collectors.mapping(Variable::getSubtype, Collectors.toList())));
