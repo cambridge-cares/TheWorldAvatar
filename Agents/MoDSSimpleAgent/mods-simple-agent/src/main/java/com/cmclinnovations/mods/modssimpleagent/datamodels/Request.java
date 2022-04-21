@@ -9,8 +9,8 @@ public class Request {
     String jobID;
     @JsonProperty("SimulationType")
     private String simulationType;
-    @JsonProperty("Settings")
-    private List<Setting> settings;
+    @JsonProperty("Algorithms")
+    private List<Algorithm> algorithms;
     @JsonProperty("Inputs")
     private Data inputs;
 
@@ -30,12 +30,12 @@ public class Request {
         this.simulationType = simulationType;
     }
 
-    public List<Setting> getSettings() {
-        return settings;
+    public List<Algorithm> getAlgorithms() {
+        return algorithms;
     }
 
-    public void setSettings(List<Setting> settings) {
-        this.settings = settings;
+    public void setAlgorithms(List<Algorithm> algorithms) {
+        this.algorithms = algorithms;
     }
 
     public Data getInputs() {
