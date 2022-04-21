@@ -26,12 +26,12 @@ To check the status of a component, a GET request needs to be sent to the follow
 http://<IP address of ESP node>/<domain>/<domain ID>
 ```
 
-If the switch is off, the response will be:
+If the component such as a switch is in the off state, the response will be:
 ```
 {"id":"switch-generic_output","state":"OFF","value":false}
 ```
 
-If the switch is on, the response will be:
+If the component such as a switch is in the on state, the response will be:
 ```
 {"id":"switch-generic_output","state":"ON","value":true}
 ```
@@ -54,7 +54,7 @@ to explain the set-up of a knowledge graph triple store or Postgres database.
 For running the agent, three property files are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
-- One [property file for the ThingsBoard API](#api-properties) defining the IP address of the ESPHome web server, domain, domain ID.
+- One [property file for the ESPHome API](#api-properties) defining the IP address of the ESPHome web server, domain, domain ID.
 
 #### Agent properties
 The agent property file only needs to contain a single line:
