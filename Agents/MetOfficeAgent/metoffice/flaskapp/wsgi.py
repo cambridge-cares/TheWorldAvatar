@@ -11,6 +11,7 @@ from pathlib import Path
 
 from metoffice.flaskapp import create_app
 from apscheduler.schedulers.background import BackgroundScheduler
+from pytz import utc
 
 from metoffice.datainstantiation.readings import update_all_stations
 from metoffice.dataretrieval.stations import create_json_output_files
@@ -19,12 +20,12 @@ from metoffice.dataretrieval.stations import create_json_output_files
 # 1) Assimilate latest time series data every hour
 # 2) Write latest output files once per day
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(update_all_stations, trigger='cron', hour='*', max_instances=1)
+sched.add_job(update_all_stations, trigger='cron', hour='*', timezone=utc)
 # Create path to output directory
 # (dependent on whether called from Docker container or as local agent)
 outdir = os.path.join(Path(__file__).parent.parent.parent, 'output')
 sched.add_job(create_json_output_files, trigger='cron', hour='4', minute='30', 
-              kwargs={'outdir': str(outdir)}, max_instances=1)
+              kwargs={'outdir': str(outdir)}, timezone=utc)
 sched.start()
 
 app = create_app()

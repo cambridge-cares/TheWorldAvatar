@@ -351,7 +351,7 @@ def instantiate_all_station_readings(api_key: str = DATAPOINT_API_KEY,
 def update_all_stations(api_key: str = DATAPOINT_API_KEY,
                         query_endpoint: str = QUERY_ENDPOINT,
                         update_endpoint: str = UPDATE_ENDPOINT):
-    
+
     # Instantiate all available stations (ONLY not already existing stations
     # will be newly instantiated)
     print('\nUpdate instantiated stations: ')

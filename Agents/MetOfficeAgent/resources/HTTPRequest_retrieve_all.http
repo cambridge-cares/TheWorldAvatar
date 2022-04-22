@@ -27,6 +27,7 @@ Content-Type: application/json
 
 { "query": {
       "outDir": "/app/output",
+      "splitObsFcs": true,
       "daysBack": "14"
     }
 }
