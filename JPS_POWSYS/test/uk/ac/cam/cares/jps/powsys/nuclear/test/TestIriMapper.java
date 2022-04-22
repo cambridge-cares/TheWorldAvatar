@@ -10,26 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestIriMapper {
-	
-	// Test add(String iri, String id, String type)
-	@Test
-	public void testAdd() {
-		String iri = "iri_number";
-		String id = "id_number";
-		String type =  "type_number";
-		
-		List<IriMapping> list = new ArrayList<IriMapping>();
-		IriMapper newinst = new IriMapper();
-		IriMapper.IriMapping newinst_irimapping = newinst.new IriMapping();
-		newinst_irimapping.iri=iri;
-		newinst_irimapping.id=id;
-		newinst_irimapping.type=type;
-		list.add(newinst_irimapping);
-		
-		assertSame(list.get(0).iri,iri);
-		assertSame(list.get(0).id,id);
-		assertSame(list.get(0).type,type);	
-	}
 		
 	// Test getIri(String id, String type)
 	@Test 
@@ -103,9 +83,9 @@ public class TestIriMapper {
 		assertSame(mappedori3,id2);
 	}
 	
-	// Test IriMapping
+	// Test add(String iri, String id, String type) and serialize
 	@Test
-	public void testSerialize() {
+	public void testAddandSerialize() {
 		String iri = "iri_number";
 		String id = "id_number";
 		String type =  "type_number";
@@ -125,8 +105,8 @@ public class TestIriMapper {
 	
 		IriMapper newinst1 = new IriMapper();
 		newinst1.add(iri,id,type);
-		String filePath = "C:\\Users\\HXUE01\\Documents\\GitHub\\TheWorldAvatar\\JPS_POWSYS\\test\\uk\\ac\\cam\\cares\\jps\\powsys\\nuclear\\test\\test.txt";
-		List<IriMapping> list = newinst1.deserialize(filePath);
+		java.net.URL filePath = this.getClass().getResource("test.txt");
+		List<IriMapping> list = newinst1.deserialize(filePath.getFile());
 		
 		List<IriMapping> list_test = new ArrayList<IriMapping>();
 		IriMapper newinst2 = new IriMapper();
@@ -150,8 +130,8 @@ public class TestIriMapper {
 	
 		IriMapper newinst1 = new IriMapper();
 		newinst1.add(iri,id,type);
-		String filePath = "C:\\Users\\HXUE01\\Documents\\GitHub\\TheWorldAvatar\\JPS_POWSYS\\test\\uk\\ac\\cam\\cares\\jps\\powsys\\nuclear\\test\\test.txt";
-		List<IriMapping> list = newinst1.deserialize2(filePath);
+		java.net.URL filePath = this.getClass().getResource("test.txt");
+		List<IriMapping> list = newinst1.deserialize2(filePath.getFile());
 		
 		List<IriMapping> list_test = new ArrayList<IriMapping>();
 		IriMapper newinst2 = new IriMapper();
