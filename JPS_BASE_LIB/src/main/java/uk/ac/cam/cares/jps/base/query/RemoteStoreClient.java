@@ -809,13 +809,22 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @param file
      */
     public void uploadFile(File file) {
+    	String extension = FilenameUtils.getExtension(file.getAbsolutePath());
+    	uploadFile(file, extension);
+    }
+    
+    /**
+     * same method as above but receives extension as a separate argument
+     * @param file
+     * @param extension
+     */
+    public void uploadFile(File file, String extension) {
     	if (!file.exists()) {
     		throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
     	}
     	
-    	String extension = FilenameUtils.getExtension(file.getAbsolutePath());
     	HttpEntity entity;
-    	switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
+    	switch (extension) {
     		case "rdf":
     		case "rdfs":
     		case "owl":
