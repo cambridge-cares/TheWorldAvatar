@@ -16,8 +16,13 @@ class MOO extends Simulation {
     }
 
     @Override
+    protected Algorithm getPrimaryAlgorithm() {
+        return getAlgorithmOfType("MOO");
+    }
+
+    @Override
     protected void populateAlgorithmNodes(List<Variable> variables) {
-        populateMOOAlgorithmNode(Simulation.DEFAULT_MOO_ALGORITHM_NAME, variables);
+        populateMOOAlgorithmNode(Simulation.DEFAULT_MOO_ALGORITHM_NAME, getPrimaryAlgorithm().getName(), variables);
         super.populateAlgorithmNodes(variables);
     }
 

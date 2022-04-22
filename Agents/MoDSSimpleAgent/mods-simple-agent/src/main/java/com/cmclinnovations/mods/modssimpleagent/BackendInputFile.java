@@ -99,10 +99,12 @@ public final class BackendInputFile implements FileGenerator {
         }
     }
 
-    public void configureMOOAlgorithm(String algorithmName, Map<String, List<String>> partitionedSubtypes) {
+    public void configureMOOAlgorithm(String algorithmName, String displayName,
+            Map<String, List<String>> partitionedSubtypes) {
         modsObject.getAlgorithms().getAlgorithm().stream()
                 .filter(alg -> alg.getName().equals(algorithmName))
                 .forEach(alg -> {
+                    alg.setDisplayName(displayName);
                     Details details = alg.getDetails();
                     partitionedSubtypes.entrySet().forEach(
                             varEntry -> varEntry.getValue().forEach(

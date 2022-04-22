@@ -69,9 +69,12 @@ public class Simulation {
         return modsBackend;
     }
 
+    protected Algorithm getPrimaryAlgorithm() {
+        return request.getAlgorithms().get(0);
+    }
+
     protected void populateInputFile() {
-        List<Algorithm> algorithms = request.getAlgorithms();
-        List<Variable> variables = algorithms.get(0).getVariables();
+        List<Variable> variables = getPrimaryAlgorithm().getVariables();
         populateAlgorithmNodes(variables);
         populateCaseNodes();
         populateModelNodes();
@@ -80,12 +83,12 @@ public class Simulation {
 
     }
 
-    protected void populateMOOAlgorithmNode(String mooAlgName, List<Variable> variables) {
+    protected void populateMOOAlgorithmNode(String mooAlgName, String displayName, List<Variable> variables) {
         Map<String, List<String>> partitionedSubtypes = variables.stream()
                 .filter(variable -> variable.getType().equals("output"))
                 .collect(Collectors.groupingBy(Variable::getObjective,
                         Collectors.mapping(Variable::getSubtype, Collectors.toList())));
-        inputFile.configureMOOAlgorithm(mooAlgName, partitionedSubtypes);
+        inputFile.configureMOOAlgorithm(mooAlgName, displayName, partitionedSubtypes);
     }
 
     protected void populateAlgorithmNodes(List<Variable> variables) {
