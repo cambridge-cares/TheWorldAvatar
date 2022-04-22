@@ -13,6 +13,9 @@ coverage.xml
 *.png
 assets
 
+output/*
+!.gitignore
+
 ## User defined
 *.egg-info
 
