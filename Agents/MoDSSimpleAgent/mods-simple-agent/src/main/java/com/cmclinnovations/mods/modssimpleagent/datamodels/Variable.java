@@ -1,5 +1,6 @@
 package com.cmclinnovations.mods.modssimpleagent.datamodels;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Variable {
 
     public static final String SUBTYPE_PREFIX = "subtype_";
@@ -14,6 +15,11 @@ public class Variable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JsonIgnore
+    public String getSubtype() {
+        return SUBTYPE_PREFIX + name;
     }
 
     public String getType() {
@@ -32,8 +38,5 @@ public class Variable {
         this.objective = objective;
     }
 
-    public String getSubtype() {
-        return SUBTYPE_PREFIX + name;
-    }
 
 }
