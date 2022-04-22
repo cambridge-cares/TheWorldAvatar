@@ -22,7 +22,7 @@ import java.util.Properties;
 class NUSDavisWeatherStationAPIConnector{
     private String api_key;
     private String api_secret;
-    private String api_url="https://api.weatherlink.com/v2/current/";
+    private String api_url="https://api.weatherlink.com/";
     private int stationId;
     private String api_Signature=" ";
     private Long current_timestamp= Instant.now().getEpochSecond();
@@ -55,9 +55,9 @@ class NUSDavisWeatherStationAPIConnector{
     * Method for setting the API signature. It uses the SDK given by the API provider: weatherlink.
     * The HMAC SHA-256 algorithm is used to generate the API signature.
     * */
-    private void setAPISignature() throws SignatureException {
+    private void setAPISignature(Long timestamp) throws SignatureException {
         SignatureCalculator sc=new SignatureCalculator();
-        String signature=sc.calculateCurrentSignature(api_key,api_secret,current_timestamp,stationId);
+        String signature=sc.calculateCurrentSignature(api_key,api_secret,timestamp,stationId);
         this.api_Signature=signature;
     }
 
@@ -82,10 +82,10 @@ class NUSDavisWeatherStationAPIConnector{
      */
     private JSONObject retrieveWeatherReadings() throws SignatureException, IOException {
         if (api_Signature == " ")
-            setAPISignature();
+            setAPISignature(current_timestamp);
         //Sample path taken from the documentation using mock values
         //https://api.weatherlink.com/v2/current/96230?api-key=987654321&t=1558729481&api-signature=c818f075283713f1a133c30e27984032e19ca6dd37c33160d1c8f1edbaa509e4
-        String path = api_url + stationId + "?api-key=" + api_key + "&t=" + current_timestamp + "api-signature=" + api_Signature;
+        String path = api_url + "v2/current/"+stationId + "?api-key=" + api_key + "&t=" + current_timestamp + "&api-signature=" + api_Signature;
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet readingRequest = new HttpGet(path);
             try (CloseableHttpResponse response = httpclient.execute(readingRequest)) {
@@ -116,7 +116,7 @@ class NUSDavisWeatherStationAPIConnector{
                 throw new IOException("The properties file is missing \"weather.api_key=<api_key>\"");
             }
             if (prop.containsKey("weather.api_secret")){
-                this.api_url=prop.getProperty("weather.api_secret");
+                this.api_secret=prop.getProperty("weather.api_secret");
             }else{
                 throw new IOException("The properties file is missing \"weather.api_secret=<api_secret>\"");
             }

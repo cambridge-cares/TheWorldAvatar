@@ -49,24 +49,24 @@ public class NUSDavisWeatherStationAPIConnectorTest {
         NUSDavisWeatherStationAPIConnector connector=new NUSDavisWeatherStationAPIConnector("key","secret","url",123456);
         String propertiesFile = Paths.get(folder.getRoot().toString(), "api.properties").toString();
         writePropertyFile(propertiesFile, Arrays.asList("weather.api_key=key", "weather.api_secret=secret","weather.api_url=url","weather.stationId=123456" ));
-
         NUSDavisWeatherStationAPIConnector connectorFile= new NUSDavisWeatherStationAPIConnector(propertiesFile);
-        Field apiKeyField = NUSDavisWeatherStationAPIConnector.class.getField("api_key");
+
+        Field apiKeyField = NUSDavisWeatherStationAPIConnector.class.getDeclaredField("api_key");
         apiKeyField.setAccessible(true);
         Assert.assertEquals("key", apiKeyField.get(connector));
         Assert.assertEquals("key", apiKeyField.get(connectorFile));
 
-        Field apiSecretField = NUSDavisWeatherStationAPIConnector.class.getField("api_secret");
+        Field apiSecretField = NUSDavisWeatherStationAPIConnector.class.getDeclaredField("api_secret");
         apiSecretField.setAccessible(true);
         Assert.assertEquals("secret", apiSecretField.get(connector));
         Assert.assertEquals("secret", apiSecretField.get(connectorFile));
 
-        Field apiUrlField = NUSDavisWeatherStationAPIConnector.class.getField("api_url");
+        Field apiUrlField = NUSDavisWeatherStationAPIConnector.class.getDeclaredField("api_url");
         apiUrlField.setAccessible(true);
         Assert.assertEquals("url", apiUrlField.get(connector));
         Assert.assertEquals("url", apiUrlField.get(connectorFile));
 
-        Field stationIdField = NUSDavisWeatherStationAPIConnector.class.getField("api_stationId");
+        Field stationIdField = NUSDavisWeatherStationAPIConnector.class.getDeclaredField("stationId");
         stationIdField.setAccessible(true);
         Assert.assertEquals(123456, stationIdField.get(connector));
         Assert.assertEquals(123456, stationIdField.get(connectorFile));
@@ -163,10 +163,10 @@ public class NUSDavisWeatherStationAPIConnectorTest {
 
         Field stationIdField =NUSDavisWeatherStationAPIConnector.class.getDeclaredField("stationId");
         stationIdField.setAccessible(true);
-        Assert.assertEquals("test_id", stationIdField.get(testConnector));
+        Assert.assertEquals(123456, stationIdField.get(testConnector));
     }
     @Test
-    public void testGetWeatherDataReadings()  {
+    public void testGetWeatherDataReadings() throws NoSuchFieldException, IllegalAccessException {
 
         // API returns a response
         JSONObject responseBody = new JSONObject();
@@ -177,12 +177,16 @@ public class NUSDavisWeatherStationAPIConnectorTest {
 
         NUSDavisWeatherStationAPIConnector testConnector1= new NUSDavisWeatherStationAPIConnector("987654321","ABC123",TEST_URL,123456,1558729481);
 
+
+        Field api_sign=testConnector1.getClass().getDeclaredField("api_Signature");
+        api_sign.setAccessible(true);
         //signature calculated using the online tool: freeformatter.com/hmac-generator
-        String signature="c1bd80b57a887aa35ed48f71dc66c64825328ad42a0344949cb9c510d318b36e";
+        String signature= "c1bd80b57a887aa35ed48f71dc66c64825328ad42a0344949cb9c510d318b36e";
+        api_sign.set(testConnector1,signature);
 
-        nusDavisWeatherStationAPIMock.stubFor(get(urlEqualTo("123456?api-key=987654321&t=1558729481&api-signature="+signature))
+        nusDavisWeatherStationAPIMock.stubFor(get(urlEqualTo("/v2/current/123456?api-key=987654321&t=1558729481&api-signature="+signature))
                 .willReturn(ok().withBody(responseBody.toString())));
-
+        String response=testConnector1.getWeatherReadings().toString();
         Assert.assertEquals(responseBody.toString(), testConnector1.getWeatherReadings().toString());
     }
 
@@ -190,17 +194,18 @@ public class NUSDavisWeatherStationAPIConnectorTest {
     public void testSetAPISignature() throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         NUSDavisWeatherStationAPIConnector testConnector2= new NUSDavisWeatherStationAPIConnector("987654321","ABC123",TEST_URL,123456,1558729481);
 
-        Field timestamp=testConnector2.getClass().getField("current_timestamp");
+        Field timestamp=testConnector2.getClass().getDeclaredField("current_timestamp");
         timestamp.setAccessible(true);
-
-        Method setSign=testConnector2.getClass().getMethod("setAPISignature",null);
+        Long ts= (Long)timestamp.get(testConnector2);
+        Method setSign=testConnector2.getClass().getDeclaredMethod("setAPISignature",Long.class);
         setSign.setAccessible(true);
-        setSign.invoke(testConnector2,"timestamp").toString();
+        setSign.invoke(testConnector2,ts);
 
-        Field api_sign=testConnector2.getClass().getField("api_Signature");
+
+        Field api_sign=testConnector2.getClass().getDeclaredField("api_Signature");
         api_sign.setAccessible(true);
         //expected signature calculated using the online tool: freeformatter.com/hmac-generator
-        Assert.assertEquals("c1bd80b57a887aa35ed48f71dc66c64825328ad42a0344949cb9c510d318b36e",api_sign);
+        Assert.assertEquals("c1bd80b57a887aa35ed48f71dc66c64825328ad42a0344949cb9c510d318b36e",api_sign.get(testConnector2));
     }
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
         // Overwrite potentially existing properties file
