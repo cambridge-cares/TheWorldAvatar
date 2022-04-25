@@ -131,7 +131,7 @@ public class Simulation {
             Variable variable = variables.stream().filter(varToTest -> varToTest.getName().equals(name))
                     .findFirst().orElseThrow();
             inputFile.addParameter(name, variable.getSubtype(), variable.getType(),
-                    getVaraibleCases(name), getVariableModels(name),
+                    getVariableCases(name), getVariableModels(name),
                     minItr.next(), maxItr.next());
         }
     }
@@ -144,18 +144,33 @@ public class Simulation {
         return List.of(getFullCaseName(DEFAULT_CASEGROUP_NAME, DEFAULT_CASE_NAME));
     }
 
-    protected List<String> getVaraibleCases(String varName) {
-        return getCases();
-    }
-
     protected List<String> getModels() {
         return List.of(DEFAULT_SURROGATE_MODEL_NAME);
     }
 
+    /**
+     * 
+     * @param varName Name of the variable
+     * @return Names of the cases associated with the specified variable
+     */
+    protected List<String> getVariableCases(String varName) {
+        return getCases();
+    }
+
+    /**
+     * 
+     * @param caseName Name of the case
+     * @return Names of the models associated with the specified case
+     */
     protected List<String> getCaseModels(String caseName) {
         return getModels();
     }
 
+    /**
+     * 
+     * @param varName Name of the variable
+     * @return Names of the models associated with the specified variable
+     */
     protected List<String> getVariableModels(String varName) {
         return getModels();
     }
