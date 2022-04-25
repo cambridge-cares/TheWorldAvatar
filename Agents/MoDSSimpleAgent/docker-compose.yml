@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   mods_simple_agent:
-    image: mods_simple_agent:0.0.1
+    image: docker.cmclinnovations.com/mods_simple_agent:0.0.1
     build: .
     container_name: mods_simple_agent
     environment:
