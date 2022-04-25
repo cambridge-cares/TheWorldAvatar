@@ -84,6 +84,10 @@ public final class BackendInputFile implements FileGenerator {
         this(unmarshal(stream));
     }
 
+    public BackendInputFile(Path path) throws JAXBException, IOException {
+        this(java.nio.file.Files.newInputStream(path));
+    }
+
     private BackendInputFile(Mods modsObject) {
         this.modsObject = modsObject;
     }
