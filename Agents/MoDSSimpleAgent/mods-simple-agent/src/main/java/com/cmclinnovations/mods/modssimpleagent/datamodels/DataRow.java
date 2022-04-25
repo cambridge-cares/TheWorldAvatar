@@ -1,7 +1,10 @@
 package com.cmclinnovations.mods.modssimpleagent.datamodels;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Streams;
 
 public class DataRow implements IDataTable {
     private final List<String> headers;
@@ -22,16 +25,17 @@ public class DataRow implements IDataTable {
     }
 
     @Override
-    public List<List<Double>> getValuesMatrix() {
+    @JsonIgnore
+    public List<List<Double>> getRows() {
         return List.of(values);
     }
 
-    public Iterator<List<Double>> getRowIterator() {
-        return List.of(values).iterator();
-    }
-
-    public Iterator<List<Double>> getColumnIterator() {
-        return values.stream().map(List::of).iterator();
+    @Override
+    @JsonIgnore
+    public List<DataColumn> getColumns() {
+        return Streams.zip(headers.stream(), values.stream(),
+                (header, value) -> new DataColumn(header, List.of(value)))
+                .collect(Collectors.toList());
     }
 
 }

@@ -3,9 +3,9 @@ package com.cmclinnovations.mods.modssimpleagent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.List;
 
+import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.IDataTable;
 
 import org.apache.commons.csv.CSVFormat;
@@ -30,11 +30,9 @@ public class CSVDataSeparateFiles extends AbstractCSVDataFile {
 
     @Override
     public void marshal(Path dirPath) throws FileGenerationException {
-        Iterator<String> headerItr = getHeaders().iterator();
-        Iterator<List<Double>> valuesItr = this.getData().getColumnIterator();
-        while (headerItr.hasNext() && valuesItr.hasNext()) {
-            String header = headerItr.next();
-            List<Double> values = valuesItr.next();
+        for (DataColumn column : getData().getColumns()) {
+            String header = column.getName();
+            List<Double> values = column.getValues();
             Path filePath = dirPath.resolve(fileNamePrefix + header + ".csv");
             try (CSVPrinter printer = new CSVPrinter(Files.newBufferedWriter(filePath),
                     CSVFormat.RFC4180)) {

@@ -21,6 +21,6 @@ public abstract class AbstractCSVDataFile implements FileGenerator {
     }
 
     public List<List<Double>> getRows() {
-        return data.getValuesMatrix();
+        return data.getRows();
     }
 }

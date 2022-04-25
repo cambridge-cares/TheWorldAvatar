@@ -5,10 +5,8 @@ import java.util.Collections;
 import java.util.DoubleSummaryStatistics;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,6 +25,7 @@ public class Data implements IDataTable {
         this.columns = columns;
     }
 
+    @Override
     public List<DataColumn> getColumns() {
         return columns;
     }
@@ -35,11 +34,15 @@ public class Data implements IDataTable {
         this.columns = columns;
     }
 
+    @Override
+    @JsonIgnore
     public List<String> getHeaders() {
         return columns.stream().map(DataColumn::getName).collect(Collectors.toUnmodifiableList());
     }
 
-    public List<List<Double>> getValuesMatrix() {
+    @Override
+    @JsonIgnore
+    public List<List<Double>> getRows() {
         if (columns.isEmpty()) {
             return Collections.emptyList();
         }
@@ -55,16 +58,7 @@ public class Data implements IDataTable {
         return rows;
     }
 
-    @Override
-    public Iterator<List<Double>> getColumnIterator() {
-        return columns.stream().map(DataColumn::getValues).iterator();
-    }
-
-    @Override
-    public Iterator<List<Double>> getRowIterator() {
-        return getValuesMatrix().iterator();
-    }
-
+    @JsonIgnore
     private List<DoubleSummaryStatistics> getStats() {
         if (null == stats) {
             stats = columns.stream()
@@ -75,21 +69,25 @@ public class Data implements IDataTable {
         return stats;
     }
 
+    @JsonIgnore
     public DataRow getAverages() {
         return new DataRow(getHeaders(), getStats().stream()
                 .map(DoubleSummaryStatistics::getAverage)
                 .collect(Collectors.toList()));
     }
 
+    @JsonIgnore
     public DataRow getMinimums() {
         return new DataRow(getHeaders(), getStats().stream()
                 .map(DoubleSummaryStatistics::getMin)
                 .collect(Collectors.toList()));
     }
 
+    @JsonIgnore
     public DataRow getMaximums() {
         return new DataRow(getHeaders(), getStats().stream()
                 .map(DoubleSummaryStatistics::getMax)
                 .collect(Collectors.toList()));
     }
+
 }
