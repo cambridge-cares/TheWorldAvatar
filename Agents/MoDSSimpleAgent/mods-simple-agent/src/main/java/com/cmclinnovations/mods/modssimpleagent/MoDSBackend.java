@@ -38,10 +38,14 @@ public final class MoDSBackend {
         this.timeout = timeout;
     }
 
+    public String getJobID() {
+        return jobID;
+    }
+
     public Path createSubDir(String subDirName) throws IOException {
         Path subDirPath = simDir.resolve(subDirName);
         if (!Files.exists(subDirPath)) {
-        Files.createDirectory(subDirPath);
+            Files.createDirectory(subDirPath);
         }
         return subDirPath;
     }
