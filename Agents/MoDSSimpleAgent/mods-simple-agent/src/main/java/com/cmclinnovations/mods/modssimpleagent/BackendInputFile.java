@@ -92,7 +92,7 @@ public final class BackendInputFile implements FileGenerator {
         return modsObject;
     }
 
-    public void configureAlgorithms(List<String> inputVarSubtypes, List<String> outputVarSubtypes) {
+    public void configureAlgorithmParams(List<String> inputVarSubtypes, List<String> outputVarSubtypes) {
         for (Algorithm alg : modsObject.getAlgorithms().getAlgorithm()) {
             addDetail(alg.getDetails(), "optimisable_param_subtypes", inputVarSubtypes);
             addDetail(alg.getDetails(), "response_param_subtypes", outputVarSubtypes);

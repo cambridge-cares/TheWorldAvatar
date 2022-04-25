@@ -95,7 +95,7 @@ public class Simulation {
         Map<String, List<String>> partitionedVars = variables.stream().collect(
                 Collectors.groupingBy(Variable::getType,
                         Collectors.mapping(Variable::getSubtype, Collectors.toList())));
-        inputFile.configureAlgorithms(partitionedVars.get("input"), partitionedVars.get("output"));
+        inputFile.configureAlgorithmParams(partitionedVars.get("input"), partitionedVars.get("output"));
     }
 
     private void populateCaseNodes() {
