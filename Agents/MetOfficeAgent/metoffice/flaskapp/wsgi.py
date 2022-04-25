@@ -17,14 +17,14 @@ from metoffice.datainstantiation.readings import update_all_stations
 from metoffice.dataretrieval.stations import create_json_output_files
 
 # Add recurring background tasks
-# 1) Assimilate latest time series data every hour
+# 1) Assimilate latest time series data once per day
 # 2) Write latest output files once per day
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(update_all_stations, trigger='cron', hour='*', timezone=utc)
+sched.add_job(update_all_stations, trigger='cron', hour='3', timezone=utc)
 # Create path to output directory
 # (dependent on whether called from Docker container or as local agent)
 outdir = os.path.join(Path(__file__).parent.parent.parent, 'output')
-sched.add_job(create_json_output_files, trigger='cron', hour='4', minute='30', 
+sched.add_job(create_json_output_files, trigger='cron', hour='4',
               kwargs={'outdir': str(outdir)}, timezone=utc)
 sched.start()
 
