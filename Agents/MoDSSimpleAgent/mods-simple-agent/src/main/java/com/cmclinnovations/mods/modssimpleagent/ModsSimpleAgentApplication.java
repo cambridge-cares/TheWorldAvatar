@@ -25,6 +25,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @RestController
 public class ModsSimpleAgentApplication {
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     Map<RequestMappingInfo, HandlerMethod> endpointMap;
 
     @EventListener
@@ -44,14 +46,15 @@ public class ModsSimpleAgentApplication {
     public String request(@RequestParam("query") String config)
             throws IOException, JAXBException {
 
-        ObjectMapper mapper = new ObjectMapper();
-        Request request = mapper.readValue(config, Request.class);
+        Request request = OBJECT_MAPPER.readValue(config, Request.class);
 
         Simulation sim = Simulation.createSimulation(request);
 
         sim.run();
 
-        return "Hello Docker World\n" + config;
+        Request reponse = sim.getResponse();
+
+        return OBJECT_MAPPER.writeValueAsString(reponse);
     }
 
     @GetMapping(value = "/output/request")

@@ -250,4 +250,11 @@ public class Simulation {
         modsBackend.run();
     }
 
+    public final Request getResponse() {
+        Request response = new Request();
+        response.setJobID(getJobID());
+        response.setSimulationType(request.getSimulationType());
+        return response;
+    }
+
 }
