@@ -82,7 +82,7 @@ public class MinValueAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				minAgent.monitorDerivation(Config.agentIriMinValue);
+				minAgent.monitorAsyncDerivations(Config.agentIriMinValue);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}

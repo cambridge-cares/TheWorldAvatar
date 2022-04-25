@@ -103,7 +103,7 @@ public class RNGAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				rngAgent.monitorDerivation(Config.agentIriRNG);
+				rngAgent.monitorAsyncDerivations(Config.agentIriRNG);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}

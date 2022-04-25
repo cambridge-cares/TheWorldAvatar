@@ -94,12 +94,12 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 	}
 
 	/**
-	 * Monitor the derivation that isDerivedUsing the agentIRI.
+	 * Monitor the asynchronous derivation that isDerivedUsing the agentIRI.
 	 * 
 	 * @param agentIRI
 	 */
 	@Override
-	public void monitorDerivation(String agentIRI) {
+	public void monitorAsyncDerivations(String agentIRI) {
 		// function getDerivationsAndStatusType ONLY consider the async derivation
 		// sync derivations <isDerivedUsing> agentIRI will be handled as HTTP requests
 		Map<String, StatusType> derivationsAndStatusType = devClient.getDerivationsAndStatusType(agentIRI);

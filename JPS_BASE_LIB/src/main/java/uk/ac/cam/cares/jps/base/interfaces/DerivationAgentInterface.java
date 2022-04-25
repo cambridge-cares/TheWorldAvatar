@@ -33,10 +33,10 @@ public interface DerivationAgentInterface {
 	boolean validateInput(JSONObject requestParams) throws BadRequestException;
 
 	/**
-	 * Shall implement logic to monitor the derivation that isDerivedUsing the
-	 * instantiated agent.
+	 * Shall implement logic to monitor the asynchronous derivation that
+	 * isDerivedUsing the instantiated agent.
 	 * 
 	 * @param agentIRI
 	 */
-	void monitorDerivation(String agentIRI);
+	void monitorAsyncDerivations(String agentIRI);
 }

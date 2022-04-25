@@ -82,7 +82,7 @@ public class MaxValueAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				maxAgent.monitorDerivation(Config.agentIriMaxValue);
+				maxAgent.monitorAsyncDerivations(Config.agentIriMaxValue);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}
