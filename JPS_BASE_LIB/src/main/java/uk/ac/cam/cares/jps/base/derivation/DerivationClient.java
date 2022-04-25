@@ -388,9 +388,17 @@ public class DerivationClient {
 	 * to all of their inputs. The input, derivedIRIs, should have rdf:type
 	 * DerivedQuantity or DerivedQuantityWithTimeSeries
 	 * 
+	 * NOTE this method is marked as Deprecated as it updates the timestamp of the
+	 * whole derivation DAG in one-go after all the update is finished, which
+	 * restricts the amount of entities that requesting the same information at the
+	 * same time, as we prefer a decentralised deployment of agents, the amount of
+	 * entities that require an update should NOT be confined. The new method
+	 * updatePureSyncDerivations(List<String>) is recommended as an alternative.
+	 * 
 	 * @param kbClient
 	 * @param derivedIRI
 	 */
+	@Deprecated
 	public void updateDerivations(List<String> derivedIRIs) {
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
@@ -418,7 +426,16 @@ public class DerivationClient {
 
 	/**
 	 * updates all derivations in the triple-store
+	 * 
+	 * * NOTE this method is marked as Deprecated as it updates the timestamp of the
+	 * whole derivation DAG in one-go after all the update is finished, which
+	 * restricts the amount of entities that requesting the same information at the
+	 * same time, as we prefer a decentralised deployment of agents, the amount of
+	 * entities that require an update should NOT be confined. The new method
+	 * updateAllSyncDerivations() is recommended as an alternative.
+	 * 
 	 */
+	@Deprecated
 	public void updateDerivations() {
 		List<Derivation> derivations = this.sparqlClient.getDerivations();
 
