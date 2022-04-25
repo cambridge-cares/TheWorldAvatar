@@ -60,6 +60,11 @@ public class SparqlClient {
 	public static Iri hasType = p_agent.iri("hasType");
 	public static Iri hasName = p_agent.iri("hasName");
 	
+	// derivation realted
+	public static Prefix p_derivation = SparqlBuilder.prefix("derivation",
+			iri("https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#"));
+	public static Iri belongsTo = p_derivation.iri("belongsTo");
+
 	public SparqlClient(StoreClientInterface storeClient) {
 		this.storeClient = storeClient;
 	}
@@ -353,9 +358,10 @@ public class SparqlClient {
     	
     	String key = "listofrandompoints";
     	Variable ul_iri = SparqlBuilder.var(key);
-    	GraphPattern queryPattern = ul_iri.isA(ListOfRandomPoints);
+		Variable derivation = SparqlBuilder.var("derivation");
+		GraphPattern queryPattern = ul_iri.isA(ListOfRandomPoints).andHas(belongsTo, derivation);
     	
-    	query.prefix(p_namespace).select(ul_iri).where(queryPattern);
+		query.prefix(p_namespace, p_derivation).select(ul_iri).where(queryPattern);
     	
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
@@ -420,6 +426,8 @@ public class SparqlClient {
 	 * This method counts the number of ?pt in below triples
 	 * ?list a <ListOfRandomPoints>.
 	 * ?list <hasPoint> ?pt.
+	 * ?list <belongsTo> ?derivation.
+	 * 
 	 * @return
 	 */
 	public int getAmountOfPointsInList() {
@@ -430,9 +438,10 @@ public class SparqlClient {
 		
 		Variable lst = SparqlBuilder.var(listKey);
 		Variable pt = SparqlBuilder.var(pointKey);
-		GraphPattern queryPattern = lst.isA(ListOfRandomPoints).andHas(hasPoint, pt);
+		Variable derivation = SparqlBuilder.var("derivation");
+		GraphPattern queryPattern = lst.isA(ListOfRandomPoints).andHas(hasPoint, pt).andHas(belongsTo, derivation);
 
-		query.prefix(p_namespace).select(pt).where(queryPattern);
+		query.prefix(p_namespace, p_derivation).select(pt).where(queryPattern);
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 

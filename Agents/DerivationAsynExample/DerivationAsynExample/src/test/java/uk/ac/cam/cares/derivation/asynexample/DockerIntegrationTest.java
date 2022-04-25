@@ -184,14 +184,15 @@ public class DockerIntegrationTest extends TestCase {
 		executeAndTestUpdateDerivations(response);
 	}
 
-	// TODO testMaxMinDiffAsync can pass with the naive work-around by setting
-	// initial.delay.agent.minvalue=7 and period.agent.minvalue=7 in
-	// src/main/resources/agents.properties to avoid the concurrent HTTP request
-	// issue (for more details, please refer to
-	// https://github.com/cambridge-cares/TheWorldAvatar/issues/184), to test if
-	// this issue is addressed properly, one may change both
-	// initial.delay.agent.minvalue and period.agent.minvalue back to 5 and run test
-	// again
+	// TODO testMaxMinDiffAsync can now pass with the changes made to only do SPARQL
+	// update when reconnecting new derived IRIs if the derivation is still
+	// outdated, this avoid the concurrent HTTP request issue to some extend as now
+	// the correct outputs will be presented in the derivation DAGs, however, the
+	// calculation within HTTP requests will still be executed for each concurrent
+	// HTTP request, thus the knowledge graph is still modified, a better approach
+	// to also avoid the actual computation might be proposed in the future (for
+	// more details, please refer to
+	// https://github.com/cambridge-cares/TheWorldAvatar/issues/184)
 	@Test
 	@Timeout(value = 180, unit = TimeUnit.SECONDS)
 	@Order(6)

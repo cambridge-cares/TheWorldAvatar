@@ -990,8 +990,6 @@ public class DerivationClient {
 
 				// NOTE difference 6 - here we create lists to be used when reconnecting
 				// inputs and updating cached data
-				List<String> newInputs = new ArrayList<>();
-				List<String> derivationsToReconnect = new ArrayList<>();
 				List<Entity> newEntities = new ArrayList<>();
 				// if it is a derived quantity with time series, there will be no changes to the
 				// instances, only timestamp will be updated
@@ -999,28 +997,28 @@ public class DerivationClient {
 					// collect new instances created by agent
 					List<String> newEntitiesString = derivationOutputs.getNewDerivedIRI();
 
-					// delete old instances
-					this.sparqlClient.deleteBelongsTo(derivation.getIri());
-					LOGGER.debug("Deleted old instances of: " + derivation.getIri());
-
-					// link new entities to derived instance, adding ?x <belongsTo> <instance>
-					this.sparqlClient.addNewEntitiesToDerived(derivation.getIri(), newEntitiesString);
-					LOGGER.debug("Added new instances <" + newEntitiesString + "> to the derivation <"
-							+ derivation.getIri() + ">");
-
 					// entities that are input to another derivation
 					List<Entity> inputToAnotherDerivation = derivation.getEntities()
 							.stream().filter(e -> e.isInputToDerivation()).collect(Collectors.toList());
 
+					// NOTE difference 7 - a map is created to host the new derived IRIs and the
+					// downstream derivations that are supposed to be linked via <isDerivedFrom>
+					// create map for the new instances
+					Map<String, List<String>> newIriDownstreamDerivationMap = new HashMap<>();
+					newEntitiesString.stream()
+							.forEach(ens -> newIriDownstreamDerivationMap.put(ens, new ArrayList<String>()));
+
 					if (inputToAnotherDerivation.size() > 0) {
-						// NOTE difference 7 - initialiseNewEntities will only be called if
+						// NOTE difference 8 - initialiseNewEntities will only be called if
 						// inputToAnotherDerivation.size() > 0, as it is not used under other situations
-						newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
 						LOGGER.debug(
 								"This derivation contains at least one entity which is an input to another derivation");
 						LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
-						// after deleting the old entity, we need to make sure that it remains linked to
-						// the appropriate derived instance
+						newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
+
+						// here we do the mapping in memory first to get the mapping between downstream
+						// derivations and new instances to be connected - we need to make sure that the
+						// new instances remains linked to the appropriate downstream derivations
 
 						for (Entity oldInput : inputToAnotherDerivation) {
 							// find within new Entities with the same rdf:type
@@ -1041,23 +1039,33 @@ public class DerivationClient {
 								derivationToReconnect.addInput(matchingEntity.get(0));
 								derivationToReconnect.removeInput(oldInput);
 
-								newInputs.add(matchingEntity.get(0).getIri());
-								derivationsToReconnect.add(derivationToReconnect.getIri());
+								// construct map to be used for reconnecting new derived IRIs
+								newIriDownstreamDerivationMap.get(matchingEntity.get(0).getIri())
+										.add(derivationToReconnect.getIri());
 							});
 						}
 					}
+
+					// NOTE difference 9 - delete old outputs, insert new outputs, update timestamp,
+					// delete status (if exist) are all done in one-go
+					// reconnect new derived IRIs
+					this.sparqlClient.reconnectNewDerivedIRIs(newIriDownstreamDerivationMap, derivation.getIri(),
+							derivation.getTimestamp());
+					LOGGER.debug("Attempted to reconnect <" + newEntitiesString + "> to the derivation <"
+							+ derivation.getIri()
+							+ ">; also attempted to reconnect new derivedIRIs with the downstream derivations: "
+							+ newIriDownstreamDerivationMap.toString()
+							+ ". This SPARQL update should be successful if the derivation was still outdated when executing the SPARQL update, i.e. the update requests were not concurrent HTTP requests.");
+				} else {
+					// NOTE difference 10 - update timestamp after the update of every derivation
+					// so here we update timestamp, delete status (for sync in mixed type DAGs) in
+					// one-go
+					this.sparqlClient.updateTimestampDeleteStatus(derivation.getIri(), derivation.getTimestamp());
 				}
-				// NOTE difference 8 - update timestamp after the update of every derivation
-				// so here we reconnect inputs to derivation instances, update timestamp, delete
-				// status (for sync in mixed type DAGs) in one-go
-				this.sparqlClient.reconnectInputsUpdateTimestampDeleteStatus(newInputs, derivationsToReconnect,
-						derivation.getIri(), derivation.getTimestamp());
 				// also update cached data if newEntities were generated
 				if (!newEntities.isEmpty()) {
 					derivation.replaceEntities(newEntities);
 				}
-				// if there are no errors, assume update is successful
-				derivation.setUpdateStatus(true);
 			}
 		}
 	}

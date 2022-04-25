@@ -1773,27 +1773,16 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * This method reconnects inputs to derivations, updates the timestamp of the
-	 * given derivation with given value, also delete the status of the given
-	 * derivation if the status exist.
+	 * This method updates the timestamp of the given derivation with given value,
+	 * also delete the status of the given derivation if the status exist.
 	 * 
 	 * @param inputs
 	 * @param derivations
 	 * @param derivation
 	 * @param timestamp
 	 */
-	void reconnectInputsUpdateTimestampDeleteStatus(List<String> inputs, List<String> derivations, String derivation,
-			Long timestamp) {
-		if (inputs.size() != derivations.size()) {
-			throw new JPSRuntimeException("reconnectInputsUpdateTimestampDeleteStatus has incorrect inputs");
-		}
-
+	void updateTimestampDeleteStatus(String derivation, Long timestamp) {
 		ModifyQuery modify = Queries.MODIFY();
-
-		// prepare the inputs to be connected with derivations
-		for (int i = 0; i < inputs.size(); i++) {
-			modify.insert(iri(derivations.get(i)).has(isDerivedFrom, iri(inputs.get(i))));
-		}
 
 		// obtain time IRI and status IRI through sub query
 		SubSelect sub = GraphPatterns.select();
@@ -2245,6 +2234,106 @@ public class DerivationSparql {
 		modify.delete(delete_tp1, delete_tp2)
 				.where(entity.has(belongsTo, iri(derivation)), delete_tp1, subject.has(predicate2, entity).optional())
 				.prefix(p_derived);
+
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
+	/**
+	 * This method reconnects new derived IRIs when a derivation is updated,
+	 * specifically, it does below four operations in one-go:
+	 * (1) delete old outputs (entities) of the given derivation and its connections
+	 * with downstream derivations;
+	 * (2) delete status of the derivation if exist (applicable for outdated sync
+	 * derivations in the mixed derivation DAGs);
+	 * (3) replace timestamp of the given derivation with the new timestamp recorded
+	 * when the derivation inputs were retrieved;
+	 * (4) insert new derived IRIs to be connected with the given derivation using
+	 * "belongsTo", also all its downstream derivations using "isDerivedFrom".
+	 * 
+	 * It should be noted that this SPARQL update will ONLY be executed when the
+	 * given derivation is outdated - this helps with addressing the concurrent HTTP
+	 * request issue as detailed in
+	 * https://github.com/cambridge-cares/TheWorldAvatar/issues/184.
+	 * 
+	 * @param newIriDownstreamDerivationMap
+	 * @param derivation
+	 * @param retrievedInputsAt
+	 */
+	void reconnectNewDerivedIRIs(Map<String, List<String>> newIriDownstreamDerivationMap, String derivation,
+			Long retrievedInputsAt) {
+		ModifyQuery modify = Queries.MODIFY();
+		SubSelect sub = GraphPatterns.select();
+
+		// insert triples of new derived IRI and the derivations that it should be
+		// connected to
+		newIriDownstreamDerivationMap.forEach((newIRI, downstreamDerivations) -> {
+			// add <newIRI> <belongsTo> <derivation> for each newIRI
+			modify.insert(iri(newIRI).has(belongsTo, iri(derivation)));
+			// if this <newIRI> is inputs to other derivations, add
+			// <downstreamDerivation> <isDerivedFrom> <newIRI>
+			if (!downstreamDerivations.isEmpty()) {
+				downstreamDerivations.stream().forEach(dd -> modify.insert(iri(dd).has(isDerivedFrom, iri(newIRI))));
+			}
+		});
+
+		// create variables for sub query
+		Variable d = SparqlBuilder.var("d"); // this derivation
+		Variable ups = SparqlBuilder.var("ups"); // upstream inputs/derivations
+
+		// variables for old outputs (entities)
+		Variable e = SparqlBuilder.var("e");
+		Variable p1 = SparqlBuilder.var("p1");
+		Variable o = SparqlBuilder.var("o");
+		Variable s = SparqlBuilder.var("s");
+		Variable p2 = SparqlBuilder.var("p2");
+
+		// variables for timestamp
+		Variable unixtimeIRI = SparqlBuilder.var("timeIRI");
+		Variable dTs = SparqlBuilder.var("dTs"); // timestamp of this derivation
+		Variable upsTs = SparqlBuilder.var("upsTs"); // timestamp of upstream
+
+		// variables for status related concepts
+		Variable status = SparqlBuilder.var("status");
+		Variable statusType = SparqlBuilder.var("statusType");
+		Variable sndIRI = SparqlBuilder.var("sndIRI");
+
+		// filter ?derivationTimestamp < ?upstreamTimestamp
+		Expression<?> tsFilter = Expressions.lt(dTs, upsTs);
+
+		// this GraphPattern ensures ?d only exist if it's outdated, otherwise the
+		// SPARQL update will not execute
+		GraphPattern derivationPattern = GraphPatterns
+				.and(new ValuesPattern(d, Arrays.asList(iri(derivation))),
+						d.has(PropertyPaths.path(hasTime, inTimePosition), unixtimeIRI),
+						unixtimeIRI.has(numericPosition, dTs),
+						d.has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)), ups),
+						ups.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), upsTs))
+				.filter(tsFilter);
+		// this GraphPattern queries all the old outputs (entities)
+		GraphPattern entityPattern = GraphPatterns.and(e.has(belongsTo, d), e.has(p1, o), s.has(p2, e).optional());
+		// these patterns query the status of this derivation if it exist, thus optional
+		TriplePattern tp1 = iri(derivation).has(hasStatus, status);
+		TriplePattern tp2 = status.isA(statusType);
+		TriplePattern tp3 = status.has(hasNewDerivedIRI, sndIRI);
+		GraphPattern statusQueryPattern = GraphPatterns.and(tp1, tp2, tp3.optional()).optional();
+
+		// construct the sub query
+		sub.select(d, unixtimeIRI, dTs, status, statusType, sndIRI, e, p1, o, s, p2)
+				.where(derivationPattern, entityPattern, statusQueryPattern);
+
+		// delete old outputs (entities) - basically delete this individual
+		TriplePattern deleteEntityAsSubject = e.has(p1, o);
+		TriplePattern deleteEntityAsObject = s.has(p2, e);
+
+		// timestamp-related triples to add and delete
+		TriplePattern deleteOldTimestamp = unixtimeIRI.has(numericPosition, dTs);
+		TriplePattern insertNewTimestamp = unixtimeIRI.has(numericPosition, retrievedInputsAt);
+
+		// construct the complete SPARQL update, note that some of the insert triples
+		// have already been added at the beginning of this method
+		modify.prefix(p_time, p_derived)
+				.delete(deleteEntityAsSubject, deleteEntityAsObject, tp1, tp2, tp3, deleteOldTimestamp)
+				.insert(insertNewTimestamp).where(sub);
 
 		storeClient.executeUpdate(modify.getQueryString());
 	}

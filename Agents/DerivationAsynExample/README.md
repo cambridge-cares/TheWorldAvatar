@@ -49,7 +49,7 @@ To also demonstrate the new added capability of unified DerivationAgent updating
 | 5 | Sync | Async | Async |  |
 | 6 | Async |  |  |  |
 
-In these cases, the derivation agent will work out when to generate the information if it detects async derivations are to be handled. Once the whole knowledge graph is completed, developer may change the pure inputs and request update of existing information. More details on how to invoke these please refer to below sections. **NOTE: Example case 5 is currenctly not available for testing due to concurrent HTTP request issue. This will be brought back to life once the concurrent issue is addressed.**
+In these cases, the derivation agent will work out when to generate the information if it detects async derivations are to be handled. Once the whole knowledge graph is completed, developer may change the pure inputs and request update of existing information. More details on how to invoke these please refer to below sections. **NOTE: Example case 5 should now be working with the fixes to address the concurrent HTTP request issue. However, it should be noted that a better approach is still desired to prevent the calculation at all. For more details, please refer to this [issue](https://github.com/cambridge-cares/TheWorldAvatar/issues/184).**
 
 ### Pure inputs
 

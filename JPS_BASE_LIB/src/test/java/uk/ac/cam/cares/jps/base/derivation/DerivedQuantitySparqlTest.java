@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -603,25 +601,25 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testReconnectInputsUpdateTimestampDeleteStatus() throws InterruptedException {
+	public void testUpdateTimestampDeleteStatus() throws InterruptedException {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		long timestamp = Instant.now().getEpochSecond();
-		// create async derivation with no status
-		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, false);
+		// create DerivationWithTimeSeries
+		String derivation = devClient.createDerivationWithTimeSeries(entities, derivedAgentIRI, derivedAgentURL,
+				inputs);
 		devClient.addTimeInstance(derivation); // timestamp initialised as 0
 
-		// case 1: no status are created, no reconnecting inputs, only update timestamp
+		// case 1: no status are added, only update timestamp
 		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
 		// update timestamp and delete status
-		devClient.reconnectInputsUpdateTimestampDeleteStatus(new ArrayList<>(), new ArrayList<>(), derivation,
-				timestamp);
+		devClient.updateTimestampDeleteStatus(derivation, timestamp);
 
 		// timestamp should be updated
 		long addedTimestamp = devClient.getTimestamp(derivation);
 		Assert.assertEquals(timestamp, addedTimestamp);
 
-		// case 2: derivation is marked with status, no reconnecting inputs
+		// case 2: derivation is marked with status
 		String statusIRI = devClient.markAsRequested(derivation);
 		Assert.assertNotNull(testKG.getIndividual(statusIRI));
 		// add triples about new derived IRI
@@ -635,55 +633,13 @@ public class DerivedQuantitySparqlTest {
 		// update timestamp and delete status
 		TimeUnit.SECONDS.sleep(2);
 		long newTS = Instant.now().getEpochSecond();
-		devClient.reconnectInputsUpdateTimestampDeleteStatus(new ArrayList<>(), new ArrayList<>(), derivation, newTS);
+		devClient.updateTimestampDeleteStatus(derivation, newTS);
 
 		// status and the connection with new derived IRI should be deleted
 		Assert.assertNull(testKG.getIndividual(statusIRI));
 		// timestamp should be updated
 		addedTimestamp = devClient.getTimestamp(derivation);
 		Assert.assertEquals(newTS, addedTimestamp);
-
-		// case 3: derivation is marked with status, also reconnect inputs
-		statusIRI = devClient.markAsRequested(derivation);
-		Assert.assertNotNull(testKG.getIndividual(statusIRI));
-		// add triples about new derived IRI
-		testKG.add(ResourceFactory.createResource(statusIRI),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasNewDerivedIRI"),
-				ResourceFactory.createResource(entity1));
-		testKG.add(ResourceFactory.createResource(statusIRI),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasNewDerivedIRI"),
-				ResourceFactory.createResource(entity2));
-
-		// update timestamp and delete status
-		TimeUnit.SECONDS.sleep(2);
-		newTS = Instant.now().getEpochSecond();
-		Random rand = new Random();
-		int randNum = rand.nextInt(20);
-		List<String> randomInputs = new ArrayList<>();
-		List<String> randomDerivations = new ArrayList<>();
-		for (int i = 0; i < randNum; i++) {
-			randomInputs.add("http://" + UUID.randomUUID().toString());
-			randomDerivations.add("http://" + UUID.randomUUID().toString());
-		}
-		// should fail if not provided correct size
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.reconnectInputsUpdateTimestampDeleteStatus(Arrays.asList(input1, input2),
-						randomDerivations, derivation, (long) 0));
-		Assert.assertTrue(e.getMessage().contains("reconnectInputsUpdateTimestampDeleteStatus has incorrect inputs"));
-		// should work now with correct size
-		devClient.reconnectInputsUpdateTimestampDeleteStatus(randomInputs,
-				randomDerivations, derivation, newTS);
-		// status and the connection with new derived IRI should be deleted
-		Assert.assertNull(testKG.getIndividual(statusIRI));
-		// timestamp should be updated
-		addedTimestamp = devClient.getTimestamp(derivation);
-		Assert.assertEquals(newTS, addedTimestamp);
-		// inputs should be reconnected
-		for (int i = 0; i < randomInputs.size(); i++) {
-			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(randomDerivations.get(i)),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-					ResourceFactory.createResource(randomInputs.get(i))));
-		}
 	}
 
 	@Test
@@ -726,6 +682,109 @@ public class DerivedQuantitySparqlTest {
 					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
 					ResourceFactory.createResource(derived)));
 		}
+	}
+
+	@Test
+	public void testReconnectNewDerivedIRIs() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		long retrievedInputsAt = Instant.now().getEpochSecond();
+		List<String> oldInstances = Arrays.asList("http://a", "http://b", "http://c");
+		Map<String, List<String>> newInstanceMap1 = new HashMap<>();
+		newInstanceMap1.put("http://a/new", Arrays.asList("http://d1", "http://d2"));
+		newInstanceMap1.put("http://b/new", Arrays.asList("http://d3"));
+		newInstanceMap1.put("http://c/new", new ArrayList<String>());
+		Map<String, List<String>> newInstanceMap2 = new HashMap<>();
+		newInstanceMap2.put("http://a/new2", Arrays.asList("http://d1", "http://d2"));
+		newInstanceMap2.put("http://b/new2", Arrays.asList("http://d3"));
+		newInstanceMap2.put("http://c/new2", new ArrayList<String>());
+		String derivation = devClient.createDerivation(oldInstances, derivedAgentIRI, inputs);
+		devClient.addTimeInstance(derivation); // timestamp initialised as 0
+
+		// add timestamp to all inputs with current timestamp
+		for (String input : inputs) {
+			devClient.addTimeInstance(input);
+			devClient.updateTimeStamp(input);
+		}
+
+		// test if derivation was created correctly
+		// agent
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
+				ResourceFactory.createResource(derivedAgentIRI)));
+		// outputs
+		for (String instance : oldInstances) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(instance),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivation)));
+		}
+		// inputs
+		for (String input : inputs) {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(input)));
+		}
+		// new instance set 1 should NOT be created
+		newInstanceMap1.keySet().stream().forEach(instance -> {
+			Assert.assertTrue(Objects.isNull(testKG.getIndividual(instance)));
+		});
+		// new instance set 2 should NOT be created
+		newInstanceMap2.keySet().stream().forEach(instance -> {
+			Assert.assertTrue(Objects.isNull(testKG.getIndividual(instance)));
+		});
+
+		// case 1: derivation is outdated, now delete and add new instances should work
+		devClient.reconnectNewDerivedIRIs(newInstanceMap1, derivation, retrievedInputsAt);
+		// all old outputs should be deleted
+		for (String instance : oldInstances) {
+			Assert.assertTrue(Objects.isNull(testKG.getIndividual(instance)));
+		}
+		// new outputs should be connected to this derivation, and its downstreams
+		newInstanceMap1.forEach((instance, dds) -> {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(instance),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivation)));
+			if (!dds.isEmpty()) {
+				dds.stream().forEach(dd -> {
+					Assert.assertTrue(testKG.contains(ResourceFactory.createResource(dd),
+							ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+							ResourceFactory.createResource(instance)));
+				});
+			}
+		});
+		// timestamp should be updated
+		Assert.assertEquals(retrievedInputsAt, devClient.getTimestamp(derivation));
+		// new instance set 2 should not be created
+		newInstanceMap2.keySet().stream().forEach(instance -> {
+			Assert.assertTrue(Objects.isNull(testKG.getIndividual(instance)));
+		});
+
+		// case 2: as now the timestamp of this derivation is up-to-date, nothing should
+		// happen when reconnectNewDerivedIRIs again with a new sets of instances
+		devClient.reconnectNewDerivedIRIs(newInstanceMap2, derivation, retrievedInputsAt);
+		// repeat all checks after case 1
+		// all old outputs should be deleted
+		for (String instance : oldInstances) {
+			Assert.assertTrue(Objects.isNull(testKG.getIndividual(instance)));
+		}
+		// new outputs should be connected to this derivation, and its downstreams
+		newInstanceMap1.forEach((instance, dds) -> {
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(instance),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivation)));
+			if (!dds.isEmpty()) {
+				dds.stream().forEach(dd -> {
+					Assert.assertTrue(testKG.contains(ResourceFactory.createResource(dd),
+							ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+							ResourceFactory.createResource(instance)));
+				});
+			}
+		});
+		// timestamp should be updated
+		Assert.assertEquals(retrievedInputsAt, devClient.getTimestamp(derivation));
+		// new instance set 2 should not be created
+		newInstanceMap2.keySet().stream().forEach(instance -> {
+			Assert.assertTrue(Objects.isNull(testKG.getIndividual(instance)));
+		});
 	}
 
 	@Test
