@@ -141,11 +141,11 @@ def format_data(sensor_data):
 
 
 # Function to instantiate annual postcode statistics
-def instantiate_annual_statistics(kgclient, data, postcode):
+def instantiate_annual_statistics(KGClient, data, postcode):
     """
     Instantiates postcode with annual electricity consumption statistics
 
-    :param kgclient - KG client Java object (allows KG access via py4jps)
+    :param KGClient - KG client Java object (allows KG access via py4jps)
     :param dict data - Dictionary of postcode data to be instantiated
     :param str postcode - String of postcode IRI
 
@@ -167,15 +167,15 @@ def instantiate_annual_statistics(kgclient, data, postcode):
                                              data['mean_hhc'], data['median_hhc'], 
                                              data['lat'] + '#' + data['lon'] + '\"^^geolit:lat-lon')
     # Execute query
-    kgclient.executeUpdate(query)
+    KGClient.executeUpdate(query)
 
 
 # Function to instantiate monthly consumption pattern
-def instantiate_consumption_pattern(kgclient, postcode, timeseries, consumption, units):
+def instantiate_consumption_pattern(KGClient, postcode, timeseries, consumption, units):
     """
     Instantiates monthly electricity consumption pattern for a postcode
 
-    :param kgclient - KG client Java object (allows KG access via py4jps)
+    :param KGClient - KG client Java object (allows KG access via py4jps)
     :param str postcode - Post code IRI to instantiate consumption for
     :param list timeseries - List of timeseries keys to instantiate
     :param dict consumption - Dictionary with consumption IRIs for timeseries keys
@@ -202,7 +202,7 @@ def instantiate_consumption_pattern(kgclient, postcode, timeseries, consumption,
     query += '}'
 
     # Execute query
-    kgclient.executeUpdate(query)
+    KGClient.executeUpdate(query)
 
 
 
@@ -210,7 +210,7 @@ def instantiate_consumption_pattern(kgclient, postcode, timeseries, consumption,
 
 
 
-def get_sensors_in_circle(center, radius):
+def get_sensors_in_circle(center, radius, KGClient):
     '''
         Returns all instantiated sensors within a radius of 'radius' km from 'center' as list
     '''
@@ -245,7 +245,7 @@ def get_sensors_in_circle(center, radius):
 
 
 
-def get_metadata(sensor):
+def get_metadata(sensor, KGClient):
     '''
         Returns meta data for given 'sensor'
     '''
@@ -306,22 +306,22 @@ def get_all_time_series(sensor, KGClient, TSClient):
     # Return time series and associated lists of variables and units
     return timeseries, dataIRIs, utilities, units
 
-def nearest_wind_data(postcode):
+def nearest_wind_data(postcode, KGClient, TSClient):
     print(postcode)
     p_lat = str(postcode['lat'])
     p_lon = str(postcode['lon'])
     postcode_coords = p_lat + '#' + p_lon
-    sensors = get_sensors_in_circle(postcode_coords, 240)
+    sensors = get_sensors_in_circle(postcode_coords, 240, KGClient)
     min_distance = 10000000
     close_sensors = []
     for sensor in sensors:
-        lon, lat = get_metadata(sensor)
+        lon, lat = get_metadata(sensor, KGClient)
         distance = ((float(p_lat)-float(lat))**2 + (float(p_lon)-float(lon))**2)**0.5
         if distance < min_distance:
             min_distance = distance
             close_sensors.append(sensor)
     closest_sensor = close_sensors[-1]
-    timeseries, dataIRIs, measurement, units = get_all_time_series(closest_sensor, jpsBaseLibView.RemoteStoreClient(utils.QUERY_ENDPOINT), TSClient)
+    timeseries, dataIRIs, measurement, units = get_all_time_series(closest_sensor, KGClient, TSClient)
 
     # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
     #print([timeseries], [1], [dict(zip(dataIRIs, units))], [dict(zip(dataIRIs, measurement))])
@@ -388,7 +388,7 @@ def instantiate_energy_data():
     for postcode in postcode_instances:
         print('Current postcode: ', postcode['postcode'])
 
-        w_powers = nearest_wind_data(postcode)
+        w_powers = nearest_wind_data(postcode, KGClient, TSClient)
         postcode['timeseries']['NearestWindPower'] = w_powers
 
         # Create IRI for current postcode

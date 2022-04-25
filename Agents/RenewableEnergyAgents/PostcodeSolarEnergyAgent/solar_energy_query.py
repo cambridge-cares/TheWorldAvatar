@@ -5,10 +5,9 @@
 # Date: 15 Feb 2022                            #
 ################################################
 
-
-
-
-# ===============================================================================
+"""Retrieves Solar Energy Data consumed at each postcode in the UK from KG and
+Stores as JSON Files for DTVF
+"""
 
 import os.path
 import json
@@ -41,7 +40,7 @@ geojson_props = { 'displayName': '',
 # ===============================================================================
 # Functions to Query MIDAS Data from KG
 
-def get_all_postcodes():
+def get_all_postcodes(KGClient):
     '''
         Returns all postcodes instantiated in KG as list
     '''
@@ -62,7 +61,7 @@ def get_all_postcodes():
     return postcodes
 
 
-def get_sensors_in_circle(center, radius):
+def get_sensors_in_circle(center, radius, KGClient):
     '''
         Returns all instantiated sensors within a radius of 'radius' km from 'center' as list
     '''
@@ -96,7 +95,7 @@ def get_sensors_in_circle(center, radius):
     return sensors
 
 
-def get_geojson_data(postcode):
+def get_geojson_data(postcode, KGClient):
     '''
         Returns coordinates ([lon, lat]) and name (label) for given 'postcode'
     '''
@@ -123,7 +122,7 @@ def get_geojson_data(postcode):
     return coordinates, name
 
 
-def get_metadata(postcode):
+def get_metadata(postcode, KGClient):
     '''
         Returns meta data for given 'postcode'
     '''
@@ -226,10 +225,7 @@ def json_add_metadata(feature_id, lon, lat, meters, annual_energy, mean_hhc, med
                  }
     return metadata
 
-# ===============================================================================
-# Retrieve MIDAS Data from KG and Store as Files for DTVF
-
-if __name__ == '__main__':
+def query_solar_energy():
 
     # Set Mapbox API key in DTVF 'index.html' file
     utils.set_mapbox_apikey()
@@ -254,15 +250,15 @@ if __name__ == '__main__':
     feature_id = 0
 
     # Get postcodes of interest
-    postcodes = get_all_postcodes()
-    #sensors = get_sensors_in_circle(center, radius)
+    postcodes = get_all_postcodes(KGClient)
+    #sensors = get_sensors_in_circle(center, radius, KGClient)
 
     # Loop over all sensors
     for postcode in postcodes[:100]:
         feature_id += 1
 
         # 1) Retrieve data for GeoJSON output
-        coords, name = get_geojson_data(postcode)
+        coords, name = get_geojson_data(postcode, KGClient)
 
         # Update GeoJSON properties
         geojson_props['description'] = str(postcode)
@@ -271,7 +267,7 @@ if __name__ == '__main__':
         geojson['features'].append(geojson_add_postcode(feature_id, geojson_props, coords))
 
         # Retrieve data for metadata output
-        lon, lat, meters, annual_energy, mean_hhc, median_hhc = get_metadata(postcode)
+        lon, lat, meters, annual_energy, mean_hhc, median_hhc = get_metadata(postcode, KGClient)
         metadata.append(json_add_metadata(feature_id, lon, lat, meters, annual_energy, mean_hhc, median_hhc))
 
         # 3) Retrieve time series data
@@ -299,6 +295,5 @@ if __name__ == '__main__':
     with open(file_name, 'w') as f:
         json.dump(ts_json, indent=4, fp=f)
 
-
-
-
+if __name__ == '__main__':
+    query_solar_energy()
