@@ -60,15 +60,11 @@ public class ModsSimpleAgentApplication {
     @GetMapping(value = "/output/request")
     public String getOutput(@RequestParam("query") String config) throws IOException, JAXBException {
 
-        // MoDSBackend modsBackend = MoDSBackendFactory.getMoDSBackend(config);
+        Request request = OBJECT_MAPPER.readValue(config, Request.class);
 
-        // BackendInputFile inputFile =
-        // TemplateLoader.load(config.optString("template"));
+        Simulation sim = Simulation.retrieveSimulation(request);
 
-        // inputFile.marshal(modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
-        // modsBackend.run();
-
-        return config;
+        return OBJECT_MAPPER.writeValueAsString(sim.getResults());
     }
 
     public static void main(String[] args) {

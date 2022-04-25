@@ -257,4 +257,8 @@ public class Simulation {
         return response;
     }
 
+    public Request getResults() {
+        return getResponse();
+    }
+
 }
