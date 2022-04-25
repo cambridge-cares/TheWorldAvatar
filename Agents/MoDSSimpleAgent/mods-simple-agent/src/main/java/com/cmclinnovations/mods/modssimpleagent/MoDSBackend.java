@@ -40,7 +40,9 @@ public final class MoDSBackend {
 
     public Path createSubDir(String subDirName) throws IOException {
         Path subDirPath = simDir.resolve(subDirName);
+        if (!Files.exists(subDirPath)) {
         Files.createDirectory(subDirPath);
+        }
         return subDirPath;
     }
 
