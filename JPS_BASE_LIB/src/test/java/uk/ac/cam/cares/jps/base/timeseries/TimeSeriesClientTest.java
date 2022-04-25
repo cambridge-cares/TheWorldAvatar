@@ -651,6 +651,50 @@ public class TimeSeriesClientTest {
     	Assert.assertTrue(keys.contains("units"));
     	Assert.assertTrue(keys.contains("time"));
     }
+
+    @Test
+    public void testConvertToJSONwithMissingValues() {
+    	List<Instant> instantList = new ArrayList<>();
+    	List<List<?>> dataToAdd = new ArrayList<>();
+    	List<Double> data1 = new ArrayList<>();
+    	List<String> data2 = new ArrayList<>();
+    	List<Integer> data3 = new ArrayList<>();
+    	dataIRIs = new ArrayList<>();
+    	dataIRIs.add("http://data1"); dataIRIs.add("http://data2"); dataIRIs.add("http://data3"); 
+		for (int i = 0; i < 10; i++) {
+			instantList.add(Instant.now().plusSeconds(i));
+			data1.add(Double.valueOf(i));
+			// Include data series with fully missing data
+			data2.add(null);
+			data3.add(Integer.valueOf(i));
+		}
+		// Include test data series with partially missing data
+		data1.set(0, null); data1.set(1, null);
+		dataToAdd.add(data1); dataToAdd.add(data2); dataToAdd.add(data3);
+    	TimeSeries<Instant> ts_instant = new TimeSeries<Instant>(instantList, dataIRIs, dataToAdd);
+    	
+    	List<Map<String,String>> units = new ArrayList<>();
+    	Map<String,String> unit = new HashMap<>();
+    	unit.put("http://data1", "unit1");
+    	unit.put("http://data2", "unit2");
+    	unit.put("http://data3", "unit3");
+    	units.add(unit);
+    	
+    	JSONArray ts_jarray = testClient.convertToJSON(Arrays.asList(ts_instant), Arrays.asList(1,2), units, null);
+    	
+    	JSONObject ts_jo = ts_jarray.getJSONObject(0);
+    	List<String> keys = ts_jo.keySet().stream().collect(Collectors.toList());
+    	Assert.assertTrue(keys.contains("data"));
+    	Assert.assertTrue(keys.contains("values"));
+    	Assert.assertTrue(keys.contains("timeClass"));
+    	Assert.assertTrue(keys.contains("valuesClass"));
+    	// Verify that valuesClass contains Unknown and twice Number
+        Assert.assertTrue(ts_jo.get("valuesClass").toString().contains("Unknown"));
+    	Assert.assertEquals(3, ts_jo.get("valuesClass").toString().split("Number").length);
+    	Assert.assertTrue(keys.contains("id"));
+    	Assert.assertTrue(keys.contains("units"));
+    	Assert.assertTrue(keys.contains("time"));
+    }
     
     private void setRDFMock() throws NoSuchFieldException, IllegalAccessException {
         // Set private fields accessible to insert the mock

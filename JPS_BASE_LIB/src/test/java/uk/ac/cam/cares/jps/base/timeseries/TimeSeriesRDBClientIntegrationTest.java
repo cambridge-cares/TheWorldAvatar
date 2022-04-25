@@ -55,6 +55,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 	private static List<String> data2_1;
 	private static List<Integer> data3_1;
 	private static TimeSeries<Instant> ts1, ts2, ts3;	
+	private static List<TimeSeries<Instant>> ts_list1, ts_list2, ts_list3;	
 	private static List<List<?>> dataToAdd_1;
 	private static List<List<?>> dataToAdd_2;
 
@@ -102,6 +103,8 @@ public class TimeSeriesRDBClientIntegrationTest {
     	dataToAdd_1.add(data1_1); dataToAdd_1.add(data2_1); dataToAdd_1.add(data3_1);
     	// Constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
     	ts1 = new TimeSeries<>(timeList_1, dataIRI_1, dataToAdd_1);
+		ts_list1 = new ArrayList<>();
+		ts_list1.add(ts1);
 		/* 
 		 * Initialise 2nd time series with same associated data series
 		 */
@@ -122,6 +125,8 @@ public class TimeSeriesRDBClientIntegrationTest {
     	dataToAdd_2.add(data1_2); dataToAdd_2.add(data2_2); dataToAdd_2.add(data3_2);
     	// Constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
     	ts2 = new TimeSeries<>(timeList_2, dataIRI_1, dataToAdd_2);
+		ts_list2 = new ArrayList<>();
+		ts_list2.add(ts2);
 		/* 
 		 * Initialise 3rd time series with only one associated data series
 		 */
@@ -143,6 +148,8 @@ public class TimeSeriesRDBClientIntegrationTest {
     	dataToAdd_3.add(data1_3);
     	// Constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
     	ts3 = new TimeSeries<>(timeList_3, dataIRI_3, dataToAdd_3);
+		ts_list3 = new ArrayList<>();
+		ts_list3.add(ts3);
 	}
 
 	@AfterClass
@@ -276,7 +283,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		// Initialise time series table
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
 		// Add time series data
-		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts_list1);
 		
 		// Retrieve the value of the private field 'dbTableName' of the client to check its value
 		Field tableNameField = client.getClass().getDeclaredField("dbTableName");
@@ -312,7 +319,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		}
 		
 		// Add additional data and check whether it has been appended correctly
-		client.addTimeSeriesData(ts2);
+		client.addTimeSeriesData(ts_list2);
 		List<?> combinedList;
 		for (int i=0; i < dataIRI_1.size(); i++) {
 			tstable = context.select(tsTableNameColumn).from(table).where(dataIRIcolumn.eq(dataIRI_1.get(i))).fetch(tsTableNameColumn).get(0);
@@ -332,7 +339,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 	public void testAddTimeseriesDataExceptions() {
 		try {
 			// Add time series data for non-initialised time series and central table
-			client.addTimeSeriesData(ts1);
+			client.addTimeSeriesData(ts_list1);
 		} catch (JPSRuntimeException e) {
 			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
 			Assert.assertEquals("TimeSeriesRDBClient: Central RDB lookup table has not been initialised yet",
@@ -341,7 +348,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		try {
 			// Add time series data for non-initialised time series
 			client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);	
-			client.addTimeSeriesData(ts1);
+			client.addTimeSeriesData(ts_list1);
 			Assert.fail();
 		} catch (JPSRuntimeException e) {
 			String s = ts1.getDataIRIs().get(0);
@@ -358,7 +365,9 @@ public class TimeSeriesRDBClientIntegrationTest {
 			List<List<?>> dataToAdd = new ArrayList<>();
 	    	dataToAdd.add(data1_1); dataToAdd.add(data2_1); dataToAdd.add(data3_1); dataToAdd.add(data3_1);
 			TimeSeries<Instant> ts = new TimeSeries<>(timeList_1, dataIRIs, dataToAdd);
-			client.addTimeSeriesData(ts);
+			List<TimeSeries<Instant>> ts_list = new ArrayList<>();
+			ts_list.add(ts);
+			client.addTimeSeriesData(ts_list);
 			Assert.fail();
 		} catch (JPSRuntimeException e) {
 			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
@@ -372,7 +381,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		// Initialise time series table
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
 		// Add time series data
-		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts_list1);
 		List<String> iris = new ArrayList<>();
 		// Check for time series with only one data IRI
 		iris.add(dataIRI_1.get(0));
@@ -430,7 +439,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		// Initialise time series table
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
 		// Add time series data
-		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts_list1);
 		// Check for time series with only one data IRI
 		List<String> iris = dataIRI_1.subList(0, 1);
 		// Test bounds within range
@@ -471,7 +480,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		// Initialise time series table
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
 		// Add time series data
-		client.addTimeSeriesData(ts2);
+		client.addTimeSeriesData(ts_list2);
 		lb = ts1.getTimes().get(0);	
 		ts = client.getTimeSeriesWithinBounds(iris, lb, null);
 		Assert.assertEquals(ts2.getTimes().subList(0, ts2.getTimes().size()),
@@ -485,7 +494,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		// Initialise time series table
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
 		// Add time series data
-		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts_list1);
 		
 		// Check for only one time series (with numerics data content)
 		String iri = dataIRI_1.get(0);
@@ -523,7 +532,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		// Initialise time series table
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
 		// Add time series data
-		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts_list1);
 		
 		// Check for only one time series (with numerics data content)
 		String iri = dataIRI_1.get(0);
@@ -560,7 +569,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		// Initialise time series table
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
 		// Add time series data
-		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts_list1);
 		
 		// Check for time series with only one data IRI
 		List<String> iris = dataIRI_1.subList(0, 1);
@@ -589,7 +598,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		
 		// Test for upper bound outside current time range
 		// Add new time series data
-		client.addTimeSeriesData(ts2);
+		client.addTimeSeriesData(ts_list2);
 		ub = timeList_2.get(timeList_2.size()-2);
 		client.deleteRows(iri, lb, ub);
 		ts = client.getTimeSeries(iris);
@@ -601,7 +610,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		// Initialise time series table
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
 		// Add time series data
-		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts_list1);
 		// Retrieve the value of the private field 'dbTableName' of the client to check its value
 		Field tableNameField = client.getClass().getDeclaredField("dbTableName");
 		tableNameField.setAccessible(true);
@@ -702,8 +711,8 @@ public class TimeSeriesRDBClientIntegrationTest {
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
 		client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
 		// Add time series data
-		client.addTimeSeriesData(ts1);
-		client.addTimeSeriesData(ts3);
+		client.addTimeSeriesData(ts_list1);
+		client.addTimeSeriesData(ts_list3);
 		// Retrieve the value of the private field 'dbTableName' of the client to check its value
 		Field tableNameField = client.getClass().getDeclaredField("dbTableName");
 		tableNameField.setAccessible(true);
@@ -758,8 +767,8 @@ public class TimeSeriesRDBClientIntegrationTest {
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
 		client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
 		// Add time series data
-		client.addTimeSeriesData(ts1);
-		client.addTimeSeriesData(ts3);
+		client.addTimeSeriesData(ts_list1);
+		client.addTimeSeriesData(ts_list3);
 		
 		// Delete all tables and verify deleting
 		Assert.assertEquals(3, context.meta().getTables().size());
@@ -775,7 +784,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 	public void testGetLatestData() {
 		// Initialise time series tables
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
-		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts_list1);
 		TimeSeries<Instant> ts = client.getLatestData(dataIRI_1.get(0));
 		Instant latestTime = ts.getTimes().get(0);
 		Double latestValue = ts.getValuesAsDouble(dataIRI_1.get(0)).get(0);
@@ -788,7 +797,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 	public void testGetOldestData() {
 		// Initialise time series tables
 		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
-		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts_list1);
 		TimeSeries<Instant> ts = client.getOldestData(dataIRI_1.get(0));
 		Instant oldestTime = ts.getTimes().get(0);
 		Double oldestValue = ts.getValuesAsDouble(dataIRI_1.get(0)).get(0);
