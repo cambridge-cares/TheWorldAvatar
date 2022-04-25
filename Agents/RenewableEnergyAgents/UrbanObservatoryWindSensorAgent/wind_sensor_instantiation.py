@@ -58,7 +58,7 @@ def instantiate_wind_sensor(sensor, units, KGClient, instant_class, double_class
     '''Instantiates a given wind sensor.'''
     print('Current sensor: ', sensor['sensor name'])
 
-    ts = sensor['timeseries'].keys()[0]
+    ts = list(sensor['timeseries'].keys())[0]
     # Create IRI for current sensor
     sensorIRI = utils.PREFIXES['ssn'] + 'Sensor_' + str(uuid.uuid4())
     # Create IRI for time series
