@@ -1,5 +1,6 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Simulation {
 
@@ -33,6 +35,10 @@ public class Simulation {
 
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
 
+    private static final String REQUEST_FILE_NAME = "request.json";
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private final Request request;
     private final BackendInputFile inputFile;
     private final MoDSBackend modsBackend;
@@ -41,7 +47,30 @@ public class Simulation {
 
         String simulationType = request.getSimulationType();
         BackendInputFile inputFile = TemplateLoader.load(simulationType);
+
         MoDSBackend modsBackend = MoDSBackendFactory.createMoDSBackend();
+
+        OBJECT_MAPPER.writeValue(getRequestFilePath(modsBackend), request);
+
+        return createSimulation(request, inputFile, modsBackend);
+    }
+
+    public static Simulation retrieveSimulation(Request request) throws JAXBException, IOException {
+        String jobID = request.getJobID();
+
+        MoDSBackend modsBackend = MoDSBackendFactory.retrieveMoDSBackend(jobID);
+
+        Request originalRequest = OBJECT_MAPPER.readValue(getRequestFilePath(modsBackend), Request.class);
+        BackendInputFile inputFile = new BackendInputFile(
+                modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
+
+        return createSimulation(originalRequest, inputFile, modsBackend);
+    }
+
+    private static Simulation createSimulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend)
+            throws IOException {
+
+        String simulationType = request.getSimulationType();
         switch (simulationType) {
             case "MOO":
                 return new MOO(request, inputFile, modsBackend);
@@ -50,11 +79,14 @@ public class Simulation {
         }
     }
 
+    private static File getRequestFilePath(MoDSBackend modsBackend) {
+        return modsBackend.getSimDir().resolve(REQUEST_FILE_NAME).toFile();
+    }
+
     public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend) {
         this.request = request;
         this.inputFile = inputFile;
         this.modsBackend = modsBackend;
-
     }
 
     protected final Request getRequest() {
@@ -67,6 +99,10 @@ public class Simulation {
 
     protected final MoDSBackend getModsBackend() {
         return modsBackend;
+    }
+
+    public String getJobID() {
+        return modsBackend.getJobID();
     }
 
     protected Algorithm getPrimaryAlgorithm() {
