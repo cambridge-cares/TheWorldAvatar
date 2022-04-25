@@ -39,7 +39,7 @@ public class NUSDavisWeatherStationInputAgentTest {
 
     private final String[] keys = {"temp_in","dew_point","heat_index","wind_chill","bar","hum_in","solar_rad", "rain_day_mm" ,"wind_dir"};
     // Default list of timestamps
-    private final String[] timestamps = {"1558729481"};
+    private final String[] timestamps = {"1558729481","1558829481","1558929481","1559029481"};
 
     private ArrayList<Double> weatherValues;
     // Readings used by several tests

@@ -39,7 +39,7 @@ public class NUSDavisWeatherStationInputAgent {
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "uk.ac.cam.cares.jps.agent/nusDavisWeatherStation";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "nusDavisWeatherStation";
     /**
      * The time unit used for all time series maintained by the nusDavisWeatherStation input agent
      */
@@ -236,7 +236,7 @@ public class NUSDavisWeatherStationInputAgent {
             getSensor = readings.getJSONArray("sensors");
             objSensor = getSensor.getJSONObject(0);
             getData = objSensor.getJSONArray("data");
-            //objData=getData.getJSONObject(0);
+
             for (int i = 0; i < getData.length(); i++){
                 JSONObject currentEntry = getData.getJSONObject(i);
                 for (Iterator<String> it = currentEntry.keys(); it.hasNext(); ) {
@@ -278,7 +278,7 @@ public class NUSDavisWeatherStationInputAgent {
                             } else if (key.contains("wind_speed")) {
                                 //conversion of speed from miles/hour to km/h
                                 value = ((Double) value) * 1.609344;
-                            } else if (key.contains("ts")) {
+                            } else if (key.contains(NUSDavisWeatherStationInputAgent.timestampKey)) {
                                 //convert timestamp to a proper format
                                 Date date = new java.util.Date((Long) value);
                                 SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
