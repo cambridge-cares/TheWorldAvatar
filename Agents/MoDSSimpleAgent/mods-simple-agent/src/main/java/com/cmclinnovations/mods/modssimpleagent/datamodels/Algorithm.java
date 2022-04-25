@@ -7,7 +7,7 @@ public class Algorithm {
     private String name;
     private String type;
     private List<Variable> variables;
-    private int numberOfResults = Integer.MAX_VALUE;
+    private int maxNumberOfResults = Integer.MAX_VALUE;
 
     public String getName() {
         return name;
@@ -33,8 +33,8 @@ public class Algorithm {
         this.variables = variables;
     }
 
-    public int getNumberOfResults() {
-        return numberOfResults;
+    public int getMaxNumberOfResults() {
+        return maxNumberOfResults;
     }
 
 }
