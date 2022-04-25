@@ -48,6 +48,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.9.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.cmclinnovations.mods</groupId>
 			<artifactId>MoDS_API</artifactId>
 			<version>0.15.0</version>
