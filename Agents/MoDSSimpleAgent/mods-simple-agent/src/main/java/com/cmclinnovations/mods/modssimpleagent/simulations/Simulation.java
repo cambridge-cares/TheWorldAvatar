@@ -136,6 +136,11 @@ public class Simulation {
         }
     }
 
+    protected Algorithm getAlgorithmOfType(String algType) {
+        return getRequest().getAlgorithms().stream().filter(alg -> alg.getType().equals(algType)).findFirst()
+                .orElseThrow();
+    }
+
     public String getFullCaseName(String caseGroupName, String caseName) {
         return caseGroupName + "_" + caseName;
     }
