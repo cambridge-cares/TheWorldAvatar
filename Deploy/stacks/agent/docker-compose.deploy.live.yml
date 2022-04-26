@@ -10,7 +10,6 @@
 
 version: "3.8"
 
-
 services:
 
   # Email Agent
@@ -22,7 +21,7 @@ services:
   gas-grid-agent:
     ports:
       - 40081:80
-      
+
   # Flood Agent
   flood-agent:
     ports:
@@ -61,3 +60,8 @@ services:
   mods-simple-agent:
     ports:
       - "58085:8080"
+
+  # MoDS CUDS wrapper Agent
+  mods-cuds-wrapper-agent:
+    ports:
+      - "58086:8080"
