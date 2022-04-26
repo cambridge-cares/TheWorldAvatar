@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.agent.esphomeUpdate;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
-import uk.ac.cam.cares.jps.agent.utils.JSONKeyToIRIMapper;
+import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;

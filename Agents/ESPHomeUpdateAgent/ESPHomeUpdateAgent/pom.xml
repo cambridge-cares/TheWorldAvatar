@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <jps.base.version>1.6.0</jps.base.version>
+        <jps.base.version>1.9.0</jps.base.version>
        
     </properties>
 
