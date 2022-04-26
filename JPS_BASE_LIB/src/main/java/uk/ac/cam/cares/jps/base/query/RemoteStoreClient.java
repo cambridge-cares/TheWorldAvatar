@@ -318,7 +318,7 @@ public class RemoteStoreClient implements StoreClientInterface {
         Statement stmt = null;
         try {
             RemoteEndpointDriver.register();
-            System.out.println(getConnectionUrl());
+            // System.out.println(getConnectionUrl());
             conn = DriverManager.getConnection(getConnectionUrl());
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 //			System.out.println(query);
@@ -385,7 +385,7 @@ public class RemoteStoreClient implements StoreClientInterface {
         Statement stmt = null;
         try {
             RemoteEndpointDriver.register();
-            System.out.println(getConnectionUrl());
+            // System.out.println(getConnectionUrl());
             conn = DriverManager.getConnection(getConnectionUrl());
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 //			System.out.println(query);
