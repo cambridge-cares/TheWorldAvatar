@@ -6,10 +6,30 @@ import org.junit.Test;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestIriMapper {
+	
+	// Test add(String iri, String id, String type)
+		@Test
+		public void testAdd() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+			String iri = "iri_number";
+			String id = "id_number";
+			String type =  "type_number";
+			
+			IriMapper newinst = new IriMapper();
+			newinst.add(iri, id, type);
+			assertNotNull(newinst.getClass().getDeclaredField("list"));
+			Field field = newinst.getClass().getDeclaredField("list");
+			field.setAccessible(true);
+			List<IriMapper.IriMapping> list = (List<IriMapping>) field.get(newinst);
+			
+			assertEquals(list.get(0).iri,iri);
+			assertEquals(list.get(0).id,id);
+			assertEquals(list.get(0).type,type);	
+		}
 		
 	// Test getIri(String id, String type)
 	@Test 
@@ -83,9 +103,9 @@ public class TestIriMapper {
 		assertSame(mappedori3,id2);
 	}
 	
-	// Test add(String iri, String id, String type) and serialize
+	// Test serialize
 	@Test
-	public void testAddandSerialize() {
+	public void testSerialize() {
 		String iri = "iri_number";
 		String id = "id_number";
 		String type =  "type_number";
