@@ -56,3 +56,8 @@ services:
   weather-agent:
     ports:
       - "48085:8080"
+
+  # MoDS Agent
+  mods-simple-agent:
+    ports:
+      - "58085:8080"
