@@ -1,8 +1,8 @@
-package uk.ac.cam.cares.jps.agent.utils;
+package uk.ac.cam.cares.jps.base.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.cam.cares.jps.agent.aqmesh.AQMeshInputAgentLauncher;
+
 
 import java.io.*;
 import java.util.*;
@@ -29,7 +29,7 @@ public class JSONKeyToIRIMapper {
     /**
      * Logger for reporting info/errors.
      */
-    private static final Logger LOGGER = LogManager.getLogger(AQMeshInputAgentLauncher.class);
+    private static final Logger LOGGER = LogManager.getLogger(JSONKeyToIRIMapper.class);
     /**
      * Logging / error messages
      */
