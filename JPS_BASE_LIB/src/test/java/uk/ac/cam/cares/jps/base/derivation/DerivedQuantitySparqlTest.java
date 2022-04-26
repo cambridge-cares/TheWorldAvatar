@@ -319,6 +319,44 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
+	public void testMarkAsRequestedIfOutdated() {
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		// add timestamp to inputs and derivations
+		devClient.addTimeInstance(inputs);
+		devClient.addTimeInstance(derivation);
+
+		// case 1: as all timestamp will be 0, the derivation should be deemed as
+		// up-to-date, thus nothing should happen if execute
+		devClient.markAsRequestedIfOutdated(derivation);
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+
+		// case 2: if now we make the derivation to be outdated, then the status should
+		// be mark as requested
+		for (String input : inputs) {
+			devClient.updateTimeStamp(input);
+		}
+		devClient.markAsRequestedIfOutdated(derivation);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
+				ResourceFactory.createProperty(RDF.type.getURI()),
+				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
+
+		// case 3: if now we execute to mark up again, then nothing should happen
+		devClient.markAsRequestedIfOutdated(derivation);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
+				ResourceFactory.createResource(statusIRI)));
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
+				ResourceFactory.createProperty(RDF.type.getURI()),
+				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
+	}
+
+	@Test
 	public void testUpdateStatusBeforeSetupJob()
 			throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
@@ -2018,31 +2056,6 @@ public class DerivedQuantitySparqlTest {
 					fail("Unexpected agentURL for derivation: " + agentURL);
 			}
 		}
-	}
-
-	@Test
-	public void testIsOutdated() {
-		// d0 should be outdated (timestamp 0), but the inputs have current timestamp
-		String d0 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI, inputs, true);
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-			devClient.updateTimeStamp(input);
-		}
-		devClient.addTimeInstance(d0);
-		Assert.assertTrue(devClient.isOutdated(d0));
-
-		// d1 should also be outdated, as its upstream derivation d0 is outdated
-		String d1 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI, Arrays.asList(d0), false);
-		devClient.addTimeInstance(d1);
-		Assert.assertTrue(devClient.isOutdated(d1));
-
-		// d2 is outdated as timestamp 0 although no status
-		String d2 = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, false);
-		devClient.addTimeInstance(d2);
-		Assert.assertTrue(devClient.isOutdated(d2));
-		// d2 is now up-to-date given current timestamp
-		devClient.updateTimeStamp(d2);
-		Assert.assertTrue(!devClient.isOutdated(d2));
 	}
 
 	@Test

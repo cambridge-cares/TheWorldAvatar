@@ -934,12 +934,9 @@ public class DerivationClient {
 			}
 		}
 
-		if (this.sparqlClient.isOutdated(derivation.getIri())) {
-			// mark it as Requested if the current derivation does NOT have status already
-			if (!this.sparqlClient.hasStatus(derivation.getIri())) {
-				this.sparqlClient.markAsRequested(derivation.getIri());
-			}
-		}
+		// mark the derivation as Requested if the current derivation is outdated and
+		// does NOT have status already
+		this.sparqlClient.markAsRequestedIfOutdated(derivation.getIri());
 	}
 
 	/**

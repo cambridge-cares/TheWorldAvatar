@@ -742,6 +742,7 @@ public class DerivationSparql {
 	 * @param derivation
 	 * @return
 	 */
+	@Deprecated
 	boolean hasStatus(String derivation) {
 		SelectQuery query = Queries.SELECT();
 
@@ -1217,8 +1218,10 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * This method checks if a derivation is outdated or not. A derivation is
-	 * outdated IN FACT if:
+	 * This method marks the status of the derivation as "Requested" if the
+	 * derivation is outdated and there's no status marked already.
+	 * 
+	 * A derivation is outdated IN FACT if:
 	 * (1) its timestamp is outdated (smaller) compared to the timestamp of its
 	 * upstream derivations or pure inputs; (2) any of its upstream derivations
 	 * have status (the derivation might still up-to-date when comparing the
@@ -1226,70 +1229,69 @@ public class DerivationSparql {
 	 * derivations are done, thus it is in fact outdated from a global view).
 	 * 
 	 * @param derivationIRI
-	 * @return
 	 */
-	boolean isOutdated(String derivationIRI) {
+	void markAsRequestedIfOutdated(String derivationIRI) {
 		// complete query string
-		// prefix d:
+		// PREFIX time: <http://www.w3.org/2006/time#>
+		// PREFIX derived:
 		// <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
-		// prefix time: <http://www.w3.org/2006/time#>
-		// select distinct ?upstream
-		// where {
-		// <derivationIRI> time:hasTime/time:inTimePosition/time:numericPosition
-		// ?derivationTimestamp.
-		// <derivationIRI> d:isDerivedFrom/d:belongsTo? ?upstream.
+		// INSERT { ?derivation derived:hasStatus <statusIRI> .
+		// <statusIRI> a derived:Requested . }
+		// WHERE { { SELECT ?derivation
+		// WHERE { VALUES ?derivation { <derivationIRI> }
+		// ?derivation time:hasTime/time:inTimePosition/time:numericPosition
+		// ?derivationTimestamp .
+		// ?derivation derived:isDerivedFrom/derived:belongsTo? ?upstream .
 		// ?upstream time:hasTime/time:inTimePosition/time:numericPosition
-		// ?upstreamTimestamp.
-		// optional {?upstream d:hasStatus/a ?statusType}
-		// filter (?derivationTimestamp < ?upstreamTimestamp || ?statusType =
-		// derived:Requested || ?statusType = derived:InProgress ||
-		// ?statusType = derived:Finished))
-		// }
+		// ?upstreamTimestamp .
+		// OPTIONAL { ?upstream derived:hasStatus/a ?upsStatusType . }
+		// FILTER NOT EXISTS { ?derivation derived:hasStatus ?derivationStatus . }
+		// FILTER ( ( ?derivationTimestamp < ?upstreamTimestamp || ?upsStatusType =
+		// derived:Requested || ?upsStatusType = derived:InProgress || ?upsStatusType =
+		// derived:Finished ) ) }
+		// } }
 
-		String derivationTimeQueryKey = "derivationTimestamp";
-		String upstreamQueryKey = "upstream";
-		String upstreamTimeQueryKey = "upstreamTimestamp";
-		String statusTypeQueryKey = "statusType";
+		SubSelect sub = GraphPatterns.select();
+		ModifyQuery modify = Queries.MODIFY();
 
-		SelectQuery query = Queries.SELECT().distinct();
-
-		Variable derivationTimestamp = SparqlBuilder.var(derivationTimeQueryKey);
-		Variable upstream = SparqlBuilder.var(upstreamQueryKey);
-		Variable upstreamTimestamp = SparqlBuilder.var(upstreamTimeQueryKey);
-		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
+		Variable d = SparqlBuilder.var("derivation");
+		Variable dTs = SparqlBuilder.var("derivationTimestamp");
+		Variable dStatus = SparqlBuilder.var("derivationStatus");
+		Variable upstream = SparqlBuilder.var("upstream");
+		Variable upsTs = SparqlBuilder.var("upstreamTimestamp");
+		Variable upsStatusType = SparqlBuilder.var("upsStatusType");
 
 		// check if the derivation (outdated timestamp compared to its upstream
 		// inputs/derivations || its upstream derivations have status)
 		Expression<?> upstreamFilter = Expressions.or(
 				// ?derivationTimestamp < ?upstreamTimestamp
-				Expressions.lt(derivationTimestamp, upstreamTimestamp),
+				Expressions.lt(dTs, upsTs),
 				// ?statusType IN (derived:Requested, derived:InProgress, derived:Finished)
-				Expressions.equals(statusType, Requested),
-				Expressions.equals(statusType, InProgress),
-				Expressions.equals(statusType, Finished));
+				Expressions.equals(upsStatusType, Requested),
+				Expressions.equals(upsStatusType, InProgress),
+				Expressions.equals(upsStatusType, Finished));
 
-		GraphPattern derivationTimePattern = iri(derivationIRI)
-				.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp);
-		GraphPattern upstreamPattern = iri(derivationIRI)
-				.has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)), upstream);
+		GraphPattern derivationIRIPattern = new ValuesPattern(d, Arrays.asList(iri(derivationIRI)));
+		GraphPattern derivationTimePattern = d.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), dTs);
+		GraphPattern upstreamPattern = d.has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)), upstream);
 		GraphPattern upstreamTimePattern = upstream
-				.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), upstreamTimestamp);
+				.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), upsTs);
 		GraphPattern upstreamStatusTypePattern = GraphPatterns
-				.optional(GraphPatterns.and(upstream.has(PropertyPaths.path(hasStatus, RdfPredicate.a), statusType)));
+				.and(upstream.has(PropertyPaths.path(hasStatus, RdfPredicate.a), upsStatusType)).optional();
+		GraphPattern derivationStatusPattern = d.has(hasStatus, dStatus);
 
-		query.prefix(p_derived, p_time).select(upstream)
-				.where(GraphPatterns
-						.and(derivationTimePattern, upstreamPattern, upstreamTimePattern,
-								upstreamStatusTypePattern)
-						.filter(upstreamFilter));
+		sub.select(d).where(GraphPatterns.and(derivationIRIPattern, derivationTimePattern, upstreamPattern,
+				upstreamTimePattern, upstreamStatusTypePattern).filter(upstreamFilter)
+				.filterNotExists(derivationStatusPattern));
 
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		String statusIRI = getNameSpace(derivationIRI) + "status_" + UUID.randomUUID().toString();
 
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
+		TriplePattern insert_status = d.has(hasStatus, iri(statusIRI));
+		TriplePattern insert_status_rdf_type = iri(statusIRI).isA(Requested);
+
+		modify.prefix(p_time, p_derived).insert(insert_status, insert_status_rdf_type).where(sub);
+
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 
 	/**
