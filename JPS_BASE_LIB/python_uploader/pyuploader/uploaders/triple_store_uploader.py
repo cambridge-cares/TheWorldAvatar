@@ -1,5 +1,5 @@
 from pyuploader.common.gateways import jpsBaseLibGW
-from pyuploader.uploaders.uploader import Uploader
+from pyuploader.uploaders.uploader import Uploader, Upload_Client
 import functools as functools
 from typing import Tuple, Optional, Callable
 
@@ -24,7 +24,7 @@ class Triple_Store_Uploader(Uploader):
 
         super().__init__(
             uploader_name=uploader_name,
-            supported_file_ext='owl',
+            supported_file_ext=['rdf','rdfs','owl','xml','nt','ntx','ttl','ttlx','n3','trix','trig','nq','rsj','json'],
             url=url,
             auth_file=auth_file,
             no_auth=no_auth,
@@ -32,15 +32,18 @@ class Triple_Store_Uploader(Uploader):
             auth_file_env_var=auth_file_env_var if auth_file_env_var is not None else TS_AUTH_ENV_VAR_VALUE)
 
 
-    def _get_upload_client(self, url: str, auth: Tuple[str, str]) -> Callable[[str], str]:
+    def _get_upload_client(self, url: str, auth: Tuple[str, str]) -> Upload_Client:
         client = jpsBaseLib_view.RemoteStoreClient(
                 url, url, auth[0], auth[1])
         return functools.partial(self.__upload_wrapper, client, url)
 
     @staticmethod
-    def __upload_wrapper(client: Callable, url: str, file_path: str)->str:
+    def __upload_wrapper(client: Callable, url: str, file_path: str, file_ext: Optional[str])->str:
         rdfFile = jpsBaseLib_view.java.io.File(file_path)
-        client.uploadRDFFile(rdfFile)
+        if file_ext is not None:
+            client.uploadFile(rdfFile, file_ext)
+        else:
+            client.uploadFile(rdfFile)
         return url
 
 def get_triple_store_uploader(
