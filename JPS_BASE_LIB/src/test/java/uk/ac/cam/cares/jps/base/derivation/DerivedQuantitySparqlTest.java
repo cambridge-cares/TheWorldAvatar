@@ -725,7 +725,6 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testReconnectNewDerivedIRIs() {
 		OntModel testKG = mockClient.getKnowledgeBase();
-		long retrievedInputsAt = Instant.now().getEpochSecond();
 		List<String> oldInstances = Arrays.asList("http://a", "http://b", "http://c");
 		Map<String, List<String>> newInstanceMap1 = new HashMap<>();
 		newInstanceMap1.put("http://a/new", Arrays.asList("http://d1", "http://d2"));
@@ -771,6 +770,7 @@ public class DerivedQuantitySparqlTest {
 		});
 
 		// case 1: derivation is outdated, now delete and add new instances should work
+		long retrievedInputsAt = Instant.now().getEpochSecond();
 		devClient.reconnectNewDerivedIRIs(newInstanceMap1, derivation, retrievedInputsAt);
 		// all old outputs should be deleted
 		for (String instance : oldInstances) {

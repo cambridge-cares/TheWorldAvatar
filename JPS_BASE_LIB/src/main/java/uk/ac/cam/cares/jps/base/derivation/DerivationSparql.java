@@ -2314,7 +2314,7 @@ public class DerivationSparql {
 		// this GraphPattern queries all the old outputs (entities)
 		GraphPattern entityPattern = GraphPatterns.and(e.has(belongsTo, d), e.has(p1, o), s.has(p2, e).optional());
 		// these patterns query the status of this derivation if it exist, thus optional
-		TriplePattern tp1 = iri(derivation).has(hasStatus, status);
+		TriplePattern tp1 = d.has(hasStatus, status);
 		TriplePattern tp2 = status.isA(statusType);
 		TriplePattern tp3 = status.has(hasNewDerivedIRI, sndIRI);
 		GraphPattern statusQueryPattern = GraphPatterns.and(tp1, tp2, tp3.optional()).optional();
