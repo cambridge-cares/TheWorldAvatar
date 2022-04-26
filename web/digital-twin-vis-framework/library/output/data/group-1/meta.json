@@ -1,0 +1,49 @@
+{
+    "name": "Group #1",
+    "groups": {
+        "label": "Subgroup",
+        "directories": [
+            "subgroup-1"
+        ]
+    },
+    "sources": [
+        {
+            "name": "super-points",
+            "type": "geojson",
+            "data": "super-assets.geojson"
+        },
+        {
+            "name": "super-lines",
+            "type": "geojson",
+            "data": "super-lines.geojson"
+        }
+    ],
+    "layers": [
+        {
+            "name": "super-points-layer",
+            "source": "super-points",
+            "type": "circle",
+            "layout": {
+                "visibility": "visible"
+            },
+            "paint": {
+                "circle-radius": 5,
+                "circle-color": "#FF0000",
+                "circle-stroke-width": 1,
+                "circle-stroke-color": "#000000"
+            }
+        },
+        {
+            "name": "super-lines-layer",
+            "source": "super-lines",
+            "type": "line",
+            "layout": {
+                "visibility": "visible"
+            },
+            "paint": {
+                "line-color": "#FF0000",
+                "line-width": 5
+            }
+        }
+    ]
+}

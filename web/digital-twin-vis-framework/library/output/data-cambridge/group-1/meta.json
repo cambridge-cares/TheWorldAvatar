@@ -1,0 +1,9 @@
+{
+    "name": "Group #1",
+    "groups": {
+        "label": "Subgroups",
+        "directories": [
+            "subgroup-1"
+        ]
+    }
+}

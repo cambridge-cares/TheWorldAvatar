@@ -1,0 +1,37 @@
+{
+    "name": "Sample Set",
+    "groups": {
+        "label": "Data Group",
+        "directories": [
+            "group-1"
+        ]
+    },
+    "meta": {
+        "version": "2.0.0",
+        "mapOptions": {
+            "center": [-0.18692046403884885, 51.11206846649548],
+            "zoom": 12,
+            "bearing": 0,
+            "pitch": 45,
+            "style": "mapbox://styles/mapbox/light-v10?optimize=true"
+        },
+        "linkedFiles": [
+            {
+                "text": "Test File #1",
+                "url": "linked-files/test-file-1.txt"
+            },
+            {
+                "text": "Test File #2",
+                "url": "linked-files/test-file-2.txt"
+            },
+            {
+                "text": "Test File #3",
+                "url": "linked-files/test-file-3.txt"
+            },
+            {
+                "text": "A funny video",
+                "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            }
+        ]
+    }
+}

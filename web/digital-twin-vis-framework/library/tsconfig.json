@@ -1,6 +1,11 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "ES2017",
+        "lib": [
+            "ES2017",
+            "dom"
+        ],
+        "skipLibCheck": true,
         "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
@@ -12,7 +17,7 @@
         "src/**/*"
     ],
     "exclude": [
-        "node_modules",
+        "**/node_modules",
         "**/*.spec.ts"
     ]
 }

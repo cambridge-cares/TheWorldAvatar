@@ -1,0 +1,470 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.121971,
+                    52.205253
+                ]
+            },
+            "properties": {
+                "name": "Christ's",
+                "icon-image": "christs"
+            },
+            "id": 1
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.103683,
+                    52.212189
+                ]
+            },
+            "properties": {
+                "name": "Churchill",
+                "icon-image": "churchill"
+            },
+            "id": 2
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.115609,
+                    52.205059
+                ]
+            },
+            "properties": {
+                "name": "Clare",
+                "icon-image": "clare"
+            },
+            "id": 3
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.104198,
+                    52.203997
+                ]
+            },
+            "properties": {
+                "name": "Clare Hall",
+				"icon-image": "clare-hall"
+            },
+            "id": 4
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.117776,
+                    52.20283
+                ]
+            },
+            "properties": {
+                "name": "Corpus Christi",
+				"icon-image": "corpus-christi"
+            },
+            "id": 5
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.113879,
+                    52.200839
+                ]
+            },
+            "properties": {
+                "name": "Darwin",
+				"icon-image": "darwin"
+            },
+            "id": 6
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.125184,
+                    52.201454
+                ]
+            },
+            "properties": {
+                "name": "Downing",
+				"icon-image": "downing"
+            },
+            "id": 7
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.123661,
+                    52.203558
+                ]
+            },
+            "properties": {
+                "name": "Emmanuel",
+				"icon-image": "emmanuel"
+            },
+            "id": 8
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.107009,
+                    52.215489
+                ]
+            },
+            "properties": {
+                "name": "Fitzwilliam",
+				"icon-image": "fitzwilliam"
+            },
+            "id": 9
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.083685,
+                    52.228374
+                ]
+            },
+            "properties": {
+                "name": "Girton",
+				"icon-image": "girton"
+            },
+            "id": 10
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.117899,
+                    52.205799
+                ]
+            },
+            "properties": {
+                "name": "Gonville & Caius",
+				"icon-image": "gonville"
+            },
+            "id": 11
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.138048,
+                    52.185471
+                ]
+            },
+            "properties": {
+                "name": "Homerton",
+				"icon-image": "homerton"
+            },
+            "id": 12
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.131798,
+                    52.200995
+                ]
+            },
+            "properties": {
+                "name": "Hughes Hall",
+				"icon-image": "hughes"
+            },
+            "id": 13
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.123296,
+                    52.208455
+                ]
+            },
+            "properties": {
+                "name": "Jesus",
+				"icon-image": "jesus"
+            },
+            "id": 14
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.117255,
+                    52.204319
+                ]
+            },
+            "properties": {
+                "name": "Kings",
+				"icon-image": "kings"
+            },
+            "id": 15
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.110408,
+                    52.211121
+                ]
+            },
+            "properties": {
+                "name": "Lucy Cavendish",
+				"icon-image": "lucy"
+            },
+            "id": 16
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.116042,
+                    52.21015
+                ]
+            },
+            "properties": {
+                "name": "Magdalene",
+				"icon-image": "magdalene"
+            },
+            "id": 17
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.10908,
+                    52.214192
+                ]
+            },
+            "properties": {
+                "name": "Murray Edwards",
+				"icon-image": "murray"
+            },
+            "id": 18
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.109187,
+                    52.200206
+                ]
+            },
+            "properties": {
+                "name": "Newnham",
+				"icon-image": "newnham"
+            },
+            "id": 19
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.118366,
+                    52.201694
+                ]
+            },
+            "properties": {
+                "name": "Pembroke",
+				"icon-image": "pembroke"
+            },
+            "id": 20
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.118803,
+                    52.201002
+                ]
+            },
+            "properties": {
+                "name": "Peterhouse",
+				"icon-image": "peterhouse"
+            },
+            "id": 21
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.114898,
+                    52.201826
+                ]
+            },
+            "properties": {
+                "name": "Queens",
+				"icon-image": "queens"
+            },
+            "id": 22
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.105304,
+                    52.20449
+                ]
+            },
+            "properties": {
+                "name": "Robinson",
+				"icon-image": "robinson"
+            },
+            "id": 23
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.119999,
+                    52.207119
+                ]
+            },
+            "properties": {
+                "name": "Sidney Sussex",
+				"icon-image": "sussex"
+            },
+            "id": 24
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.11747,
+                    52.202827
+                ]
+            },
+            "properties": {
+                "name": "St Catherine's",
+				"icon-image": "catherine"
+            },
+            "id": 25
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.10967,
+                    52.212531
+                ]
+            },
+            "properties": {
+                "name": "St Edmunds",
+				"icon-image": "edmunds"
+            },
+            "id": 26
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.105572,
+                    52.201032
+                ]
+            },
+            "properties": {
+                "name": "Selwyn",
+				"icon-image": "selwyn"
+            },
+            "id": 27
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.117835,
+                    52.207863
+                ]
+            },
+            "properties": {
+                "name": "St John's",
+				"icon-image": "st-johns"
+            },
+            "id": 28
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.117773,
+                    52.207119
+                ]
+            },
+            "properties": {
+                "name": "Trinity",
+				"icon-image": "trinity"
+            },
+            "id": 29
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.116166,
+                    52.20573
+                ]
+            },
+            "properties": {
+                "name": "Trinity Hall",
+				"icon-image": "trinity-hall"
+            },
+            "id": 30
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.100897,
+                    52.198234
+                ]
+            },
+            "properties": {
+                "name": "Wolfson",
+				"icon-image": "wolfson"
+            },
+            "id": 31
+        }
+    ]
+}
