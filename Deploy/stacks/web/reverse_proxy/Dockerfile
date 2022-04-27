@@ -35,6 +35,8 @@ RUN chmod 777 /usr/local/log-parser.py
 #RUN chmod 755 /usr/local/setup-credo.sh
 #RUN /usr/local/setup-credo.sh
 
+RUN mkdir -p /var/www/certbot/.well-known
+
 # Run both nginx and cron together on boot
 CMD [ "sh", "-c", "cron && nginx -g 'daemon off;'" ]
 #==================================================================================================
