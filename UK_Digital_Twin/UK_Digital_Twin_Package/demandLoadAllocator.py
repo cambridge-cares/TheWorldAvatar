@@ -17,7 +17,7 @@ from UK_Digital_Twin_Package.generatorCluster import busLocationFinderForGBOrNI
 from UK_Digital_Twin_Package.polygonCoversEdinburghChannel import EdinburghChannelNorthShapely, EdinburghChannelSouthShapely, complementaryBorderShapely
 from math import sin, cos, sqrt, atan2, radians, degrees
 import shapely.geometry
-from shapely.validation import make_valid
+from shapely.validation import explain_validity as make_valid
 
 """This class is designed to provide several ways of allocating the electricity demand load to each bus based on different allocation principles"""
 class demandLoadAllocator(object):

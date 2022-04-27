@@ -357,7 +357,7 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigital
     """% (startTime_of_EnergyConsumption)
      
     print('...stars queryElectricityConsumption_Region...')     
-    res = json.loads(performFederatedQuery(queryStr, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri))
+    res = json.loads(performFederatedQuery(queryStr, [UKDigitalTwinEndPoint_iri, ONSEndPoint_iri]))
     print('...queryElectricityConsumption_Region is done...') 
     for r in res:
         for key in r.keys():
@@ -538,12 +538,12 @@ if __name__ == '__main__':
     # sl_path = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     # sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
     # iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'   
-    ONS_json = "http://statistics.data.gov.uk/sparql.json"
+    ONS_json = "http://statistics.data.gov.uk/sparql.json" # http://statistics.data.gov.uk/sparql
     ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
     
     # res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin_test1")
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
-    # res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
+    res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res, a = queryELineTopologicalInformation(29, 99, 'ukdigitaltwin', None, False)
     # res, a = queryELineTopologicalInformation(10, 14, 'ukdigitaltwin', None, False)
@@ -557,5 +557,5 @@ if __name__ == '__main__':
     
     # for r in res:
     #     print(r['ELine'])
-    res = queryBusTopologicalInformation("http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_10fe8504-f3bb-403c-9363-34b258d59711", "ukdigitaltwin_test2")
+    # res = queryBusTopologicalInformation("http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_10fe8504-f3bb-403c-9363-34b258d59711", "ukdigitaltwin_test2")
     print(res, len(res)) 

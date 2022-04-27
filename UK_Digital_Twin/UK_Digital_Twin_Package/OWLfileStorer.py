@@ -10,6 +10,7 @@ from tkinter.filedialog import askdirectory
 
 """Read data files"""
 def readFile(filepath):
+    print("...read the file from", filepath)
     ContentArrays = []
     with open(filepath) as file:
         lines = file.readlines()

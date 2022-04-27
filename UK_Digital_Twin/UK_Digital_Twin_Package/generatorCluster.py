@@ -12,7 +12,7 @@ from UK_Digital_Twin_Package.busLocatedRangeFinder import busLocatedRegionFinder
 from UK_Digital_Twin_Package.polygonCoversEdinburghChannel import EdinburghChannelNorthShapely, EdinburghChannelSouthShapely, complementaryBorderShapely
 from collections import Counter
 import shapely.geometry
-from shapely.validation import make_valid
+from shapely.validation import explain_validity as make_valid
 import time
 import matplotlib.pyplot as plt
 

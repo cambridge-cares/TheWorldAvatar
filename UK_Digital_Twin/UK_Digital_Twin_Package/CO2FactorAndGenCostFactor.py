@@ -4,11 +4,14 @@
 ##########################################
 
 """This class defines the properties of Model Factors"""
+from pathlib import Path
 
 class ModelFactor:
     
     """ File path """
-    DataPath = '../Data files/CO2FactorAndCostFactor/'
+    # DataPath = "C:/Users/wx243/Documents/TheWorldAvatar/UK_Digital_Twin/Data files/CO2FactorAndCostFactor/"
+    
+    DataPath = str(Path(__file__).resolve().parent.parent) + "\Data files\CO2FactorAndCostFactor\\"
     CO2EmissionFactorAndCostFactor = DataPath + 'CO2EmissionFactorAndCostFactor.csv' 
     
     """Source Data"""

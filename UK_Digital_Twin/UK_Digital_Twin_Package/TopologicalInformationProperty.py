@@ -4,16 +4,17 @@
 ##########################################
 
 """This class defines the properties of UK Topological Information data"""
+from pathlib import Path
 
 class TopologicalInformation:
     
      def __init__(self, numOfBus:int, voltageLevel = ["275", "400"]):
         """ File path """
-        self.DataPath = '../Data files/PowerGridTopology/'
+        self.DataPath = str(Path(__file__).resolve().parent.parent) + "\Data files\PowerGridTopology\\"
         self.EBus_num = numOfBus
         self.Name = str(self.EBus_num) + '_bus_topology'
-        self.BusInfo =  self.DataPath + str(self.EBus_num) + '_bus/bus_topological_info.csv'
-        self.BranchInfo =  self.DataPath + str(self.EBus_num) + '_bus/branch_topological_info.csv'
+        self.BusInfo =  self.DataPath + str(self.EBus_num) + '_bus\\bus_topological_info.csv'
+        self.BranchInfo =  self.DataPath + str(self.EBus_num) + '_bus\\branch_topological_info.csv'
         # self.BranchProperty =  self.DataPath + str(self.EBus_num) + '_bus/branch_properties.csv' # the branch prop should be calculated from the raw data
            
         """Data file header"""
@@ -26,11 +27,6 @@ class TopologicalInformation:
                 
         """Source Data"""
         if self.EBus_num == 10:
-            self.__TOPOINFO = self.DataPath + str(self.EBus_num) +  "_bus/-Node-24h-Tax-Auto - Template.xlsx"
+            self.__TOPOINFO = self.DataPath + str(self.EBus_num) +  "_bus\\-Node-24h-Tax-Auto - Template.xlsx"
         if self.EBus_num == 29:
             self.DataSource = "https://www.maths.ed.ac.uk/optenergy/NetworkData/reducedGB/"
-        
-
-if __name__ == '__main__': 
-    topoinfo = TopologicalInformation(10, 14, [])
-    print(topoinfo.headerBranchTopologicalInformation)

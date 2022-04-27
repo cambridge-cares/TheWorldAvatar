@@ -30,10 +30,12 @@ from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endp
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package import demandLoadAllocator as DLA
 from UK_Digital_Twin_Package.derivationInterface import createMarkUpDerivation
-from pyasyncagent.kg_operations import sparql_client
+from pyasyncagent.kg_operations import sparql_client # the import of this agent will need a parckage name werkzeug, install `pip install Werkzeug==2.0.2`, otherwise it will report the error message
 import uuid
 # from UK_Digital_Twin_Package import TopologicalInformationProperty as TopoInfo 
 
+
+from py4jps.resources import JpsBaseLib
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -271,15 +273,31 @@ def addUpConsumptionForAggregatedBus(EBus_Load_List):
     return EBus_Load_List
 
 if __name__ == '__main__':  
-    import os, sys
-    BASE = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, BASE)
-    from jpsSingletons import jpsBaseLibGW
+    # import os, sys
+    # BASE = os.path.dirname(os.path.abspath(__file__))
+    # sys.path.insert(0, BASE)
+    # from py4jps.resources import JpsBaseLib
+
+    # # jpsBaseLib resource gateway
+    # # you may also wish to pass any **JGkwargs
+    # jpsBaseLibGW = JpsBaseLib()
+
+    # # you may also wish to pass any **LGkwargs
+    # jpsBaseLibGW.launchGateway()
+    # jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    # jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+    # endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+    # storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
+    
+    jpsBaseLibGW = JpsBaseLib()
+    jpsBaseLibGW.launchGateway()
+
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+
     endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
     storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
-    
+
     topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_10fe8504-f3bb-403c-9363-34b258d59711" 
     powerSystemModelIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerSystemModel_22fe8504-f3bb-403c-9363-34b258d59712"
     AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
