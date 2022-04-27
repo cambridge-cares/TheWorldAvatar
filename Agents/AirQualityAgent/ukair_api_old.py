@@ -46,7 +46,10 @@ df = df[df['station_id'] != 9999999999]
 df = df[df['station'] != 'GB_SamplingFeature_missingFOI']
 df = df.explode('timeseries_ids').reset_index(drop=True)
 df = df.explode('phenomena').reset_index(drop=True)
-df.drop_duplicates()
+df.drop_duplicates(inplace=True)
+df = df.reset_index()
+df = df.drop(columns=['index'])
+
 
 # requests
 headers = {'Content-Type': 'application/json'}
