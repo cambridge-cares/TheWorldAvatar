@@ -9,7 +9,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
-import uk.ac.cam.cares.jps.agent.utils.JSONKeyToIRIMapper;
+import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
