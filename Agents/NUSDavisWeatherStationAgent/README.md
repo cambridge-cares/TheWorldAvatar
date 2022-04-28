@@ -10,7 +10,7 @@ contacted by one of the classes in this package to retrieve data.
 
 ## Weather Station API
 
-We will here briefly describe the weather station API. The official documentation can be found [here](https://weatherlink.github.io/v2-api/), .
+We will here briefly describe the weather station API. The official documentation can be found [here](https://weatherlink.github.io/v2-api/) .
 
 
 ### Data retrieval
@@ -22,16 +22,16 @@ The actual endpoint has the following structure and controls what type of data i
 https://api.weatherlink.com/v2/current/[<stationId>]?apiKey=[<apiKey>]&t=[<timestamp>]&apiSignature=[<apiSignature>]
 ```
 where `[stationId]` is the id of the weather station which is taking the physical readings.  The  
-`[apiKey]` is the key needed to access the API. '[timestamp]' refers to the timestamp at which the data is to be retrieved. 
+`[apiKey]` is the key needed to access the API. `[timestamp]` refers to the timestamp at which the data is to be retrieved. 
 Finally, the option `[apiSignature]` contains the apiSignature. This signature is generated firstly by creating a string 
 made by concatenating the parameter name-value pairs in the following manner:
-api-key<apiKey>t<timestamp> (e.g. api-key982634341t1988729481). Then the aforementioned concatenated string can be used
-to generate the apiSignature by using the HMAC SHA-256 algorithm with the HMAC secret key being the <apiSecret>. Note that every api call
+api-key`[apiKey]`t`[timestamp]` (e.g. api-key982634341t1988729481). Then the aforementioned concatenated string can be used
+to generate the apiSignature by using the HMAC SHA-256 algorithm with the HMAC secret key being the `[apiSecret]`. Note that every api call
 requires a fresh timestamp. See also the [API documentation](#Weather-Station-API)).
 #### Example readings
 Readings are returned in the response body in form of a JSON Object which consist of key-value pair. The JSONObject has the 
-key:"sensors", which contains a JSONArray containing a JSONObject. In this JSONObject is a JSONArray associated with the key:"data". This JSONArry contains one JSONObject. The key value pairs with this JSONObject contains all the relevant weather readings corresponding to a particular timestamp. The key for the timestamp is "ts".
-The following examples of what the JSONObject returned by a 'current' data api call looks like. 
+key:"sensors", which contains a JSONArray containing a JSONObject. In this JSONObject is a JSONArray associated with the key:"data". This JSONArray contains one JSONObject. The key value pairs within this JSONObject contain all the relevant weather readings corresponding to a particular timestamp. The key for the timestamp is `[ts]`.
+The following examples of what the JSONObject returned by a `[current]` data api call looks like. 
 
 ![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading1.png "First part of the weather data reading obtained using a 'current' data api call")
 ![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading2.png "Second part of the current weather data reading obtained using a 'current' data api call")
@@ -46,7 +46,7 @@ The [next section](#requirements) will explain the requirements to run the agent
 ### Requirements
 It is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine or need to be accessible from the host machine via a fixed URL.
 
-This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database..
+This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
 
 ### Property files
 For running the agent, three property files are required:
@@ -94,9 +94,9 @@ the same readings
 The mapping is achieved in this package by using one property file per group. Each property file contains one line per 
 JSON key that should be linked to an IRI, e.g. like:
 ```
-co_slope=http:/example/co_slope
+temp_in=http:/example/temp_in
 ```
-If the IRI is left empty (`co_slope=` in the example), i.e. because there is no instance that represents the measure yet, 
+If the IRI is left empty (`temp_in=` in the example), i.e. because there is no instance that represents the measure yet, 
 it will be automatically created when the agent is run for the first time. This automatically generated URI will have the
 following form:
 ```
