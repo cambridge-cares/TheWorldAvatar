@@ -17,8 +17,6 @@ import org.apache.jena.query.TxnType;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.riot.Lang;
@@ -49,12 +47,6 @@ public class LocalStoreClient implements StoreClientInterface {
 		conn = RDFConnectionFactory.connect(dataset);
 	}
 
-	public void addTriple(String s, String p, String o) {
-	//	Statement statement = ResourceFactory.createStatement(s, p, o);
-	//	Model model = ModelFactory.createDefaultModel();
-	
-	}
-	
 	///////////////////////////
 	// Sparql query and update
 	///////////////////////////
