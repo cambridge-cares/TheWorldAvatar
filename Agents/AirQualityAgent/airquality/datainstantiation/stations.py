@@ -8,12 +8,11 @@
 
 # The UK Air API does not require any registration or API token
 
-import json
-import pandas as pd
+import math
+import uuid
 import re
 import requests
-import uuid
-import math
+import pandas as pd
 
 #import agentlogging
 from airquality.kgutils.querytemplates import *
