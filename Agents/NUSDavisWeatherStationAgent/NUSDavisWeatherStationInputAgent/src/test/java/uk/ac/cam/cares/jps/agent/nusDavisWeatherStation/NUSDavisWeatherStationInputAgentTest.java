@@ -76,7 +76,9 @@ public class NUSDavisWeatherStationInputAgentTest {
     }
     @Before
     public void createExampleReadings() {
-        double value =0.0;
+        Integer ivalue =0;
+        double dvalue= 0.0;
+
         weatherDataReadings = new JSONObject();
         JSONArray sensors= new JSONArray();
         JSONArray data= new JSONArray();
@@ -89,12 +91,18 @@ public class NUSDavisWeatherStationInputAgentTest {
 
         for(int i=0; i<timestamps.length;i++) {
             JSONObject measurements = new JSONObject();
-            measurements.put(NUSDavisWeatherStationInputAgent.timestampKey,Long.parseLong(timestamps[i]) );
+            measurements.put(NUSDavisWeatherStationInputAgent.timestampKey,Integer.parseInt(timestamps[i]) );
             for(String key: keys) {
-                measurements.put(key, value);
+                if(key.contains("wind_dir")|| key.contains("solar_rad") || key.contains("hum_in")) {
+                    measurements.put(key, ivalue);
+                }else{
+                    measurements.put(key,dvalue);
+                }
+
             }
             data.put(measurements);
-            value++;
+            ivalue++;
+            dvalue++;
         }
         jsObj1.put("data",data);
         sensors.put(jsObj1);
@@ -202,7 +210,7 @@ public class NUSDavisWeatherStationInputAgentTest {
         Assert.assertEquals(Double.class, getClassFromJSONKey.invoke(testAgent, "rain_rate_mm"));
         Assert.assertEquals(Double.class, getClassFromJSONKey.invoke(testAgent, "wind_chill"));
 
-        Assert.assertEquals(String.class, getClassFromJSONKey.invoke(testAgent,"ts"));
+        Assert.assertEquals(String.class, getClassFromJSONKey.invoke(testAgent,NUSDavisWeatherStationInputAgent.timestampKey));
 
         Assert.assertEquals(Integer.class, getClassFromJSONKey.invoke(testAgent,"uv"));
         Assert.assertEquals(Integer.class, getClassFromJSONKey.invoke(testAgent, "hum_out"));
@@ -388,7 +396,7 @@ public class NUSDavisWeatherStationInputAgentTest {
         JSONArray getData=objSensor.getJSONArray("data");
 
         Long timestamp =getData.getJSONObject(0).getLong(NUSDavisWeatherStationInputAgent.timestampKey);
-        Date date = new java.util.Date(timestamp);
+        Date date = new java.util.Date(timestamp*1000);
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         String maxTime = sdf.format(date);
@@ -428,11 +436,12 @@ public class NUSDavisWeatherStationInputAgentTest {
         JSONArray getSensor=weatherDataReadings.getJSONArray("sensors");
         JSONObject objSensor=getSensor.getJSONObject(0);
         JSONArray getData=objSensor.getJSONArray("data");
-        JSONObject objData=getData.getJSONObject(0);
+        JSONObject objData=getData.getJSONObject(getData.length()-1);
 
         Long timestamp = objData.getLong(NUSDavisWeatherStationInputAgent.timestampKey);
-        Date date = new java.util.Date(timestamp);
+        Date date = new java.util.Date(timestamp*1000);
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         String maxTime = sdf.format(date);
 
 
@@ -482,7 +491,7 @@ public class NUSDavisWeatherStationInputAgentTest {
             String key = it.next();
             Assert.assertTrue(readings.containsKey(key));
         }
-        Assert.assertTrue(readings.containsKey("ts"));
+        Assert.assertTrue(readings.containsKey(NUSDavisWeatherStationInputAgent.timestampKey));
     }
 
 

@@ -24,6 +24,9 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Class to retrieve data from the weather station API and storing it with connection to The World Avatar (Knowledge Base).
+ * @author  GMMajal*/
 public class NUSDavisWeatherStationInputAgent {
 
     /**
@@ -242,6 +245,7 @@ public class NUSDavisWeatherStationInputAgent {
                 JSONObject currentEntry = getData.getJSONObject(i);
                 for (Iterator<String> it = currentEntry.keys(); it.hasNext(); ) {
                     String key = it.next();
+                    //exclude keys that are not needed
                     if (!key.contains("temp_extra_1") || !key.contains("temp_extra_2") || !key.contains("temp_extra_3") || !key.contains("temp_extra_4")
                             || !key.contains("temp_extra_5") || !key.contains("temp_extra_6") || !key.contains("temp_extra_7")
                             || !key.contains("temp_soil_1") || !key.contains("temp_soil_2") || !key.contains("temp_soil_3") || !key.contains("temp_soil_4")
@@ -261,7 +265,7 @@ public class NUSDavisWeatherStationInputAgent {
                         if (value == JSONObject.NULL) {
                             String datatype = getClassFromJSONKey(key).getSimpleName();
                             // If it is a number use NaN (not a number)
-                            if (datatype.equals(Integer.class.getSimpleName()) | datatype.equals(Double.class.getSimpleName()) | datatype.equals(Long.class.getSimpleName())) {
+                            if (datatype.equals(Integer.class.getSimpleName()) | datatype.equals(Double.class.getSimpleName()) ) {
                                 value = Double.NaN;
                             }
                             // Otherwise, use the string NA (not available)
@@ -272,19 +276,26 @@ public class NUSDavisWeatherStationInputAgent {
                             //perform conversion to metric units where needed
                             if (key.contains("temp_in") || key.contains("temp_out") || key.contains("dew_point") || key.contains("heat_index") || key.contains("wind_chill")) {
                                 //conversion of temp from Fahrenheit to Celsius
-                                value = (5.0 * ((Double) value - 32.0)) / 9.0;
-                            } else if (key.contains("bar")) {
+                                //the temp values are of type float
+                                Double temp= Double.parseDouble(value.toString());
+                                temp = (5.0 * (temp - 32.0)) / 9.0;
+                                value=temp;
+                            } else if (key.contentEquals("bar")) {
                                 //conversion of pressure from inHg to mmHg
                                 value = ((Double) value) * 25.4;
                             } else if (key.contains("wind_speed")) {
                                 //conversion of speed from miles/hour to km/h
-                                value = ((Double) value) * 1.609344;
+                                //since wind speed is provided as an Integer, it is converted back to an Integer after unit conversion
+                                Double wind_sp = (Integer)value * 1.609344;
+                                value=wind_sp.intValue();
                             } else if (key.contains(NUSDavisWeatherStationInputAgent.timestampKey)) {
-                                //convert timestamp to a proper format
-                                Date date = new java.util.Date((Long) value);
-                                SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                value = sdf.format(date);
+                                    //convert unix timestamp to a proper format
+                                    //int ts= (Integer)value;
+                                    Long ts=Long.parseLong(value.toString());
+                                    Date date = new java.util.Date(ts*1000);
+                                    SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                    value = sdf.format(date);
                             }
                         }
                         // If the key is not present yet initialize the list
@@ -312,9 +323,7 @@ public class NUSDavisWeatherStationInputAgent {
                 valuesTyped = valuesUntyped.stream().map(x -> ((Number) x).intValue()).collect(Collectors.toList());
             } else if (datatype.equals(Double.class.getSimpleName())) {
                 valuesTyped = valuesUntyped.stream().map(x -> ((Number) x).doubleValue()).collect(Collectors.toList());
-            } else if (datatype.equals(Long.class.getSimpleName())) {
-                valuesTyped = valuesUntyped.stream().map(x -> ((Number) x).longValue()).collect(Collectors.toList());
-            } else {
+            }  else {
                 valuesTyped = valuesUntyped.stream().map(Object::toString).collect(Collectors.toList());
             }
             readingsMapTyped.put(key, valuesTyped);
@@ -424,13 +433,14 @@ public class NUSDavisWeatherStationInputAgent {
      * @return The corresponding class as Class<?> object.
      */
     private Class<?> getClassFromJSONKey(String jsonKey) {
-        if (   jsonKey.contains("temp_in")      || jsonKey.contains("temp_out")     || jsonKey.contains("dew_point")   || jsonKey.contains("heat_index")
-            || jsonKey.contains("wind_chill")   || jsonKey.contains("bar")          || jsonKey.contains("rain_day_mm") || jsonKey.contains("rain_month_mm")
-            || jsonKey.contains("rain_year_mm") || jsonKey.contains("rain_rate_mm") || jsonKey.contains("rain_storm_mm")){
+        if (   jsonKey.contains("bar")  || jsonKey.contains("rain_day_mm") || jsonKey.contains("rain_month_mm")
+            || jsonKey.contains("rain_year_mm") || jsonKey.contains("rain_rate_mm") || jsonKey.contains("rain_storm_mm")
+            || jsonKey.contains("temp_in")  || jsonKey.contains("temp_out") || jsonKey.contains("dew_point") || jsonKey.contains("heat_index")
+            || jsonKey.contains("wind_chill")){
             return Double.class;
         }
-        else if(jsonKey.contains("hum_in")      || jsonKey.contains("hum_out") || jsonKey.contains("solar_rad") || jsonKey.contains("wind_speed")
-                || jsonKey.contains("wind_dir") || jsonKey.contains("uv")){
+        else if( jsonKey.contains("hum_in")     || jsonKey.contains("hum_out") || jsonKey.contains("solar_rad") || jsonKey.contains("wind_speed")
+                || jsonKey.contains("wind_dir") || jsonKey.contains("uv")  ){
             return Integer.class;
         }
         else {

@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.*;
 
+@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
+        "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 @Testcontainers
 public class NUSDavisWeatherStationInputAgentIntegrationTest {
     // Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
@@ -241,7 +243,7 @@ public class NUSDavisWeatherStationInputAgentIntegrationTest {
         for (int i=0;i< timestamps.length;++i){
 
             Long timestamp = Long.parseLong(timestamps[i]);
-            Date date = new java.util.Date(timestamp);
+            Date date = new java.util.Date(timestamp*1000);
             SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             String dateTime = sdf.format(date);
@@ -274,7 +276,7 @@ public class NUSDavisWeatherStationInputAgentIntegrationTest {
         List<OffsetDateTime> times = new ArrayList<>();
         for (int i=0;i< timestamps.length;++i){
             Long timestamp = Long.parseLong(timestamps[i]);
-            Date date = new java.util.Date(timestamp);
+            Date date = new java.util.Date(timestamp*1000);
             SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             String dateTime = sdf.format(date);
@@ -297,9 +299,9 @@ public class NUSDavisWeatherStationInputAgentIntegrationTest {
         JSONArray getData=objSensor.getJSONArray("data");
         Assert.assertEquals(getData.length(),ts.getTimes().size());
         // Check that data content is correct
-        /*for (String iri: IRIs) {
+        for (String iri: IRIs) {
             Assert.assertEquals(weatherValues, ts.getValues(iri));
-        }*/
+        }
         // Assert timestamps
         Assert.assertTrue(OffsetDateTime.of(LocalDateTime.parse(timestamps[0]), NUSDavisWeatherStationInputAgent.ZONE_OFFSET)
                 .isEqual(tsClient.getMinTime(IRIs.get(0))));

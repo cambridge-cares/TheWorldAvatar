@@ -13,6 +13,11 @@ import javax.ws.rs.BadRequestException;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
+/**
+ * Class with a main method that is the entry point of the compiled war and puts all components together to retrieve
+ * data from the API and write it into the database.
+ * @author GMMajal
+ */
 @WebServlet(urlPatterns = {"/retrieve"})
 public class NUSDavisWeatherStationInputAgentLauncher extends JPSAgent {
     public static final String KEY_AGENTPROPERTIES = "agentProperties";

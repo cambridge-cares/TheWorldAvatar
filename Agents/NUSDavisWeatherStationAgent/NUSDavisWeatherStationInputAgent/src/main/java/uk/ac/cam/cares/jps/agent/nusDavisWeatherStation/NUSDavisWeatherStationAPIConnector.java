@@ -19,6 +19,9 @@ import java.io.*;
 import java.time.Instant;
 import java.util.Properties;
 
+/**
+ * Class that connects to the weather station API
+ * @author  GMMajal*/
 class NUSDavisWeatherStationAPIConnector{
     private String api_key;
     private String api_secret;
