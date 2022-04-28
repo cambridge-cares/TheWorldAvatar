@@ -78,13 +78,12 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	 * @return url
 	 */
 	@Override
-	protected String getFromStore(String agentID) {
+	protected String getFromStore(String agentID, StoreClientInterface storeClient) {
 		
 		LOGGER.debug("Get URL from triple store. AgentID="+agentID);
 		
 		String query = getQuery(agentID);
 		
-		StoreClientInterface storeClient = new RemoteStoreClient(agentRouterEndpoint);
 		JSONArray result = storeClient.executeQuery(query);
 		
 		//TODO logic for multiple results
@@ -93,6 +92,11 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 		LOGGER.debug("URL="+firstURL);
 		
 		return firstURL;
+	}
+	
+	@Override
+	protected StoreClientInterface getStoreClient() {
+		return new RemoteStoreClient(agentRouterEndpoint);
 	}
 	
 	/**

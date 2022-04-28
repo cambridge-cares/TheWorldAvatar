@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * This defines an abstract CachedRouter class. The extending class must 
@@ -36,7 +37,8 @@ public abstract class AbstractCachedRouter<K, V> {
 		V value;
 		if(!cache.contains(key)) {
 			LOGGER.info("Key= "+key.toString()+" not in cache. Get from store.");
-			value = getFromStore(key);
+			StoreClientInterface storeClient = getStoreClient();
+			value = getFromStore(key, storeClient);
 			cache.put(key, value);
 		}else {
 			LOGGER.info("Key= "+key.toString()+" found in cache.");
@@ -47,9 +49,15 @@ public abstract class AbstractCachedRouter<K, V> {
 	}
 	
 	/**
+	 * Extending class to implement logic for instantiating a storeClient
+	 * @return store Client
+	 */
+	abstract protected StoreClientInterface getStoreClient();
+	
+	/**
 	 * Extending class to implement logic for getting value(s) from triple store
 	 * @param key
 	 * @return
 	 */
-	abstract protected V getFromStore(K key);	
+	abstract protected V getFromStore(K key, StoreClientInterface storeClient);	
 }
