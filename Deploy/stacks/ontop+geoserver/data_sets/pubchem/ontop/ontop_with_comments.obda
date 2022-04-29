@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+:		    http://example.org/crops/
+os: http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#
+gc:         http://purl.org/gc/
+ex:		    http://example.org/
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:		http://www.w3.org/XML/1998/namespace
+xsd:		http://www.w3.org/2001/XMLSchema#
+foaf:		http://xmlns.com/foaf/0.1/
+obda:		https://w3id.org/obda/vocabulary#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+geo:		http://www.opengis.net/ont/geosparql#
+skos:       http://www.w3.org/2004/02/skos/core#
+
+
+[MappingDeclaration] @collection [[
+mappingId	pubchem_to_inchi
+# test comment
+target		os:pubchem_species/{id} a os:Species ; 
+             os:inChI {pubchem_inchi} .
+source		SELECT compound_desc.compound_id AS id, inchi_value.inchi_value AS pubchem_inchi
+            FROM compound_desc
+            INNER JOIN inchi_type
+            ON compound_desc.inchi_desc = inchi_type.inchi_desc
+            INNER JOIN inchi_value
+            ON compound_desc.inchi_desc = inchi_value.inchi_desc;
+
+
+mappingId	pubchem_to_name
+# test comment
+target		os:pubchem_species/{id} a os:Species ; 
+            skos:altLabel {pubchem_name} .
+source		SELECT compound_desc.compound_id AS id, iupac_name_value.name_value AS pubchem_name
+            FROM compound_desc
+            INNER JOIN iupac_name_type
+            ON compound_desc.name_desc = iupac_name_type.name_desc
+            INNER JOIN iupac_name_value
+            ON compound_desc.name_desc = iupac_name_value.name_desc;
+]]
+
