@@ -21,7 +21,7 @@ public interface DerivationAgentInterface {
 	 * @param derivationInputs
 	 * @return
 	 */
-	DerivationOutputs processRequestParameters(DerivationInputs derivationInputs);
+	void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs);
 
 	/**
 	 * Shall implement input validation logic.

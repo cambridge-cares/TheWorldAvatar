@@ -37,6 +37,10 @@ public class Derivation {
 		return this.iri;
 	}
 
+	public String getRdfType() {
+		return this.rdfType;
+	}
+
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 	}
@@ -120,6 +124,23 @@ public class Derivation {
 			}
 		});
 		return new JSONObject(inputsMap);
+	}
+
+	public JSONObject getBelongsToMap() {
+		Map<String, String> belongsToMap = new HashMap<>();
+		this.getEntities().stream().forEach(e -> {
+			belongsToMap.put(e.getIri(), e.getRdfType());
+		});
+		return new JSONObject(belongsToMap);
+	}
+
+	public JSONObject getDownstreamDerivationMap() {
+		Map<String, List<String>> downstreamDerivationMap = new HashMap<>();
+		this.getEntities().stream().filter(e -> e.isInputToDerivation()).forEach(e -> {
+			downstreamDerivationMap.put(e.getIri(),
+					e.getInputOf().stream().map(dd -> dd.getIri()).collect(Collectors.toList()));
+		});
+		return new JSONObject(downstreamDerivationMap);
 	}
 
 	public boolean isOutOfDate() {

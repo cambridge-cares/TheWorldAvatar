@@ -2,7 +2,9 @@ package uk.ac.cam.cares.derivation.asynexample;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.model.vocabulary.OWL;
@@ -15,7 +17,9 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -77,6 +81,14 @@ public class SparqlClient {
 	 */
 	public static String getRdfTypeString(Iri clz) {
 		return clz.getQueryString().replaceAll(prefix + ":", namespace);
+	}
+
+	/**
+	 * This method returns the rdf:type in the string format of the given
+	 * object/date property.
+	 */
+	public static String getPropertyString(Iri property) {
+		return property.getQueryString().replaceAll(prefix + ":", namespace);
 	}
 
 	/**
@@ -447,7 +459,27 @@ public class SparqlClient {
 
 		return queryResult.length();
 	}
-    
+
+	/**
+	 * This method counts the number of ?pt in the whole knowledge graph
+	 * ?pt a <Point>
+	 * 
+	 */
+	public int getAmountOfPointsInKG() {
+		SelectQuery query = Queries.SELECT();
+
+		String pointKey = "pt";
+
+		Variable pt = SparqlBuilder.var(pointKey);
+		GraphPattern queryPattern = pt.isA(Point);
+
+		query.prefix(p_namespace).select(pt).where(queryPattern);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		return queryResult.length();
+	}
+
     /**
      * adds a value instance to the given property
      * <property> <hasValue> <valueIRI>, <valueIRI> a <ScalarValue>, <valueIRI> <numericalValue> value
@@ -463,7 +495,24 @@ public class SparqlClient {
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	return value_iri;
     }
-    
+
+	/**
+	 * This method generates below triples given <propertyIRI> and <valueIRI>:
+	 * <propertyIRI> <hasValue> <valueIRI>.
+	 * <valueIRI> <numericalValue> value.
+	 * 
+	 * @param quantityInstance
+	 * @param valueInstance
+	 * @param value
+	 * @return
+	 */
+	public List<TriplePattern> addValueInstance(String quantityInstance, String valueInstance, int value) {
+		List<TriplePattern> triples = new ArrayList<>();
+		triples.add(iri(quantityInstance).has(iri(getPropertyString(hasValue)), iri(valueInstance)));
+		triples.add(iri(valueInstance).has(iri(getPropertyString(numericalValue)), value));
+		return triples;
+	}
+
     /**
      * This method creates a ListOfRandomPoints instance given a list of value.
      * <iri> a <ListOfRandomPoints>,
@@ -476,8 +525,9 @@ public class SparqlClient {
      * @param listOfRandomPoints
      * @return
      */
-    public String createListOfRandomPoints(List<Integer> listOfRandomPoints) {
-    	String listOfRandomPoints_iri = namespace + UUID.randomUUID().toString();    	
+	public List<String> createListOfRandomPoints(String listOfRandomPoints_iri, List<Integer> listOfRandomPoints) {
+		List<String> iris = new ArrayList<>();
+		iris.add(listOfRandomPoints_iri);
     	ModifyQuery modify = Queries.MODIFY();
     	modify.insert(iri(listOfRandomPoints_iri).isA(ListOfRandomPoints).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
@@ -485,13 +535,45 @@ public class SparqlClient {
     	if (listOfRandomPoints != null) {
         	for (Integer pt : listOfRandomPoints) {
         		String pt_iri = createPoint();
-        		addValueInstance(pt_iri, pt);
+				iris.add(pt_iri);
+				String value_iri = addValueInstance(pt_iri, pt);
+				iris.add(value_iri);
         		addPointInstance(listOfRandomPoints_iri, pt_iri);
         	}
     	}
     	
-    	return listOfRandomPoints_iri;
-    }
+		return iris;
+	}
+
+	/**
+	 * This method generates below triples:
+	 * <lstRandPtsIRI> <hasPoint> <pt_n>.
+	 * <pt_n> <hasValue> <valueIRI_n>.
+	 * <valueIRI_n> <numericalValue> value_n.
+	 * 
+	 * Note that all these triples will be repeated n times depend on the size of
+	 * map ptIRIs.
+	 * 
+	 * @param lstRandPtsIRI
+	 * @param ptIRIs
+	 * @param valuesMap
+	 * @return
+	 */
+	public List<TriplePattern> createListOfRandomPoints(String lstRandPtsIRI, Map<String, String> ptIRIs,
+			Map<String, Integer> valuesMap) {
+		List<TriplePattern> triples = new ArrayList<>();
+		if (ptIRIs.values().stream().allMatch(valIri -> valuesMap.containsKey(valIri))) {
+			ptIRIs.forEach((ptIri, valIri) -> {
+				triples.add(Rdf.iri(lstRandPtsIRI).has(Rdf.iri(getPropertyString(hasPoint)), Rdf.iri(ptIri)));
+				triples.addAll(addValueInstance(ptIri, valIri, valuesMap.get(valIri)));
+			});
+		} else {
+			throw new JPSRuntimeException(
+					"The provided valuesMap is incomplete that it doesn't contain all IRIs appeared in ptIRIs. valuesMap: "
+							+ valuesMap + "; ptIRIs: " + ptIRIs);
+		}
+		return triples;
+	}
     
     /**
      * This method creates a Point instance. 

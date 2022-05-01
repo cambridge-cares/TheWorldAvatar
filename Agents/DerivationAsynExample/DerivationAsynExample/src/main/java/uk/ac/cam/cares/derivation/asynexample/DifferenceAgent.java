@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -9,7 +10,11 @@ import javax.servlet.annotation.WebServlet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
+
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -44,7 +49,7 @@ public class DifferenceAgent extends DerivationAgent {
 	}
 	
 	@Override
-	public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
+	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 		LOGGER.debug("DifferenceAgent received derivationInputs: " + derivationInputs.toString());
 
 		// get the input from the KG
@@ -54,15 +59,15 @@ public class DifferenceAgent extends DerivationAgent {
 		// compute difference
 		Integer diff = sparqlClient.getValue(maxvalue_iri) - sparqlClient.getValue(minvalue_iri);
 		
-		// create new instances in KG
-		String createdDifference = sparqlClient.createDifference();
-		sparqlClient.addValueInstance(createdDifference, diff);
-
-		// create DerivationOutputs instance
-		DerivationOutputs derivationOutputs = new DerivationOutputs(
-				SparqlClient.getRdfTypeString(SparqlClient.Difference), createdDifference);
-
-		return derivationOutputs;
+		// write the output triples to derivationOutputs
+		String difference_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+		derivationOutputs.createNewEntity(difference_iri, SparqlClient.getRdfTypeString(SparqlClient.Difference));
+		derivationOutputs.addTriple(difference_iri, RDF.TYPE.toString(), OWL.NAMEDINDIVIDUAL.toString());
+		String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+		derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
+		derivationOutputs.addTriple(sparqlClient.addValueInstance(difference_iri, value_iri, diff));
+		LOGGER.info("Created a new calculated difference instance <" + difference_iri
+				+ ">, and its value instance <" + value_iri + ">");
 	}
 	
 	@Override
@@ -76,6 +81,7 @@ public class DifferenceAgent extends DerivationAgent {
 		if (this.kbClient == null) {
 			this.kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
 			this.sparqlClient = new SparqlClient(this.kbClient);
+			super.devClient = new DerivationClient(this.kbClient, Config.derivationInstanceBaseURL);
 		}
 		DifferenceAgent diffAgent = new DifferenceAgent(this.kbClient, Config.derivationInstanceBaseURL);
 		

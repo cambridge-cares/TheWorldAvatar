@@ -16,6 +16,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class DerivationInputs {
 	private Map<String, List<String>> inputs;
 
+	public static final String DERIVATIONINPUTS_SERIALISE_ERROR = "Serialise the given JSONObject to DerivationInputs is not supported: ";
+
 	/**
 	 * The constructor to serilise JSONObject mappedInputs to DerivationInputs.
 	 * The mappedInputs should have data structure similar to below:
@@ -34,12 +36,12 @@ public class DerivationInputs {
 			String key = keys.next();
 			Object val = mappedInputs.get(key);
 			if (val instanceof JSONArray) {
-				map.put(key, ((JSONArray) val).toList().stream().map(iri -> (String) iri).collect(Collectors.toList()));
+				map.put(key, ((JSONArray) val).toList().stream().map(iri -> trimIRI((String) iri))
+						.collect(Collectors.toList()));
 			} else if (val instanceof String) {
-				map.put(key, new ArrayList<>(Arrays.asList((String) val)));
+				map.put(key, new ArrayList<>(Arrays.asList(trimIRI((String) val))));
 			} else {
-				throw new JPSRuntimeException("Serilise the given JSONObject to DerivationInputs is not supported:"
-						+ mappedInputs.toString());
+				throw new JPSRuntimeException(DERIVATIONINPUTS_SERIALISE_ERROR + mappedInputs.toString());
 			}
 		}
 		this.inputs = map;
@@ -78,6 +80,8 @@ public class DerivationInputs {
 	}
 
 	public void addToInputs(String rdfType, List<String> iris) {
+		rdfType = trimIRI(rdfType);
+		iris = trimIRI(iris);
 		if (!this.inputs.containsKey(rdfType)) {
 			this.inputs.put(rdfType, new ArrayList<>(iris));
 		} else {
@@ -92,5 +96,19 @@ public class DerivationInputs {
 	@Override
 	public String toString() {
 		return this.getInputs().toString();
+	}
+
+	String trimIRI(String iri) {
+		if (iri.startsWith("<")) {
+			iri = iri.substring(1);
+		}
+		if (iri.endsWith(">")) {
+			iri = iri.substring(0, iri.length() - 1);
+		}
+		return iri;
+	}
+
+	List<String> trimIRI(List<String> iris) {
+		return iris.stream().map(iri -> trimIRI(iri)).collect(Collectors.toList());
 	}
 }

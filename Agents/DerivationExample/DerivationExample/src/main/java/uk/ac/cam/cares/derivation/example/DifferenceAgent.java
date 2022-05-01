@@ -4,19 +4,28 @@ import javax.ws.rs.BadRequestException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.List;
+import java.util.UUID;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
 /**
- * This agent takes two inputs (MinValue and MaxValue), calculate the difference between them, and write the value in the KG
+ * This agent takes two inputs (MinValue and MaxValue), calculate the difference
+ * between them, and write the value in the KG
+ * 
  * @author Kok Foong Lee
+ * @author Jiaru Bai
  */
 @WebServlet(urlPatterns = {DifferenceAgent.URL_Difference})
 public class DifferenceAgent extends DerivationAgent {
@@ -25,6 +34,13 @@ public class DifferenceAgent extends DerivationAgent {
 	// ============================ Static variables ===========================
     private static final Logger LOGGER = LogManager.getLogger(DifferenceAgent.class);
     public static final String URL_Difference = "/DifferenceAgent";
+
+	StoreClientInterface storeClient;
+	SparqlClient sparqlClient;
+
+	public DifferenceAgent() {
+		LOGGER.info("DifferenceAgent is initialised.");
+	}
 
     // ================================ Methods ================================
     /**
@@ -35,10 +51,7 @@ public class DifferenceAgent extends DerivationAgent {
      * @return
      */
     @Override
-    public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
-        Config.initProperties();
-        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-    	SparqlClient sparqlClient = new SparqlClient(storeClient);
+	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 
         if (validateInput(derivationInputs,sparqlClient)) {
         	LOGGER.info("Calculating difference");
@@ -50,15 +63,18 @@ public class DifferenceAgent extends DerivationAgent {
 			maxvalue_input = sparqlClient.getValue(maxIri);
 			minvalue_input = sparqlClient.getValue(minIri);
     		
-    		// calculate a new value and create a new instance
+			// calculate a new value
     		int difference = maxvalue_input - minvalue_input;
-    		String createdDifference = sparqlClient.createDifference();
-			sparqlClient.addValueInstance(createdDifference, difference);
-    		LOGGER.info("Created a new calculated difference instance <" + createdDifference + ">");
-			// create DerivationOutputs instance
-			DerivationOutputs derivationOutputs = new DerivationOutputs(
-				SparqlClient.getRdfTypeString(SparqlClient.Difference), createdDifference);
-			return derivationOutputs;
+
+			// write the output triples to derivationOutputs
+			String difference_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+			derivationOutputs.createNewEntity(difference_iri, SparqlClient.getRdfTypeString(SparqlClient.Difference));
+			derivationOutputs.addTriple(difference_iri, RDF.TYPE.toString(), OWL.NAMEDINDIVIDUAL.toString());
+			String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+			derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
+			derivationOutputs.addTriple(sparqlClient.addValueInstance(difference_iri, value_iri, difference));
+			LOGGER.info("Created a new calculated difference instance <" + difference_iri
+					+ ">, and its value instance <" + value_iri + ">");
 	    } else {
 			LOGGER.error("Input validation failed.");
 			throw new BadRequestException("Input validation failed.");
@@ -94,4 +110,12 @@ public class DifferenceAgent extends DerivationAgent {
         return valid;
     }
 
+	@Override
+	public void init() throws ServletException {
+		// initialise all clients
+		Config.initProperties();
+		this.storeClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser, Config.kgpassword);
+		this.sparqlClient = new SparqlClient(this.storeClient);
+		super.devClient = new DerivationClient(this.storeClient, InitialiseInstances.derivationInstanceBaseURL);
+	}
 }

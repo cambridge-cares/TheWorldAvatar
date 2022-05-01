@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jgrapht.graph.DefaultEdge;
@@ -33,6 +34,9 @@ public class DerivationClient {
 	public static final String AGENT_INPUT_KEY = "agent_input";
 	public static final String AGENT_OUTPUT_KEY = "agent_output";
 	public static final String BELONGSTO_KEY = "belongsTo";
+	public static final String DERIVATION_KEY = "derivation";
+	public static final String DERIVATION_TYPE_KEY = "derivation_rdftype";
+	public static final String DOWNSTREAMDERIVATION_KEY = "downstream_derivation";
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	DerivationSparql sparqlClient;
@@ -589,9 +593,10 @@ public class DerivationClient {
 	 * @param derivation
 	 * @param newDerivedIRI
 	 */
-	public void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
+	public void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI,
+			List<TriplePattern> newTriples) {
 		// mark as Finished and add newDerivedIRI to Finished status
-		this.sparqlClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		this.sparqlClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples);
 	}
 
 	/**
@@ -666,7 +671,7 @@ public class DerivationClient {
 		LOGGER.debug("Added new instances <" + newEntitiesString + "> to the derivation <" + derivation + ">");
 
 		// create local variable for the new entities for reconnecting purpose
-		List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
+		List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(derivation);
 
 		// if none of the outputs of derivaiton is input of other derivations, or if the derivation was created
 		// for new info, the code will NOT enter the next if block
@@ -804,6 +809,22 @@ public class DerivationClient {
 	 */
 	public Map<String, String> getDerivationsOf(List<String> entities) {
 		return this.sparqlClient.getDerivationsOf(entities);
+	}
+
+	/**
+	 * This method updates the knowledge graph when the update of one derivation is
+	 * finished.
+	 * 
+	 * @param outputTriples
+	 * @param newIriDownstreamDerivationMap
+	 * @param derivation
+	 * @param retrievedInputsAt
+	 */
+	public String reconnectNewDerivedIRIs(List<TriplePattern> outputTriples,
+			Map<String, List<String>> newIriDownstreamDerivationMap, String derivation,
+			Long retrievedInputsAt) {
+		return this.sparqlClient.reconnectNewDerivedIRIs(outputTriples, newIriDownstreamDerivationMap,
+				derivation, retrievedInputsAt);
 	}
 
 	/**
@@ -980,56 +1001,52 @@ public class DerivationClient {
 				// calling agent to create a new instance
 				String agentURL = derivation.getAgentURL();
 				JSONObject requestParams = new JSONObject();
-				// NOTE difference 2 - pass in the derivation agent inputs
-				JSONObject inputsMapJson = derivation.getAgentInputsMap();
-				requestParams.put(AGENT_INPUT_KEY, inputsMapJson);
-				requestParams.put(BELONGSTO_KEY, derivation.getEntitiesIri()); // IRIs of belongsTo
+				// NOTE difference 2 - pass in information collected from derivation
+				requestParams.put(AGENT_INPUT_KEY, derivation.getAgentInputsMap()); // mapped IRIs of isDerivedFrom
+				requestParams.put(BELONGSTO_KEY, derivation.getBelongsToMap()); // mapped IRIs of belongsTo
+				requestParams.put(DERIVATION_KEY, derivation.getIri()); // IRI of this derivation
+				requestParams.put(DERIVATION_TYPE_KEY, derivation.getRdfType()); // rdf:type of this derivation
+				requestParams.put(DOWNSTREAMDERIVATION_KEY, derivation.getDownstreamDerivationMap()); // downstream
 
 				LOGGER.debug("Updating <" + derivation.getIri() + "> using agent at <" + agentURL
 						+ "> with http request " + requestParams);
-				// NOTE difference 3 - timestamp is now recorded at the agent side when it
-				// receives request
+
 				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
 
 				LOGGER.debug("Obtained http response from agent: " + response);
 
-				// NOTE difference 4 - the response is processed as Derivation outputs for both
-				// Derivation and DerivationWithTimeSeries
+				// NOTE difference 3 - as the update on knowledge graph will be done by the
+				// DerivationAgent for normal Derivation, here we only need to update the cached
+				// value for normal Derivation, whereas for DerivationWithTimeSeries, we need to
+				// update the timestamp and status (if presented)
 				JSONObject agentResponse = new JSONObject(response);
-				DerivationOutputs derivationOutputs = new DerivationOutputs(
-					agentResponse.getJSONObject(AGENT_OUTPUT_KEY));
-				// NOTE difference 5 - the timestamp is read from the agent response
-				// set the timestamp
+				// NOTE difference 4 - the timestamp is read from the agent response and used
+				// for updating the cached derivations
 				derivation.setTimestamp(agentResponse.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY));
 
-				// NOTE difference 6 - here we create lists to be used when reconnecting
-				// inputs and updating cached data
-				List<Entity> newEntities = new ArrayList<>();
 				// if it is a derived quantity with time series, there will be no changes to the
 				// instances, only timestamp will be updated
 				if (!derivation.isDerivationWithTimeSeries()) {
-					// collect new instances created by agent
-					List<String> newEntitiesString = derivationOutputs.getNewDerivedIRI();
 
 					// entities that are input to another derivation
 					List<Entity> inputToAnotherDerivation = derivation.getEntities()
 							.stream().filter(e -> e.isInputToDerivation()).collect(Collectors.toList());
 
-					// NOTE difference 7 - a map is created to host the new derived IRIs and the
-					// downstream derivations that are supposed to be linked via <isDerivedFrom>
-					// create map for the new instances
-					Map<String, List<String>> newIriDownstreamDerivationMap = new HashMap<>();
-					newEntitiesString.stream()
-							.forEach(ens -> newIriDownstreamDerivationMap.put(ens, new ArrayList<String>()));
+					// NOTE difference 5 - here we create lists to be used when reconnecting
+					// inputs and updating cached data
+					List<Entity> newEntities = new ArrayList<>();
 
 					if (inputToAnotherDerivation.size() > 0) {
-						// NOTE difference 8 - initialiseNewEntities will only be called if
+						// NOTE difference 6 - initialiseNewEntities will only be called if
 						// inputToAnotherDerivation.size() > 0, as it is not used under other situations
+						// TODO we may consider call initialiseNewEntities for all derivations if we
+						// TODO decided to provide the function accessInformation
 						LOGGER.debug(
 								"This derivation contains at least one entity which is an input to another derivation");
 						LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
-						newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
+						newEntities = this.sparqlClient.initialiseNewEntities(derivation.getIri());
 
+						// UPDATE CACHED DATA
 						// here we do the mapping in memory first to get the mapping between downstream
 						// derivations and new instances to be connected - we need to make sure that the
 						// new instances remains linked to the appropriate downstream derivations
@@ -1052,33 +1069,18 @@ public class DerivationClient {
 								Derivation derivationToReconnect = d;
 								derivationToReconnect.addInput(matchingEntity.get(0));
 								derivationToReconnect.removeInput(oldInput);
-
-								// construct map to be used for reconnecting new derived IRIs
-								newIriDownstreamDerivationMap.get(matchingEntity.get(0).getIri())
-										.add(derivationToReconnect.getIri());
 							});
 						}
 					}
-
-					// NOTE difference 9 - delete old outputs, insert new outputs, update timestamp,
-					// delete status (if exist) are all done in one-go
-					// reconnect new derived IRIs
-					this.sparqlClient.reconnectNewDerivedIRIs(newIriDownstreamDerivationMap, derivation.getIri(),
-							derivation.getTimestamp());
-					LOGGER.debug("Attempted to reconnect <" + newEntitiesString + "> to the derivation <"
-							+ derivation.getIri()
-							+ ">; also attempted to reconnect new derivedIRIs with the downstream derivations: "
-							+ newIriDownstreamDerivationMap.toString()
-							+ ". This SPARQL update should be successful if the derivation was still outdated when executing the SPARQL update, i.e. the update requests were not concurrent HTTP requests.");
+					// also update cached data if newEntities were generated
+					if (!newEntities.isEmpty()) {
+						derivation.replaceEntities(newEntities);
+					}
 				} else {
-					// NOTE difference 10 - update timestamp after the update of every derivation
-					// so here we update timestamp, delete status (for sync in mixed type DAGs) in
-					// one-go
+					// NOTE difference 7 - update timestamp after the update of every
+					// DerivationWithTimeSeries, so here we update timestamp, delete status (for
+					// sync in mixed type DAGs) in one-go
 					this.sparqlClient.updateTimestampDeleteStatus(derivation.getIri(), derivation.getTimestamp());
-				}
-				// also update cached data if newEntities were generated
-				if (!newEntities.isEmpty()) {
-					derivation.replaceEntities(newEntities);
 				}
 			}
 		}
@@ -1155,7 +1157,9 @@ public class DerivationClient {
 					List<Entity> inputToAnotherDerivation = derivation.getEntities()
 							.stream().filter(e -> e.isInputToDerivation()).collect(Collectors.toList());
 
-					List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
+					// TODO below lines are only changed to make the code compile
+					// TODO its functions are NOT tested due to marked as Deprecated
+					List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(derivation.getIri());
 
 					if (inputToAnotherDerivation.size() > 0) {
 						LOGGER.debug(

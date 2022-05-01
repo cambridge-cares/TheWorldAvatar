@@ -5,21 +5,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * This is an example of an agent updating a derivation that has a time series data
+ * This is an example of an agent updating a derivation that has a time series
+ * data
  * The derivation needs to be initialised with createDerivationWithTimeSeries
- * It is not required to give a proper HTTP response to the DerivationClient as this agent does not write any new instances
+ * It is not required to give a proper HTTP response to the DerivationClient as
+ * this agent does not write any new instances
+ * 
  * @author Kok Foong Lee
+ * @author Jiaru Bai
  *
  */
 @WebServlet(urlPatterns = {AverageAgent.URL_AVERAGE})
@@ -27,8 +37,17 @@ public class AverageAgent extends DerivationAgent {
 	private static final long serialVersionUID = 1L;
 	public static final String URL_AVERAGE = "/AverageAgent";
 
+	private static final Logger LOGGER = LogManager.getLogger(AverageAgent.class);
+
+	StoreClientInterface storeClient;
+	SparqlClient sparqlClient;
+
+	public AverageAgent() {
+		LOGGER.info("DifferenceAgent is initialised.");
+	}
+
 	@Override
-	public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
+	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 		Config.initProperties();
 		
 		// set up remote store client to point to triple store
@@ -55,9 +74,9 @@ public class AverageAgent extends DerivationAgent {
 			TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(InstancesDatabase.Average), values);
 			
 			tsClient.addTimeSeriesData(ts);
-			DerivationOutputs derivationOutputs = new DerivationOutputs(
-				SparqlClient.getRdfTypeString(SparqlClient.Average), InstancesDatabase.Average);
-			return derivationOutputs;
+
+			// nothing need to be provided to the derivationOutputs as this agent deals with
+			// DerivationWithTimeSeries
 		} else {
 			throw new BadRequestException("Input validation failed.");
 		}
@@ -79,5 +98,14 @@ public class AverageAgent extends DerivationAgent {
 		}
 
 		return valid;
+	}
+
+	@Override
+	public void init() throws ServletException {
+		// initialise all clients
+		Config.initProperties();
+		this.storeClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser, Config.kgpassword);
+		this.sparqlClient = new SparqlClient(this.storeClient);
+		super.devClient = new DerivationClient(this.storeClient, InitialiseInstances.derivationInstanceBaseURL);
 	}
 }

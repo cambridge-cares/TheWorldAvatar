@@ -46,8 +46,8 @@ public class DerivationInputsTest {
 		mappedInstances.put("http://key", new JSONObject().put("http://key2", "http://value"));
 		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
 				() -> new DerivationInputs(mappedInstances));
-		Assert.assertTrue(e.getMessage().contains(
-				"Serilise the given JSONObject to DerivationInputs is not supported:" + mappedInstances.toString()));
+		Assert.assertTrue(e.getMessage()
+				.contains(DerivationInputs.DERIVATIONINPUTS_SERIALISE_ERROR + mappedInstances.toString()));
 	}
 
 	@Test
@@ -98,10 +98,10 @@ public class DerivationInputsTest {
 		JSONObject mappedInstances = new JSONObject();
 		mappedInstances.put(class1, new JSONArray(Arrays.asList(instance1_1)));
 		DerivationInputs devInputs = new DerivationInputs(mappedInstances);
-		devInputs.addToInputs(class1, instance1_2);
-		devInputs.addToInputs(class2, Arrays.asList(instance2_1));
-		devInputs.addToInputs(class2, Arrays.asList(instance2_2, instance2_3));
-		devInputs.addToInputs(class3, instance3_1);
+		devInputs.addToInputs("<" + class1 + ">", "<" + instance1_2 + ">");
+		devInputs.addToInputs(class2 + ">", Arrays.asList("<" + instance2_1 + ">"));
+		devInputs.addToInputs("<" + class2, Arrays.asList("<" + instance2_2, instance2_3 + ">"));
+		devInputs.addToInputs("<" + class3 + ">", "<" + instance3_1);
 		Map<String, List<String>> outputs = devInputs.getInputs();
 		// the retrieved value should contain the same values as the mappedInstances
 		Assert.assertTrue(equalLists(Arrays.asList(instance1_1, instance1_2), outputs.get(class1)));
@@ -115,10 +115,10 @@ public class DerivationInputsTest {
 		Entity entity1 = new Entity(instance1_1);
 		entity1.setRdfType(class1);
 		DerivationInputs devInputs = new DerivationInputs(Arrays.asList(entity1));
-		devInputs.addToInputs(class1, instance1_2);
-		devInputs.addToInputs(class2, Arrays.asList(instance2_1));
-		devInputs.addToInputs(class2, Arrays.asList(instance2_2, instance2_3));
-		devInputs.addToInputs(class3, instance3_1);
+		devInputs.addToInputs("<" + class1, instance1_2 + ">");
+		devInputs.addToInputs(class2 + ">", Arrays.asList("<" + instance2_1 + ">"));
+		devInputs.addToInputs(class2 + ">", Arrays.asList("<" + instance2_2 + ">", "<" + instance2_3));
+		devInputs.addToInputs("<" + class3 + ">", "<" + instance3_1 + ">");
 		Map<String, List<String>> outputs = devInputs.getInputs();
 		// the retrieved value should contain the same values as the mappedInstances
 		Assert.assertTrue(equalLists(Arrays.asList(instance1_1, instance1_2), outputs.get(class1)));

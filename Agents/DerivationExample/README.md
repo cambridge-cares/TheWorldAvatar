@@ -161,7 +161,7 @@ The derivation instance:
 ```
 The agent for this instance, `MaxValueAgent`, receives HTTP responses in the form of:
 ```json
-{"agent_input": {"http://derivation_example#InputData":[input]}}
+{"agent_input": {"http://derivation_example#InputData":[input]}, "belongsTo": {"<max>": "http://derived_example#MaxValue", "<valueOfMax>": "http://derived_example#ScalarValue"}, "derivation": "<derivation_of_max>", "derivation_rdftype": "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#Derivation", "downstream_derivation": {"<max>": ["<derivation_of_diff>"]}}
 ```
 queries the maximum value from the given input using the TimeSeriesClient, and writes a new instance, e.g.
 ```
@@ -171,7 +171,7 @@ queries the maximum value from the given input using the TimeSeriesClient, and w
 ```
 And returns a HTTP response in the form of:
 ```json
-{"agent_output": {"http://derived_example#MaxValue":[new_max]}, "retrievedInputsAt": timestamp}
+{"retrievedInputsAt": timestamp}
 ```
 
 ### Minimum value
@@ -209,7 +209,7 @@ The derivation instance contains two inputs - the minimum value and maximum valu
 ```
 The `DifferenceAgent` receives HTTP requests in the form of:
 ```json
-{"agent_input": {"http://derived_example#MaxValue":[max], "http://derived_example#MinValue": [min]}}
+{"agent_input": {"http://derived_example#MaxValue":[max], "http://derived_example#MinValue": [min]}, "belongsTo": {"<diff>": "http://derived_example#Difference", "<valueOfDiff>": "http://derived_example#ScalarValue"}, "derivation": "<derivation_of_diff>", "derivation_rdftype": "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#Derivation", "downstream_derivation": {}}
 ```
 It then queries the values using the given IRIs and calculate the difference between the values. The agent creates a new instance
 ```
@@ -219,6 +219,6 @@ It then queries the values using the given IRIs and calculate the difference bet
 ```
 and returns a HTTP response in the form of:
 ```json
-{"agent_output": {"http://derived_example#Difference": [new_diff]}, "retrievedInputsAt": timestamp}
+{"retrievedInputsAt": timestamp}
 ```
 

@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.derivation;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -904,7 +905,7 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
-		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
 				.asLiteral().getLong();
@@ -951,7 +952,7 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
-		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
 				.asLiteral().getLong();
@@ -1001,7 +1002,7 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
-		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
 				.asLiteral().getLong();
@@ -1056,7 +1057,7 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
-		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
 				.asLiteral().getLong();
@@ -1127,7 +1128,7 @@ public class DerivedQuantityClientTest {
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
-		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
 				.asLiteral().getLong();

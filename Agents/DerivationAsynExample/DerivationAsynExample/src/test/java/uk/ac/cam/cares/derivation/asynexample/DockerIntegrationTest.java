@@ -184,14 +184,13 @@ public class DockerIntegrationTest extends TestCase {
 		executeAndTestUpdateDerivations(response);
 	}
 
-	// TODO testMaxMinDiffAsync can now pass with the changes made to only do SPARQL
-	// update when reconnecting new derived IRIs if the derivation is still
-	// outdated, this avoid the concurrent HTTP request issue to some extend as now
-	// the correct outputs will be presented in the derivation DAGs, however, the
-	// calculation within HTTP requests will still be executed for each concurrent
-	// HTTP request, thus the knowledge graph is still modified, a better approach
-	// to also avoid the actual computation might be proposed in the future (for
-	// more details, please refer to
+	// NOTE testMaxMinDiffAsync can now pass with the changes made to only do SPARQL
+	// update when reconnecting new derived IRIs at the DerivationAgent side if the
+	// derivation is still outdated, although the calculation within HTTP requests
+	// will still be executed for each concurrent HTTP request, the knowledge graph
+	// will only be modified once, therefore, this avoid the concurrent HTTP request
+	// issue as now the correct outputs will be presented in the knowledge graph and
+	// the derivation DAGs (for more details, please refer to
 	// https://github.com/cambridge-cares/TheWorldAvatar/issues/184)
 	@Test
 	@Timeout(value = 180, unit = TimeUnit.SECONDS)
@@ -267,9 +266,13 @@ public class DockerIntegrationTest extends TestCase {
 		Assert.assertTrue(timestamp_difference_derivation >= timestamp_minvalue_derivation);
 
 		// test if all values in the KG are correct
-		// test if it contains correct number of points
+		// test if it contains correct number of points in the derivation DAG
 		Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()),
 				sparqlClient.getAmountOfPointsInList());
+		// test if no duplicate information written to KG in the situation of concurrent
+		// HTTP request
+		Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()),
+				sparqlClient.getAmountOfPointsInKG());
 		// test if the value is the same as the max value
 		Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getListOfRandomPointsIRI(), true),
 				sparqlClient.getValue(sparqlClient.getMaxValueIRI()));

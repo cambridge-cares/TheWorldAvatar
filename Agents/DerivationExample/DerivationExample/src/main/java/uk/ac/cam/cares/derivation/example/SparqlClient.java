@@ -2,6 +2,8 @@ package uk.ac.cam.cares.derivation.example;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.model.vocabulary.OWL;
@@ -13,6 +15,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
@@ -36,8 +39,8 @@ public class SparqlClient {
 	public static Iri ScalarValue = p_namespace.iri("ScalarValue");
 	
 	// property
-	private static Iri hasValue = p_namespace.iri("hasValue");
-	private static Iri numericalValue = p_namespace.iri("numericalValue");
+	public static Iri hasValue = p_namespace.iri("hasValue");
+	public static Iri numericalValue = p_namespace.iri("numericalValue");
 	
     public SparqlClient(StoreClientInterface storeClient) {
     	this.storeClient = storeClient;
@@ -66,7 +69,18 @@ public class SparqlClient {
 	public static String getRdfTypeString(Iri clz) {
 		return clz.getQueryString().replaceAll(prefix + ":", namespace);
 	}
-    
+
+	/**
+	 * This method returns the rdf:type in the string format of the given
+	 * object/date property.
+	 * 
+	 * @param property
+	 * @return
+	 */
+	public static String getPropertyString(Iri property) {
+		return property.getQueryString().replaceAll(prefix + ":", namespace);
+	}
+
     /**
      * query <instance> <hasValue> ?x, ?x <numericalValue> ?value
      * @param instance
@@ -202,6 +216,23 @@ public class SparqlClient {
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	return value_iri;
     }
+
+	/**
+	 * This method generates below triples given <propertyIRI> and <valueIRI>:
+	 * <propertyIRI> <hasValue> <valueIRI>.
+	 * <valueIRI> <numericalValue> value.
+	 * 
+	 * @param quantityInstance
+	 * @param valueInstance
+	 * @param value
+	 * @return
+	 */
+	public List<TriplePattern> addValueInstance(String quantityInstance, String valueInstance, int value) {
+		List<TriplePattern> triples = new ArrayList<>();
+		triples.add(iri(quantityInstance).has(iri(getPropertyString(hasValue)), iri(valueInstance)));
+		triples.add(iri(valueInstance).has(iri(getPropertyString(numericalValue)), value));
+		return triples;
+	}
     
     /**
      * returns the input instance. There can only be one input instance at a time based on the way it is initialised

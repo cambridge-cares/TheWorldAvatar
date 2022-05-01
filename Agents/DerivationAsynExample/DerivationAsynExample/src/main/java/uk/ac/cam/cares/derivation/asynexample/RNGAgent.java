@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -48,7 +52,7 @@ public class RNGAgent extends DerivationAgent {
 	}
 	
 	@Override
-	public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
+	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 		LOGGER.debug("RNGAgent received derivationInputs: " + derivationInputs.toString());
 
 		// get the input from the KG
@@ -66,15 +70,25 @@ public class RNGAgent extends DerivationAgent {
 		if (upperLimit >= lowerLimit) {
 			// generate a list of random points
 			List<Integer> listOfRandomPoints = randomNumberGeneration(upperLimit, lowerLimit, numberOfPoints);
-			// write the generated list of random points to the KG
-			String listOfRandomPoints_iri = sparqlClient.createListOfRandomPoints(listOfRandomPoints);
-			
-			// respond with the created IRI
-			DerivationOutputs derivationOutputs = new DerivationOutputs(
-					SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints), listOfRandomPoints_iri);
-			return derivationOutputs;
+			// write the generated output triples to derivationOutputs
+			String listOfRandomPoints_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+			derivationOutputs.createNewEntity(listOfRandomPoints_iri,
+					SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints));
+			Map<String, String> ptIRIs = new HashMap<>();
+			Map<String, Integer> valuesMap = new HashMap<>();
+			listOfRandomPoints.stream().forEach(val -> {
+				String pt_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+				derivationOutputs.createNewEntity(pt_iri, SparqlClient.getRdfTypeString(SparqlClient.Point));
+				String val_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+				derivationOutputs.createNewEntity(val_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
+				ptIRIs.put(pt_iri, val_iri);
+				valuesMap.put(val_iri, val);
+			});
+			derivationOutputs
+					.addTriple(sparqlClient.createListOfRandomPoints(listOfRandomPoints_iri, ptIRIs, valuesMap));
 		} else {
-			return null;
+			throw new JPSRuntimeException("The provided upper limit " + upperLimit
+					+ " is smaller than the provided lower limit " + lowerLimit);
 		}
 	}
 	
@@ -98,6 +112,7 @@ public class RNGAgent extends DerivationAgent {
 		if (this.kbClient == null) {
 			this.kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
 			this.sparqlClient = new SparqlClient(this.kbClient);
+			super.devClient = new DerivationClient(this.kbClient, Config.derivationInstanceBaseURL);
 		}
 		RNGAgent rngAgent = new RNGAgent(this.kbClient, Config.derivationInstanceBaseURL);
 		

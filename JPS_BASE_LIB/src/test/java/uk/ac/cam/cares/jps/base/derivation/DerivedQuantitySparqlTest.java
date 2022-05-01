@@ -13,10 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.jena.graph.Triple;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -24,6 +26,8 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -404,7 +408,12 @@ public class DerivedQuantitySparqlTest {
 				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
 		// update the status, the rdf:type of status should be updated but its IRI
 		// should remain the same, the new derived IRIs should also be added
-		devClient.updateStatusAtJobCompletion(derivation, entities3);
+		// also the new triples should be added
+		String s = "http://" + UUID.randomUUID().toString();
+		String p = "http://" + UUID.randomUUID().toString();
+		String o = "http://" + UUID.randomUUID().toString();
+		TriplePattern newTriple = Rdf.iri(s).has(Rdf.iri(p), Rdf.iri(o));
+		devClient.updateStatusAtJobCompletion(derivation, entities3, Arrays.asList(newTriple));
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
 				ResourceFactory.createResource(statusIRI)));
@@ -416,6 +425,8 @@ public class DerivedQuantitySparqlTest {
 					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasNewDerivedIRI"),
 					ResourceFactory.createResource(e)));
 		}
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(s),
+				ResourceFactory.createProperty(p), ResourceFactory.createResource(o)));
 	}
 
 	@Test
@@ -431,7 +442,7 @@ public class DerivedQuantitySparqlTest {
 		// update the status, the hasStatus should still return true
 		devClient.updateStatusBeforeSetupJob(derivation);
 		Assert.assertEquals(true, devClient.hasStatus(derivation));
-		devClient.updateStatusAtJobCompletion(derivation, entities3);
+		devClient.updateStatusAtJobCompletion(derivation, entities3, new ArrayList<>());
 		Assert.assertEquals(true, devClient.hasStatus(derivation));
 		// delete status, the hasStatus should return false
 		devClient.deleteStatus(derivation);
@@ -445,7 +456,7 @@ public class DerivedQuantitySparqlTest {
 		// create derivation with status marked as "Requested"
 		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, true);
 		// update the status, the new derived IRIs should be added
-		devClient.updateStatusAtJobCompletion(derivation, entities3);
+		devClient.updateStatusAtJobCompletion(derivation, entities3, new ArrayList<>());
 		List<String> newDerivedIRI = devClient.getNewDerivedIRI(derivation);
 		Assert.assertTrue(equalLists(newDerivedIRI, entities3));
 	}
@@ -726,6 +737,10 @@ public class DerivedQuantitySparqlTest {
 	public void testReconnectNewDerivedIRIs() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<String> oldInstances = Arrays.asList("http://a", "http://b", "http://c");
+		List<TriplePattern> newTriples1 = new ArrayList<>();
+		newTriples1.add(Rdf.iri("http://a/new").isA(Rdf.iri("http://a/rdftype")));
+		newTriples1.add(Rdf.iri("http://b/new").isA(Rdf.iri("http://b/rdftype")));
+		newTriples1.add(Rdf.iri("http://c/new").isA(Rdf.iri("http://c/rdftype")));
 		Map<String, List<String>> newInstanceMap1 = new HashMap<>();
 		newInstanceMap1.put("http://a/new", Arrays.asList("http://d1", "http://d2"));
 		newInstanceMap1.put("http://b/new", Arrays.asList("http://d3"));
@@ -734,6 +749,10 @@ public class DerivedQuantitySparqlTest {
 		newInstanceMap2.put("http://a/new2", Arrays.asList("http://d1", "http://d2"));
 		newInstanceMap2.put("http://b/new2", Arrays.asList("http://d3"));
 		newInstanceMap2.put("http://c/new2", new ArrayList<String>());
+		List<TriplePattern> newTriples2 = new ArrayList<>();
+		newTriples2.add(Rdf.iri("http://a/new2").isA(Rdf.iri("http://a/rdftype")));
+		newTriples2.add(Rdf.iri("http://b/new2").isA(Rdf.iri("http://b/rdftype")));
+		newTriples2.add(Rdf.iri("http://c/new2").isA(Rdf.iri("http://c/rdftype")));
 		String derivation = devClient.createDerivation(oldInstances, derivedAgentIRI, inputs);
 		devClient.addTimeInstance(derivation); // timestamp initialised as 0
 
@@ -771,7 +790,7 @@ public class DerivedQuantitySparqlTest {
 
 		// case 1: derivation is outdated, now delete and add new instances should work
 		long retrievedInputsAt = Instant.now().getEpochSecond();
-		devClient.reconnectNewDerivedIRIs(newInstanceMap1, derivation, retrievedInputsAt);
+		devClient.reconnectNewDerivedIRIs(newTriples1, newInstanceMap1, derivation, retrievedInputsAt);
 		// all old outputs should be deleted
 		for (String instance : oldInstances) {
 			Assert.assertTrue(Objects.isNull(testKG.getIndividual(instance)));
@@ -781,6 +800,7 @@ public class DerivedQuantitySparqlTest {
 			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(instance),
 					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
 					ResourceFactory.createResource(derivation)));
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(instance), RDF.type));
 			if (!dds.isEmpty()) {
 				dds.stream().forEach(dd -> {
 					Assert.assertTrue(testKG.contains(ResourceFactory.createResource(dd),
@@ -798,7 +818,7 @@ public class DerivedQuantitySparqlTest {
 
 		// case 2: as now the timestamp of this derivation is up-to-date, nothing should
 		// happen when reconnectNewDerivedIRIs again with a new sets of instances
-		devClient.reconnectNewDerivedIRIs(newInstanceMap2, derivation, retrievedInputsAt);
+		devClient.reconnectNewDerivedIRIs(newTriples2, newInstanceMap2, derivation, retrievedInputsAt);
 		// repeat all checks after case 1
 		// all old outputs should be deleted
 		for (String instance : oldInstances) {
@@ -809,6 +829,7 @@ public class DerivedQuantitySparqlTest {
 			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(instance),
 					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
 					ResourceFactory.createResource(derivation)));
+			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(instance), RDF.type));
 			if (!dds.isEmpty()) {
 				dds.stream().forEach(dd -> {
 					Assert.assertTrue(testKG.contains(ResourceFactory.createResource(dd),
@@ -2139,8 +2160,15 @@ public class DerivedQuantitySparqlTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
 
+		String derivationIRI = "http://derivation";
+		for (String instance : allInstances) {
+			testKG.add(ResourceFactory.createResource(instance),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(derivationIRI));
+		}
+
 		// queried instances should have the correct rdf:type
-		List<Entity> newEntities = devClient.initialiseNewEntities(allInstances);
+		List<Entity> newEntities = devClient.initialiseNewEntities(derivationIRI);
 		for (Entity e : newEntities) {
 			Assert.assertTrue(e.getRdfType().contentEquals(e.getIri() + "/rdftype"));
 		}
@@ -2149,7 +2177,7 @@ public class DerivedQuantitySparqlTest {
 		testKG.add(ResourceFactory.createResource(input1), RDF.type,
 				ResourceFactory.createResource(input1 + "/rdftype_should_fail_test"));
 		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.initialiseNewEntities(Arrays.asList(input1)));
+				() -> devClient.initialiseNewEntities(derivationIRI));
 		Assert.assertTrue(
 				e.getMessage().contains("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for"));
 	}

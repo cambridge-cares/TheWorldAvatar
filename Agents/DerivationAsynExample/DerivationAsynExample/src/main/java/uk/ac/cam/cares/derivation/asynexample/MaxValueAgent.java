@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -9,8 +10,11 @@ import javax.servlet.annotation.WebServlet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
 import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -45,7 +49,7 @@ public class MaxValueAgent extends DerivationAgent {
 	}
 	
 	@Override
-	public DerivationOutputs processRequestParameters(DerivationInputs derivationInputs) {
+	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 		LOGGER.debug("MaxValueAgent received derivationInputs: " + derivationInputs.toString());
 
 		// get the input from the KG
@@ -54,16 +58,16 @@ public class MaxValueAgent extends DerivationAgent {
 		
 		// find the maximum value
 		Integer maxvalue = sparqlClient.getExtremeValueInList(listOfRandomPoints_iri, true);
-		
-		// create new instances in KG
-		String createdMaxValue = sparqlClient.createMaxValue();
-		sparqlClient.addValueInstance(createdMaxValue, maxvalue);
 
-		// create DerivationOutputs instance
-		DerivationOutputs derivationOutputs = new DerivationOutputs(
-				SparqlClient.getRdfTypeString(SparqlClient.MaxValue), createdMaxValue);
-
-		return derivationOutputs;
+		// write the output triples to derivationOutputs
+		String max_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+		derivationOutputs.createNewEntity(max_iri, SparqlClient.getRdfTypeString(SparqlClient.MaxValue));
+		derivationOutputs.addTriple(max_iri, RDF.TYPE.toString(), OWL.NAMEDINDIVIDUAL.toString());
+		String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+		derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
+		derivationOutputs.addTriple(sparqlClient.addValueInstance(max_iri, value_iri, maxvalue));
+		LOGGER.info(
+				"Created a new max value instance <" + max_iri + ">, and its value instance <" + value_iri + ">");
 	}
 	
 	@Override
@@ -77,6 +81,7 @@ public class MaxValueAgent extends DerivationAgent {
 		if (this.kbClient == null) {
 			this.kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
 			this.sparqlClient = new SparqlClient(this.kbClient);
+			super.devClient = new DerivationClient(this.kbClient, Config.derivationInstanceBaseURL);
 		}
 		MaxValueAgent maxAgent = new MaxValueAgent(this.kbClient, Config.derivationInstanceBaseURL);
 		

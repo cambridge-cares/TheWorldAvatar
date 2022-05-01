@@ -43,6 +43,16 @@ public class InitialiseInstances extends JPSAgent{
 
 	public static final String derivationInstanceBaseURL = "http://derivationexample.com/triplestore/repository/";
 
+	public static final String input_key = "input";
+	public static final String min_key = "min value";
+	public static final String max_key = "max value";
+	public static final String min_dev_key = "derivation of min value";
+	public static final String max_dev_key = "derivation of max value";
+	public static final String diff_key = "difference";
+	public static final String diff_dev_key = "derivation of difference";
+	public static final String avg_key = "average";
+	public static final String avg_dev_key = "derivation of average";
+
 	private static final Logger LOGGER = LogManager.getLogger(InitialiseInstances.class);
     
 	@Override
@@ -123,15 +133,15 @@ public class InitialiseInstances extends JPSAgent{
     	}
 
     	JSONObject response = new JSONObject();
-    	response.put("input", input);
-    	response.put("min value", min_property);
-    	response.put("derivation of min value", derived_minvalue);
-    	response.put("max value", max_property);
-    	response.put("derivation of max value", derived_maxvalue);
-    	response.put("difference", diff_property);
-    	response.put("derivation of difference", derived_difference);
-    	response.put("average", average);
-    	response.put("derivation of average", derived_average);
+		response.put(input_key, input);
+		response.put(min_key, min_property);
+		response.put(min_dev_key, derived_minvalue);
+		response.put(max_key, max_property);
+		response.put(max_dev_key, derived_maxvalue);
+		response.put(diff_key, diff_property);
+		response.put(diff_dev_key, derived_difference);
+		response.put(avg_key, average);
+		response.put(avg_dev_key, derived_average);
     	
     	return response;
     }

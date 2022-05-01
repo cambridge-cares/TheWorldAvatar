@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -197,13 +198,15 @@ public class InitialiseInstances extends JPSAgent {
 			for (int i = 0; i < number_of_points; i++) {
 				listOfRandomPointsValue.add(rand.nextInt(upper_limit_value - lower_limit_value) + lower_limit_value);
 			}
-			String listOfRandomPoints = sparqlClient.createListOfRandomPoints(listOfRandomPointsValue);
+			String listOfRandomPoints_iri = SparqlClient.namespace + UUID.randomUUID().toString();
+			List<String> listOfRandomPoints = sparqlClient.createListOfRandomPoints(listOfRandomPoints_iri,
+					listOfRandomPointsValue);
 			LOGGER.info("Created ListOfRandomPoints instance <" + listOfRandomPoints + ">");
-			response.put(list_rand_pts_instance_key, listOfRandomPoints);
-			maxDevInputs.add(listOfRandomPoints);
-			minDevInputs.add(listOfRandomPoints);
+			response.put(list_rand_pts_instance_key, listOfRandomPoints_iri);
+			maxDevInputs.add(listOfRandomPoints_iri);
+			minDevInputs.add(listOfRandomPoints_iri);
 
-			String rng_dev = devClient.createDerivation(Arrays.asList(listOfRandomPoints), Config.agentIriRNG,
+			String rng_dev = devClient.createDerivation(listOfRandomPoints, Config.agentIriRNG,
 					pureInputs);
 			devClient.updateTimestamp(rng_dev);
 			response.put(rng_dev_key, rng_dev);
@@ -216,7 +219,7 @@ public class InitialiseInstances extends JPSAgent {
 				response.put(maxvalue_instance_key, maxValue);
 				diffDevInputs.add(maxValue);
 
-				String max_dev = devClient.createDerivation(Arrays.asList(maxValue), Config.agentIriMaxValue,
+				String max_dev = devClient.createDerivation(Arrays.asList(maxValue, maxval), Config.agentIriMaxValue,
 						maxDevInputs);
 				devClient.updateTimestamp(max_dev);
 				response.put(max_dev_key, max_dev);
@@ -234,7 +237,7 @@ public class InitialiseInstances extends JPSAgent {
 				response.put(minvalue_instance_key, minValue);
 				diffDevInputs.add(minValue);
 
-				String min_dev = devClient.createDerivation(Arrays.asList(minValue), Config.agentIriMinValue,
+				String min_dev = devClient.createDerivation(Arrays.asList(minValue, minval), Config.agentIriMinValue,
 						minDevInputs);
 				devClient.updateTimestamp(min_dev);
 				response.put(min_dev_key, min_dev);
@@ -253,7 +256,8 @@ public class InitialiseInstances extends JPSAgent {
 				LOGGER.info("Created Difference instance <" + difference + ">");
 				response.put(difference_instance_key, difference);
 
-				String diff_dev = devClient.createDerivation(Arrays.asList(difference), Config.agentIriDifference,
+				String diff_dev = devClient.createDerivation(Arrays.asList(difference, diffval),
+						Config.agentIriDifference,
 						Arrays.asList(response.getString(maxvalue_instance_key),
 								response.getString(minvalue_instance_key)));
 				devClient.updateTimestamp(diff_dev);

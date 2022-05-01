@@ -221,6 +221,8 @@ public class IntegrationTest extends TestCase {
         TimeUnit.SECONDS.sleep(5);
         // test if it contains correct number of points
         Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()), sparqlClient.getAmountOfPointsInList());
+        Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()),
+                sparqlClient.getAmountOfPointsInKG());
     }
 
     @Test
