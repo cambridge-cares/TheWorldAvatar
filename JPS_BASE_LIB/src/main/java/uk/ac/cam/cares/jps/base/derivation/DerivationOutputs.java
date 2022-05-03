@@ -28,7 +28,7 @@ public class DerivationOutputs {
 	private String thisDerivation;
 	private long retrievedInputsAt;
 
-	public static final String PROTOCOLS = "^(ftp|file|https?)://.*$";
+	// public static final String PROTOCOLS = "^(ftp|file|https?)://.*$";
 	public static final String OLD_ENTITIES_MAP_ERROR = "Serialise the given JSONObject to oldEntitiesMap Map<String, String> is not supported: ";
 	public static final String OLD_ENTITIES_DOWNSTREAM_DERIVATION_MAP_ERROR = "Serialise the given JSONObject to oldEntitiesDownstreamDerivationMap Map<String, List<String>> is not supported: ";
 	public static final String OLD_NEW_ENTITIES_MATCHING_ERROR = "When the agent writes new instances, make sure that there is 1 instance with matching rdf:type over the old set, old set: ";
@@ -127,11 +127,15 @@ public class DerivationOutputs {
 		s = trimIRI(s);
 		p = trimIRI(p);
 		o = trimIRI(o);
-		checkIfValidIri(Arrays.asList(s, p));
-		if (o.matches(PROTOCOLS)) {
+		try {
+			checkIfValidIri(Arrays.asList(s, p, o));
 			this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.iri(o)));
-		} else {
-			this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
+		} catch (Exception e) {
+			if (e.getMessage().contains(INVALID_IRI_ERROR + o)) {
+				this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
+			} else {
+				throw e;
+			}
 		}
 	}
 

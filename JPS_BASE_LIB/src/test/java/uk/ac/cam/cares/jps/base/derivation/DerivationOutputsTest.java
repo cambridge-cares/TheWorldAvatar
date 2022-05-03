@@ -1,6 +1,9 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
@@ -168,7 +171,7 @@ public class DerivationOutputsTest {
 
 	@Test
 	public void testCreateNewEntity_GetNewDerivedIRI()
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+			throws Exception {
 		DerivationOutputs devOutputs = new DerivationOutputs();
 		Field newentities = devOutputs.getClass().getDeclaredField("newEntitiesMap");
 		newentities.setAccessible(true);
@@ -222,7 +225,7 @@ public class DerivationOutputsTest {
 
 	@Test
 	public void testGetAddTriple()
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+			throws Exception {
 		DerivationOutputs devOutputs = new DerivationOutputs();
 		Field outputs = devOutputs.getClass().getDeclaredField("outputTriples");
 		outputs.setAccessible(true);
@@ -402,12 +405,18 @@ public class DerivationOutputsTest {
 		return a.equals(b);
 	}
 
-	public String formulateTripleString(String s, String p, Object o) {
+	public String formulateTripleString(String s, String p, Object o) throws Exception {
 		if (o instanceof String) {
-			if (((String) o).matches(DerivationOutputs.PROTOCOLS)) {
+			try {
+				new URI((String) o).toURL();
 				return "<" + s + "> <" + p + "> <" + o + "> .";
-			} else {
-				return "<" + s + "> <" + p + "> \"" + o + "\" .";
+			} catch (Exception e) {
+				// TODO find if "URI is not absolute" can be replaced with constant
+				if (e.getMessage().contains("URI is not absolute")) {
+					return "<" + s + "> <" + p + "> \"" + o + "\" .";
+				} else {
+					throw e;
+				}
 			}
 		} else if (o instanceof Number) {
 			return "<" + s + "> <" + p + "> " + o + " .";
