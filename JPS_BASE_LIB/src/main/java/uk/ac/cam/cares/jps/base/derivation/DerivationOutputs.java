@@ -146,6 +146,25 @@ public class DerivationOutputs {
 		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
 	}
 
+	/**
+	 * Can be used to add triples with custom data type like:
+	 * <http://9c9cf967-8ca8-4b44-a0c5-cad2098dd9eb>
+	 * <http://09ee9702-8f34-4b81-8d57-5f294ebeafac>
+	 * "48.13188#11.54965#1379714400"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time>
+	 * .
+	 * 
+	 * @param s
+	 * @param p
+	 * @param o
+	 * @param dataType
+	 */
+	public void addTriple(String s, String p, String o, String dataType) {
+		s = trimIRI(s);
+		p = trimIRI(p);
+		checkIfValidIri(s, p);
+		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOfType(o, Rdf.iri(dataType))));
+	}
+
 	//////////////////////////////////////////////////
 	// Retrieve processed outputs for SPARQL update //
 	//////////////////////////////////////////////////

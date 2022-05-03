@@ -256,6 +256,11 @@ public class DerivationOutputsTest {
 		String p6 = "http://" + UUID.randomUUID().toString();
 		boolean o6 = false;
 
+		String s7 = "http://" + UUID.randomUUID().toString();
+		String p7 = "http://" + UUID.randomUUID().toString();
+		String o7 = "48.13188#11.54965#1379714400";
+		String dataType = "http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time";
+
 		// addTriple(List<TriplePattern>) is tested automatically
 		devOutputs.addTriple(Rdf.iri(s0).has(Rdf.iri(p0), o0));
 		devOutputs.addTriple("<" + s1, p1 + ">", o1);
@@ -264,10 +269,11 @@ public class DerivationOutputsTest {
 		devOutputs.addTriple("<" + s4 + ">", "<" + p4 + ">", o4);
 		devOutputs.addTriple("<" + s5 + ">", "<" + p5 + ">", o5);
 		devOutputs.addTriple(s6 + ">", "<" + p6 + ">", o6);
+		devOutputs.addTriple(s7, p7, o7, dataType);
 
 		List<TriplePattern> triples = (List<TriplePattern>) outputs.get(devOutputs);
 		// the amount of triples added must be correct, also the content must be correct
-		Assert.assertEquals(7, triples.size());
+		Assert.assertEquals(8, triples.size());
 		Assert.assertEquals(formulateTripleString(s0, p0, o0), triples.get(0).getQueryString());
 		Assert.assertEquals(formulateTripleString(s1, p1, o1), triples.get(1).getQueryString());
 		Assert.assertEquals(formulateTripleString(s2, p2, o2), triples.get(2).getQueryString());
@@ -275,10 +281,11 @@ public class DerivationOutputsTest {
 		Assert.assertEquals(formulateTripleString(s4, p4, o4), triples.get(4).getQueryString());
 		Assert.assertEquals(formulateTripleString(s5, p5, o5), triples.get(5).getQueryString());
 		Assert.assertEquals(formulateTripleString(s6, p6, o6), triples.get(6).getQueryString());
+		Assert.assertEquals(formulateTripleString(s7, p7, o7, dataType), triples.get(7).getQueryString());
 
 		// test the getter
 		List<TriplePattern> triplesFromGetter = devOutputs.getOutputTriples();
-		Assert.assertEquals(7, triplesFromGetter.size());
+		Assert.assertEquals(8, triplesFromGetter.size());
 		Assert.assertEquals(formulateTripleString(s0, p0, o0), triplesFromGetter.get(0).getQueryString());
 		Assert.assertEquals(formulateTripleString(s1, p1, o1), triplesFromGetter.get(1).getQueryString());
 		Assert.assertEquals(formulateTripleString(s2, p2, o2), triplesFromGetter.get(2).getQueryString());
@@ -286,6 +293,7 @@ public class DerivationOutputsTest {
 		Assert.assertEquals(formulateTripleString(s4, p4, o4), triplesFromGetter.get(4).getQueryString());
 		Assert.assertEquals(formulateTripleString(s5, p5, o5), triplesFromGetter.get(5).getQueryString());
 		Assert.assertEquals(formulateTripleString(s6, p6, o6), triplesFromGetter.get(6).getQueryString());
+		Assert.assertEquals(formulateTripleString(s7, p7, o7, dataType), triplesFromGetter.get(7).getQueryString());
 	}
 
 	@Test
@@ -395,5 +403,9 @@ public class DerivationOutputsTest {
 		} else {
 			return null;
 		}
+	}
+
+	public String formulateTripleString(String s, String p, String o, String dataType) {
+		return "<" + s + "> <" + p + "> \"" + o + "\"^^<" + dataType + "> .";
 	}
 }
