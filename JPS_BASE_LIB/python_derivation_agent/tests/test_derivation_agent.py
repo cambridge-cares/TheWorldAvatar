@@ -9,7 +9,7 @@ import time
 
 from pyderivationagent.data_model import *
 
-from tests.random_agent import *
+from tests.agents_for_test import *
 from tests.sparql_client_for_test import PySparqlClientForTest
 
 import logging
@@ -47,7 +47,7 @@ def initialise_agent(initialise_triple_store):
         sparql_client = PySparqlClientForTest(endpoint, endpoint)
 
         # Initialise Async Agent with temporary docker container endpoint
-        agent = RandomAgent(ONTOAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE, DERIVATION_INSTANCE_BASE_URL, endpoint)
+        agent = RNGAgent(ONTOAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE, DERIVATION_INSTANCE_BASE_URL, endpoint)
 
         yield sparql_client, agent
 
@@ -74,7 +74,7 @@ def test_async_agent(initialise_agent):
     sparql_client.uploadOntology(folderpath+'Service__Random.ttl')
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = agent.derivationClient.createAsynDerivation(DERIVATION_OUTPUT, agent.agentIRI, DERIVATION_INPUTS)
+    derivation_iri = agent.derivationClient.createAsyncDerivationForNewInfo(agent.agentIRI, DERIVATION_INPUTS)
 
     # Check if the derivation instance is created correctly
     assert sparql_client.checkInstanceClass(derivation_iri, ONTODERIVATION_DERIVATIONASYN)
@@ -95,7 +95,8 @@ def test_async_agent(initialise_agent):
                         WHERE { <%s> <%s>/<%s>/<%s> ?time .}""" % (derivation_iri, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION)
     while currentTimestamp_derivation == 0:
         time.sleep(5)
-        currentTimestamp_derivation = sparql_client.performQuery(query_timestamp)[0]['time']
+        # the queried results must be converted to int, otherwise it will never equal to 0
+        currentTimestamp_derivation = int(sparql_client.performQuery(query_timestamp)[0]['time'])
 
     # Wait some arbitrary time until the cleaning up is done by the derivation client
     time.sleep(5)

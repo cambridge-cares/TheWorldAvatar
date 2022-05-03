@@ -21,7 +21,7 @@
     example:hasValue "1"^^xsd:integer;
 .
 
-# :listofpoints is a placeholder instance that to be updated by RandomAgent
-:listofpoints
-    rdf:type example:ListOfPoints;
-.
+# # :listofpoints is a placeholder instance that to be updated by RandomAgent
+# :listofpoints
+#     rdf:type example:ListOfPoints;
+# .

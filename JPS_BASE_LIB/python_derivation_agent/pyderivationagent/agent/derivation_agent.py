@@ -5,6 +5,7 @@ import json
 import agentlogging
 
 from pyderivationagent.kg_operations import *
+from pyderivationagent.data_model import DerivationInputs, DerivationOutputs
 
 class FlaskConfig(object):
     """
@@ -87,15 +88,13 @@ class DerivationAgent(object):
         self.app.add_url_rule(url_pattern, url_pattern_name, function, methods=methods, *args, **kwargs)
         self.logger.info("A URL Pattern <%s> is added." % (url_pattern))
 
-    def monitorDerivations(self):
+    def monitor_async_derivations(self):
         """
-            This method monitors the status of the derivation that "isDerivedUsing" DerivationAgent.
-
-            When it detects the status is "PendingUpdate", the agent will check its immediate upstream derivations.
-            Once all its immediate upstream derivations are up-to-date, the agent marks the status as "Requested".
+            This method monitors the status of the asynchronous derivation that "isDerivedUsing" DerivationAgent.
 
             When it detects the status is "Requested", the agent will mark the status as "InProgress" and start the job.
             Once the job is finished, the agent marks the status as "Finished" and attaches the new derived IRI to it via "hasNewDerivedIRI".
+            All new generated triples are also written to the knowledge graph at this point.
 
             When it detects the status is "InProgress", the currently implementation just passes.
 
@@ -106,50 +105,73 @@ class DerivationAgent(object):
             `uk.ac.cam.cares.jps.base.derivation.DerivationClient.cleanUpFinishedDerivationUpdate(String)`.
         """
 
-        # Below codes follow the logic as defined in AsynAgent.java in JPS_BASE_LIB
-        # for more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/agent/AsynAgent.java
+        # Below codes follow the logic as defined in DerivationAgent.java in JPS_BASE_LIB
+        # for more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/agent/DerivationAgent.java
 
         # Retrieves a list of derivations and their status type that "isDerivedUsing" DerivationAgent
         derivationAndStatusType = self.derivationClient.getDerivationsAndStatusType(self.agentIRI)
         if bool(derivationAndStatusType):
-            self.logger.info("A list of derivations that <isDerivedUsing> <%s> are retrieved: %s." % (self.agentIRI, derivationAndStatusType))
+            self.logger.info("A list of asynchronous derivations that <isDerivedUsing> <%s> are retrieved: %s." % (self.agentIRI, {d:str(derivationAndStatusType[d]) for d in derivationAndStatusType}))
 
             # Iterate over the list of derivation, and do different things depend on the derivation status
             for derivation in derivationAndStatusType:
                 statusType = str(derivationAndStatusType[derivation])
-                self.logger.info("Derivation <%s> has status type: %s." % (derivation, statusType))
+                self.logger.info("Asynchronous derivation <%s> has status type: %s." % (derivation, statusType))
 
-                # If "PendingUpdate", check the immediate upstream derivations if they are up-to-date
-                if statusType == 'PENDINGUPDATE':
-                    immediateUpstreamDerivationToUpdate = self.derivationClient.checkAtPendingUpdate(derivation)
-                    if immediateUpstreamDerivationToUpdate is not None:
-                        self.logger.info(
-                            "Derivation <%s> has a list of immediate upstream derivations to be updated: <%s>." % (derivation, ">, <".join(immediateUpstreamDerivationToUpdate))
-                        )
+                # # If "PendingUpdate", check the immediate upstream derivations if they are up-to-date
+                # if statusType == 'PENDINGUPDATE':
+                #     immediateUpstreamDerivationToUpdate = self.derivationClient.checkAtPendingUpdate(derivation)
+                #     if immediateUpstreamDerivationToUpdate is not None:
+                #         self.logger.info(
+                #             "Derivation <%s> has a list of immediate upstream derivations to be updated: <%s>." % (derivation, ">, <".join(immediateUpstreamDerivationToUpdate))
+                #         )
+                #     else:
+                #         self.logger.info("All immediate upstream derivations of derivation <%s> are up-to-date." % (derivation))
+
+                # If "Requested", check the immediate upstream derivations if they are up-to-date
+                # if any of the asynchronous derivations are still outdated, skip, otherwise, request update of all synchronous derivations
+                # then retrieve inputs, marks as "InProgress", start job, update status at job completion
+                if statusType == 'REQUESTED':
+                    immediateUpstreamDerivationToUpdate = self.derivationClient.checkImmediateUpstreamDerivation(derivation)
+                    if self.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN in immediateUpstreamDerivationToUpdate:
+                        self.logger.info("Asynchronous derivation <" + derivation
+                                + "> has a list of immediate upstream asynchronous derivations to be updated: "
+                                + immediateUpstreamDerivationToUpdate)
                     else:
-                        self.logger.info("All immediate upstream derivations of derivation <%s> are up-to-date." % (derivation))
+                        syncDerivationsToUpdate = self.derivationClient.groupSyncDerivationsToUpdate(immediateUpstreamDerivationToUpdate)
+                        if bool(syncDerivationsToUpdate):
+                            self.logger.info("Asynchronous derivation <" + derivation
+                                + "> has a list of immediate upstream synchronous derivations to be updated: "
+                                + syncDerivationsToUpdate)
+                            self.derivationClient.updatePureSyncDerivations(syncDerivationsToUpdate)
+                            self.logger.info("Update of synchronous derivation is done for: " + syncDerivationsToUpdate)
+                        if not bool(self.derivationClient.checkImmediateUpstreamDerivation(derivation)):
+                            agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(derivation, self.agentIRI))
+                            self.logger.info("Agent <%s> retrieved inputs of asynchronous derivation <%s>: %s." % (self.agentIRI, derivation, agentInputs))
+                            self.logger.info("Asynchronous derivation <%s> is in progress." % (derivation))
 
-                # If "Requested", retrieve inputs, marks as "InProgress", start job, update status at job completion
-                elif statusType == 'REQUESTED':
-                    agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(derivation, self.agentIRI))
-                    self.logger.info("Agent <%s> retrieved inputs of derivation <%s>: %s." % (self.agentIRI, derivation, agentInputs))
-                    self.logger.info("Derivation <%s> is in progress." % (derivation))
+                            # Preprocessing inputs to be sent to agent for setting up job, this is now in dict datatype
+                            agent_input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
+                            agent_input_key = str(self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
+                            if agent_input_key in agent_input_json:
+                                inputs_to_send = agent_input_json[agent_input_key]
+                            else:
+                                self.logger.error("Agent input key (%s) might be missing. Received input: %s." % (agent_input_key, agent_input_json.__dict__))
+                            # The inputs_to_send should be a dictionary format,
+                            # for example: {'OntoXX:Concept_A': 'Instance_A', 'OntoXX:Concept_B': 'Instance_B'}
+                            # Developer can directly use it with dictionary operations
+                            derivationInputs = self.jpsBaseLib_view.DerivationInputs(inputs_to_send)
+                            derivation_inputs = DerivationInputs(derivationInputs)
+                            derivationOutputs = self.jpsBaseLib_view.DerivationOutputs()
+                            derivation_outputs = DerivationOutputs(derivationOutputs)
+                            self.process_request_parameters(derivation_inputs, derivation_outputs)
 
-                    # Preprocessing inputs to be sent to agent for setting up job, this is now in dict datatype
-                    agent_input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
-                    agent_input_key = str(self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
-                    if agent_input_key in agent_input_json:
-                        inputs_to_send = agent_input_json[agent_input_key]
-                    else:
-                        self.logger.error("Agent input key (%s) might be missing. Received input: %s." % (agent_input_key, agent_input_json.__dict__))
-                    # The inputs_to_send should be a dictionary format,
-                    # for example: {'OntoXX:Concept_A': 'Instance_A', 'OntoXX:Concept_B': 'Instance_B'}
-                    # Developer can directly use it with dictionary operations
-                    newDerivedIRI = self.setupJob(inputs_to_send)
-                    self.logger.info("Derivation <%s> generated new derived IRI: <%s>." % (derivation, ">, <".join(newDerivedIRI)))
-
-                    self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI)
-                    self.logger.info("Derivation <%s> is now finished, to be cleaned up." % (derivation))
+                            newDerivedIRI = derivationOutputs.getNewDerivedIRI()
+                            newTriples = derivationOutputs.getOutputTriples()
+                            self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples)
+                            self.logger.info("Asynchronous derivation <%s> generated new derived IRI: <%s>." % (derivation, ">, <".join(newDerivedIRI)))
+                            self.logger.info("Asynchronous derivation <" + derivation + "> has all new generated triples: "+ str([t.getQueryString() for t in newTriples]))
+                            self.logger.info("Asynchronous derivation <" + derivation + "> is now finished, to be cleaned up.")
 
                 # If "InProgress", pass
                 elif statusType == 'INPROGRESS':
@@ -158,39 +180,40 @@ class DerivationAgent(object):
                 # If "Finished", do all the clean-up steps
                 elif statusType == 'FINISHED':
                     self.derivationClient.cleanUpFinishedDerivationUpdate(derivation)
-                    self.logger.info("Derivation <%s> is now cleand up." % (derivation))
+                    self.logger.info("Asynchronous derivation <%s> is now cleand up." % (derivation))
 
                 # If anything else, pass
                 else:
-                    self.logger.info("Derivation <%s> has unhandled status type: %s." % (derivation, statusType))
+                    self.logger.info("Asynchronous derivation <%s> has unhandled status type: %s." % (derivation, statusType))
                     pass
 
         else:
-            self.logger.info("Currently, no derivation <isDerivedUsing> <%s>." % (self.agentIRI))
+            self.logger.info("Currently, no asynchronous derivation <isDerivedUsing> <%s>." % (self.agentIRI))
 
-    def setupJob(self, agentInputs) -> list:
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         """
-            This method sets up the job to update the derivation. Developer shall override this when writing new derivation agent based on DerivationAgent class.
+        This method perform the agent logic of converting derivation inputs to derivation outputs.
+        Developer shall override this when writing new derivation agent based on DerivationAgent class.
 
-            Arguments:
-                agentInputs - a JSON/dictionary of the derivation inputs, an example:
-                    {
-                        "https://www.example.com/triplestore/repository/Ontology.owl#Concept_1": "https://www.example.com/triplestore/repository/Concept_1/Instance_1",
-                        "https://www.example.com/triplestore/repository/Ontology.owl#Concept_2": "https://www.example.com/triplestore/repository/Concept_2/Instance_2",
-                        "https://www.example.com/triplestore/repository/Ontology.owl#Concept_3":
-                            ["https://www.example.com/triplestore/repository/Concept_3/Instance_3_1", "https://www.example.com/triplestore/repository/Concept_3/Instance_3_2"],
-                        "https://www.example.com/triplestore/repository/Ontology.owl#Concept_4": "https://www.example.com/triplestore/repository/Concept_4/Instance_4"
-                    }
+        Arguments
+            - derivation_inputs: instance of derivation inputs in the format of: 
+            {
+                "https://www.example.com/triplestore/repository/Ontology.owl#Concept_1": ["https://www.example.com/triplestore/repository/Concept_1/Instance_1"],
+                "https://www.example.com/triplestore/repository/Ontology.owl#Concept_2": ["https://www.example.com/triplestore/repository/Concept_2/Instance_2"],
+                "https://www.example.com/triplestore/repository/Ontology.owl#Concept_3":
+                ["https://www.example.com/triplestore/repository/Concept_3/Instance_3_1", "https://www.example.com/triplestore/repository/Concept_3/Instance_3_2"],
+                "https://www.example.com/triplestore/repository/Ontology.owl#Concept_4": ["https://www.example.com/triplestore/repository/Concept_4/Instance_4"]
+            }
+            - derivation_outputs: instance of derivation outputs, developer should add new created entiteis and triples to this variable
         """
-        createdIRI = []
-        return createdIRI
+        pass
 
     def start_monitoring_derivations(self):
         """
             This method starts the periodical job to monitor derivation, also runs the flask app as an HTTP servlet.
         """
         self.scheduler.init_app(self.app)
-        self.scheduler.add_job(id='monitor_derivations', func=self.monitorDerivations, trigger='interval', seconds=self.time_interval)
+        self.scheduler.add_job(id='monitor_derivations', func=self.monitor_async_derivations, trigger='interval', seconds=self.time_interval)
         self.scheduler.start()
         self.logger.info("Monitor derivations job is started with a time interval of %d seconds." % (self.time_interval))
 
