@@ -828,6 +828,9 @@ public class DerivedQuantityClientTest {
 		// create async derivation
 		String derivationIRI = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, false);
 		String statusIRI = devClient.sparqlClient.markAsRequested(derivationIRI);
+		// get the current timestamp right before retrieving the agent inputs --> the
+		// timetamp marked as retrievedInputsAt should be >= currentTimestamp
+		long currentTimestamp = Instant.now().getEpochSecond();
 		JSONObject agentInputs = devClient.retrieveAgentInputIRIs(derivationIRI, derivedAgentIRI);
 		Assert.assertTrue(agentInputs.has(DerivationClient.AGENT_INPUT_KEY));
 		Assert.assertTrue(equalLists(Arrays.asList(input1),
@@ -837,7 +840,6 @@ public class DerivedQuantityClientTest {
 				.getJSONArray(input2).toList().stream().map(i -> (String) i).collect(Collectors.toList())));
 		// async derivation should be marked as InProgress, also has a retrievedInputsAt
 		// timestamp
-		long currentTimestamp = Instant.now().getEpochSecond();
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivationIRI),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
 				ResourceFactory.createResource(statusIRI)));
