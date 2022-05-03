@@ -261,6 +261,14 @@ public class DerivationOutputsTest {
 		String o7 = "48.13188#11.54965#1379714400";
 		String dataType = "http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time";
 
+		String s8 = "http://" + UUID.randomUUID().toString();
+		String p8 = "http://" + UUID.randomUUID().toString();
+		String o8 = "ftp://" + UUID.randomUUID().toString();
+
+		String s9 = "http://" + UUID.randomUUID().toString();
+		String p9 = "http://" + UUID.randomUUID().toString();
+		String o9 = "file://" + UUID.randomUUID().toString();
+
 		// addTriple(List<TriplePattern>) is tested automatically
 		devOutputs.addTriple(Rdf.iri(s0).has(Rdf.iri(p0), o0));
 		devOutputs.addTriple("<" + s1, p1 + ">", o1);
@@ -270,10 +278,12 @@ public class DerivationOutputsTest {
 		devOutputs.addTriple("<" + s5 + ">", "<" + p5 + ">", o5);
 		devOutputs.addTriple(s6 + ">", "<" + p6 + ">", o6);
 		devOutputs.addTriple(s7, p7, o7, dataType);
+		devOutputs.addTriple(s8, "<" + p8, o8 + ">");
+		devOutputs.addTriple(s9, "<" + p9, o9 + ">");
 
 		List<TriplePattern> triples = (List<TriplePattern>) outputs.get(devOutputs);
 		// the amount of triples added must be correct, also the content must be correct
-		Assert.assertEquals(8, triples.size());
+		Assert.assertEquals(10, triples.size());
 		Assert.assertEquals(formulateTripleString(s0, p0, o0), triples.get(0).getQueryString());
 		Assert.assertEquals(formulateTripleString(s1, p1, o1), triples.get(1).getQueryString());
 		Assert.assertEquals(formulateTripleString(s2, p2, o2), triples.get(2).getQueryString());
@@ -282,10 +292,12 @@ public class DerivationOutputsTest {
 		Assert.assertEquals(formulateTripleString(s5, p5, o5), triples.get(5).getQueryString());
 		Assert.assertEquals(formulateTripleString(s6, p6, o6), triples.get(6).getQueryString());
 		Assert.assertEquals(formulateTripleString(s7, p7, o7, dataType), triples.get(7).getQueryString());
+		Assert.assertEquals(formulateTripleString(s8, p8, o8), triples.get(8).getQueryString());
+		Assert.assertEquals(formulateTripleString(s9, p9, o9), triples.get(9).getQueryString());
 
 		// test the getter
 		List<TriplePattern> triplesFromGetter = devOutputs.getOutputTriples();
-		Assert.assertEquals(8, triplesFromGetter.size());
+		Assert.assertEquals(10, triplesFromGetter.size());
 		Assert.assertEquals(formulateTripleString(s0, p0, o0), triplesFromGetter.get(0).getQueryString());
 		Assert.assertEquals(formulateTripleString(s1, p1, o1), triplesFromGetter.get(1).getQueryString());
 		Assert.assertEquals(formulateTripleString(s2, p2, o2), triplesFromGetter.get(2).getQueryString());
@@ -294,6 +306,8 @@ public class DerivationOutputsTest {
 		Assert.assertEquals(formulateTripleString(s5, p5, o5), triplesFromGetter.get(5).getQueryString());
 		Assert.assertEquals(formulateTripleString(s6, p6, o6), triplesFromGetter.get(6).getQueryString());
 		Assert.assertEquals(formulateTripleString(s7, p7, o7, dataType), triplesFromGetter.get(7).getQueryString());
+		Assert.assertEquals(formulateTripleString(s8, p8, o8), triplesFromGetter.get(8).getQueryString());
+		Assert.assertEquals(formulateTripleString(s9, p9, o9), triplesFromGetter.get(9).getQueryString());
 	}
 
 	@Test
@@ -354,21 +368,20 @@ public class DerivationOutputsTest {
 		String http = "http://" + UUID.randomUUID().toString();
 		String https = "https://" + UUID.randomUUID().toString();
 		String p = UUID.randomUUID().toString();
+		String cmt = "comment";
 		DerivationOutputs outputs = new DerivationOutputs();
 
 		// should execute without error
-		outputs.checkIfValidIri(http, https);
-		outputs.checkIfValidIri(https, http);
-		outputs.checkIfValidIri("<" + http + ">", "<" + https + ">");
+		outputs.checkIfValidIri(Arrays.asList(http, https, "<" + http + ">", "<" + https + ">"));
 
 		// should throw error if not valid IRI
 		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> outputs.checkIfValidIri(http, p));
+				() -> outputs.checkIfValidIri(Arrays.asList(http, p)));
 		Assert.assertTrue(e.getMessage()
 				.contains(DerivationOutputs.INVALID_IRI_ERROR));
 
 		e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> outputs.checkIfValidIri(https, p));
+				() -> outputs.checkIfValidIri(Arrays.asList(http, cmt)));
 		Assert.assertTrue(e.getMessage()
 				.contains(DerivationOutputs.INVALID_IRI_ERROR));
 	}
@@ -391,7 +404,7 @@ public class DerivationOutputsTest {
 
 	public String formulateTripleString(String s, String p, Object o) {
 		if (o instanceof String) {
-			if (((String) o).matches(DerivationOutputs.HTTP_HTTPS_PROTOCOL)) {
+			if (((String) o).matches(DerivationOutputs.PROTOCOLS)) {
 				return "<" + s + "> <" + p + "> <" + o + "> .";
 			} else {
 				return "<" + s + "> <" + p + "> \"" + o + "\" .";

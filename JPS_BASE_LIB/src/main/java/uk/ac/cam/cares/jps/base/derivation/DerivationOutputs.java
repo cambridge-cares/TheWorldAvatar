@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,11 +28,11 @@ public class DerivationOutputs {
 	private String thisDerivation;
 	private long retrievedInputsAt;
 
-	public static final String HTTP_HTTPS_PROTOCOL = "^(https?)://.*$";
+	public static final String PROTOCOLS = "^(ftp|file|https?)://.*$";
 	public static final String OLD_ENTITIES_MAP_ERROR = "Serialise the given JSONObject to oldEntitiesMap Map<String, String> is not supported: ";
 	public static final String OLD_ENTITIES_DOWNSTREAM_DERIVATION_MAP_ERROR = "Serialise the given JSONObject to oldEntitiesDownstreamDerivationMap Map<String, List<String>> is not supported: ";
 	public static final String OLD_NEW_ENTITIES_MATCHING_ERROR = "When the agent writes new instances, make sure that there is 1 instance with matching rdf:type over the old set, old set: ";
-	public static final String INVALID_IRI_ERROR = "Both subject and predicate should start with 'http://' or 'https://' to be a valid IRI when constructing DerivationOutputs, received subject and predicate: ";
+	public static final String INVALID_IRI_ERROR = "Invalid IRI received when validating IRIs: ";
 
 	//////////////////
 	// Constructors //
@@ -124,8 +127,8 @@ public class DerivationOutputs {
 		s = trimIRI(s);
 		p = trimIRI(p);
 		o = trimIRI(o);
-		checkIfValidIri(s, p);
-		if (o.matches(HTTP_HTTPS_PROTOCOL)) {
+		checkIfValidIri(Arrays.asList(s, p));
+		if (o.matches(PROTOCOLS)) {
 			this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.iri(o)));
 		} else {
 			this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
@@ -135,14 +138,14 @@ public class DerivationOutputs {
 	public void addTriple(String s, String p, Number o) {
 		s = trimIRI(s);
 		p = trimIRI(p);
-		checkIfValidIri(s, p);
+		checkIfValidIri(Arrays.asList(s, p));
 		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
 	}
 
 	public void addTriple(String s, String p, Boolean o) {
 		s = trimIRI(s);
 		p = trimIRI(p);
-		checkIfValidIri(s, p);
+		checkIfValidIri(Arrays.asList(s, p));
 		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
 	}
 
@@ -161,7 +164,7 @@ public class DerivationOutputs {
 	public void addTriple(String s, String p, String o, String dataType) {
 		s = trimIRI(s);
 		p = trimIRI(p);
-		checkIfValidIri(s, p);
+		checkIfValidIri(Arrays.asList(s, p, dataType));
 		this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOfType(o, Rdf.iri(dataType))));
 	}
 
@@ -205,10 +208,15 @@ public class DerivationOutputs {
 	// Utility functions //
 	///////////////////////
 
-	void checkIfValidIri(String s, String p) {
-		if (!trimIRI(s).matches(HTTP_HTTPS_PROTOCOL) || !trimIRI(p).matches(HTTP_HTTPS_PROTOCOL)) {
-			throw new JPSRuntimeException(INVALID_IRI_ERROR + s + ", and " + p);
-		}
+	void checkIfValidIri(List<String> strs) {
+		strs.stream().forEach(s -> {
+			try {
+				new URI(trimIRI(s)).toURL();
+			} catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
+				e.printStackTrace();
+				throw new JPSRuntimeException(INVALID_IRI_ERROR + s);
+			}
+		});
 	}
 
 	String trimIRI(String iri) {
