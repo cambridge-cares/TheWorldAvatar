@@ -1,9 +1,7 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
@@ -447,16 +445,10 @@ public class DerivationOutputsTest {
 
 	public String formulateTripleString(String s, String p, Object o) throws Exception {
 		if (o instanceof String) {
-			try {
-				new URI((String) o).toURL();
+			if (new URI((String) o).isAbsolute()) {
 				return "<" + s + "> <" + p + "> <" + o + "> .";
-			} catch (Exception e) {
-				// TODO find if "URI is not absolute" can be replaced with constant
-				if (e.getMessage().contains("URI is not absolute")) {
-					return "<" + s + "> <" + p + "> \"" + o + "\" .";
-				} else {
-					throw e;
-				}
+			} else {
+				return "<" + s + "> <" + p + "> \"" + o + "\" .";
 			}
 		} else if (o instanceof Number) {
 			return "<" + s + "> <" + p + "> " + o + " .";

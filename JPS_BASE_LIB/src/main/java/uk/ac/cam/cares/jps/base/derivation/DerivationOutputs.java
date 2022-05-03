@@ -142,14 +142,13 @@ public class DerivationOutputs {
 		p = trimIRI(p);
 		o = trimIRI(o);
 		try {
-			checkIfValidIri(Arrays.asList(s, p, o));
-			this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.iri(o)));
-		} catch (Exception e) {
-			if (e.getMessage().contains(INVALID_IRI_ERROR + o)) {
-				this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
+			if (new URI(o).isAbsolute()) {
+				this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.iri(o)));
 			} else {
-				throw e;
+				this.outputTriples.add(Rdf.iri(s).has(Rdf.iri(p), Rdf.literalOf(o)));
 			}
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		}
 	}
 
