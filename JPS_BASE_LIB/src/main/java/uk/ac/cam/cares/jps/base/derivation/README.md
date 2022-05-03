@@ -122,6 +122,7 @@ When developing a new derivation agent, developer only need to implement the age
 
 Upon receiving the inputs, developer may check the complete agent inputs by using `DerivationInputs.getInputs()`, or retrieve list of IRIs of specific rdf:type by using `DerivationInputs.getIris(String)`. Once the calculation is done, the new created instances are expected to be put in the instance of DerivationOutputs as provided as an argument to the method `uk.ac.cam.cares.jps.base.agent.DerivationAgent.processRequestParameters(DerivationInputs, DerivationOutputs)`. Developer can add the new created instances and new created triples to outputs by calling below methods:
  - `derivationOutputs.createNewEntity(String, String)`
+ - `derivationOutputs.createNewEntityWithBaseUrl(String, String)`
  - `derivationOutputs.addTriple(TriplePattern)`
  - `derivationOutputs.addTriple(List<TriplePattern>)`
  - `derivationOutputs.addTriple(String, String, String)`
@@ -143,6 +144,19 @@ You can execute below lines in your codes (**NOTE: all the provided IRIs must be
 ```java
 derivationOutputs.createNewEntity("<newDerivedQuantity>", "<Quantity>");
 derivationOutputs.createNewEntity("<valueIRI>", "<QuantityValue>");
+```
+
+or if you would like the `<newDerivedQuantity>` and `<valueIRI>` to be generated automatically, you can call:
+```java
+String newDerivedQuantity = derivationOutputs.createNewEntityWithBaseUrl("<baseUrl>", "<Quantity>");
+String valueIRI = derivationOutputs.createNewEntityWithBaseUrl("<valueIRI>", "<QuantityValue>");
+```
+
+Assuming the `<baseUrl>` has value `http://baseUrl` and `<Quantity>` has value `http://example.com#Quantity`, the IRI `newDerivedQuantity` created by the method `createNewEntityWithBaseUrl` will be in the format of ```http://baseUrl/Quantity_UUID```, where the `UUID` will be generated using `java.util.UUID.randomUUID().toString()`.
+
+For adding triples, you can directly use below functions:
+
+```java
 derivationOutputs.addTriple("<newDerivedQuantity>", "<hasValue>", "<valueIRI>");
 derivationOutputs.addTriple("<valueIRI>", "<hasUnit>", "<unit>");
 derivationOutputs.addTriple("<valueIRI>", "<hasNumericalValue>", 5);

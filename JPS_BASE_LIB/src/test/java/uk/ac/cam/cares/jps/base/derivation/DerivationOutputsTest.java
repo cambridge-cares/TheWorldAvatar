@@ -170,7 +170,7 @@ public class DerivationOutputsTest {
 	}
 
 	@Test
-	public void testCreateNewEntity_GetNewDerivedIRI()
+	public void testCreateNewEntity_CreateNewEntityWithBaseUrl_GetNewDerivedIRI()
 			throws Exception {
 		DerivationOutputs devOutputs = new DerivationOutputs();
 		Field newentities = devOutputs.getClass().getDeclaredField("newEntitiesMap");
@@ -196,15 +196,43 @@ public class DerivationOutputsTest {
 		devOutputs.createNewEntity("<" + iri3_1 + ">", "<" + rdfType3 + ">");
 		devOutputs.createNewEntity(iri3_1, rdfType3); // add duplicate entry on purpose
 
+		// also add triples with createNewEntityWithBaseUrl
+		String baseUrl = "http://" + UUID.randomUUID().toString();
+		String rdfTypeClz = UUID.randomUUID().toString();
+		String prefix1 = "http://prefix1/"; // try ends with "/"
+		String prefix2 = "http://prefix2#"; // try ends with "#"
+		String iri_new_1_1 = devOutputs.createNewEntityWithBaseUrl(baseUrl, prefix1 + rdfTypeClz);
+		String iri_new_1_2 = devOutputs.createNewEntityWithBaseUrl(baseUrl, prefix1 + rdfTypeClz);
+		String iri_new_2_1 = devOutputs.createNewEntityWithBaseUrl(baseUrl, prefix2 + rdfTypeClz);
+		String iri_new_2_2 = devOutputs.createNewEntityWithBaseUrl(baseUrl, prefix2 + rdfTypeClz);
+		String iri_new_2_3 = devOutputs.createNewEntityWithBaseUrl(baseUrl, prefix2 + rdfTypeClz);
+		// should throw an error if the provided rdf:type ends with "/" and nothing will
+		// be added
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devOutputs.createNewEntityWithBaseUrl(baseUrl, prefix1 + rdfTypeClz + "/"));
+		Assert.assertTrue(e.getMessage()
+				.contains(DerivationOutputs.INVALID_IRI_FOR_GET_CLASS_NAME_ERROR));
+		// same error should be thrown for rdf:type ending with "#"
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devOutputs.createNewEntityWithBaseUrl(baseUrl, prefix1 + rdfTypeClz + "#"));
+		Assert.assertTrue(e.getMessage()
+				.contains(DerivationOutputs.INVALID_IRI_FOR_GET_CLASS_NAME_ERROR));
+
 		Map<String, List<String>> entities = (Map<String, List<String>>) newentities.get(devOutputs);
 		List<TriplePattern> triples = (List<TriplePattern>) outputs.get(devOutputs);
 
 		// the retrieved values must be the same as the ones been added
-		Assert.assertEquals(3, entities.size());
+		// there are 5 rdf:type
+		Assert.assertEquals(5, entities.size());
 		Assert.assertTrue(equalLists(Arrays.asList(iri1_1, iri1_2), entities.get(rdfType1)));
 		Assert.assertTrue(equalLists(Arrays.asList(iri2_1, iri2_2, iri2_3), entities.get(rdfType2)));
 		Assert.assertTrue(equalLists(Arrays.asList(iri3_1), entities.get(rdfType3)));
-		Assert.assertEquals(6, triples.size());
+		Assert.assertTrue(equalLists(Arrays.asList(iri_new_1_1, iri_new_1_2), entities.get(prefix1 + rdfTypeClz)));
+		Assert.assertTrue(
+				equalLists(Arrays.asList(iri_new_2_1, iri_new_2_2, iri_new_2_3), entities.get(prefix2 + rdfTypeClz)));
+
+		// there are 11 triples in total
+		Assert.assertEquals(11, triples.size());
 		Assert.assertEquals(formulateTripleString(iri1_1, RDF.TYPE.toString(), rdfType1),
 				triples.get(0).getQueryString());
 		Assert.assertEquals(formulateTripleString(iri1_2, RDF.TYPE.toString(), rdfType1),
@@ -217,9 +245,21 @@ public class DerivationOutputsTest {
 				triples.get(4).getQueryString());
 		Assert.assertEquals(formulateTripleString(iri3_1, RDF.TYPE.toString(), rdfType3),
 				triples.get(5).getQueryString());
+		Assert.assertEquals(formulateTripleString(iri_new_1_1, RDF.TYPE.toString(), prefix1 + rdfTypeClz),
+				triples.get(6).getQueryString());
+		Assert.assertEquals(formulateTripleString(iri_new_1_2, RDF.TYPE.toString(), prefix1 + rdfTypeClz),
+				triples.get(7).getQueryString());
+		Assert.assertEquals(formulateTripleString(iri_new_2_1, RDF.TYPE.toString(), prefix2 + rdfTypeClz),
+				triples.get(8).getQueryString());
+		Assert.assertEquals(formulateTripleString(iri_new_2_2, RDF.TYPE.toString(), prefix2 + rdfTypeClz),
+				triples.get(9).getQueryString());
+		Assert.assertEquals(formulateTripleString(iri_new_2_3, RDF.TYPE.toString(), prefix2 + rdfTypeClz),
+				triples.get(10).getQueryString());
 
 		// test getNewDerivedIRI
-		Assert.assertTrue(equalLists(Arrays.asList(iri1_1, iri1_2, iri2_1, iri2_2, iri2_3, iri3_1),
+		Assert.assertTrue(equalLists(
+				Arrays.asList(iri1_1, iri1_2, iri2_1, iri2_2, iri2_3, iri3_1, iri_new_1_1, iri_new_1_2, iri_new_2_1,
+						iri_new_2_2, iri_new_2_3),
 				devOutputs.getNewDerivedIRI()));
 	}
 

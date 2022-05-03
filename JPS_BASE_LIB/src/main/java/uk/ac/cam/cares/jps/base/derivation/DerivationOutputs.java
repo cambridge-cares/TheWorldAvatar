@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -33,6 +34,7 @@ public class DerivationOutputs {
 	public static final String OLD_ENTITIES_DOWNSTREAM_DERIVATION_MAP_ERROR = "Serialise the given JSONObject to oldEntitiesDownstreamDerivationMap Map<String, List<String>> is not supported: ";
 	public static final String OLD_NEW_ENTITIES_MATCHING_ERROR = "When the agent writes new instances, make sure that there is 1 instance with matching rdf:type over the old set, old set: ";
 	public static final String INVALID_IRI_ERROR = "Invalid IRI received when validating IRIs: ";
+	public static final String INVALID_IRI_FOR_GET_CLASS_NAME_ERROR = "The provided rdf:type to getClassName should NOT end with '#' or '/', received IRI: ";
 
 	//////////////////
 	// Constructors //
@@ -113,6 +115,18 @@ public class DerivationOutputs {
 			// add new entity to triples
 			this.addTriple(iri, RDF.TYPE.toString(), rdfType);
 		}
+	}
+
+	public String createNewEntityWithBaseUrl(String baseUrl, String rdfType) {
+		baseUrl = trimIRI(baseUrl);
+		rdfType = trimIRI(rdfType);
+		String clz = getClassName(rdfType);
+		if (!baseUrl.endsWith("/") && !baseUrl.endsWith("#")) {
+			baseUrl = baseUrl + "/";
+		}
+		String iri = baseUrl + clz + "_" + UUID.randomUUID().toString();
+		this.createNewEntity(iri, rdfType);
+		return iri;
 	}
 
 	public void addTriple(TriplePattern triple) {
@@ -231,5 +245,22 @@ public class DerivationOutputs {
 			iri = iri.substring(0, iri.length() - 1);
 		}
 		return iri;
+	}
+
+	String getClassName(String rdfType) {
+		rdfType = trimIRI(rdfType);
+		if (rdfType.endsWith("#") || rdfType.endsWith("/")) {
+			throw new JPSRuntimeException(INVALID_IRI_FOR_GET_CLASS_NAME_ERROR + rdfType);
+		}
+		if (rdfType.contains("#")) {
+			String temp = rdfType.substring(rdfType.lastIndexOf("#") + 1);
+			if (!temp.contains("/")) {
+				return temp;
+			} else {
+				return temp.substring(temp.lastIndexOf("/") + 1);
+			}
+		} else {
+			return rdfType.substring(rdfType.lastIndexOf("/") + 1);
+		}
 	}
 }
