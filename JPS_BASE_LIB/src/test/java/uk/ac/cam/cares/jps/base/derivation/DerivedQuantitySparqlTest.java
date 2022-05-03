@@ -1054,8 +1054,11 @@ public class DerivedQuantitySparqlTest {
 		boolean forUpdate = true;
 		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
 		JSONObject mappedInputs = devClient.getInputsMapToAgent(derivationIRI, derivedAgentIRI);
-		Assert.assertEquals(input1, mappedInputs.getString(input1));
-		Assert.assertEquals(input2, mappedInputs.getString(input2));
+		Assert.assertTrue(equalLists(Arrays.asList(input1),
+				mappedInputs.getJSONArray(input1).toList().stream().map(i -> (String) i).collect(Collectors.toList())));
+		Assert.assertTrue(equalLists(Arrays.asList(input2),
+				mappedInputs.getJSONArray(input2).toList().stream().map(i -> (String) i).collect(Collectors.toList())));
+
 	}
 
 	@Test
@@ -1087,8 +1090,12 @@ public class DerivedQuantitySparqlTest {
 		boolean forUpdate = true;
 		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
 		JSONObject mappedInputs = devClient.getInputsMapToAgent(derivationIRI, derivedAgentIRI);
-		Assert.assertEquals(input1, mappedInputs.getString(input1ParentRdfType));
-		Assert.assertEquals(input2, mappedInputs.getString(input2ParentRdfType));
+		Assert.assertTrue(equalLists(Arrays.asList(input1),
+				mappedInputs.getJSONArray(input1ParentRdfType).toList().stream().map(i -> (String) i)
+						.collect(Collectors.toList())));
+		Assert.assertTrue(equalLists(Arrays.asList(input2),
+				mappedInputs.getJSONArray(input2ParentRdfType).toList().stream().map(i -> (String) i)
+						.collect(Collectors.toList())));
 	}
 
 	@Test
@@ -1116,8 +1123,12 @@ public class DerivedQuantitySparqlTest {
 		boolean forUpdate = true;
 		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
 		JSONObject mappedInputs = devClient.getInputsMapToAgent(derivationIRI, derivedAgentIRI);
-		Assert.assertEquals(input1, mappedInputs.getString(input1RdfType));
-		Assert.assertEquals(input2, mappedInputs.getString(input2RdfType));
+		Assert.assertTrue(equalLists(Arrays.asList(input1),
+				mappedInputs.getJSONArray(input1RdfType).toList().stream().map(i -> (String) i)
+						.collect(Collectors.toList())));
+		Assert.assertTrue(equalLists(Arrays.asList(input2),
+				mappedInputs.getJSONArray(input2RdfType).toList().stream().map(i -> (String) i)
+						.collect(Collectors.toList())));
 	}
 
 	@Test
@@ -1147,8 +1158,12 @@ public class DerivedQuantitySparqlTest {
 		boolean forUpdate = true;
 		String derivationIRI = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, forUpdate);
 		JSONObject mappedInputs = devClient.getInputsMapToAgent(derivationIRI, derivedAgentIRI);
-		Assert.assertEquals(input1, mappedInputs.getString(input1ParentRdfType));
-		Assert.assertEquals(input2, mappedInputs.getString(input2ParentRdfType));
+		Assert.assertTrue(equalLists(Arrays.asList(input1),
+				mappedInputs.getJSONArray(input1ParentRdfType).toList().stream().map(i -> (String) i)
+						.collect(Collectors.toList())));
+		Assert.assertTrue(equalLists(Arrays.asList(input2),
+				mappedInputs.getJSONArray(input2ParentRdfType).toList().stream().map(i -> (String) i)
+						.collect(Collectors.toList())));
 	}
 
 	@Test

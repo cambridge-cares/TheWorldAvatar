@@ -981,7 +981,7 @@ public class DerivationSparql {
 				}
 			} else {
 				agentInputs.put(queryResult.getJSONObject(i).getString(typeKey),
-						queryResult.getJSONObject(i).getString(inputKey));
+						new JSONArray().put(queryResult.getJSONObject(i).getString(inputKey)));
 			}
 		}
 

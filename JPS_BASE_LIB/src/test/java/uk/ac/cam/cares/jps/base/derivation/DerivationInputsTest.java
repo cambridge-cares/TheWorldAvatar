@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.derivation;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +70,25 @@ public class DerivationInputsTest {
 		List<Entity> entities = Arrays.asList(entity1, entity2, entity3, entity4, entity5, entity6);
 
 		DerivationInputs devInputs = new DerivationInputs(entities);
+		// Retrieve the value of the private field 'outputs' of the client
+		Field inputs = devInputs.getClass().getDeclaredField("inputs");
+		inputs.setAccessible(true);
+		Map<String, List<String>> inputsf = (Map<String, List<String>>) inputs.get(devInputs);
+		// the retrieved value should contain the same values as the mappedInstances
+		Assert.assertTrue(equalLists(Arrays.asList(instance1_1, instance1_2), inputsf.get(class1)));
+		Assert.assertTrue(equalLists(Arrays.asList(instance2_1, instance2_2, instance2_3), inputsf.get(class2)));
+		Assert.assertTrue(equalLists(Arrays.asList(instance3_1), inputsf.get(class3)));
+	}
+
+	@Test
+	public void testConstructor3()
+			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		// initialise with constructor DerivationInputs(JSONObject mappedInputs)
+		Map<String, List<String>> mappedInstances = new HashMap<>();
+		mappedInstances.put(class1, Arrays.asList(instance1_1, instance1_2));
+		mappedInstances.put(class2, Arrays.asList(instance2_1, instance2_2, instance2_3));
+		mappedInstances.put(class3, Arrays.asList(instance3_1));
+		DerivationInputs devInputs = new DerivationInputs(mappedInstances);
 		// Retrieve the value of the private field 'outputs' of the client
 		Field inputs = devInputs.getClass().getDeclaredField("inputs");
 		inputs.setAccessible(true);

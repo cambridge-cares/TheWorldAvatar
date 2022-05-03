@@ -64,6 +64,17 @@ public class DerivationInputs {
 		this.inputs = map;
 	}
 
+	/**
+	 * The constructor to serilise a Map<String, List<String>> to DerivationInputs.
+	 * This constructor is provided to communicate with the pyderivationagent when
+	 * handling derivations.
+	 * 
+	 * @param inputs
+	 */
+	public DerivationInputs(Map<String, List<String>> inputs) {
+		this.inputs = inputs;
+	}
+
 	public Map<String, List<String>> getInputs() {
 		return this.inputs;
 	}
