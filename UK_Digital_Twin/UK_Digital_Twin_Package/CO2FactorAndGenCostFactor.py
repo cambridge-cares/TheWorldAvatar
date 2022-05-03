@@ -18,9 +18,9 @@ class ModelFactor:
     __ModelFactor = DataPath + "-Node-24h-Tax-Auto - Template.xlsx"
    
     Renewable = ['Solar', 'Hydro', 'PumpHydro', 'Wind']
-    Bio = ['Waste_anaerobicdigestion', 'Waste_municipalsolidwaste', 'Waste']
-    CCGT = ['CombinedCycleGasTurbine']
-    OCGT = ['OpenCycleGasTurbine']
+    Bio = ['Waste_anaerobicdigestion', 'Waste_municipalsolidwaste', 'Waste', 'Biomass']
+    CCGT = ['http://www.theworldavatar.com/kb/ontoeip/CombinedCycleGasTurbine']
+    OCGT = ['http://www.theworldavatar.com/kb/ontoeip/OpenCycleGasTurbine']
     
     FixMaintenanceCostsKey = "FixMaintenanceCosts_"
     OperationalExpenditureCostsKey = "OperationalExpenditureCosts_"

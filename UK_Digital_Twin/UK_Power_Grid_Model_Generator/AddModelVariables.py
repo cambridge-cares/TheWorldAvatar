@@ -20,14 +20,15 @@ t_box = T_BOX.UKDigitalTwinTBox()
 """T-Box URI"""
 ontocape_upper_level_system = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
 ontocape_mathematical_model = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
-ontopowsys = owlready2.get_ontology(t_box.ontopowsys).load()
+ontocape_network_system = owlready2.get_ontology(t_box.ontocape_network_system).load()
+# ontopowsys = owlready2.get_ontology(t_box.ontopowsys_OntoPowSys).load()
 
 def AddModelVariable(graph, root_node, namespace, varKey, varValue, unit, varType):
     # parameter iri
     var_iri = namespace + varKey + str(uuid.uuid4())
     value_var_iri = namespace + UK_PG.ModelVariableSpecificationKey + str(uuid.uuid4())
     # add var node and type
-    graph.add((URIRef(root_node), URIRef(ontopowsys.hasInput.iri), URIRef(var_iri)))
+    graph.add((URIRef(root_node), URIRef(ontocape_network_system.hasInput.iri), URIRef(var_iri)))
     graph.add((URIRef(var_iri), RDF.type, URIRef(varType)))
     #add var value
     graph.add((URIRef(var_iri), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_var_iri)))

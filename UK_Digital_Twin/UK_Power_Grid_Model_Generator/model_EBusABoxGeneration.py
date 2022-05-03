@@ -1,7 +1,7 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 April 2022        #
-##########################################
+# Last Update Date: 29 April 2022        #
+##########################################a
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
 
@@ -30,11 +30,9 @@ from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endp
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package import demandLoadAllocator as DLA
 from UK_Digital_Twin_Package.derivationInterface import createMarkUpDerivation
-from pyasyncagent.kg_operations import sparql_client # the import of this agent will need a parckage name werkzeug, install `pip install Werkzeug==2.0.2`, otherwise it will report the error message
+from pyasyncagent.agent.async_agent import AsyncAgent
+from pyasyncagent.kg_operations.sparql_client import PySparqlClient # the import of this agent will need a parckage name werkzeug, install `pip install Werkzeug==2.0.2`, otherwise it will report the error message
 import uuid
-# from UK_Digital_Twin_Package import TopologicalInformationProperty as TopoInfo 
-
-
 from py4jps.resources import JpsBaseLib
 
 """Notation used in URI construction"""
@@ -80,7 +78,7 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 ### Functions ### 
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
 
-def createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNodeIRI, storeClient, startTime_of_EnergyConsumption, loadAllocatorName, EBusModelVariableInitialisationMethodName, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
+def createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNodeIRI, derivationClient, startTime_of_EnergyConsumption, loadAllocatorName, EBusModelVariableInitialisationMethodName, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
     ## Query the bus node IRI and GPS of the given topology entity
     res_queryBusTopologicalInformation, numOfBus = list(query_model.queryBusTopologicalInformation(topologyNodeIRI, endpoint_label))
     
@@ -141,12 +139,11 @@ def createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNod
     if aggregatedBusFlag == True:
         EBus_Load_List = addUpConsumptionForAggregatedBus(EBus_Load_List) # sum up the demand of an AggregatedBus
     
-    
     print('################START createModel_EBus#################')
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())
     namespace = UK_PG.ontopowsys_namespace  
     ## ElectricalBusModel node IRI 
-    ElectricalBusModelIRI = UK_PG.ontopowsys_namespace + uk_ebus_model.ModelEBusKey + str(uuid.uuid4()) # root node
+    ElectricalBusModelIRI = namespace + uk_ebus_model.ModelEBusKey + str(uuid.uuid4()) # root node
     ## create a named graph
     g = Graph(store = store, identifier = URIRef(ontologyIRI))
     ## Import T-boxes
@@ -231,10 +228,10 @@ def createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNod
                                  ontopowsys_PowerSystemModel.VmMin.iri)
         ModelInputVariableIRIList.append(varNode)
         
-        print(g.serialize(format="pretty-xml").decode("utf-8"))
+        # print(g.serialize(format="pretty-xml").decode("utf-8"))
          
-        ## add deviation  
-        createMarkUpDerivation(ModelInputVariableIRIList, AgentIRI, BusNodeIRI, storeClient, False)
+        ## add derviation 
+        createMarkUpDerivation(list(ModelInputVariableIRIList), AgentIRI, [BusNodeIRI], derivationClient, False)
         
         BusNumber += 1 
     
@@ -248,6 +245,7 @@ def createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNod
         storeGeneratedOWLs(g, filepath_)
     
     ## update the graph to endpoint
+    sparql_client = PySparqlClient(endpoint_iri, endpoint_iri)
     sparql_client.uploadOntology(filepath_)
     
     if isinstance(store, Sleepycat):  
@@ -273,27 +271,12 @@ def addUpConsumptionForAggregatedBus(EBus_Load_List):
     return EBus_Load_List
 
 if __name__ == '__main__':  
-    # import os, sys
-    # BASE = os.path.dirname(os.path.abspath(__file__))
-    # sys.path.insert(0, BASE)
-    # from py4jps.resources import JpsBaseLib
-
-    # # jpsBaseLib resource gateway
-    # # you may also wish to pass any **JGkwargs
-    # jpsBaseLibGW = JpsBaseLib()
-
-    # # you may also wish to pass any **LGkwargs
-    # jpsBaseLibGW.launchGateway()
-    # jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    # jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
-    # endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
-    # storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
-    
     jpsBaseLibGW = JpsBaseLib()
     jpsBaseLibGW.launchGateway()
 
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
 
     endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
     storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
@@ -303,9 +286,14 @@ if __name__ == '__main__':
     AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
     slackBusNodeIRI = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_67e9e639-599c-4e6a-8941-ea939adeef39"
     
-    createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNodeIRI, storeClient, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", None, True, 'default')  
-    
-    
-    # createModel_EBus('default', False, 2019, 29, 99, "2017-01-31", "closestDemandLoad", "preSpecified", None, True)  
-    #createModel_EBus('default', False, 2019, 29, 99, "2017-01-31", "regionalDemandLoad", "preSpecified", None, True)           
+    ModelInputVariableIRIList = ['http://www.theworldavatar.com/kb/ontopowsys/BusNumber_4a832bb7-a9f6-40c0-bb49-3a036a382dae', 'http://www.theworldavatar.com/kb/ontopowsys/BusType_bf8f7115-94d2-4b30-98d2-f0932df918f3', 'http://www.theworldavatar.com/kb/ontopowsys/PdBus_c4fa810b-131e-4805-b14a-10674e9f8769', 'http://www.theworldavatar.com/kb/ontopowsys/GdBus_138f59ae-ca18-4f47-bbb6-edf260e8e77c', 'http://www.theworldavatar.com/kb/ontopowsys/Gs_06a10ba8-397a-4693-a981-30a0575a68f8', 'http://www.theworldavatar.com/kb/ontopowsys/Bs_dadf103f-d40a-4782-b8f1-fcc24d0e1a76', 'http://www.theworldavatar.com/kb/ontopowsys/Area_c3c0cde4-9718-4147-888f-b001861d7557', 'http://www.theworldavatar.com/kb/ontopowsys/Vm_351d012b-14f3-4f3b-834b-c0a358863507', 'http://www.theworldavatar.com/kb/ontopowsys/Va_cfe7d283-da92-4dc7-8017-70979b4f1e1c', 'http://www.theworldavatar.com/kb/ontopowsys/baseKV_fc33f334-aa88-4927-9b5f-2b1a30ddd502', 'http://www.theworldavatar.com/kb/ontopowsys/Zone_3720a687-5e53-4ffd-8cfc-1dd2c39c743e', 'http://www.theworldavatar.com/kb/ontopowsys/VmMax_725c736d-eb00-4c0a-aa9f-84f84a631e33', 'http://www.theworldavatar.com/kb/ontopowsys/VmMin_34de8974-29ea-4a8c-99a3-f38a99b0a921']
+    BusNodeIRI = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_9fee5b07-8a08-4a60-93e2-bc118bce3965"
+
+    ## set up the derivationInstanceBaseURL
+    derivationInstanceBaseURL = dt.baseURL + '/' + dt.topNode + '/'
+    ## initialise the derivationClient
+    derivationClient = jpsBaseLib_view.DerivationClient(storeClient, derivationInstanceBaseURL)
+
+    createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNodeIRI, derivationClient, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", None, True, 'default')  
+         
     print('*****************Terminated*****************')

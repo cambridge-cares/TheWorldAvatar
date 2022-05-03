@@ -49,6 +49,7 @@ class UKDigitalTwinTBox:
     ontopowsys_PowSysFunction = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#"
     ontopowsys_PowerSystemModel = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#"
     ontopowsys_PowSysPerformance = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#"
+    ontopowsys_OntoPowSys = "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#"
     
     """OntoSDG"""
     ontosdgName = "ontosdg"

@@ -36,7 +36,7 @@ class demandLoadAllocator(object):
         # query regional consumption
         res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
         # Find the located region of each bus 
-        busLatLonKey = str(res_queryBusTopologicalInformation[0].keys()[0])
+        busLatLonKey = 'BusLatLon'
         res_queryBusTopologicalInformation = busLocatedRegionFinder(res_queryBusTopologicalInformation, ons_label, busLatLonKey)
         
         # Check one region has at most one bus as this cluster method can only be used in this occasion 

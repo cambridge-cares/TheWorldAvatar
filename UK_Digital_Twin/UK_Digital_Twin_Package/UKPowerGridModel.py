@@ -154,7 +154,7 @@ class UKElineModel:
     
     """ELine Node keys"""
     ELineKey = "ELine-"
-    ModelELineKey = "Model_ELine-"
+    ModelEBusKey = "ElectricalGeneratorModel_"
     
     """Model variable keys"""
     FROMBUSKey = "FromBusNumber_"
@@ -207,7 +207,7 @@ class UKElineModel:
     
     OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
-    def __init__(self, DUKESVersion = 2019, numOfBus = 10, initialiserMethod = 'defaultBranchInitialiser', Location = 'http://dbpedia.org/resource/United_Kingdom'):
+    def __init__(self, numOfBus:int, initialiserMethod = 'defaultBranchInitialiser'):
         
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\Sleepycat_EBus"
@@ -220,9 +220,9 @@ class UKElineModel:
         else:
             self.headerBranchProperty = []
         
-        self.DUKESVersion = DUKESVersion
+     
         self.numOfBus = numOfBus
-        self.location =  Location
+
         
         ## Attributes ##
         # model input
@@ -323,14 +323,12 @@ class UKEGenModel:
    
     OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
-    def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
+    def __init__(self, numOfBus:int):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\Sleepycat_EBus"
         
-        self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
-        self.location = Location
-        
+       
         # Model input
         self.BUS = None # BUS
         self.PG_INPUT = None # PG_INPUT
@@ -363,21 +361,19 @@ class UKEGenModel:
         #return {"INPUT": self.INPUT_VARIABLE, "OUTPUT": self.OUTPUT_VARIABLE}
     
     
-class UKEGenModel_CostFunc(UKEGenModel): 
-    
+class UKEGenModel_CostFunc(UKEGenModel):     
     """Cost function parametor keys"""
-    CostFuncFormatKey = "Format_CostEq_"
-    StartupCostKey = "StartupCost_"
-    ShutdownCostKey = "ShutdownCost_"
+    CostFuncFormatKey = "CostModel_"
+    StartupCostKey = "StartCost_"
+    ShutdownCostKey = "StopCost_"
     genCostnKey = "genCostn_"
-    genCost_aKey = "genCostcn-2_a_"
-    genCost_bKey = "genCostcn-2_b_"
-    genCost_cKey = "genCostcn-2_c_"
+
+    genCost_aKey = "ZeroOrderCoefficient_" #polynomial
+    genCost_bKey = "FirstOrderCoefficient_"
+    genCost_cKey = "SecondOrderCoefficient_"
     
     """Initialise the cost function"""
-    def __init__(self, DUKESVersion = 2019, CarbonTax = 16, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 3, Location = 'http://dbpedia.org/resource/United_Kingdom'): # 2019 base world UK carbon tax is £16/tCO2 eq.
-            self.DUKESVersion = DUKESVersion
-            self.location = Location
+    def __init__(self, CarbonTax = 16, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 3): # 2019 base world UK carbon tax is £16/tCO2 eq.               
             self.MODEL = piecewiseOrPolynomial # 1: piecewise linear;  2: polynomial
             self.STARTUP = 0
             self.SHUTDOWN = 0

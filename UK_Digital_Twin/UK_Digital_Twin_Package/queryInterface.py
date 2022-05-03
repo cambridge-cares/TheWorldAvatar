@@ -21,28 +21,15 @@ jpsBaseLibGW.launchGateway()
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()
 jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
-## this function shows how to do a simple KG query
-# def performQuery(kb, query, isQuery = True, isUpdate = False):
-#     # perform an example sparqle query, see the jps-base-lib docs for further details
-#     KGRouter = jpsBaseLib_view.KGRouter
-#     print(KGRouter)
-#     KGClient = KGRouter.getKnowledgeBaseClient(str(KGRouter.HTTP_KB_PREFIX) + str(kb), isQuery, isUpdate)
-#     print(KGClient)
-#     if type(KGClient) == 'NoneType':       
-#         print('KGClient in the query interfaced has not been created successfully. Please check if the endpoint is already added into the lookup table of Blazegraph.')
-#     response = KGClient.executeQuery((query))
-#     return str(response)
-
-## TODO: update this function with new RemoteStoreClient.java
 def performQuery(kb, query, isQuery = True, isUpdate = False):
     # perform an example sparqle query, see the jps-base-lib docs for further details
     KGRouter = jpsBaseLib_view.StoreRouter
-    KGClient = KGRouter.getStoreClient(str(KGRouter.HTTP_KB_PREFIX) + str(kb), isQuery, isUpdate)
+    KGClient = KGRouter.getStoreClient(KGRouter.HTTP_KB_PREFIX + kb, isQuery, isUpdate)
     try:
         response = KGClient.executeQuery((query))
         return str(response)
     except:
-        print("KGClient has not been created successfully.")
+        print("***WARNING:KGClient has not been created successfully.****")
 
 def performUpdate(kb, query, isQuery = True, isUpdate = True):
     # perform an example sparqle query, see the jps-base-lib docs for further details
@@ -53,98 +40,59 @@ def performUpdate(kb, query, isQuery = True, isUpdate = True):
         return str(response)
     except:
         print("KGClient has not been created successfully.")
-
+  
 def performFederatedQuery(query, queryendpoints:list):
     # perform an example sparqle query, see the jps-base-lib docs for further details   
     RemoteKnowledgeBaseClient = jpsBaseLib_view.RemoteStoreClient()
-    # if len(queryendpoints) == 0:
-    #     print('Please specify the remote query endpoints.')
-    #     return None    
-    # endpoints = []
-    # for ed in queryendpoints:        
-    #     endpoints.append(str(ed))
-    # # RemoteKnowledgeBaseClient.executeFederatedQuery(endpoints, query) 
     try: 
         response = RemoteKnowledgeBaseClient.executeFederatedQuery(list(queryendpoints), query)
         return str(response)
     except:
-        print("...RemoteKnowledgeBaseClient has not been created successfully...")
-
-# def performFederatedQuery(query, *queryendpoints):
-#     # perform an example sparqle query, see the jps-base-lib docs for further details   
-#     RemoteKnowledgeBaseClient = jpsBaseLib_view.RemoteKnowledgeBaseClient()
-#     if len(queryendpoints) == 0:
-#         print('Please specify the remote query endpoints.')
-#         return None    
-#     endpoints = []
-#     for ed in queryendpoints:        
-#         endpoints.append(str(ed))  
-#     response = RemoteKnowledgeBaseClient.executeFederatedQuery(endpoints, query)
-#     return str(response)
-
-
-
+        print("***WARNING:RemoteKnowledgeBaseClient has not been created successfully***")
 
 
 if __name__ == '__main__':  
-    queryStr1 = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX dbo: <https://dbpedia.org/ontology/>
-    SELECT DISTINCT ?Bus_node ?Location_region ?areacode
-    WHERE
-    {
-    ?Bus_node rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
-    ?Bus_node ontocape_upper_level_system:hasAddress ?Location_region . 
-    
-    ?Location_region rdf:type <https://dbpedia.org/ontology/Region> .
-    ?Location_region dbo:areaCode ?areacode .
-    
-    }
-    """ 
 
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    SELECT DISTINCT ?PowerGenerator ?LACode_PP ?PP_lat_lon ?PrimaryFuel ?GenerationTechnology
-    WHERE
-    {      	
-    ?powerPlant a ontoeip_powerplant:PowerPlant .
-    ?powerPlant ontoenergysystem:hasRelevantPlace ?LocatedPlace .
-    ?LocatedPlace rdf:type ontoenergysystem:AdministrativeDivision .
-    ?LocatedPlace ontoenergysystem:hasLocalAuthorityCode ?LACode_PP .
-    
-    ?powerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
-    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel/rdf:type ?PrimaryFuel .
-    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology/rdf:type ?GenerationTechnology .  
-    
-    ?powerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?PP_lat_lon .
-    }
-    """
-
-    queryONS = """
-    PREFIX dcat: <http://www.w3.org/ns/dcat#>
-    PREFIX dcterms: <http://purl.org/dc/terms/>
-    PREFIX owl: <http://www.w3.org/2002/07/owl#>
-    PREFIX qb: <http://purl.org/linked-data/cube#>
+    queryStr_topo = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX sdmx: <http://purl.org/linked-data/sdmx/2009/concept#>
-    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-    PREFIX void: <http://rdfs.org/ns/void#>
-    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
-    SELECT *
-    WHERE {
-    ?s ?p ?o
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
+    SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel
+    WHERE
+    {
+    <http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_7ea91c81-9f7f-4d27-9b75-9b897171bbc4> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
+    ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator . 
+    
+    ?PowerGenerator ontopowsys_PowSysPerformance:hasFixedMaintenanceCost/ ontocape_upper_level_system:hasValue ?v_FixedMO .
+    ?v_FixedMO ontocape_upper_level_system:numericalValue ?FixedMO .
+    
+    ?PowerGenerator ontopowsys_PowSysPerformance:hasCost/ ontocape_upper_level_system:hasValue ?v_VarMO .
+    ?v_VarMO ontocape_upper_level_system:numericalValue ?VarMO .
+    
+    ?PowerGenerator ontopowsys_PowSysPerformance:hasFuelCost/ ontocape_upper_level_system:hasValue ?v_FuelCost .
+    ?v_FuelCost ontocape_upper_level_system:numericalValue ?FuelCost .
+    
+    ?PowerGenerator ontoeip_powerplant:hasEmissionFactor/ ontocape_upper_level_system:hasValue ?v_CO2EmissionFactor .
+    ?v_CO2EmissionFactor ontocape_upper_level_system:numericalValue ?CO2EmissionFactor .
+    
+    ?PowerGenerator meta_model_topology:hasOutput ?Bus .
+    ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .  
+    
+    ?PowerPlant ontoecape_technical_system:hasRealizationAspect ?PowerGenerator .
+    ?PowerPlant ontoecape_technical_system:hasRequirementsAspect ?pp_capa .
+    ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
+    ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
+    
+    ?PowerGenerator ontoecape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?PrimaryFuel .
     }
-
-    LIMIT 100
     """
 
     ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
@@ -152,11 +100,9 @@ if __name__ == '__main__':
     ONS_json = "http://statistics.data.gov.uk/sparql.json" 
     # ONS_json = "http://statistics.data.gov.uk/sparql"
     # res = performFederatedQuery(queryStr, [ukdigitaltwinendpoint, ukdigitaltwinendpoint])
-    res = performFederatedQuery(queryONS, [ONS_json, ukdigitaltwinendpoint])
-    # res = performQuery('ukdigitaltwin_test2', queryStr)
-    
-    
-    print(len(res))
+    # res = performFederatedQuery(queryONS, [ONS_json, ukdigitaltwinendpoint])
+    res = performQuery('ukdigitaltwin_test2', queryStr_topo)
+    print(res)
     
     
     

@@ -114,8 +114,8 @@ def rootNodeAndNameSpace(numOfBus, numOfBranch, endpoint_label, ElectricitySyste
     return topoConfig
 
 """ Create the TopologicalInformationProperty Instance by specifying its numOfBus and numOfBranch"""
-def createTopologicalInformationPropertyInstance(numOfBus, numOfBranch, voltageLevel):
-    topo_info = TopoInfo.TopologicalInformation(numOfBus, numOfBranch, voltageLevel)   
+def createTopologicalInformationPropertyInstance(numOfBus, voltageLevel):
+    topo_info = TopoInfo.TopologicalInformation(numOfBus, voltageLevel)   
     busInfoArrays = readFile(topo_info.BusInfo)
     branchTopoInfoArrays = readFile(topo_info.BranchInfo)
     return topo_info, busInfoArrays, branchTopoInfoArrays
@@ -140,7 +140,7 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
         return
     store = LocalGraphStore(storeType) 
     ## specify the topology properties according to the model type
-    topo_info, busInfoArrays, branchTopoInfoArrays = createTopologicalInformationPropertyInstance(numOfBus, numOfBranch, voltageLevel)
+    topo_info, busInfoArrays, branchTopoInfoArrays = createTopologicalInformationPropertyInstance(numOfBus, voltageLevel)
 
     ## initialise the Sleepycat
     if isinstance(store, Sleepycat): 
@@ -174,10 +174,10 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
     aggregatedBusList = checkaggregatedBus(numOfBus)
     
     ## create the bus nodes
-    graph, orderedBusList, orderedLatlon = addBusTopologyNodes(graph, numOfBus, numOfBranch, topo_info.headerBusTopologicalInformation, busInfoArrays, ontopowsys_namespace, topology_root_node, uk_topo)
+    graph, orderedBusList, orderedLatlon = addBusTopologyNodes(graph, topo_info.headerBusTopologicalInformation, busInfoArrays, ontopowsys_namespace, topology_root_node, uk_topo)
     
     ## create branch nodes
-    graph = addBranchTopologyNodes(graph, numOfBus, numOfBranch, topo_info.headerBranchTopologicalInformation, branchTopoInfoArrays, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo)
+    graph = addBranchTopologyNodes(graph, numOfBranch, topo_info.headerBranchTopologicalInformation, branchTopoInfoArrays, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo)
     
     ## create tehe generator nodes
     graph = addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo)
@@ -197,7 +197,7 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
     return
 
 
-def addBusTopologyNodes(graph, numOfBus, numOfBranch, busTopoheader, busDataArray, ontopowsys_namespace, topology_root_node, uk_topo): 
+def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace, topology_root_node, uk_topo): 
     print('****************Start adding bus node triples in the topology graph****************')
     
     ## Check the bus data header
@@ -226,7 +226,7 @@ def addBusTopologyNodes(graph, numOfBus, numOfBranch, busTopoheader, busDataArra
         counter += 1     
     return graph, orderedBusList, orderedLatlon
 
-def addBranchTopologyNodes(graph, numOfBus, numOfBranch, branchTopoHeader, branchTopoArray, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo): 
+def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, branchTopoArray, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo): 
     print("****************Adding the triples of ELine of the grid topology.****************") 
     ## check the branch topology data header
     for header in branchTopoArray[0]:
@@ -304,7 +304,7 @@ def addBranchTopologyNodes(graph, numOfBus, numOfBranch, branchTopoHeader, branc
     
 def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo):    
     print('****************Adding the triples of Generator of the grid topology.****************')
-    counter = 1 
+    # counter = 1 
     if modelFactorArrays[0] != ukmf.headerModelFactor:
         raise Exception('The bus model factor data header is not matched, please check the data file')
     
@@ -332,22 +332,22 @@ def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClu
         genClusterMethod = getattr(gc, generatorClusterFunctionName)
         # pass the arrguments to the cluster method
         bus_generator_assignment_list = genClusterMethod(busInfoList, res_queryPowerPlantAttributes, aggregatedBusList)    
-                             
+
     for busGen in bus_generator_assignment_list: # Bus_node, EBus, Bus_lat_lon[], Bus_LACode; PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology
         ## Link the generator_node, EGen_node and their PowerGenerator of the power plant
         graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(busGen['PowerGenerator'])))
         graph.add((URIRef(busGen['PowerGenerator']), URIRef(meta_model_topology.hasOutput.iri), URIRef(busGen['Bus_node'])))
        
         ## Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
-        graph = AddCostAttributes(graph, counter, busGen['PrimaryFuel'], busGen['GenerationTechnology'], busGen['PowerGenerator'], modelFactorArrays, ontopowsys_namespace, uk_topo)
-        counter += 1               
+        graph = AddCostAttributes(graph, busGen['PrimaryFuel'], busGen['GenerationTechnology'], busGen['PowerGenerator'], modelFactorArrays, ontopowsys_namespace, uk_topo)
+        # counter += 1               
      
     # print(graph.serialize(format="turtle").decode("utf-8"))
     return graph
 
 """This function is designed for added the attributes to the generator cost function"""
-def AddCostAttributes(graph, counter, fuelType, genTech, generatorNodeIRI, modelFactorArrays, ontopowsys_namespace, uk_topo): 
-    fuelType = str(fuelType)
+def AddCostAttributes(graph, fuelType, genTech, generatorNodeIRI, modelFactorArrays, ontopowsys_namespace, uk_topo): 
+    fuelType = str(fuelType.split('#')[1])
     genTech = str(genTech)
     if fuelType in ukmf.Renewable:
         fuelTypeIndex = 1     # fuelTypeIndex, 1: Renewable, 2: Nuclear, 3: Bio, 4: Coal, 5: CCGT, 6: OCGT, 7: OtherPeaking
@@ -357,9 +357,9 @@ def AddCostAttributes(graph, counter, fuelType, genTech, generatorNodeIRI, model
         fuelTypeIndex = 3
     elif fuelType in 'Coal': 
         fuelTypeIndex = 4
-    elif fuelType in ukmf.CCGT:  
+    elif genTech in ukmf.CCGT: 
         fuelTypeIndex = 5
-    elif fuelType in ukmf.OCGT:  
+    elif genTech in ukmf.OCGT:  
         fuelTypeIndex = 6
     else:
         fuelTypeIndex = 7  
@@ -420,7 +420,7 @@ def checkaggregatedBus(numOfBus):
 if __name__ == '__main__': 
     # topoConfig = rootNodeAndNameSpace(10, 14, 'ukdigitaltwin_test2', 'Great_Britain')
     # print(topoConfig)
-    # createTopologyGraph(topoConfig, 'sameRegionWithBus', ["275", "400"], None, False, 'default')
+    # createTopologyGraph(topoConfig, 'sameRegionWithBus', ["275", "400"], None, True, 'default')
     
     topoConfig = rootNodeAndNameSpace(29, 99, 'ukdigitaltwin_test2', 'Great_Britain')
     print(topoConfig)
