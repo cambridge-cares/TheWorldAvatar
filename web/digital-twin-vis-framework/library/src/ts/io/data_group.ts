@@ -69,9 +69,18 @@ class DataGroup {
             let node = layersJSON[i];
             let source = this.getSourceWithName(node["source"]);
 
-            let layer = new DataLayer(node["name"], source);
+            let layer = null;
+            switch(Manager.PROVIDER) {
+                case MapProvider.MAPBOX:
+                    layer = new MapBoxLayer(node["name"], source);
+                break;
+    
+                default:
+                    throw new Error("Unknown map provider specified!");
+                break;
+            }
+           
             layer.definition = node;
-            
             this.dataLayers.push(layer);
         }
     }

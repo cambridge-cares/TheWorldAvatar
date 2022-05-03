@@ -9,6 +9,11 @@ class Manager {
     public static CURRENT_GROUP: DataGroup;
 
     /**
+     * 
+     */
+    public static PROVIDER: MapProvider;
+
+    /**
      * Stores definitions of data sources.
      */
     private dataStore: DataStore = new DataStore();
@@ -17,11 +22,13 @@ class Manager {
      * Map handler instance.
      */
     private mapHandler: MapHandler;
-
+   
     /**
      * Initialise a new Manager instance.
      */
     constructor(mapProvider: MapProvider) {
+        Manager.PROVIDER = mapProvider;
+
         // Initialise the map handler instance
         switch(mapProvider) {
             case MapProvider.MAPBOX:

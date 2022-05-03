@@ -36,7 +36,7 @@ abstract class DataLayer {
     public isClickable(): boolean {
         if(this.definition != null) {
             if("clickable" in Object.keys(this.definition)) {
-                return definition["clickable"];
+                return this.definition["clickable"];
             }
         }
         return false;

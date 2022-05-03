@@ -24,7 +24,7 @@
             },
             "paint": {
                 "fill-extrusion-color": "#000000",
-                "fill-extrusion-opacity": 0.25,
+                "fill-extrusion-opacity": 0.33,
                 "fill-extrusion-base": 0,
                 "fill-extrusion-height": [
                     "case",

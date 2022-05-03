@@ -31,7 +31,7 @@ class MapHandler_MapBox extends MapHandler {
 
             // Setup mouse interactions
             MapHandler.MAP.on("click", (event) => this.handleClick(event));
-            MapHandler.MAP.on("mousemove", (event) => this.handleMove(event));
+            MapHandler.MAP.on("mousemove", (event) => this.handleMouse(event));
         }  else {
             // Reinitialise state of existing map
             MapHandler.MAP.setStyle(newOptions["style"]);
@@ -58,12 +58,12 @@ class MapHandler_MapBox extends MapHandler {
         //   - hidden layers
         //   - default layers added by MapBox
         features = features.filter(feature => {
-            if(featureLayer.includes("arrows")) return false;
-            if(featureLayer.includes("highlight")) return false;
-            if(featureLayer.includes("focus")) return false;
-
             let layer = feature["layer"]["id"]
             if(MapHandler.MAP.getLayoutProperty(layer, "visibility") === "none") return false;
+
+            if(layer.includes("arrows")) return false;
+            if(layer.includes("highlight")) return false;
+            if(layer.includes("focus")) return false;
 
             if(!layer["matadata"]) {
                 return false;
@@ -80,8 +80,8 @@ class MapHandler_MapBox extends MapHandler {
                 // Click on overlapping, individual features
             } else {
                 // Click on single feature
-                let layer = Manager.CURRENT_GROUP.getLayerWithName(feature["layer"]["id"]);
-                layer.handleClick(feature);
+                let layer = Manager.CURRENT_GROUP.getLayerWithName(features[0]["layer"]["id"]);
+                layer.handleClick(features[0]);
             }
         }
     }
@@ -92,28 +92,31 @@ class MapHandler_MapBox extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
+        // Get a list of features under the mouse
         let features = MapHandler.MAP.queryRenderedFeatures(event.point);
-        let feature = features.find(feature => {
-            let layer = feature["layer"]["id"]
-            if(MapHandler.MAP.getLayoutProperty(layer, "visibility") === "none") return false;
-
-            if(!layer["matadata"]) {
-                return false;
-            } else {
-                if(!layer["metadata"]["attribution"] || layer["metadata"]["attribution"] !== "CMCL Innovations") return false;
-                if(!layer["metadata"]["clickable"]) return false;
-            }
+        features = features.filter(feature => {
+            return isCMCLLayer(feature);
         });
 
-        // Mouse no longer over any features
-        if(!feature) {
+        if(features.length > 1) {
+            console.log("There are " + features.length + " features under mouse");
+            console.log(features);
+        }
+
+        if(features.length === 0) {
+            // Mouse no longer over any features
             MapHandler.MAP.getCanvas().style.cursor = '';
-            this.popup.remove();
-        } else {
+
+        } else if(features.length === 1) {
+            // Mouse over single feature
+            let feature = features[0];
             let layer = Manager.CURRENT_GROUP.getLayerWithName(feature["layer"]["id"]);
             if(layer != null && layer instanceof MapBoxLayer) {
                 (<MapBoxLayer> layer).handleMouseEnter(feature);
             }
+
+        } else {
+            // Mouse over multiple features
         }
     }
 
