@@ -183,6 +183,24 @@ public class IntegrationTest {
 				.put(DerivationClient.DOWNSTREAMDERIVATION_KEY, new JSONObject());
 		String response = AgentCaller.executeGetWithURLAndJSON("http://localhost:8081/DerivationExample/DifferenceAgent", request.toString());
 		JSONObject responseJson = new JSONObject(response);
+
+		// NOTE following the updated design of SPARQL udpate with sub query, the
+		// DifferenceAgent will NOT update the knowledge graph in this situation as all
+		// three DifferenceDerivation/MaxValueDerivation/MinValueDerivation will be
+		// initialised with timestamp 0, thus by just looking at the timestamp, the
+		// DifferenceDerivation is "up-to-date", the SPARQL update will thus not be
+		// executed, therefore nothing changes and the timestamp of DifferenceDerivation
+		// remains 0
+		Assert.assertEquals(0, responseJson.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY));
+
+		// now if we change the timestamp of the MaxValueDerivation then fire the
+		// request again, it should be working as expected
+		RemoteStoreClient storeClient = new RemoteStoreClient(kgurl, kgurl, Config.kguser, Config.kgpassword);
+		DerivationClient devClient = new DerivationClient(storeClient, InitialiseInstances.derivationInstanceBaseURL);
+		devClient.updateTimestamp(initResponse.getString(InitialiseInstances.max_dev_key));
+		response = AgentCaller.executeGetWithURLAndJSON("http://localhost:8081/DerivationExample/DifferenceAgent",
+				request.toString());
+		responseJson = new JSONObject(response);
 		Assert.assertTrue(responseJson.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY) > 0);
 	}
 }
