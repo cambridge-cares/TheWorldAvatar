@@ -1,13 +1,11 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.util.Iterator;
+
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Statement;
 
 /**
- * Mock store client based on an in-memory LocalStoreClient.
+ * MockStoreClient based on the in-memory LocalStoreClient class.
  * This class is designed as a mock StoreClientInterface type 
  * object for testing purposes. 
  * @author csl37
@@ -31,5 +29,24 @@ public class MockStoreClient extends LocalStoreClient {
 		builder.addInsert(s, p, o);
 		executeUpdate(builder.buildRequest());	
 	}
-
+	
+	/**
+	 * Clear the mock dataset
+	 */
+	public void clear() {
+		
+		conn.delete();
+		Iterator<String> it = dataset.listNames();
+		while(it.hasNext()) {
+			conn.delete(it.next());
+		}
+	}
+	
+	/**
+	 * isEmpty
+	 */
+	public void isEmpty() {
+		dataset.isEmpty();
+	}
+	
 }
