@@ -18,6 +18,14 @@ public class MockStoreClient extends LocalStoreClient {
 	}
 	
 	/**
+	 * Load file into dataset
+	 * @param path
+	 */
+	public void load(String path) {
+		conn.load(path);
+	}
+	
+	/**
 	 * Add a single triple to the store
 	 * @param subject
 	 * @param predicate
@@ -29,7 +37,7 @@ public class MockStoreClient extends LocalStoreClient {
 		builder.addInsert(s, p, o);
 		executeUpdate(builder.buildRequest());	
 	}
-		
+	
 	/**
 	 * Clear the mock dataset
 	 */
