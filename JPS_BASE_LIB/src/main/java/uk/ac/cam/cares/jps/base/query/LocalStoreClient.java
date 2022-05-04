@@ -46,7 +46,34 @@ public class LocalStoreClient implements StoreClientInterface {
 		dataset = DatasetFactory.create();
 		conn = RDFConnectionFactory.connect(dataset);
 	}
-
+	
+	public LocalStoreClient(String query) {
+		dataset = DatasetFactory.create();
+		conn = RDFConnectionFactory.connect(dataset);
+		this.query = query;
+	}
+	
+	/**
+	 * Checks the connection is active.
+	 * @return
+	 */
+	public boolean isConnected() {
+		return !conn.isClosed();
+	}
+	
+	/**
+	 * Checks the model contains data.
+	 * @return
+	 */
+	public boolean isEmpty() {
+		
+		if(!isConnected()) {
+			return true;
+		}else {
+			return dataset.isEmpty();
+		}
+	}	
+	
 	///////////////////////////
 	// Sparql query and update
 	///////////////////////////

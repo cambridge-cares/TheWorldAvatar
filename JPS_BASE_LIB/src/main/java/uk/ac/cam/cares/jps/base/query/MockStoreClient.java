@@ -29,7 +29,7 @@ public class MockStoreClient extends LocalStoreClient {
 		builder.addInsert(s, p, o);
 		executeUpdate(builder.buildRequest());	
 	}
-	
+		
 	/**
 	 * Clear the mock dataset
 	 */
@@ -41,12 +41,4 @@ public class MockStoreClient extends LocalStoreClient {
 			conn.delete(it.next());
 		}
 	}
-	
-	/**
-	 * isEmpty
-	 */
-	public void isEmpty() {
-		dataset.isEmpty();
-	}
-	
 }
