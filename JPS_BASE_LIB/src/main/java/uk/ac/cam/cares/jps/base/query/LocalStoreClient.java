@@ -51,11 +51,24 @@ public class LocalStoreClient implements StoreClientInterface {
 	// Sparql query and update
 	///////////////////////////
 	
+	/**
+	 * Executes the update operation using update supplied
+	 * through the constructor or setter methods.
+	 * 
+	 * @param
+	 * @return
+	 */
 	@Override
 	public int executeUpdate() {
 		return executeUpdate(this.query);
 	}
 
+	/**
+	 * Executes the update operation supplied by the calling method.
+	 * 
+	 * @param update as String
+	 * @return
+	 */
 	@Override
 	public int executeUpdate(String update) {
 		try {
@@ -68,33 +81,65 @@ public class LocalStoreClient implements StoreClientInterface {
 		return 0;
 	}
 	
+	/**
+	 * Executes the update operation supplied by the calling method.
+	 * 
+	 * @param update as String
+	 * @return
+	 */
 	@Override
 	public int executeUpdate(UpdateRequest update) {
 		return executeUpdate(update.toString());		
 	}
 
+	/**
+	 * Execute sparql query using the query variable
+	 * set by the setter method
+	 * 
+	 * @return JSONArray as String 
+	 */
 	@Override
 	public String execute(){
 		return execute(this.query);
 	}
 
+	/**
+	 * Excute sparql query supplied as argument
+	 * 
+	 * @param sparql
+	 * @return JSONArray as String
+	 */
 	@Override
 	public String execute(String query){
 		JSONArray result = executeQuery(query);
 		return result.toString();
 	}
 
+	/**
+	 * Excute sparql query supplied as argument
+	 * 
+	 * @param sparql
+	 * @return JSONArray
+	 */
 	@Override
 	public JSONArray executeQuery(String sparql) {
 		ResultSet results = performExecuteQuery(sparql);
 		return convert(results);
 	}	
 
+	/**
+	 * Executes the query supplied by the calling method and returns results
+	 * as a JSONArray.
+	 */
 	@Override
 	public JSONArray executeQuery() {
 		return executeQuery(this.query);
 	}
 
+	/**
+	 * Performs query execution
+	 * @param sparql
+	 */
 	private ResultSet performExecuteQuery(String sparql) {		
 		try {
 			conn.begin( TxnType.READ );
@@ -106,6 +151,9 @@ public class LocalStoreClient implements StoreClientInterface {
 		}	
 	}
 
+	/**
+	 * Convert query results to JSONArray
+	 */
 	private JSONArray convert(ResultSet resultSet) {
 	
 		JSONArray json = new JSONArray();
@@ -128,11 +176,17 @@ public class LocalStoreClient implements StoreClientInterface {
 		return json;
 	}
 
+	/**
+	 * Execute sparql construct query
+	 */
 	@Override
 	public Model executeConstruct(Query sparql) {
 		return executeConstruct(sparql.toString());
 	}
 
+	/**
+	 * Execute sparql construct query
+	 */
 	@Override
 	public Model executeConstruct(String sparql) {
 		try {
@@ -145,6 +199,13 @@ public class LocalStoreClient implements StoreClientInterface {
 		}
 	}
 	
+	/**
+	 * Get rdf content from store.
+	 * Performs a construct query on the store and returns the model as a string.
+	 * @param graphName (if any)
+	 * @param accept
+	 * @return String
+	 */
 	@Override
 	public String get(String resourceUrl, String accept) {
 		
@@ -179,6 +240,12 @@ public class LocalStoreClient implements StoreClientInterface {
 		return out.toString();
 	}
 
+	/**
+	 * Insert rdf content into store. 
+	 * @param graphName (if any)
+	 * @param content
+	 * @param contentType
+	 */
 	@Override
 	public void insert(String graphName, String content, String contentType) {
 		
@@ -211,12 +278,18 @@ public class LocalStoreClient implements StoreClientInterface {
 	// Get and Set methods
 	///////////////////////////
 	
+	/**
+	 * Set query variable
+	 */
 	@Override
 	public String setQuery(String query) {
 		this.query = query;
 		return query;
 	}
 
+	/**
+	 * Get query variable
+	 */
 	@Override
 	public String getQuery() {
 		return query;
