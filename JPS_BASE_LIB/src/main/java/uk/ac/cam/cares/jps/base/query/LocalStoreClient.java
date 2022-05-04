@@ -30,15 +30,15 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * Local in-memory implementation of the StoreClientInterface,
- * designed to serve as a mock store client object for testing.
+ * designed to serve as a temporary store.
  * 
  * @author csl37
  *
  */
 public class LocalStoreClient implements StoreClientInterface {
 
-	private Dataset dataset;
-	private RDFConnection conn;
+	protected Dataset dataset;
+	protected RDFConnection conn;
 
 	private String query;
 	
