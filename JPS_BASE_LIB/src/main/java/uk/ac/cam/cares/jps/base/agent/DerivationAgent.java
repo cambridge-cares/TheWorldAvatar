@@ -98,10 +98,14 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 				LOGGER.info("Derivation Agent (URL: <" + requestParams.getString(JPSConstants.REQUESTURL)
 						+ ">) attempted to update derivation DAG in the knowledge graph with: " + sparqlUpdate
 						+ " Whether the update was successfully executed depends on if the target derivation is still outdated at the SPARQL update execution.");
+				// for normal Derivation, we need to return both timestamp and the new derived
+				Derivation updated = this.devClient.getDerivation(derivationIRI);
+				res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, updated.getTimestamp());
+				res.put(DerivationClient.AGENT_OUTPUT_KEY, updated.getBelongsToMap());
+			} else {
+				// for DerivationWithTimeSeries, we just need to return retrievedInputsAt
+				res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, outputs.getRetrievedInputsAt());
 			}
-
-			// if all agent operations executed as expected, return retrievedInputsAt
-			res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, outputs.getRetrievedInputsAt());
 		} else {
 			res.put(DerivationClient.AGENT_OUTPUT_KEY, EMPTY_REQUEST_MSG);
 		}

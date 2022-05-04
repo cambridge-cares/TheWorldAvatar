@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -828,6 +829,16 @@ public class DerivationClient {
 	}
 
 	/**
+	 * This method retrieves the derivation instance given the derivation IRI.
+	 * 
+	 * @param derivationIRI
+	 * @return
+	 */
+	public Derivation getDerivation(String derivationIRI) {
+		return this.sparqlClient.getDerivation(derivationIRI);
+	}
+
+	/**
 	 * All private functions below
 	 */
 
@@ -1033,18 +1044,23 @@ public class DerivationClient {
 							.stream().filter(e -> e.isInputToDerivation()).collect(Collectors.toList());
 
 					// NOTE difference 5 - here we create lists to be used when reconnecting
-					// inputs and updating cached data
+					// inputs and updating cached data, as now the new entiteis are returned as part
+					// of HTTP response, we can create list of Entities directly
+					// TODO we may consider return the entities if we decided to provide the
+					// TODO function accessInformation
 					List<Entity> newEntities = new ArrayList<>();
+					Iterator<String> keys = agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).keys();
+					while (keys.hasNext()) {
+						String iri = keys.next();
+						Entity ne = new Entity(iri);
+						ne.setRdfType(agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_KEY).getString(iri));
+						newEntities.add(ne);
+					}
 
 					if (inputToAnotherDerivation.size() > 0) {
-						// NOTE difference 6 - initialiseNewEntities will only be called if
-						// inputToAnotherDerivation.size() > 0, as it is not used under other situations
-						// TODO we may consider call initialiseNewEntities for all derivations if we
-						// TODO decided to provide the function accessInformation
 						LOGGER.debug(
 								"This derivation contains at least one entity which is an input to another derivation");
 						LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
-						newEntities = this.sparqlClient.initialiseNewEntities(derivation.getIri());
 
 						// UPDATE CACHED DATA
 						// here we do the mapping in memory first to get the mapping between downstream
