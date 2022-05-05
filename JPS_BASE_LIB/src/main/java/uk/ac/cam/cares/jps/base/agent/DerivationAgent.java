@@ -92,16 +92,25 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 				// at the point of executing SPARQL update, i.e. this solves concurrent request
 				// issue as detailed in
 				// https://github.com/cambridge-cares/TheWorldAvatar/issues/184
-				String sparqlUpdate = this.devClient.reconnectNewDerivedIRIs(outputs.getOutputTriples(),
+				boolean triplesChangedForSure = this.devClient.reconnectNewDerivedIRIs(outputs.getOutputTriples(),
 						outputs.getNewEntitiesDownstreamDerivationMap(), outputs.getThisDerivation(),
 						outputs.getRetrievedInputsAt());
-				LOGGER.info("Derivation Agent (URL: <" + requestParams.getString(JPSConstants.REQUESTURL)
-						+ ">) attempted to update derivation DAG in the knowledge graph with: " + sparqlUpdate
-						+ " Whether the update was successfully executed depends on if the target derivation is still outdated at the SPARQL update execution.");
+
 				// for normal Derivation, we need to return both timestamp and the new derived
-				Derivation updated = this.devClient.getDerivation(derivationIRI);
-				res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, updated.getTimestamp());
-				res.put(DerivationClient.AGENT_OUTPUT_KEY, updated.getBelongsToMap());
+				if (triplesChangedForSure) {
+					// if we know the triples are changed for sure, we return the triples
+					// computed by this agent
+					res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY,
+							outputs.getRetrievedInputsAt());
+					res.put(DerivationClient.AGENT_OUTPUT_KEY,
+							outputs.getNewEntitiesJsonMap());
+				} else {
+					// if we are not certain, query the knowledge graph to get the accurate
+					// information
+					Derivation updated = this.devClient.getDerivation(derivationIRI);
+					res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, updated.getTimestamp());
+					res.put(DerivationClient.AGENT_OUTPUT_KEY, updated.getBelongsToMap());
+				}
 			} else {
 				// for DerivationWithTimeSeries, we just need to return retrievedInputsAt
 				res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, outputs.getRetrievedInputsAt());

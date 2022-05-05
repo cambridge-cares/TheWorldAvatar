@@ -209,6 +209,14 @@ public class DerivationOutputs {
 		return newEntitiesDownstreamDerivationMap;
 	}
 
+	public JSONObject getNewEntitiesJsonMap() {
+		JSONObject newEntitiesJson = new JSONObject();
+		this.newEntitiesMap.forEach((rdfType, iris) -> {
+			iris.stream().forEach(iri -> newEntitiesJson.put(iri, rdfType));
+		});
+		return newEntitiesJson;
+	}
+
 	public long getRetrievedInputsAt() {
 		return this.retrievedInputsAt;
 	}

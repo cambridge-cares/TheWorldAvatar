@@ -821,7 +821,7 @@ public class DerivationClient {
 	 * @param derivation
 	 * @param retrievedInputsAt
 	 */
-	public String reconnectNewDerivedIRIs(List<TriplePattern> outputTriples,
+	public boolean reconnectNewDerivedIRIs(List<TriplePattern> outputTriples,
 			Map<String, List<String>> newIriDownstreamDerivationMap, String derivation,
 			Long retrievedInputsAt) {
 		return this.sparqlClient.reconnectNewDerivedIRIs(outputTriples, newIriDownstreamDerivationMap,

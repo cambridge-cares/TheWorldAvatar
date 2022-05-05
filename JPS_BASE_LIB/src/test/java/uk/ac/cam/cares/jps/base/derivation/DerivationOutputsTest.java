@@ -5,6 +5,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -168,7 +169,7 @@ public class DerivationOutputsTest {
 	}
 
 	@Test
-	public void testCreateNewEntity_CreateNewEntityWithBaseUrl_GetNewDerivedIRI()
+	public void testCreateNewEntity_CreateNewEntityWithBaseUrl_GetNewDerivedIRI_GetNewEntitiesJsonMap()
 			throws Exception {
 		DerivationOutputs devOutputs = new DerivationOutputs();
 		Field newentities = devOutputs.getClass().getDeclaredField("newEntitiesMap");
@@ -255,10 +256,27 @@ public class DerivationOutputsTest {
 				triples.get(10).getQueryString());
 
 		// test getNewDerivedIRI
-		Assert.assertTrue(equalLists(
-				Arrays.asList(iri1_1, iri1_2, iri2_1, iri2_2, iri2_3, iri3_1, iri_new_1_1, iri_new_1_2, iri_new_2_1,
-						iri_new_2_2, iri_new_2_3),
-				devOutputs.getNewDerivedIRI()));
+		List<String> allInstances = Arrays.asList(iri1_1, iri1_2, iri2_1, iri2_2, iri2_3, iri3_1, iri_new_1_1,
+				iri_new_1_2, iri_new_2_1, iri_new_2_2, iri_new_2_3);
+		Assert.assertTrue(equalLists(allInstances, devOutputs.getNewDerivedIRI()));
+
+		Map<String, String> iriRdfTypeMap = new HashMap<>();
+		iriRdfTypeMap.put(iri1_1, rdfType1);
+		iriRdfTypeMap.put(iri1_2, rdfType1);
+		iriRdfTypeMap.put(iri2_1, rdfType2);
+		iriRdfTypeMap.put(iri2_2, rdfType2);
+		iriRdfTypeMap.put(iri2_3, rdfType2);
+		iriRdfTypeMap.put(iri3_1, rdfType3);
+		iriRdfTypeMap.put(iri_new_1_1, prefix1 + rdfTypeClz);
+		iriRdfTypeMap.put(iri_new_1_2, prefix1 + rdfTypeClz);
+		iriRdfTypeMap.put(iri_new_2_1, prefix2 + rdfTypeClz);
+		iriRdfTypeMap.put(iri_new_2_2, prefix2 + rdfTypeClz);
+		iriRdfTypeMap.put(iri_new_2_3, prefix2 + rdfTypeClz);
+
+		// test getNewEntitiesJsonMap
+		JSONObject newEntitiesJson = devOutputs.getNewEntitiesJsonMap();
+		allInstances.stream()
+				.forEach(iri -> Assert.assertEquals(iriRdfTypeMap.get(iri), newEntitiesJson.getString(iri)));
 	}
 
 	@Test

@@ -2,13 +2,17 @@ package uk.ac.cam.cares.jps.base.derivation;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -33,12 +37,17 @@ import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
  * SPARQL queries/updates for instances related to derived quantities
@@ -2243,7 +2252,7 @@ public class DerivationSparql {
 
 	/**
 	 * This method reconnects new derived IRIs when a derivation is updated,
-	 * specifically, it does below four operations in one-go:
+	 * specifically, it does below five operations in one-go:
 	 * (1) delete old outputs (entities) of the given derivation and its connections
 	 * with downstream derivations;
 	 * (2) delete status of the derivation if exist (applicable for outdated sync
@@ -2259,12 +2268,18 @@ public class DerivationSparql {
 	 * request issue as detailed in
 	 * https://github.com/cambridge-cares/TheWorldAvatar/issues/184.
 	 * 
+	 * This method returns a boolean value to indicate if it is certain that the
+	 * triples in the update endpoint are changed by the SPARQL update operation. A
+	 * true boolean will be returned IF AND ONLY IF the triples are changed FOR
+	 * SURE. There might be situation that triples are changed by the SPARQL update
+	 * but the response is not clear enough to say, where false will be returned.
+	 * 
 	 * @param outputTriples
 	 * @param newIriDownstreamDerivationMap
 	 * @param derivation
 	 * @param retrievedInputsAt
 	 */
-	String reconnectNewDerivedIRIs(List<TriplePattern> outputTriples,
+	boolean reconnectNewDerivedIRIs(List<TriplePattern> outputTriples,
 			Map<String, List<String>> newIriDownstreamDerivationMap, String derivation,
 			Long retrievedInputsAt) {
 		ModifyQuery modify = Queries.MODIFY();
@@ -2344,8 +2359,28 @@ public class DerivationSparql {
 				.delete(deleteEntityAsSubject, deleteEntityAsObject, tp1, tp2, tp3, deleteOldTimestamp)
 				.insert(insertNewTimestamp).where(sub);
 
-		storeClient.executeUpdate(modify.getQueryString());
-		return modify.getQueryString();
+		try {
+			if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
+				HttpResponse httpResponse = ((RemoteStoreClient) storeClient)
+						.executeUpdateByPost(modify.getQueryString());
+				if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
+					String html = EntityUtils.toString(httpResponse.getEntity());
+					Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
+					Matcher matcher = pattern.matcher(html);
+					if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
+						// only return true if the agent is able to parse "mutationCount=(.*)</p" and
+						// the parsed value is greater than 0
+						return true;
+					}
+				}
+			} else {
+				storeClient.executeUpdate(modify.getQueryString());
+			}
+		} catch (ClassCastException | ParseException | IOException exception) {
+			LOGGER.debug(exception);
+			storeClient.executeUpdate(modify.getQueryString());
+		}
+		return false;
 	}
 
 	/**
