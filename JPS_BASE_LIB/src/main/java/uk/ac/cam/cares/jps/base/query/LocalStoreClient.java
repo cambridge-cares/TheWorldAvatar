@@ -44,7 +44,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	protected Dataset dataset;
 	protected RDFConnection conn;
 
-	private String query;
+	protected String query;
 	
 	public LocalStoreClient() {
 		dataset = DatasetFactory.create();
