@@ -5,12 +5,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpEntity;
@@ -268,6 +272,26 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * Detects if the provided SPARQL update endpoint is blazegraph backended.
+     * 
+     * @return
+     */
+    public boolean isUpdateEndpointBlazegraphBackended() {
+        if (!Objects.isNull(this.getUpdateEndpoint())) {
+            try {
+                if (Paths.get(new URI(this.getUpdateEndpoint().toLowerCase()).getPath()).toString()
+                        .replace("\\", "/") // added to make sure it also works on the windows machine
+                        .contains("/blazegraph/namespace/")) {
+                    return true;
+                }
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     ///////////////////////////
