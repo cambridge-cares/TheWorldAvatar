@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import glob
+import logging
 
 def wait():
 	input("Press Enter to continue...")
@@ -82,3 +83,14 @@ def get_xyz_from_parsed_json(parsedJsonData):
         xyz_coords = f"{xyz_coords}{a} {g[0]} {g[1]} {g[2]}\n"
     xyz_coords = xyz_coords.rstrip()
     return xyz_coords
+
+
+def config_logging():
+    logHandlers = []
+    logHandlers.append(logging.StreamHandler())
+
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s [%(threadName)s] [%(levelname)s] %(message)s",
+        handlers=logHandlers,
+    )

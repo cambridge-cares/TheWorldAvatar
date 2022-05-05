@@ -1,0 +1,64 @@
+{
+    "Empirical_Formula": "CO2",
+    "Atom_Total_Counts": [
+        1,
+        2
+    ],
+    "Atom_List": [
+        "C",
+        "O",
+        "O"
+    ],
+    "Atom_Masses": [
+        12.0,
+        15.99491,
+        15.99491
+    ],
+    "Elements": [
+        "C",
+        "O"
+    ],
+    "Level_of_Theory": "RB3LYP",
+    "Basis_Set": "6-311G(d,p)",
+    "Spin_Multiplicity": 1,
+    "Total_Charge": 0,
+    "Geometry_Type": "linear",
+    "X_Atoms_Coordinates": [
+        -3.555363,
+        -4.715866,
+        -2.394861
+    ],
+    "Y_Atoms_Coordinates": [
+        -0.513457,
+        -0.521191,
+        -0.505724
+    ],
+    "Z_Atoms_Coordinates": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "Rotational_Constants_String": "11.729883",
+    "Rotational_Constants_Number": 1,
+    "Rotational_Symmetry_Number": 1,
+    "Frequencies_String": "666.8738 666.8738 1374.9931 2434.8919",
+    "Frequencies_Number": 4,
+    "Electronic_Energy": -188.641138764,
+    "Electronic_And_ZPE_Energy": -188.629421,
+    "ZPE_Energy": 0.011717763999996578,
+    "Homo_Energy": -0.37686,
+    "Homo-1_Energy": -0.37686,
+    "Homo-2_Energy": -0.52194,
+    "Lumo_Energy": 0.02943,
+    "Lumo+1_Energy": 0.02943,
+    "Lumo+2_Energy": 0.06533,
+    "Program_Name": "Gaussian",
+    "Program_Version": "2009+D.01",
+    "Run_Date": "Thu Jul 16 13:46:13 2020",
+    "Log_File_Name": "co2_linked_g09.log",
+    "Species_IRI": "test_species_iri",
+    "Entry_IRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
+    "PNG_Source_Location": "dummy_location/co2_linked_g09.log_1.oc_json.png",
+    "CCLOG_Source_Location": "dummy_location/co2_linked_g09.log",
+    "Entry_ID": "testID-111-111-111"
+}
