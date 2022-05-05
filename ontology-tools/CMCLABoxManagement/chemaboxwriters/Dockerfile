@@ -2,8 +2,7 @@ FROM condaforge/miniforge3
 
 # Expose the port on which our server will run
 EXPOSE 5000
-# Keeps Python from generating .pyc files in the container
-#ENV PYTHONDONTWRITEBYTECODE=1
+
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
@@ -12,7 +11,7 @@ WORKDIR /app
 
 RUN git clone https://github.com/cambridge-cares/TheWorldAvatar.git --no-checkout TWA && \
     cd TWA && git sparse-checkout init --cone && git sparse-checkout set thermo/chemutils && \
-    git checkout dev-chemaboxwriters && cd thermo/chemutils && chmod 777 ./install_script_conda.sh
+    git checkout main && cd thermo/chemutils && chmod 777 ./install_script_conda.sh
 
 COPY ./chemaboxwriters/ ./chemaboxwriters
 COPY ./install_script_conda.sh .
