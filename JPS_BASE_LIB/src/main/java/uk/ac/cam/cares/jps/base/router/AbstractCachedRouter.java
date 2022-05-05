@@ -7,10 +7,22 @@ import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * This defines an abstract CachedRouter class. The extending class must 
- * initialize the cache in its constructor and implement the getFromStore 
- * method to fetch data from the router triple store.
- * The get method should be used to retrieve routing data.
+ * This abstract class defines a cached router. The extending router class must 
+ * initialize the {@link uk.ac.cam.cares.jps.base.interfaces.CacheInterface cache} 
+ * in its constructor and implement the 
+ * {@link uk.ac.cam.cares.jps.base.router.AbstractCachedRouter#getStoreClient getStoreClient}
+ * and {@link uk.ac.cam.cares.jps.base.router.AbstractCachedRouter#getFromStore getFromStore} 
+ * methods to initialize the {@link  uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClient}
+ * object and fetch data from the router triple store.
+ * The {@link uk.ac.cam.cares.jps.base.router.AbstractCachedRouter#get get} method 
+ * should be used to retrieve routing data e.g.
+ * <pre>
+ * cachedRouter.get(Key)
+ * </pre>
+ *
+ * @see uk.ac.cam.cares.jps.base.interfaces.CacheInterface CacheInterface
+ * @see uk.ac.cam.cares.jps.base.cache.LRUCache LRUCache
+ * 
  * @author csl37
  *
  * @param <K> key type
@@ -29,7 +41,9 @@ public abstract class AbstractCachedRouter<K, V> {
 	/**
 	 * Get value mapped to the specified key. If the key is not in the cache 
 	 * then get the value from the triple store and add it to the cache.
+	 * 
 	 * @param key
+	 * 
 	 * @return value
 	 */
 	public V get(K key) {
@@ -49,15 +63,20 @@ public abstract class AbstractCachedRouter<K, V> {
 	}
 	
 	/**
-	 * Extending class to implement logic for instantiating a storeClient
-	 * @return store Client
+	 * Extending class to implement logic for instantiating a 
+	 * {@link  uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClient}
+	 * 
+	 * @return storeClient
 	 */
 	abstract protected StoreClientInterface getStoreClient();
 	
 	/**
 	 * Extending class to implement logic for getting value(s) from triple store
+	 * 
 	 * @param key
-	 * @return
+	 * @param storeClient of type {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface} 
+	 * 
+	 * @return value
 	 */
 	abstract protected V getFromStore(K key, StoreClientInterface storeClient);	
 }

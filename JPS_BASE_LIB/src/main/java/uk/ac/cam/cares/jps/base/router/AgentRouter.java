@@ -17,15 +17,14 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * This class is designed to get the URL 
- * of a requested agent from the ontoagent triple store:
+ * This class is designed to get the URL of a requested agent from the ontoagent triple store:
  * <pre>
  * AgentRouter.getInstance().get(agent_name)
  * </pre>
+ * This class extends the {@link uk.ac.cam.cares.jps.base.router.AbstractCachedRouter AbstractCachedRouter} 
+ * class and uses a {@link uk.ac.cam.cares.jps.base.cache.LRUCache LRUCache} to cache results. 
+ * If a result is not in the cache, the router will query the ontoagent triple store for the data.
  * 
- * This class extends the AbstractCachedRouter class and uses
- * a LRUCache to cache results. If a result is not in the cache,
- * the router will query the ontoagent triple store for the data.
  * @author csl37
  *
  */
