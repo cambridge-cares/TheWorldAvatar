@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 01 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 01 Apr 2022                            #
+################################################
 
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
@@ -22,39 +22,39 @@ def all_airquality_station_ids() -> str:
     return query
 
 
-# def instantiated_metoffice_stations(circle_center: str = None,
-#                                     circle_radius: str = None) -> str:
-#     # Returns query to retrieve identifiers and IRIs of instantiated stations
-#     if not circle_center and not circle_radius:
-#         # Retrieve all stations
-#         query = f"""
-#             SELECT ?id ?station
-#             WHERE {{
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-#                      <{EMS_HAS_IDENTIFIER}> ?id 
-#                 }}
-#         """
-#     else:
-#         # Retrieve only stations in provided circle (radius in km)
-#         query = f"""
-#             {create_sparql_prefix('geo')}
-#             SELECT ?id ?station
-#             WHERE {{
-#                   SERVICE geo:search {{
-#                     ?station geo:search "inCircle" .
-#                     ?station geo:predicate <{EMS_HAS_OBSERVATION_LOCATION}> .
-#                     ?station geo:searchDatatype <{GEOLIT_LAT_LON}> .
-#                     ?station geo:spatialCircleCenter "{circle_center}" .
-#                     ?station geo:spatialCircleRadius "{circle_radius}" . 
-#                 }}
-#                 ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                          <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-#                          <{EMS_HAS_IDENTIFIER}> ?id 
-#                 }}
-#         """
+def instantiated_airquality_stations(circle_center: str = None,
+                                     circle_radius: str = None) -> str:
+    # Returns query to retrieve identifiers and IRIs of instantiated stations
+    if not circle_center and not circle_radius:
+        # Retrieve all stations
+        query = f"""
+            SELECT ?id ?station
+            WHERE {{
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
+                     <{EMS_HAS_IDENTIFIER}> ?id 
+                }}
+        """
+    else:
+        # Retrieve only stations in provided circle (radius in km)
+        query = f"""
+            {create_sparql_prefix('geo')}
+            SELECT ?id ?station
+            WHERE {{
+                  SERVICE geo:search {{
+                    ?station geo:search "inCircle" .
+                    ?station geo:predicate <{EMS_HAS_OBSERVATION_LOCATION}> .
+                    ?station geo:searchDatatype <{GEOLIT_LAT_LON}> .
+                    ?station geo:spatialCircleCenter "{circle_center}" .
+                    ?station geo:spatialCircleRadius "{circle_radius}" . 
+                }}
+                ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                         <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
+                         <{EMS_HAS_IDENTIFIER}> ?id 
+                }}
+        """
     
-#     return query
+    return query
 
 
 def instantiated_airquality_stations_with_details(circle_center: str = None,

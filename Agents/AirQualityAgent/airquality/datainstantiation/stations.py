@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 27 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 27 Apr 2022                            #
+################################################
 
 # The purpose of this module is to provide functions to retrieve 
 # station data from the UK Air API and instantiate it in the KG
@@ -73,7 +73,7 @@ def retrieve_station_data_from_api(crs: str = 'EPSG:4326') -> list:
             List of dicts with station data as returned by API
     """
 
-    # Construct API to get basic information for all staions
+    # Construct API call to get basic information for all staions
     if crs and re.match(r"EPSG:\d+", crs):
         url = f'https://uk-air.defra.gov.uk/sos-ukair/api/v1/stations?{crs}'
         if crs != 'EPSG:4326':
@@ -99,9 +99,9 @@ def retrieve_station_data_from_api(crs: str = 'EPSG:4326') -> list:
     # measurement features has different IDs). Hence, the  station name will also 
     # serve as unique identifier
     stations = [{'station': s['properties']['label'].split('-')[0],
-                'latitude': s['geometry']['coordinates'][0],
-                'longitude': s['geometry']['coordinates'][1], 
-                'elevation': s['geometry']['coordinates'][2],
+                 'latitude': s['geometry']['coordinates'][0],
+                 'longitude': s['geometry']['coordinates'][1], 
+                 'elevation': s['geometry']['coordinates'][2],
                 } for s in stations_raw ]
     df = pd.DataFrame(stations)
     
@@ -190,6 +190,7 @@ def _condition_airquality_data(station_data: dict) -> dict:
 def clean_api_data(dataframe: pd.DataFrame):
     """
         Clean the DataFrame with the raw station data (as returned from API)
+        (columns: ['station', 'latitude', 'longitude', 'elevation'])
     """
     # Create local copy of DataFrame to manipulate
     data = dataframe.copy()
@@ -199,8 +200,8 @@ def clean_api_data(dataframe: pd.DataFrame):
                           'GB_SamplingFeature_missingFOI']
     data = data[~data['station'].isin(stations_to_remove)]
 
-    # Switch returned coordinates, as some of the returned station locations are
-    # far outside the UK and lat/long are most likely mixed up
+    # Potentially switch returned coordinates, as some of the returned station
+    # locations are far outside the UK and lat/lon are most likely mixed up
     data['switch'] = data.apply(lambda x: check_coordinates(x['latitude'], x['longitude']), axis=1)
     data['latitude_old'] = data['latitude']
     data['longitude_old'] = data['longitude']
