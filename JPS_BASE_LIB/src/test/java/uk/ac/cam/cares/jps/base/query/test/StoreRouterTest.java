@@ -63,8 +63,9 @@ class StoreRouterTest {
 		assertTrue(StoreRouter.isRemoteTargetResourceID("ontokin"));
 		assertTrue(StoreRouter.isRemoteTargetResourceID("ontokin123"));
 		assertTrue(StoreRouter.isRemoteTargetResourceID("123"));
+		assertTrue(StoreRouter.isRemoteTargetResourceID("citieskg-berlin"));
+		assertTrue(StoreRouter.isRemoteTargetResourceID("kb_ontokin"));
 		assertFalse(StoreRouter.isRemoteTargetResourceID("test/ontokin"));
-		assertFalse(StoreRouter.isRemoteTargetResourceID("kb_ontokin"));
 	}
 	
 }
