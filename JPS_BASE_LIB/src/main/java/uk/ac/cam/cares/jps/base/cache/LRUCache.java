@@ -7,8 +7,10 @@ import java.util.Map;
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 
 /**
- * Least Recently Used (LRU) Cache implementation of CacheInterface
+ * Least Recently Used (LRU) Cache implementation of 
+ * {@link uk.ac.cam.cares.jps.base.interfaces.CacheInterface CacheInterface}
  * using a LinkedHashMap
+ *
  * @author csl37
  *
  * @param <K>
@@ -34,31 +36,50 @@ public class LRUCache<K,V> implements CacheInterface<K,V>{
 			});
 	}
 	
+	/**
+	 * Put key-value pair into cache.
+	 */
 	@Override
 	public V put(K key, V value) {
 		return cache.put(key, value);
 	}
 
+	/**
+	 * Get value for supplied key. If the key does not exist,
+	 * return the default value: null.
+	 */
 	@Override
 	public V get(K key) {	
 		return cache.getOrDefault(key, DEFAULT_VALUE);
 	}
 	
+	/**
+	 * Check if the cache contains a key.
+	 */
 	@Override
 	public boolean contains(K key) {
 		return cache.containsKey(key);
 	}
 	
+	/**
+	 * Check if the cache is empty.
+	 */
 	@Override
 	public boolean isEmpty() {
 		return cache.size()==0;
 	}
 
+	/**
+	 * Clear the cache.
+	 */
 	@Override
 	public void clear() {
 		cache.clear();
 	}
 	
+	/**
+	 * Get the max capacity of the cache.
+	 */
 	@Override
 	public int capacity() {
 		return capacity;
