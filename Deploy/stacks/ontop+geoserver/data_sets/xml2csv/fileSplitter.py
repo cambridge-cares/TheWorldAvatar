@@ -1,5 +1,15 @@
 from os import name
 import time as tm
+import sys
+import re
+
+try:
+    # receive the name of the input_file from the arguments
+    input_name = sys.argv[1]
+except:
+    # if the input_file is not provided
+    raise Exception("fileSplitter: please provide a file name argument")
+    
 
 
 def read_in_chunks(file_object):
@@ -15,14 +25,16 @@ def read_in_chunks(file_object):
 counter = 0
 name_counter = 1
 compound_count = 50000 # number of compounds added per file
-File_name = 'input_files/Compound_000000001_000500000.xml'
+File_name = './input_files/'+input_name
 with open(File_name) as f:
-    
+    # if the main xml file is opened properly print the the code is running
+    if(f):
+        print("fileSplitter: is running")
     # create the outputfile
-    output_file_name = 'output_files/CID_'+str((name_counter-1)*compound_count)+'-'+str(name_counter*compound_count)+'.xml' 
+    output_file_name = './output_files/CID_'+str((name_counter-1)*compound_count)+'-'+str(name_counter*compound_count)+'.xml' 
     output = open(output_file_name,'w',newline='',encoding='UTF8')
+    print("fileSplitter: "+output_file_name+" is created")
 
-    string = ''
     for piece in read_in_chunks(f):
 
         print(str.rstrip(piece), file=output)
@@ -35,8 +47,9 @@ with open(File_name) as f:
             output.close()
             counter = 0
             name_counter += 1
-            output_file_name = 'output_files/CID_'+str((name_counter-1)*compound_count)+'-'+str(name_counter*compound_count)+'.xml' 
+            output_file_name = './output_files/CID_'+str((name_counter-1)*compound_count)+'-'+str(name_counter*compound_count)+'.xml' 
             output = open(output_file_name,'w',newline='',encoding='UTF8')
+            print("fileSplitter: "+output_file_name+" is created")
 
 
             string = \
@@ -50,4 +63,4 @@ with open(File_name) as f:
             print(string, file=output)
 
 
-print(counter)
+print("fileSplitter: done")
