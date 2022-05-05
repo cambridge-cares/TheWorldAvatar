@@ -212,8 +212,8 @@ public class ThingsBoardAPIConnector {
         
         startTs = 1;
         endTs = System.currentTimeMillis();        
-        LOGGER.info("The latest 3600 readings are retrieved from an endTs=" + endTs);
-        String historicalReadingPath = String.join("&", latestReadingPath, "startTs="+startTs, "endTs="+endTs, "limit=3600", "agg=NONE");
+        LOGGER.info("The latest 600 readings are retrieved from an endTs=" + endTs);
+        String historicalReadingPath = String.join("&", latestReadingPath, "startTs="+startTs, "endTs="+endTs, "limit=600", "agg=NONE");
         
         
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
