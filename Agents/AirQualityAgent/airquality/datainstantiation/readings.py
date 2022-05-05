@@ -524,47 +524,67 @@ def retrieve_readings_data_from_api(crs: str = 'EPSG:4326') -> list:
 
     return stations
 
-def retrieve_individual_timeseries_information_from_api(ts_id: str) -> dict:
+def retrieve_timeseries_information_from_api(ts_ids=[]) -> dict:
     """
-        Retrieve information about the nature of a particular timeseries/
-        station reading (but not the time series data itself)
+        Retrieve information about the nature of particular timeseries/
+        station reading(s) (but not the time series data itself)
+        (returns information for all available timeseries if empty list is provided)
 
         Arguments:
-            ts_id - ID of reading/timeseries
+            ts_ids - (list of) ID(s) of reading/timeseries
         Returns:
-            Dictionary with readings information
+            Dictionary with readings information (timeseries ID as key and
+            information as dictionary)
     """
 
-    # API call to get information for provided timeseries ID
-    url = f'https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries/{ts_id}'
+    # API call to get information for provided timeseries ID(s)
+    if isinstance(ts_ids, str):
+        url = f'https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries/{ts_ids}'
+        ts_ids = [ts_ids]
+    elif isinstance(ts_ids, list):
+        url = f'https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries?expanded=true'
+    else:
+        raise InvalidInput('Provided timeseries ID(s) must be a (list of) string(s).')
     try:
-        ts_raw = requests.get(url=url).json() 
+        ts_raw = requests.get(url=url).json()
     except Exception as ex:
         #logger.error("Error while retrieving timeseries information from API.")
-        raise APIException("Error while retrieving timeseries information from API.") 
+        raise APIException("Error while retrieving timeseries information from API.")
+    # Ensure returned data is list of dictionaries
+    if isinstance(ts_raw, dict):
+        ts_raw = [ts_raw]
+
+    # Return information about all timeseries if empty list is provided
+    if not ts_ids:
+        ts_ids = [ts['id'] for ts in ts_raw]
 
     # Initialise return dictionary
-    info = {}
-    # Extract relevant information from JSON response
-    if ts_raw.get('label'):
-        # Get information if exists (else returns None)
-        pollutant = ts_raw.get('parameters', {}).get('feature', {}).get('label')
-        eionet = ts_raw.get('parameters', {}).get('phenomenon', {}).get('label')
-        unit = ts_raw.get('uom')
-        # Populate dictionary
-        info['pollutant'] = pollutant.split('-')[-1] if pollutant else 'n/a'
-        info['eionet'] = eionet if eionet else 'n/a'
-        info['unit'] = unit if unit else 'n/a' 
+    infos = {}
 
-    return info
+    # Extract relevant information from JSON response
+    for ts in ts_raw:
+        info = {}
+        # Get information if exists (else returns None)
+        id = ts.get('id')
+        if id in ts_ids:
+            pollutant = ts.get('parameters', {}).get('offering', {}).get('label')
+            eionet = ts.get('parameters', {}).get('phenomenon', {}).get('label')
+            unit = ts.get('uom')
+            # Populate dictionary
+            info['pollutant'] = pollutant.split('-')[-1] if pollutant else 'n/a'
+            info['eionet'] = eionet if eionet else 'n/a'
+            info['unit'] = unit if unit else 'n/a'
+            infos[id] = info
+
+    return infos
 
 
 if __name__ == '__main__':
 
 
-    #d1 = retrieve_individual_timeseries_information_from_api('4886')
     t1 = time.time()
-    d2 = retrieve_readings_data_from_api()
+    d1 = retrieve_timeseries_information_from_api()
+    #d2 = retrieve_readings_data_from_api()
     t2 = time.time()
     print(f'Elapsed seconds: {t2-t1: .2} s')
 
