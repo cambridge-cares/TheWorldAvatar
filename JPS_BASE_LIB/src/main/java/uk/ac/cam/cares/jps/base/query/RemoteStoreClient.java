@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -284,8 +283,9 @@ public class RemoteStoreClient implements StoreClientInterface {
     public boolean isUpdateEndpointBlazegraphBackended() {
         if (!Objects.isNull(this.getUpdateEndpoint())) {
             try {
-                if (Paths.get(new URI(this.getUpdateEndpoint().toLowerCase()).getPath()).toString()
-                        .replace("\\", "/") // added to make sure it also works on the windows machine
+                // normalise the URI before checking if it contains the "/blazegraph/namespace/"
+                // so that this works on both Linux and Windows OS
+                if (new URI(this.getUpdateEndpoint().toLowerCase()).normalize().getPath().toString()
                         .contains("/blazegraph/namespace/")) {
                     return true;
                 }
