@@ -31,8 +31,13 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * Local in-memory implementation of the StoreClientInterface,
+ * Local in-memory implementation of the {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface},
  * designed to serve as a temporary store.
+ * 
+ * This class uses {@link org.apache.jena.rdfconnection.RDFConnection RDFConnection} to provide SPARQL access to an in-memory dataset. 
+ * 
+ * @see uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface
+ * @see org.apache.jena.rdfconnection.RDFConnection RDFConnection
  * 
  * @author csl37
  *
@@ -47,16 +52,22 @@ public class LocalStoreClient implements StoreClientInterface {
 	protected String query;
 	
 	public LocalStoreClient() {
-		dataset = DatasetFactory.create();
-		conn = RDFConnectionFactory.connect(dataset);
+		init();
 		LOGGER.info("LocalStoreClient instantiated.");
 	}
 	
 	public LocalStoreClient(String query) {
-		dataset = DatasetFactory.create();
-		conn = RDFConnectionFactory.connect(dataset);
+		init();
 		this.query = query;
 		LOGGER.info("LocalStoreClient instantiated with query.");
+	}
+	
+	/**
+	 * Initialize Dataset and RDFConnection 
+	 */
+	protected void init() {
+		dataset = DatasetFactory.create();
+		conn = RDFConnectionFactory.connect(dataset);
 	}
 	
 	/**
@@ -180,7 +191,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	 * Performs query execution
 	 * @param sparql
 	 */
-	private ResultSet performExecuteQuery(String sparql) {		
+	protected ResultSet performExecuteQuery(String sparql) {		
 		try {
 			LOGGER.info("Executing SPARQL query.");
 			conn.begin( TxnType.READ );
@@ -195,7 +206,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	/**
 	 * Convert query results to JSONArray
 	 */
-	private JSONArray convert(ResultSet resultSet) {
+	protected JSONArray convert(ResultSet resultSet) {
 	
 		JSONArray json = new JSONArray();
 		
@@ -302,19 +313,23 @@ public class LocalStoreClient implements StoreClientInterface {
 		InputStream in = new ByteArrayInputStream(content.getBytes());
 		
 		if (contentType == null) {
+			LOGGER.info("Assuming default content type RDF/XML");
 			//RDF/XML default
 			//base=null, assume all uri are absolute
 			model.read(in, null); 
 		} else {
 			Lang syntax = RDFLanguages.contentTypeToLang(contentType);
+			LOGGER.debug("Content type: "+syntax.getName());
 			model.read(in,null,syntax.getName());
 		}
 		
 		UpdateBuilder builder = new UpdateBuilder();
 		
 		if (graphName == null) {
+			LOGGER.debug("Create insert for default graph");
 			builder.addInsert(model);
 		} else {
+			LOGGER.debug("Create insert for namde graph: "+graphName);
 			String graphURI = "<" + graphName + ">";
 			builder.addInsert(graphURI, model);
 		}
