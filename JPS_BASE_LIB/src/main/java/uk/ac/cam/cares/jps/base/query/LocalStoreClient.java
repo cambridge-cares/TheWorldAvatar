@@ -23,6 +23,8 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -37,6 +39,8 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  */
 public class LocalStoreClient implements StoreClientInterface {
 
+	private static Logger LOGGER = LogManager.getLogger(LocalStoreClient.class);
+	
 	protected Dataset dataset;
 	protected RDFConnection conn;
 
@@ -45,12 +49,14 @@ public class LocalStoreClient implements StoreClientInterface {
 	public LocalStoreClient() {
 		dataset = DatasetFactory.create();
 		conn = RDFConnectionFactory.connect(dataset);
+		LOGGER.info("LocalStoreClient instantiated.");
 	}
 	
 	public LocalStoreClient(String query) {
 		dataset = DatasetFactory.create();
 		conn = RDFConnectionFactory.connect(dataset);
 		this.query = query;
+		LOGGER.info("LocalStoreClient instantiated with query.");
 	}
 	
 	/**
@@ -87,6 +93,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	@Override
 	public int executeUpdate() {
+		LOGGER.info("SPARQL update with query variable.");
 		return executeUpdate(this.query);
 	}
 
@@ -99,6 +106,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	@Override
 	public int executeUpdate(String update) {
 		try {
+			LOGGER.info("Executing SPARQL update.");
 			conn.begin( TxnType.WRITE );
 			conn.update(update);
 			conn.commit();
@@ -116,6 +124,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	@Override
 	public int executeUpdate(UpdateRequest update) {
+		LOGGER.info("SPARQL update with argument.");
 		return executeUpdate(update.toString());		
 	}
 
@@ -127,6 +136,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	@Override
 	public String execute(){
+		LOGGER.info("SPARQL query with query variable.");
 		return execute(this.query);
 	}
 
@@ -138,6 +148,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	@Override
 	public String execute(String query){
+		LOGGER.info("SPARQL query with query as argument.");
 		JSONArray result = executeQuery(query);
 		return result.toString();
 	}
@@ -150,6 +161,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	@Override
 	public JSONArray executeQuery(String sparql) {
+		LOGGER.info("SPARQL query with query as argument.");
 		ResultSet results = performExecuteQuery(sparql);
 		return convert(results);
 	}	
@@ -160,6 +172,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	@Override
 	public JSONArray executeQuery() {
+		LOGGER.info("SPARQL query with query variable.");
 		return executeQuery(this.query);
 	}
 
@@ -169,6 +182,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	private ResultSet performExecuteQuery(String sparql) {		
 		try {
+			LOGGER.info("Executing SPARQL query.");
 			conn.begin( TxnType.READ );
 			QueryExecution queryExec = conn.query(sparql);
 			ResultSet results = queryExec.execSelect();
@@ -217,6 +231,7 @@ public class LocalStoreClient implements StoreClientInterface {
 	@Override
 	public Model executeConstruct(String sparql) {
 		try {
+			LOGGER.info("Executing SPARQL construct query.");
 			conn.begin( TxnType.READ );
 			QueryExecution queryExec = conn.query(sparql);
 			Model results = queryExec.execConstruct();
@@ -235,6 +250,8 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	@Override
 	public String get(String resourceUrl, String accept) {
+		
+		LOGGER.info("Executing GET resourceURL="+resourceUrl);
 		
 		Var varS = Var.alloc("s");
 		Var varP = Var.alloc("p");
@@ -261,6 +278,8 @@ public class LocalStoreClient implements StoreClientInterface {
 			//default to application/rdf+xml
 			syntax = Lang.RDFXML; 
 		}
+		LOGGER.info("GET accept lang="+syntax.toString());
+		
 		
 		StringWriter out = new StringWriter();
 		model.write(out, syntax.getName());
@@ -275,6 +294,8 @@ public class LocalStoreClient implements StoreClientInterface {
 	 */
 	@Override
 	public void insert(String graphName, String content, String contentType) {
+		
+		LOGGER.info("Executing INSERT graph="+graphName+" , contentType="+contentType);
 		
 		Model model = ModelFactory.createDefaultModel();
 		
