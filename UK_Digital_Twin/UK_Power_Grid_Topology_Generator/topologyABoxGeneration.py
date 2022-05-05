@@ -13,6 +13,7 @@ from rdflib.namespace import RDF, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE
 import sys, os
+from UK_Digital_Twin.UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
@@ -118,6 +119,7 @@ def createTopologicalInformationPropertyInstance(numOfBus, voltageLevel):
     topo_info = TopoInfo.TopologicalInformation(numOfBus, voltageLevel)   
     busInfoArrays = readFile(topo_info.BusInfo)
     branchTopoInfoArrays = readFile(topo_info.BranchInfo)
+    #TODO: create new method to read and write the file BranchModelInitialisation
     return topo_info, busInfoArrays, branchTopoInfoArrays
 
 """Main function: create the sub graph represents the Topology"""
@@ -198,7 +200,7 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
 
 
 def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace, topology_root_node, uk_topo): 
-    print('****************Start adding bus node triples in the topology graph****************')
+    print('****************Adding the triples of BusNode****************')
     
     ## Check the bus data header
     if busDataArray[0] != busTopoheader:
@@ -227,7 +229,7 @@ def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace
     return graph, orderedBusList, orderedLatlon
 
 def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, branchTopoArray, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo): 
-    print("****************Adding the triples of ELine of the grid topology.****************") 
+    print("****************Adding the triples of ELineNode****************") 
     ## check the branch topology data header
     for header in branchTopoArray[0]:
         if not  header.strip('\n') in branchTopoHeader:   
@@ -254,7 +256,7 @@ def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, branchTopoArray
        
         ## Link line node with root node and specify its type
         graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(branch_node)))
-        graph.add((URIRef(branch_node), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
+        graph.add((URIRef(branch_node), RDF.type, URIRef(ontopowsys_PowSysRealization.ElectricalLine.iri)))
         
         ## link with leaves(from) bus and enters(to) bus
         graph.add((URIRef(branch_node), URIRef(ontocape_network_system.leaves.iri), URIRef(FromBus_iri)))
@@ -303,7 +305,7 @@ def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, branchTopoArray
     return graph
     
 def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo):    
-    print('****************Adding the triples of Generator of the grid topology.****************')
+    print('****************Adding the triples of GeneratorNode****************')
     # counter = 1 
     if modelFactorArrays[0] != ukmf.headerModelFactor:
         raise Exception('The bus model factor data header is not matched, please check the data file')

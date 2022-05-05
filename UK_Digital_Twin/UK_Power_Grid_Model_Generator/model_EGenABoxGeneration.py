@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 29 April 2022        #
+# Last Update Date: 04 May 2022          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EGen."""
@@ -30,7 +30,7 @@ from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
-
+from UK_Digital_Twin_Package.derivationInterface import createMarkUpDerivation
 from pyasyncagent.agent.async_agent import AsyncAgent
 from pyasyncagent.kg_operations.sparql_client import PySparqlClient # the import of this agent will need a parckage name werkzeug, install `pip install Werkzeug==2.0.2`, otherwise it will report the error message
 import uuid
@@ -63,18 +63,9 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 """Create an object of Class UKEnergyConsumption"""
 ukec = UKec.UKEnergyConsumption()
 
-"""Remote Endpoint lable and queryendpoint_iri"""
-powerPlant_Endpoint = ukpp.endpoint['lable']
-topology_Endpoint = uk_topo.endpoint['lable']
-energyConsumption_Endpoint = ukec.endpoint['lable']
-powerPlant_federated_query_Endpoint = ukpp.endpoint['queryendpoint_iri']
-topology_federated_query_Endpoint = uk_topo.endpoint['queryendpoint_iri']
-# energyConsumption_federated_query_Endpoint = ukec.endpoint['queryendpoint_iri']
-
-
 """Blazegraph UK digital tiwn"""
 endpoint_label = endpointList.ukdigitaltwin['lable']
-endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
+endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
 
 """Sleepycat storage path"""
 topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
@@ -104,7 +95,7 @@ capa_demand_ratio = 0
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
-def createModel_EGen(topologyNodeIRI, powerSystemModelIRI, AgentIRI, startTime_of_EnergyConsumption, OPFOrPF, CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
+def createModel_EGen(topologyNodeIRI, powerSystemModelIRI, AgentIRI, OrderedBusNodeIRIList, derivationClient, startTime_of_EnergyConsumption, OPFOrPF, CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
     ## Query generator attributes and the number of the buses
     EGenInfo, numOfBus = list(query_model.queryEGenInfo(topologyNodeIRI, endpoint_label))
     # location = query_model.queryPowerSystemLocation(endpoint_label, topologyNodeIRI)  
@@ -143,15 +134,12 @@ def createModel_EGen(topologyNodeIRI, powerSystemModelIRI, AgentIRI, startTime_o
         print('Store is IOMemery')        
    
     capa_demand_ratio = demandAndCapacityRatioCalculator(EGenInfo, topologyNodeIRI, startTime_of_EnergyConsumption)
-    # TODO: check the capa_demand_ratio
-    print(capa_demand_ratio)
-
-
+    
     print('################START createModel_EGen#################')
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())
     namespace = UK_PG.ontopowsys_namespace  
     ## ElectricalGenerator node IRI 
-    ElectricalGeneratorModelIRI = namespace + uk_egen_model.ModelEBusKey + str(uuid.uuid4()) # root node
+    ElectricalGeneratorModelIRI = namespace + uk_egen_model.ModelEGenKey + str(uuid.uuid4()) # root node
     ## create a named graph
     g = Graph(store = store, identifier = URIRef(ontologyIRI))
     ## Import T-boxes
@@ -165,37 +153,29 @@ def createModel_EGen(topologyNodeIRI, powerSystemModelIRI, AgentIRI, startTime_o
     g.add((URIRef(ElectricalGeneratorModelIRI), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(powerSystemModelIRI)))
     g.add((URIRef(ElectricalGeneratorModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalGeneratorModel')))
     g.add((URIRef(powerSystemModelIRI), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
-    
-    ##The bus index number used in the model input
-    BusNumber = 0
-    
-    
-    for egen in EGenInfo:         
-    # if EGenInfo[0] != None: # test
-    #     egen = EGenInfo[0] # test
-        
+    counter = 0  
+    for egen in EGenInfo: 
+        if counter > 500:
+            break
+         # if EGenInfo[0] != None: # test
+            # egen = EGenInfo[0] # test
+        # ## create a named graph 
+        # g = Graph(store = store, identifier = URIRef(ontologyIRI))
+        # ## Import T-boxes
+        # g.set((g.identifier, RDF.type, OWL_NS['Ontology']))
+        # g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_mathematical_model)))
+        # g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))  
+        # g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
+        # g.set((g.identifier, RDFS.comment, Literal('This ontology represents mathematical model of the electricity generator of the UK energy system.'))) 
+        # ## Link topologyNodeIRI with PowerSystemModel and ElectricalGeneratorModelIRI
+        # g.add((URIRef(powerSystemModelIRI), URIRef(ontopowsys_PowerSystemModel.hasModelingPrinciple.iri), URIRef(topologyNodeIRI)))
+        # g.add((URIRef(ElectricalGeneratorModelIRI), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(powerSystemModelIRI)))
+        # g.add((URIRef(ElectricalGeneratorModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalGeneratorModel')))
+        # g.add((URIRef(powerSystemModelIRI), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))       
+   
         generatorNodeIRI = egen[0]
-
-        # root_uri = egen[0].split('#')[0]
-        # namespace = root_uri + HASH
-        # node_locator = egen[0].split('#')[1]
-        # root_node = namespace + 'Model_' + node_locator
-        # father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, numOfBus, "EGen")
-        
         ## link the ElectricalGeneratorModelIRI with topology generatorNodeIRI
         g.add((URIRef(generatorNodeIRI), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(ElectricalGeneratorModelIRI)))
-
-        # # Add root node type and the connection between root node and its father node   
-        # g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
-        # g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch_Model" )))
-        # g.add((URIRef(father_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
-        # g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
-        # g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalGeneratorModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
-        # g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(root_node)))
-        # g.add((URIRef(father_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
-        # # link with EGen node in topology
-        # g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(egen[0])))
-        # g.add((URIRef(egen[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
         
         ModelInputVariableIRIList = []
         ###add cost function parameters###
@@ -230,15 +210,9 @@ def createModel_EGen(topologyNodeIRI, powerSystemModelIRI, AgentIRI, startTime_o
             g.add((URIRef(t_box.ontopowsys_PowerSystemModel + 'SecondOrderCoefficient'), RDFS.subClassOf, URIRef(t_box.ontopowsys_PowerSystemModel + 'PolynomialCostFunctionParameter'))) 
             g.add((URIRef(t_box.ontopowsys_PowerSystemModel + 'PolynomialCostFunctionParameter'), RDFS.subClassOf, URIRef(t_box.ontopowsys_PowerSystemModel + 'genCostcn-2')))
             
-            # g.add((URIRef(namespace + uk_egen_costFunc.genCost_aKey + node_locator), RDFS.label, Literal('Parameter_a')))   
-            # g.add((URIRef(namespace + uk_egen_costFunc.genCost_bKey + node_locator), RDFS.label, Literal('Parameter_b')))   
-            # g.add((URIRef(namespace + uk_egen_costFunc.genCost_cKey + node_locator), RDFS.label, Literal('Parameter_c')))   
-        
         ###add EGen model parametor###
-        # uk_egen_model_ = UK_PG.UKEGenModel(DUKESVersion = version_of_DUKES, numOfBus = numOfBus)
-
-        #TODO: check the initialiseEGenModelVar and the kays
-        uk_egen_model_ = initialiseEGenModelVar(uk_egen_model, egen, capa_demand_ratio)
+        
+        uk_egen_model_ = initialiseEGenModelVar(uk_egen_model, egen, OrderedBusNodeIRIList, capa_demand_ratio)
         
         g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_model_.BUSNUMKey, int(uk_egen_model_.BUS), None, ontopowsys_PowerSystemModel.BusNumber.iri)
         ModelInputVariableIRIList.append(varNode)
@@ -302,28 +276,42 @@ def createModel_EGen(topologyNodeIRI, powerSystemModelIRI, AgentIRI, startTime_o
         
         g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_model_.APFKey, int(uk_egen_model_.APF), None, ontopowsys_PowerSystemModel.APF.iri)      
         ModelInputVariableIRIList.append(varNode)
-#TODO: add derivation
-        # generate/update OWL files
-        if updateLocalOWLFile == True: 
-            # Store/update the generated owl files      
-            if filepath[-2:] != "\\": 
-                filepath_ = filepath + "\\" + str(numOfBus) + '_Bus_Model_' + node_locator + OWL
-            else:
-                filepath_ = filepath + str(numOfBus) + '_Bus_Model_'+ node_locator + OWL
-            storeGeneratedOWLs(g, filepath_)
 
+        ## add derviation 
+        createMarkUpDerivation(list(ModelInputVariableIRIList), AgentIRI, [generatorNodeIRI, egen[5]], derivationClient, False)
+
+        counter += 1
+
+    ## generate/update OWL files
+    if updateLocalOWLFile == True: 
+        ## Store/update the generated owl files      
+        if filepath[-2:] != '\\': 
+            filepath_ = filepath + '\\' + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(counter) + OWL
+        else:
+            filepath_ = filepath + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(counter)  + OWL 
+        storeGeneratedOWLs(g, filepath_)
+        print(filepath_)
+        ## update the graph to endpoint
+        #TODO: change the endpoint
+        endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+        sparql_client = PySparqlClient(endPointURL, endPointURL)   #(endpoint_iri, endpoint_iri)
+        sparql_client.uploadOntology(filepath_)
+
+        # counter += 1
+
+
+    print("################FINISH createModel_EGen#################")
     if isinstance(store, Sleepycat):  
         cg_model_EGen.close()       
     return
 
-def initialiseEGenModelVar(EGen_Model, egen, demand_capa_ratio):
+def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_ratio):
     if not isinstance (EGen_Model, UK_PG.UKEGenModel):
         raise Exception('The first argument should be an instence of UKEGenModel')
-
-    EGen_Model.BUS = egen[6]
-    capa = egen[7]
+    EGen_Model.BUS = int(OrderedBusNodeIRIList.index(egen[5]))
+    capa = egen[6]
     EGen_Model.PG_INPUT = capa * demand_capa_ratio    
-    primaryFuel = egen[8]
+    primaryFuel = egen[7]
     
     if primaryFuel in ukmf.Renewable:
         EGen_Model.PMAX = EGen_Model.PG_INPUT
@@ -341,7 +329,7 @@ def initialiseEGenModelVar(EGen_Model, egen, demand_capa_ratio):
 def demandAndCapacityRatioCalculator(EGenInfo, topologyNodeIRI, startTime_of_EnergyConsumption):
     sum_of_capa = 0
     for eg in EGenInfo:
-        sum_of_capa += eg[7]
+        sum_of_capa += eg[6]
     print('\\\\\sum_of_capa is: ', sum_of_capa)
     total_demand = query_model.queryTotalElecConsumptionofGBOrUK(endpoint_label, topologyNodeIRI, startTime_of_EnergyConsumption) * 1000 / (24 * 365) 
     print('######total_demand:', total_demand)
@@ -350,6 +338,31 @@ def demandAndCapacityRatioCalculator(EGenInfo, topologyNodeIRI, startTime_of_Ene
     return demand_capa_ratio
 
 if __name__ == '__main__':    
-    createModel_EGen('default', False, 2019, "2017-01-31", 10, 14, 50, 2, 3, None, True) 
+    # createModel_EGen('default', False, 2019, "2017-01-31", 10, 14, 50, 2, 3, None, True) 
     # createModel_EGen('default', False, 2019, "2017-01-31", 29, 99, 50, 2, 3, None, True)
-    print('Terminated')
+
+    jpsBaseLibGW = JpsBaseLib()
+    jpsBaseLibGW.launchGateway()
+
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
+
+    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+    storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
+
+    topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_7ea91c81-9f7f-4d27-9b75-9b897171bbc4"
+    powerSystemModelIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerSystemModel_22fe8504-f3bb-403c-9363-34b258d59712"
+    AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
+
+    ## set up the derivationInstanceBaseURL
+    derivationInstanceBaseURL = dt.baseURL + '/' + dt.topNode + '/'
+    ## initialise the derivationClient
+    derivationClient = jpsBaseLib_view.DerivationClient(storeClient, derivationInstanceBaseURL)
+
+    OrderedBusNodeIRIList= ['http://www.theworldavatar.com/kb/ontopowsys/BusNode_2b04446d-9a1b-4af3-b7d8-fd40bf670344', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_f5353119-e428-41cf-8b76-01784a8f88c4', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_375a0eaf-adf0-4faf-b5d0-80d3000d9834', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_e950a401-4542-4491-a127-e4e3424f6685', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_1d9a4ab2-7ced-410e-bccd-3caa554f328f', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_fc689f69-536d-426d-a8c1-c0f5b0abd5a2', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_b3af588e-b7f4-4ba7-9d83-d9eb817a8045', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_85818347-cd94-4de3-8bc2-479030c38bcd', 
+'http://www.theworldavatar.com/kb/ontopowsys/BusNode_b88721cf-07c9-41b3-9dda-f4970a78cb83', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_c8544b21-d85c-4806-a1ee-7229d1c84b87']
+    
+    createModel_EGen(topologyNodeIRI, powerSystemModelIRI, AgentIRI, OrderedBusNodeIRIList, derivationClient, \
+        "2017-01-31", False, 0, 2, 3, None, True, 'default')
+    print('***********************Terminated***********************')

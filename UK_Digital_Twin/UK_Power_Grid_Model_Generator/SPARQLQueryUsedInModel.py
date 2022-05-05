@@ -113,7 +113,7 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .
     }
     """% topologyNodeIRI
-    print(counterBusNumber)
+
     print('...starts queryEGenInfo...')
     res = json.loads(performQuery(endPoint_label, queryStr))
     qres = [[ str(r['PowerGenerator']), float((r['FixedMO'].split('\"^^')[0]).replace('\"','')), float((r['VarMO'].split('\"^^')[0]).replace('\"','')), \
@@ -333,7 +333,7 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKDigi
     
 ###############ELine#############
 # branchGeometryQueryCreator is developed to constuct a query string used to retrieve the branch's geometry information according to its parallel connection of each branch
-def branchGeometryQueryCreator(label, branch_voltage_level): 
+def branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level): 
     PREFIX = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -346,45 +346,44 @@ def branchGeometryQueryCreator(label, branch_voltage_level):
     """
     
     SELECT_CLAUSE = """
-    SELECT DISTINCT ?ELine ?From_Bus ?To_Bus ?Value_Length_ELine """
-    
+    SELECT DISTINCT ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine """
+    #TODO: change the SELECT_CLAUSE
     for voltage in branch_voltage_level:
        SELECT_CLAUSE += "?Num_OHL_" + str(voltage) + " "
         
     WHERE_CLAUSE = """
     WHERE
     {
-    ?Topology rdfs:label ?label .
-    FILTER regex(?label, "%s") .
-    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?PowerFlow_ELine .
-    ?PowerFlow_ELine rdf:type ontopowsys_PowSysFunction:PowerFlow .   
-    ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
-    ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    ?PowerFlow_ELine ontocape_network_system:leaves ?From_Bus .
-    ?PowerFlow_ELine ontocape_network_system:enters ?To_Bus .
+    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?ELineNode .
+    ?ELineNode rdf:type ontopowsys_PowSysRealization:ElectricalLine .   
+    
+    
+    ?ELineNode ontocape_network_system:leaves ?From_Bus .
+    ?ELineNode ontocape_network_system:enters ?To_Bus .
 
-    ?ELine ontocape_geometry:hasShapeRepresentation/ontocape_geometry:has_length ?Length_ELine .
+    ?ELineNode ontocape_geometry:hasShapeRepresentation/ontocape_geometry:has_length ?Length_ELine .
     ?Length_ELine ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Value_Length_ELine .
 
-    """% label 
+    """% topologyNodeIRI 
     
     for voltage in branch_voltage_level: 
         OHL = "?OHL_" + str(voltage)
         Num_OHL = "?Num_OHL_" + str(voltage)
         
-        WHERE_CLAUSE += """?ELine ontocape_upper_level_system:isComposedOfSubsystem %s . 
+        WHERE_CLAUSE += """?ELineNode ontocape_upper_level_system:isComposedOfSubsystem %s . 
     %s rdf:type ontopowsys_PowSysRealization:OverheadLine .
     %s ontopowsys_PowSysRealization:hasVoltageLevel "%s" .
-    %s ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s .    
+    %s ontopowsys_PowSysRealization:hasNumberOfParallelLine %s .    
     """% (OHL, OHL, OHL, voltage, OHL, Num_OHL)
-    WHERE_CLAUSE += "} ORDER BY ASC(?ELine)"
+
+    WHERE_CLAUSE += "} " #ORDER BY ASC(?ELineNode)
         
     queryStr =  PREFIX + SELECT_CLAUSE + WHERE_CLAUSE
     return queryStr    
     
 # queryELineTopologicalInformation is developed to perform the query for branch topological information and its geometry information
-def queryELineTopologicalInformation(numOfBus, numOfBranch, ukdigitaltwin_endpointlabel, topology_Sleepycat, localQuery):
-    label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
+def queryELineTopologicalInformation(topologyNodeIRI, endpoint_label):
+    #  label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
     
     query_branch_voltage_level = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -398,48 +397,28 @@ def queryELineTopologicalInformation(numOfBus, numOfBranch, ukdigitaltwin_endpoi
     SELECT DISTINCT ?OHL_voltage_level
     WHERE
     {
-    ?Topology rdf:type ontocape_network_system:NetworkSystem .
-    ?Topology rdfs:label ?label .
-    FILTER regex(?label, "%s") .
-    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?PowerFlow_ELine .
-    ?PowerFlow_ELine rdf:type ontopowsys_PowSysFunction:PowerFlow .   
-    ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
-    ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
-       
-    ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL . 
+    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?ELineNode .
+    ?ELineNode rdf:type ontopowsys_PowSysRealization:ElectricalLine .   
+    ?ELineNode ontocape_upper_level_system:isComposedOfSubsystem ?OHL . 
     ?OHL rdf:type ontopowsys_PowSysRealization:OverheadLine .
     ?OHL ontopowsys_PowSysRealization:hasVoltageLevel ?OHL_voltage_level .   
     }
-    """% label
+    """ %topologyNodeIRI
     
-    global qres 
-    
-    if localQuery == False and ukdigitaltwin_endpointlabel != None: 
-        print('Query the branch_voltage_level')
-        res = json.loads(performQuery(ukdigitaltwin_endpointlabel, query_branch_voltage_level))
-        print('Branch_voltage_level query is done')
-        branch_voltage_level =  [str(r['OHL_voltage_level']) for r in res]
-        queryStr = branchGeometryQueryCreator(label, branch_voltage_level)
-        print('Query Branch Geometry')
-        res = json.loads(performQuery(ukdigitaltwin_endpointlabel, queryStr))
-        print('branchGeometryQuery is done')
-        for r in res:
-          for key in r.keys():
-              if '\"^^' in  r[key] :
+    print('...Query the branch_voltage_level...')
+    res = json.loads(performQuery(endpoint_label, query_branch_voltage_level))
+    print('...Branch_voltage_level query is done...')
+    branch_voltage_level =  [str(r['OHL_voltage_level']) for r in res]
+    queryStr = branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level)
+    print('...Query Branch Geometry...')
+    res = json.loads(performQuery(endpoint_label, queryStr))
+    print('...branchGeometryQuery is done...')
+    for r in res:
+        for key in r.keys():
+            if '\"^^' in  r[key] :
                 r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
-        return res, branch_voltage_level 
-    elif topology_Sleepycat != None and localQuery == True: 
-        print('*************WARNING: Local Query is specified, the return is a list instead of a dictionary.*************')       
-        eline_cg = ConjunctiveGraph('Sleepycat')
-        sl = eline_cg.open(topology_Sleepycat, create = False)
-        if sl == NO_STORE:
-            print('Cannot find the UK topology sleepycat store')
-            return []
-        branch_voltage_level = list(eline_cg.query(query_branch_voltage_level))
-        queryStr = branchGeometryQueryCreator(label, branch_voltage_level)
-        qres = list(eline_cg.query(queryStr))  
-        eline_cg.close()
-        return qres, branch_voltage_level 
+    return res, branch_voltage_level 
+    
 
 
 if __name__ == '__main__': 

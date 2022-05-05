@@ -160,7 +160,7 @@ def createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNod
     
     ##The bus index number used in the model input
     BusNumber = 0
-    
+    OrderedBusNodeIRIList = []
     for ebus in EBus_Load_List:         
     # if EBus_Load_List[0] != None: # test
     #     ebus = EBus_Load_List[0] # test  
@@ -188,12 +188,10 @@ def createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNod
         g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.BUSTYPEKey, int(uk_ebus_model.TYPE), None, ontopowsys_PowerSystemModel.BusType.iri)
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.PD_INPUTKey, float(uk_ebus_model.PD_INPUT), ontocape_derived_SI_units.MW.iri, \
-                             ontopowsys_PowerSystemModel.PdBus.iri)    
+        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.PD_INPUTKey, float(uk_ebus_model.PD_INPUT), ontocape_derived_SI_units.MW.iri, ontopowsys_PowerSystemModel.PdBus.iri)    
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.GD_INPUTKey, float(uk_ebus_model.GD_INPUT), ontocape_derived_SI_units.Mvar.iri, \
-                                 ontopowsys_PowerSystemModel.GdBus.iri) 
+        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.GD_INPUTKey, float(uk_ebus_model.GD_INPUT), ontocape_derived_SI_units.Mvar.iri, ontopowsys_PowerSystemModel.GdBus.iri) 
         ModelInputVariableIRIList.append(varNode)
         
         g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.GSKey, int(uk_ebus_model.GS), None, ontopowsys_PowerSystemModel.Gs.iri)
@@ -205,27 +203,22 @@ def createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNod
         g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.AREAKey, int(uk_ebus_model.AREA), None, ontopowsys_PowerSystemModel.Area.iri)
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.VM_INPUTKey, float(uk_ebus_model.VM_INPUT), ontocape_derived_SI_units.kV.iri, \
-                                 ontopowsys_PowerSystemModel.Vm.iri) 
+        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.VM_INPUTKey, float(uk_ebus_model.VM_INPUT), ontocape_derived_SI_units.kV.iri, ontopowsys_PowerSystemModel.Vm.iri) 
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.VA_INPUTKey, float(uk_ebus_model.VA_INPUT), ontocape_derived_SI_units.degree.iri, \
-                                 ontopowsys_PowerSystemModel.Va.iri)  
+        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.VA_INPUTKey, float(uk_ebus_model.VA_INPUT), ontocape_derived_SI_units.degree.iri, ontopowsys_PowerSystemModel.Va.iri)  
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.BASEKVKey, int(uk_ebus_model.BASEKV), ontocape_derived_SI_units.kV.iri, \
-                                 ontopowsys_PowerSystemModel.baseKV.iri)    
+        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.BASEKVKey, int(uk_ebus_model.BASEKV), ontocape_derived_SI_units.kV.iri, ontopowsys_PowerSystemModel.baseKV.iri)    
         ModelInputVariableIRIList.append(varNode)
         
         g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.ZONEKey, int(uk_ebus_model.ZONE), None, ontopowsys_PowerSystemModel.Zone.iri)
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.VMAXKey, float(uk_ebus_model.VMAX), ontocape_derived_SI_units.kV.iri, \
-                                 ontopowsys_PowerSystemModel.VmMax.iri) 
+        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.VMAXKey, float(uk_ebus_model.VMAX), ontocape_derived_SI_units.kV.iri, ontopowsys_PowerSystemModel.VmMax.iri) 
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.VMINKey, float(uk_ebus_model.VMIN), ontocape_derived_SI_units.kV.iri, \
-                                 ontopowsys_PowerSystemModel.VmMin.iri)
+        g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.VMINKey, float(uk_ebus_model.VMIN), ontocape_derived_SI_units.kV.iri, ontopowsys_PowerSystemModel.VmMin.iri)
         ModelInputVariableIRIList.append(varNode)
         
         # print(g.serialize(format="pretty-xml").decode("utf-8"))
@@ -233,24 +226,25 @@ def createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNod
         ## add derviation 
         createMarkUpDerivation(list(ModelInputVariableIRIList), AgentIRI, [BusNodeIRI], derivationClient, False)
         
+        OrderedBusNodeIRIList.append(BusNodeIRI)
         BusNumber += 1 
     
     ## generate/update OWL files
     if updateLocalOWLFile == True:    
         # Store/update the generated owl files      
         if filepath[-2:] != "\\": 
-            filepath_ = filepath + '\\' + 'Model_' + str(numOfBus) + '_Bus_Grid' + OWL
+            filepath_ = filepath + '\\' + 'BusModel_' + str(numOfBus) + '_Bus_Grid' + OWL
         else:
-            filepath_ = filepath + 'Model_' + str(numOfBus) + '_Bus_Grid' + OWL
+            filepath_ = filepath + 'BusModel_' + str(numOfBus) + '_Bus_Grid' + OWL
         storeGeneratedOWLs(g, filepath_)
     
-    ## update the graph to endpoint
-    sparql_client = PySparqlClient(endpoint_iri, endpoint_iri)
-    sparql_client.uploadOntology(filepath_)
+        ## update the graph to endpoint
+        sparql_client = PySparqlClient(endpoint_iri, endpoint_iri)
+        sparql_client.uploadOntology(filepath_)
     
     if isinstance(store, Sleepycat):  
         cg_model_EBus.close()       
-    return
+    return OrderedBusNodeIRIList
 
 # The demanding of an AggregatedBus is the sum of their regional consumption (elec demanding)
 def addUpConsumptionForAggregatedBus(EBus_Load_List):
@@ -281,7 +275,7 @@ if __name__ == '__main__':
     endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
     storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
 
-    topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_10fe8504-f3bb-403c-9363-34b258d59711" 
+    topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_7ea91c81-9f7f-4d27-9b75-9b897171bbc4" 
     powerSystemModelIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerSystemModel_22fe8504-f3bb-403c-9363-34b258d59712"
     AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
     slackBusNodeIRI = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_67e9e639-599c-4e6a-8941-ea939adeef39"
@@ -294,6 +288,7 @@ if __name__ == '__main__':
     ## initialise the derivationClient
     derivationClient = jpsBaseLib_view.DerivationClient(storeClient, derivationInstanceBaseURL)
 
-    createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNodeIRI, derivationClient, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", None, True, 'default')  
-         
+    OrderedBusNodeIRIList = createModel_EBus(topologyNodeIRI, powerSystemModelIRI, AgentIRI, slackBusNodeIRI, derivationClient, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", None, True, 'default')  
+    
+    print(OrderedBusNodeIRIList)
     print('*****************Terminated*****************')

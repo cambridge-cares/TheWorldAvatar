@@ -154,20 +154,20 @@ class UKElineModel:
     
     """ELine Node keys"""
     ELineKey = "ELine-"
-    ModelEBusKey = "ElectricalGeneratorModel_"
+    ModelELineKey = "ElectricalLine_"
     
     """Model variable keys"""
-    FROMBUSKey = "FromBusNumber_"
-    TOBUSKey = "ToBusNumber_"
+    FROMBUSKey = "BusFrom_"
+    TOBUSKey = "BusTo_"
     R_Key = "R_"
     X_Key = "X_"
     B_Key = "B_"
     RateAKey = "RateA_"
     RateBKey = "RateB_"
     RateCKey = "RateC_"
-    RATIOKey = "RatioCoeff_"
+    RATIOKey = "RatioCoefficient_"
     ANGLEKey = "Angle_"
-    STATUSKey = "Status_"
+    STATUSKey = "BranchStatus_"
     ANGMINKey = "AngleMin_"
     ANGMAXKey = "AngleMax_"
     
@@ -216,7 +216,7 @@ class UKElineModel:
         if initialiserMethod == 'defaultBranchInitialiser':
             self.headerBranchProperty = ["voltage_level_kV", "R_MVA/km", "X_MVA/km", "B_MVA/km", "MVA\n"]
         elif initialiserMethod == 'preSpecifiedBranchInitialiser':
-            self.headerBranchProperty = ["Bus1", "Bus2", "R", "X", "B", "RateA", "RateB", "RateC", "ratio",	"angle", "status", "angmin", "angmax\n"]
+            self.headerBranchProperty = ["Bus1", "Bus2", "R", "X", "B", "RateA", "RateB", "RateC", "ratio",	"angle", "status", "angmin", "angmax", "BranchNodeIRI\n"]
         else:
             self.headerBranchProperty = []
         
@@ -256,33 +256,36 @@ class UKEGenModel:
     
     """EGen Node keys"""
     EGenKey = "EGen-"
-    ModelEGenKey = "Model_EGen-"
+    ModelEGenKey = "ElectricalGeneratorModel_"
     
     """Model variable keys"""
     BUSNUMKey = "BusNumber_"
-    PG_INPUTKey = "InputVariable_PGen_"
-    QG_INPUTKey = "InputVariable_QGen_"
-    PG_OUTPUTKey = "StateVariable_PGen_"
-    QG_OUTPUTKey = "StateVariable_QGen_"
+    PG_INPUTKey = "Pg_"
+    QG_INPUTKey = "Qg_"
+   
     QMAXKey = "QMax_"
     QMINKey = "QMin_"
     VGKey = "Vg_"
     MBASEKey = "mBase_"
     STATUSKey ="Status_"
-    PMAXKey = "Pmax_"
-    PMINKey = "Pmin_"
+    PMAXKey = "PMax_"
+    PMINKey = "PMin_"
     PC1Key = "Pc1_"
     PC2Key = "Pc2_"
-    QC1MINKey = "Qc1Min_"
-    QC2MINKey = "Qc2Min_"
-    QC1MAXKey = "Qc1Max_"
-    QC2MAXKey = "Qc2Max_"
-    RAMP_AGCKey = "Ramp_agc_"
-    RAMP_10Key = "Ramp_10_"
-    RAMP_30Key = "Ramp_30_"
-    RAMP_QKey = "Ramp_q_"
+    QC1MINKey = "QC1Min_"
+    QC2MINKey = "QC2Min_"
+    QC1MAXKey = "QC1Max_"
+    QC2MAXKey = "QC2Max_"
+    RAMP_AGCKey = "Rampagc_"
+    RAMP_10Key = "Ramp10_"
+    RAMP_30Key = "Ramp30_"
+    RAMP_QKey = "Rampq_"
     APFKey = "APF_"
     
+    PG_OUTPUTKey = "StateVariable_PGen_"
+    QG_OUTPUTKey = "StateVariable_QGen_"
+
+
     """The INPUT_VARIABLE and OUTPUT_VARIABLE index key for PF analysis """   
     # INPUT_VARIABLE = ["BUS", "PG_INPUT", "QG_INPUT", "QMAX", "QMIN", "VG", "MBASE", "STATUS", "PMAX", "PMIN", "PC1", "PC2", "QC1MIN", "QC1MAX", "QC2MIN", "QC2MAX", "RAMP_AGC", \
     #                   "RAMP_10", "RAMP_30", "RAMP_Q", "APF"]
@@ -350,8 +353,8 @@ class UKEGenModel:
         self.RAMP_10 = 0 # RAMP_10
         self.RAMP_30 = 0 # RAMP_30
         self.RAMP_Q = 0 # RAMP_Q
-        self.RAMP_Q = 0 # APF
-        
+        self.APF = 0 # APF
+
         # Model output
         self.PG_OUTPUT = None
         self.QG_OUTPUT = None

@@ -16,7 +16,7 @@ class BranchPropertyInitialisation(object):
     
     """The default initialiser is firstly designed for the 10_bus model which by default using the values provided from the branchProperty csv file.
     By using this method, branchProperty must be provided. """ 
-    def defaultBranchInitialiser(self, ELine_Model, ELineTopoAndGeometryInfo, branchVoltageLevel, counter):       
+    def defaultBranchInitialiser(self, ELine_Model, ELineTopoAndGeometryInfo, branchVoltageLevel, OrderedBusNodeIRIList, counter):       
         if not isinstance (ELine_Model, UK_PG.UKElineModel):
             raise Exception('The ELine_Model argument should be an instence of UKElineModel.')
         if not os.path.exists(ELine_Model.BranchProperty):
@@ -32,9 +32,9 @@ class BranchPropertyInitialisation(object):
         for voltage in branchVoltageLevel:            
             if not voltage.strip('kV') in voltageLevelOfBranchProperty:
                 raise Exception('The voltage level of BranchProperty does not match.')
-       
-        ELine_Model.FROMBUS = int(ELineTopoAndGeometryInfo['From_Bus'].split('_EBus-')[1])
-        ELine_Model.TOBUS = int(ELineTopoAndGeometryInfo['To_Bus'].split('_EBus-')[1])
+        
+        ELine_Model.FROMBUS = int(OrderedBusNodeIRIList.index(ELineTopoAndGeometryInfo['From_Bus']))
+        ELine_Model.TOBUS = int(OrderedBusNodeIRIList.index(ELineTopoAndGeometryInfo['To_Bus']))
         
         _branchPropertyArrays = np.array(branchPropertyArrays, dtype = object)
         
@@ -64,7 +64,7 @@ class BranchPropertyInitialisation(object):
         return ELine_Model
     
     """The preSpecifiedBranchInitialiser is firstly designed for the 29_bus model which specify the values of the input for a set of given """ 
-    def preSpecifiedBranchInitialiser(self, ELine_Model, ELineTopoAndGeometryInfo, branchVoltageLevel, counter):
+    def preSpecifiedBranchInitialiser(self, ELine_Model, ELineTopoAndGeometryInfo, branchVoltageLevel, OrderedBusNodeIRIList, counter):
         if not isinstance (ELine_Model, UK_PG.UKElineModel):
             raise Exception('The ELine_Model argument should be an instence of UKElineModel.')
             
@@ -76,9 +76,9 @@ class BranchPropertyInitialisation(object):
         if BranchModelInitialisationArrays[0] != ELine_Model.headerBranchProperty:
             raise Exception('The header of BranchProperty does not match.') 
           
-        ELine_Model.FROMBUS = int(ELineTopoAndGeometryInfo['From_Bus'].split('_EBus-')[1])
-        ELine_Model.TOBUS = int(ELineTopoAndGeometryInfo['To_Bus'].split('_EBus-')[1])
-        
+        ELine_Model.FROMBUS = int(OrderedBusNodeIRIList.index(ELineTopoAndGeometryInfo['From_Bus']))
+        ELine_Model.TOBUS = int(OrderedBusNodeIRIList.index(ELineTopoAndGeometryInfo['To_Bus']))
+        #TODO: change the method of finding the index of the data
         if str(ELine_Model.FROMBUS) == BranchModelInitialisationArrays[counter][0].strip('\n') and \
             str(ELine_Model.TOBUS) == BranchModelInitialisationArrays[counter][1].strip('\n'):
             ELine_Model.R = BranchModelInitialisationArrays[counter][2].strip('\n')
