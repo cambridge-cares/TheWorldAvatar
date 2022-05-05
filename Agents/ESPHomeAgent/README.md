@@ -131,22 +131,22 @@ Content-Type: application/json
 
 If the agent run successfully, either one of the four responses below will be returned as a JSONObject.
 
-switch is in OFF state. Latest timeseries value is lesser than the threshold.
+component is in OFF state. Latest timeseries value is lesser than the threshold.
 ```
-{"message":["The switch is already in the OFF state.","A request has been successfully sent to the ESPHome web server.","POST request has been sent successfully."]}
+{"message":["The component is already in the OFF state.","A request has been successfully sent to the ESPHome web server.","POST request has been sent successfully."]}
 ```
 
-switch is in OFF state. Latest timeseries value is greater than the threshold.
+component is in OFF state. Latest timeseries value is greater than the threshold.
 ```
 {"message":["A POST request has been sent to turn on the device or component.","A request has been successfully sent to the ESPHome web server.","POST request has been sent successfully."]}
 ```
 
-switch is in ON state. Latest timeseries value is lesser than the threshold.
+component is in ON state. Latest timeseries value is lesser than the threshold.
 ```
 {"message":["A POST request has been sent to turn off the device or component.","A request has been successfully sent to the ESPHome web server.","POST request has been sent successfully."]}
 ```
 
-switch is in ON state. Latest timeseries value is greater than the threshold.
+component is in ON state. Latest timeseries value is greater than the threshold.
 ```
-{"message":["The switch is already in the ON state.","A request has been successfully sent to the ESPHome web server.","POST request has been sent successfully."]}
+{"message":["The component is already in the ON state.","A request has been successfully sent to the ESPHome web server.","POST request has been sent successfully."]}
 ```
