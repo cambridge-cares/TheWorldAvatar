@@ -100,12 +100,22 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     	AccessAgentCaller.update(targetResourceID, sparqlUpdate);
     }
     
-    // Agent routing
-    
+    /**
+     * Send a HTTP GET request to an agent with JSON parameters
+     * 
+     * @param agentID the name of the agent as found in the ontoagent triple store
+     * @param jsonParameters
+     */
     public String callAgentWithGet(String agentID, JSONObject jsonParameters) {
-    	return new AgentCaller().getWithJsonParameter(agentID, jsonParameters);
+    	return new AgentCaller().getWithJson(agentID, jsonParameters);
     }
     
+    /**
+     * Send a HTTP POST request to an agent
+     * 
+     * @param agentID the name of the agent as found in the ontoagent triple store
+     * @param body request body
+     */
     public String callAgentWithPost(String agentID, String body) {
     	return new AgentCaller().post(agentID, body);
     }
