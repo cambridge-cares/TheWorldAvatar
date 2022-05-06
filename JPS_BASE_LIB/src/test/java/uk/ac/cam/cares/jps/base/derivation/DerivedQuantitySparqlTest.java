@@ -363,7 +363,7 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testUpdateStatusBeforeSetupJob()
 			throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
+			IllegalArgumentException, InvocationTargetException, InterruptedException {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		// create derivation for markup, no status should be added
 		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, false);
@@ -392,6 +392,22 @@ public class DerivedQuantitySparqlTest {
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
 				.asLiteral().getLong();
 		Assert.assertTrue(retrievedInputsAt >= currentTimestamp);
+		// now we execute the function again, nothing should happen as data property
+		// retrievedInputsAt already exist
+		// sleep for 2 sec to make sure the timestamp generated in
+		// updateStatusBeforeSetupJob will be different from the existing one
+		TimeUnit.SECONDS.sleep(2);
+		devClient.updateStatusBeforeSetupJob(derivation);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
+				ResourceFactory.createResource(statusIRI)));
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
+				ResourceFactory.createProperty(RDF.type.getURI()),
+				ResourceFactory.createResource(DerivationSparql.derivednamespace + "InProgress")));
+		long retrievedInputsAt_new = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
+				.asLiteral().getLong();
+		Assert.assertEquals(retrievedInputsAt, retrievedInputsAt_new);
 	}
 
 	@Test

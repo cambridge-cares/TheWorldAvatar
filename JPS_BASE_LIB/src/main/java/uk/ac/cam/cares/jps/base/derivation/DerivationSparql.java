@@ -663,22 +663,26 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 		Variable status = query.var();
 		Variable statusType = query.var();
+		Variable existingTimestamp = query.var();
 
+		// query the status and statusType
 		GraphPattern query_gp = GraphPatterns.and(
 			iri(derivation).has(hasStatus, status), status.isA(statusType));
 		TriplePattern delete_tp = status.isA(statusType);
 		TriplePattern insert_tp_rdf_type = status.isA(InProgress);
-
-		modify.delete(delete_tp).where(query_gp).prefix(p_derived);
-		modify.insert(insert_tp_rdf_type);
 
 		// record timestamp at the point the derivation status is marked as InProgress
 		// <derivation> <retrievedInputsAt> timestamp.
 		long retrievedInputsAtTimestamp = Instant.now().getEpochSecond();
 		TriplePattern insert_tp_retrieved_inputs_at = iri(derivation).has(retrievedInputsAt,
 				retrievedInputsAtTimestamp);
-		modify.insert(insert_tp_retrieved_inputs_at);
-
+		// the retrievedInputsAt data property should only be added when there's no such
+		// data property already - this will prevent duplicate timestamp in case of
+		// super fast monitoring
+		TriplePattern existingRetrievedInputsAtPattern = iri(derivation).has(retrievedInputsAt, existingTimestamp);
+		modify.delete(delete_tp).insert(insert_tp_rdf_type, insert_tp_retrieved_inputs_at)
+				.where(GraphPatterns.and(query_gp.filterNotExists(existingRetrievedInputsAtPattern)))
+				.prefix(p_derived);
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 
