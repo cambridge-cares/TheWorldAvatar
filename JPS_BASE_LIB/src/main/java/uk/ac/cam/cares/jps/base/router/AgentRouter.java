@@ -86,11 +86,14 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 		JSONArray result = storeClient.executeQuery(query);
 		
 		//TODO logic for multiple results
-		String firstURL = result.getJSONObject(0).getString(STR_O);
-		
-		LOGGER.debug("URL="+firstURL);
-		
-		return firstURL;
+		if(!result.isEmpty()) {
+			String firstURL = result.getJSONObject(0).getString(STR_O);
+			LOGGER.debug("URL="+firstURL);
+			return firstURL;
+		}else {
+			LOGGER.info("URL not found for AgentID="+agentID);
+			return null;
+		}
 	}
 	
 	@Override
