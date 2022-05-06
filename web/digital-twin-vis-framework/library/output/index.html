@@ -6,10 +6,13 @@
         <!-- JS -->
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
         <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+        <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
         <script src="./dtvf.temp.js"></script>
 
         <!-- CSS -->
         <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css" rel="stylesheet" />
+        <link href="./dtvf.min.css" rel="stylesheet" />
+
         <style>
             body, html, #map {
                 width: 100%;
@@ -22,6 +25,12 @@
     <body>
         <!-- Container the map will be added to -->
         <div id="map"></div>
+
+        <!-- Element the map controls will be added to (normally on the left) -->
+        <div id="controlsContainer"></div>
+
+        <!-- Element for depth of field overlay -->
+        <div id="tiltShift"></div>
 
         <script>
             // Create a new manager instance

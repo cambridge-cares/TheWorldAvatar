@@ -32,11 +32,13 @@ abstract class MapHandler {
      * @param group data group to plot.
      * 
      */
-    public plotGroup(group: DataGroup) {
+    public plotGroup(group: DataGroup): Promise<any> {
         let allLayers = group.flattenUp();
         allLayers.forEach(layer => {
             this.plotLayer(group, layer);
         });
+
+        return new Promise((reject, resolve) => resolve(null));
     }
 
     /**

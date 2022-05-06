@@ -7,7 +7,7 @@ class MapHandler_MapBox extends MapHandler {
     /**
      * MapBox popup element.
      */
-    private popup;
+    public static POPUP;
 
     /**
      * Initialise and store a new map object.
@@ -32,6 +32,13 @@ class MapHandler_MapBox extends MapHandler {
             // Setup mouse interactions
             MapHandler.MAP.on("click", (event) => this.handleClick(event));
             MapHandler.MAP.on("mousemove", (event) => this.handleMouse(event));
+
+            // Create popup
+            MapHandler_MapBox.POPUP = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false,
+                maxWidth: "400px"
+            });
         }  else {
             // Reinitialise state of existing map
             MapHandler.MAP.setStyle(newOptions["style"]);
@@ -53,37 +60,34 @@ class MapHandler_MapBox extends MapHandler {
         // Get all visible features under the mouse click
         let features = MapHandler.MAP.queryRenderedFeatures(event.point);
 
-        // Filter out:
-        //   - generated infrastructure layers
-        //   - hidden layers
-        //   - default layers added by MapBox
+        // Filter out non-CMCL layers
         features = features.filter(feature => {
-            let layer = feature["layer"]["id"]
-            if(MapHandler.MAP.getLayoutProperty(layer, "visibility") === "none") return false;
-
-            if(layer.includes("arrows")) return false;
-            if(layer.includes("highlight")) return false;
-            if(layer.includes("focus")) return false;
-
-            if(!layer["matadata"]) {
-                return false;
-            } else {
-                if(!layer["metadata"]["attribution"] || layer["metadata"]["attribution"] !== "CMCL Innovations") return false;
-                if(!layer["metadata"]["clickable"]) return false;
-            }
+            return MapBoxUtils.isCMCLLayer(feature);
         });
 
-        if(features.length == 1 && features[0]) {
-            // Click on a clustered feature
-        } else {
-            if(features.length > 1) {
-                // Click on overlapping, individual features
-            } else {
-                // Click on single feature
-                let layer = Manager.CURRENT_GROUP.getLayerWithName(features[0]["layer"]["id"]);
-                layer.handleClick(features[0]);
-            }
+        if(features.length > 1) {
+            // Click on overlapping, individual features/clusters
+            this.clickMultiple(features);
+
+        } else if (features.length === 1) {
+
+            // Click on single feature (or single cluster)
+            let layer = Manager.CURRENT_GROUP.getLayerWithName(features[0]["layer"]["id"]);
+            layer.handleClick(features[0]);
         }
+    }
+
+    /**
+     * Triggered when the user clicks on the map and multiple features are underneath
+     * (these could be overlapping individual features or cluster points).
+     * 
+     * @param features list of features/clusters under mouse
+     */
+    private async clickMultiple(features: Array<Object>) {
+        let leafs = [];
+        await MapBoxUtils.recurseFeatureNames(leafs, features);
+
+        // TODO - Use leafs variable to build drop-down tree.
     }
 
     /**
@@ -92,31 +96,32 @@ class MapHandler_MapBox extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
+        
         // Get a list of features under the mouse
         let features = MapHandler.MAP.queryRenderedFeatures(event.point);
         features = features.filter(feature => {
-            return isCMCLLayer(feature);
+            return MapBoxUtils.isCMCLLayer(feature);
         });
-
-        if(features.length > 1) {
-            console.log("There are " + features.length + " features under mouse");
-            console.log(features);
-        }
 
         if(features.length === 0) {
             // Mouse no longer over any features
             MapHandler.MAP.getCanvas().style.cursor = '';
+            if(MapHandler_MapBox.POPUP !== null) MapHandler_MapBox.POPUP.remove();
 
         } else if(features.length === 1) {
             // Mouse over single feature
+            MapHandler.MAP.getCanvas().style.cursor = 'pointer';
+
             let feature = features[0];
             let layer = Manager.CURRENT_GROUP.getLayerWithName(feature["layer"]["id"]);
+
             if(layer != null && layer instanceof MapBoxLayer) {
                 (<MapBoxLayer> layer).handleMouseEnter(feature);
             }
 
         } else {
             // Mouse over multiple features
+            MapHandler.MAP.getCanvas().style.cursor = 'pointer';
         }
     }
 
@@ -126,12 +131,12 @@ class MapHandler_MapBox extends MapHandler {
      * @param group data group to plot.
      * 
      */
-    public plotGroup(group: DataGroup) {
+    public plotGroup(group: DataGroup): Promise<any> {
         // Get the root group
         let rootGroup = DataUtils.getRootGroup(group);
 
         // Handle loading icons that may be required by the layers
-        this.handleIcons(rootGroup).then(() => {
+        return this.handleIcons(rootGroup).then(() => {
             // Once images are loaded, add layers
             console.log("All images have been loaded?");
 

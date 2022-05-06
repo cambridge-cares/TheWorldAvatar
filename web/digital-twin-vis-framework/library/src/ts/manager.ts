@@ -24,10 +24,16 @@ class Manager {
     private mapHandler: MapHandler;
    
     /**
+     * Handles controls on left.
+     */
+    private controlHandler: ControlHandler;
+
+    /**
      * Initialise a new Manager instance.
      */
     constructor(mapProvider: MapProvider) {
         Manager.PROVIDER = mapProvider;
+        this.controlHandler = new ControlHandler();
 
         // Initialise the map handler instance
         switch(mapProvider) {
@@ -39,6 +45,13 @@ class Manager {
                 throw new Error("Unknown map provider specified!");
             break;
         }
+    }
+
+    /**
+     * 
+     */
+    public onLayerChange(control: Object) {
+        this.controlHandler.onLayerChange(control);
     }
 
     /**
@@ -105,7 +118,17 @@ class Manager {
         // Plot the group
         if(group !== null) {
             Manager.CURRENT_GROUP = group;
-            this.mapHandler.plotGroup(group);
+
+            // Read the tree file (if needed)...
+            this.controlHandler.readTreeFile(group).then(() => {
+               
+                // ..then plot the data group...
+                this.mapHandler.plotGroup(group).then(() => {
+
+                    // ... then rebuild the layer tree
+                    this.controlHandler.showControls();
+                });
+            });
         }
     }
 }

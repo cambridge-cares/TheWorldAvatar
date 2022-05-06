@@ -56,11 +56,4 @@ abstract class DataLayer {
      */
     public abstract handleMouseEnter(feature: Object);
 
-    /**
-     * Handles a mouse event on the input feature.
-     * 
-     * @param feature feature with layer that's been exited.
-     */
-    public abstract handleMouseExit(feature: Object);
-
 }

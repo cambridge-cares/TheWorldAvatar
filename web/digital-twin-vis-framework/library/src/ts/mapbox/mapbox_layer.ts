@@ -16,7 +16,8 @@ class MapBoxLayer extends DataLayer {
      * @param feature feature with layer that's been clicked on.
      */
     public handleClick(feature: Object) {
-        
+        console.log("Clicked on layer " + feature["layer"]["id"]);
+        console.log(feature);
     }
 
     /**
@@ -25,16 +26,8 @@ class MapBoxLayer extends DataLayer {
      * @param feature feature with layer that's been entered.
      */
      public handleMouseEnter(feature: Object) {
-
-     }
-
-     /**
-      * Handles a mouse event on the input feature.
-      * 
-      * @param feature feature with layer that's been exited.
-      */
-     public handleMouseExit(feature: Object) {
-
-     }
-
+        if(feature !== null) {
+            MapBoxUtils.showPopup(feature);
+        }
+    }
 }

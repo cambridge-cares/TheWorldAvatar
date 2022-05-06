@@ -1,0 +1,89 @@
+
+#controlContainer {
+    width: 250px;
+    height: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 20px;
+    z-index: 1;
+
+    color: white;
+    font-family: "Inter", sans-serif !important;
+    font-size: 10pt;
+}
+
+#controlContainer p {
+    margin: 0 0 5px 0;
+    font-weight: bold;
+    font-size: 12pt;
+}
+#controlContainer a {
+    color: white;
+    text-decoration: none;
+    padding-left: 10px;
+}
+#controlContainer a:hover {
+    color: lightskyblue;
+    text-decoration: underline;
+}
+#controlContainer label:hover {
+    color: lightskyblue;
+    text-decoration: underline;
+}
+
+.controlBlock {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 10px;
+    line-height: 14pt;
+}
+.controlBlock:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.controlBlock.collapsed {
+    height: 20px;
+}
+
+.collapsed > .controlContents {
+    display: none;
+}
+
+.collapsed .tooltip {
+    display: none;
+}
+
+
+.controlTitle p {
+    cursor: pointer;
+}
+
+#layerContainer {
+    max-height: 550px;
+}
+
+#layerTree {
+    padding-left: 0px;
+}
+#layerTree ul {
+    padding-left: 15px;
+}
+#layerTree ul, li {
+    list-style-type: none;
+}
+
+
+#layerTreeContainer {
+    min-height: 30vh;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+@media only screen and (max-height: 900px) {
+    #layerTreeContainer {
+        max-height: 25vh;
+        overflow-y: auto;
+    }
+}

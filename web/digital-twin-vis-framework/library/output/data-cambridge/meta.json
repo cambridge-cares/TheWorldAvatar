@@ -9,8 +9,8 @@
     "meta": {
         "version": "2.0.0",
         "mapOptions": {
-            "center": [0.119076669216156, 52.2053663031144],
-            "zoom": 12,
+            "center": [0.121971, 52.205253],
+            "zoom": 18,
             "bearing": 0,
             "pitch": 45,
             "style": "mapbox://styles/mapbox/light-v10?optimize=true"

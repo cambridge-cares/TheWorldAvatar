@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <link href="./controls.css" rel="stylesheet" />
+    </head>
+
+    <body>
+
+        <!-- Container for all controls  -->
+        <div id="controlContainer">
+
+            <!-- Camera controls -->
+			<div id="cameraContainer" class="controlBlock">
+
+                <!-- Title and toggle for DoF -->
+				<div id="controlTitle" class="controlTitle">
+					<p>Camera</p>
+					<div class="tooltip">
+						<label class="switch"><input type="checkbox" onclick="MapBoxUtils.setTiltshift(this.checked)"><span class="slider round"><p>DoF</p></label>
+						<span class="tooltiptext">Toggle depth of field effect</span>
+					</div>
+				</div>
+
+                <div class="controlContents">
+                    <a href="#" onclick="MapBoxUtils.changeCamera('bird')">Bird's Eye</a><br/>
+                    <a href="#" onclick="MapBoxUtils.changeCamera('pitch')">Pitched</a>
+                </div>
+			</div>
+
+            <!-- Terrain controls -->
+			<div id="terrainContainer" class="controlBlock">
+
+                <!-- Title and toggle for 3d terrain -->
+				<div id="controlTitle" class="controlTitle">
+					<p>Terrain</p>
+					<div class="tooltip">
+						<label class="switch"><input type="checkbox" onclick="MapBoxUtils.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
+						<span class="tooltiptext">Toggle 3D terrain</span>
+					</div>
+				</div>
+			
+                <div class="controlContents">
+                    <input type="radio" name="terrain" id="light" onclick="MapBoxUtils.changeTerrain('light')" checked>
+                    <label for="light">Light</label><br/>
+                    <input type="radio" name="terrain" id="dark" onclick="MapBoxUtils.changeTerrain('dark')">
+                    <label for="dark">Dark</label><br/>
+                    <input type="radio" name="terrain" id="outdoors" onclick="MapBoxUtils.changeTerrain('outdoors')">
+                    <label for="outdoors">Outdoors</label><br/>
+                    <input type="radio" name="terrain" id="satellite" onclick="MapBoxUtils.changeTerrain('satellite')">
+                    <label for="satellite">Satellite</label><br/>
+                </div>
+			</div>
+
+            <!-- Layer controls -->
+			<div id="layerContainer" class="controlBlock">
+
+                <!-- Title and toggle for place names -->
+				<div id="controlTitle"  class="controlTitle">
+					<p>Layers</p>
+					<div class="tooltip" id="placenameContainer">
+						<label class="switch"><input type="checkbox" onclick="MapBoxUtils.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
+						<span class="tooltiptext">Toggle place names, labels, and roads </span>
+					</div>
+				</div>
+
+                <!-- Container for dynamic layer tree -->
+                <div class="controlContents">
+                    <div id="layerTreeContainer">
+                        TREE-GOES-HERE
+                    </div>
+                </div>
+			</div>
+
+            <!-- Container for data group selections -->
+			<div id="selectionsContainer" class="controlBlock"></div>
+
+            <!-- Container for developer info -->
+			<div id="developerContainer" class="controlBlock"></div>
+		</div>
+
+    </body>
+</html>

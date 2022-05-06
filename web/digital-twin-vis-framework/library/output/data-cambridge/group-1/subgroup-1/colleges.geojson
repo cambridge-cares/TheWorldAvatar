@@ -12,7 +12,9 @@
             },
             "properties": {
                 "name": "Christ's",
-                "icon-image": "christs"
+                "icon-image": "christs",
+                "description": "The college includes the Master, the Fellows of the College, and about 450 undergraduate and 170 graduate students. The college was founded by William Byngham in 1437 as God's House. In 1505, the college was granted a new royal charter, was given a substantial endowment by Lady Margaret Beaufort, and changed its name to Christ's College, becoming the twelfth of the Cambridge colleges to be founded in its current form.",
+                "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Christ%27s_College_Cambridge_Great_Gate.jpg/330px-Christ%27s_College_Cambridge_Great_Gate.jpg"
             },
             "id": 1
         },
