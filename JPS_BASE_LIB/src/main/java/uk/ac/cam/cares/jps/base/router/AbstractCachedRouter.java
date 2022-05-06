@@ -53,13 +53,31 @@ public abstract class AbstractCachedRouter<K, V> {
 			LOGGER.info("Key= "+key.toString()+" not in cache. Get from store.");
 			StoreClientInterface storeClient = getStoreClient();
 			value = getFromStore(key, storeClient);
-			cache.put(key, value);
+			if(validate(value)) {
+				cache.put(key, value);
+			}
 		}else {
 			LOGGER.info("Key= "+key.toString()+" found in cache.");
 			value = cache.get(key);
 		}
 		LOGGER.info("Key= "+key.toString()+", Value="+value.toString());
 		return value;
+	}
+	
+	/**
+	 * Validate value returned from triple store.
+	 * If TRUE, the key-value pair will be put into the cache.
+	 * If FALSE, the key-value pair will NOT be put into the cache.
+	 * Override this method for different behaviour. 
+	 *  
+	 * @param value
+	 */
+	protected boolean validate(V value) {
+		if(value==null) {
+			return false;
+		}else {
+			return true;
+		}
 	}
 	
 	/**

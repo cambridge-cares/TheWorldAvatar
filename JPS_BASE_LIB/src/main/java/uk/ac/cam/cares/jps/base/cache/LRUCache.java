@@ -9,7 +9,7 @@ import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 /**
  * Least Recently Used (LRU) Cache implementation of 
  * {@link uk.ac.cam.cares.jps.base.interfaces.CacheInterface CacheInterface}
- * using a LinkedHashMap
+ * using a {@link java.util.LinkedHashMap LinkedHashMap}.
  *
  * @author csl37
  *
