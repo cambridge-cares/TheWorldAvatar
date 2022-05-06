@@ -77,7 +77,7 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	 * @return url
 	 */
 	@Override
-	protected String getFromStore(String agentID, StoreClientInterface storeClient) {
+	public String getFromStore(String agentID, StoreClientInterface storeClient) {
 		
 		LOGGER.debug("Get URL from triple store. AgentID="+agentID);
 		
@@ -97,7 +97,7 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	}
 	
 	@Override
-	protected StoreClientInterface getStoreClient() {
+	public StoreClientInterface getStoreClient() {
 		return new RemoteStoreClient(agentRouterEndpoint);
 	}
 	

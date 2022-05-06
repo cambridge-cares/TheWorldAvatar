@@ -8,17 +8,61 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.MockStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.router.AgentRouter;
 
 class AgentRouterTest {
 
 	private final String defaultEndpoint = KeyValueMap.getInstance().get(IKeys.URL_AGENTROUTER_ENDPOINT);
+	
+	private static String agentName1 = "Agent1";
+	private static String agentURL1 = "http://www.example.com/agent1/location1";
+	private static String agentName2 = "Agent2";
+	private static String agentURL2 = "http://www.example.com/agent2/location2";
+	private static String agentName3 = "Agent3";
+	private static String agentURL3 = "http://www.example.com/agent3/location3";
+	
+	private static StoreClientInterface createMockStore() {
+		
+		MockStoreClient mockStore = new MockStoreClient();
+		mockStore.addTriple(		
+				"<http://www.theworldavatar.com/kb/agents/Service_"+agentName1+".owl#Operation_1>",
+				"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+				"<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation>");
+		mockStore.addTriple(
+				"<http://www.theworldavatar.com/kb/agents/Service_"+agentName1+".owl#Operation_1>",
+				"<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl>",
+				agentURL1);
+		
+		mockStore.addTriple(		
+				"<http://www.theworldavatar.com/kb/agents/Service_"+agentName2+".owl#Operation_2>",
+				"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+				"<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation>");
+		mockStore.addTriple(
+				"<http://www.theworldavatar.com/kb/agents/Service_"+agentName2+".owl#Operation_2>",
+				"<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl>",
+				agentURL2);
+		
+		mockStore.addTriple(		
+				"<http://www.theworldavatar.com/kb/agents/Service_"+agentName3+".owl#Operation_3>",
+				"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>",
+				"<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation>");
+		mockStore.addTriple(
+				"<http://www.theworldavatar.com/kb/agents/Service_"+agentName3+".owl#Operation_3>",
+				"<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl>",
+				agentURL3);
+		
+		return mockStore;	
+	}
+	
+	////////////////////////////////////////
 	
 	@Test
 	void testCacheInitialisation() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -76,16 +120,86 @@ class AgentRouterTest {
 	}
 	
 	@Test
-	void testGetFromStore() {
-		//TODO use a MockStoreClient
-		fail("Not yet implemented");
+	void testGetFromStore() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		StoreClientInterface mockStoreClient = createMockStore();
+				
+		AgentRouter agentRouter = AgentRouter.getInstance();
+		
+		assertNotNull(agentRouter.getClass().getDeclaredMethod("getFromStore", String.class, StoreClientInterface.class));
+		Method method = agentRouter.getClass().getDeclaredMethod("getFromStore", String.class, StoreClientInterface.class);
+	    method.setAccessible(true);
+	    
+	    String agentName = "Agent1";
+	    Object obj = method.invoke(agentRouter, agentName, mockStoreClient);
+		assertNotNull(obj);
+		String result = (String) obj;
+		assertEquals(agentURL1, result);
+		
+		agentName = "Agent2";
+	    obj = method.invoke(agentRouter, agentName, mockStoreClient);
+		assertNotNull(obj);
+		result = (String) obj;
+		assertEquals(agentURL2, result);
+		
+		agentName = "Agent3";
+	    obj = method.invoke(agentRouter, agentName, mockStoreClient);
+		assertNotNull(obj);
+		result = (String) obj;
+		assertEquals(agentURL3, result);
+	}
+	
+	@Test
+	void testGetFromStoreWithNull() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		StoreClientInterface mockStoreClient = createMockStore();
+				
+		AgentRouter agentRouter = AgentRouter.getInstance();
+		
+		assertNotNull(agentRouter.getClass().getDeclaredMethod("getFromStore", String.class, StoreClientInterface.class));
+		Method method = agentRouter.getClass().getDeclaredMethod("getFromStore", String.class, StoreClientInterface.class);
+	    method.setAccessible(true);
+	    
+	    String agentName = "Agent4";
+	    Object obj = method.invoke(agentRouter, agentName, mockStoreClient);
+		assertNull(obj);
 	}
 	
 	@Test
 	void testGet() {
-		//TODO use spy to test
-		fail("Not yet implemented");
+		
+		StoreClientInterface mockStoreClient = createMockStore();
+		
+		AgentRouter agentRouter = AgentRouter.getInstance();
+		
+		//Use mocked StoreClient as triple store
+		AgentRouter spyAgentRouter = Mockito.spy(agentRouter);
+		Mockito.doReturn(mockStoreClient).when(spyAgentRouter).getStoreClient();
+		
+		//Not in cache
+		assertEquals(agentURL1, spyAgentRouter.get(agentName1));
+		Mockito.verify(spyAgentRouter, Mockito.times(1)).getStoreClient();
+		Mockito.verify(spyAgentRouter, Mockito.times(1)).getFromStore(agentName1, mockStoreClient);
+		
+		//In cache
+		//Agent1 in cache so getFromStore not called again
+		assertEquals(agentURL1, spyAgentRouter.get(agentName1));
+		Mockito.verify(spyAgentRouter, Mockito.times(1)).getStoreClient();
+		Mockito.verify(spyAgentRouter, Mockito.times(1)).getFromStore(agentName1, mockStoreClient);
+
+		//Not in cache
+		assertEquals(agentURL2, spyAgentRouter.get(agentName2));
+		Mockito.verify(spyAgentRouter, Mockito.times(2)).getStoreClient();
+		Mockito.verify(spyAgentRouter, Mockito.times(1)).getFromStore(agentName2, mockStoreClient);
+		
+		//Does not exist
+		assertNull(spyAgentRouter.get("Agent4"));
+		Mockito.verify(spyAgentRouter, Mockito.times(3)).getStoreClient();
+		//Should try store again if null and called again
+		assertNull(spyAgentRouter.get("Agent4"));
+		Mockito.verify(spyAgentRouter, Mockito.times(4)).getStoreClient();
 	}
+	
 	
 	@Test
 	void testGetQuery() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {

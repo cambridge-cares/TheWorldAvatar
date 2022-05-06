@@ -60,7 +60,7 @@ public abstract class AbstractCachedRouter<K, V> {
 			LOGGER.info("Key= "+key.toString()+" found in cache.");
 			value = cache.get(key);
 		}
-		LOGGER.info("Key= "+key.toString()+", Value="+value.toString());
+		LOGGER.info("Key= "+key.toString()+", Value="+String.valueOf(value));
 		return value;
 	}
 	
@@ -74,6 +74,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	 */
 	protected boolean validate(V value) {
 		if(value==null) {
+			LOGGER.debug("Invalid value");
 			return false;
 		}else {
 			return true;
@@ -86,7 +87,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * 
 	 * @return storeClient
 	 */
-	abstract protected StoreClientInterface getStoreClient();
+	abstract public StoreClientInterface getStoreClient();
 	
 	/**
 	 * Extending class to implement logic for getting value(s) from triple store
@@ -96,5 +97,5 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * 
 	 * @return value
 	 */
-	abstract protected V getFromStore(K key, StoreClientInterface storeClient);	
+	abstract public V getFromStore(K key, StoreClientInterface storeClient);	
 }
