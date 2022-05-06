@@ -25,13 +25,13 @@ def read_in_chunks(file_object):
 counter = 0
 name_counter = 1
 compound_count = 50000 # number of compounds added per file
-File_name = './input_files/'+input_name
+File_name = './data/inputs/pubchem/'+input_name
 with open(File_name) as f:
     # if the main xml file is opened properly print the the code is running
     if(f):
         print("fileSplitter: is running")
     # create the outputfile
-    output_file_name = './output_files/CID_'+str((name_counter-1)*compound_count)+'-'+str(name_counter*compound_count)+'.xml' 
+    output_file_name = './data/inputs/pubchem/output_files/'+input_name+str((name_counter-1)*compound_count)+'-'+str(name_counter*compound_count)+'.xml' 
     output = open(output_file_name,'w',newline='',encoding='UTF8')
     print("fileSplitter: "+output_file_name+" is created")
 
@@ -47,7 +47,7 @@ with open(File_name) as f:
             output.close()
             counter = 0
             name_counter += 1
-            output_file_name = './output_files/CID_'+str((name_counter-1)*compound_count)+'-'+str(name_counter*compound_count)+'.xml' 
+            output_file_name = './data/inputs/pubchem/output_files/'+input_name+str((name_counter-1)*compound_count)+'-'+str(name_counter*compound_count)+'.xml' 
             output = open(output_file_name,'w',newline='',encoding='UTF8')
             print("fileSplitter: "+output_file_name+" is created")
 
