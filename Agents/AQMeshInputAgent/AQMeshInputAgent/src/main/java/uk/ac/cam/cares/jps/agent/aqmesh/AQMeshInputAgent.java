@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.agent.aqmesh;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jooq.exception.DataAccessException;
-import uk.ac.cam.cares.jps.agent.utils.JSONKeyToIRIMapper;
+import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;

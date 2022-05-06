@@ -318,7 +318,7 @@ public class RemoteStoreClient implements StoreClientInterface {
         Statement stmt = null;
         try {
             RemoteEndpointDriver.register();
-            System.out.println(getConnectionUrl());
+            // System.out.println(getConnectionUrl());
             conn = DriverManager.getConnection(getConnectionUrl());
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 //			System.out.println(query);
@@ -385,7 +385,7 @@ public class RemoteStoreClient implements StoreClientInterface {
         Statement stmt = null;
         try {
             RemoteEndpointDriver.register();
-            System.out.println(getConnectionUrl());
+            // System.out.println(getConnectionUrl());
             conn = DriverManager.getConnection(getConnectionUrl());
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 //			System.out.println(query);
@@ -809,13 +809,22 @@ public class RemoteStoreClient implements StoreClientInterface {
      * @param file
      */
     public void uploadFile(File file) {
+    	String extension = FilenameUtils.getExtension(file.getAbsolutePath());
+    	uploadFile(file, extension);
+    }
+    
+    /**
+     * same method as above but receives extension as a separate argument
+     * @param file
+     * @param extension
+     */
+    public void uploadFile(File file, String extension) {
     	if (!file.exists()) {
     		throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
     	}
     	
-    	String extension = FilenameUtils.getExtension(file.getAbsolutePath());
     	HttpEntity entity;
-    	switch (FilenameUtils.getExtension(file.getAbsolutePath())) {
+    	switch (extension) {
     		case "rdf":
     		case "rdfs":
     		case "owl":
