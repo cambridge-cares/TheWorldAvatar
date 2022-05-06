@@ -17,6 +17,9 @@ class MockStoreClientTest {
 	private static String testQuery2 = "SELECT ?o WHERE {<http://www.example.com/test/s2> <http://www.example.com/test/p2> ?o.}";
 	private static String expected2 = "[{\"o\":\"http://www.example.com/test/o2\"}]";
 
+	private static String testQuery3 = "SELECT ?o WHERE {<http://www.example.com/test/s3> <http://www.example.com/test/p3> ?o.}";
+	private static String expected3 = "[{\"o\":\"testStringLiteral\"}]";
+	
 	@Test
 	void testAddandClear() {
 		MockStoreClient mockStore = new MockStoreClient();
@@ -32,6 +35,16 @@ class MockStoreClientTest {
 		
 		mockStore.clear();
 		assertTrue(mockStore.isEmpty());
+	}
+	
+	@Test
+	void testAddLiterals() {
+		MockStoreClient mockStore = new MockStoreClient();
+		
+		mockStore.addTriple("<http://www.example.com/test/s3>", "<http://www.example.com/test/p3>", "testStringLiteral");
+		
+		String result = mockStore.execute(testQuery3);
+		assertEquals(expected3, result);
 	}
 	
 	@Test
