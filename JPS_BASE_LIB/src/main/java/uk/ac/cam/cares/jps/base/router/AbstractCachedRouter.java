@@ -46,7 +46,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * 
 	 * @return value
 	 */
-	public V get(K key) {
+	public synchronized V get(K key) {
 		
 		V value;
 		if(!cache.contains(key)) {
@@ -74,7 +74,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * Extending class to implement logic for getting value(s) from triple store
 	 * 
 	 * @param key
-	 * @param storeClient of type {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface} 
+	 * @param storeClient see {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface} 
 	 * 
 	 * @return value
 	 */
