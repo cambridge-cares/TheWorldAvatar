@@ -2004,10 +2004,12 @@ public class DerivedQuantitySparqlTest {
 
 		// if there are two triples, an error should be thrown
 		devClient.updateStatusBeforeSetupJob(derivation);
-		// sleep 2 seconds so that two triples will be added
+		// sleep 2 seconds to add the second triple with different timestamp
 		// {<derivation> <retrievedInputsAt> timestamp}
 		TimeUnit.SECONDS.sleep(2);
-		devClient.updateStatusBeforeSetupJob(derivation);
+		testKG.add(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt"),
+				ResourceFactory.createTypedLiteral(Instant.now().getEpochSecond()));
 		e = Assert.assertThrows(JPSRuntimeException.class,
 				() -> devClient.retrieveInputReadTimestamp(derivation));
 		Assert.assertTrue(e.getMessage().contains(
