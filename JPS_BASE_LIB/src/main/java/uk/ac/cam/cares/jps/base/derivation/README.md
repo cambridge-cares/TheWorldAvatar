@@ -128,6 +128,7 @@ Upon receiving the inputs, developer may check the complete agent inputs by usin
  - `derivationOutputs.addTriple(String, String, String)`
  - `derivationOutputs.addTriple(String, String, Number)`
  - `derivationOutputs.addTriple(String, String, Boolean)`
+ - `derivationOutputs.addTriple(String, String, String, String)` _(Can be used to add triples with custom data type, e.g., `<subject> <object> "48.13188#11.54965#1379714400"^^<http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time>`)_
 
 For example, if your agent creates below information after calculation:
 

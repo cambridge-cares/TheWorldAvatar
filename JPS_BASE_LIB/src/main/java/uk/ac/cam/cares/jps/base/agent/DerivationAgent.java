@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationInputs;
@@ -69,6 +68,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 			// serialises DerivationInputs objects from JSONObject
 			DerivationInputs inputs = new DerivationInputs(
 				requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY));
+			LOGGER.info("Received derivation request parameters: " + requestParams);
 
 			// initialise DerivationOutputs, also set up information
 			String derivationIRI = requestParams.getString(DerivationClient.DERIVATION_KEY);
@@ -104,16 +104,21 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 							outputs.getRetrievedInputsAt());
 					res.put(DerivationClient.AGENT_OUTPUT_KEY,
 							outputs.getNewEntitiesJsonMap());
+					LOGGER.info("Derivation update is done in the knowledge graph, returned response: " + res);
 				} else {
 					// if we are not certain, query the knowledge graph to get the accurate
 					// information
 					Derivation updated = this.devClient.getDerivation(derivationIRI);
 					res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, updated.getTimestamp());
 					res.put(DerivationClient.AGENT_OUTPUT_KEY, updated.getBelongsToMap());
+					LOGGER.info(
+							"Unable to determine if the SPARQL update mutated triples, returned latest information in knowledge graph: "
+									+ res);
 				}
 			} else {
 				// for DerivationWithTimeSeries, we just need to return retrievedInputsAt
 				res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, outputs.getRetrievedInputsAt());
+				LOGGER.info("DerivationWithTimeSeries update is done, returned response: " + res);
 			}
 		} else {
 			res.put(DerivationClient.AGENT_OUTPUT_KEY, EMPTY_REQUEST_MSG);
