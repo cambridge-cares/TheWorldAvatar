@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "Running processing code..."
-bash;/xml2csv.sh
+/xml2csv.sh 
 echo "Processing code complete"
 
 # If the KEEP_ALIVE variable was set, tail /dev/null to prevent the container exiting
