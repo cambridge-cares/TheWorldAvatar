@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "Running processing code..."
 /upload_to_pgsql.sh
