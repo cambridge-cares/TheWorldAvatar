@@ -636,53 +636,45 @@ public class DerivationClient {
 	}
 
 	/**
-	 * This method cleans up the "Finished" derivation by reconnecting the new
-	 * generated derived IRI with derivations and deleting all status.
+	 * This method cleans up the "Finished" derivation in the knowledge graph by
+	 * deleting all old instances, reconnecting the new generated derived IRI with
+	 * derivations, deleting all status, and updating timestamp in one-go.
 	 * 
 	 * @param derivation
 	 */
 	public void cleanUpFinishedDerivationUpdate(String derivation) {
-		// this method largely follows the part of code after obtaining the response
-		// from Agent in method updateDerivation(String instance,
-		// DirectedAcyclicGraph<String,DefaultEdge> graph)
-		// the additional part in this method (compared to the above mentioned method)
-		// is: (1) how we get newDerivedIRI; (2) we connect the newDerivedIRI with
-		// downstream derivaitons if the current derivation was created for new info;
-		// (3) we delete all triples connected to the status of the derivation
+		// this method is similar to the part of code in DerivationAgent that updates
+		// the updated synchronous derivations by first matching the old-new instances
+		// and then calling reconnectNewDerivedIRIs(List<TriplePattern>
+		// outputTriples, Map<String, List<String>> newIriDownstreamDerivationMap,
+		// String derivation, Long retrievedInputsAt)
+
 		// in the future development, there's a potential these two methods can be
 		// merged into one
 
-		// (1) get newDerivedIRI as the new instances created by agent
-		List<String> newEntitiesString = this.sparqlClient.getNewDerivedIRI(derivation);
+		// four stages of operations:
+		// 1. query the finished derivation and all its immediate downstream derivations
+		// (including the status and new derived IRIs)
+		Derivation finishedDerivation = this.sparqlClient.getDerivationWithImmediateDownstream(derivation);
+		// create list of old and new instances
+		List<Entity> oldEntitiesAsInput = finishedDerivation.getEntities().stream().filter(e -> e.isInputToDerivation())
+				.collect(Collectors.toList());
+		List<Entity> newEntities = finishedDerivation.getStatus().getNewDerivedIRI();
+		// initialise a map with all new derived IRIs as key and an empty list
+		Map<String, List<String>> newIriDownstreamDerivationMap = new HashMap<>();
+		newEntities.stream().forEach(e -> newIriDownstreamDerivationMap.put(e.getIri(), new ArrayList<>()));
 
-		// get those old entities that are inputs as other derivations
-		// query for ?x <belongsTo> <derivation>; ?downstreamDerivation <isDerivedFrom>
-		// ?x.
-		// also ?x <rdf:type> ?xType; ?downstreamDerivation <rdf:type> ?preDevType.
-		List<Entity> oldEntitiesAsInput = this.sparqlClient.getDerivedEntitiesAndDownstreamDerivation(derivation);
-
-		// delete old instances
-		// IT SHOULD BE NOTED THAT DELETION OF OLD ENTITIES SHOULD ONLY BE DONE AFTER
-		// YOU STORED THE OLD ENTITIES INTO LOCAL VARIABLE "oldEntitiesAsInput"
-		this.sparqlClient.deleteBelongsTo(derivation);
-		LOGGER.debug("Deleted old instances of derivation: " + derivation);
-
-		// link new entities to derived instance, adding ?x <belongsTo> <instance>
-		this.sparqlClient.addNewEntitiesToDerived(derivation, newEntitiesString);
-		LOGGER.debug("Added new instances <" + newEntitiesString + "> to the derivation <" + derivation + ">");
-
-		// create local variable for the new entities for reconnecting purpose
-		List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(derivation);
-
-		// if none of the outputs of derivaiton is input of other derivations, or if the derivation was created
-		// for new info, the code will NOT enter the next if block
+		// 2. match old-new instances by their rdf:type to determine the downstream
+		// derivations the new instances should be connected to, note that if NONE of
+		// the old outputs of derivaiton is input of other derivations, or if the
+		// derivation was created for new info (i.e. there are no old outputs), the code
+		// will NOT enter the next if clause block
 		if (oldEntitiesAsInput.size() > 0) {
 			LOGGER.debug("This derivation contains at least one entity which is an input to another derivation");
 			LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
-			// after deleting the old entity, we need to make sure that it remains linked to
-			// the appropriate derived instance
-			List<String> newInputs = new ArrayList<>();
-			List<String> derivationsToReconnect = new ArrayList<>();
+			// before replacing the old entity with the new instance, we need to make sure
+			// that it remains linked to the appropriate derivation, thus we first do the
+			// instance matching here
 			for (Entity oldInput : oldEntitiesAsInput) {
 				// find within new Entities with the same rdf:type
 				List<Entity> matchingEntity = newEntities.stream()
@@ -696,47 +688,40 @@ public class DerivationClient {
 				}
 
 				// add IRI of the matched instance and the derivation it should connect to
-				oldInput.getInputOf().forEach(d -> {
-					newInputs.add(matchingEntity.get(0).getIri());
-					derivationsToReconnect.add(d.getIri());
-				});
+				newIriDownstreamDerivationMap.get(matchingEntity.get(0).getIri())
+						.addAll(oldInput.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList()));
 			}
-			// reconnect within the triple store
-			this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);
 		}
 
-		// (2) we need to check if any of the downstream derivations are directly connected
-		// to this derivation, i.e. the current derivation was created for new information,
-		// and other derivation instances further depend on the current one
-		Map<String, String> downstreamDerivations = this.sparqlClient.getDownstreamDerivationForNewInfo(derivation);
-		if (!downstreamDerivations.isEmpty()) {
-			List<String> newInfoAsInputs = new ArrayList<>();
-			List<String> downstreamDerivationsToReconnect = new ArrayList<>();
-			Map<String, String> derivationPairMap = new HashMap<>();
-			downstreamDerivations.forEach((downstream_derivation, agent_iri) -> {
-				List<String> asInputs = this.sparqlClient.retrieveMatchingInstances(derivation, agent_iri);
-				asInputs.forEach(inp -> {
-					newInfoAsInputs.add(inp);
-					downstreamDerivationsToReconnect.add(downstream_derivation);
-					derivationPairMap.put(downstream_derivation, derivation);
-				});
+		// 3. we also need to check and update the connection accordingly if any of the
+		// downstream derivations are directly connected to this derivation, i.e. the
+		// current derivation was created for new information, and other derivation
+		// instances further depend on the current one
+		List<Derivation> directedDownstream = finishedDerivation.getDirectedDownstreams();
+		if (!directedDownstream.isEmpty()) {
+			// here the instance matching is done by querying the I/O signature of the
+			// agents that responsible for monitoring the retrieved downstream derivations,
+			// note that it is not directly matching the rdf:type, rather, it is matching
+			// {?instance rdf:type*/rdfs:subClassOf* ?agentInputType.}
+			Map<String, List<String>> map = this.sparqlClient.matchNewDerivedIriToDownsFroNewInfo(
+					newEntities.stream().map(e -> e.getIri()).collect(Collectors.toList()),
+					directedDownstream.stream().map(d -> d.getIri()).collect(Collectors.toList()));
+			// add matched instance-derivations to map
+			map.forEach((inst, derivs) -> {
+				if (newIriDownstreamDerivationMap.containsKey(inst)) {
+					newIriDownstreamDerivationMap.get(inst).addAll(derivs);
+				} else {
+					newIriDownstreamDerivationMap.put(inst, derivs);
+				}
 			});
-			// delete <downstreamDerivation> <isDerivedFrom> <derivation>
-			this.sparqlClient.deleteDirectConnectionBetweenDerivations(derivationPairMap);
-			// reconnect within the triple store
-			this.sparqlClient.reconnectInputToDerived(newInfoAsInputs, downstreamDerivationsToReconnect);
 		}
 
-		// (3) delete all triples connected to status of the derivation
-		this.sparqlClient.deleteStatus(derivation);
-
-		// if there are no errors, assume update is successful
-		// retrieve the recorded value in {<derivation> <retrievedInputsAt> timestamp}
-		// also delete it after value retrieved
-		Map<String, Long> derivationTime_map = this.sparqlClient.retrieveInputReadTimestamp(derivation);
-		// update timestamp with the retrieved value
-		this.sparqlClient.updateTimestamps(derivationTime_map);
-		LOGGER.info("Updated timestamp of <" + derivation + ">");
+		// 4. fire SPARQL update to update the knowledge graph in one-go, for the
+		// specific changes done in this update, see comments of method
+		// updateFinishedAsyncDerivation(String derivation,
+		// Map<String, List<String>> newIriDownstreamDerivationMap)
+		this.sparqlClient.updateFinishedAsyncDerivation(derivation,
+				newIriDownstreamDerivationMap);
 	}
 
 	/**

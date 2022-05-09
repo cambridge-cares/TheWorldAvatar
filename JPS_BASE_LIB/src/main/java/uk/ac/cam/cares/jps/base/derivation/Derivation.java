@@ -24,6 +24,41 @@ public class Derivation {
 	private String rdfType;
 	private boolean updated = false;
 
+	private Status status; // for asynchronous derivation
+
+	/**
+	 * Inner class Status, for asynchronous derivation (DerivationAsyn)
+	 */
+	class Status {
+		private String statusIri;
+		private String statusRdfType;
+		private List<Entity> newDerivedIRI;
+
+		public Status(String statusIri, String statusRdfType) {
+			this.statusIri = statusIri;
+			this.statusRdfType = statusRdfType;
+			this.newDerivedIRI = new ArrayList<Entity>();
+		}
+
+		public String getStatusIri() {
+			return this.statusIri;
+		}
+
+		public String getStatusRdfType() {
+			return this.statusRdfType;
+		}
+
+		public void addNewDerivedIRI(Entity newEntity) {
+			if (!this.newDerivedIRI.stream().anyMatch(e -> e.getIri().equals(newEntity.getIri()))) {
+				this.newDerivedIRI.add(newEntity);
+			}
+		}
+
+		public List<Entity> getNewDerivedIRI() {
+			return this.newDerivedIRI;
+		}
+	}
+
 	public Derivation(String iri, String rdfType) {
 		this.iri = iri;
 		this.rdfType = rdfType;
@@ -70,6 +105,14 @@ public class Derivation {
 
 	public List<String> getEntitiesIri() {
 		return this.entities.stream().map(e -> e.getIri()).collect(Collectors.toList());
+	}
+
+	public Status getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(String statusIri, String statusRdfType) {
+		this.status = new Status(statusIri, statusRdfType);
 	}
 
 	public void addInput(Entity input) {

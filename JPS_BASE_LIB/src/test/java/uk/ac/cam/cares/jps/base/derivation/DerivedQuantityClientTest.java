@@ -905,10 +905,16 @@ public class DerivedQuantityClientTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<String> newDerivedIRI = initForCleanUpTests(testKG);
 
-		// create derivation
+		// create derivation and prepare it for clean up
 		String derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, true);
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		inputs.stream().forEach(i -> {
+			devClient.addTimeInstance(i);
+			devClient.sparqlClient.updateTimeStamp(i);
+		}); // add time instance and update timestamp for pure inputs, otherwise
+			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
+			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
 		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
@@ -952,10 +958,16 @@ public class DerivedQuantityClientTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<String> newDerivedIRI = initForCleanUpTests(testKG);
 
-		// create derivation
+		// create derivation and prepare it for clean up
 		String derivation = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, inputs);
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		inputs.stream().forEach(i -> {
+			devClient.addTimeInstance(i);
+			devClient.sparqlClient.updateTimeStamp(i);
+		}); // add time instance and update timestamp for pure inputs, otherwise
+			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
+			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
 		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
@@ -1000,12 +1012,18 @@ public class DerivedQuantityClientTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<String> newDerivedIRI = initForCleanUpTests(testKG);
 
-		// create derivation
+		// create derivation and prepare it for clean up
 		String derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, true);
 		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, entities);
 		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, entities);
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		inputs.stream().forEach(i -> {
+			devClient.addTimeInstance(i);
+			devClient.sparqlClient.updateTimeStamp(i);
+		}); // add time instance and update timestamp for pure inputs, otherwise
+			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
+			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
 		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
@@ -1055,12 +1073,18 @@ public class DerivedQuantityClientTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<String> newDerivedIRI = initForCleanUpTests(testKG);
 
-		// create derivation
+		// create derivation and prepare it for clean up
 		String derivation = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, inputs);
 		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, Arrays.asList(derivation));
 		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, Arrays.asList(derivation));
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		inputs.stream().forEach(i -> {
+			devClient.addTimeInstance(i);
+			devClient.sparqlClient.updateTimeStamp(i);
+		}); // add time instance and update timestamp for pure inputs, otherwise
+			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
+			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
 		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
@@ -1120,7 +1144,7 @@ public class DerivedQuantityClientTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<String> newDerivedIRI = initForCleanUpTests(testKG);
 
-		// create derivation
+		// create derivation and prepare it for clean up
 		String derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, true);
 		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, entities);
 		// NOTE here the developer should create derivation3 with entities (only entity1
@@ -1132,6 +1156,12 @@ public class DerivedQuantityClientTest {
 				Arrays.asList(derivation, entity1, entity2));
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		inputs.stream().forEach(i -> {
+			devClient.addTimeInstance(i);
+			devClient.sparqlClient.updateTimeStamp(i);
+		}); // add time instance and update timestamp for pure inputs, otherwise
+			// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
+			// not execute
 		devClient.sparqlClient.updateStatusBeforeSetupJob(derivation);
 		devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 		long retrievedInputsAt = testKG.getProperty(ResourceFactory.createResource(derivation),
