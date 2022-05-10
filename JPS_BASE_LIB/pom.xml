@@ -12,7 +12,7 @@
     details on how version numbers should be selected -->
 
 
-    <version>1.8.0-154-dev-unified-derivation-framework-SNAPSHOT</version>
+    <version>1.9.0</version>
 
     <!-- Project Properties -->
     <properties>
