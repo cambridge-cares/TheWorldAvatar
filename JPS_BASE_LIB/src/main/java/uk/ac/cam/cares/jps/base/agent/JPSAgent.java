@@ -111,12 +111,24 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     }
     
     /**
+     * Send a HTTP POST request to an agent with JSON parameters in the body
+     * 
+     * @param agentID the name of the agent as found in the ontoagent triple store
+     * @param jsonParameters request body
+     */
+    public String callAgentWithPost(String agentID, JSONObject jsonParameters) {
+    	return new AgentCaller().postWithJson(agentID, jsonParameters);
+    }
+    
+    /**
      * Send a HTTP POST request to an agent
      * 
      * @param agentID the name of the agent as found in the ontoagent triple store
-     * @param body request body
+     * @param body
+     * @param contentType {@link uk.ac.cam.cares.jps.base.discovery.MediaType see MediaType}  
+     * @param accept {@link uk.ac.cam.cares.jps.base.discovery.MediaType see MediaType}
      */
-    public String callAgentWithPost(String agentID, String body) {
-    	return new AgentCaller().post(agentID, body);
+    public String callAgentWithPost(String agentID, String body, String contentType, String accept) {
+    	return new AgentCaller().post(agentID, body, contentType, accept);
     }
 }

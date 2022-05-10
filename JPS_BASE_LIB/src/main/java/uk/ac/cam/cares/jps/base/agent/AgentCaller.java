@@ -47,16 +47,17 @@ public class AgentCaller {
 	 * @param body
 	 * @return
 	 */
-	public String post(String agentID, String body) {
-		return post(agentID, body, MediaType.APPLICATION_JSON.type, MediaType.APPLICATION_JSON.type);
+	public String postWithJson(String agentID, JSONObject jsonParameters) {
+		LOGGER.info("Execute HTTP POST with JSON parameters.");
+		return post(agentID, jsonParameters.toString(), MediaType.APPLICATION_JSON.type, MediaType.APPLICATION_JSON.type);
 	}
 	
 	/**
 	 * Execute HTTP POST request on agentID
 	 * @param agentID
 	 * @param body
-	 * @param contentType
-	 * @param accept
+	 * @param contentType {@link uk.ac.cam.cares.jps.base.discovery.MediaType see MediaType}
+	 * @param accept {@link uk.ac.cam.cares.jps.base.discovery.MediaType see MediaType}
 	 * @return
 	 */
 	public String post(String agentID, String body, String contentType, String accept) {
@@ -77,7 +78,7 @@ public class AgentCaller {
 	 * @param agentID
 	 * @return
 	 */
-	private String getAgentUrl(String agentID) {
+	public String getAgentUrl(String agentID) {
 		return AgentRouter.getInstance().get(agentID);
 	}
 }
