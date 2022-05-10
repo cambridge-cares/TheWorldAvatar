@@ -68,6 +68,9 @@ class ControlHandler {
             let terrainContainer = document.getElementById("terrainContainer");
             let terrainSelect = terrainContainer.querySelector("input[id='" + window.terrain + "']") as HTMLInputElement;
             if(terrainSelect != null) terrainSelect.checked = true;
+
+            // Build data selection dropdowns
+            this.recurseBuildDataSelect();
         });
 	}
 
@@ -561,6 +564,69 @@ class ControlHandler {
 			}
 		}
 	}
+
+    /**
+     * 
+     */
+    private recurseBuildDataSelect() {
+        let container = document.getElementById("selectionsContainer");
+
+        // @ts-ignore
+        let groups = manager.dataStore.dataGroups;
+
+        let html = this.buildDropdown("Data Set:", groups, 0);
+        if(html !== null) container.innerHTML += html;
+
+        recurse()
+    }
+
+    private recurse(currentGroup: DataGroup, index: number) {
+        
+        if(currentGroup.subGroups.length > 0) {
+
+            let html = this.buildDropdown(
+                currentGroup.subLabel,
+                currentGroup.subGroups,
+                index + 1
+            );
+            if(html !== null) container.innerHTML += html;
+
+            // ??
+            this.recurse(currentGroup.subGroups[0], index + 1);
+        }
+    }
+
+    /**
+     * 
+     */
+    private buildDropdown(label: String, groups: Array<DataGroup>, index: number) {
+        // Check if the container div already exists
+        let divID = "selectContainer" + index;
+        let divElement = document.getElementById(divID);
+
+        let html = "">;
+        if(divElement === null) {
+            html += "<div id='selectContainer" + index + "'>";
+        }
+       
+        html += "<label for='selectLevel" + index + "'>" + label + "</label>";
+        html += "<select name='selectLevel" + index + "'>";
+        for(var i = 0; i < groups.length; i++) {
+            let group = groups[i];
+            html += "<option value='" + i + "'>" + group.name + "</option>";
+        }
+        html += "</select>";
+
+        if(divElement === null) {
+            html += "</div>";
+            return html;
+
+        } else {
+            divElement.innerHTML = html;
+            return null;
+        }
+    }
+
 
 }
 // End of class.

@@ -1,7 +1,7 @@
 export {};
 
 declare global {
-  interface Window {
-    terrain: string; 
-  }
+    interface Window {
+        terrain: string; 
+    }
 }

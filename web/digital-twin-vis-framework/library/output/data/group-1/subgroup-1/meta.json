@@ -1,9 +1,0 @@
-{
-	"name": "Subgroup #1",
-	"groups": {
-		"label": "Subsubgroups",
-		"directories": [
-			"subsubgroup-1"
-		]
-    }
-}

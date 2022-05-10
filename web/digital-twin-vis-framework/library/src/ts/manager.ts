@@ -16,7 +16,7 @@ class Manager {
     /**
      * Stores definitions of data sources.
      */
-    private dataStore: DataStore = new DataStore();
+    public dataStore: DataStore = new DataStore();
 
     /**
      * Map handler instance.

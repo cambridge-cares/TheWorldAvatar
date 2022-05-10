@@ -38,8 +38,10 @@
             var manager = new Manager(MapProvider.MAPBOX);
 
             // Load the definitions of sample data
-            var dataPromise = manager.loadDataDirectory("./data-cambridge");
-            dataPromise.then(() => {
+            var dataPromiseOne = manager.loadDataDirectory("./data/cambridge");
+            var dataPromiseTwo = manager.loadDataDirectory("./data/singapore");
+
+            Promise.all([dataPromiseOne, dataPromiseTwo]).then(() => {
                 // Only start the map after data definitions have been read.
                 start();
             });
