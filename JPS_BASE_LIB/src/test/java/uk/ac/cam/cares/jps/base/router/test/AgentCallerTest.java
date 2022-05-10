@@ -16,13 +16,6 @@ import uk.ac.cam.cares.jps.base.agent.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.http.Http;
 
-/**
- * This class is intended to test the integration of the 
- * {@link uk.ac.cam.cares.jps.base.agent.AgentCaller AgentCaller} with
- * the {@link uk.ac.cam.cares.jps.base.router.AgentRouter AgentRouter}.
- * @author csl37
- *
- */
 @WireMockTest()
 class AgentCallerTest {
 	
