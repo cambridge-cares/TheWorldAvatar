@@ -105,12 +105,8 @@ class AgentRouterTest {
 	void testGetStoreClient() throws NoSuchFieldException, SecurityException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
 		AgentRouter agentRouter = AgentRouter.getInstance();
-		
-		assertNotNull(agentRouter.getClass().getDeclaredMethod("getStoreClient"));
-	    Method method = agentRouter.getClass().getDeclaredMethod("getStoreClient");
-	    method.setAccessible(true);
-		
-	    Object obj = method.invoke(agentRouter);
+				
+	    Object obj = agentRouter.getStoreClient();
 		assertNotNull(obj);
 		assertTrue(obj.getClass().getClass().isInstance(RemoteStoreClient.class));
 		
@@ -126,26 +122,16 @@ class AgentRouterTest {
 				
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
-		assertNotNull(agentRouter.getClass().getDeclaredMethod("getFromStore", String.class, StoreClientInterface.class));
-		Method method = agentRouter.getClass().getDeclaredMethod("getFromStore", String.class, StoreClientInterface.class);
-	    method.setAccessible(true);
-	    
 	    String agentName = "Agent1";
-	    Object obj = method.invoke(agentRouter, agentName, mockStoreClient);
-		assertNotNull(obj);
-		String result = (String) obj;
+	    String result = agentRouter.getFromStore(agentName, mockStoreClient);
 		assertEquals(agentURL1, result);
 		
 		agentName = "Agent2";
-	    obj = method.invoke(agentRouter, agentName, mockStoreClient);
-		assertNotNull(obj);
-		result = (String) obj;
+		result = agentRouter.getFromStore(agentName, mockStoreClient);
 		assertEquals(agentURL2, result);
 		
 		agentName = "Agent3";
-	    obj = method.invoke(agentRouter, agentName, mockStoreClient);
-		assertNotNull(obj);
-		result = (String) obj;
+		result = agentRouter.getFromStore(agentName, mockStoreClient);
 		assertEquals(agentURL3, result);
 	}
 	
@@ -156,12 +142,8 @@ class AgentRouterTest {
 				
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
-		assertNotNull(agentRouter.getClass().getDeclaredMethod("getFromStore", String.class, StoreClientInterface.class));
-		Method method = agentRouter.getClass().getDeclaredMethod("getFromStore", String.class, StoreClientInterface.class);
-	    method.setAccessible(true);
-	    
 	    String agentName = "Agent4";
-	    Object obj = method.invoke(agentRouter, agentName, mockStoreClient);
+	    Object obj = agentRouter.getFromStore(agentName, mockStoreClient);
 		assertNull(obj);
 	}
 	
