@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.router.test;
+package uk.ac.cam.cares.jps.base.agent.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
