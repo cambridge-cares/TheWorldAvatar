@@ -20,29 +20,29 @@ skos:       http://www.w3.org/2004/02/skos/core#
 [MappingDeclaration] @collection [[
 mappingId pubchem_compound
 # chemical entity
-target compound:{compound_id} rdf:type sio:SIO_010004 ;
-sio:has-attribute descriptor:{compound_id}_Canonical_SMILES ,
-descriptor:{compound_id}_Compound_Identifier ,
-descriptor:{compound_id}_Covalent_Unit_Count ,
-descriptor:{compound_id}_Defined_Atom_Stereo_Count ,
-descriptor:{compound_id}_Defined_Bond_Stereo_Count ,
-descriptor:{compound_id}_Exact_Mass ,
-descriptor:{compound_id}_Hydrogen_Bond_Acceptor_Count ,
-descriptor:{compound_id}_Hydrogen_Bond_Donor_Count ,
-descriptor:{compound_id}_IUPAC_InChI ,
-descriptor:{compound_id}_IUPAC_InChIKey ,
-descriptor:{compound_id}_Isotope_Atom_Count ,
-descriptor:{compound_id}_Heavy_Atom_Count ,
-descriptor:{compound_id}_Molecular_Formula ,
-descriptor:{compound_id}_Molecular_Weight ,
-descriptor:{compound_id}_Preferred_IUPAC_Name ,
-descriptor:{compound_id}_Rotatable_Bond_Count ,
-descriptor:{compound_id}_Structure_Complexity ,
-descriptor:{compound_id}_TPSA ,
-descriptor:{compound_id}_Total_Formal_Charge ,
-descriptor:{compound_id}_Undefined_Atom_Stereo_Count ,
-descriptor:{compound_id}_Undefined_Bond_Stereo_Count ,
-descriptor:{compound_id}_XLogP3-AA .
+target compound:{compound_id} rdf:type sio:SIO_010004 ;             
+             sio:has-attribute descriptor:{compound_id}_Canonical_SMILES ,
+             descriptor:{compound_id}_Compound_Identifier ,
+             descriptor:{compound_id}_Covalent_Unit_Count ,
+             descriptor:{compound_id}_Defined_Atom_Stereo_Count ,
+             descriptor:{compound_id}_Defined_Bond_Stereo_Count ,
+             descriptor:{compound_id}_Exact_Mass ,
+             descriptor:{compound_id}_Hydrogen_Bond_Acceptor_Count ,
+             descriptor:{compound_id}_Hydrogen_Bond_Donor_Count ,
+             descriptor:{compound_id}_IUPAC_InChI ,
+             descriptor:{compound_id}_IUPAC_InChIKey ,
+             descriptor:{compound_id}_Isotope_Atom_Count ,
+             descriptor:{compound_id}_Heavy_Atom_Count ,
+             descriptor:{compound_id}_Molecular_Formula ,
+             descriptor:{compound_id}_Molecular_Weight ,
+             descriptor:{compound_id}_Preferred_IUPAC_Name ,
+             descriptor:{compound_id}_Rotatable_Bond_Count ,
+             descriptor:{compound_id}_Structure_Complexity ,
+             descriptor:{compound_id}_TPSA ,
+             descriptor:{compound_id}_Total_Formal_Charge ,
+             descriptor:{compound_id}_Undefined_Atom_Stereo_Count ,
+             descriptor:{compound_id}_Undefined_Bond_Stereo_Count ,
+             descriptor:{compound_id}_XLogP3-AA .
 #
     descriptor:{compound_id}_Canonical_SMILES rdf:type sio:CHEMINF_000376 ;
                                 sio:has-value {canonical_smiles} .
@@ -90,27 +90,8 @@ descriptor:{compound_id}_XLogP3-AA .
                                 sio:has-value {log_p} . 
 # 
 source		SELECT compound_id,charge,compound_complexity,count_hydrogen_bond_acceptor,count_hydrogen_bond_donor,count_rotatable_bond,iupac_name,inchi_standard,inchi_key,log_p,exact_mass,molecular_formula,molecular_weight,tpsa,canonical_smiles,count_heavy_atoms,count_def_atom_stereo,count_undef_atom_setereo,count_def_bond_stereo,count_undef_bond_setereo,count_isotope_atom,count_covalent_unit
-            FROM "public"."Compound1.xml"
+            FROM "public"."pubchem"
 
-
-
-
-
-
-
-#
-#
-#
-#map#pingId	pubchem_to_inchi
-## test comment
-#target		os:pubchem_species/{id} a os:Species ; 
-#             os:inChI {pubchem_inchi} .
-#source		SELECT compound_desc.compound_id AS id, inchi_value.inchi_value AS pubchem_inchi
-#            FROM compound_desc
-#            INNER JOIN inchi_type
-#            ON compound_desc.inchi_desc = inchi_type.inchi_desc
-#            INNER JOIN inchi_value
-#            ON compound_desc.inchi_desc = inchi_value.inchi_desc;
 
 
 #mappingId	pubchem_to_name
