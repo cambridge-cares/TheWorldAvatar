@@ -2389,8 +2389,8 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * This method reconnects new derived IRIs when a derivation is updated,
-	 * specifically, it does below five operations in one-go:
+	 * This method reconnects new derived IRIs when a synchronous derivation is
+	 * updated, specifically, it does below five operations in one-go:
 	 * (1) delete old outputs (entities) of the given derivation and its connections
 	 * with downstream derivations;
 	 * (2) delete status of the derivation if exist (applicable for outdated sync
@@ -2407,10 +2407,15 @@ public class DerivationSparql {
 	 * https://github.com/cambridge-cares/TheWorldAvatar/issues/184.
 	 * 
 	 * This method returns a boolean value to indicate if it is certain that the
-	 * triples in the update endpoint are changed by the SPARQL update operation. A
-	 * true boolean will be returned IF AND ONLY IF the triples are changed FOR
-	 * SURE. There might be situation that triples are changed by the SPARQL update
-	 * but the response is not clear enough to say, where false will be returned.
+	 * triples in the update endpoint are changed by the SPARQL update operation.
+	 * This is currently implemented as checking the "mutationCount" in the response
+	 * message of the HTTP POST for SPARQL update to blazegraph-backended endpoint,
+	 * a true boolean will be returned IF AND ONLY IF the mutationCount is greater
+	 * than 0 meaning the triples are changed.
+	 * 
+	 * For non-blazegraph-backended endpoint, the SPARQL update will be executed in
+	 * the normal way and it is not clear enough to determine whether triples are
+	 * changed. In this situation, a false boolean will be returned.
 	 * 
 	 * @param outputTriples
 	 * @param newIriDownstreamDerivationMap
@@ -2457,7 +2462,6 @@ public class DerivationSparql {
 		// variables for status related concepts
 		Variable status = SparqlBuilder.var("status");
 		Variable statusType = SparqlBuilder.var("statusType");
-		Variable sndIRI = SparqlBuilder.var("sndIRI");
 
 		// filter ?derivationTimestamp < ?upstreamTimestamp
 		Expression<?> tsFilter = Expressions.lt(dTs, upsTs);
@@ -2476,11 +2480,10 @@ public class DerivationSparql {
 		// these patterns query the status of this derivation if it exist, thus optional
 		TriplePattern tp1 = d.has(hasStatus, status);
 		TriplePattern tp2 = status.isA(statusType);
-		TriplePattern tp3 = status.has(hasNewDerivedIRI, sndIRI);
-		GraphPattern statusQueryPattern = GraphPatterns.and(tp1, tp2, tp3.optional()).optional();
+		GraphPattern statusQueryPattern = GraphPatterns.and(tp1, tp2).optional();
 
 		// construct the sub query
-		sub.select(d, unixtimeIRI, dTs, status, statusType, sndIRI, e, p1, o, s, p2)
+		sub.select(d, unixtimeIRI, dTs, status, statusType, e, p1, o, s, p2)
 				.where(derivationPattern, entityPattern, statusQueryPattern);
 
 		// delete old outputs (entities) - basically delete this individual
@@ -2494,29 +2497,36 @@ public class DerivationSparql {
 		// construct the complete SPARQL update, note that some of the insert triples
 		// have already been added at the beginning of this method
 		modify.prefix(p_time, p_derived)
-				.delete(deleteEntityAsSubject, deleteEntityAsObject, tp1, tp2, tp3, deleteOldTimestamp)
+				.delete(deleteEntityAsSubject, deleteEntityAsObject, tp1, tp2, deleteOldTimestamp)
 				.insert(insertNewTimestamp).where(sub);
 
 		try {
-			if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
-				HttpResponse httpResponse = ((RemoteStoreClient) storeClient)
-						.executeUpdateByPost(modify.getQueryString());
-				if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
-					String html = EntityUtils.toString(httpResponse.getEntity());
-					Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
-					Matcher matcher = pattern.matcher(html);
-					if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
-						// only return true if the agent is able to parse "mutationCount=(.*)</p" and
-						// the parsed value is greater than 0
-						return true;
+			if (storeClient.getClass() == RemoteStoreClient.class) {
+				if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
+					HttpResponse httpResponse = ((RemoteStoreClient) storeClient)
+							.executeUpdateByPost(modify.getQueryString());
+					if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
+						String html = EntityUtils.toString(httpResponse.getEntity());
+						Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
+						Matcher matcher = pattern.matcher(html);
+						if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
+							// only return true if the agent is able to parse "mutationCount=(.*)</p" and
+							// the parsed value is greater than 0
+							LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
+									+ matcher.group(1));
+							return true;
+						}
+						LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
+								+ matcher.group(1));
 					}
+				} else {
+					storeClient.executeUpdate(modify.getQueryString());
 				}
 			} else {
 				storeClient.executeUpdate(modify.getQueryString());
 			}
-		} catch (ClassCastException | ParseException | IOException exception) {
-			LOGGER.debug(exception);
-			storeClient.executeUpdate(modify.getQueryString());
+		} catch (ParseException | IOException exception) {
+			throw new JPSRuntimeException(exception);
 		}
 		return false;
 	}
@@ -2542,10 +2552,15 @@ public class DerivationSparql {
 	 * due to high frequency asynchronous derivation monitoring.
 	 * 
 	 * This method returns a boolean value to indicate if it is certain that the
-	 * triples in the update endpoint are changed by the SPARQL update operation. A
-	 * true boolean will be returned IF AND ONLY IF the triples are changed FOR
-	 * SURE. There might be situation that triples are changed by the SPARQL update
-	 * but the response is not clear enough to say, where false will be returned.
+	 * triples in the update endpoint are changed by the SPARQL update operation.
+	 * This is currently implemented as checking the "mutationCount" in the response
+	 * message of the HTTP POST for SPARQL update to blazegraph-backended endpoint,
+	 * a true boolean will be returned IF AND ONLY IF the mutationCount is greater
+	 * than 0 meaning the triples are changed.
+	 * 
+	 * For non-blazegraph-backended endpoint, the SPARQL update will be executed in
+	 * the normal way and it is not clear enough to determine whether triples are
+	 * changed. In this situation, a false boolean will be returned.
 	 * 
 	 * @param derivation
 	 * @param newIriDownstreamDerivationMap
@@ -2644,29 +2659,32 @@ public class DerivationSparql {
 				.insert(insertNewTimestamp).where(sub);
 
 		try {
-			if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
-				HttpResponse httpResponse = ((RemoteStoreClient) storeClient)
-						.executeUpdateByPost(modify.getQueryString());
-				if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
-					String html = EntityUtils.toString(httpResponse.getEntity());
-					Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
-					Matcher matcher = pattern.matcher(html);
-					if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
-						// only return true if the agent is able to parse "mutationCount=(.*)</p" and
-						// the parsed value is greater than 0
-						LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
+			if (storeClient.getClass() == RemoteStoreClient.class) {
+				if (((RemoteStoreClient) storeClient).isUpdateEndpointBlazegraphBackended()) {
+					HttpResponse httpResponse = ((RemoteStoreClient) storeClient)
+							.executeUpdateByPost(modify.getQueryString());
+					if (httpResponse.getStatusLine().getStatusCode() != 204 && httpResponse.getEntity() != null) {
+						String html = EntityUtils.toString(httpResponse.getEntity());
+						Pattern pattern = Pattern.compile("mutationCount=(.*)</p");
+						Matcher matcher = pattern.matcher(html);
+						if (matcher.find() && Integer.parseInt(matcher.group(1)) > 0) {
+							// only return true if the agent is able to parse "mutationCount=(.*)</p" and
+							// the parsed value is greater than 0
+							LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
 								+ matcher.group(1));
-						return true;
-					}
-					LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
+							return true;
+						}
+						LOGGER.debug("SPARQL update (" + modify.getQueryString() + ") executed with mutationCount="
 							+ matcher.group(1));
+					}
+				} else {
+					storeClient.executeUpdate(modify.getQueryString());
 				}
 			} else {
 				storeClient.executeUpdate(modify.getQueryString());
 			}
-		} catch (ClassCastException | ParseException | IOException exception) {
-			LOGGER.debug(exception);
-			storeClient.executeUpdate(modify.getQueryString());
+		} catch (ParseException | IOException exception) {
+			throw new JPSRuntimeException(exception);
 		}
 		return false;
 	}
