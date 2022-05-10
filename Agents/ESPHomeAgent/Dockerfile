@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-11-slim as builder
+FROM maven:3.6-openjdk-8-slim as builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 ADD . /root
@@ -12,8 +12,9 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
-WORKDIR /root/access-agent
+WORKDIR /root/esphome-agent-code
 RUN mvn package
+
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
@@ -22,7 +23,26 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/access-agent/output/access-agent##1.2.1.war $CATALINA_HOME/webapps/
+# Copy in the properties file
+COPY ./config/api.properties /root/api.properties
+
+# Copy in the properties file
+COPY ./config/client.properties /root/client.properties
+
+# Copy in the properties file
+COPY ./config/esphome-client.properties /root/esphome-client.properties
+
+# Set the required environment variable
+ENV API_PROPERTIES="/root/api.properties"
+
+# Set the required environment variable
+ENV CLIENT_PROPERTIES="/root/client.properties"
+
+# Set the required environment variable
+ENV ESPHOME_CLIENT_PROPERTIES="/root/esphome-client.properties"
+
+
+COPY --from=builder /root/esphome-agent-code/output/esphome-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
