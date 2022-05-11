@@ -40,41 +40,43 @@ In order to use the `pyuploader` tool for uploading files into the file server a
 
 # Command line interface usage #
 
-## File uploader CLI
+## Uploaders CLI
 
 ```bash
 Usage:
-    fs_upload <file_or_dir>  [--url=<url>]
-                             [--auth-file=<file>]
-                             [--no-auth]
-                             [--file-ext=<ext>]
-                             [--subdirs=<dir>]
-                             [--log-file-name=<name>]
-                             [--log-file-dir=<dir>]
-                             [--no-file-logging]
-                             [--dry-run]
+    pyuploader ts_upload <file_or_dir> [options]
+    pyuploader fs_upload <file_or_dir> [options]
 
 Options:
---url=<url>             File server upload url. If not specified, the code
+--url=<url>             Upload endpoint. If not specified, the code
                         will try to read it from a file whose location
-                        should be specified in user 'KG_FILE_SERVER_SPECS'
-                        environment variable.
---auth-file=<file>      File path to the file server secrets file containing
-                        the user authorization string of the following form:
+                        should be specified in an environment variable:
+                            KG_FILE_SERVER_SPECS - for file server uploads
+                            TRIPLE_STORE_SPECS - for triple store uploads
+--auth-file=<file>      File path to the secrets file containing the user
+                        authorization string of the following form:
                         "username:password". If not specified, the code will
-                        try to read the secrets file path from a user
-                        'KG_FILE_SERVER_SECRETS' environment variable.
+                        try to read the secrets file path from an environment
+                        variable:
+                            KG_FILE_SERVER_SECRETS - for file server uploads
+                            TRIPLE_STORE_SECRETS - for triple store uploads
                         DO NOT store your secrets directly in environment
                         variables, only store the secrets file path.
 --no-auth               Disables reading credentials from the environment
-                        variables and sending it to the file server.
+                        variables and sending it to the upload endpoint.
 --file-ext=<ext>        List of extensions used to select files
                         that will be uploaded to the file server.
-                        Example: --file-ext='log,txt'                       [default: log]
+                        Example: --file-ext='log,txt'
+                        Defaults to:
+                            all - for file server uploads
+                            owl - for triple store uploads
 --subdirs=<dir>         Optional subdirectories to be created on
                         the file server to upload your files into.
-                        Example: --subdirs='dir1/dir2/'                     [default: ]
---log-file-name=<name>  Name of the generated log file.                     [default: fs_uploader.log]
+                        Example: --subdirs='dir1/dir2/'
+--log-file-name=<name>  Name of the generated log file.
+                        Defaults to:
+                            fs_uploader.log - for file server uploads
+                            ts_uploader.log - for triple store uploads
 --log-file-dir=<dir>    Path to the log file storing information of
                         what has been uploaded and where. Defaults
                         to the <file_or_dir> directory.
@@ -84,96 +86,64 @@ Options:
 ```
 
 ```bash
-# Example usage
+# Example file server uploader usage
 # - upload single file,
 #   read the server url and auth from env variables
-$ fs_upload file1.log
+$ pyuploader fs_upload file1.log
 # - upload single file,
 #   read the server auth from env variables
-$ fs_upload file1.log --url="http://<server_url>"
+$ pyuploader fs_upload file1.log --url="http://<server_url>"
 # - upload single file,
 #   read the server url from env variables, do not use authorisation
-$ fs_upload file1.log --url="http://<server_url>" --no-auth
+$ pyuploader fs_upload file1.log --url="http://<server_url>" --no-auth
 # - upload all log, txt and tiff files in my_directory,
 #   read the server url and auth from env variables
-$ fs_upload my_directory --file-ext="log,txt,tiff"
+$ pyuploader fs_upload my_directory --file-ext="log,txt,tiff"
 # - similar to the previous example, but it does not upload the files
-$ fs_upload my_directory --file-ext="log,txt,tiff" --dry-run
-```
-
-## Triple store uploader CLI
-
-```bash
-Usage:
-    ts_upload <file_or_dir>  [--url=<url>]
-                             [--auth-file=<file>]
-                             [--no-auth]
-                             [--file-ext=<ext>]
-                             [--log-file-name=<name>]
-                             [--log-file-dir=<dir>]
-                             [--no-file-logging]
-                             [--dry-run]
-
-Options:
---url=<url>             Triple store upload endpoint. If not specified, the code
-                        will try to read it from a file whose location
-                        should be specified in user 'TRIPLE_STORE_SPECS'
-                        environment variable.
---auth-file=<file>      File path to the triple store secrets file containing
-                        the user authorization string of the following form:
-                        "username:password". If not specified, the code will
-                        try to read the secrets file path from a user
-                        'TRIPLE_STORE_SECRETS' environment variable.
-                        DO NOT store your secrets directly in environment
-                        variables, only store the secrets file path.
---no-auth               Disables reading credentials from the environment
-                        variables and sending it to the triple store.
---file-ext=<ext>        List of extensions used to select files             [default: owl]
-                        that will be uploaded to the triple store.
---log-file-name=<name>  Name of the generated log file.                     [default: ts_uploader.log]
---log-file-dir=<dir>    Path to the log file storing information of
-                        what has been uploaded and where. Defaults
-                        to the <file_or_dir> directory.
---no-file-logging       No logging flag to a file.
---dry-run               Run the triple store uploader tool in a dry
-                        run without uploading any triples.
+$ pyuploader fs_upload my_directory --file-ext="log,txt,tiff" --dry-run
 ```
 
 ```bash
-# Example usage
+# Example triple store uploader usage
 # - upload triples from a single file,
 #   read the triple store endpoint and auth from env variables
-$ ts_upload file1.owl
+$ pyuploader ts_upload file1.owl
 # - upload triples from a single file,
 #   read the triple store auth from env variables
-$ ts_upload file1.owl --url="http://<triple_store_endpoint>"
+$ pyuploader ts_upload file1.owl --url="http://<triple_store_endpoint>"
 # - upload triples from a single file,
 #   read the triple store endpoint from env variables, do not use authorisation
-$ ts_upload file1.owl --url="http://<triple_store_endpoint>" --no-auth
+$ pyuploader ts_upload file1.owl --url="http://<triple_store_endpoint>" --no-auth
 # - upload triples from all owl files in my_directory,
 #   read the triple store endpoint and auth from env variables
-$ ts_upload my_directory --file-ext="owl"
+$ pyuploader ts_upload my_directory --file-ext="owl"
 # - similar to the previous example, but it does not upload the triples
-$ ts_upload my_directory --file-ext="owl" --dry-run
+$ pyuploader ts_upload my_directory --file-ext="owl" --dry-run
 ```
 # Module usage #
 
 Apart from using `pyuploader` via its command line interface it is also possible to use it as a python module. The recommended way is to add the following import statement in your code:
 
 ```python
-from pyuploader import get_uploader
+import pyuploader as pyuploader
 ```
 
-The `get_uploader` is a factory function for creating file or triple store uploaders. The function's signature is as follows:
+The `pyuploader.get_uploader` is a factory function for creating file or triple store uploaders. The function's signature is as follows:
 
 ```python
 #------------------------------------------------
 # SIGNATURE
 def get_uploader(
-    uploader_type: str,                      # pass either "fs_uploader" or "ts_uploader" string
-    default_url: Optional[str] = None,       # optional
-    default_auth_file: Optional[str] = None, # optional
-    default_no_auth: bool = False            # optional
+    uploader_type: str,                     # pass either pyuploader.FS_UPLOADER
+                                            # or pyuploader.TS_UPLOADER
+    url: Optional[str] = None,              # optional
+    auth_file: Optional[str] = None,        # optional
+    no_auth: bool = False,                  # optional
+    subdirs: Optional[str] = None,          # optional, pyuploader.FS_UPLOADER only
+    url_env_var: Optional[str] = None,      # optional, name of the env variable that stores the uploader
+                                            # url, if not provided, defaults will be used
+    auth_file_env_var: Optional[str] = None # optional, name of the env variable that stores the uploader
+                                            # auth file path, if not provided, defaults will be used
     ) -> Uploader:
 
     ...
@@ -182,28 +152,18 @@ def get_uploader(
 # Example creation of the file uploader,
 # url and auth details to be read from
 # the system env variables
-file_uploader = get_uploader(
-    uploader_type="fs_uploader")
+file_uploader = pyuploader.get_uploader(
+    uploader_type=pyuploader.FS_UPLOADER)
 
 # Example creation of the triple store uploader,
 # triple store endpoint and auth details to be read from
 # the system env variables
-triple_store_uploader = get_uploader(
-    uploader_type="ts_uploader")
-
-# The created uploader objects provide two main methods:
-# "set_logging" and "upload" to configure the file or
-# triple upload behaviour. Here is how to use them:
-uploader.set_logging(
-    log_file_dir=log_file_dir,
-    log_file_name=log_file_name,
-    no_file_logging=no_file_logging
-    )
+triple_store_uploader = pyuploader.get_uploader(
+    uploader_type=pyuploader.TS_UPLOADER)
 
 uploaded_locations = uploader.upload(
     file_or_dir=file_or_dir,
     file_ext=file_ext,
-    subdirs=subdirs,                   # only used in the file uploader
     dry_run=dry_run
     )
 # where the "uploaded_locations" return value will contain:

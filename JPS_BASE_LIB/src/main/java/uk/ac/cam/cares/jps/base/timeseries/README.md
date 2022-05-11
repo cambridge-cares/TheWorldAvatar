@@ -20,7 +20,7 @@ Initialising any new time series using the `TimeSeriesClient` creates all requir
 The namespaces used in this document:  
 (`ts` denotes the time series ontology and `kb` refers to the namespace to which the time series shall be added)
 ```
-ts  : https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
+ts  : https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
 rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
 kb  : http://www.theworldavatar.com/kb/ontotimeseries/
 ```
@@ -81,8 +81,8 @@ You can request login details by emailing `support<at>cmclinnovations.com` with 
 
 [//]: # (These are reference links used in the body)
 
-   [test repository]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/test/java/uk/ac/cam/cares/jps/base/timeseries>
-   [AQMeshInputAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Agents/AQMeshInputAgent>
-   [FloodAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Agents/FloodAgent>
-   [GasGridAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/1161-dev-gas-grid-input-agent/Agents/GasGridAgent/src/gasgridagent>
-   [TimeSeriesExample]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Agents/TimeSeriesExample>
+   [test repository]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/test/java/uk/ac/cam/cares/jps/base/timeseries>
+   [AQMeshInputAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AQMeshInputAgent>
+   [FloodAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent>
+   [GasGridAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/1161-dev-gas-grid-input-agent/Agents/GasGridAgent/>
+   [TimeSeriesExample]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/TimeSeriesExample>
