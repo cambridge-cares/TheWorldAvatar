@@ -12,7 +12,7 @@
     details on how version numbers should be selected -->
 
 
-    <version>1.8.1</version>
+    <version>1.9.2</version>
 
     <!-- Project Properties -->
     <properties>
@@ -302,7 +302,58 @@
             <version>0.10.9.1</version>
         </dependency>
         
-        <!-- ??? -->
+        <!-- Following RDF4J dependencies are added for enabling the federated query
+		feature supported by FedX-->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-repository-http</artifactId>
+		    <version>3.0.4</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-sparql -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-repository-sparql</artifactId>
+		    <version>3.0.4</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-model -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-model</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-query -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-query</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-util -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-util</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-runtime</artifactId>
+		    <version>3.1.0</version>
+		    <type>pom</type>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-api -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-repository-api</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-tools-federation</artifactId>

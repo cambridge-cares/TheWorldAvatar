@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
@@ -107,6 +108,29 @@ public class RemoteStoreClientTest {
 		assertEquals(formInsertQuery(), kbClient.getQuery());
 	}
 	
+	@Test
+	public void testIsUpdateEndpointBlazegraphBackended() {
+		queryEndpoint = "/test/Query/Endpoint";
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
+		// should be false as no update endpoint is provided
+		assertTrue(!kbClient.isUpdateEndpointBlazegraphBackended());
+
+		updateEndpoint = UUID.randomUUID().toString() + "/blazegraph/namespace/" + UUID.randomUUID().toString()
+				+ "/sparql";
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		assertTrue(kbClient.isUpdateEndpointBlazegraphBackended());
+
+		updateEndpoint = UUID.randomUUID().toString() + "//blazegraph//namespace//" + UUID.randomUUID().toString()
+				+ "/sparql";
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		// Paths should be able to resolve "//" to "/"
+		assertTrue(kbClient.isUpdateEndpointBlazegraphBackended());
+
+		updateEndpoint = UUID.randomUUID().toString();
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		assertTrue(!kbClient.isUpdateEndpointBlazegraphBackended());
+	}
+
 	/**
 	 * Checks if the connection URL established for the query endpoint (URL)<p>
 	 * is the expected one. 
