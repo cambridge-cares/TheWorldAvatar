@@ -1,0 +1,49 @@
+@prefix ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#> .
+@prefix example:             <http://www.example.com/ontology/random.owl#> .
+@prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
+@prefix :                    <http://www.asyncagent.com/resource/agents/Service__Diff#> .
+
+:Service
+    rdf:type ontoagent:Service;
+    ontoagent:hasOperation :Operation;
+.
+
+:Operation
+    rdf:type ontoagent:Operation;
+    ontoagent:hasInput :MessageContent_input;
+    ontoagent:hasOutput :MessageContent_output;
+    ontoagent:hasHttpUrl "http://localhost:7000/diff/"^^xsd:string;
+.
+
+:MessageContent_input
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_maxvalue;
+    ontoagent:hasMandatoryPart :MessagePart_minvalue;
+.
+
+:MessageContent_output
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_difference;
+.
+
+:MessagePart_maxvalue
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType example:MaxValue;
+    ontoagent:hasName "maxValue"^^xsd:string;
+.
+
+:MessagePart_minvalue
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType example:MinValue;
+    ontoagent:hasName "minValue"^^xsd:string;
+.
+
+:MessagePart_difference
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType example:Difference;
+    ontoagent:hasName "difference"^^xsd:string;
+.

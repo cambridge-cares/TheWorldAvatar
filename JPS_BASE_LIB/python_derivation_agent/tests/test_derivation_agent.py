@@ -7,6 +7,7 @@ from flask import Flask
 from pathlib import Path
 import time
 
+from pyderivationagent.agent import FlaskConfig
 from pyderivationagent.data_model import *
 
 from tests.agents_for_test import *
@@ -16,23 +17,40 @@ import logging
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 # Configurations for agent
-ONTOAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Random#Service' # should match one defined in Service__Random.ttl
+# should match one defined in Service__Random.ttl
+RNGAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Random#Service'
+# should match one defined in Service__Max.ttl
+MAXAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Max#Service'
+# should match one defined in Service__Min.ttl
+MINAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Min#Service'
+# should match one defined in Service__Diff.ttl
+DIFFAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Diff#Service'
+
 DERIVATION_PERIODIC_TIMESCALE = 3
 DERIVATION_INSTANCE_BASE_URL = 'http://www.asyncagent.com/triplestore/repository/'
 
-# Predefined inputs and outputs, should match those defined in dummy_abox.ttl
-DERIVATION_OUTPUT = ['https://www.example.com/triplestore/random/random_data_1/listofpoints']
+# Predefined pure inputs, should match those defined in dummy_abox.ttl
 DERIVATION_INPUTS = ['https://www.example.com/triplestore/random/random_data_1/numofpoints',
                     'https://www.example.com/triplestore/random/random_data_1/upperlimit',
                     'https://www.example.com/triplestore/random/random_data_1/lowerlimit']
+
+
+class FlaskConfigTest(FlaskConfig):
+    # NOTE this to prevent below Exception when instantiating the all four agents in the integration test cases:
+    # "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
+    SCHEDULER_API_ENABLED = False
+
 
 @pytest.fixture()
 def initialise_triple_store():
     # NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
     # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-    blazegraph = DockerContainer('docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
-    blazegraph.with_exposed_ports(9999) # the port is set as 9999 to match with the value set in the docker image
+    blazegraph = DockerContainer(
+        'docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
+    # the port is set as 9999 to match with the value set in the docker image
+    blazegraph.with_exposed_ports(9999)
     yield blazegraph
+
 
 @pytest.fixture()
 def initialise_agent(initialise_triple_store):
@@ -42,80 +60,107 @@ def initialise_agent(initialise_triple_store):
 
         # Retrieve SPARQL endpoint
         endpoint = get_endpoint(container)
+        # endpoint = "http://kg.cmclinnovations.com:81/blazegraph/namespace/testontorxn/sparql"
 
         # Create SparqlClient for testing
         sparql_client = PySparqlClientForTest(endpoint, endpoint)
 
         # Initialise Async Agent with temporary docker container endpoint
-        agent = RNGAgent(ONTOAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE, DERIVATION_INSTANCE_BASE_URL, endpoint)
+        rng_agent = RNGAgent(RNGAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE,
+                             DERIVATION_INSTANCE_BASE_URL, endpoint, flask_config=FlaskConfigTest())
+        min_agent = MinValueAgent(MINAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE,
+                                  DERIVATION_INSTANCE_BASE_URL, endpoint, flask_config=FlaskConfigTest())
+        max_agent = MaxValueAgent(MAXAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE,
+                                  DERIVATION_INSTANCE_BASE_URL, endpoint, flask_config=FlaskConfigTest())
+        diff_agent = DifferenceAgent(DIFFAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE,
+                                     DERIVATION_INSTANCE_BASE_URL, endpoint, flask_config=FlaskConfigTest())
 
-        yield sparql_client, agent
+        yield sparql_client, rng_agent, min_agent, max_agent, diff_agent
 
         # Tear down scheduler of doe agent
-        agent.scheduler.shutdown()
+        rng_agent.scheduler.shutdown()
+        min_agent.scheduler.shutdown()
+        max_agent.scheduler.shutdown()
+        diff_agent.scheduler.shutdown()
 
         # Clear logger at the end of the test
         clear_loggers()
 
-def test_async_agent(initialise_agent):
-    sparql_client, agent = initialise_agent
 
+def test_integration_test(initialise_agent):
+    sparql_client, rng_agent, min_agent, max_agent, diff_agent = initialise_agent
+
+    sparql_client.performUpdate("delete where {?s ?p ?o}")
     # Verify that knowledge base is empty
     res = sparql_client.getAmountOfTriples()
     assert res == 0
 
     # Start the scheduler to monitor derivations
-    agent.start_monitoring_derivations()
+    rng_agent.start_monitoring_derivations()
+    min_agent.start_monitoring_derivations()
+    max_agent.start_monitoring_derivations()
+    diff_agent.start_monitoring_derivations()
 
     # Upload all example triples provided in the resources folder to triple store
     folderpath = str(Path(__file__).absolute().parent) + '/resources/'
     sparql_client.uploadOntology(folderpath+'dummy_tbox.ttl')
     sparql_client.uploadOntology(folderpath+'dummy_abox.ttl')
     sparql_client.uploadOntology(folderpath+'Service__Random.ttl')
-
-    # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = agent.derivationClient.createAsyncDerivationForNewInfo(agent.agentIRI, DERIVATION_INPUTS)
-
-    # Check if the derivation instance is created correctly
-    assert sparql_client.checkInstanceClass(derivation_iri, ONTODERIVATION_DERIVATIONASYN)
+    sparql_client.uploadOntology(folderpath+'Service__Max.ttl')
+    sparql_client.uploadOntology(folderpath+'Service__Min.ttl')
+    sparql_client.uploadOntology(folderpath+'Service__Diff.ttl')
 
     # Iterate over the list of inputs to add and update the timestamp
     for input in DERIVATION_INPUTS:
-        agent.derivationClient.addTimeInstance(input)
+        rng_agent.derivationClient.addTimeInstance(input)
         # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
-        agent.derivationClient.updateTimestamp(input)
+        rng_agent.derivationClient.updateTimestamp(input)
 
-    # Update the asynchronous derivation, it will be marked as "PendingUpdate"
-    # The actual update will be handled by monitorDerivation method periodically run by DoE agent
-    agent.derivationClient.updateDerivationAsyn(derivation_iri)
+    # Create derivation instance given above information, the timestamp of this derivation is 0
+    rng_derivation_iri = rng_agent.derivationClient.createAsyncDerivationForNewInfo(
+        rng_agent.agentIRI, DERIVATION_INPUTS)
+    max_derivation_iri = max_agent.derivationClient.createAsyncDerivationForNewInfo(
+        MAXAGENT_SERVICE, [rng_derivation_iri])
+    min_derivation_iri = min_agent.derivationClient.createAsyncDerivationForNewInfo(
+        MINAGENT_SERVICE, [rng_derivation_iri])
+    diff_derivation_iri = diff_agent.derivationClient.createAsyncDerivationForNewInfo(
+        DIFFAGENT_SERVICE, [max_derivation_iri, min_derivation_iri])
 
-    # Query timestamp of the derivation for every 20 seconds until it's updated
-    currentTimestamp_derivation = 0
-    query_timestamp = """SELECT ?time \
-                        WHERE { <%s> <%s>/<%s>/<%s> ?time .}""" % (derivation_iri, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION)
-    while currentTimestamp_derivation == 0:
-        time.sleep(5)
+    # Check if the derivation instance is created correctly
+    assert sparql_client.checkInstanceClass(
+        rng_derivation_iri, ONTODERIVATION_DERIVATIONASYN)
+    assert sparql_client.checkInstanceClass(
+        max_derivation_iri, ONTODERIVATION_DERIVATIONASYN)
+    assert sparql_client.checkInstanceClass(
+        min_derivation_iri, ONTODERIVATION_DERIVATIONASYN)
+    assert sparql_client.checkInstanceClass(
+        diff_derivation_iri, ONTODERIVATION_DERIVATIONASYN)
+
+    ################################################################################
+    ########## Stage 1: check if new information generation is successful ##########
+    ################################################################################
+
+    # Query timestamp of the each derivation every 8 seconds until it's updated
+    #######################
+    ## I. RNG derivation ##
+    #######################
+    rng_derivation_current_timestamp = 0
+    while rng_derivation_current_timestamp == 0:
+        time.sleep(8)
         # the queried results must be converted to int, otherwise it will never equal to 0
-        currentTimestamp_derivation = int(sparql_client.performQuery(query_timestamp)[0]['time'])
+        rng_derivation_current_timestamp = get_timestamp(
+            rng_derivation_iri, sparql_client)
 
-    # Wait some arbitrary time until the cleaning up is done by the derivation client
-    time.sleep(5)
-
-    # Query the iri of the new proposed NewExperiment
-    new_listofpoints_iri = sparql_client.getListOfPoints()
-
-    # Check the new generated instance NewExperiment is different from the original one provided in the example
-    assert new_listofpoints_iri != DERIVATION_OUTPUT[0]
-
+    # Test that if the knowledge graph contains the correct number of points
     # Get the number of points
-    numofpoints_iri = sparql_client.getNumOfPoints()
-    numofpoints = sparql_client.getValue(numofpoints_iri)
-
+    numofpoints = sparql_client.getValue(sparql_client.getNumOfPoints())
     # Get the list of actual points generated
-    pt_dict = sparql_client.getPointsInList(new_listofpoints_iri)
-
+    pt_dict = sparql_client.getPointsInList(sparql_client.getListOfPoints())
     # Check if the number of generated points is the same as the input
     assert len(pt_dict) == numofpoints
+    # Also check if the number of generated points matches the total number of points in the knowledge graph
+    pt_in_kg = sparql_client.getPointsInKG()
+    assert len(pt_in_kg) == numofpoints
 
     # Get the max and min vlaue of the generated list of points
     all_pt_values = pt_dict.values()
@@ -132,6 +177,118 @@ def test_async_agent(initialise_agent):
     # Check if the max and min generated values are within the upper and lower limits defined in inputs
     assert max_value <= upperlimit
     assert lowerlimit <= min_value
+
+    ########################
+    ## II. Max derivation ##
+    ########################
+    max_derivation_current_timestamp = 0
+    while max_derivation_current_timestamp == 0:
+        time.sleep(8)
+        # the queried results must be converted to int, otherwise it will never equal to 0
+        max_derivation_current_timestamp = get_timestamp(
+            max_derivation_iri, sparql_client)
+
+    # Check if the max value is calculated correctly
+    queried_max = sparql_client.getValue(sparql_client.getMaxValueIRI())
+    assert queried_max == max_value
+
+    #########################
+    ## III. Min derivation ##
+    #########################
+    min_derivation_current_timestamp = 0
+    while min_derivation_current_timestamp == 0:
+        time.sleep(8)
+        # the queried results must be converted to int, otherwise it will never equal to 0
+        min_derivation_current_timestamp = get_timestamp(
+            min_derivation_iri, sparql_client)
+
+    # Check if the max value is calculated correctly
+    queried_min = sparql_client.getValue(sparql_client.getMinValueIRI())
+    assert queried_min == min_value
+
+    #########################
+    ## IV. Diff derivation ##
+    #########################
+    diff_derivation_current_timestamp = 0
+    while diff_derivation_current_timestamp == 0:
+        time.sleep(8)
+        # the queried results must be converted to int, otherwise it will never equal to 0
+        diff_derivation_current_timestamp = get_timestamp(
+            diff_derivation_iri, sparql_client)
+
+    # Check if the difference is calculated correctly
+    queried_diff = sparql_client.getValue(sparql_client.getDifferenceIRI())
+    assert queried_diff == max_value - min_value
+
+    ####################################################################################
+    ########## Stage 2: modify the value of pure input and request for update ##########
+    ####################################################################################
+
+    #############################
+    ## I. Modify num of points ##
+    #############################
+    sparql_client.increaseNumOfPointsByOne()
+    rng_agent.derivationClient.updateTimestamp(sparql_client.getNumOfPoints())
+    assert sparql_client.getValue(
+        sparql_client.getNumOfPoints()) == numofpoints + 1
+
+    ###############################
+    ## II. Request for an update ##
+    ###############################
+    diff_agent.derivationClient.unifiedUpdateDerivation(diff_derivation_iri)
+
+    # Wait until the difference derivation is updated
+    ts = get_timestamp(diff_derivation_iri, sparql_client)
+    diff_derivation_current_timestamp = ts
+    while diff_derivation_current_timestamp == ts:
+        time.sleep(8)
+        # the queried results must be converted to int, otherwise it will never equal to 0
+        diff_derivation_current_timestamp = get_timestamp(
+            diff_derivation_iri, sparql_client)
+
+    # Check if all the information in the knowledge graph is complete and correct
+    numofpoints = sparql_client.getValue(sparql_client.getNumOfPoints())
+    # Get the list of actual points generated
+    pt_dict = sparql_client.getPointsInList(sparql_client.getListOfPoints())
+    assert len(pt_dict) == numofpoints
+    # Also check if the number of generated points matches the total number of points in the knowledge graph
+    pt_in_kg = sparql_client.getPointsInKG()
+    assert len(pt_in_kg) == numofpoints
+
+    # Get the max and min vlaue of the generated list of points
+    all_pt_values = pt_dict.values()
+    max_value = max(all_pt_values)
+    min_value = min(all_pt_values)
+
+    # Get the upper limit
+    upperlimit_iri = sparql_client.getUpperLimit()
+    upperlimit = sparql_client.getValue(upperlimit_iri)
+    # Get the lower limit
+    lowerlimit_iri = sparql_client.getLowerLimit()
+    lowerlimit = sparql_client.getValue(lowerlimit_iri)
+
+    # Check if the max and min generated values are within the upper and lower limits defined in inputs
+    assert max_value <= upperlimit
+    assert lowerlimit <= min_value
+
+    # Check if the max value is calculated correctly
+    queried_max = sparql_client.getValue(sparql_client.getMaxValueIRI())
+    assert queried_max == max_value
+
+    # Check if the max value is calculated correctly
+    queried_min = sparql_client.getValue(sparql_client.getMinValueIRI())
+    assert queried_min == min_value
+
+    # Check if the difference is calculated correctly
+    queried_diff = sparql_client.getValue(sparql_client.getDifferenceIRI())
+    assert queried_diff == max_value - min_value
+
+
+def get_timestamp(derivation_iri: str, sparql_client):
+    query_timestamp = """SELECT ?time WHERE { <%s> <%s>/<%s>/<%s> ?time .}""" % (
+        derivation_iri, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION)
+    # the queried results must be converted to int, otherwise it will not be comparable
+    return int(sparql_client.performQuery(query_timestamp)[0]['time'])
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer
