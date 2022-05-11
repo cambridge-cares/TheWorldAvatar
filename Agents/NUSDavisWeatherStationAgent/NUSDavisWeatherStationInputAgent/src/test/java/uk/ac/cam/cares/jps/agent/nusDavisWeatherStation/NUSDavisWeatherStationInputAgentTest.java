@@ -337,9 +337,6 @@ public class NUSDavisWeatherStationInputAgentTest {
         JSONArray getData=objSensor.getJSONArray("data");
         JSONObject objData=getData.getJSONObject(0);
 
-        //JSONArray jsArr = weatherDataReadings.getJSONArray("observations");
-        //JSONObject currentEntry = jsArr.getJSONObject(0);
-        //JSONObject obj=currentEntry.getJSONObject("metric_si");
         for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
             // Check that number of timestamps is correct
             Assert.assertEquals(getData.length(), ts.getTimes().size());
@@ -372,9 +369,6 @@ public class NUSDavisWeatherStationInputAgentTest {
         JSONArray getData=objSensor.getJSONArray("data");
         JSONObject objData=getData.getJSONObject(0);
 
-        //JSONArray jsArr = weatherDataReadings.getJSONArray("observations");
-        //JSONObject currentEntry = jsArr.getJSONObject(0);
-        //JSONObject obj=currentEntry.getJSONObject("metric_si");
         for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
             // Check that number of timestamps is correct
             Assert.assertEquals(getData.length(), ts.getTimes().size());

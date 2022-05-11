@@ -27,11 +27,11 @@ Finally, the option `[apiSignature]` contains the apiSignature. This signature i
 made by concatenating the parameter name-value pairs in the following manner:
 api-key`[apiKey]`t`[timestamp]` (e.g. api-key982634341t1988729481). Then the aforementioned concatenated string can be used
 to generate the apiSignature by using the HMAC SHA-256 algorithm with the HMAC secret key being the `[apiSecret]`. Note that every api call
-requires a fresh timestamp. See also the [API documentation](#Weather-Station-API)).
+requires a fresh timestamp. (See also the [API documentation](#Weather-Station-API)).
 #### Example readings
 Readings are returned in the response body in form of a JSON Object which consist of key-value pair. The JSONObject has the 
-key:"sensors", which contains a JSONArray containing a JSONObject. In this JSONObject is a JSONArray associated with the key:"data". This JSONArray contains one JSONObject. The key value pairs within this JSONObject contain all the relevant weather readings corresponding to a particular timestamp. The key for the timestamp is `[ts]`.
-The following examples of what the JSONObject returned by a `[current]` data api call looks like. 
+key:"sensors", which contains a JSONArray containing a JSONObject. Inside this JSONObject is a JSONArray associated with the key:"data". This JSONArray contains one JSONObject. The key value pairs within this JSONObject contain all the relevant weather readings corresponding to a particular timestamp. The key for the timestamp is `[ts]`.
+The following images are examples of what the JSONObject returned by a `[current]` data api call looks like. 
 
 ![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading1.png "First part of the weather data reading obtained using a 'current' data api call")
 ![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading2.png "Second part of the current weather data reading obtained using a 'current' data api call")
@@ -74,8 +74,9 @@ More information can be found in the example property file `client.properties` i
 
 #### API properties
 The API properties contain the credentials to authorize access to the weather Station API (see the [API description](#Weather-Station-API)),
-as well as, the API URL and which pod index. It should contain the following keys:
+as well as, the API URL and the weather station ID. It should contain the following keys:
 - `weather.api_key` the key needed to access the API.
+- `weather.api_secret` the secret needed to generate the API signature.
 - `weather.stationId` the stationId associated with the sensor.
 - `weather.api_url` the URL to use for the API. (see [Data retrieval](#data-retrieval)). This property also allows to adjust the agent, if the URL should change in the future.
 
@@ -150,7 +151,7 @@ Content-Type: application/json
 {"agentProperties":"NUSDavisWeatherStation_AGENTPROPERTIES","apiProperties":"NUSDavisWeatherStation_APIPROPERTIES","clientProperties":"NUSDavisWeatherStation_CLIENTPROPERTIES"}
 ```
 
-If the agent run successfully, you should see a JSON Object returned back that is similar to the one shown below.
+If the agent runs successfully, you should see a JSON Object returned back that is similar to the one shown below.
 ```
 {"Result":["Input agent object initialized.","Time series client object initialized.","API connector object initialized.","Retrieved 1 weather station reading.","Data updated with new readings from API.","Timeseries Data has been updated."]}
 ```

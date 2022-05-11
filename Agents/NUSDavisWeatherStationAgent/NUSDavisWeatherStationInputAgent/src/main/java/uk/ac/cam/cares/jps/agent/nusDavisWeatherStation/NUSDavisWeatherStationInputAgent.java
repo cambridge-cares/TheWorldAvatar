@@ -290,7 +290,6 @@ public class NUSDavisWeatherStationInputAgent {
                                 value=wind_sp.intValue();
                             } else if (key.contains(NUSDavisWeatherStationInputAgent.timestampKey)) {
                                     //convert unix timestamp to a proper format
-                                    //int ts= (Integer)value;
                                     Long ts=Long.parseLong(value.toString());
                                     Date date = new java.util.Date(ts*1000);
                                     SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
