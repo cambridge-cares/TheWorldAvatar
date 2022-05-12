@@ -13,7 +13,7 @@
     rdf:type ontoagent:Operation;
     ontoagent:hasInput :MessageContent_input;
     ontoagent:hasOutput :MessageContent_output;
-    ontoagent:hasHttpUrl "http://localhost:7000/max/"^^xsd:string;
+    ontoagent:hasHttpUrl "http://localhost:5002/sync"^^xsd:string;
 .
 
 :MessageContent_input

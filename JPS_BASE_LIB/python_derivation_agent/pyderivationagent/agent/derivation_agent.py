@@ -1,6 +1,9 @@
 from flask_apscheduler import APScheduler
+from flask import Flask, request
+from urllib.parse import unquote
 from flask import Flask
 import json
+import time
 
 import agentlogging
 
@@ -45,6 +48,8 @@ class DerivationAgent(object):
         # create a JVM module view and use it to import the required java classes
         self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
         jpsBaseLibGW.importPackages(
+            self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.agent.*")
+        jpsBaseLibGW.importPackages(
             self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
         jpsBaseLibGW.importPackages(
             self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.derivation.*")
@@ -84,7 +89,8 @@ class DerivationAgent(object):
     def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['GET'], *args, **kwargs):
         """
             This method is a wrapper of add_url_rule method of Flask object that adds customised URL Pattern to derivation agent.
-            For more information, visit https://flask.palletsprojects.com/en/2.0.x/api/#flask.Flask.add_url_rule.
+            #flask.Flask.add_url_rule.
+            For more information, visit https://flask.palletsprojects.com/en/2.0.x/api/
             WARNING: Use of this is STRONGLY discouraged. The design intention of an derivation agent is to communicate via the KNOWLEDGE GRAPH, and NOT via HTTP requests.
 
             Arguments:
@@ -156,11 +162,11 @@ class DerivationAgent(object):
                         if bool(syncDerivationsToUpdate):
                             self.logger.info("Asynchronous derivation <" + derivation
                                              + "> has a list of immediate upstream synchronous derivations to be updated: "
-                                             + syncDerivationsToUpdate)
+                                             + str(syncDerivationsToUpdate))
                             self.derivationClient.updatePureSyncDerivations(
                                 syncDerivationsToUpdate)
                             self.logger.info(
-                                "Update of synchronous derivation is done for: " + syncDerivationsToUpdate)
+                                "Update of synchronous derivation is done for: " + str(syncDerivationsToUpdate))
                         if not bool(self.derivationClient.checkImmediateUpstreamDerivation(derivation)):
                             agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(
                                 derivation, self.agentIRI))
@@ -209,8 +215,10 @@ class DerivationAgent(object):
 
                 # If "Finished", do all the clean-up steps
                 elif statusType == 'FINISHED':
-                    self.derivationClient.cleanUpFinishedDerivationUpdate(derivation)
-                    self.logger.info("Asynchronous derivation <%s> is now cleand up." % (derivation))
+                    self.derivationClient.cleanUpFinishedDerivationUpdate(
+                        derivation)
+                    self.logger.info(
+                        "Asynchronous derivation <%s> is now cleand up." % (derivation))
 
                 # If anything else, pass
                 else:
@@ -228,12 +236,13 @@ class DerivationAgent(object):
         Developer shall override this when writing new derivation agent based on DerivationAgent class.
 
         Arguments
-            - derivation_inputs: instance of derivation inputs in the format of: 
+            - derivation_inputs: instance of derivation inputs in the format of:
             {
                 "https://www.example.com/triplestore/repository/Ontology.owl#Concept_1": ["https://www.example.com/triplestore/repository/Concept_1/Instance_1"],
                 "https://www.example.com/triplestore/repository/Ontology.owl#Concept_2": ["https://www.example.com/triplestore/repository/Concept_2/Instance_2"],
                 "https://www.example.com/triplestore/repository/Ontology.owl#Concept_3":
-                ["https://www.example.com/triplestore/repository/Concept_3/Instance_3_1", "https://www.example.com/triplestore/repository/Concept_3/Instance_3_2"],
+                ["https://www.example.com/triplestore/repository/Concept_3/Instance_3_1",
+                    "https://www.example.com/triplestore/repository/Concept_3/Instance_3_2"],
                 "https://www.example.com/triplestore/repository/Ontology.owl#Concept_4": ["https://www.example.com/triplestore/repository/Concept_4/Instance_4"]
             }
             - derivation_outputs: instance of derivation outputs, developer should add new created entiteis and triples to this variable
@@ -248,8 +257,81 @@ class DerivationAgent(object):
         self.scheduler.add_job(id='monitor_derivations', func=self.monitor_async_derivations,
                                trigger='interval', seconds=self.time_interval)
         self.scheduler.start()
-        self.logger.info("Monitor derivations job is started with a time interval of %d seconds." % (
+        self.logger.info("Monitor asynchronous derivations job is started with a time interval of %d seconds." % (
             self.time_interval))
+
+        self.add_url_pattern(
+            '/sync', 'sync', self.handle_sync_derivations, methods=['GET'])
+        self.logger.info("Synchronous derivations can be handled at URL /sync")
+
+    def handle_sync_derivations(self):
+        requestParams = json.loads(unquote(request.url[len(request.base_url):])[
+            len("?query="):])
+        res = {}
+        if self.validate_inputs(requestParams):
+            inputs = self.jpsBaseLib_view.DerivationInputs(
+                requestParams[self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY])
+            self.logger.info(
+                "Received derivation request parameters: " + str(requestParams))
+            derivationIRI = requestParams[self.jpsBaseLib_view.DerivationClient.DERIVATION_KEY]
+            derivationType = requestParams[self.jpsBaseLib_view.DerivationClient.DERIVATION_TYPE_KEY]
+            outputs = self.jpsBaseLib_view.DerivationOutputs()
+            outputs.setThisDerivation(derivationIRI)
+            outputs.setRetrievedInputsAt(int(time.time()))
+            outputs.setOldEntitiesMap(
+                requestParams[self.jpsBaseLib_view.DerivationClient.BELONGSTO_KEY])
+            outputs.setOldEntitiesDownstreamDerivationMap(
+                requestParams[self.jpsBaseLib_view.DerivationClient.DOWNSTREAMDERIVATION_KEY])
+
+            # apply agent logic to convert inputs to outputs
+            derivation_inputs = DerivationInputs(inputs)
+            derivation_outputs = DerivationOutputs(outputs)
+            self.process_request_parameters(
+                derivation_inputs, derivation_outputs)
+
+            derivation = self.jpsBaseLib_view.Derivation(
+                derivationIRI, derivationType)
+            if not derivation.isDerivationAsyn() and not derivation.isDerivationWithTimeSeries():
+                # construct and fire SPARQL update given DerivationOutputs objects, if normal
+                # derivation NOTE this makes sure that the new generated instances/triples will
+                # ONLY be written to knowledge graph if the target derivation is till outdated
+                # at the point of executing SPARQL update, i.e. this solves concurrent request
+                # issue as detailed in
+                # https://github.com/cambridge-cares/TheWorldAvatar/issues/184
+                triplesChangedForSure = self.derivationClient.reconnectNewDerivedIRIs(
+                    outputs.getOutputTriples(), outputs.getNewEntitiesDownstreamDerivationMap(),
+                    outputs.getThisDerivation(), outputs.getRetrievedInputsAt())
+
+                # for normal Derivation, we need to return both timestamp and the new derived
+                if triplesChangedForSure:
+                    # if we know the triples are changed for sure, we return the triples
+                    # computed by this agent
+                    res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = outputs.getRetrievedInputsAt()
+                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = json.loads(str(
+                        outputs.getNewEntitiesJsonMap()))
+                    self.logger.info(
+                        "Derivation update is done in the knowledge graph, returned response: " + str(res))
+                else:
+                    # if we are not certain, query the knowledge graph to get the accurate
+                    # information
+                    updated = self.derivationClient.getDerivation(
+                        derivationIRI)
+                    res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = updated.getTimestamp()
+                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = updated.getBelongsToMap()
+                    self.logger.info("Unable to determine if the SPARQL update mutated triples, returned latest information in knowledge graph: "
+                                     + str(res))
+            else:
+                # for DerivationWithTimeSeries, we just need to return retrievedInputsAt
+                res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = outputs.getRetrievedInputsAt()
+                self.logger.info(
+                    "DerivationWithTimeSeries update is done, returned response: " + str(res))
+        else:
+            res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = self.jpsBaseLib_view.DerivationAgent.EMPTY_REQUEST_MSG
+
+        return json.dumps(res)
+
+    def validate_inputs(self, http_request) -> bool:
+        return True
 
     def run_flask_app(self, **kwargs):
         """
