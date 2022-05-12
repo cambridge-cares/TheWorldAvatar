@@ -24,6 +24,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * This class extends the {@link uk.ac.cam.cares.jps.base.router.AbstractCachedRouter AbstractCachedRouter} 
  * class and uses a {@link uk.ac.cam.cares.jps.base.cache.LRUCache LRUCache} to cache results. 
  * If a result is not in the cache, the router will query the ontoagent triple store for the data.
+ * <p>
+ * Note: if multiple instances exist for a given agentID, only the first will be returned.
  * 
  * @author csl37
  *
@@ -73,6 +75,7 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	
 	/**
 	 * Get the URL of an agent matching agentID from the store client
+	 * Note: if multiple instances exist for a given agentID, only the first will be returned.
 	 * @param agentID
 	 * @return url
 	 */
@@ -85,7 +88,7 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 		
 		JSONArray result = storeClient.executeQuery(query);
 		
-		//TODO logic for multiple results
+		//TODO add logic for multiple results
 		if(!result.isEmpty()) {
 			String firstURL = result.getJSONObject(0).getString(STR_O);
 			LOGGER.debug("URL="+firstURL);
