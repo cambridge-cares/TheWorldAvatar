@@ -7,11 +7,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
@@ -102,7 +104,7 @@ class AgentRouterTest {
 	}
 	
 	@Test
-	void testGetStoreClient() throws NoSuchFieldException, SecurityException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	void testGetStoreClient() {
 		
 		AgentRouter agentRouter = AgentRouter.getInstance();
 				
@@ -116,7 +118,7 @@ class AgentRouterTest {
 	}
 	
 	@Test
-	void testGetFromStore() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	void testGetFromStore() {
 		
 		StoreClientInterface mockStoreClient = createMockStore();
 				
@@ -136,7 +138,18 @@ class AgentRouterTest {
 	}
 	
 	@Test
-	void testGetFromStoreWithNull() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	void testGetFromStoreException() {
+		
+		StoreClientInterface storeClient = null;
+	
+		AgentRouter agentRouter = AgentRouter.getInstance();
+		
+		String agentName = "Agent1";		
+	    Assertions.assertThrows(JPSRuntimeException.class, ()->{ agentRouter.getFromStore(agentName, storeClient);});
+	}
+	
+	@Test
+	void testGetFromStoreWithNull() {
 		
 		StoreClientInterface mockStoreClient = createMockStore();
 				
@@ -174,11 +187,12 @@ class AgentRouterTest {
 		Mockito.verify(spyAgentRouter, Mockito.times(2)).getStoreClient();
 		Mockito.verify(spyAgentRouter, Mockito.times(1)).getFromStore(agentName2, mockStoreClient);
 		
+		//Test Exception
 		//Does not exist
-		assertNull(spyAgentRouter.get("Agent4"));
+		Assertions.assertThrows(JPSRuntimeException.class, ()->{spyAgentRouter.get("Agent4");});
 		Mockito.verify(spyAgentRouter, Mockito.times(3)).getStoreClient();
 		//Should try store again if null and called again
-		assertNull(spyAgentRouter.get("Agent4"));
+		Assertions.assertThrows(JPSRuntimeException.class, ()->{spyAgentRouter.get("Agent4");});
 		Mockito.verify(spyAgentRouter, Mockito.times(4)).getStoreClient();
 	}
 	

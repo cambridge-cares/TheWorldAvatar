@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.cache.LRUCache;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -73,6 +74,16 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 		LOGGER.info("Agent router endpoint set to: "+agentRouterEndpoint);
 	}
 	
+	@Override
+	public String get(String agentID) {
+		
+		String url = super.get(agentID);
+		if(url == null) {
+			throw new JPSRuntimeException("AgentRouter: url not found for "+agentID);
+		}
+		return url;
+	}
+	
 	/**
 	 * Get the URL of an agent matching agentID from the store client
 	 * Note: if multiple instances exist for a given agentID, only the first will be returned.
@@ -86,17 +97,21 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 		
 		String query = getQuery(agentID);
 		
-		JSONArray result = storeClient.executeQuery(query);
-		
-		//TODO add logic for multiple results
-		if(!result.isEmpty()) {
-			String firstURL = result.getJSONObject(0).getString(STR_O);
-			LOGGER.debug("URL="+firstURL);
-			return firstURL;
-		}else {
-			LOGGER.info("URL not found for AgentID="+agentID);
-			return null;
-		}
+		try {
+			JSONArray result = storeClient.executeQuery(query);
+			
+			//TODO add logic for multiple results
+			if(!result.isEmpty()) {
+				String firstURL = result.getJSONObject(0).getString(STR_O);
+				LOGGER.debug("URL="+firstURL);
+				return firstURL;
+			}else {
+				LOGGER.info("URL not found for AgentID="+agentID);
+				return null;
+			}
+		}catch(Exception e) {
+			throw new JPSRuntimeException("AgentRouter: failed to query store.", e);
+		}	
 	}
 	
 	@Override
