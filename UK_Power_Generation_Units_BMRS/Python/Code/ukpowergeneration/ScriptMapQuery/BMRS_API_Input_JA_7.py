@@ -89,6 +89,13 @@ def day_over_a_week_ago():
     return str(weekAgo.year), str(weekAgo.month), str(weekAgo.day)
 
 
+def two_weeks_ago():
+    #Get a two weeks ago (14 days) here, returns str for year, month, day: 
+    weekAgo = datetime.utcnow() - timedelta(days=14)
+    #print(weekAgoFormat)
+    return str(weekAgo.year), str(weekAgo.month), str(weekAgo.day)
+
+
 def str0_2(value):
     #Converts the day or month int to a string of length 2. Thus, 12 -> "12", and 1 -> "01", the leading 0 is important.
     #This function thus performs a similar role as str(), but also can add the 0 at the start, and is applied to length 2 instances.
@@ -364,7 +371,7 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
         print("Querying BMRS and Updating Data Record of BMRS Data (if new data exists)")
         #This will automatically be 8 days ago. 
         #Year, Month, Day = week_ago() #Week Ago
-        Year, Month, Day = day_over_a_week_ago() #8 Days Ago (to be safe)
+        Year, Month, Day = two_weeks_ago() #14 Days Ago (to be safe)
         Year = str(Year)
         Month = str(Month)
         Day = str(Day)
@@ -389,11 +396,11 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
         if empty_query_response(liveGeneratorData):
             #See if anything was recieved in this query.
             return 0
-    elif Search == 2: 
+    elif Search == 2:
         for i in range(1,loop):
             Period = i
             print("Check: " + str(Period))
-            liveGeneratorData = run_query(Key, Year, Month, Day, Period) #Dict of generation units and their outputs.
+            liveGeneratorData = run_query(Key, Year, Month, Day, Period) #Dict of generation units and their outputs. 
             if empty_query_response(liveGeneratorData):
                 #See if anything was recieved in this query.
                 return 0
@@ -409,9 +416,16 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
         data.iloc[i, data.columns.get_loc('Day')] = Day
         data.iloc[i, data.columns.get_loc('Period')] = Period
     if Search == 2:
+        manuals = {} #Only used if Search == 2 later.
+        manualsDone = {}
         for i in range(0,len(data['Output1'])):
-            data.iloc[i, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "None"
-            data.iloc[i, data.columns.get_loc('Connected (if generator(unit))')] = "None"
+            if str(data['Manual'][i]) == "0" or str(data['Manual'][i]) == "0.0" or str(data['Manual'][i]) == "False":
+                data.iloc[i, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "None"
+                data.iloc[i, data.columns.get_loc('Connected (if generator(unit))')] = "None"
+            elif str(data['Manual'][i]) == "1" or str(data['Manual'][i]) == "1.0" or str(data['Manual'][i]) == "True":
+                #List of Manual Mappings
+                manuals[str(data['Registered Resource Name'][i])] = int(i)
+                manualsDone[str(data['Registered Resource Name'][i])] = 0
             for p in range(1,loop):
                 data.iloc[i, data.columns.get_loc(('Output'+str(p)))] = 0
     
@@ -425,26 +439,43 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
             #See if an ID is contained.
             if (str(data['ConfidenceResult'][i]) == "1" and data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
                 #Now loop through the generators
-                for gen in liveGeneratorData: 
+                for gen in liveGeneratorData:
+                    #If gen is in manuals will need to set the generator output, and add to the powerplant output (mapping is not required, as it is already done manually). 
+                    #MANUAL
+                    if gen in manuals:
+                        #This will repeat multiple times due to the automatic ones including the DUKES scan for mapping. So just need to do this once (this is what manualsDone is used for).
+                        if manualsDone[gen] < p:
+                            #Now set manualsDone for this period
+                            manualsDone[gen] = p
+                            #Set the output value for the generator. 
+                            data.iloc[int(manuals[gen]), data.columns.get_loc(('Output' + str(Period)))] = liveGeneratorData[gen]
+                            #Add the output to the powerplant. 
+                            for kPP in range(0,len(data['Registered Resource EIC code'])):
+                                #Try to find powerplant.
+                                if data['Connected (if generator(unit))'][manuals[gen]] == data['Registered Resource EIC code'][kPP]:
+                                    data.iloc[kPP, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][kPP]) + liveGeneratorData[gen]
+                            #Done for this manual generator. 
+                    
+                    #AUTOMATIC
+                    #Now for the non-manuals (automatic ones), where matching will need to be done by algorithm. 
                     #Now see if there is a match. This is based on the generator ID containing the station ID, and the generator ID, when specifics are removed, being the same as the station ID.
-                    if (data['outputDUKESToBMRSID'][i] in gen):
-                        if (gen.strip("0987654321.-_ ") == data['outputDUKESToBMRSID'][i]):
-                            if Search == 0 or Search == 1:
-                                data.iloc[i, data.columns.get_loc('Output')] = float(data['Output'][i]) + liveGeneratorData[gen]
-                            elif Search == 2:
-                                #data.iloc[i, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][i]) + liveGeneratorData[gen]
-                                for k in range(0,len(data['Registered Resource EIC code'])):
-                                    #Set this to the generator. 
-                                    if (str(data['Registered Resource Name'][k]) == gen) or ((str(data['NGC BM Unit ID'][k]) != "") and (str(data['NGC BM Unit ID'][k]) == gen)):
-                                        data.iloc[k, data.columns.get_loc(('Output' + str(Period)))] = liveGeneratorData[gen]
-                                        data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "generator"
-                                        data.iloc[k, data.columns.get_loc('Connected (if generator(unit))')] = data['outputDUKESToBMRSEIC'][i]
-                                    #Add this to the station.
-                                    elif (data['outputDUKESToBMRSEIC'][i] == data['Registered Resource EIC code'][k]):
-                                        data.iloc[k, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][k]) + liveGeneratorData[gen]
-                                        data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "powerplant"
+                    if ((data['outputDUKESToBMRSID'][i] in gen) and (gen not in manuals)): #Manuals will be considered seperately, there are only manuals if Search == 2
+                        if (Search == 0 or Search == 1) and (gen.strip("0987654321.-_ ") == data['outputDUKESToBMRSID'][i]):
+                            data.iloc[i, data.columns.get_loc('Output')] = float(data['Output'][i]) + liveGeneratorData[gen]
+                        elif (Search == 2) and ((gen.strip("0987654321.-_ ") == data['outputDUKESToBMRSID'][i])):
+                            #data.iloc[i, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][i]) + liveGeneratorData[gen]
+                            for k in range(0,len(data['Registered Resource EIC code'])):
+                                #Set this to the generator. 
+                                if (str(data['Registered Resource Name'][k]) == gen) or ((str(data['NGC BM Unit ID'][k]) != "") and (str(data['NGC BM Unit ID'][k]) == gen)):
+                                    data.iloc[k, data.columns.get_loc(('Output' + str(Period)))] = liveGeneratorData[gen] #SET generator's Output in the Record. 
+                                    data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "generator" #Set generator. 
+                                    data.iloc[k, data.columns.get_loc('Connected (if generator(unit))')] = data['outputDUKESToBMRSEIC'][i] #Define powerplant for this generator. 
+                                #Add this to the station.
+                                elif (data['outputDUKESToBMRSEIC'][i] == data['Registered Resource EIC code'][k]):
+                                    data.iloc[k, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][k]) + liveGeneratorData[gen] #ADD generator's output to its powerplant's output. 
+                                    data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "powerplant" #Set powerplant. 
                                 
-                        elif ext_chars(gen.replace(data['outputDUKESToBMRSID'][i], "")): 
+                        elif ext_chars(gen.replace(data['outputDUKESToBMRSID'][i], "")): #Now we just repeat the above for non-manuals, but with another algorithm to attempt mapping. 
                             #The station name could contain a number, which we can check with a looser method here. Here we see if, after removing the station name from the gen name, if the only remaining characters are numbers or in . -_". 
                             #print("TAKE2: " + data['outputDUKESToBMRSID'][i] + ", " + gen)
                             if Search == 0 or Search == 1:
@@ -464,7 +495,7 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
                         else:
                             #Code should not get here. Print differences for debugging. 
                             print(data['outputDUKESToBMRSID'][i] + ", " + gen)
-
+    
     outputless_assignment(csvName) #For the mapped generators / stations without outputs. 
     
     #Re-export to csv, with times and outputs. 
@@ -484,7 +515,8 @@ def Auto_Call(Key, AutoFile):
 
 ###Main Function###
 if __name__ == "__main__":
-    Key = ''
+    Key = 'iwx6raw9m7nqq0f' ########## REMOVE LATER
     #live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2021', '11', '14', '24', 2)
     Auto_Call(Key, 'https://www.dropbox.com/s/9bdt4y1406yqfgj/Input-Template-Auto.csv?dl=1')
+    #NOTE: With Manual Mapping Exemption now (i.e. if the value in the "Manual" column is '1', then it does not overwrite the generator to plant mapping and leaves it. 
 
