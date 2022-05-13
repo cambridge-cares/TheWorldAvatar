@@ -29,6 +29,7 @@ class DerivationAgent(object):
             kg_password: str = None,
             app: Flask = Flask(__name__),
             flask_config: FlaskConfig = FlaskConfig(),
+            agent_endpoint: str = "/",
             logger_name: str = "dev"):
         """
             This method initialises the instance of DerivationAgent.
@@ -64,6 +65,8 @@ class DerivationAgent(object):
 
         # assign IRI of the agent
         self.agentIRI = agent_iri
+
+        self.agentEndpoint = agent_endpoint
 
         # assign KG related information
         self.kgUrl = kg_url
@@ -261,8 +264,9 @@ class DerivationAgent(object):
             self.time_interval))
 
         self.add_url_pattern(
-            '/sync', 'sync', self.handle_sync_derivations, methods=['GET'])
-        self.logger.info("Synchronous derivations can be handled at URL /sync")
+            self.agentEndpoint, self.agentEndpoint[1:], self.handle_sync_derivations, methods=['GET'])
+        self.logger.info(
+            "Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
     def handle_sync_derivations(self):
         requestParams = json.loads(unquote(request.url[len(request.base_url):])[

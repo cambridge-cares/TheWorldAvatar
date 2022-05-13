@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+
+  # Agents
+  rng_agent:
+    image: rng_agent:1.0.0
+    container_name: rng_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test.rng
+    ports:
+     - 7000:5000
+  
+  max_agent:
+    image: max_agent:1.0.0
+    container_name: max_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test.max
+    ports:
+     - 7001:5000
+
+  min_agent:
+    image: min_agent:1.0.0
+    container_name: min_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test.min
+    ports:
+     - 7002:5000
+
+  diff_agent:
+    image: diff_agent:1.0.0
+    container_name: diff_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test.diff
+    ports:
+     - 7003:5000
+
+  # Blazegraph
+  blazegraph:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: "blazegraph_test"
+    ports:
+      - 27149:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: tests/dummy_services_secrets/blazegraph_passwd.txt
