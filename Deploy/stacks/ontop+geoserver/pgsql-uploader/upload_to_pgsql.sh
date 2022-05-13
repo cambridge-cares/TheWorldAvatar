@@ -321,15 +321,10 @@ for c in "${CONFIG_DIR}"/*.conf; do (
             SHP_EPSG_FROM="$(gdalsrsinfo -o epsg "$shp")"
             SHP_EPSG_FROM="${SHP_EPSG_FROM#*:}"
           fi
-          # If "SHP_EPSG_TO" is not empty then prepend a colon, otherwise ignore it
-          if test -n "$SHP_EPSG_TO"; then
-            SHP_EPSG_TO=":${SHP_EPSG_TO}"
-          fi
-          
-          shp2pgsql -${mode} -s "${SHP_EPSG_FROM}${SHP_EPSG_TO}" -D $add_index_flag -S "$shp" "${SHP_SCHEMA}"."${SHP_TABLE}" |
+         shp2pgsql -${mode} -s "${SHP_EPSG_FROM}" -D $add_index_flag -S "$shp" "${SHP_SCHEMA}"."${SHP_TABLE}" |
             ${SHP_SQL_STATEMENT_TRANSFORM} |
             psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$DB" -w
-
+          
           mode=a # Just append the data from subsequent shp files
           add_index_flag=
         done
