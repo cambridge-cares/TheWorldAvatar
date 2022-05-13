@@ -79,7 +79,7 @@ is_valid_stack()
 {
   local stack=$1
   case "$stack" in
-    "agent"|"db"|"web")
+    "agent"|"db"|"web"|"cares-agent")
       return $TRUE ;;
     *)
       return $FALSE ;;
