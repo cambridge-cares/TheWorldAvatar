@@ -1047,8 +1047,9 @@ public class DerivationClient {
 				if (httpResponse.getStatusLine().getStatusCode() != 200) {
 					String msg = "Failed to update derivation <" + derivation.getIri() + "> with original request: "
 							+ originalRequest;
+					String body = EntityUtils.toString(httpResponse.getEntity());
 					LOGGER.error(msg);
-					throw new JPSRuntimeException(msg);
+					throw new JPSRuntimeException(msg + " Error body: " + body);
 				}
 				String response = EntityUtils.toString(httpResponse.getEntity());
 				LOGGER.debug("Obtained http response from agent: " + response);
