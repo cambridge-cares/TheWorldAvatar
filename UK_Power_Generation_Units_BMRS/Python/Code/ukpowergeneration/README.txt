@@ -4,6 +4,7 @@ Steps to run:
 1. Copy external files: 
 Copy to this folder all files from path: 'Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\_JPS Development\data\ukpowergeneration\COPY_FILES'
 So 'Input-Template-Auto.csv' and 'LocalOnlyBMRSKey.txt' should both be copied to the folder level of this 'README.txt' file. 
+Note that a local copy of this csv is reccomended if you want to switch to using that, but the external dropbox version may also be used - so probably best to copy, but keep in mind that the remote one may be in use (and that saving to this might not occur, even if in the code). 
 This step only needs to be done once, so long as the files are present a redo is not required. 
 
 2. Run the importer script 'generation_data_importer.py': 
