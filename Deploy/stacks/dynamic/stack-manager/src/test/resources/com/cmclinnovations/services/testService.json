@@ -1,0 +1,7 @@
+{
+    "name": "service1",
+    "host": "machine1",
+    "port": 1234,
+    "username": "user",
+    "passwordFile": "src/test/resources/com/cmclinnovations/services/testPasswordFile"
+}
