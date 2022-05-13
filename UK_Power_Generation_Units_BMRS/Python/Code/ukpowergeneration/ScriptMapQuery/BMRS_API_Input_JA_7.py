@@ -416,7 +416,7 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
         data.iloc[i, data.columns.get_loc('Day')] = Day
         data.iloc[i, data.columns.get_loc('Period')] = Period
     if Search == 2:
-        manuals = {} #Only used if Search == 2 later.
+        manuals = {} #Only used if Search == 2 later. 
         manualsDone = {}
         for i in range(0,len(data['Output1'])):
             if str(data['Manual'][i]) == "0" or str(data['Manual'][i]) == "0.0" or str(data['Manual'][i]) == "False":
