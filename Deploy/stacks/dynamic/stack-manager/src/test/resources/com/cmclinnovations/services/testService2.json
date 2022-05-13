@@ -1,0 +1,9 @@
+{
+    "name": "service2",
+    "image": "test:image:1.0",
+    "containerName": "container2",
+    "host": "machine2",
+    "port": 1234,
+    "username": "user2",
+    "passwordFile": "src/test/resources/com/cmclinnovations/services/testPasswordFile"
+}
