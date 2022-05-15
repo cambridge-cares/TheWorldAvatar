@@ -1,1 +1,7 @@
-from .agents_for_test import RNGAgent, MaxValueAgent, MinValueAgent, DifferenceAgent
+from .agents_for_test import (
+	RNGAgent,
+	MaxValueAgent,
+	MinValueAgent,
+	DifferenceAgent,
+	UpdateEndpoint,
+)

@@ -1,4 +1,6 @@
-from pyderivationagent.kg_operations import *
+from pyderivationagent.kg_operations import PySparqlClient
+from pyderivationagent.kg_operations import trimIRI
+from pyderivationagent.kg_operations import PREFIX_RDF
 import uuid
 
 # Random number generation TBox
@@ -23,19 +25,24 @@ class PySparqlClientForTest(PySparqlClient):
 
         if len(response) > 1:
             raise Exception("There should only be one instance of RandomExample:ListOfPoints, found multiple: " + response)
-        else:
+        elif len(response) == 1:
             return response[0]['listofpoints']
+
+        return None
 
     def createListOfPoints(self, points):
         listofpoints_iri = RANDOM_EXAMPLE_BASE_URL + 'ListOfPoints_' + str(uuid.uuid4())
+        pt_iris = []
         update = PREFIX_RDF + \
                 """INSERT DATA { <%s> rdf:type <%s> . """ % (listofpoints_iri, RANDOM_EXAMPLE_LISTOFPOINTS)
         for pt in points:
             pt_iri = RANDOM_EXAMPLE_BASE_URL + 'Point_' + str(uuid.uuid4())
-            update += "<%s> <%s> <%s> . <%s> <%s> %s ." % (listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, pt_iri, pt_iri, RANDOM_EXAMPLE_HASVALUE, pt)
+            pt_iris.append(pt_iri)
+            update += "<%s> <%s> <%s> . <%s> rdf:type <%s>; <%s> %s ." % (
+                listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, pt_iri, pt_iri, RANDOM_EXAMPLE_POINT, RANDOM_EXAMPLE_HASVALUE, pt)
         update += """}"""
         self.performUpdate(update)
-        return listofpoints_iri
+        return listofpoints_iri, pt_iris
 
     def getPointsInList(self, listofpoints_iri: str) -> dict:
         listofpoints_iri = trimIRI(listofpoints_iri)
@@ -44,18 +51,22 @@ class PySparqlClientForTest(PySparqlClient):
                 ?pt <%s> ?val .}""" % (listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, RANDOM_EXAMPLE_HASVALUE)
         response = self.performQuery(query)
 
-        pt_dict = { pt['pt'] : int(pt['val']) for pt in response }
+        if len(response) > 0:
+            pt_dict = { pt['pt'] : int(pt['val']) for pt in response }
+            return pt_dict
 
-        return pt_dict
+        return None
 
     def getPointsInKG(self) -> dict:
         query = """SELECT ?pt ?val WHERE{ ?pt a <%s>. ?pt <%s> ?val.}""" % (
             RANDOM_EXAMPLE_POINT, RANDOM_EXAMPLE_HASVALUE)
         response = self.performQuery(query)
 
-        pt_dict = {pt['pt']: int(pt['val']) for pt in response}
+        if len(response) > 0:
+            pt_dict = {pt['pt']: int(pt['val']) for pt in response}
+            return pt_dict
 
-        return pt_dict
+        return None
 
     def getValue(self, iri):
         iri = trimIRI(iri)
@@ -73,8 +84,10 @@ class PySparqlClientForTest(PySparqlClient):
 
         if len(response) > 1:
             raise Exception("There should only be one instance of RandomExample:UpperLimit, found multiple: " + response)
-        else:
+        elif len(response) == 1:
             return response[0]['upperlimit']
+
+        return None
 
     def getLowerLimit(self):
         query = PREFIX_RDF + \
@@ -84,8 +97,10 @@ class PySparqlClientForTest(PySparqlClient):
 
         if len(response) > 1:
             raise Exception("There should only be one instance of RandomExample:LowerLimit, found multiple: " + response)
-        else:
+        elif len(response) == 1:
             return response[0]['lowerlimit']
+
+        return None
 
     def getNumOfPoints(self):
         query = PREFIX_RDF + \
@@ -95,8 +110,10 @@ class PySparqlClientForTest(PySparqlClient):
 
         if len(response) > 1:
             raise Exception("There should only be one instance of RandomExample:NumOfPoints, found multiple: " + response)
-        else:
+        elif len(response) == 1:
             return response[0]['numofpoints']
+
+        return None
 
     def getExtremeValueInList(self, listofpoints_iri: str, max: bool) -> int:
         listofpoints_iri = trimIRI(listofpoints_iri)
@@ -104,10 +121,9 @@ class PySparqlClientForTest(PySparqlClient):
             listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, RANDOM_EXAMPLE_HASVALUE)
         query += "ORDER BY DESC(?value) " if max else "ORDER BY ?value "
         query += "LIMIT 1"
-        print(query)
 
         response = self.performQuery(query)
-        return response[0]['value']
+        return int(response[0]['value'])
 
     def getMaxValueIRI(self):
         query = PREFIX_RDF + \
@@ -118,8 +134,18 @@ class PySparqlClientForTest(PySparqlClient):
         if len(response) > 1:
             raise Exception(
                 "There should only be one instance of RandomExample:MaxValue, found multiple: " + response)
-        else:
+        elif len(response) == 1:
             return response[0]['max']
+
+        return None
+
+    def createMaxValue(self, value):
+        max_iri = RANDOM_EXAMPLE_BASE_URL + 'MaxValue_' + str(uuid.uuid4())
+        update = PREFIX_RDF + """INSERT DATA {<%s> rdf:type <%s>. <%s> <%s> %s.}""" % (
+            max_iri, RANDOM_EXAMPLE_MAXVALUE, max_iri, RANDOM_EXAMPLE_HASVALUE, value)
+
+        self.performUpdate(update)
+        return max_iri
 
     def getMinValueIRI(self):
         query = PREFIX_RDF + \
@@ -130,8 +156,18 @@ class PySparqlClientForTest(PySparqlClient):
         if len(response) > 1:
             raise Exception(
                 "There should only be one instance of RandomExample:MinValue, found multiple: " + response)
-        else:
+        elif len(response) == 1:
             return response[0]['min']
+
+        return None
+
+    def createMinValue(self, value):
+        min_iri = RANDOM_EXAMPLE_BASE_URL + 'MinValue_' + str(uuid.uuid4())
+        update = PREFIX_RDF + """INSERT DATA {<%s> rdf:type <%s>. <%s> <%s> %s.}""" % (
+            min_iri, RANDOM_EXAMPLE_MINVALUE, min_iri, RANDOM_EXAMPLE_HASVALUE, value)
+
+        self.performUpdate(update)
+        return min_iri
 
     def getDifferenceIRI(self):
         query = PREFIX_RDF + \
@@ -142,8 +178,18 @@ class PySparqlClientForTest(PySparqlClient):
         if len(response) > 1:
             raise Exception(
                 "There should only be one instance of RandomExample:Difference, found multiple: " + response)
-        else:
+        elif len(response) == 1:
             return response[0]['diff']
+
+        return None
+
+    def createDiffValue(self, value):
+        diff_iri = RANDOM_EXAMPLE_BASE_URL + 'Difference_' + str(uuid.uuid4())
+        update = PREFIX_RDF + """INSERT DATA {<%s> rdf:type <%s>. <%s> <%s> %s.}""" % (
+            diff_iri, RANDOM_EXAMPLE_DIFFERENCE, diff_iri, RANDOM_EXAMPLE_HASVALUE, value)
+
+        self.performUpdate(update)
+        return diff_iri
 
     def increaseNumOfPointsByOne(self):
         update = PREFIX_RDF + \

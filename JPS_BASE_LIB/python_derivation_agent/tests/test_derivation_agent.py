@@ -1,99 +1,14 @@
-from testcontainers.core.container import DockerContainer
-import pytest
-
-from flask_apscheduler import APScheduler
-from flask import Flask
-
-from pathlib import Path
 import time
 
-from pyderivationagent.agent import FlaskConfig
-from pyderivationagent.data_model import *
-
-from tests.agents_for_test import *
-from tests.sparql_client_for_test import PySparqlClientForTest
-
-import logging
-logging.getLogger("py4j").setLevel(logging.INFO)
-
-# Configurations for agent
-# should match one defined in Service__Random.ttl
-RNGAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Random#Service'
-# should match one defined in Service__Max.ttl
-MAXAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Max#Service'
-# should match one defined in Service__Min.ttl
-MINAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Min#Service'
-# should match one defined in Service__Diff.ttl
-DIFFAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Diff#Service'
-
-DERIVATION_PERIODIC_TIMESCALE = 3
-DERIVATION_INSTANCE_BASE_URL = 'http://www.asyncagent.com/triplestore/repository/'
-
-# Predefined pure inputs, should match those defined in dummy_abox.ttl
-DERIVATION_INPUTS = ['https://www.example.com/triplestore/random/random_data_1/numofpoints',
-                    'https://www.example.com/triplestore/random/random_data_1/upperlimit',
-                    'https://www.example.com/triplestore/random/random_data_1/lowerlimit']
-
-
-class FlaskConfigTest(FlaskConfig):
-    # NOTE this to prevent below Exception when instantiating the all four agents in the integration test cases:
-    # "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
-    SCHEDULER_API_ENABLED = False
-
-
-@pytest.fixture()
-def initialise_triple_store():
-    # NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-    # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-    blazegraph = DockerContainer(
-        'docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
-    # the port is set as 9999 to match with the value set in the docker image
-    blazegraph.with_exposed_ports(9999)
-    yield blazegraph
-
-
-@pytest.fixture()
-def initialise_agent(initialise_triple_store):
-    with initialise_triple_store as container:
-        # Wait some arbitrary time until container is reachable
-        time.sleep(3)
-
-        # Retrieve SPARQL endpoint
-        endpoint = get_endpoint(container)
-        # endpoint = "http://kg.cmclinnovations.com:81/blazegraph/namespace/testontorxn/sparql"
-
-        # Create SparqlClient for testing
-        sparql_client = PySparqlClientForTest(endpoint, endpoint)
-
-        # Initialise Async Agent with temporary docker container endpoint
-        rng_agent = RNGAgent(RNGAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE,
-                             DERIVATION_INSTANCE_BASE_URL, endpoint, flask_config=FlaskConfigTest())
-        min_agent = MinValueAgent(MINAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE,
-                                  DERIVATION_INSTANCE_BASE_URL, endpoint, flask_config=FlaskConfigTest())
-        max_agent = MaxValueAgent(MAXAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE,
-                                  DERIVATION_INSTANCE_BASE_URL, endpoint, flask_config=FlaskConfigTest())
-        diff_agent = DifferenceAgent(DIFFAGENT_SERVICE, DERIVATION_PERIODIC_TIMESCALE,
-                                     DERIVATION_INSTANCE_BASE_URL, endpoint, flask_config=FlaskConfigTest())
-
-        yield sparql_client, rng_agent, min_agent, max_agent, diff_agent
-
-        # Tear down scheduler of doe agent
-        rng_agent.scheduler.shutdown()
-        min_agent.scheduler.shutdown()
-        max_agent.scheduler.shutdown()
-        diff_agent.scheduler.shutdown()
-
-        # Clear logger at the end of the test
-        clear_loggers()
-
+import tests.utils as utils
 
 def test_integration_test(initialise_agent):
-    sparql_client, rng_agent, min_agent, max_agent, diff_agent = initialise_agent
+    sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent = initialise_agent
 
-    sparql_client.performUpdate("delete where {?s ?p ?o}")
-    # Verify that knowledge base is empty
-    res = sparql_client.getAmountOfTriples()
-    assert res == 0
+    all_instances = utils.initialise_triples_assert_pure_inputs(
+        sparql_client=sparql_client,
+        derivation_client=derivation_client
+    )
 
     # Start the scheduler to monitor derivations
     rng_agent.start_monitoring_derivations()
@@ -101,40 +16,38 @@ def test_integration_test(initialise_agent):
     max_agent.start_monitoring_derivations()
     diff_agent.start_monitoring_derivations()
 
-    # Upload all example triples provided in the resources folder to triple store
-    folderpath = str(Path(__file__).absolute().parent) + '/resources/'
-    sparql_client.uploadOntology(folderpath+'dummy_tbox.ttl')
-    sparql_client.uploadOntology(folderpath+'dummy_abox.ttl')
-    sparql_client.uploadOntology(folderpath+'Service__Random.ttl')
-    sparql_client.uploadOntology(folderpath+'Service__Max.ttl')
-    sparql_client.uploadOntology(folderpath+'Service__Min.ttl')
-    sparql_client.uploadOntology(folderpath+'Service__Diff.ttl')
-
-    # Iterate over the list of inputs to add and update the timestamp
-    for input in DERIVATION_INPUTS:
-        rng_agent.derivationClient.addTimeInstance(input)
-        # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
-        rng_agent.derivationClient.updateTimestamp(input)
-
     # Create derivation instance given above information, the timestamp of this derivation is 0
     rng_derivation_iri = rng_agent.derivationClient.createAsyncDerivationForNewInfo(
-        rng_agent.agentIRI, DERIVATION_INPUTS)
+        rng_agent.agentIRI,
+        [all_instances.IRI_UPPER_LIMIT, all_instances.IRI_LOWER_LIMIT, all_instances.IRI_NUM_OF_PTS]
+    )
     max_derivation_iri = max_agent.derivationClient.createAsyncDerivationForNewInfo(
-        MAXAGENT_SERVICE, [rng_derivation_iri])
+        max_agent.agentIRI, [rng_derivation_iri]
+    )
     min_derivation_iri = min_agent.derivationClient.createAsyncDerivationForNewInfo(
-        MINAGENT_SERVICE, [rng_derivation_iri])
+        min_agent.agentIRI, [rng_derivation_iri]
+    )
     diff_derivation_iri = diff_agent.derivationClient.createAsyncDerivationForNewInfo(
-        DIFFAGENT_SERVICE, [max_derivation_iri, min_derivation_iri])
+        diff_agent.agentIRI, [max_derivation_iri, min_derivation_iri]
+    )
 
     # Check if the derivation instance is created correctly
     assert sparql_client.checkInstanceClass(
-        rng_derivation_iri, ONTODERIVATION_DERIVATIONASYN)
+        rng_derivation_iri,
+        sparql_client.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN
+    )
     assert sparql_client.checkInstanceClass(
-        max_derivation_iri, ONTODERIVATION_DERIVATIONASYN)
+        max_derivation_iri,
+        sparql_client.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN
+    )
     assert sparql_client.checkInstanceClass(
-        min_derivation_iri, ONTODERIVATION_DERIVATIONASYN)
+        min_derivation_iri,
+        sparql_client.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN
+    )
     assert sparql_client.checkInstanceClass(
-        diff_derivation_iri, ONTODERIVATION_DERIVATIONASYN)
+        diff_derivation_iri,
+        sparql_client.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN
+    )
 
     ################################################################################
     ########## Stage 1: check if new information generation is successful ##########
@@ -148,7 +61,7 @@ def test_integration_test(initialise_agent):
     while rng_derivation_current_timestamp == 0:
         time.sleep(8)
         # the queried results must be converted to int, otherwise it will never equal to 0
-        rng_derivation_current_timestamp = get_timestamp(
+        rng_derivation_current_timestamp = utils.get_timestamp(
             rng_derivation_iri, sparql_client)
 
     # Test that if the knowledge graph contains the correct number of points
@@ -185,7 +98,7 @@ def test_integration_test(initialise_agent):
     while max_derivation_current_timestamp == 0:
         time.sleep(8)
         # the queried results must be converted to int, otherwise it will never equal to 0
-        max_derivation_current_timestamp = get_timestamp(
+        max_derivation_current_timestamp = utils.get_timestamp(
             max_derivation_iri, sparql_client)
 
     # Check if the max value is calculated correctly
@@ -199,7 +112,7 @@ def test_integration_test(initialise_agent):
     while min_derivation_current_timestamp == 0:
         time.sleep(8)
         # the queried results must be converted to int, otherwise it will never equal to 0
-        min_derivation_current_timestamp = get_timestamp(
+        min_derivation_current_timestamp = utils.get_timestamp(
             min_derivation_iri, sparql_client)
 
     # Check if the max value is calculated correctly
@@ -213,7 +126,7 @@ def test_integration_test(initialise_agent):
     while diff_derivation_current_timestamp == 0:
         time.sleep(8)
         # the queried results must be converted to int, otherwise it will never equal to 0
-        diff_derivation_current_timestamp = get_timestamp(
+        diff_derivation_current_timestamp = utils.get_timestamp(
             diff_derivation_iri, sparql_client)
 
     # Check if the difference is calculated correctly
@@ -238,12 +151,12 @@ def test_integration_test(initialise_agent):
     diff_agent.derivationClient.unifiedUpdateDerivation(diff_derivation_iri)
 
     # Wait until the difference derivation is updated
-    ts = get_timestamp(diff_derivation_iri, sparql_client)
+    ts = utils.get_timestamp(diff_derivation_iri, sparql_client)
     diff_derivation_current_timestamp = ts
     while diff_derivation_current_timestamp == ts:
         time.sleep(8)
         # the queried results must be converted to int, otherwise it will never equal to 0
-        diff_derivation_current_timestamp = get_timestamp(
+        diff_derivation_current_timestamp = utils.get_timestamp(
             diff_derivation_iri, sparql_client)
 
     # Check if all the information in the knowledge graph is complete and correct
@@ -282,29 +195,3 @@ def test_integration_test(initialise_agent):
     # Check if the difference is calculated correctly
     queried_diff = sparql_client.getValue(sparql_client.getDifferenceIRI())
     assert queried_diff == max_value - min_value
-
-
-def get_timestamp(derivation_iri: str, sparql_client):
-    query_timestamp = """SELECT ?time WHERE { <%s> <%s>/<%s>/<%s> ?time .}""" % (
-        derivation_iri, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION)
-    # the queried results must be converted to int, otherwise it will not be comparable
-    return int(sparql_client.performQuery(query_timestamp)[0]['time'])
-
-def get_endpoint(docker_container):
-    # Retrieve SPARQL endpoint for temporary testcontainer
-    # endpoint acts as both Query and Update endpoint
-    endpoint = 'http://' + docker_container.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
-               + docker_container.get_exposed_port(9999)
-    # 'kb' is default namespace in Blazegraph
-    endpoint += '/blazegraph/namespace/kb/sparql'
-    return endpoint
-
-# method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
-def clear_loggers():
-    """Remove handlers from all loggers"""
-    import logging
-    loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
-    for logger in loggers:
-        handlers = getattr(logger, 'handlers', [])
-        for handler in handlers:
-            logger.removeHandler(handler)

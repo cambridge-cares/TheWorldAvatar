@@ -15,6 +15,14 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_HASVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASPOINT
 from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
 
+class UpdateEndpoint(DerivationAgent):
+    def update_derivations(self):
+        sparql_client = PySparqlClientForTest(self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword)
+        diff_iri = sparql_client.getDifferenceIRI()
+        diff_derivation = self.derivationClient.getDerivationsOf([diff_iri])[diff_iri]
+        self.derivationClient.unifiedUpdateDerivation(diff_derivation)
+        return {"status": "updated derivation <" + diff_derivation + ">"}
+
 
 class DifferenceAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):

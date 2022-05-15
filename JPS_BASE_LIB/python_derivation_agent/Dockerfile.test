@@ -56,4 +56,5 @@ RUN chmod -R 755 /home/appuser
 # Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the 'python_agent' module
 # Note that port 5000 is *inside the container*; this can be mapped to a port on the host when running the container on the command line or in docker-compose.yml
 USER appuser
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "tests.entry_point:create_diff_app()"]
+# The ENTRYPOINT is provided in docker-compose.test.yml file
+# ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "tests.entry_point:create_rng_app()"]

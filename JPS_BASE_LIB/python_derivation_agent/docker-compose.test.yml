@@ -8,36 +8,50 @@ services:
     container_name: rng_agent
     build:
       context: .
-      dockerfile: ./Dockerfile.test.rng
+      dockerfile: ./Dockerfile.test
     ports:
      - 7000:5000
-  
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_rng_app()"]
+
   max_agent:
     image: max_agent:1.0.0
     container_name: max_agent
     build:
       context: .
-      dockerfile: ./Dockerfile.test.max
+      dockerfile: ./Dockerfile.test
     ports:
      - 7001:5000
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_max_app()"]
 
   min_agent:
     image: min_agent:1.0.0
     container_name: min_agent
     build:
       context: .
-      dockerfile: ./Dockerfile.test.min
+      dockerfile: ./Dockerfile.test
     ports:
      - 7002:5000
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_min_app()"]
 
   diff_agent:
     image: diff_agent:1.0.0
     container_name: diff_agent
     build:
       context: .
-      dockerfile: ./Dockerfile.test.diff
+      dockerfile: ./Dockerfile.test
     ports:
      - 7003:5000
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_diff_app()"]
+
+  update_endpoint:
+    image: update_endpoint:1.0.0
+    container_name: update_endpoint
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7004:5000
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_update_endpoint()"]
 
   # Blazegraph
   blazegraph:
