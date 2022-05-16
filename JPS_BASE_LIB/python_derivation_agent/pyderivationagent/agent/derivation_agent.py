@@ -1,7 +1,7 @@
 from flask_apscheduler import APScheduler
-from flask import Flask, request
-from urllib.parse import unquote
 from flask import Flask
+from flask import request
+from urllib.parse import unquote
 import json
 import time
 
@@ -20,28 +20,38 @@ class FlaskConfig(object):
 
 class DerivationAgent(object):
     def __init__(
-            self,
-            agent_iri: str,
-            time_interval: int,
-            derivation_instance_base_url: str,
-            kg_url: str,
-            kg_user: str = None,
-            kg_password: str = None,
-            app: Flask = Flask(__name__),
-            flask_config: FlaskConfig = FlaskConfig(),
-            agent_endpoint: str = "/",
-            logger_name: str = "dev"):
+        self,
+        agent_iri: str,
+        time_interval: int,
+        derivation_instance_base_url: str,
+        kg_url: str,
+        kg_update_url: str = None,
+        kg_user: str = None,
+        kg_password: str = None,
+        fs_url: str = None,
+        fs_user: str = None,
+        fs_password: str = None,
+        app: Flask = Flask(__name__),
+        flask_config: FlaskConfig = FlaskConfig(),
+        agent_endpoint: str = "/",
+        logger_name: str = "dev"
+    ):
         """
             This method initialises the instance of DerivationAgent.
 
             Arguments:
                 app - flask app object, an example: app = Flask(__name__)
                 agent_iri - OntoAgent:Service IRI of the derivation agent, an example: "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
+                agent_endpoint - data property OntoAgent:hasHttpUrl of OntoAgent:Operation of the derivation agent, an example: "http://localhost:7000/endpoint"
                 time_interval - time interval between two runs of derivation monitoring job (in SECONDS)
                 derivation_instance_base_url - namespace to be used when creating derivation instance, an example: "http://www.example.com/triplestore/repository/"
-                kg_url - SPARQL query/update endpoint, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
-                kg_user - username used to access the SPARQL query/update endpoint specified by kg_url
-                kg_password - password that set for the kg_user used to access the SPARQL query/update endpoint specified by kg_url
+                kg_url - SPARQL query endpoint, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
+                kg_update_url - SPARQL update endpoint, will be set to the same value as kg_url if not provided, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
+                kg_user - username used to access the SPARQL query/update endpoint specified by kg_url/kg_update_url
+                kg_password - password that set for the kg_user used to access the SPARQL query/update endpoint specified by kg_url/kg_update_url
+                fs_url - file server endpoint, an example: "http://localhost:8080/FileServer/"
+                fs_user - username used to access the file server endpoint specified by fs_url
+                fs_password - password that set for the fs_user used to access the file server endpoint specified by fs_url
                 flask_config - configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
                 logger_name - logger names for getting correct loggers from agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/utils/python-utils/agentlogging/logging.py
         """
@@ -63,23 +73,28 @@ class DerivationAgent(object):
         self.scheduler = APScheduler()
         self.time_interval = time_interval
 
-        # assign IRI of the agent
+        # assign IRI and HTTP URL of the agent
         self.agentIRI = agent_iri
-
         self.agentEndpoint = agent_endpoint
 
         # assign KG related information
         self.kgUrl = kg_url
+        self.kgUpdateUrl = kg_update_url if kg_update_url is not None else kg_url
         self.kgUser = kg_user
         self.kgPassword = kg_password
 
+        # assign file server related information
+        self.fs_url = fs_url
+        self.fs_user = fs_user
+        self.fs_password = fs_password
+
         # initialise the derivationClient with SPARQL Query and Update endpoint
-        if self.kgUser is None:
+        if kg_user is None:
             self.storeClient = self.jpsBaseLib_view.RemoteStoreClient(
-                self.kgUrl, self.kgUrl)
+                self.kgUrl, self.kgUpdateUrl)
         else:
             self.storeClient = self.jpsBaseLib_view.RemoteStoreClient(
-                self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword)
+                self.kgUrl, self.kgUpdateUrl, self.kgUser, self.kgPassword)
         self.derivationClient = self.jpsBaseLib_view.DerivationClient(
             self.storeClient, derivation_instance_base_url)
 
