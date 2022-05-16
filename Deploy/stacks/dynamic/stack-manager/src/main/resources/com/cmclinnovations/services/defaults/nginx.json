@@ -1,0 +1,7 @@
+{
+    "name": "nginx",
+    "image": "nginx:1.19.6",
+    "ports": {
+        "main": "8080:80"
+    }
+}
