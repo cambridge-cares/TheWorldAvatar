@@ -10,7 +10,9 @@
     
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.5.0-SNAPSHOT</version>
+
+
+    <version>1.9.2</version>
 
     <!-- Project Properties -->
     <properties>
@@ -22,7 +24,7 @@
     <parent>
         <groupId>uk.ac.cam.cares.jps</groupId>
         <artifactId>jps-parent-pom</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     
     <!-- Repository locations to deploy to -->
@@ -300,7 +302,58 @@
             <version>0.10.9.1</version>
         </dependency>
         
-        <!-- ??? -->
+        <!-- Following RDF4J dependencies are added for enabling the federated query
+		feature supported by FedX-->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-repository-http</artifactId>
+		    <version>3.0.4</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-sparql -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-repository-sparql</artifactId>
+		    <version>3.0.4</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-model -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-model</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-query -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-query</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-util -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-util</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-runtime</artifactId>
+		    <version>3.1.0</version>
+		    <type>pom</type>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-api -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-repository-api</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-tools-federation</artifactId>
@@ -341,7 +394,7 @@
 			<artifactId>junit</artifactId>
 			<version>4.13.2</version>
 		</dependency>
-		
+
         <!-- Used to mock the behaviour of functions for testing purposes -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -354,8 +407,8 @@
             <artifactId>mockito-inline</artifactId>
             <version>3.5.7</version>
             <scope>test</scope>
-        </dependency>
-        
+        </dependency>        
+
         <!-- Used to mock environment variables in testing -->
         <dependency>
             <groupId>com.github.stefanbirkner</groupId>

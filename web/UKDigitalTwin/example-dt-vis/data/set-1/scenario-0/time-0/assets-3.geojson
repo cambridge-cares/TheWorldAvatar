@@ -1,0 +1,133 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": 1,
+        "properties": {
+          "displayName": "Symbol #1",
+          "icon-image": "warning",
+          "icon-size": 0.75
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.3918170928955078,
+            52.76315142393882
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 2,
+        "properties": {
+          "displayName": "Symbol #2",
+          "icon-image": "error",
+          "icon-size": 0.75
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.3945636749267578,
+            52.76569626826941
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 3,
+        "properties": {
+          "displayName": "Symbol #3",
+          "icon-image": "warning",
+          "icon-size": 0.75
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.39834022521972656,
+            52.76398240986877
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 4,
+        "properties": {
+          "displayName": "Symbol #4",
+          "icon-image": "error",
+          "icon-size": 0.75
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.3832125663757324,
+            52.761073889738206
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 5,
+        "properties": {
+          "displayName": "Symbol #5",
+          "icon-image": "warning",
+          "icon-size": 0.75
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.37664651870727534,
+            52.75798337425344
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 6,
+        "properties": {
+          "displayName": "Symbol #6",
+          "icon-image": "error",
+          "icon-size": 0.75
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.3877615928649902,
+            52.746034781429735
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 7,
+        "properties": {
+          "displayName": "Symbol #7",
+          "icon-image": "warning",
+          "icon-size": 0.75
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.4016447067260742,
+            52.74473582387299
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 8,
+        "properties": {
+          "displayName": "Symbol #8",
+          "icon-image": "error",
+          "icon-size": 0.75
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.409090518951416,
+            52.746684245687945
+          ]
+        }
+      }
+    ]
+  }

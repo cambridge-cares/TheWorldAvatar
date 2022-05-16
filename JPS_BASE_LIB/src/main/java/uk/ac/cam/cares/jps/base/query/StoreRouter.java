@@ -16,6 +16,9 @@ import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
@@ -39,7 +42,6 @@ public class StoreRouter{
 	public static final String SLASH="/";
 	public static final String HTTP_KB_PREFIX = HTTP.concat(KB).concat(SLASH);
 	public static final String EMPTY = "";
-	private static final String STOREROUTER_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql";
 	public static final String RDFS_PREFIX = "rdfs";
 	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
 	public static final String RDF_PREFIX = "rdf";
@@ -60,6 +62,9 @@ public class StoreRouter{
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
 	
+	// get default ontokgrouter endpoint from jps.properties
+	private static String STOREROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);
+	
 	/**
 	 * List of file extensions for file based resources
 	 * ".owl",".rdf",".nt"
@@ -67,6 +72,17 @@ public class StoreRouter{
 	public static final List<String> fileExtensions = Arrays.asList(".owl",".rdf",".nt"); //File extensions
 	
 	static StoreRouter storeRouter = null;
+		
+	/**
+	 * Set STOREROUTER_ENDPOINT
+	 * @param endpoint
+	 */
+	public static void setRouterEndpoint(String endpoint) {
+		if (storeRouter == null) {
+			storeRouter = new StoreRouter();
+		}
+		STOREROUTER_ENDPOINT = endpoint;
+	}
 	
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
@@ -148,7 +164,8 @@ public class StoreRouter{
 	
 	/**
 	 * Check that the targetResourceID is either a valid IRI or namespace label for a remote resource.
-	 * A namespace label is valid if it is composed of only alphanumeric characters (A-Z, 0-9).
+	 * A namespace label is valid if it is composed of only alphanumeric characters (A-Z, 0-9) 
+	 * or the special characters - and _
 	 * @param targetResourceID
 	 * @return
 	 */
@@ -157,10 +174,10 @@ public class StoreRouter{
 		if(InputValidator.checkIfValidIRI(targetResourceID)){
 			return true;
 		}else {
-			if(targetResourceID.matches("[A-Za-z0-9]+")) {
+			if(targetResourceID.matches("[A-Za-z0-9\\-\\_]+")) {
 				return true;
 			}else {
-				LOGGER.error("Invalid namespace label:"+targetResourceID+". Not alphanumeric.");
+				LOGGER.error("Invalid namespace label:"+targetResourceID+". Not alphanumeric (special characters - and _ are allowed).");
 				return false;
 			}
 		}

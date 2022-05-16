@@ -42,7 +42,7 @@ public class TimeSeriesSparql {
 	private StoreClientInterface kbClient;
 	
 	// Namespaces for ontology and knowledge base
-	public static final String ns_ontology = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
+	public static final String ns_ontology = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
 	public static final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
 	
 	// Prefixes

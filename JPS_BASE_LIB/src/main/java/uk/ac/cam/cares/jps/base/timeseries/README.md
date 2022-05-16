@@ -20,7 +20,7 @@ Initialising any new time series using the `TimeSeriesClient` creates all requir
 The namespaces used in this document:  
 (`ts` denotes the time series ontology and `kb` refers to the namespace to which the time series shall be added)
 ```
-ts  : https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
+ts  : https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
 rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
 kb  : http://www.theworldavatar.com/kb/ontotimeseries/
 ```
@@ -74,14 +74,15 @@ You can request login details by emailing `support<at>cmclinnovations.com` with 
    
 - **Agent examples**:
    Several agents provide working examples of how to use the `TimeSeriesClient`, e.g.  
-   (in case the provided links do not work, please replace "XXX-dev-..." in the URLs with "develop")
-   * [AQMeshInputAgent] queries and stores time series data from AQ Mesh sensor in Singapore
-   * [FloodAgent] queries water level data from the Environment Agency, stores it in the KG, and retrieves it for visualisation
-   * [GasGridAgent] queries instantaneous gas flow data from the National Grid, stores it in the KG, and retrieves it for visualisation (via py4jps)
+   * [AQMeshInputAgent] queries and stores time series data from AQ Mesh sensor in Singapore (Java)
+   * [FloodAgent] queries water level data from the Environment Agency, stores it in the KG, and retrieves it for visualisation (Java)
+   * [TimeSeriesExample] provides a minimum working example on how to instantiate time series data which is attached to some geospatial reference, stores it in the KG, and retrieves it for visualisation (Python, access of JPS_BASE_LIB via py4jps)
+   * [GasGridAgent] queries instantaneous gas flow data from the National Grid, stores it in the KG, and retrieves it for visualisation (Python, access of JPS_BASE_LIB via py4jps)
 
 [//]: # (These are reference links used in the body)
 
-   [test repository]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/test/java/uk/ac/cam/cares/jps/base/timeseries>
-   [AQMeshInputAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Agents/AQMeshInputAgent>
-   [FloodAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Agents/FloodAgent>
-   [GasGridAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/1161-dev-gas-grid-input-agent/Agents/GasGridAgent/src/gasgridagent>
+   [test repository]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/test/java/uk/ac/cam/cares/jps/base/timeseries>
+   [AQMeshInputAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AQMeshInputAgent>
+   [FloodAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent>
+   [GasGridAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/1161-dev-gas-grid-input-agent/Agents/GasGridAgent/>
+   [TimeSeriesExample]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/TimeSeriesExample>
