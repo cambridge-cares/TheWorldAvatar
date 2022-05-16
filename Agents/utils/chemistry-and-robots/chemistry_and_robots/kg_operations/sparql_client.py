@@ -29,6 +29,31 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         self.fs_url = fs_url
         self.fs_auth = (fs_user, fs_pwd)
 
+    def collect_triples_for_new_experiment(self, doe: DesignOfExperiment, newExp: List[ReactionExperiment]) -> Graph:
+        """
+            This method is used to collect the suggested new experiments as triples.
+            It first serialises the ReactionVariation/ReactionExperiment instance to rdflib.Graph().
+            It then add the triple that connects the OntoDoE:DesignOfExperiment instance and the new created OntoRxn:ReactionExperiment/ReactionVariation instance.
+
+            Arguments:
+                doe - instance of dataclass OntoDoE.DesignOfExperiment
+                newExp - a list of instance of dataclass OntoRxn.ReactionExperiment
+        """
+        # (1) first serialise ReactionVariation/ReactionExperiment instance to rdflib.Graph()
+        # All information should already be prepared and added to the instance
+        # Method create_instance_for_kg will write all information to rdflib Graph on-the-fly
+        g = Graph()
+        # NOTE although here we loop through the list of OntoRxn:ReactionVariation/ReactionExperiment
+        # NOTE in theory, the len(newExp) should be 1 (as we decided to make DoE Agent only suggest 1 experiment per derivation)
+        # NOTE the loop is added for the future development
+        for exp in newExp:
+            g = exp.create_instance_for_kg(g)
+            # (2) add triple that connects the OntoDoE:DesignOfExperiment with OntoRxn:ReactionVariation/ReactionExperiment
+            g.add((URIRef(doe.instance_iri), URIRef(ONTODOE_PROPOSESNEWEXPERIMENT), URIRef(exp.instance_iri)))
+
+        return g
+
+    # TODO delete this function, should use collect_triples_for_new_experiment instead
     def updateNewExperimentInKG(self, doe: DesignOfExperiment, newExp: List[ReactionExperiment]):
         """
             This method is used to populate the suggested new experiments back to the knowledge graph.
@@ -872,8 +897,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     doe_iri, ">, <".join([res['newexp'] for res in response])
                 )
             )
-        else:
+        elif (len(response) == 1):
             return response[0]['newexp']
+        return None
 
     def create_equip_settings_for_rs400_from_rxn_exp(self, rxnexp: ReactionExperiment, rs400: VapourtecRS400, preferred_r4_reactor: VapourtecR4Reactor) -> List[EquipmentSettings]:
         list_equip_setting = []

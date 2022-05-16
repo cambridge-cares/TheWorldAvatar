@@ -199,7 +199,7 @@ def test_getReactionExperiment(initialise_triples, rxnexp_iris, rxn_type, rxnexp
 def test_getNewExperimentFromDoE(initialise_triples):
     sparql_client = initialise_triples
     new_exp_iri = sparql_client.getNewExperimentFromDoE(TargetIRIs.DOE_IRI.value)
-    assert new_exp_iri == TargetIRIs.DOE_NEW_EXP_IRI.value
+    assert new_exp_iri is None
 
 def test_getDoEHistoricalData(initialise_triples):
     sparql_client = initialise_triples

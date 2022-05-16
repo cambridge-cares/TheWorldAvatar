@@ -7,6 +7,7 @@
 @prefix exp5:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/> .
 @prefix exp6:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_6/> .
 @prefix rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:           <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
 @prefix :			    <https://www.example.com/triplestore/ontodoe/DoE_1/> .
 
@@ -20,7 +21,7 @@
     OntoDoE:hasSystemResponse :SystemResponse_1;
     OntoDoE:hasSystemResponse :SystemResponse_2;
     OntoDoE:utilisesHistoricalData :HistoricalData_1;
-    OntoDoE:proposesNewExperiment :ReactionExperiment_new;
+    #OntoDoE:proposesNewExperiment :ReactionExperiment_new; # TODO delete this
 .
 
 :Strategy_1
@@ -34,7 +35,7 @@
 # This statement is actually part of OntoDoE TBox
 # just added here to enable query by property paths
 OntoDoE:TSEMO
-    rdf:type OntoDoE:Strategy;
+    rdfs:subClassOf OntoDoE:Strategy;
 .
 
 :Domain_1
@@ -97,6 +98,7 @@ OntoDoE:TSEMO
     OntoDoE:numOfNewExp "1"^^xsd:integer; # the numOfNewExp is set to be 1 for the DoE design of this iteration
 .
 
-:ReactionExperiment_new
-    rdf:type OntoRxn:ReactionExperiment;
-.
+# TODO delete this
+#:ReactionExperiment_new
+#    rdf:type OntoRxn:ReactionExperiment;
+#.
