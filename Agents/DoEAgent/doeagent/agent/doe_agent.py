@@ -4,35 +4,29 @@ from typing import List
 import json
 import os
 
-from pyasyncagent import AsyncAgent
+from pyderivationagent import DerivationAgent
+from pyderivationagent import DerivationInputs
+from pyderivationagent import DerivationOutputs
 
 from doeagent.kg_operations import *
 from doeagent.data_model import *
 from doeagent.doe_algo import *
 from doeagent.conf import *
 
-class DoEAgent(AsyncAgent):
-    def setupJob(self, agentInputs) -> List[str]:
-        """
-            This function sets up the job given the URL-decoded input JSON string.
+from rdflib import RDF
 
-            Arguments:
-                agentInputs - URL-decoded input JSON string
-                                an example is:
-                                {
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#DesignOfExperiment":
-                                    "https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1"
-                                }
-        """
-        # Load string to JSON object (python dict)
-        input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
-
+class DoEAgent(DerivationAgent):
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Create sparql_client
         self.sparql_client = ChemistryAndRobotsSparqlClient(
             self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword
         )
+
         # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance
-        doe_instance = self.collectInputsInformation(input_json)
+        try:
+            doe_instance = self.sparql_client.get_doe_instance(derivation_inputs.getIris(ONTODOE_DESIGNOFEXPERIMENT)[0])
+        except Exception as e:
+            self.logger.error(e)
         self.logger.info("Collected inputs from the knowledge graph: ")
         self.logger.info(json.dumps(doe_instance.dict()))
 
@@ -41,34 +35,11 @@ class DoEAgent(AsyncAgent):
 
         # Upload the created OntoRxn:ReactionVariation triples to KG
         # Also update the triple between OntoDoE:DesignOfExperiment and OntoRxn:ReactionVariation
-        self.sparql_client.updateNewExperimentInKG(doe_instance, new_rxn_exp)
+        g = self.sparql_client.collect_triples_for_new_experiment(doe_instance, new_rxn_exp)
 
-        # NOTE here a list is created by looping through the list of new_rxn_exp, but in fact its length should be 1 in current design
-        # NOTE the loop is added for future development
-        list_new_rxn_exp_iri = [exp.instance_iri for exp in new_rxn_exp]
-        self.logger.info(f"The proposed new experiment is: {' '.join(list_new_rxn_exp_iri)}.")
-        return list_new_rxn_exp_iri
+        # Add the whole graph to output triples
+        derivation_outputs.addGraph(g)
 
-    def collectInputsInformation(self, agent_inputs) -> DesignOfExperiment:
-        """
-            This function checks the input parameters of the HTTP request against the I/O signiture as declared in the DoE Agent OntoAgent instance and collects information.
-        """
-        self.logger.info("Checking arguments...")
-        exception_string = """Inputs are not provided in correct form. An example is: 
-            {"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#DesignOfExperiment": "https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1"}"""
-        # If the input JSON string is missing ontology concept keys, raise error with "exception_string"
-        if ONTODOE_DESIGNOFEXPERIMENT in agent_inputs:
-            try:
-                # Get the information from OntoDoE:Strategy instance
-                doe_instance = self.sparql_client.get_doe_instance(agent_inputs[ONTODOE_DESIGNOFEXPERIMENT])
-            except ValueError:
-                self.logger.error("Unable to interpret design of experiment ('%s') as an IRI." % agent_inputs[ONTODOE_DESIGNOFEXPERIMENT])
-                raise Exception("Unable to interpret design of experiment ('%s') as an IRI." % agent_inputs[ONTODOE_DESIGNOFEXPERIMENT])
-        else:
-            self.logger.error('OntoDoE:DesignOfExperiment instance might be missing. Received inputs: ' + agent_inputs + exception_string)
-            raise Exception('OntoDoE:DesignOfExperiment instance might be missing. Received inputs: ' + agent_inputs + exception_string)
-
-        return doe_instance
 
 def suggest(doe_instance: DesignOfExperiment) -> List[ReactionExperiment]:
     """
@@ -82,6 +53,7 @@ def suggest(doe_instance: DesignOfExperiment) -> List[ReactionExperiment]:
     new_exp = proposeNewExperiment(doe_instance)
 
     return new_exp
+
 
 # Show an instructional message at the DoEAgent servlet root
 def default():

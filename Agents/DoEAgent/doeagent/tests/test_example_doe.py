@@ -70,21 +70,17 @@ def test_example_doe(initialise_agent):
         sparql_client.uploadOntology(filePath)
         os.remove(filePath)
 
-    # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = doe_agent.derivationClient.createAsynDerivation(derivation_output, doe_agent.agentIRI, derivation_inputs)
-
-    # Check if the derivation instance is created correctly
-    assert sparql_client.checkInstanceClass(derivation_iri, ONTODERIVATION_DERIVATIONASYN)
-
     # Iterate over the list of inputs to add and update the timestamp
     for input in derivation_inputs:
         doe_agent.derivationClient.addTimeInstance(input)
         # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
         doe_agent.derivationClient.updateTimestamp(input)
 
-    # Update the asynchronous derivation, it will be marked as "PendingUpdate"
-    # The actual update will be handled by monitorDerivation method periodically run by DoE agent
-    doe_agent.derivationClient.updateDerivationAsyn(derivation_iri)
+    # Create derivation instance for new information, the timestamp of this derivation is 0
+    derivation_iri = doe_agent.derivationClient.createAsyncDerivationForNewInfo(doe_agent.agentIRI, derivation_inputs)
+
+    # Check if the derivation instance is created correctly
+    assert sparql_client.checkInstanceClass(derivation_iri, ONTODERIVATION_DERIVATIONASYN)
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
     currentTimestamp_derivation = 0
@@ -94,14 +90,10 @@ def test_example_doe(initialise_agent):
         time.sleep(20)
         currentTimestamp_derivation = int(sparql_client.performQuery(query_timestamp)[0]['time'])
 
-    # Wait some arbitrary time until the cleaning up is done by the derivation client
-    time.sleep(20)
-
     # Query the iri of the new proposed NewExperiment
     new_exp_iri = sparql_client.getNewExperimentFromDoE(design_of_experiment_iri)
+    assert new_exp_iri is not None
 
-    # Check the new generated instance NewExperiment is different from the original one provided in the example
-    assert new_exp_iri != derivation_output[0]
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer
@@ -111,6 +103,7 @@ def get_endpoint(docker_container):
     # 'kb' is default namespace in Blazegraph
     endpoint += '/blazegraph/namespace/kb/sparql'
     return endpoint
+
 
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
 def clear_loggers():
