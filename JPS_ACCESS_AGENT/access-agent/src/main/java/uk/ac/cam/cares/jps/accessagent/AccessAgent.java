@@ -13,7 +13,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -54,6 +56,12 @@ public class AccessAgent extends JPSAgent{
      */
     private static final Logger LOGGER = LogManager.getLogger(AccessAgent.class);
 	
+    /**
+     * Get ontokgrouter endpoint from AccessAgent properties file. This overrides the endpoint supplied in JPS_BASE_LIB
+     */
+    private static final String propertiesFile = "/accessagent.properties";
+    private static final String STOREROUTER_ENDPOINT = KeyValueMap.getProperty(propertiesFile, IKeys.URL_STOREROUTER_ENDPOINT);
+    
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject result = processRequestParameters(requestParams,null);
@@ -62,20 +70,19 @@ public class AccessAgent extends JPSAgent{
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		System.out.println("JSON PARAMS" + requestParams.toString());
 		if (!validateInput(requestParams)) {
 			throw new JSONException("AccessAgent: Input parameters not found.\n");
 		}
 		
 		JSONObject JSONresult = new JSONObject();
 		String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
-		System.out.println("METHOD: "+ method);
+	
 		switch (method) {
 			case HttpGet.METHOD_NAME:	
 				JSONresult = get(requestParams);
 			    break;
 			case HttpPost.METHOD_NAME:
-				post(requestParams);
+				JSONresult = post(requestParams);
 				break;
 			case HttpPut.METHOD_NAME:
 				put(requestParams);
@@ -108,6 +115,7 @@ public class AccessAgent extends JPSAgent{
 			
 			JSONObject JSONresult = new JSONObject();
 			String result = null;
+			//Note: Using HTTP GET for queries is now deprecated. HTTP POST is used instead. 
 			if (sparqlquery != null) { 
 				//query
 				result = kbClient.execute(sparqlquery);
@@ -158,27 +166,42 @@ public class AccessAgent extends JPSAgent{
 	/**
 	 * Perform HTTP POST. This will perform a SPARQL update on the store. 
 	 * @param requestParams
+	 * @return 
 	 */
-	public void post(JSONObject requestParams) {	
+	public JSONObject post(JSONObject requestParams) {	
 		
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
 		String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
-		
-		if(sparqlquery != null) {
-			throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_QUERY + " is not allowed");
-		}
+			
+		JSONObject JSONresult = new JSONObject();
+		String result = null;
 		
 		try {
-			logInputParams(requestParams, sparqlupdate, false);
-			
-			StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
-			
+
 			if (sparqlupdate!=null) {
+				//update
+				logInputParams(requestParams, sparqlupdate, false);
+				StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
+				LOGGER.info("Store client instantiated for update endpoint: "+kbClient.getUpdateEndpoint());
+				LOGGER.info("Performing SPARQL update.");
 				kbClient.executeUpdate(sparqlupdate);
+				//TODO change this
+				JSONresult.put("result","Update completed!");
+			}else if(sparqlquery!=null){
+				//query
+				logInputParams(requestParams, sparqlquery, false);
+				StoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
+				LOGGER.info("Store client instantiated for query endpoint: "+kbClient.getQueryEndpoint());
+				LOGGER.info("Performing SPARQL query.");
+				result = kbClient.execute(sparqlquery);
+				JSONresult.put("result",result);
 			}else {
-				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is missing");
+				throw new JPSRuntimeException("SPARQL query or update is missing");
 			}
+			
+			return JSONresult;
+			
 		} catch (RuntimeException e) {
 			logInputParams(requestParams, sparqlupdate, true);
 			throw new JPSRuntimeException(e);
@@ -194,6 +217,8 @@ public class AccessAgent extends JPSAgent{
 	 */
 	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {
 		try {
+			LOGGER.info("Setting Store Router Endpoint: "+STOREROUTER_ENDPOINT);
+			StoreRouter.setRouterEndpoint(STOREROUTER_ENDPOINT);
 			StoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, isQuery, isUpdate);
 			if (storeClient == null) {
 				throw new RuntimeException();

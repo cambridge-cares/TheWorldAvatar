@@ -10,13 +10,7 @@ import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntResource;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.NodeIterator;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.rdf.model.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -276,7 +270,6 @@ public class JenaModelWrapper {
 	}
 	
 	private RDFNode createObject(Individual subject, Property prop, int position, String[] path) {
-		
 		// for creating an object we have to specify a class
 		// check whether the class of the object is defined as part of the path
 		if (position < path.length - 2) {
@@ -348,78 +341,5 @@ public class JenaModelWrapper {
 		}
 
 		return path + UUID.randomUUID().toString();
-	}
-	
-	public int removeSubtree(String startSubject, String... path) {
-		
-		this.startSubject = startSubject;
-		
-		RDFNode nodeBeforeLast = null;
-		if (path.length <= 2) {
-			
-			nodeBeforeLast = model.getIndividual(startSubject);
-			
-		} else {
-			
-			String[] pathMinusLast = new String[path.length - 2];
-			for (int i=0; i<pathMinusLast.length; i++) {
-				pathMinusLast[i] = path[i];
-			}
-			nodeBeforeLast = getPropertyValue(startSubject, pathMinusLast);
-		} 
-		
-		String lastPropName = concat(path[path.length - 2], path[path.length - 1]);
-		Property lastProp = model.getProperty(lastPropName);
-		
-		// remove the subtree with root lastNode
-		String restrictedToPath = startSubject;
-		int i = startSubject.lastIndexOf("#");
-		if (i >= 0) {
-			restrictedToPath =restrictedToPath.substring(0, i);
-		}
-		RDFNode lastNode = nodeBeforeLast.asResource().getPropertyResourceValue(lastProp); 
-		List<Resource> nodesForRemoval = new ArrayList<Resource>();
-		removeSubtreeRecursively(lastNode, 20, restrictedToPath, nodesForRemoval);
-		System.out.println("number of nodes for removal = " + nodesForRemoval.size());
-		for (Resource current : nodesForRemoval) {
-			current.removeProperties();
-		}
-		
-		// remove the property between nodeBeforeLast and lastNode
-		Statement statement = nodeBeforeLast.asResource().getProperty(lastProp);
-		model.remove(statement);
-	
-		return nodesForRemoval.size();
-	}
-	
-	
-	private void removeSubtreeRecursively(RDFNode node, int counter, String restrictedToPath, List<Resource> nodesForRemoval) {
-		
-		if (counter < 1) {
-			return;
-		}
-		
-		if (node.isResource()) {
-			Resource r = node.asResource();
-			StmtIterator it = r.listProperties();
-			while (it.hasNext()) {
-				Statement statement = it.next();
-				RDFNode object = statement.getObject();
-				if (object.toString().startsWith(restrictedToPath)) {
-					Property p = statement.getPredicate();
-					//System.out.println("counter = " + counter + ", property = " + p + ", resource = " + object);
-					
-					if (!nodesForRemoval.contains(object)) {
-						removeSubtreeRecursively(object, counter - 1, restrictedToPath, nodesForRemoval);
-					}
-				} else {
-					//System.out.println("SKIPPED counter = " + counter + ", object = " + object);
-				}
-					
-			}
-			//System.out.println("add resource to nodes for removal: level = " + counter + ", r = " + r);
-			//r.removeProperties();
-			nodesForRemoval.add(r);
-		}
 	}
 } 

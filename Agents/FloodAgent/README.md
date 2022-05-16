@@ -30,6 +30,7 @@ Optional variables:
 - KG_PORT
 - POSTGRES_HOST
 - POSTGRES_PORT
+- SKIP_RIVER (if set to true, this code will be skipped)
 
 In addition to the credentials for the databases, a directory to write the geojson and flood needs to be specified.
 
@@ -63,6 +64,17 @@ To run
 ```
 docker run -d [TAGNAME]
 ```
+
+To push this image to the repository:
+```
+docker login ghcr.io -u <github_username>
+```
+enter your personal access token when prompted for the password, then
+```
+docker compose -f docker compose -f docker-compose-write-only.yml build
+docker compose -f docker compose -f docker-compose-write-only.yml push
+```
+
 ### Logs
 Logs are saved at `root/.jps/` by default, you can copy the logs into your local environment by using the following command
 ```
@@ -70,7 +82,7 @@ docker cp flood:/root/.jps .
 ```
 
 ## Main entrypoint
-The main entrypoint is the `LaunchScheduledUpdaterAndWriter` class, it is set as the main class in the manifest, i.e. running the `java -jar FloodAgent-1.0.0-SNAPSHOT.jar` command will launch this by default.
+The main entrypoint is the `LaunchScheduledUpdater` class, it is set as the main class in the manifest, i.e. running the `java -jar FloodAgent-1.0.0-SNAPSHOT.jar` command will launch this by default.
 
 When launched, it will initialise the flood monitoring stations if they are not initialised, and start a scheduled task that runs once a day. The code will always download readings from the day before and upload the data to the time series tables in PostgreSQL.
 

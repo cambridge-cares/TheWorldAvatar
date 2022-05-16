@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   access-agent:
-    image: access-agent:1.0.0
+    image: access-agent:1.2.1
     build: .
     container_name: access-agent
     pull_policy: if_not_present

@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cmclinnovations</groupId>
   <artifactId>CMCLABoxManagement</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <packaging>jar</packaging>
   <name>CMCLABoxManagement</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <cmclui.version>0.0.1-SNAPSHOT</cmclui.version>	
+    <cmclui.version>0.0.1</cmclui.version>	
   </properties>
 
 	<distributionManagement>
