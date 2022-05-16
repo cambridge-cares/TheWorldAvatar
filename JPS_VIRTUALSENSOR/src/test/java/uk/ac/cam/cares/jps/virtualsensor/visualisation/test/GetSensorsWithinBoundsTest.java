@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.region.Region;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Region;
 
 public class GetSensorsWithinBoundsTest extends TestCase{
 	public void testGetSensorsWithinBounds() {

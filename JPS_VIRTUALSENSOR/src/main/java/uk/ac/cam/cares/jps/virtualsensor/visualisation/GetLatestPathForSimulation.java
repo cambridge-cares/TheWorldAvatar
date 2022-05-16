@@ -15,7 +15,7 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+// import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 
 /**
  * Servlet implementation class GetLastestPathForSimulation
@@ -23,7 +23,7 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 @WebServlet(urlPatterns = {"/adms/results/latest", "/episode/results/latest"})
 public class GetLatestPathForSimulation extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    public static final String dataseturl = KeyValueManager.get(IKeys.DATASET_META_URL);
+    // public static final String dataseturl = KeyValueManager.get(IKeys.DATASET_META_URL);
     public String LATEST_RESULTS_PATH = "/results/latest";
     public String ADMS_VENDOR = "ADMS";
     public String EPISODE_VENDOR = "Episode";
@@ -55,11 +55,11 @@ public class GetLatestPathForSimulation extends HttpServlet {
             
         }
         
-        String result = KnowledgeBaseClient.query(dataseturl, null, query_latest_path);
-        String[] keys = JenaResultSetFormatter.getKeys(result);
-        List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-        String directory = listmap.get(0)[0];
-        response.getWriter().write(directory);
+        // String result = KnowledgeBaseClient.query(dataseturl, null, query_latest_path);
+        // String[] keys = JenaResultSetFormatter.getKeys(result);
+        // List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+        // String directory = listmap.get(0)[0];
+        // response.getWriter().write(directory);
 
     }
 

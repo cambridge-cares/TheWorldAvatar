@@ -18,8 +18,8 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Region;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 

@@ -10,11 +10,11 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Chimney;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Region;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 public class ShipSparqlTest extends TestCase {
@@ -72,7 +72,6 @@ public class ShipSparqlTest extends TestCase {
     
     public void testQueryShipIRI() {
     	JSONObject jo = new JSONObject();
-        Region.putRegion(jo, 5);
         
         Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
         ShipSparql.GetShipIriWithinScope(sc);

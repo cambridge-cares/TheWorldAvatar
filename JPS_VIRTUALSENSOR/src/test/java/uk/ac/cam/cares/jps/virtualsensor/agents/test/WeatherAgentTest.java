@@ -1,14 +1,14 @@
 package uk.ac.cam.cares.jps.virtualsensor.agents.test;
 
 import org.json.JSONObject;
+import org.junit.Test;
 
-import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.virtualsensor.agents.WeatherAgent;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 
-public class WeatherAgentTest extends TestCase {
+public class WeatherAgentTest {
 	
 	/**
 	 * You must have a weather station called http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1
@@ -28,9 +28,10 @@ public class WeatherAgentTest extends TestCase {
 	/**
 	 * This will query for weather stations within the scope defined by the region class
 	 */
+	@Test
 	public void testWeatherAgentCall() {
 		JSONObject jo = new JSONObject();
-		jo.put(DispSimSparql.SimKey, "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5");
+		jo.put(DispSimSparql.SimKey, "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim2");
 		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/WeatherAgent", jo.toString());
 	}
 }

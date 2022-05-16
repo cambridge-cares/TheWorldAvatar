@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 /** 

@@ -6,9 +6,10 @@ import java.util.concurrent.CompletableFuture;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -18,7 +19,7 @@ import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 @WebServlet("/DMSCoordinationAgent")
 public class DMSCoordinationAgent extends JPSAgent {
 
-	Logger logger = LoggerFactory.getLogger(DMSCoordinationAgent.class);
+	Logger logger = LogManager.getLogger(DMSCoordinationAgent.class);
 	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {

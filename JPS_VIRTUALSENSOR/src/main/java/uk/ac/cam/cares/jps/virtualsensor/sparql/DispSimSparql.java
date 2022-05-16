@@ -5,10 +5,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
-import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Region;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 

@@ -26,16 +26,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -55,7 +55,6 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentConfiguration;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentProperty;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
@@ -63,17 +62,16 @@ import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
-@WebServlet(urlPatterns = {"/EpisodeAgent"})
+@WebServlet(urlPatterns = {"/EpisodeAgent"}, loadOnStartup=1)
 public class EpisodeAgent extends JPSAgent{
 	private static EpisodeAgentProperty episodeAgentProperty;
-	public static ApplicationContext applicationContextEpisodeAgent;
 	public static JobSubmission jobSubmission;
 	private File jobSpace;
 	public static final String FILE_NAME_3D_MAIN_CONC_DATA = "3D_instantanous_mainconc_center.dat";
 	public static final String FILE_NAME_ICM_HOUR = "icmhour.nc";
 	public static final String FILE_NAME_PLUME_SEGMENT = "plume_segments.dat";
 	private static final String separator="\t";
-	Logger logger = LoggerFactory.getLogger(EpisodeAgent.class);
+	private Logger logger = LogManager.getLogger(EpisodeAgent.class);
     
 	// episode parameters
 	private double dx_rec=100.0; //TODO hardcoded? decide the dx for the receptor
@@ -810,18 +808,20 @@ public class EpisodeAgent extends JPSAgent{
     
     @Override
     protected void setLogger() {
-        logger = LoggerFactory.getLogger(EpisodeAgent.class);
+        logger = LogManager.getLogger(EpisodeAgent.class);
     }
     
     /**
      * For job monitoring
      */
     @Override
-	public void init(){
+	public void init() throws ServletException {
         logger.info("---------- Episode Agent has started ----------");
         System.out.println("---------- Episode Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         EpisodeAgent episodeAgent = new EpisodeAgent();
+		episodeAgentProperty = new EpisodeAgentProperty();
+		episodeAgentProperty.initProperties();
 		// initialising classes to read properties from the dispersion-agent.properites file
         initAgentProperty();
 		// In the following method call, the parameter getAgentInitialDelay-<br>
@@ -851,14 +851,7 @@ public class EpisodeAgent extends JPSAgent{
 	 * through the DispersionModellingAgent class.
 	 */
 	public void initAgentProperty() {
-		// initialising classes to read properties from the dft-agent.properites
-		// file
-		if (applicationContextEpisodeAgent == null) {
-			applicationContextEpisodeAgent = new AnnotationConfigApplicationContext(EpisodeAgentConfiguration.class);
-		}
-		if (episodeAgentProperty == null) {
-			episodeAgentProperty = applicationContextEpisodeAgent.getBean(EpisodeAgentProperty.class);
-		}
+		episodeAgentProperty.initProperties();
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(episodeAgentProperty.getAgentClass(), episodeAgentProperty.getHpcAddress());
 			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(episodeAgentProperty.getHpcServerLoginUserName());

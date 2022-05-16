@@ -1,68 +1,68 @@
 package uk.ac.cam.cares.jps.virtualsensor.configuration;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.Properties;
 
-@Configuration
-@PropertySource("classpath:dispersion-agent.properties")
+import org.springframework.core.io.ClassPathResource;
+
 public class EpisodeAgentProperty {
-	@Value("${hpc.server.login.user.name}")
 	private String hpcServerLoginUserName;
-
-	@Value("${hpc.server.login.user.password}")
 	private String hpcServerLoginUserPassword;
-
-	@Value("${agent.class}")
 	private String agentClass;
-	
-	@Value("${agent.class}")
 	private String agentWorkspacePrefix;
-
-	@Value("${agent.completed.job.space.prefix}")
 	private String agentCompletedJobsSpacePrefix;
-
-	@Value("${agent.failed.job.space.prefix}")
 	private String agentFailedJobsSpacePrefix;
-	
-	@Value("${hpc.address}")
 	private String hpcAddress;
-
-	@Value("${input.file.name}")
 	private String inputFileName;
-
-	@Value("${input.file.extension}")
 	private String inputFileExtension;
-
-	@Value("${chk.point.file.extension}")
 	private String checkPointFileExtension;
-
-	@Value("${json.input.file.name}")
 	private String jsonInputFileName;
-	
-	@Value("${json.file.extension}")
 	private String jsonFileExtension;
-
-	@Value("${slurm.script.file.name}")
 	private String slurmScriptFileName;
-	
-	@Value("${executable.file}")
 	private String executableFile;
-
-	@Value("${output.file.name}")
 	private String outputFileName;
-
-	@Value("${output.file.extension}")
 	private String outputFileExtension;
-	
-	@Value("${max.number.of.hpc.jobs}")
 	private int maxNumberOfHPCJobs;
-
-	@Value("${agent.initial.delay.to.start}")
 	private int agentInitialDelayToStartJobMonitoring;
-	
-	@Value("${agent.periodic.action.interval}")
 	private int agentPeriodicActionInterval;
+
+    private Properties props = null;
+
+    public void initProperties() {
+		if (props == null) {
+			try {
+				String propfile = Paths.get("dispersion-agent.properties").toString();
+				InputStream inputStream = new ClassPathResource(propfile).getInputStream();
+
+				props = new Properties();
+				props.load(inputStream);
+
+				hpcServerLoginUserName = props.getProperty("hpc.server.login.user.name");
+				hpcServerLoginUserPassword = props.getProperty("hpc.server.login.user.password");
+				agentClass = props.getProperty("agent.class");
+				agentWorkspacePrefix = agentClass;
+				agentCompletedJobsSpacePrefix = props.getProperty("agent.completed.job.space.prefix");
+				agentFailedJobsSpacePrefix = props.getProperty("agent.failed.job.space.prefix");
+				hpcAddress = props.getProperty("hpc.address");
+				inputFileName = props.getProperty("input.file.name");
+				inputFileExtension = props.getProperty("input.file.extension");
+				checkPointFileExtension = props.getProperty("chk.point.file.extension");
+				jsonInputFileName = props.getProperty("json.input.file.name");
+				jsonFileExtension = props.getProperty("json.file.extension");
+				slurmScriptFileName = props.getProperty("slurm.script.file.name");
+				executableFile = props.getProperty("executable.file");
+				outputFileName = props.getProperty("output.file.name");
+				outputFileExtension = props.getProperty("output.file.extension");
+				maxNumberOfHPCJobs = Integer.parseInt(props.getProperty("max.number.of.hpc.jobs"));
+				agentInitialDelayToStartJobMonitoring = Integer.parseInt(props.getProperty("agent.initial.delay.to.start"));
+				agentPeriodicActionInterval = Integer.parseInt(props.getProperty("agent.periodic.action.interval"));
+			} catch (IOException e) {
+				
+			}
+		}
+	}
 
 	public String getHpcServerLoginUserName() {
 		return hpcServerLoginUserName;

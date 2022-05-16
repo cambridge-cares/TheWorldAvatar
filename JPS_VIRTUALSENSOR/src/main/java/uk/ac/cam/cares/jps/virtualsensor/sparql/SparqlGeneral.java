@@ -12,9 +12,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
-
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.SparqlAuthentication;
 
@@ -27,7 +24,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
  */
 
 public class SparqlGeneral {
-	private static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
+	private static String endpoint = "http://localhost:8080/blazegraph/namespace/virtualsensor/sparql";
 	
 	private static Iri numericalValue = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	private static Iri hasValue = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
