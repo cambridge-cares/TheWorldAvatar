@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 public class ServiceConfig {
 
     private final String name;
     private final String host;
-    private final Integer port;
+    private final Map<String, PortMapping> ports;
     private final String path;
     private final String username;
     private final String passwordFile;
@@ -21,7 +22,7 @@ public class ServiceConfig {
     public ServiceConfig() {
         name = null;
         host = null;
-        port = null;
+        ports = null;
         path = null;
         username = null;
         passwordFile = null;
@@ -38,8 +39,8 @@ public class ServiceConfig {
         return host;
     }
 
-    public Integer getPort() {
-        return port;
+    public Map<String, PortMapping> getPorts() {
+        return ports;
     }
 
     public String getPath() {

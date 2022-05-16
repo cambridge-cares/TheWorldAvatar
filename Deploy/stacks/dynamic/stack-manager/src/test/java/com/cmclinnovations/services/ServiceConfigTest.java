@@ -50,7 +50,9 @@ public class ServiceConfigTest {
 
     @Test
     public void testGetPort() {
-        Assert.assertEquals(1234, serviceConfig.getPort().intValue());
+        PortMapping portMapping = serviceConfig.getPorts().get("first");
+        Assert.assertEquals(1234, portMapping.getInternalPort().intValue());
+        Assert.assertEquals(5678, portMapping.getExternalPort().intValue());
     }
 
     @Test
