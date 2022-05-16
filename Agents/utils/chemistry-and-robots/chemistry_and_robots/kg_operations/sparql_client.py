@@ -11,8 +11,8 @@ from requests import status_codes
 import uuid
 import os
 
-from pyasyncagent.kg_operations import PySparqlClient
-from pyasyncagent.data_model import *
+from pyderivationagent.kg_operations import PySparqlClient
+from pyderivationagent.data_model import *
 
 from chemistry_and_robots.data_model import *
 from chemistry_and_robots.hardware import hplc

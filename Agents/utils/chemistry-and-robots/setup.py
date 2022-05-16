@@ -12,6 +12,7 @@ setup(
     # long_description=open('README.md').read(),
     # long_description_content_type="text/markdown",
     packages=find_packages(exclude=('tests')),
+    # TODO change pyasyncagent to pyderivationagent once it's released to PyPI
     install_requires=['pyasyncagent>=0.0.5', 'pydantic==1.9.0', 'xlrd', 'xlwt'],
     extras_require={
         "dev": [

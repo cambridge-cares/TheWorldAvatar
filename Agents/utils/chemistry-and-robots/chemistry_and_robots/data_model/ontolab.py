@@ -3,8 +3,8 @@ from __future__ import annotations
 import pydantic
 from typing import Optional, List
 
-from pyasyncagent.data_model.iris import *
-from pyasyncagent.data_model.utils import *
+from chemistry_and_robots.data_model.iris import *
+from pyderivationagent.data_model.utils import *
 
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 

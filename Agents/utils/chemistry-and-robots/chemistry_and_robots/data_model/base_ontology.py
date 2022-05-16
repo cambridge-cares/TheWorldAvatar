@@ -6,8 +6,8 @@ from rdflib.namespace import RDF
 import hashlib
 import base64
 
-from pyasyncagent.data_model.iris import *
-from pyasyncagent.data_model.utils import *
+from chemistry_and_robots.data_model.iris import *
+from pyderivationagent.data_model.utils import *
 
 # TODO add below IRIs to pyasyncagent.data_model.iris, also TBox CSV/OWL if applicable
 OM_CELSIUSTEMPERATURE = UNITS_OF_MEASURE + 'CelsiusTemperature'
