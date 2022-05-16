@@ -42,7 +42,7 @@ class PySparqlClient:
 
         # Perform query
         response = self.performQuery(query)
-        print(response)
+
         res = [list(r.values())[0] for r in response]
         if res[0] == 'true':
             return True

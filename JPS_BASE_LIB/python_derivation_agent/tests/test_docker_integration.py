@@ -17,18 +17,6 @@ pytest_plugins = ["docker_compose"]
 # Docker integration tests
 # ----------------------------------------------------------------------------------
 
-def test_test():
-    print("test print")
-    logger.info("test logging info")
-    logger.debug("test logging debug")
-    logger.warning("test logging warning")
-    logger.debug(
-        f"""
-        Testing derivation DAG (True for sync, False for async):
-        rng_derivation [], max_derivation [{str(True)}], min_derivation [{str(False)}], diff_derivation [{True}].
-        """
-    )
-
 @pytest.mark.parametrize(
     "rng, max, min, diff",
     [ # True - sync; False - async
