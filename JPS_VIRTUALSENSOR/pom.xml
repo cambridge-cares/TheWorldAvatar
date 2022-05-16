@@ -68,6 +68,10 @@
 						<directory>python</directory>
 						<targetPath>python</targetPath>
 					</resource>
+					<resource>
+                        <directory>${basedir}/WEB-INF</directory>
+                        <targetPath>WEB-INF</targetPath>
+                    </resource>
 				</webResources>
 				</configuration>
 			</plugin>
@@ -104,7 +108,7 @@
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.9.2</version>
+			<version>1.9.2-removeblazegraph-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Testing, versions pulled from parent -->
