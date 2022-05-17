@@ -1,4 +1,4 @@
-from hplcinputagent import create_app
+from agilenthplcinputagent import create_app
 
 if __name__ == '__main__':
     app = create_app()

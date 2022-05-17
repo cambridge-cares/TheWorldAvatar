@@ -8,11 +8,11 @@ import os
 
 from pyasyncagent import AsyncAgent, FlaskConfig
 from flask import Flask
-from hplcinputagent.kg_operations import *
-from hplcinputagent.data_model import *
-from hplcinputagent.conf import *
+from agilenthplcinputagent.kg_operations import *
+from agilenthplcinputagent.data_model import *
+from agilenthplcinputagent.conf import *
 
-class HPLCInputAgent(AsyncAgent):
+class AgilentHPLCInputAgent(AsyncAgent):
     # TODO consider making __init__ of AsyncAgent to accept **kwargs
     def __init__(self, hplc_digital_twin: str, hplc_report_periodic_timescale: str, fs_url: str, fs_user: str, fs_pwd: str,
         agent_iri: str, time_interval: int, derivation_instance_base_url: str, kg_url: str, kg_user: str = None, kg_password: str = None, app: Flask = Flask(__name__), flask_config: FlaskConfig = FlaskConfig(), logger_name: str = "dev"

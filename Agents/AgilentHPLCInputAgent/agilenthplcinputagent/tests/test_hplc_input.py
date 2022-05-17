@@ -5,7 +5,7 @@ import time
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
-from hplcinputagent.agent import *
+from agilenthplcinputagent.agent import *
 
 pytest_plugins = ["docker_compose"]
 
@@ -34,7 +34,7 @@ class FlaskConfigTest(FlaskConfig):
 def test_hplc_input_agent(initialise_triples, create_test_report, generate_random_download_path, hplc_digital_twin, hplc_report_periodic_timescale, filename_extension):
     sparql_client, sparql_endpoint, fs_url, fs_user, fs_pwd = initialise_triples
 
-    hplc_input_agent = HPLCInputAgent(
+    hplc_input_agent = AgilentHPLCInputAgent(
         hplc_digital_twin=hplc_digital_twin, hplc_report_periodic_timescale=hplc_report_periodic_timescale,
         fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd,
         agent_iri=HPLC_ONTOAGENT_SERVICE, time_interval=DERIVATION_PERIODIC_TIMESCALE,
