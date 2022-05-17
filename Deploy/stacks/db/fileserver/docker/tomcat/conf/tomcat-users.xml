@@ -9,4 +9,3 @@
 <user username="fs_user" password="FS_PASSWORD" roles="fs_role"/>
 
 </tomcat-users>
-

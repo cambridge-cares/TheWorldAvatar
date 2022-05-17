@@ -182,4 +182,3 @@
 		<role-name>rdf4j-user</role-name>
 	</security-role>
 </web-app>
-
