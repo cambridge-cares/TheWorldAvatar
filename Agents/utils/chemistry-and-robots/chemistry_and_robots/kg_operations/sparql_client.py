@@ -1006,6 +1006,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def sort_r2_pumps_in_vapourtec_rs400(self, rs400: VapourtecRS400) -> Dict[str, VapourtecR2Pump]:
         return {pump.locationID:pump for pump in rs400.consistsOf if isinstance(pump, VapourtecR2Pump)}
 
+    def collect_triples_for_equip_settings(self, equip_settings: List[EquipmentSettings]):
+        g = Graph()
+        for es in equip_settings:
+            g = es.create_instance_for_kg(g)
+
+        return g
+
+    # TODO delete this method, should use collect_triples_for_equip_settings instead
     def write_equip_settings_to_kg(self, equip_settings: List[EquipmentSettings]):
         filePath = f'{str(uuid.uuid4())}.ttl'
 

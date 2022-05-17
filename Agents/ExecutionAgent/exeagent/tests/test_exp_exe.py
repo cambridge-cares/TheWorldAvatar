@@ -16,13 +16,14 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 # TODO Hardcode the IRI to be used for the example, these should be identical with the ones specified in ''
 class DerivationIO(Enum):
-    NEW_RXN_EXP_1_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d9b9223c-c993-44e2-80cf-dcd9111029b1'
-    NEW_RXN_EXP_2_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_5fab2298-5bf0-4b2c-aab1-28deeb412f2a'
-    NEW_RXN_EXP_3_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_d8c28dd6-ffb3-4669-a4e4-602c923ccf3c'
-    # TODO it's only referring to the ReactorSettings at the moment, to be extended to support PumpSettings
-    PLACEHOLDER_1_IRI = 'https://www.example.com/triplestore/ontolab/ExpSetup_1/EquipmentSettings_1'
-    PLACEHOLDER_2_IRI = 'https://www.example.com/triplestore/ontolab/ExpSetup_2/EquipmentSettings_1'
-    PLACEHOLDER_3_IRI = 'https://www.example.com/triplestore/ontolab/ExpSetup_3/EquipmentSettings_1'
+    NEW_RXN_EXP_1_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70'
+    NEW_RXN_EXP_2_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8'
+    NEW_RXN_EXP_3_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf'
+    # TODO delete below placeholder IRIs as now we have the new information generation mode
+    # # TODO it's only referring to the ReactorSettings at the moment, to be extended to support PumpSettings
+    # PLACEHOLDER_1_IRI = 'https://www.example.com/triplestore/ontolab/ExpSetup_1/EquipmentSettings_1'
+    # PLACEHOLDER_2_IRI = 'https://www.example.com/triplestore/ontolab/ExpSetup_2/EquipmentSettings_1'
+    # PLACEHOLDER_3_IRI = 'https://www.example.com/triplestore/ontolab/ExpSetup_3/EquipmentSettings_1'
 
 # The (scope="module") is added to make the initialisation only run once for the whole python module so it saves time
 @pytest.fixture(scope="module")
@@ -52,6 +53,24 @@ def initialise_agent(initialise_triple_store):
         # Initialise DoE agent with temporary docker container endpoint
         exe_agent = ExecutionAgent(config.ONTOAGENT_SERVICE, config.PERIODIC_TIMESCALE, config.DERIVATION_INSTANCE_BASE_URL, endpoint)
 
+        # Start the scheduler to monitor derivations
+        exe_agent.start_monitoring_derivations()
+
+        # Upload triples
+        for f in ['ontoagent/Service__Execution.ttl', 'sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl', 'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl']:
+            data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
+            g = Graph().parse(data=data)
+            filePath = f'{str(uuid.uuid4())}.ttl'
+            g.serialize(filePath, format='ttl')
+            sparql_client.uploadOntology(filePath)
+            os.remove(filePath)
+
+        # Iterate over the list of inputs to add and update the timestamp
+        for input in DerivationIO:
+            exe_agent.derivationClient.addTimeInstance(input.value)
+            # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
+            exe_agent.derivationClient.updateTimestamp(input.value)
+
         yield sparql_client, exe_agent
 
         # Tear down scheduler of doe agent
@@ -61,42 +80,27 @@ def initialise_agent(initialise_triple_store):
         clear_loggers()
 
 @pytest.mark.parametrize(
-    "derivation_input,derivation_output",
+    # "derivation_input,derivation_output",
+    # [
+    #     ([DerivationIO.NEW_RXN_EXP_1_IRI.value], [DerivationIO.PLACEHOLDER_1_IRI.value]),
+    #     # ([DerivationIO.NEW_RXN_EXP_2_IRI.value], [None]),
+    #     # ([DerivationIO.NEW_RXN_EXP_3_IRI.value], [None]),
+    # ],
+    "derivation_input",
     [
-        ([DerivationIO.NEW_RXN_EXP_1_IRI.value], [DerivationIO.PLACEHOLDER_1_IRI.value]),
-        # ([DerivationIO.NEW_RXN_EXP_2_IRI.value], [None]),
-        # ([DerivationIO.NEW_RXN_EXP_3_IRI.value], [None]),
+        ([DerivationIO.NEW_RXN_EXP_1_IRI.value]),
+        ([DerivationIO.NEW_RXN_EXP_2_IRI.value]),
+        ([DerivationIO.NEW_RXN_EXP_3_IRI.value]),
     ],
 )
-def test_exp_exe(initialise_agent, derivation_input, derivation_output):
+def test_exp_exe(initialise_agent, derivation_input):
     sparql_client, exe_agent = initialise_agent
 
-    # Start the scheduler to monitor derivations
-    exe_agent.start_monitoring_derivations()
-
-    for f in ['ontoagent/Service__Execution.ttl', 'sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl', 'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl']:
-        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
-        g = Graph().parse(data=data)
-        filePath = f'{str(uuid.uuid4())}.ttl'
-        g.serialize(filePath, format='ttl')
-        sparql_client.uploadOntology(filePath)
-        os.remove(filePath)
-
     # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = exe_agent.derivationClient.createAsynDerivation(derivation_output, exe_agent.agentIRI, derivation_input)
+    derivation_iri = exe_agent.derivationClient.createAsyncDerivationForNewInfo(exe_agent.agentIRI, derivation_input)
 
     # Check if the derivation instance is created correctly
     assert sparql_client.checkInstanceClass(derivation_iri, ONTODERIVATION_DERIVATIONASYN)
-
-    # Iterate over the list of inputs to add and update the timestamp
-    for input in derivation_input:
-        exe_agent.derivationClient.addTimeInstance(input)
-        # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
-        exe_agent.derivationClient.updateTimestamp(input)
-
-    # Update the derivation asynchronous, it will only mark as "Requested"
-    # The actual update will be handled by monitorDerivation method periodically run by DoE agent
-    exe_agent.derivationClient.updateDerivationAsyn(derivation_iri)
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
     currentTimestamp_derivation = 0
