@@ -2,7 +2,6 @@
 * text=auto
 
 # These files should be force to have Linux line endings
-*.xml text eol=lf
 *.sh text eol=lf
 
 # These files should be force to have Windows line endings
