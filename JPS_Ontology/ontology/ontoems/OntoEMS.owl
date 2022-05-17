@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 February 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 April 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Environmental Measurement Station ontology (OntoEMS) is an ontology developed for representing environmental measurement stations, reported quantities, and time series of associated readings.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -251,6 +251,18 @@
         <rdfs:domain rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.w3.org/2000/01/rdf-schema#label -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.w3.org/2000/01/rdf-schema#label">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Textual description of the air pollutant (i.e. Eionet Data Dictionary label)</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
@@ -578,6 +590,83 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenDioxideConcentration -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenDioxideConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenOxidesConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of nitrogen dioxide in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenMonoxideConcentration -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenMonoxideConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenOxidesConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of nitrogen monoxide in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenOxidesConcentration -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenOxidesConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of nitrogen oxides in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#OzoneConcentration -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#OzoneConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of ozone in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PM10Concentration -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PM10Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ParticulateMatterConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter &lt; 10 �m in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PM2.5Concentration -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PM2.5Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ParticulateMatterConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter &lt; 2.5 �m in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ParticulateMatterConcentration -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ParticulateMatterConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PrecipitationProbability -->
 
 
@@ -625,6 +714,17 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A station (physical or virtual) reporting a quantity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#SulfurDioxideConcentration -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#SulfurDioxideConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of sulfur dioxide in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl</rdfs:isDefinedBy>
     </owl:Class>
     

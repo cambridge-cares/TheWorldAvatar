@@ -9,12 +9,12 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 class ValuesPattern implements GraphPattern {
 	List<Iri> values;
 	Variable var;
-	
-    public ValuesPattern(Variable var, List<Iri> values) {
-    	this.values = values;
-    	this.var = var;
-    }
-	
+
+	public ValuesPattern(Variable var, List<Iri> values) {
+		this.values = values;
+		this.var = var;
+	}
+
 	@Override
 	public String getQueryString() {
 		String queryString = "VALUES " + var.getQueryString() + " {";
