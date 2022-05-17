@@ -1,4 +1,4 @@
-from postprocagent.agent import PostProcAgent, PostProcAgentConfig, default
+from agilentpostprocagent.agent import AgilentPostProcAgent, PostProcAgentConfig, default
 from pathlib import Path
 
 import logging
@@ -9,7 +9,7 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 def create_app():
     config = PostProcAgentConfig(str(Path(__file__).absolute().parent) + '/conf/agent_properties.json')
 
-    app = PostProcAgent(
+    app = AgilentPostProcAgent(
         fs_url=config.FILESERVER_URL, fs_user=config.FS_USERNAME, fs_pwd=config.FS_PASSWORD,
         agent_iri=config.ONTOAGENT_SERVICE, time_interval=config.PERIODIC_TIMESCALE,
         derivation_instance_base_url=config.DERIVATION_INSTANCE_BASE_URL,

@@ -1,4 +1,4 @@
-import postprocagent.tests.conftest as conftest
+import agilentpostprocagent.tests.conftest as conftest
 import logging
 import pytest
 import time

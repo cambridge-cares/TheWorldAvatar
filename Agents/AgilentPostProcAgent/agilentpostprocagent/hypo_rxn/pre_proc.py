@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
-from postprocagent.hypo_rxn.hypo_rxn import *
+from agilentpostprocagent.hypo_rxn.hypo_rxn import *
 
 def calc_run_mol_n_volume_of_other_solute(
     input_chemical: str, species: str, eq_ratio: float,

@@ -1,5 +1,5 @@
-from postprocagent.agent import *
-from postprocagent.tests import conftest
+from agilentpostprocagent.agent import *
+from agilentpostprocagent.tests import conftest
 
 from pathlib import Path
 from rdflib import Graph
@@ -51,7 +51,7 @@ def exampleEntryPoint():
         os.remove(filePath)
 
     # Instantiate PostProc Agent
-    post_proc_agent = PostProcAgent(
+    post_proc_agent = AgilentPostProcAgent(
         fs_url=config.FILESERVER_URL, fs_user=config.FS_USERNAME, fs_pwd=config.FS_PASSWORD,
         agent_iri=config.ONTOAGENT_SERVICE, time_interval=config.PERIODIC_TIMESCALE,
         derivation_instance_base_url=config.DERIVATION_INSTANCE_BASE_URL,

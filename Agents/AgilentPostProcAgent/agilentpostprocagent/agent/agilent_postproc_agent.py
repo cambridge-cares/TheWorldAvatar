@@ -2,12 +2,12 @@ from pyasyncagent import AsyncAgent, FlaskConfig
 from flask import Flask
 from pathlib import Path
 
-from postprocagent.kg_operations import *
-from postprocagent.data_model import *
-import postprocagent.hypo_rxn as hypo
-from postprocagent.conf import *
+from agilentpostprocagent.kg_operations import *
+from agilentpostprocagent.data_model import *
+import agilentpostprocagent.hypo_rxn as hypo
+from agilentpostprocagent.conf import *
 
-class PostProcAgent(AsyncAgent):
+class AgilentPostProcAgent(AsyncAgent):
     def __init__(self, fs_url: str, fs_user: str, fs_pwd: str,
         agent_iri: str, time_interval: int, derivation_instance_base_url: str,
         kg_url: str, kg_user: str = None, kg_password: str = None,

@@ -11,7 +11,7 @@ import os
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
-from postprocagent.agent import *
+from agilentpostprocagent.agent import *
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
