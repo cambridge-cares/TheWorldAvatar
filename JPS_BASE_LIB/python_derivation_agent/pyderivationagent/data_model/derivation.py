@@ -1,3 +1,4 @@
+import ast
 from rdflib import Graph, RDF
 
 class DerivationInputs():
@@ -9,10 +10,10 @@ class DerivationInputs():
         self.derivation_inputs = derivationInputs
 
     def getInputs(self):
-        return self.derivation_inputs
+        return ast.literal_eval(str(self.derivation_inputs.getInputs()))
 
     def getIris(self, rdfType):
-        return self.derivation_inputs.getIris(rdfType)
+        return list(self.derivation_inputs.getIris(rdfType))
 
 class DerivationOutputs():
     """This is a warpper class for uk.ac.cam.cares.jps.base.derivation.DerivationOutputs.java.
