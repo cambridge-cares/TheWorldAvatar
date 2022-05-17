@@ -4,8 +4,10 @@ os: http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#
 gc:         http://purl.org/gc/
 ex:		    http://example.org/
 sio:        http://semanticscience.org/resource/
+pubchem:    http://rdf.ncbi.nlm.nih.gov/pubchem/
 compound:	http://rdf.ncbi.nlm.nih.gov/pubchem/compound/
 descriptor:	http://rdf.ncbi.nlm.nih.gov/pubchem/descriptor/
+inchikey:	http://rdf.ncbi.nlm.nih.gov/pubchem/inchikey/
 owl:		http://www.w3.org/2002/07/owl#
 rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
 xml:		http://www.w3.org/XML/1998/namespace
@@ -30,7 +32,6 @@ target compound:{compound_id} rdf:type sio:SIO_010004 ;
              descriptor:{compound_id}_Hydrogen_Bond_Acceptor_Count ,
              descriptor:{compound_id}_Hydrogen_Bond_Donor_Count ,
              descriptor:{compound_id}_IUPAC_InChI ,
-             descriptor:{compound_id}_IUPAC_InChIKey ,
              descriptor:{compound_id}_Isotope_Atom_Count ,
              descriptor:{compound_id}_Heavy_Atom_Count ,
              descriptor:{compound_id}_Molecular_Formula ,
@@ -61,9 +62,7 @@ target compound:{compound_id} rdf:type sio:SIO_010004 ;
     descriptor:{compound_id}_Hydrogen_Bond_Donor_Count rdf:type sio:CHEMINF_000387 ;
                                 sio:has-value {count_hydrogen_bond_donor} . 
     descriptor:{compound_id}_IUPAC_InChI rdf:type sio:CHEMINF_000396 ; 
-                                sio:has-value {inchi_standard} .
-    descriptor:{compound_id}_IUPAC_InChIKey rdf:type sio:CHEMINF_000399 ; 
-                                sio:has-value {inchi_key} .    
+                                sio:has-value {inchi_standard} .   
     descriptor:{compound_id}_Isotope_Atom_Count rdf:type sio:CHEMINF_000372 ;
                                 sio:has-value {count_isotope_atom} .
     descriptor:{compound_id}_Heavy_Atom_Count rdf:type sio:CHEMINF_000373 ;
@@ -88,7 +87,11 @@ target compound:{compound_id} rdf:type sio:SIO_010004 ;
                                 sio:has-value {count_undef_bond_setereo} .
     descriptor:{compound_id}_XLogP3-AA rdf:type sio:CHEMINF_000395 ;
                                 sio:has-value {log_p} . 
-# 
+#
+    inchikey:{inchi_key} rdf:type sio:CHEMINF_000399 ; 
+                         sio:is-attribute-of compound:{compound_id} ;
+                         sio:has-value {inchi_key} .
+
 source		SELECT compound_id,charge,compound_complexity,count_hydrogen_bond_acceptor,count_hydrogen_bond_donor,count_rotatable_bond,iupac_name,inchi_standard,inchi_key,log_p,exact_mass,molecular_formula,molecular_weight,tpsa,canonical_smiles,count_heavy_atoms,count_def_atom_stereo,count_undef_atom_setereo,count_def_bond_stereo,count_undef_bond_setereo,count_isotope_atom,count_covalent_unit
             FROM "public"."pubchem"
 
