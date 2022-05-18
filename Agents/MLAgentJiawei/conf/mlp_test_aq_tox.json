@@ -1,0 +1,93 @@
+{
+    "goals": {
+        "hpo": true,
+        "contour_plot": false,
+        "best_trial_retraining": true,
+        "transfer_learning": false,
+        "predict": false
+    },
+    "numerical_settings": {
+        "seed": 1,
+        "cudnn_deterministic": true,
+        "cudnn_benchmark": false
+    },
+    "dataset": {
+        "src": "./data/processed/qsar_aquatic_toxicity.csv",
+        "normalize": true,
+        "x_column": [
+            "TPSA(Tot)",
+            "SAacc",
+            "H-050",
+            "MLOGP",
+            "RDCHI",
+            "GATS1p",
+            "nN",
+            "C-040"
+        ],
+        "y_column": [
+            "LC50 [-LOG(mol/L)]"
+        ],
+        "split": [
+            0.7,
+            0.15,
+            0.15
+        ]
+    },
+    "model": {
+        "name": "MLP",
+        "model_specific": {
+            "mlp_layers": {
+                "type": "int",
+                "low": 1,
+                "high": 4
+            },
+            "mlp_units": {
+                "type": "int",
+                "low": 8,
+                "high": 256,
+                "length": "mlp_layers"
+            },
+            "mlp_dropouts": {
+                "type": "uniform",
+                "low": 0.0,
+                "high": 0.3,
+                "direction": "constant",
+                "length": "mlp_layers"
+            }
+        }
+    },
+    "training": {
+        "optimiser": {
+            "name": "Adam",
+            "lr": {
+                "type": "loguniform",
+                "low": 1e-5,
+                "high": 1e-2
+            },
+            "weight_decay": {
+                "type": "loguniform",
+                "low": 1e-5,
+                "high": 0.01
+            }
+        },
+        "batch_size": 20,
+        "epochs": 10,
+        "patience": 20,
+        "min_delta": 0.0,
+        "metric": "val_loss",
+        "direction": "minimize",
+        "cross_validation": 0,
+        "trials": 10,
+        "study_name": "mlp_aq_tox",
+        "storage": "sqlite:///mlp_aq_tox.db",
+        "storage_timeout": 1000,
+        "load_if_exists": true,
+        "jobs": 1
+    },
+    "post_processing": {
+        "contour_plot_alt_dir": null,
+        "z_transform_inverse_prediction": true,
+        "regression_plot": true,
+        "transfer": false
+    }
+}
