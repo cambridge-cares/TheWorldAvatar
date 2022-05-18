@@ -93,7 +93,7 @@ public class EpisodeAgent extends JPSAgent{
 	private String gmttimedifference; //it should be dependent on the location it simulates
 	
 	//keys
-	private String outputPathKey = "outputPath";
+	private String jobPathKey = "jobPath";
 	private String simStartKey = "simStart";
 	
 	/**
@@ -134,7 +134,13 @@ public class EpisodeAgent extends JPSAgent{
             WeatherStation mainStation = new WeatherStation(mainstn_iri);
             WeatherStation subStation = new WeatherStation(substn_iri[0]); // code can only deal with 1 substation
             
-            createPointsInput(inputPath, ship_iri);
+			// initialise ship objects
+			List<Ship> ships = new ArrayList<>();
+			for (int i = 0; i < ship_iri.length; i++) {
+				ships.add(new Ship(ship_iri[i], true));
+			}
+
+            createPointsInput(inputPath, ships);
             createLinesInput(inputPath, "lines.csv", sc);
             try { //for control file
                 createControlWeatherORCityChemFile(inputPath, "run_file.asc", mainStation,subStation,sc);
@@ -163,9 +169,20 @@ public class EpisodeAgent extends JPSAgent{
 //                  value=false;
 //              }
                 jsonforslurm.put("runWholeScript",value); // read by citychem shell script
-                jsonforslurm.put(outputPathKey,outputPath); // used in output annotation
+                jsonforslurm.put(jobPathKey,dataPath); // used in output annotation
                 jsonforslurm.put(simStartKey, Instant.now().getEpochSecond()); // used in output annotation
                 jsonforslurm.put(DispSimSparql.SimKey, sim_iri); // used in output annotation
+
+				// ship locations used for visualisation
+				JSONArray ships_array = new JSONArray();
+				for (Ship ship : ships) {
+					JSONArray coordinates = new JSONArray();
+					coordinates.put(ship.getXCoord());
+					coordinates.put(ship.getYCoord());
+					ships_array.put(coordinates);
+				}
+				jsonforslurm.put("ships", ships_array);
+
                 setUpJob(jsonforslurm.toString(),dataPath);
             } catch (IOException | SlurmJobException e) {
                 // TODO Auto-generated catch block
@@ -230,16 +247,14 @@ public class EpisodeAgent extends JPSAgent{
         new QueryBroker().putLocal(Paths.get(inputPath,filename).toString(), sb.toString());  	
 	}
     
-    private void createPointsInput(String inputPath,String[] ship_iri) {
+    private void createPointsInput(String inputPath, List<Ship> ships) {
     	System.out.println("it goes to create point emission input here");
 
 		List<String[]> resultquery = new ArrayList<String[]>();
 		String[] header = { "snap", "xcor", "ycor", "Hi", "Vi", "Ti", "radi", "BH", "BW", "Pvec", "Pdir",
 				"pcir_ang", "Ptstart", "Ptend", "NOx", "NMVOC", "CO", "SO2", "NH3", "PM2.5", "PM10" };
 		resultquery.add(0, header);
-		for (int i = 0; i < ship_iri.length; i++) {
-			Ship ship = new Ship(ship_iri[i],true);
-			
+		for (Ship ship : ships) {
 			// all emission are in kg/s from the triple store
 			double emissionratepm25 = 0.0;
 			double emissionratepm10 = 0.0;
@@ -806,18 +821,12 @@ public class EpisodeAgent extends JPSAgent{
 		return URLDecoder.decode(path, "utf-8");
 	}
     
-    @Override
-    protected void setLogger() {
-        logger = LogManager.getLogger(EpisodeAgent.class);
-    }
-    
     /**
      * For job monitoring
      */
     @Override
 	public void init() throws ServletException {
         logger.info("---------- Episode Agent has started ----------");
-        System.out.println("---------- Episode Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         EpisodeAgent episodeAgent = new EpisodeAgent();
 		episodeAgentProperty = new EpisodeAgentProperty();
@@ -833,13 +842,11 @@ public class EpisodeAgent extends JPSAgent{
 			try {
 				episodeAgent.monitorJobs();
 			} catch (SlurmJobException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage());
 			}
 		}, episodeAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
 				episodeAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
 		logger.info("---------- Dispersion of pollutant simulation jobs are being monitored  ----------");
-        System.out.println("---------- Dispersion of pollutant simulation jobs are being monitored  ----------");
 	}
     
     /**
@@ -921,11 +928,9 @@ public class EpisodeAgent extends JPSAgent{
 						}
 						if(annotateOutputs(jobFolder, zipFilePath)) {
 							logger.info("EpisodeAgent: Annotation has been completed.");
-							System.out.println("Annotation has been completed.");
 							PostProcessing.updateJobOutputStatus(jobFolder);
 						} else {
 							logger.error("EpisodeAgent: Annotation has not been completed.");
-							System.out.println("Annotation has not been completed.");
 							// Edit the status file to be error termination
 							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(),
 									Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
@@ -935,10 +940,8 @@ public class EpisodeAgent extends JPSAgent{
 			}
 		} catch (IOException e) {
 			logger.error("EpisodeAgent: IOException.".concat(e.getMessage()));
-			e.printStackTrace();
 		} catch(SlurmJobException e){
-			logger.error("EpisodeAgent: ".concat(e.getMessage()));
-			e.printStackTrace();
+			logger.error("EpisodeAgent: SlurmJobException.".concat(e.getMessage()));
 		}
 	}
 	
@@ -947,7 +950,8 @@ public class EpisodeAgent extends JPSAgent{
 			System.out.println("Annotating output has started");
 
 			JSONObject jobInfo = new JSONObject(Files.readAllLines(Paths.get(jobFolder.getAbsolutePath(), "input.json")).get(0));
-			String outputPath = jobInfo.getString(outputPathKey); // scenario folder written during job submission
+			String jobPath = jobInfo.getString(jobPathKey);
+			String outputPath = Paths.get(jobPath, "output").toString(); // scenario folder written during job submission
 			String sim_iri = jobInfo.getString(DispSimSparql.SimKey);
 			
 			if (!DispSimSparql.CheckOutputPathExist(sim_iri, outputPath)) { 
@@ -971,7 +975,7 @@ public class EpisodeAgent extends JPSAgent{
 				new QueryBroker().putLocal(destinationUrl3, file3);
 				
 				// python script reads in conc file and produces a geojson file next to it
-				createGeoJSON(outputPath,DispSimSparql.GetSimCRS(sim_iri));
+				createGeoJSON(jobPath,DispSimSparql.GetSimCRS(sim_iri));
 				
 				System.out.println("metadata annotation started");
 	
