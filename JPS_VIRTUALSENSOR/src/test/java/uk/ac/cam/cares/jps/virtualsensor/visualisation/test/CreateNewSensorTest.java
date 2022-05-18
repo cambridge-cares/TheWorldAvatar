@@ -1,11 +1,12 @@
 package uk.ac.cam.cares.jps.virtualsensor.visualisation.test;
 
 import org.json.JSONObject;
+import org.junit.Test;
 
-import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
-public class CreateNewSensorTest extends TestCase{
+public class CreateNewSensorTest{
+	@Test
     public void testCreateNewSensor() {
     	JSONObject request = new JSONObject();
     	request.put("lat", 1.267135);

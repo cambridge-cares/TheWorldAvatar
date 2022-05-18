@@ -81,10 +81,6 @@ public class SensorSparqlTest extends TestCase{
 		result.getJSONObject(0);
 	}
 	
-	public void testGetNumAirStations() {
-		SensorSparql.GetNumAirStations();
-	}
-	
 	public void testGetNumWeatherStation() {
 		SensorSparql.GetNumWeatherStation();
 	}

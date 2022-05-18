@@ -19,7 +19,6 @@ import java.util.List;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
-import org.eclipse.rdf4j.sparqlbuilder.core.OrderCondition;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -735,6 +734,7 @@ public class DispSimSparql {
     	sim.setDz(dz);
     	
     	String sim_iri = DispSimSparql.InitSim(sim);
+		DispSimSparql.InitService(episode_iri, "http://localhost:8080/JPS_VIRTUALSENSOR/EpisodeAgent");
     	return sim_iri;
 	}
 	

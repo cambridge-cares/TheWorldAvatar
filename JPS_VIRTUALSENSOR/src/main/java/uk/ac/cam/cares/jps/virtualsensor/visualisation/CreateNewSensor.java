@@ -2,8 +2,10 @@ package uk.ac.cam.cares.jps.virtualsensor.visualisation;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
@@ -37,8 +39,7 @@ public class CreateNewSensor extends JPSHttpServlet{
 			
 			//work out how many stations exist in the endpoint and give a unique name
 			//functionality to delete does not exist yet so this won't break!
-			int station_number = SensorSparql.GetNumAirStations() + 1;
-			String station_name = "virtualsensor" + station_number;
+			String station_name = "virtualsensor_" + UUID.randomUUID().toString();
 			String stationiri = SensorSparql.createAirQualityStation(station_name, xyz);
 			
 			// check if any simulations exist at this point

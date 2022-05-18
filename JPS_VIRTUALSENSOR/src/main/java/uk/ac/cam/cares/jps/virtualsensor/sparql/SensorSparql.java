@@ -509,8 +509,13 @@ public class SensorSparql {
     	// all properties share the same time stamp, hence distinct()
     	query.prefix(getPrefix()).select(timestamp).where(queryPattern).from(queryGraph).orderBy(timeDesc).distinct();
         
-    	long result = SparqlGeneral.performQuery(query).getJSONObject(0).getLong(queryKey);
-    	return result;
+        JSONArray result = SparqlGeneral.performQuery(query);
+
+        if (result.length() == 0) {
+            return 0;
+        } else {
+            return result.getJSONObject(0).getLong(queryKey);
+        }
     }
     
     public static JSONArray queryAirStationsWithinScope(Scope sc) {
@@ -572,25 +577,6 @@ public class SensorSparql {
     	JSONArray queryresult = SparqlGeneral.performQuery(query);
     	long timestamp = queryresult.getJSONObject(0).getLong("vtime");
     	return timestamp;
-    }
-    
-    /**
-     * Returns number of the air quality stations in the endpoint
-     * @return
-     */
-    public static int GetNumAirStations() {
-    	// IRI of station
-    	SelectQuery query = Queries.SELECT();
-    	String queryKey = "numstation";
-    	Variable station = query.var();
-    	Variable numstation = SparqlBuilder.var(queryKey);
-    	GraphPattern querypattern = station.isA(AirQualityStation);
-    	Assignment count = Expressions.count(station).as(numstation);
-    	
-    	From queryGraph = SparqlBuilder.from(airquality_graph);
-    	query.from(queryGraph).prefix(p_station).select(count).where(querypattern);
-
-    	return SparqlGeneral.performQuery(query).getJSONObject(0).getInt(queryKey);
     }
 
     /**

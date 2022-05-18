@@ -41,13 +41,7 @@ public class SensorUpdaterAgent extends JPSAgent{
         	
         	String sim_iri = DispSimSparql.GetSimForSensor(stationiri);
         	
-        	long latestTimeStamp;
-        	
-        	try {
-        		latestTimeStamp = SensorSparql.GetLatestTimeStamp(stationiri);
-        	} catch (Exception e) { // no data recorded yet
-        		latestTimeStamp = 0;
-        	}
+        	long latestTimeStamp = SensorSparql.GetLatestTimeStamp(stationiri);
         	
         	// this will give a list of outputs that have not been added to this sensor (after latestTimeStamp)
         	JSONArray queryResult = DispSimSparql.GetOutputPathAndTime(sim_iri, latestTimeStamp);
@@ -122,7 +116,7 @@ public class SensorUpdaterAgent extends JPSAgent{
     	boolean valid = false;
     	try {
     		// check if air quality station IRI is valid
-    		new URL(requestParams.getString(Region.keyAirStationIRI)).toURI();
+    		new URL(requestParams.getString(SensorSparql.keyAirStationIRI)).toURI();
     		valid = true;
     	} catch (Exception e) {
     		throw new BadRequestException(e);
