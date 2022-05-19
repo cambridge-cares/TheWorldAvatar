@@ -185,7 +185,7 @@ def outputless_assignment(csvName):
 
     for i in range(0,len(data['outputDUKESToBMRSID'])):
         #See if an ID is contained.
-        if (str(data['ConfidenceResult'][i]) == "1" and data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
+        if (((str(data['ConfidenceResult'][i]) == "1") or (str(data['ManualConfidence'][i]) == "1")) and data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
             #So if this is a mapped DUKES Powerplant (station) proceed. 
             for k in range(0,len(data['Registered Resource EIC code'])):
                 #Add this to the station.
@@ -437,7 +437,7 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
             liveGeneratorData = run_query(Key, Year, Month, Day, Period)
         for i in range(0,len(data['outputDUKESToBMRSID'])):
             #See if an ID is contained.
-            if (str(data['ConfidenceResult'][i]) == "1" and data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
+            if (((str(data['ConfidenceResult'][i]) == "1") or (str(data['ManualConfidence'][i]) == "1")) and data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
                 #Now loop through the generators
                 for gen in liveGeneratorData:
                     #If gen is in manuals will need to set the generator output, and add to the powerplant output (mapping is not required, as it is already done manually). 
@@ -515,7 +515,7 @@ def Auto_Call(Key, AutoFile):
 
 ###Main Function###
 if __name__ == "__main__":
-    Key = 'iwx6raw9m7nqq0f' ########## REMOVE LATER
+    Key = '' #Add Here if needed, but remove before push. 
     #live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2021', '11', '14', '24', 2)
     Auto_Call(Key, 'https://www.dropbox.com/s/9bdt4y1406yqfgj/Input-Template-Auto.csv?dl=1')
     #NOTE: With Manual Mapping Exemption now (i.e. if the value in the "Manual" column is '1', then it does not overwrite the generator to plant mapping and leaves it. 
