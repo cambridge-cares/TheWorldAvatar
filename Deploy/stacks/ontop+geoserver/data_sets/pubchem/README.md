@@ -36,6 +36,13 @@
 ## Uploading the csv files to PostgreSQL tables on Ontop
 Please refer to the `README.md` file in the main parent directory at:
 
-TheWorldAvatar/Deploy/stacks/ontop+geoserver
+        TheWorldAvatar/Deploy/stacks/ontop+geoserver
 
 and follow the steps accordingly.
+
+## Running the servers by providing ontologies:
+The previous instructions are provided for only using a mapping file between the triples and PostgreSQL tables. If it is required to also upload a TBox (ontology) to make sure that the mapping file is correct, an extra step must be taken btween step 5 and 6. First, copy your ontology (.owl file) in the tbox directory (./shared_data/pubchem/tbox). Second, run the following command to copy the owl file to ontop/inputs folder in the parent ONTOP+GEOSERVER directory and generate the required ontop.env file for building the ontop server:
+
+        ./scripts/generate_ontop_env_file.sh
+
+Finally, proceed with rest of the instructions at step 6. 
