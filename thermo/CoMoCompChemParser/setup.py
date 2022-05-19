@@ -1,25 +1,18 @@
 from setuptools import setup, find_packages
 
 setup(
-    # This is the name of your project. The first time you publish this
-    # package, this name will be registered for you. It will determine how
-    # users can install this project, e.g.:
-    #
-    # $ pip install sampleproject
-    #
-    name='compchemparser', # Required
-    version='1.0.0', # Required
-    # This should be your name or the name of the organization which owns the
-    # project.
-    author='Daniel Nurkowski and Angiras Menon', # Optional
-    # This should be a valid email address corresponding to the author listed
-    # above.
-    author_email='',  # Optional
-    license='',
+    name='compchemparser',
+    version='1.0.2',
+    author='Daniel Nurkowski and Angiras Menon',
+    author_email='danieln@cmclinnovations.com',
+    license='MIT',
     long_description=open('README.md').read(), # Optional
     # When your source code is in a subdirectory under the project root, e.g.
     # `src/`, it is necessary to specify the `package_dir` argument.
     packages=find_packages(exclude=("tests")),
+    long_description_content_type="text/markdown",
+    description="The `compchemparser` package provides parsers to convert quantum chemistry log files into a more condensed JSON format.",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/thermo/CoMoCompChemParser",
     # Specify which Python versions you support pip install' will check this
     # and refuse to install the project if the version does not match.
     python_requires='>=3.5, <4',
@@ -35,7 +28,6 @@ setup(
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional
         'console_scripts': [
-            #'ccparse=compchemparser:compchemparser.main',
              'ccparse=compchemparser.main:main'
         ],
     },
