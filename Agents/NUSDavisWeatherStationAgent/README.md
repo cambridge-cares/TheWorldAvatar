@@ -1,6 +1,6 @@
 # NUS Davis Weather Station input agent
 
-This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the NUS Davis weather station. It's only purpose is to retrieve new data (if available) from the API and download it into 
+This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the NUS Davis weather station. Its only purpose is to retrieve new data (if available) from the API and download it into 
 the corresponding database, as well as, instantiating KG instances and connection when called for the first time. The 
 agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS base lib to interact with both the KG and database.
@@ -29,7 +29,7 @@ api-key`[apiKey]`t`[timestamp]` (e.g. api-key982634341t1988729481). Then the afo
 to generate the apiSignature by using the HMAC SHA-256 algorithm with the HMAC secret key being the `[apiSecret]`. Note that every api call
 requires a fresh timestamp. (See also the [API documentation](#Weather-Station-API)).
 #### Example readings
-Readings are returned in the response body in form of a JSON Object which consist of key-value pair. The JSONObject has the 
+Readings are returned to the response body in form of a JSON Object which consist of key-value pair. The JSONObject has the 
 key:"sensors", which contains a JSONArray containing a JSONObject. Inside this JSONObject is a JSONArray associated with the key:"data". This JSONArray contains one JSONObject. The key value pairs within this JSONObject contain all the relevant weather readings corresponding to a particular timestamp. The key for the timestamp is `[ts]`.
 The following images are examples of what the JSONObject returned by a `[current]` data api call looks like. 
 
@@ -150,13 +150,17 @@ POST http://localhost:1080/nusdavisweatherstation-agent/retrieve
 Content-Type: application/json
 {"agentProperties":"NUSDavisWeatherStation_AGENTPROPERTIES","apiProperties":"NUSDavisWeatherStation_APIPROPERTIES","clientProperties":"NUSDavisWeatherStation_CLIENTPROPERTIES"}
 ```
+In curl syntax
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"NUSDavisWeatherStation_AGENTPROPERTIES\",\"apiProperties\":\"NUSDavisWeatherStation_APIPROPERTIES\",\"clientProperties\":\"NUSDavisWeatherStation_CLIENTPROPERTIES\"}" http://localhost:1080/nusdavisweatherstation-agent/retrieve
+```
 
-If the agent runs successfully, you should see a JSON Object returned back that is similar to the one shown below.
+If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 ```
 {"Result":["Input agent object initialized.","Time series client object initialized.","API connector object initialized.","Retrieved 1 weather station reading.","Data updated with new readings from API.","Timeseries Data has been updated."]}
 ```
 
-If the JSON Object returned back is as shown below, it means that the request was written wrongly. Check whether the URL, keys and values are written correctly.
+If the returned JSON Object is as shown below, it means that the request was written wrongly. Check whether the URL, keys and values are written correctly.
 ```
 {"Result":"Request parameters are not defined correctly."}
 ```
