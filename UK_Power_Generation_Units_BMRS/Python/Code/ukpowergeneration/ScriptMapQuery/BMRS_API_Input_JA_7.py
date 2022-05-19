@@ -517,6 +517,6 @@ def Auto_Call(Key, AutoFile):
 if __name__ == "__main__":
     Key = '' #Add Here if needed, but remove before push. 
     #live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2021', '11', '14', '24', 2)
-    Auto_Call(Key, 'https://www.dropbox.com/s/9bdt4y1406yqfgj/Input-Template-Auto.csv?dl=1')
+    Auto_Call(Key, 'https://www.dropbox.com/s/k2889eg7vyq0jsf/Input-Template-Auto.csv?dl=1')
     #NOTE: With Manual Mapping Exemption now (i.e. if the value in the "Manual" column is '1', then it does not overwrite the generator to plant mapping and leaves it. 
 
