@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.cmclinnovations.services.ContainerService;
 import com.cmclinnovations.services.DockerService;
+import com.cmclinnovations.services.PostgreSQLService;
 import com.cmclinnovations.services.ReverseProxyService;
 import com.cmclinnovations.services.ServiceManager;
 
@@ -23,6 +24,8 @@ public class Stack<P extends ContainerService & ReverseProxyService> {
         docker.createNetwork(name);
 
         docker.startContainer(proxy);
+
+        docker.startContainer(new PostgreSQLService(name, manager.getServiceConfig("postgis")));
     }
 
 }
