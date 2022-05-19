@@ -1,7 +1,7 @@
 package com.cmclinnovations.services;
 
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +34,12 @@ public class DockerService extends AbstractService {
 
         Builder dockerConfigBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
-        URL endpoint = getEndpoint("dockerHost");
+        URI endpoint = getEndpoint("dockerHost");
         if (null != endpoint) {
             dockerConfigBuilder.withDockerHost(endpoint.toString());
+            // TODO need to set up TLS so that the unsecured Docker port "2375" doesn't need
+            // to be opened.
+            // dockerConfigBuilder.withDockerTlsVerify(true);
         }
 
         DockerClientConfig dockerConfig = dockerConfigBuilder.build();

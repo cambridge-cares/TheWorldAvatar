@@ -2,7 +2,7 @@ package com.cmclinnovations.services;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import com.github.dockerjava.api.model.HostConfig;
 public class ServiceConfig {
 
     private final String name;
-    private final Map<String, URL> endpoints;
+    private final Map<String, URI> endpoints;
     private final String username;
     private final String passwordFile;
 
@@ -40,7 +40,7 @@ public class ServiceConfig {
         return name;
     }
 
-    public Map<String, URL> getEndpoints() {
+    public Map<String, URI> getEndpoints() {
         return endpoints;
     }
 

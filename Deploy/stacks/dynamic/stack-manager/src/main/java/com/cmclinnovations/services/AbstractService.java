@@ -1,6 +1,6 @@
 package com.cmclinnovations.services;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
@@ -21,11 +21,11 @@ public abstract class AbstractService {
         return config.getName();
     }
 
-    public Map<String, URL> getEndpoints() {
+    public Map<String, URI> getEndpoints() {
         return config.getEndpoints();
     }
 
-    public URL getEndpoint(String endpointName) {
+    public URI getEndpoint(String endpointName) {
         return config.getEndpoints().get(endpointName);
     }
 
