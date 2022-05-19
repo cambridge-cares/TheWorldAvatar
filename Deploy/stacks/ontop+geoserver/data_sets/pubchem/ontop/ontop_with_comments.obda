@@ -91,7 +91,7 @@ target compound:{compound_id} rdf:type sio:SIO_010004 ;
     inchikey:{inchi_key} rdf:type sio:CHEMINF_000399 ; 
                          sio:is-attribute-of compound:{compound_id} ;
                          sio:has-value {inchi_key} .
-
+# define the SQL query
 source		SELECT compound_id,charge,compound_complexity,count_hydrogen_bond_acceptor,count_hydrogen_bond_donor,count_rotatable_bond,iupac_name,inchi_standard,inchi_key,log_p,exact_mass,molecular_formula,molecular_weight,tpsa,canonical_smiles,count_heavy_atoms,count_def_atom_stereo,count_undef_atom_setereo,count_def_bond_stereo,count_undef_bond_setereo,count_isotope_atom,count_covalent_unit
             FROM "public"."pubchem"
 
