@@ -164,7 +164,8 @@ public class StoreRouter{
 	
 	/**
 	 * Check that the targetResourceID is either a valid IRI or namespace label for a remote resource.
-	 * A namespace label is valid if it is composed of only alphanumeric characters (A-Z, 0-9).
+	 * A namespace label is valid if it is composed of only alphanumeric characters (A-Z, 0-9) 
+	 * or the special characters - and _
 	 * @param targetResourceID
 	 * @return
 	 */
@@ -173,10 +174,10 @@ public class StoreRouter{
 		if(InputValidator.checkIfValidIRI(targetResourceID)){
 			return true;
 		}else {
-			if(targetResourceID.matches("[A-Za-z0-9]+")) {
+			if(targetResourceID.matches("[A-Za-z0-9\\-\\_]+")) {
 				return true;
 			}else {
-				LOGGER.error("Invalid namespace label:"+targetResourceID+". Not alphanumeric.");
+				LOGGER.error("Invalid namespace label:"+targetResourceID+". Not alphanumeric (special characters - and _ are allowed).");
 				return false;
 			}
 		}

@@ -51,3 +51,4 @@ zip -r output.zip .
 cp output.zip $SLURM_SUBMIT_DIR
 cd $SLURM_SUBMIT_DIR
 rm -rf $SCRATCH_DIRECTORY || exit $?
+
