@@ -257,6 +257,14 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 */
 
 function handleResults(rawResult){
+	
+	if(rawResult === null || rawResult === undefined || rawResult === "null") {
+		let msg = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide an answer.</span>";
+		let chatbotResults = document.getElementById("chatbot-results");
+		if(chatbotResults !== null) chatbotResults.innerHTML = msg;
+        return;
+	}
+	
 	// 1. convert any results to JSON object/ JSON array
 	// 2. identify chart data from non-chart data
 	// 3. call processChatbotResults or process matrix data accordingly
@@ -671,10 +679,12 @@ function makeTable(matrix_set){
 */
 function convertToJSONResults(rawResults) {
     	// Parse the results
-	var chatbotResults = null;
+	
 
-	if (rawResults == null || rawResults == "") {
-		chatbotResults = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide and answer.</span>";
+	if (rawResults === null || rawResults === undefined || rawResults === "" || rawResults === "null") {
+		let msg = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide an answer.</span>";
+		let chatbotResults = document.getElementById("chatbot-results");
+		if(chatbotResults !== null) chatbotResults.innerHTML = msg;
         return null;
 	} else {
 		// Get the data into JSON form (if not already);
