@@ -5,9 +5,17 @@ import java.util.Iterator;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 
 /**
- * MockStoreClient based on the in-memory LocalStoreClient class.
+ * MockStoreClient is based on the in-memory LocalStoreClient class.
  * This class is designed as a mock StoreClientInterface type 
- * object for testing purposes. 
+ * object to avoid the need to connect to a file-based or remote store client. 
+ * <p>
+ * An example use of this class is in testing an agent or class that interacts 
+ * with a StoreClientInterface type object. Passing a MockStoreClient (possibly 
+ * loaded with test data using the {@link uk.ac.cam.cares.jps.base.query.MockStoreClient#load load} 
+ * and {@link uk.ac.cam.cares.jps.base.query.MockStoreClient#addTriple addTriple} methods) 
+ * will permit testing of different interactions with the StoreClientInterface without 
+ * writing files to disk or having to set-up a test remote triple store.
+ * 
  * @author csl37
  *
  */
