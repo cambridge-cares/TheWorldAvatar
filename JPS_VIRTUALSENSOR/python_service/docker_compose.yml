@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  python-service:
+    container_name: python-service
+    image: python-service:1.0.0
+    build:
+      context: ./
+      target: debug
+    ports:
+      - 5000:5000
+      - 5678:5678
