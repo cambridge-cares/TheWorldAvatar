@@ -1,9 +1,9 @@
 package com.cmclinnovations.services;
 
-public class NginxService extends AbstractService implements ReverseProxyService {
+public class NginxService extends ContainerService implements ReverseProxyService {
 
-    public NginxService(ServiceConfig config) {
-        super(config);
+    public NginxService(String stackName, ServiceConfig config) {
+        super(stackName, config);
     }
 
 }

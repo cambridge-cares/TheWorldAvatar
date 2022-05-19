@@ -2,49 +2,46 @@ package com.cmclinnovations.services;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.dockerjava.api.model.HostConfig;
 
 public class ServiceConfig {
 
     private final String name;
-    private final String host;
-    private final Map<String, PortMapping> ports;
-    private final String path;
+    private final Map<String, URL> endpoints;
     private final String username;
     private final String passwordFile;
 
     // Docker specific settings
     private final String image;
-    private final String containerName;
+    private final Map<String, String> environment;
+
+    @JsonProperty("HostConfig")
+    private final HostConfig dockerHostConfig;
 
     public ServiceConfig() {
         name = null;
-        host = null;
-        ports = null;
-        path = null;
+        endpoints = new HashMap<>();
         username = null;
         passwordFile = null;
 
         image = null;
-        containerName = null;
+        environment = new HashMap<>();
+        dockerHostConfig = new HostConfig();
     }
 
     public String getName() {
         return name;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public Map<String, PortMapping> getPorts() {
-        return ports;
-    }
-
-    public String getPath() {
-        return path;
+    public Map<String, URL> getEndpoints() {
+        return endpoints;
     }
 
     public String getUsername() {
@@ -74,8 +71,11 @@ public class ServiceConfig {
         return image;
     }
 
-    public String getContainerName() {
-        return (null != containerName) ? containerName : name;
+    public Map<String, String> getEnvironment() {
+        return environment;
     }
 
+    public HostConfig getDockerHostConfig() {
+        return dockerHostConfig;
+    }
 }

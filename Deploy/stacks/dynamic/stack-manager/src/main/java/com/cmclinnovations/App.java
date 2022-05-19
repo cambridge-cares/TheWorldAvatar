@@ -1,10 +1,10 @@
 package com.cmclinnovations;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import com.cmclinnovations.services.DockerService;
 import com.cmclinnovations.services.NginxService;
-import com.cmclinnovations.services.ReverseProxyService;
 import com.cmclinnovations.services.ServiceManager;
 
 /**
@@ -12,11 +12,13 @@ import com.cmclinnovations.services.ServiceManager;
  *
  */
 public class App {
-    public static void main(String[] args) throws URISyntaxException {
+    public static void main(String[] args) throws URISyntaxException, IOException {
+        String stackName = "stack1";
         ServiceManager manager = new ServiceManager();
         DockerService docker = new DockerService(manager.getServiceConfig("docker"));
-        ReverseProxyService proxy = new NginxService(manager.getServiceConfig("nginx"));
+        NginxService proxy = new NginxService(stackName, manager.getServiceConfig("nginx"));
 
-        Stack stack = new Stack(manager, docker, proxy);
+        Stack<NginxService> stack = new Stack<>(stackName, manager, docker, proxy);
+        stack.hashCode();
     }
 }

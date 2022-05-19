@@ -1,7 +1,13 @@
 {
     "name": "nginx",
     "image": "nginx:1.19.6",
-    "ports": {
-        "main": "8080:80"
+    "HostConfig": {
+        "PortBindings": {
+            "80": [
+                {
+                    "HostPort": "8080"
+                }
+            ]
+        }
     }
 }

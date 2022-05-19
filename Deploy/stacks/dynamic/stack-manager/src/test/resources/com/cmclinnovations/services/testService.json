@@ -1,9 +1,5 @@
 {
     "name": "service1",
-    "host": "machine1",
-    "ports": {
-        "first": "5678:1234"
-    },
     "username": "user",
     "passwordFile": "src/test/resources/com/cmclinnovations/services/testPasswordFile"
 }

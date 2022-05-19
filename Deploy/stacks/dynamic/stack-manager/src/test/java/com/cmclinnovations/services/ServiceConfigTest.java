@@ -32,11 +32,6 @@ public class ServiceConfigTest {
     }
 
     @Test
-    public void testGetHost() {
-        Assert.assertEquals("machine1", serviceConfig.getHost());
-    }
-
-    @Test
     public void testGetPassword() throws IOException {
         Assert.assertEquals("Password123", serviceConfig.getPassword());
     }
@@ -46,13 +41,6 @@ public class ServiceConfigTest {
         Assert.assertEquals(
                 "src/test/resources/com/cmclinnovations/services/testPasswordFile",
                 serviceConfig.getPasswordFile());
-    }
-
-    @Test
-    public void testGetPort() {
-        PortMapping portMapping = serviceConfig.getPorts().get("first");
-        Assert.assertEquals(1234, portMapping.getInternalPort().intValue());
-        Assert.assertEquals(5678, portMapping.getExternalPort().intValue());
     }
 
     @Test
