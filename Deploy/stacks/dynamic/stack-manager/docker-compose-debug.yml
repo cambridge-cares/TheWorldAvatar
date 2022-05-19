@@ -1,0 +1,9 @@
+services:
+  stack-manager:
+    extends:
+      file: docker-compose.yml
+      service: stack-manager
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+    ports:
+      - "5005:5005"

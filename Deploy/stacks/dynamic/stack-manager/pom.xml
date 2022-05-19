@@ -68,6 +68,45 @@
 
   <build>
 
+    <plugins>
+      <plugin>
+        <!-- This plugin edits the manifest file that goes inside the .jar file -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <!-- These properties add the copied dependencies to the classpath so the .jar can find them at runtime. -->
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>.</classpathPrefix>
+              <classpathLayoutType>repository</classpathLayoutType>
+              <mainClass>com.cmclinnovations.App</mainClass>
+              <useUniqueVersions>false</useUniqueVersions>
+            </manifest>
+          </archive>
+          <outputDirectory>${project.build.directory}/lib</outputDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target directory. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-jar-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <useRepositoryLayout>true</useRepositoryLayout>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
     <pluginManagement>
       <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>

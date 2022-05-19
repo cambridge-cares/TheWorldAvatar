@@ -1,0 +1,13 @@
+services:
+  stack-manager:
+    image: docker.cmclinnovations.com/stack-manager:latest
+    build: .
+    container_name: stack-manager
+    volumes:
+      - ./config/data:/data/input
+    secrets:
+      - postgis_password
+
+secrets:
+  postgis_password:
+    file: ./config/secrets/postgis_password.txt
