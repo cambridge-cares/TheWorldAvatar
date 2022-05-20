@@ -9,3 +9,4 @@ setlocal
 cd /d %~dp0
 python merge.py
 python update_database.py
+

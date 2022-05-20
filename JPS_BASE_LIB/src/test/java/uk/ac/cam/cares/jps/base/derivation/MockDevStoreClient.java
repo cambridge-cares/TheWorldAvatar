@@ -13,18 +13,20 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-public class MockDevStoreClient extends RemoteStoreClient{
-	private final OntModel kb;
+public class MockDevStoreClient extends RemoteStoreClient {
+    private final OntModel kb;
     private String query;
 
-    MockDevStoreClient(OntModel kb) { this.kb = kb;}
+    MockDevStoreClient(OntModel kb) {
+        this.kb = kb;
+    }
 
     public OntModel getKnowledgeBase() {
         return kb;
     }
 
     public void closeKnowledgeBase() {
-        if (!(kb==null)) {
+        if (!(kb == null)) {
             kb.close();
         }
     }
