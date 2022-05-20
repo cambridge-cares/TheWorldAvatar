@@ -9,7 +9,7 @@
     "passwordFile": "/run/secrets/postgis_password",
     "HostConfig": {
         "Binds": [
-            "/run/secrets/postgis_password:/run/secrets/postgis_password"
+            "/run/secrets/postgis_password:/run/secrets/postgis_password:ro"
         ],
         "Mounts": [
             {
