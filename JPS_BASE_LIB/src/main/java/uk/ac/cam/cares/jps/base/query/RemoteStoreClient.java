@@ -5,20 +5,25 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
@@ -270,6 +275,27 @@ public class RemoteStoreClient implements StoreClientInterface {
         this.password = password;
     }
 
+    /**
+     * Detects if the provided SPARQL update endpoint is blazegraph backended.
+     * 
+     * @return
+     */
+    public boolean isUpdateEndpointBlazegraphBackended() {
+        if (!Objects.isNull(this.getUpdateEndpoint())) {
+            try {
+                // normalise the URI before checking if it contains the "/blazegraph/namespace/"
+                // so that this works on both Linux and Windows OS
+                if (new URI(this.getUpdateEndpoint().toLowerCase()).normalize().getPath().toString()
+                        .contains("/blazegraph/namespace/")) {
+                    return true;
+                }
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
     ///////////////////////////
     // Sparql query and update
     ///////////////////////////
@@ -325,6 +351,56 @@ public class RemoteStoreClient implements StoreClientInterface {
             return stmt.executeUpdate(query);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Executes the update operation by HTTP POST and returns the HttpResponse
+     * instance. This method was tested for blazegraph and rdf4j triple store. The
+     * entity of response from blazegraph endpoint will be something look like:
+     * 
+     * <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><meta http-equiv="Content-Type" content="text&#47;html;charset=UTF-8"><title>blazegraph&trade; by SYSTAP</title
+     * ></head
+     * ><body<p>totalElapsed=88ms, elapsed=4ms, connFlush=0ms, batchResolve=0, whereClause=0ms, deleteClause=0ms, insertClause=0ms</p
+     * ><hr><p>COMMIT: totalElapsed=157ms, commitTime=1651761749071, mutationCount=1</p
+     * ></html
+     * >
+     * 
+     * So one can parse this string to determine the amount of triples got updated by
+     * regex matching "mutationCount=(.*)</p".
+     * 
+     * However, the rdf4j endpoint will only return HTTP 204 No Content status - there
+     * is no way to know if the SPARQL update actually changed any triples.
+     * 
+     * @param query
+     * @return
+     */
+    public HttpResponse executeUpdateByPost(String query) {
+        HttpEntity entity = new StringEntity(query, ContentType.create("application/sparql-update"));
+
+        // below lines follow the uploadFile(File file, String extension) method
+        HttpPost postRequest = new HttpPost(this.updateEndpoint);
+        if ((this.userName != null) && (this.password != null)) {
+            String auth = this.userName + ":" + this.password;
+            String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes());
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+        }
+        // add contents to the post request
+        postRequest.setEntity(entity);
+
+        LOGGER.info("Executing SPARQL update to " + this.updateEndpoint + ". SPARQL update string: " + query);
+        // then send the post request
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            CloseableHttpResponse response = httpclient.execute(postRequest);
+            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
+                throw new JPSRuntimeException(
+                        "SPARQL update execution by HTTP POST failed. Response status code ="
+                                + response.getStatusLine().getStatusCode());
+            }
+            return response;
+        } catch (IOException ex) {
+            throw new JPSRuntimeException("SPARQL update execution by HTTP POST failed.", ex);
         }
     }
 

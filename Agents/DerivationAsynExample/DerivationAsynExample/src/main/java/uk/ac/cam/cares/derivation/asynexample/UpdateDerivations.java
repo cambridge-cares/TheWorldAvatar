@@ -41,7 +41,7 @@ public class UpdateDerivations extends JPSAgent {
 		String difference = sparqlClient.getDifferenceIRI();
 		String difference_derivation = devClient.getDerivationsOf(Arrays.asList(difference)).get(difference);
 		
-		devClient.updateDerivationAsyn(difference_derivation);
+		devClient.unifiedUpdateDerivation(difference_derivation);
 		
 		String res_msg = "Checked derivation of difference <" + difference_derivation + ">, the update should be done in a few minutes";
 		LOGGER.info(res_msg);
