@@ -35,7 +35,6 @@ Usage:
         --log_sub_dir_prefix=LOGSUBDIRPREF        Log subfolder prefix (default 'job_')
         --log_file_name=LOGBASENAME               Log file base name (default 'py4ml.log')
         --seed=SEED                               Random seed to use (default 1)
-        --z_transform_inverse_prediction=INVPRED  Apply z transformation when making predictions (default False)
 """
 
 def run():
