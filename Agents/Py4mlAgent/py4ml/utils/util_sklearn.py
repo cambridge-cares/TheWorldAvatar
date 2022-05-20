@@ -229,29 +229,39 @@ def calculate_metrics(model, x, y, metric, ml_phase, log_head):
 
 def log_and_plot(model, x_train, y_train, x_test, y_test, dirpath, transformer=None,
                  inverse=False, regression_plot=False, log_head=None):
+
+    def _getMetrics(model, x_, y_, transformer, index_, log_head):
+        test_results, y_pred = calculate_metrics(model, x_, y_, 'all', index_, log_head)
+
+        pred_df = pd.DataFrame(y_, columns=['Measured Y'])
+        pred_df['Predicted Y'] = y_pred
+
+        if transformer.transform_type is not None:
+            pred_df[f"Measured Y untransformed"] = transformer.inverse_transform_y(y_)
+            pred_df[f"Predicted Y untransformed"] = transformer.inverse_transform_y(y_pred)
+
+        pred_df.to_csv(os.path.join(dirpath,f"predictions_{index_.replace(' ', '_')}.csv"))
+        return test_results
+
+
     index_ml = ['training set', 'test set']
     x_ml = [x_train, x_test]
     y_ml = [y_train, y_test]
+
     results_metric = []
     for index_, x_, y_ in zip(index_ml, x_ml, y_ml):
-        test_results, y_pred = calculate_metrics(model, x_, y_, 'all', index_, log_head)
-        results_metric.append(test_results)
+        results_metric.append(
+            _getMetrics(model, x_, y_, transformer, index_, log_head)
+        )
 
-        if not inverse:
-            pred_df = pd.DataFrame(list(standard_score_transform(transformer, np.array(y_))),
-                                   columns=['Measured Y'])
-            pred_df['Predicted Y'] = list(standard_score_transform(transformer, np.array(y_pred)))
-        else:
-            pred_df = pd.DataFrame(y_, columns=['Measured Y'])
-            pred_df['Predicted Y'] = y_pred
-
-        pred_df.to_csv(dirpath + 'predictions_{}.csv'.format(index_.replace(' ', '_')))
     pd.DataFrame(results_metric).to_csv(dirpath + 'best_trial_retrain_model.csv')
 
     if regression_plot:
-        py4ml.visualization.util_sns_plot.prediction_plot(dirpath, dirpath + 'predictions_training_set.csv',
-                                                          dirpath + 'predictions_validation_set.csv',
-                                                          dirpath + 'predictions_test_set.csv')
+        py4ml.visualization.util_sns_plot.prediction_plot(
+            figure_dir= dirpath+'\\',
+            train_pred = os.path.join(dirpath,'predictions_training_set.csv'),
+            val_pred = os.path.join(dirpath,'predictions_validation_set.csv'),
+            test_pred = os.path.join(dirpath,'predictions_test_set.csv'))
 
 def standard_score_transform(transformer, y):
     y_transform = (y - transformer.target_mean) / transformer.target_std
@@ -259,7 +269,12 @@ def standard_score_transform(transformer, y):
 
 def best_model_retraining(trial, model, objParams, metric, x_train, y_train, x_val, y_val,
                                 x_test, y_test, log_head, log_dir, transformer, inverse, regression_plot):
-    model_params = objParams.get('model_params')
+    model_params = {}
+    model_params_in_objParams = objParams.get('model_params')
+    if model_params_in_objParams is not None:
+        model_params.update(model_params_in_objParams)
+    model_params["transformer"] = transformer
+
     dirpath = log_dir + '/trial_' + str(trial.number) + '/'
     Path(dirpath).mkdir(parents=True, exist_ok=True)
 

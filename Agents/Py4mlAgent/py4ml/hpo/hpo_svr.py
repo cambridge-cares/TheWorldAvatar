@@ -1,5 +1,5 @@
 import logging
-import py4ml.models.model_kernel
+import sklearn.svm
 from py4ml.utils.util_config import set_config_param
 from py4ml.hpo.hpo_utils import preproc_training_params, BL_model_train
 from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
@@ -9,6 +9,7 @@ from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
 from py4ml.hpo.objclass import Objective
 from py4ml.utils.util_sklearn import train_model_hpo, best_model_retraining
 import numpy as np
+import pandas as pd
 
 def getObjectiveSVR(
         modelName,
@@ -70,7 +71,7 @@ def model_create(trial, data, objConfig, objParams):
 
     logging.info('model params=%s', model_params)
 
-    model = py4ml.models.model_kernel.SVRWrapper(**model_params)
+    model = sklearn.svm.SVR(**model_params)
 
     return model
 
@@ -110,11 +111,12 @@ def _data_preproc(df, column_x, column_y):
     x = np.array(df[column_x])
     y = np.array(df[column_y])
 
-    y = df[column_y].to_numpy()
-
     return x, y
 
 def modelPredictDataPrepare(trial, model, data, objConfig, objParams):
-    x = np.array(data)
-
-    return x
+    data = np.array(data)
+    model_params = objParams['model_params']
+    transformer = model_params.get('transformer')
+    if transformer:
+        data = transformer.transform_x(pd.DataFrame(data))
+    return data

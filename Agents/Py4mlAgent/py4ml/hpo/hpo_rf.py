@@ -7,6 +7,7 @@ from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
                                 BL_bestTrialRetrainDataPreproc, \
                                 BL_loadModelFromCheckpoint, BL_ModelPredict
 from py4ml.utils.util_config import set_config_param
+import pandas as pd
 import numpy as np
 
 
@@ -70,6 +71,10 @@ def model_create(trial, data, objConfig, objParams):
     return model
 
 def predict_data_preproc(trial, model, data, objConfig, objParams):
+    model_params = objParams['model_params']
+    transformer = model_params.get('transformer')
+    if transformer:
+        data = transformer.transform_x(pd.DataFrame(data))
     return data
 
 def data_preproc(trial, data, objConfig, objParams):

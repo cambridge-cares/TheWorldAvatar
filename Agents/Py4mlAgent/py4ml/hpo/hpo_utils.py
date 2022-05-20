@@ -240,8 +240,23 @@ def NN_logTransferLearning(trial, model, data, objConfig, objParams):
     return None
 
 def _logAndPlotResults(trial, model, data, objConfig, objParams, fileName):
+    def _getMetrics(dataset_dl, data_type, model, transformer):
+        test_result = trainer.test(model, test_dataloaders=dataset_dl)[0]
+        test_result['phase'] = f"{data_type}"
+
+        predictions = list(model.test_predictions)
+        pred_df = pd.DataFrame(predictions[0], columns=[f"Measured Y"])
+        pred_df[f"Predicted Y"] = predictions[1]
+
+        if transformer.transform_type is not None:
+            pred_df[f"Measured Y untransformed"] = transformer.inverse_transform_y(predictions[0])
+            pred_df[f"Predicted Y untransformed"] = transformer.inverse_transform_y(predictions[1])
+
+
+        pred_df.to_csv(os.path.join(dirpath,f"predictions_{index_.replace(' ', '_')}.csv"))
+        return test_result
+
     transformer = data['transformer']
-    inverse = objConfig['config']['post_processing']['z_transform_inverse_prediction']
     regression_plot = objConfig['config']['post_processing']['regression_plot']
     log_dir = objConfig['log_dir']
     data = objParams['data_preproc']
@@ -258,28 +273,21 @@ def _logAndPlotResults(trial, model, data, objConfig, objParams, fileName):
     objParams['best_trial_retrain_dirpath'] = dirpath
     index_dl = ['training set', 'validation set', 'test set']
 
-    dataset_dl = [train_dl, val_dl, test_dl]
+    dataset_dl_list = [train_dl, val_dl, test_dl]
     results_metric = []
-    for index_, dataset_ in zip(index_dl, dataset_dl):
-        test_result = trainer.test(model, test_dataloaders=dataset_)[0]
-        test_result['phase'] = index_
-        results_metric.append(test_result)
-
-        predictions = list(model.test_predictions)
-        if not inverse:
-            pred_df = pd.DataFrame(list(standard_score_transform(transformer, np.array(predictions[0]))), columns=['Measured Y'])
-            pred_df['Predicted Y'] = list(standard_score_transform(transformer, np.array(predictions[1])))
-        else:
-            pred_df = pd.DataFrame(predictions[0], columns=['Measured Y'])
-            pred_df['Predicted Y'] = predictions[1]
-        pred_df.to_csv(os.path.join(dirpath,'predictions_{}.csv'.format(index_.replace(' ', '_'))))
+    for index_, dataset_dl in zip(index_dl, dataset_dl_list):
+        results_metric.append(
+            _getMetrics(dataset_dl, data_type=index_, model=model, transformer = transformer)
+        )
 
     pd.DataFrame(results_metric).to_csv(os.path.join(dirpath,fileName+'.csv'))
 
     if regression_plot:
-        prediction_plot(dirpath+'\\', os.path.join(dirpath,'predictions_training_set.csv'),
-                                 os.path.join(dirpath,'predictions_validation_set.csv'),
-                                 os.path.join(dirpath,'predictions_test_set.csv'))
+        prediction_plot(
+            figure_dir= dirpath+'\\',
+            train_pred = os.path.join(dirpath,'predictions_training_set.csv'),
+            val_pred = os.path.join(dirpath,'predictions_validation_set.csv'),
+            test_pred =  os.path.join(dirpath,'predictions_test_set.csv'))
 
 def NN_addBestModelRetrainCallback(trial, model, data, objConfig, objParams):
     metric = objParams['training']['metric']
@@ -328,7 +336,7 @@ def NN_ModelPredict(trial, model, data, objConfig, objParams):
     data = objParams['predictDataPreproc']
     model.freeze()
     transformer = model.transformer
-    inverse = objConfig['config']['post_processing']['z_transform_inverse_prediction']
+
     splitBatchesFlag = 'splitBatchesFlag' in objParams
     obj_values = []
     for batch in data:
@@ -336,7 +344,6 @@ def NN_ModelPredict(trial, model, data, objConfig, objParams):
             obj_value = model(*batch).numpy()[0][0]
         else:
             obj_value = model(batch).numpy()[0]
-        if inverse:
             obj_value= transformer.inverse_transform_y(obj_value)
         obj_values.append(obj_value)
     _logModelPredict(trial, model, data, objConfig, objParams, obj_values)
@@ -345,6 +352,10 @@ def NN_ModelPredict(trial, model, data, objConfig, objParams):
 def BL_ModelPredict(trial, model, data, objConfig, objParams):
     data = objParams['predictDataPreproc']
     obj_values = model.predict(data)
+    model_params = objParams['model_params']
+    transformer = model_params.get('transformer')
+    if transformer:
+        obj_values = transformer.inverse_transform_y(obj_values)
     _logModelPredict(trial, model, data, objConfig, objParams, obj_values)
 
     return obj_values.tolist()
