@@ -27,7 +27,7 @@ class AgentQueryInterface:
         self.agent_caller = AgentCaller()
 
     # @MarieIOLog
-    def agent_query(self, question, mode='NLP_DEBUG'):
+    def agent_query(self, question, mode='PRODUCTION'):
         rst = self.parse_question(question)
         if mode == 'NLP_DEBUG':
             with open('NLP results', 'a') as f:

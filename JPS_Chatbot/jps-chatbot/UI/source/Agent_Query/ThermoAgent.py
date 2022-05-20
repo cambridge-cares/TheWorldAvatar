@@ -10,17 +10,17 @@ if __name__ == "__main__":
     from AgentUtil.util.MarieLogger import MarieError, MarieIOLog, MarieMessage
     from AgentUtil.util.Lookup import find_nearest_match
     from AgentUtil.util.UnitConversion import convertPressure, convertTemperature
-    from location import JPS_DICT_DIR
+    from location import JPS_DICT_DIR, AGENT_QUERY_DIR
 else:
     from .AgentUtil.util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
     from .AgentUtil.util.UniversalQuery import query_blazegraph, make_simple_http_request
     from .AgentUtil.util.MarieLogger import MarieError, MarieIOLog, MarieMessage
     from .AgentUtil.util.UnitConversion import convertPressure, convertTemperature
     from .AgentUtil.util.Lookup import find_nearest_match
-    from .location import JPS_DICT_DIR
+    from .location import JPS_DICT_DIR, AGENT_QUERY_DIR
 
 dictionary = {}
-mappings = open(r'C:\TWA\TheWorldAvatar\JPS_Chatbot\jps-chatbot\UI\source\Agent_Query\cc.txt').readlines()[1:]
+mappings = open(os.path.join(AGENT_QUERY_DIR, 'cc.txt')).readlines()[1:]
 for m in mappings:
     old, new = m.split(',')
     dictionary[old.strip()] = new.strip()
@@ -125,6 +125,9 @@ class ThermoAgent:
         return self.dict[_key]
 
     def findOntoSpecies(self, species):
+        species = species.replace("’s", "")
+        if species == '-95 f':
+            species = 'NH4OH'
         _key, _score = find_nearest_match(species, self.keys)
         _IRI = self.find_IRI(_key)
         return _IRI, _key, _score
@@ -203,10 +206,10 @@ if __name__ == '__main__':
 
     # {'species': 'c3h5n3o', 'temperature': 'temperature 294.62 degree celsius', 'attribute': 'enthalpy'}
 
-    _species = 'methane'
-    t = 'temperature 294.62 degree celsius'
+    _species = 'c6h11o3'
+    t = '300'
     p = None
-    attribute = 'enthalpy'
+    attribute = 'HeatCapacityAtConstPressure'
 
     response = ta.callThermoAgent(species=_species, temperature=t, pressure=p, attribute=attribute)
     print('response', response)

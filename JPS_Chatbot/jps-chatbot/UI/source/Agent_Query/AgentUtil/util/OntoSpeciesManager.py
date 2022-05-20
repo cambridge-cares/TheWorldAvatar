@@ -3,7 +3,7 @@ import os
 
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .SPARQLWarehouse import ONTOSPECIES_GET_SMILES
-from .location import JPS_MODELS_DIR, JPS_QUERY_DIR
+from .location import JPS_MODELS_DIR, JPS_QUERY_DIR, AGENT_QUERY_DIR
 from .Lookup import find_nearest_match
 
 
@@ -18,7 +18,7 @@ class OntoSpecies:
             f.write('')
             f.close()
         self.dictionary = {}
-        mappings = open(r'C:\TWA\TheWorldAvatar\JPS_Chatbot\jps-chatbot\UI\source\Agent_Query\cc.txt').readlines()[1:]
+        mappings = open(os.path.join(AGENT_QUERY_DIR, 'cc.txt')).readlines()[1:]
         for m in mappings:
             old, new = m.split(',')
             self.dictionary[old.strip()] = new.strip()
