@@ -1,3 +1,4 @@
+from matplotlib.transforms import Transform
 import torch.nn
 import py4ml.utils.util_pytorch as pytorch_utils
 import torch
@@ -26,18 +27,11 @@ class DatasetForMLP(torch.utils.data.Dataset):
         #
         # index - row index in the dataframe
         x = self.df.iloc[index, [self.df.columns.get_loc(c) for c in self.column_x]]
-        if self.transformer is not None:
-            x = self.transformer.transform_x(x)
+        y = self.df.iloc[index, [self.df.columns.get_loc(self.column_y)]]
 
         # gpu / cpu training
         device = py4ml.utils.params.cfg[py4ml.utils.params.PYTORCH_DEVICE]
         xtensor = torch.as_tensor(x, dtype = torch.float32, device = device) # type: ignore
-
-        # get the (transformed) pce
-        y = self.df.iloc[index, [self.df.columns.get_loc(self.column_y)]]
-        if self.transformer is not None:
-            y = self.transformer.transform_y(y)
-
         ytensor = torch.as_tensor(np.array(y, dtype=np.float32), device = device) # type: ignore
 
         return [xtensor, ytensor]
