@@ -500,6 +500,10 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
     
     #Re-export to csv, with times and outputs. 
     data.to_csv(csvName, index = False)
+
+    #Save to another place. #####
+    newName = "DataStorage/" + str(Year) + "-" + str(Month) + "-" + str(Day) + ".csv"
+    data.to_csv(newName, index = False)
     return 1
 
 
