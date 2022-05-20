@@ -1,6 +1,6 @@
 {
     "goals": {
-        "hpo": true,
+        "hpo": false,
         "contour_plot": false,
         "best_trial_retraining": true,
         "transfer_learning": false,
@@ -11,9 +11,15 @@
         "cudnn_deterministic": true,
         "cudnn_benchmark": false
     },
+    "logging_settings": {
+        "log_main_dir": "./logs/mlp",
+        "log_sub_dir_prefix": "mlp_train_aq",
+        "log_file_name": "test.log",
+        "use_date_time": false
+    },
     "dataset": {
         "src": "./data/processed/qsar_aquatic_toxicity.csv",
-        "normalize": true,
+        "transform_type": "z-transform",
         "x_column": [
             "TPSA(Tot)",
             "SAacc",
@@ -71,22 +77,21 @@
             }
         },
         "batch_size": 20,
-        "epochs": 10,
+        "epochs": 2,
         "patience": 20,
         "min_delta": 0.0,
         "metric": "val_loss",
         "direction": "minimize",
         "cross_validation": 0,
-        "trials": 10,
+        "trials": 1,
         "study_name": "mlp_aq_tox",
-        "storage": "sqlite:///mlp_aq_tox.db",
+        "storage": "sqlite:///logs/mlp/mlp_aq_tox.db",
         "storage_timeout": 1000,
         "load_if_exists": true,
         "jobs": 1
     },
     "post_processing": {
         "contour_plot_alt_dir": null,
-        "z_transform_inverse_prediction": true,
         "regression_plot": true,
         "transfer": false
     }

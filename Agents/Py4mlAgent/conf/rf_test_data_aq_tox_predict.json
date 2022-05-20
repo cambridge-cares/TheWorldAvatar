@@ -1,39 +1,18 @@
 {
     "goals": {
-        "hpo": false,
-        "contour_plot": false,
-        "best_trial_retraining": false,
-        "transfer_learning": false,
         "predict": true
-    },
-    "numerical_settings": {
-        "seed": 1,
-        "cudnn_deterministic": true,
-        "cudnn_benchmark": false
     },
     "model": {
         "name": "RF"
     },
-    "training": {
-        "metric": "mse",
-        "cross_validation": false,
-        "nested_cross_validation": false,
-        "direction": "minimize",
-        "trials": 100,
-        "study_name": "rf_test_aq_tox",
-        "storage": "sqlite:///rf_test_aq_tox.db",
-        "storage_timeout": 1000,
-        "load_if_exists": true,
-        "jobs": 1
-    },
-    "post_processing": {
-        "contour_plot_alt_dir": null,
-        "z_transform_inverse_prediction": true,
-        "regression_plot": false,
-        "transfer": false
+    "logging_settings": {
+        "log_main_dir": "./logs/rf",
+        "log_sub_dir_prefix": "rf_predict_aq",
+        "log_file_name": "test.log",
+        "use_date_time": false
     },
     "predict_settings": {
-        "ckpt_path": "./logs/job_20220518_125314/best_trial_retrain/trial_*/best_trial_retrain_model*.ckpt",
+        "ckpt_path": "./logs/rf/rf_train_aq/best_trial_retrain/trial_*/best_trial_retrain_model*.ckpt",
         "predict_input": [
             [
                 72.68,

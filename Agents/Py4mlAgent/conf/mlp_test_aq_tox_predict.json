@@ -1,16 +1,18 @@
 {
     "goals": {
-        "hpo": false,
-        "contour_plot": false,
-        "best_trial_retraining": false,
-        "transfer_learning": false,
         "predict": true
     },
     "model": {
         "name": "MLP"
     },
+    "logging_settings": {
+        "log_main_dir": "./logs/mlp",
+        "log_sub_dir_prefix": "mlp_predict_aq",
+        "log_file_name": "test.log",
+        "use_date_time": false
+    },
     "predict_settings": {
-        "ckpt_path": "./logs/job_20220518_120226/best_trial_retrain/trial_*/best_trial_retrain_model*.ckpt",
+        "ckpt_path": "./logs/mlp/mlp_train_aq/best_trial_retrain/trial_*/best_trial_retrain_model*.ckpt",
         "predict_input": [
             [
                 72.68,

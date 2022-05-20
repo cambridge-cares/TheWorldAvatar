@@ -11,9 +11,15 @@
         "cudnn_deterministic": true,
         "cudnn_benchmark": false
     },
+    "logging_settings": {
+        "log_main_dir": "./logs/svr",
+        "log_sub_dir_prefix": "svr_train_aq",
+        "log_file_name": "test.log",
+        "use_date_time": false
+    },
     "dataset": {
         "src": "./data/processed/qsar_aquatic_toxicity.csv",
-        "z-stand": "True",
+        "transform_type": "z-transform",
         "x_column": [
             "TPSA(Tot)",
             "SAacc",
@@ -37,11 +43,6 @@
         "name": "SVR",
         "model_specific": {
             "kernel": "rbf",
-            "gamma_structural": {
-                "type": "loguniform",
-                "low": 0.001,
-                "high": 20.0
-            },
             "C": {
                 "type": "loguniform",
                 "low": 0.1,
@@ -49,8 +50,8 @@
             },
             "epsilon": {
                 "type": "loguniform",
-                "low": 0.0001,
-                "high": 1.0
+                "low": 0.001,
+                "high": 10.0
             }
         }
     },
@@ -58,9 +59,9 @@
         "metric": "mse",
         "cross_validation": false,
         "direction": "minimize",
-        "trials": 100,
+        "trials": 1,
         "study_name": "svr_test_aq_tox",
-        "storage": "sqlite:///svr_test_aq_tox.db",
+        "storage": "sqlite:///logs/svr/svr_test_aq_tox.db",
         "storage_timeout": 1000,
         "load_if_exists": true,
         "jobs": 1
