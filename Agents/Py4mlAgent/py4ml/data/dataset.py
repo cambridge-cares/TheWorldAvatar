@@ -5,53 +5,53 @@ import sklearn.model_selection
 
 
 class DataTransformer():
-    def __init__(self, df, transform_y_cols, transform_x_cols):
+    def __init__(self, df, transform_y_cols, transform_x_cols, transform_type = None):
         self.transform_y_cols = transform_y_cols
         self.transform_x_cols = transform_x_cols
         self.mean_x = None
         self.std_x = None
-        if transform_x_cols is not None:
+        self.transform_type = transform_type
+
+        if self.transform_type == 'z-transform':
             self.mean_x = list(df[transform_x_cols].mean())
             self.std_x = list(df[transform_x_cols].std(ddof=0))
             logging.info('calculated features mean_x=%s, std_x=%s', self.mean_x, self.std_x)
 
-        self.mean_y = None
-        self.std_y = None
-        if transform_y_cols is not None:
             self.mean_y = [df[transform_y_cols].mean()]
             self.std_y = [df[transform_y_cols].std(ddof=0)]
             logging.info('calculated target mean_y=%s, std_y=%s', self.mean_y, self.std_y)
 
     def transform_x(self, data):
-        if self.transform_x_cols:
+        if self.transform_type == 'z-transform':
             return (data - self.mean_x) / self.std_x
         else:
             return data
 
     def transform_y(self, data):
-        if self.transform_y_cols:
+        if self.transform_type == 'z-transform':
             return (data - self.mean_y) / self.std_y
         else:
             return data
 
     def inverse_transform_x(self, data):
-        if self.transform_x_cols:
+        if self.transform_type == 'z-transform':
             return data * self.std_x + self.mean_x
         else:
             return data
 
     def inverse_transform_y(self, data):
-        if self.transform_y_cols:
+        if self.transform_type == 'z-transform':
             return data * self.std_y + self.mean_y
         else:
             return data
 
 
-def create_transformer(df, transform_y_cols = None, transform_x_cols = None):
+def create_transformer(df, transform_y_cols = None, transform_x_cols = None, transform_type = None):
     return DataTransformer(
         df = df,
         transform_x_cols=transform_x_cols,
-        transform_y_cols=transform_y_cols
+        transform_y_cols=transform_y_cols,
+        transform_type = transform_type
     )
 
 
@@ -63,7 +63,6 @@ def store(df, filepath):
 def read_and_split_by_size(filepath, split_size_array, seed):
     logging.info('reading %s', filepath)
     df = pd.read_csv(filepath)
-    #df=(df-df.mean())/df.std()
 
     train_size, val_size, test_size = split_size_array
     if not train_size:
@@ -85,7 +84,7 @@ def read_and_split_by_size(filepath, split_size_array, seed):
 def read_and_split(filepath, split_column='ml_phase'):
     logging.info('reading %s', filepath)
     df = pd.read_csv(filepath)
-    #df=(df-df.mean())/df.std()
+
     df_train = df[(df[split_column] == 'train')].copy()
     df_val = df[(df[split_column] == 'val')].copy()
     df_test = df[(df[split_column] == 'test')].copy()
@@ -97,6 +96,7 @@ def get_dataframes(dataset, seed=200, cvFold=None, nestedCvFolds=None):
     src = dataset['src']
     x_column = dataset['x_column']
     y_column = dataset['y_column'][0]
+    transform_type = dataset.get('transform_type')
 
     if cvFold is not None:
         split = dataset['split'] + '_fold_'+str(cvFold)
@@ -110,7 +110,18 @@ def get_dataframes(dataset, seed=200, cvFold=None, nestedCvFolds=None):
         # split is an array specifying the number of samples for train, val and test set
         df_train, df_val, df_test = read_and_split_by_size(src, split_size_array=split, seed=seed)
 
-    transformer = create_transformer(df_train, transform_y_cols=y_column, transform_x_cols=x_column)
+    transformer = create_transformer(df_train, transform_y_cols=y_column, transform_x_cols=x_column, transform_type= transform_type)
+
+    # now transform all data
+    df_train[x_column] = transformer.transform_x(df_train[x_column])
+    df_train[y_column] = transformer.transform_y(df_train[y_column])
+
+    df_val[x_column] = transformer.transform_x(df_val[x_column])
+    df_val[y_column] = transformer.transform_y(df_val[y_column])
+
+    df_test[x_column] = transformer.transform_x(df_test[x_column])
+    df_test[y_column] = transformer.transform_y(df_test[y_column])
+
     return (df_train, df_val, df_test, transformer)
 
 
