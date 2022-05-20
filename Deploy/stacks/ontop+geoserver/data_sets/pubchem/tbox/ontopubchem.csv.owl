@@ -9,37 +9,11 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">18 May 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">20 May 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoSpecies is an ontology developed for representing chemical species.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
     </owl:Ontology>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Object Properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-    
-
-
-    <!-- http://semanticscience.org/resource/has-attribute -->
-
-
-    <owl:ObjectProperty rdf:about="http://semanticscience.org/resource/has-attribute"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/is-attribute-of -->
-
-
-    <owl:ObjectProperty rdf:about="http://semanticscience.org/resource/is-attribute-of"/>
     
 
 
@@ -55,37 +29,221 @@
     
 
 
-    <!-- http://semanticscience.org/resource/has-value -->
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Canonical_SMILES -->
 
 
-    <owl:DatatypeProperty rdf:about="http://semanticscience.org/resource/has-value">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000140"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000334"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000335"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000336"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000338"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000369"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000370"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000371"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000372"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000373"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000374"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000375"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000376"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000382"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000387"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000388"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000389"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000390"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000392"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000395"/>
-                    <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000396"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Canonical_SMILES">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Compound_Identifier -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Compound_Identifier">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Covalent_Unit_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Covalent_Unit_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Defined_Atom_Stereo_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Defined_Atom_Stereo_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Defined_Bond_Stereo_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Defined_Bond_Stereo_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Exact_Mass -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Exact_Mass">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Heavy_Atom_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Heavy_Atom_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Hydrogen_Bond_Acceptor_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Hydrogen_Bond_Acceptor_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Hydrogen_Bond_Donor_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Hydrogen_Bond_Donor_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_IUPAC_InChI -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_IUPAC_InChI">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_InChI_Key -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_InChI_Key">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Isotope_Atom_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Isotope_Atom_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Molecular_Formula -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Molecular_Formula">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Molecular_Weight -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Molecular_Weight">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Preferred_IUPAC_Name -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Preferred_IUPAC_Name">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Rotatable_Bond_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Rotatable_Bond_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Structure_Complexity -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Structure_Complexity">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_TPSA -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_TPSA">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Total_Formal_Charge -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Total_Formal_Charge">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Undefined_Atom_Stereo_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Undefined_Atom_Stereo_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Undefined_Bond_Stereo_Count -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_Undefined_Bond_Stereo_Count">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_XLogP3-AA -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#has_XLogP3-AA">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound"/>
         <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     </owl:DatatypeProperty>
     
@@ -103,203 +261,11 @@
     
 
 
-    <!-- http://semanticscience.org/resource/CHEMINF000399 -->
+    <!-- http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound -->
 
 
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF000399">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://semanticscience.org/resource/is-attribute-of"/>
-                <owl:allValuesFrom rdf:resource="http://semanticscience.org/resource/SIO_010004"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000140 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000140"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000334 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000334"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000335 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000335"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000336 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000336"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000338 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000338"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000369 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000369"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000370 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000370"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000371 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000371"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000372 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000372"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000373 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000373"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000374 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000374"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000375 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000375"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000376 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000376"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000382 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000382"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000387 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000387"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000388 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000388"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000389 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000389"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000390 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000390"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000392 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000392"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000395 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000395"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/CHEMINF_000396 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/CHEMINF_000396"/>
-    
-
-
-    <!-- http://semanticscience.org/resource/SIO_010004 -->
-
-
-    <owl:Class rdf:about="http://semanticscience.org/resource/SIO_010004">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://semanticscience.org/resource/has-attribute"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000140"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000334"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000335"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000336"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000338"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000369"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000370"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000371"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000372"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000373"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000374"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000375"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000376"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000382"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000387"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000388"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000389"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000390"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000392"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000395"/>
-                            <rdf:Description rdf:about="http://semanticscience.org/resource/CHEMINF_000396"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#Compound">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This represents a chemical compound</rdfs:comment>
     </owl:Class>
 </rdf:RDF>
 
