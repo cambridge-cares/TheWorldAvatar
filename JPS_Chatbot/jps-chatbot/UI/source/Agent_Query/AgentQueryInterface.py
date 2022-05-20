@@ -30,12 +30,12 @@ class AgentQueryInterface:
     def agent_query(self, question, mode='PRODUCTION'):
         rst = self.parse_question(question)
         if mode == 'NLP_DEBUG':
-            with open('NLP results', 'a') as f:
-                f.write('===========================')
-                f.write('\n')
-                f.write(question + '\n')
-                f.write(json.dumps(rst, indent=4) + '\n')
-                f.close()
+            # with open('NLP results', 'a') as f:
+            #     f.write('===========================')
+            #     f.write('\n')
+            #     f.write(question + '\n')
+            #     f.write(json.dumps(rst, indent=4) + '\n')
+            #     f.close()
 
             return rst
         elif mode == 'PRODUCTION':

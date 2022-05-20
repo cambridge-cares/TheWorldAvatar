@@ -33,8 +33,8 @@ public class IriMapper {
 		int size=list.size();
 		String resultiri=null;
 		for (int r=0;r<size;r++) {
-			if(id.contentEquals(list.get(size).id)&&type.contentEquals(list.get(size).type)) {
-				resultiri=list.get(size).iri;
+			if(id.contentEquals(list.get(r).id)&&type.contentEquals(list.get(r).type)) {
+				resultiri=list.get(r).iri;
 			}
 		}
 		

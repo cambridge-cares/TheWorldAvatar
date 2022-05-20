@@ -1,0 +1,6 @@
+predicted Pce,actual Pce,smiles_string
+5.721129629629627,5.57,Cc1nc2c3ccsc3c3sc(-c4ccc(-c5cnc(C6=S=CC=C6)c6nsnc65)s4)cc3c2nc1C
+3.346824074074077,3.1,COc1c(OC)c(-c2ccc(-c3ccc4c(c3)C(C)(C)c3ccccc3-4)s2)c2nsnc2c1-c1cccs1
+4.426888888888896,4.0,Cc1cc(C=C2C(=O)c3ccccc3C2=O)sc1-c1cc(C)c(-c2ccc(-c3sc(C4=S=C(C=C5C(=O)c6ccccc6C5=O)C=C4C)cc3C)s2)s1
+0.3989861111111109,0.14,COc1ccc(C#Cc2ccc(C#Cc3ccc(-c4ccc(-c5ccc(C#Cc6ccc(C#Cc7ccc(OC)c(OC)c7)cc6)s5)c5nsnc54)s3)cc2)cc1OC
+6.31462500000001,6.7,Cc1ccc(-c2ccc(-c3cnc(-c4cc5c(s4)-c4sc(-c6ncc(-c7ccc(-c8ccc(C)s8)s7)c7nsnc76)cc4[Si]5(C)C)c4nsnc43)s2)s1

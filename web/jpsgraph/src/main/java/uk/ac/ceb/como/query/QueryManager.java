@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -19,6 +20,7 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
 import uk.ac.ceb.como.properties.PropertiesManager;
 import uk.ac.ceb.como.properties.Request;
+import uk.ac.ceb.como.query.QueryString;
 
 /**
  * 
@@ -35,7 +37,7 @@ public class QueryManager {
 
 	private static String fusakiUrl = kbProperties.getProperty("fusaki.url.for.world.avatar");
 
-	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
+	final static Logger logger = LogManager.getLogger();
 
 	/**
 	 * 

@@ -13,7 +13,7 @@ $('document').ready(function(){
 });
 function askQuestion(){
     let question = $('#input-field').val();
-    let candidate_answers = [a2];
+    let candidate_answers = [a1];
     candidate_answers.forEach(e => process_matrix_data(e));
     return a1;
 }

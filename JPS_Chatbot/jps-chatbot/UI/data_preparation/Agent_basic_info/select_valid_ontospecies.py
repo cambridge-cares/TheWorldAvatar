@@ -1,5 +1,5 @@
 import json
-dictionary = json.loads(open('../files/ONTOSPECIES_URI_DICT').read())
+dictionary = json.loads(open('../../source/Agent_Query/JPS_DICTS/ONTOSPECIES_URI_DICT').read())
 keys = dictionary.keys()
 uris = open('../files/VALID_ONTOSPECIES_URI').readlines()
 

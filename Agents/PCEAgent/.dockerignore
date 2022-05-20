@@ -1,0 +1,6 @@
+tests
+logs
+conf
+data
+*.egg-info
+*.vscode

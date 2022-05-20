@@ -1,0 +1,703 @@
+###################################################################################################
+# 
+#   There are 112 matches between the tuples.  The Zagat tuple is listed first, 
+#   and then its Fodors pair.
+#
+###################################################################################################
+
+
+Arnie Morton's of Chicago 435 S. La Cienega Blvd. Los Angeles 310-246-1501 Steakhouses
+
+
+Arnie Morton's of Chicago 435 S. La Cienega Blvd. Los Angeles 310/246-1501
+ American
+########################
+
+Art's Deli 12224 Ventura Blvd. Studio City 818-762-1221 Delis
+
+
+Art's Delicatessen 12224 Ventura Blvd. Studio City 818/762-1221 American
+########################
+
+Bel-Air Hotel 701 Stone Canyon Rd. Bel Air 310-472-1211 Californian
+
+
+Hotel Bel-Air 701 Stone Canyon Rd. Bel Air 310/472-1211 Californian
+########################
+
+Cafe Bizou 14016 Ventura Blvd. Sherman Oaks 818-788-3536 French Bistro
+
+
+Cafe Bizou 14016 Ventura Blvd. Sherman Oaks 818/788-3536 French
+########################
+
+Campanile 624 S. La Brea Ave. Los Angeles 213-938-1447 Californian
+
+
+Campanile 624 S. La Brea Ave. Los Angeles 213/938-1447 American
+########################
+
+Chinois on Main 2709 Main St. Santa Monica 310-392-9025 Pacific New Wave
+
+
+Chinois on Main 2709 Main St. Santa Monica 310/392-9025 French
+########################
+
+Citrus 6703 Melrose Ave. Los Angeles 213-857-0034 Californian
+
+
+Citrus 6703 Melrose Ave. Los Angeles 213/857-0034 Californian
+########################
+
+Fenix at the Argyle 8358 Sunset Blvd. W. Hollywood 213-848-6677 French (New)
+
+
+Fenix 8358 Sunset Blvd. West Hollywood 213/848-6677 American
+########################
+
+Granita 23725 W. Malibu Rd. Malibu 310-456-0488 Californian
+
+
+Granita 23725 W. Malibu Rd. Malibu 310/456-0488 Californian
+########################
+
+Grill  The 9560 Dayton Way Beverly Hills 310-276-0615 American (Traditional)
+
+
+Grill on the Alley 9560 Dayton Way Los Angeles 310/276-0615 American
+########################
+
+Katsu 1972 Hillhurst Ave. Los Feliz 213-665-1891 Japanese
+
+
+Restaurant Katsu 1972 N. Hillhurst Ave. Los Angeles 213/665-1891 Asian
+########################
+
+L'Orangerie 903 N. La Cienega Blvd. W. Hollywood 310-652-9770 French (Classic)
+
+
+L'Orangerie 903 N. La Cienega Blvd. Los Angeles 310/652-9770 French
+########################
+
+Le Chardonnay (Los Angeles) 8284 Melrose Ave. Los Angeles 213-655-8880 French Bistro
+
+
+Le Chardonnay 8284 Melrose Ave. Los Angeles 213/655-8880 French
+########################
+
+Locanda Veneta 8638 W. Third St. Los Angeles 310-274-1893 Italian
+
+
+Locanda Veneta 3rd St. Los Angeles 310/274-1893 Italian
+########################
+
+Matsuhisa 129 N. La Cienega Blvd. Beverly Hills 310-659-9639 Seafood
+
+
+Matsuhisa 129 N. La Cienega Blvd. Beverly Hills 310/659-9639 Asian
+########################
+
+Palm  The (Los Angeles) 9001 Santa Monica Blvd. W. Hollywood 310-550-8811 Steakhouses
+
+
+The Palm 9001 Santa Monica Blvd. Los Angeles 310/550-8811 American
+########################
+
+Patina 5955 Melrose Ave. Los Angeles 213-467-1108 Californian
+
+
+Patina 5955 Melrose Ave. Los Angeles 213/467-1108 Californian
+########################
+
+Philippe The Original 1001 N. Alameda St. Chinatown 213-628-3781 Cafeterias
+
+
+Philippe's The Original 1001 N. Alameda St. Los Angeles 213/628-3781 American
+########################
+
+Pinot Bistro 12969 Ventura Blvd. Studio City 818-990-0500 French Bistro
+
+
+Pinot Bistro 12969 Ventura Blvd. Los Angeles 818/990-0500 French
+########################
+
+Rex Il Ristorante 617 S. Olive St. Los Angeles 213-627-2300 Nuova Cucina Italian
+
+
+Rex Il Ristorante 617 S. Olive St. Los Angeles 213/627-2300 Italian
+########################
+
+Spago (Los Angeles) 8795 Sunset Blvd. W. Hollywood 310-652-4025 Californian
+
+
+Spago 1114 Horn Ave. Los Angeles 310/652-4025 Californian
+########################
+
+Valentino 3115 Pico Blvd. Santa Monica 310-829-4313 Italian
+
+
+Valentino 3115 Pico Blvd. Santa Monica 310/829-4313 Italian
+########################
+
+Yujean Kang's 67 N. Raymond Ave. Pasadena 818-585-0855 Chinese
+
+
+Yujean Kang's Gourmet Chinese Cuisine 67 N. Raymond Ave. Los Angeles
+ 818/585-0855 Asian
+########################
+
+21 Club 21 W. 52nd St. New York City 212-582-7200 American (New)
+
+
+21 Club 21 W. 52nd St. New York 212/582-7200 American
+########################
+
+Aquavit 13 W. 54th St. New York City 212-307-7311 Scandinavian
+
+
+Aquavit 13 W. 54th St. New York 212/307-7311 Continental
+########################
+
+Aureole 34 E. 61st St. New York City 212-319-1660 American (New)
+
+
+Aureole 34 E. 61st St. New York 212/ 319-1660 American
+########################
+
+BCafe Lalo 201 W. 83rd St. New York City 212-496-6031 Coffeehouses
+
+
+Caf&eacute; Lalo 201 W. 83rd St. New York 212/496-6031 Coffee Bar
+########################
+
+Cafe des Artistes 1 W. 67th St. New York City 212-877-3500 French (Classic)
+
+
+Caf&eacute; des Artistes 1 W. 67th St. New York 212/877-3500 Continental
+########################
+
+Carmine's 2450 Broadway New York City 212-362-2200 Italian
+
+
+Carmine's 2450 Broadway  between 90th and 91st Sts. New York 212/362-2200
+ Italian
+########################
+
+Carnegie Deli 854 Seventh Ave. New York City 212-757-2245 Delis
+
+
+Carnegie Deli 854 7th Ave.  between 54th and 55th Sts. New York 212/757-2245
+ Delicatessen
+########################
+
+Chanterelle 2 Harrison St. New York City 212-966-6960 French (New)
+
+
+Chanterelle 2 Harrison St.  near Hudson St. New York 212/966-6960 American
+########################
+
+CDaniel 20 E. 76th St. New York City 212-288-0033 French (New)
+
+
+Daniel 20 E. 76th St. New York 212/288-0033 French
+Dawat 210 E. 58th St. New York City 212-355-7555 Indian
+
+
+Dawat 210 E. 58th St. New York 212/355-7555 Asian
+########################
+
+Felidia 243 E. 58th St. New York City 212-758-1479 Italian
+
+
+Felidia 243 E. 58th St. New York 212/758-1479 Italian
+########################
+
+Four Seasons 99 E. 52nd St. New York City 212-754-9494 American (New)
+
+
+Four Seasons Grill Room 99 E. 52nd St. New York 212/754-9494 American
+########################
+
+Gotham Bar & Grill 12 E. 12th St. New York City 212-620-4020 American (New)
+
+
+Gotham Bar & Grill 12 E. 12th St. New York 212/620-4020 American
+########################
+
+Gramercy Tavern 42 E. 20th St. New York City 212-477-0777 American (New)
+
+
+Gramercy Tavern 42 E. 20th St.  between Park Ave. S and Broadway New York
+ 212/477-0777 American
+########################
+
+Island Spice 402 W. 44th St. New York City 212-765-1737 Caribbean
+
+
+Island Spice 402 W. 44th St. New York 212/765-1737  tel Caribbean
+########################
+
+Jo Jo 160 E. 64th St. New York City 212-223-5656 French Bistro
+
+
+Jo Jo 160 E. 64th St. New York 212/223-5656 American
+########################
+
+La Caravelle 33 W. 55th St. New York City 212-586-4252 French (Classic)
+
+
+La Caravelle 33 W. 55th St. New York 212/586-4252 French
+########################
+
+La Cote Basque 60 W. 55th St. New York City 212-688-6525 French (Classic)
+
+
+La Cote Basque 60 W. 55th St.  between 5th and 6th Ave. New York 212/688-6525
+ French
+########################
+
+Le Bernardin 155 W. 51st St. New York City 212-489-1515 Seafood
+
+
+Le Bernardin 155 W. 51st St. New York 212/489-1515 French
+########################
+
+Les Celebrites 155 W. 58th St. New York City 212-484-5113 French (Classic)
+
+
+Les C&eacute;l&eacute;brit&eacute;s 160 Central Park S New York 212/484-5113
+ French
+########################
+
+Lespinasse (New York City) 2 E. 55th St. New York City 212-339-6719 Asian
+
+
+Lespinasse 2 E. 55th St. New York 212/339-6719 American
+########################
+
+Lutece 249 E. 50th St. New York City 212-752-2225 French (Classic)
+
+
+Lut&egrave;ce 249 E. 50th St. New York 212/752-2225 French
+########################
+
+Manhattan Ocean Club 57 W. 58th St. New York City 212-371-7777 Seafood
+
+
+Manhattan Ocean Club 57 W. 58th St. New York 212/ 371-7777 Seafood
+########################
+
+March 405 E. 58th St. New York City 212-754-6272 American (New)
+
+
+March 405 E. 58th St. New York 212/754-6272 American
+########################
+
+Mesa Grill 102 Fifth Ave. New York City 212-807-7400 Southwestern
+
+
+Mesa Grill 102 5th Ave.  between 15th and 16th Sts. New York 212/807-7400
+ American
+########################
+
+Mi Cocina 57 Jane St. New York City 212-627-8273 Mexican
+
+
+Mi Cocina 57 Jane St.  off Hudson St. New York 212/627-8273 Mexican
+########################
+
+Montrachet 239 W. Broadway New York City 212-219-2777 French Bistro
+
+
+Montrachet 239 W. Broadway  between Walker and White Sts. New York
+ 212/ 219-2777 French
+########################
+
+Oceana 55 E. 54th St. New York City 212-759-5941 Seafood
+
+
+Oceana 55 E. 54th St. New York 212/759-5941 Seafood
+########################
+
+Park Avenue Cafe (New York City) 100 E. 63rd St. New York City 212-644-1900 American (New)
+
+
+Park Avenue Cafe 100 E. 63rd St. New York 212/644-1900 American
+########################
+
+Petrossian 182 W. 58th St. New York City 212-245-2214 Russian
+
+
+Petrossian 182 W. 58th St. New York 212/245-2214 French
+########################
+
+Picholine 35 W. 64th St. New York City 212-724-8585 Mediterranean
+
+
+Picholine 35 W. 64th St. New York 212/724-8585 Mediterranean
+########################
+
+Pisces 95 Ave. A New York City 212-260-6660 Seafood
+
+
+Pisces 95 Ave. A at 6th St. New York 212/260-6660 Seafood
+########################
+
+Rainbow Room 30 Rockefeller Plaza New York City 212-632-5000 American (New)
+
+
+Rainbow Room 30 Rockefeller Plaza New York 212/632-5000 or 212/632-5100
+ American
+########################
+
+River Cafe 1 Water St. Brooklyn 718-522-5200 American (New)
+
+
+River Caf&eacute; 1 Water St. at the East River Brooklyn 718/522-5200
+ American
+########################
+
+San Domenico 240 Central Park S. New York City 212-265-5959 Italian
+
+
+San Domenico 240 Central Park S New York 212/265-5959 Italian
+########################
+
+Second Avenue Deli 156 Second Ave. New York City 212-677-0606 Delis
+
+
+Second Avenue Deli 156 2nd Ave. at 10th St. New York 212/677-0606
+ Delicatessen
+########################
+
+Seryna 11 E. 53rd St. New York City 212-980-9393 Japanese
+
+
+Seryna 11 E. 53rd St. New York 212/980-9393 Asian
+########################
+
+Shun Lee Palace 155 E. 55th St. New York City 212-371-8844 Chinese
+
+
+Shun Lee West 43 W. 65th St. New York 212/371-8844 Asian
+########################
+
+Sign of the Dove 1110 Third Ave. New York City 212-861-8080 American (New)
+
+
+Sign of the Dove 1110 3rd Ave. at 65th St. New York 212/861-8080 American
+########################
+
+Smith & Wollensky 797 Third Ave. New York City 212-753-1530 Steakhouses
+
+
+Smith & Wollensky 201 E. 49th St. New York 212/753-1530 American
+########################
+
+Tavern on the Green Central Park West New York City 212-873-3200 American (New)
+
+
+Tavern on the Green In Central Park at 67th St. New York 212/873-3200
+ American
+########################
+
+Uncle Nick's 747 Ninth Ave. New York City 212-245-7992 Greek
+
+
+Uncle Nick's 747 9th Ave.  between 50th and 51st Sts. New York 212/315-1726
+ Mediterranean
+########################
+
+Union Square Cafe 21 E. 16th St. New York City 212-243-4020 American (New)
+
+
+Union Square Cafe 21 E. 16th St. New York 212/243-4020 American
+########################
+
+Virgil's Real BBQ 152 W. 44th St. New York City 212-921-9494 BBQ
+
+
+Virgil's 152 W. 44th St. New York 212/ 921-9494 American
+########################
+
+Chin's 3200 Las Vegas Blvd. S. Las Vegas 702-733-8899 Chinese
+
+
+Chin's 3200 Las Vegas Blvd. S Las Vegas 702/733-8899 Asian
+########################
+
+Coyote Cafe (Las Vegas) 3799 Las Vegas Blvd. S. Las Vegas 702-891-7349 Southwestern
+
+
+Coyote Caf&eacute; 3799 Las Vegas Blvd. S Las Vegas 702/891-7349 Southwestern
+########################
+
+Le Montrachet Bistro 3000 Paradise Rd. Las Vegas 702-732-5651 French Bistro
+
+
+Le Montrachet 3000 W. Paradise Rd. Las Vegas 702/732-5111 Continental
+########################
+
+Palace Court 3570 Las Vegas Blvd. S. Las Vegas 702-731-7110 French (New)
+
+
+Palace Court 3570 Las Vegas Blvd. S Las Vegas 702/731-7547 Continental
+########################
+
+Second Street Grill 200 E. Fremont St. Las Vegas 702-385-6277 Pacific Rim
+
+
+Second Street Grille 200 E. Fremont St. Las Vegas 702/385-3232 Seafood
+########################
+
+Steak House  The 2880 Las Vegas Blvd. S. Las Vegas 702-734-0410 Steakhouses
+
+
+Steak House 2880 Las Vegas Blvd. S Las Vegas 702/734-0410 Steak Houses
+########################
+
+Tillerman  The 2245 E. Flamingo Rd. Las Vegas 702-731-4036 Steakhouses
+
+
+Tillerman 2245 E. Flamingo Rd. Las Vegas 702/731-4036 Seafood
+########################
+
+Abruzzi 2355 Peachtree Rd. NE Atlanta 404-261-8186 Italian
+
+
+Abruzzi 2355 Peachtree Rd.  Peachtree Battle Shopping Center Atlanta
+ 404/261-8186 Italian
+########################
+
+Bacchanalia 3125 Piedmont Rd. Atlanta 404-365-0410 Californian
+
+
+Bacchanalia 3125 Piedmont Rd.  near Peachtree Rd. Atlanta 404/365-0410
+ International
+########################
+
+Bone's Restaurant 3130 Piedmont Rd. NE Atlanta 404-237-2663 Steakhouses
+
+
+Bone's 3130 Piedmont Road Atlanta 404/237-2663 American
+########################
+
+Brasserie Le Coze 3393 Peachtree Rd. Atlanta 404-266-1440 French Bistro
+
+
+Brasserie Le Coze 3393 Peachtree Rd.  Lenox Square Mall  near Neiman Marcus
+ Atlanta 404/266-1440 French
+########################
+
+Buckhead Diner 3073 Piedmont Rd. Atlanta 404-262-3336 American (New)
+
+
+Buckhead Diner 3073 Piedmont Road Atlanta 404/262-3336 American
+########################
+
+Ciboulette Restaurant 1529 Piedmont Ave. Atlanta 404-874-7600 French (New)
+
+
+Ciboulette 1529 Piedmont Ave. Atlanta 404/874-7600 French
+########################
+
+Delectables 1 Margaret Mitchell Sq. Atlanta 404-681-2909 Cafeterias
+
+
+Delectables 1 Margaret Mitchell Sq. Atlanta 404/681-2909 American
+########################
+
+Georgia Grille 2290 Peachtree Rd. Atlanta 404-352-3517 Southwestern
+
+
+Georgia Grille 2290 Peachtree Rd.  Peachtree Square Shopping Center Atlanta
+ 404/352-3517 American
+########################
+
+GHedgerose Heights Inn  The 490 E. Paces Ferry Rd. NE Atlanta 404-233-7673Continental
+
+
+Hedgerose Heights Inn 490 E. Paces Ferry Rd. Atlanta 404/233-7673
+ International
+########################
+
+Heera of India 595 Piedmont Ave. Atlanta 404-876-4408 Indian
+
+
+Heera of India 595 Piedmont Ave.  Rio Shopping Mall Atlanta 404/876-4408
+ Asian
+########################
+
+Indigo Coastal Grill 1397 N. Highland Ave. Atlanta 404-876-0676 Eclectic
+
+
+Indigo Coastal Grill 1397 N. Highland Ave. Atlanta 404/876-0676 Caribbean
+########################
+
+La Grotta 2637 Peachtree Rd. NE Atlanta 404-231-1368 Italian
+
+
+La Grotta 2637 Peachtree Rd.  Peachtree House Condominium Atlanta
+ 404/231-1368 Italian
+########################
+
+Mary Mac's Tea Room 224 Ponce de Leon Ave. Atlanta 404-876-1800 Southern/Soul
+
+
+Mary Mac's Tea Room 224 Ponce de Leon Ave. Atlanta 404/876-1800 Southern
+########################
+
+Nikolai's Roof 255 Courtland St. Atlanta 404-221-6362 Continental
+
+
+Nikolai's Roof 255 Courtland St.  at Harris St. Atlanta 404/221-6362
+ Continental
+########################
+
+Pano's & Paul's 1232 W. Paces Ferry Rd. Atlanta 404-261-3662 American (New)
+
+
+Pano's and Paul's 1232 W. Paces Ferry Rd. Atlanta 404/261-3662 International
+Ritz-Carlton Cafe (Buckhead) 3434 Peachtree Rd. NE Atlanta 404-237-2700 American (New)
+
+
+Caf&eacute;  Ritz-Carlton  Buckhead,3434 Peachtree Rd. Atlanta Georgia  404/237-2700  ext 6108 International
+########################
+
+Ritz-Carlton Dining Room (Buckhead) 3434 Peachtree Rd. NE Atlanta 404-237-2700 American (New)
+
+
+Dining Room  Ritz-Carlton  Buckhead 3434 Peachtree Rd. Atlanta 404/237-2700
+ International
+########################
+
+Ritz-Carlton Restaurant 181 Peachtree St. Atlanta 404-659-0400 French (Classic)
+
+
+Restaurant  Ritz-Carlton  Atlanta 181 Peachtree St. Atlanta 404/659-0400
+ Continental
+########################
+
+Toulouse 293-B Peachtree Rd. Atlanta 404-351-9533 French (New)
+
+
+Toulouse B Peachtree Rd. Atlanta 404/351-9533 French
+########################
+
+Veni Vidi Vici 41 14th St. Atlanta 404-875-8424 Italian
+
+
+Veni Vidi Vici 41 14th St. Atlanta 404/875-8424 Italian
+########################
+
+Alain Rondelli 126 Clement St. San Francisco 415-387-0408 French (New)
+
+
+Alain Rondelli 126 Clement St. San Francisco 415/387-0408 French
+########################
+
+Aqua 252 California St. San Francisco 415-956-9662 American (New)
+
+
+Aqua 252 California St. San Francisco 415/956-9662 Seafood
+########################
+
+Boulevard 1 Mission St. San Francisco 415-543-6084 American (New)
+
+
+Boulevard 1 Mission St. San Francisco 415/543-6084 American
+########################
+
+Cafe Claude 7 Claude Ln. San Francisco 415-392-3505 French Bistro
+
+
+Caf&eacute; Claude 7 Claude La. San Francisco 415/392-3505 French
+########################
+
+Campton Place 340 Stockton St. San Francisco 415-955-5555 American (New)
+
+
+Campton Place 340 Stockton St. San Francisco 415/955-5555 American
+########################
+
+Chez Michel 804 North Point St. San Francisco 415-775-7036 Californian
+
+
+Chez Michel 804 Northpoint San Francisco 415/775-7036 French
+########################
+
+Fleur de Lys 777 Sutter St. San Francisco 415-673-7779 French (New)
+
+
+Fleur de Lys 777 Sutter St. San Francisco 415/673-7779 French
+########################
+
+Fringale 570 Fourth St. San Francisco 415-543-0573 French Bistro
+
+
+Fringale 570 4th St. San Francisco 415/543-0573 French
+########################
+
+Hawthorne Lane 22 Hawthorne St. San Francisco 415-777-9779 Californian
+
+
+Hawthorne Lane 22 Hawthorne St. San Francisco 415/777-9779 American
+########################
+
+Khan Toke Thai House 5937 Geary Blvd. San Francisco 415-668-6654 Thai
+
+
+Khan Toke Thai House 5937 Geary Blvd. San Francisco 415/668-6654 Asian
+########################
+
+La Folie 2316 Polk St. San Francisco 415-776-5577 French (New)
+
+
+La Folie 2316 Polk St. San Francisco 415/776-5577 French
+########################
+
+LuLu Restaurant-Bis-Cafe 816 Folsom St. San Francisco 415-495-5775 Mediterranean
+
+
+LuLu 816 Folsom St. San Francisco 415/495-5775 Mediterranean
+########################
+
+Masa's 648 Bush St. San Francisco 415-989-7154 French (New)
+
+
+Masa's 648 Bush St. San Francisco 415/989-7154 French
+########################
+
+Mifune 1737 Post St. San Francisco 415-922-0337 Japanese
+
+
+Mifune Japan Center  Kintetsu Building  1737 Post St. San Francisco
+ 415/922-0337 Asian
+########################
+
+PlumpJack Cafe 3127 Fillmore St. San Francisco 415-563-4755 American (New)
+
+
+PlumpJack Caf&eacute; 3201 Fillmore St. San Francisco 415/563-4755
+ Mediterranean
+########################
+
+Postrio 545 Post St. San Francisco 415-776-7825 Californian
+
+
+Postrio 545 Post St. San Francisco 415/776-7825 American
+########################
+
+Ritz-Carlton Dining Room (San Francisco) 600 Stockton St. San Francisco 415-296-7465 French (New)
+
+
+Ritz-Carlton Restaurant and Dining Room 600 Stockton St. San Francisco
+ 415/296-7465 American
+########################
+
+Rose Pistola 532 Columbus Ave. San Francisco 415-399-0499 Italian
+
+
+Rose Pistola 532 Columbus Ave. San Francisco 415/399-0499 Italian
+########################
+
