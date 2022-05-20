@@ -28,7 +28,7 @@ public class ServiceManager {
     @JsonIgnore
     private final Map<String, Service> services = new HashMap<>();
 
-    public ServiceManager() {
+    public ServiceManager() throws IOException, URISyntaxException {
         try {
             URL url = ServiceManager.class.getResource("defaults");
             loadConfigs(url);
@@ -105,6 +105,46 @@ public class ServiceManager {
 
     public ServiceConfig getServiceConfig(String serviceName) {
         return serviceConfigs.get(serviceName);
+    }
+
+    public <S extends Service> S initialiseService(String stackName, String serviceName)
+            throws URISyntaxException, IOException {
+        ServiceConfig config = serviceConfigs.get(serviceName);
+        String type = config.getType();
+
+        final Service newService;
+        switch (type.toLowerCase()) {
+            case DockerService.TYPE:
+                newService = new DockerService(this, config);
+                ((DockerService) newService).createNetwork(stackName);
+                break;
+            case NginxService.TYPE:
+                newService = new NginxService(stackName, this, config);
+                break;
+            case PostGISService.TYPE:
+                newService = new PostGISService(stackName, this, config);
+                break;
+            default:
+                if (null != config.getImage()) {
+                    newService = new ContainerService(stackName, this, config);
+                    break;
+                } else {
+                    throw new IllegalArgumentException("Service '" + serviceName + "' is of type '" + type
+                            + "', which does not have a specific class defined, and no Docker 'image' was specified.");
+                }
+        }
+
+        if (newService instanceof ContainerService) {
+            this.<DockerService>getService("docker").startContainer((ContainerService) newService);
+        }
+
+        services.put(serviceName, newService);
+
+        return (S) newService;
+    }
+
+    <S extends Service> S getService(String otherServiceName) {
+        return (S) services.get(otherServiceName);
     }
 
 }

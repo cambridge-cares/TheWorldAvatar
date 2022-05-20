@@ -26,11 +26,13 @@ import com.github.dockerjava.transport.DockerHttpClient;
 
 public class DockerService extends AbstractService {
 
+    static final String TYPE = "docker";
+
     private final DockerClient dockerClient;
     private Network network;
 
-    public DockerService(ServiceConfig config) throws URISyntaxException {
-        super(config);
+    public DockerService(ServiceManager serviceManager, ServiceConfig config) throws URISyntaxException {
+        super(serviceManager, config);
 
         Builder dockerConfigBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
@@ -148,6 +150,8 @@ public class DockerService extends AbstractService {
                 }
             }
         }
+
+        service.setContainerId(containerId);
     }
 
 }

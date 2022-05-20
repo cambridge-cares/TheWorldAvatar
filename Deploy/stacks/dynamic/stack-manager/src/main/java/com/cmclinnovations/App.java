@@ -2,9 +2,8 @@ package com.cmclinnovations;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 
-import com.cmclinnovations.services.DockerService;
-import com.cmclinnovations.services.NginxService;
 import com.cmclinnovations.services.ServiceManager;
 
 /**
@@ -14,11 +13,10 @@ import com.cmclinnovations.services.ServiceManager;
 public class App {
     public static void main(String[] args) throws URISyntaxException, IOException {
         String stackName = "stack1";
-        ServiceManager manager = new ServiceManager();
-        DockerService docker = new DockerService(manager.getServiceConfig("docker"));
-        NginxService proxy = new NginxService(stackName, manager.getServiceConfig("nginx"));
+        URL hostURL = new URL("http://localhost");
 
-        Stack<NginxService> stack = new Stack<>(stackName, manager, docker, proxy);
+        ServiceManager manager = new ServiceManager();
+        Stack stack = new Stack(stackName, hostURL, manager);
         stack.hashCode();
     }
 }

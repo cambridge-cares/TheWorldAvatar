@@ -1,31 +1,32 @@
 package com.cmclinnovations;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
-import com.cmclinnovations.services.ContainerService;
-import com.cmclinnovations.services.DockerService;
-import com.cmclinnovations.services.PostgreSQLService;
-import com.cmclinnovations.services.ReverseProxyService;
 import com.cmclinnovations.services.ServiceManager;
 
-public class Stack<P extends ContainerService & ReverseProxyService> {
+public class Stack {
 
     private final String name;
+    private final URL hostURL;
+
     private final ServiceManager manager;
-    private final DockerService docker;
-    private final P proxy;
 
-    public Stack(String name, ServiceManager manager, DockerService docker, P proxy) throws IOException {
+    public Stack(String name, URL hostURL, ServiceManager manager) throws IOException, URISyntaxException {
         this.name = name;
+        this.hostURL = hostURL;
+
         this.manager = manager;
-        this.docker = docker;
-        this.proxy = proxy;
 
-        docker.createNetwork(name);
+        manager.initialiseService(name, "docker");
 
-        docker.startContainer(proxy);
+        manager.initialiseService(name, "nginx");
 
-        docker.startContainer(new PostgreSQLService(name, manager.getServiceConfig("postgis")));
+        manager.initialiseService(name, "blazegraph");
+
+        manager.initialiseService(name, "postgis");
+
     }
 
 }

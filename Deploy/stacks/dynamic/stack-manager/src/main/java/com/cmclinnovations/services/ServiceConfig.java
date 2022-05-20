@@ -14,6 +14,7 @@ import com.github.dockerjava.api.model.HostConfig;
 public class ServiceConfig {
 
     private final String name;
+    private final String type;
     private final Map<String, URI> endpoints;
     private final String username;
     private final String passwordFile;
@@ -27,6 +28,7 @@ public class ServiceConfig {
 
     public ServiceConfig() {
         name = null;
+        type = "default";
         endpoints = new HashMap<>();
         username = null;
         passwordFile = null;
@@ -77,5 +79,9 @@ public class ServiceConfig {
 
     public HostConfig getDockerHostConfig() {
         return dockerHostConfig;
+    }
+
+    public String getType() {
+        return type;
     }
 }

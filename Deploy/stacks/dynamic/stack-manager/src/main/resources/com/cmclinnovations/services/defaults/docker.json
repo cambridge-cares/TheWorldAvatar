@@ -1,4 +1,5 @@
 {
+    "type": "docker",
     "endpoints": {
         "dockerHost": "tcp://host.docker.internal:2375"
     }

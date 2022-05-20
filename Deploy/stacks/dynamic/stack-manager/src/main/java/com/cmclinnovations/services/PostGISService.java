@@ -3,10 +3,12 @@ package com.cmclinnovations.services;
 import java.io.IOException;
 import java.util.Objects;
 
-public class PostgreSQLService extends ContainerService {
+public class PostGISService extends ContainerService {
 
-    public PostgreSQLService(String stackName, ServiceConfig config) throws IOException {
-        super(stackName, config);
+    static final String TYPE = "postgis";
+
+    public PostGISService(String stackName, ServiceManager serviceManager, ServiceConfig config) throws IOException {
+        super(stackName, serviceManager, config);
 
         String username = config.getUsername();
         Objects.requireNonNull(username,
