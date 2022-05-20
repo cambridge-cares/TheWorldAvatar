@@ -35,7 +35,7 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 
 	private static final Logger LOGGER = LogManager.getLogger(AgentRouter.class);
 	
-	private final static int CACHE_SIZE = 100;
+	private static final int CACHE_SIZE = Integer.parseInt(KeyValueMap.getInstance().get(IKeys.AGENTROUTER_CACHE_SIZE));
 	
 	private String agentRouterEndpoint;
 	
@@ -72,6 +72,13 @@ public class AgentRouter extends AbstractCachedRouter<String, String> {
 	public void setRouterEndpoint(String endpoint) {
 		agentRouterEndpoint = endpoint;
 		LOGGER.info("Agent router endpoint set to: "+agentRouterEndpoint);
+	}
+	
+	/**
+	 * Reset AgentRouter endpoint to default value in properties file
+	 */
+	public void resetRouterEndpoint() {
+		setRouterEndpoint(KeyValueMap.getInstance().get(IKeys.URL_AGENTROUTER_ENDPOINT));
 	}
 	
 	@Override

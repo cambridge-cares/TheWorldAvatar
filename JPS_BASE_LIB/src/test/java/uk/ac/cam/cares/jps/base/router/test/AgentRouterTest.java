@@ -93,6 +93,7 @@ class AgentRouterTest {
 		field.setAccessible(true);
 		
 		//assert default endpoint is set
+		agentRouter.resetRouterEndpoint();
 		assertEquals(defaultEndpoint, (String) field.get(agentRouter));
 				
 		//change endpoint
@@ -100,14 +101,16 @@ class AgentRouterTest {
 		assertEquals(endpoint, (String) field.get(agentRouter));
 		
 		//reset default endpoint 
-		agentRouter.setRouterEndpoint(defaultEndpoint);
+		agentRouter.resetRouterEndpoint();
+		assertEquals(defaultEndpoint, (String) field.get(agentRouter));
 	}
 	
 	@Test
 	void testGetStoreClient() {
 		
 		AgentRouter agentRouter = AgentRouter.getInstance();
-				
+		agentRouter.resetRouterEndpoint();
+		
 	    Object obj = agentRouter.getStoreClient();
 		assertNotNull(obj);
 		assertTrue(obj.getClass().getClass().isInstance(RemoteStoreClient.class));
