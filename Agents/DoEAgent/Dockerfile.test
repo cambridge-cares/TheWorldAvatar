@@ -2,8 +2,6 @@
 
 # Base image is a lightweight version of Python
 FROM python:3.7-slim-buster
-# FROM rappdw/docker-java-python:openjdk1.8.0_171-python3.6.6
-# FROM openjdk:8-jdk-slim-buster
 
 # Install required software
 RUN apt update && apt install -y git
@@ -11,7 +9,7 @@ RUN apt update && apt install -y git
 # Install Java openjdk-8 to enable py4jps
 # (See https://github.com/puckel/docker-airflow/issues/182#issuecomment-594906148)
 USER root
-RUN echo "deb http://security.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list                                                   
+RUN echo "deb http://security.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list
 RUN mkdir -p /usr/share/man/man1 && \
     apt-get update -y && \
     apt-get install -y openjdk-8-jdk
@@ -26,14 +24,13 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
-# # Re-install the version of JPS_BASE_LIB that is been developing
-# # (sinse the newly added code is not in the release version of py4jps)
-# # TO BE REMOVED WHEN MERGE TO DEVELOP
-# RUN jpsrm uninstall JpsBaseLib
-# RUN mkdir /jpstemp
-# COPY jps-base-lib.jar ./jpstemp/jps-base-lib.jar
-# COPY lib ./jpstemp/lib
-# RUN jpsrm install JpsBaseLib ./jpstemp/
+# Re-install the version of JPS_BASE_LIB that is been developing
+# (this will be required if the new features are not merged back to main)
+RUN jpsrm uninstall JpsBaseLib
+RUN mkdir /jpstemp
+COPY /_temp/jps-base-lib.jar ./jpstemp/jps-base-lib.jar
+COPY /_temp/lib ./jpstemp/lib
+RUN jpsrm install JpsBaseLib ./jpstemp/
 
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app

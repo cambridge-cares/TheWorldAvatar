@@ -1,8 +1,5 @@
-from dataclasses import asdict
-from pathlib import Path
 from typing import List
 import json
-import os
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -11,9 +8,7 @@ from pyderivationagent import DerivationOutputs
 from doeagent.kg_operations import *
 from doeagent.data_model import *
 from doeagent.doe_algo import *
-from doeagent.conf import *
 
-from rdflib import RDF
 
 class DoEAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):

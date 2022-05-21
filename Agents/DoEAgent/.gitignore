@@ -14,3 +14,4 @@ dist/
 
 # Miscellaneous files/folders:
 .pytest_cache
+*.env

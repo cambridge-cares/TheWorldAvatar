@@ -1,3 +1,4 @@
+from pyderivationagent.conf import config_derivation_agent
 from doeagent.agent import *
 
 import logging
@@ -6,15 +7,21 @@ import logging
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
-    doe_agent_config = DoEAgentConfig(str(Path(__file__).absolute().parent) + '/conf/doeagent_properties.json')
+    agent_config = config_derivation_agent()
 
-    app = DoEAgent(doe_agent_config.ONTOAGENT_SERVICE, doe_agent_config.PERIODIC_TIMESCALE, doe_agent_config.DERIVATION_INSTANCE_BASE_URL, doe_agent_config.SPARQL_QUERY_ENDPOINT, logger_name='prod')
-    app.add_url_pattern('/', 'root', default, methods=['GET'])
+    agent = DoEAgent(
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=agent_config.SPARQL_QUERY_ENDPOINT,
+        kg_update_url=agent_config.SPARQL_UPDATE_ENDPOINT,
+        kg_user=agent_config.KG_USERNAME,
+        kg_password=agent_config.KG_PASSWORD,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        logger_name="prod"
+    )
 
-    app.start_monitoring_derivations()
-    flask_app = app.app
-    return flask_app
+    agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
-if __name__ == '__main__':
-    flask_app = create_app()
-    flask_app.run_flask_app()
+    agent.start_monitoring_derivations()
+    return agent.app

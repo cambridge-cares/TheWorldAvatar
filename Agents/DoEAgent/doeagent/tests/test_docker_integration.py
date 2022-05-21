@@ -2,21 +2,18 @@ import time
 
 import doeagent.tests.utils as utils
 
-def test_example_doe(generate_random_download_path, initialise_agent):
-    sparql_client, derivation_client, doe_agent = initialise_agent
+def test_docker_integration(generate_random_download_path, initialise_clients):
+    sparql_client, derivation_client = initialise_clients
 
     # Verify that knowledge base is empty
     res = sparql_client.getAmountOfTriples()
     assert res == 0
 
-    # Start the scheduler to monitor derivations
-    doe_agent.start_monitoring_derivations()
-
     # Initialise all triples in the knowledge graph
     utils.initialise_triples(generate_random_download_path, sparql_client, derivation_client)
 
     # Create derivation instance for new information, the timestamp of this derivation is 0
-    derivation_iri = derivation_client.createAsyncDerivationForNewInfo(doe_agent.agentIRI, utils.cf.DERIVATION_INPUTS)
+    derivation_iri = derivation_client.createAsyncDerivationForNewInfo(utils.cf.DOEAGENT_SERVICE_IRI, utils.cf.DERIVATION_INPUTS)
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
     currentTimestamp_derivation = 0
