@@ -11,6 +11,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7000:5000
+    env_file:
+      - ./tests/env_files/agent.rng.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_rng_app()"]
 
   max_agent:
@@ -21,6 +23,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7001:5000
+    env_file:
+      - ./tests/env_files/agent.max.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_max_app()"]
 
   min_agent:
@@ -31,6 +35,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7002:5000
+    env_file:
+      - ./tests/env_files/agent.min.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_min_app()"]
 
   diff_agent:
@@ -41,6 +47,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7003:5000
+    env_file:
+      - ./tests/env_files/agent.diff.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_diff_app()"]
 
   update_endpoint:
@@ -51,6 +59,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
      - 7004:5000
+    env_file:
+      - ./tests/env_files/endpoint.update.env.test
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_update_endpoint()"]
 
   # Blazegraph

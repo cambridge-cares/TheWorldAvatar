@@ -8,6 +8,7 @@ import time
 import os
 
 from pyderivationagent.agent import FlaskConfig
+from pyderivationagent.conf import config_derivation_agent
 
 from tests.agents.sparql_client_for_test import PySparqlClientForTest
 from tests.agents.agents_for_test import RNGAgent
@@ -20,11 +21,12 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 
 # ----------------------------------------------------------------------------------
-# Constant
+# Constant and configuration
 # ----------------------------------------------------------------------------------
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCE_DIR = os.path.join(str(Path(__file__).absolute().parent),'resources')
+ENV_FILES_DIR = os.path.join(THIS_DIR,'env_files')
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
@@ -37,22 +39,13 @@ UPDATE_ENDPOINT_ROUTE = "update"
 DERIVATION_INSTANCE_BASE_URL = 'http://www.asyncagent.com/triplestore/repository/'
 DERIVATION_PERIODIC_TIMESCALE = 3
 
-# should match one defined in Service__Random.ttl
-RNGAGENT_ONTOAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Random#Service'
-# should match one defined in Service__Max.ttl
-MAXAGENT_ONTOAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Max#Service'
-# should match one defined in Service__Min.ttl
-MINAGENT_ONTOAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Min#Service'
-# should match one defined in Service__Diff.ttl
-DIFFAGENT_ONTOAGENT_SERVICE = 'http://www.asyncagent.com/resource/agents/Service__Diff#Service'
-
-RNGAGENT_ENDPOINT = '/Random'
-MAXAGENT_ENDPOINT = '/Max'
-MINAGENT_ENDPOINT = '/Min'
-DIFFAGENT_ENDPOINT = '/Diff'
-
-# NOTE this is the URL to access blazegraph container WITHIN the docker stack
-BLAZEGRAPH_ENDPOINT_WITHIN_DOCKER = "http://blazegraph:8080/blazegraph/namespace/kb/sparql"
+# Configuration env files
+# NOTE the triple store URL provided in the agent.*.env files are the URL to access blazegraph container WITHIN the docker stack
+RNGAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.rng.env.test')
+MAXAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.max.env.test')
+MINAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.min.env.test')
+DIFFAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.env.test')
+UPDATEENDPOINT_ENV = os.path.join(ENV_FILES_DIR,'endpoint.update.env.test')
 
 
 # ----------------------------------------------------------------------------------
@@ -66,10 +59,10 @@ class FlaskConfigTest(FlaskConfig):
 
 
 class AllInstances():
-    RNGAGENT_SERVICE: str = RNGAGENT_ONTOAGENT_SERVICE
-    MAXAGENT_SERVICE: str = MAXAGENT_ONTOAGENT_SERVICE
-    MINAGENT_SERVICE: str = MINAGENT_ONTOAGENT_SERVICE
-    DIFFAGENT_SERVICE: str = DIFFAGENT_ONTOAGENT_SERVICE
+    RNGAGENT_SERVICE: str = config_derivation_agent(RNGAGENT_ENV).ONTOAGENT_SERVICE_IRI
+    MAXAGENT_SERVICE: str = config_derivation_agent(MAXAGENT_ENV).ONTOAGENT_SERVICE_IRI
+    MINAGENT_SERVICE: str = config_derivation_agent(MINAGENT_ENV).ONTOAGENT_SERVICE_IRI
+    DIFFAGENT_SERVICE: str = config_derivation_agent(DIFFAGENT_ENV).ONTOAGENT_SERVICE_IRI
 
     IRI_UPPER_LIMIT: str = None
     IRI_LOWER_LIMIT: str = None
@@ -211,10 +204,10 @@ def initialise_agent(initialise_triple_store):
         )
 
         # Initialise Async Agent with temporary docker container endpoint
-        rng_agent = create_rng_agent(endpoint)
-        min_agent = create_min_agent(endpoint)
-        max_agent = create_max_agent(endpoint)
-        diff_agent = create_diff_agent(endpoint)
+        rng_agent = create_rng_agent(RNGAGENT_ENV, endpoint)
+        min_agent = create_min_agent(MINAGENT_ENV, endpoint)
+        max_agent = create_max_agent(MAXAGENT_ENV, endpoint)
+        diff_agent = create_diff_agent(DIFFAGENT_ENV, endpoint)
 
         yield sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent
 
@@ -232,56 +225,76 @@ def initialise_agent(initialise_triple_store):
 # Agents create functions
 # ----------------------------------------------------------------------------------
 
-def create_rng_agent(sparql_endpoint):
+def create_rng_agent(env_file: str = None, sparql_endpoint: str = None):
+    if env_file is None:
+        agent_config = config_derivation_agent()
+    else:
+        agent_config = config_derivation_agent(env_file)
     return RNGAgent(
-        agent_iri=RNGAGENT_ONTOAGENT_SERVICE,
-        time_interval=DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint,
-        agent_endpoint=RNGAGENT_ENDPOINT,
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app=Flask(__name__)
     )
 
 
-def create_max_agent(sparql_endpoint):
+def create_max_agent(env_file: str = None, sparql_endpoint: str = None):
+    if env_file is None:
+        agent_config = config_derivation_agent()
+    else:
+        agent_config = config_derivation_agent(env_file)
     return MaxValueAgent(
-        agent_iri=MAXAGENT_ONTOAGENT_SERVICE,
-        time_interval=DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint,
-        agent_endpoint=MAXAGENT_ENDPOINT,
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app=Flask(__name__)
     )
 
 
-def create_min_agent(sparql_endpoint):
+def create_min_agent(env_file: str = None, sparql_endpoint: str = None):
+    if env_file is None:
+        agent_config = config_derivation_agent()
+    else:
+        agent_config = config_derivation_agent(env_file)
     return MinValueAgent(
-        agent_iri=MINAGENT_ONTOAGENT_SERVICE,
-        time_interval=DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint,
-        agent_endpoint=MINAGENT_ENDPOINT,
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app=Flask(__name__)
     )
 
 
-def create_diff_agent(sparql_endpoint):
+def create_diff_agent(env_file: str = None, sparql_endpoint: str = None):
+    if env_file is None:
+        agent_config = config_derivation_agent()
+    else:
+        agent_config = config_derivation_agent(env_file)
     return DifferenceAgent(
-        agent_iri=DIFFAGENT_ONTOAGENT_SERVICE,
-        time_interval=DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint,
-        agent_endpoint=DIFFAGENT_ENDPOINT,
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app=Flask(__name__)
     )
 
 
-def create_update_endpoint(sparql_endpoint):
+def create_update_endpoint(env_file: str = None, sparql_endpoint: str = None):
+    if env_file is None:
+        endpoint_config = config_derivation_agent()
+    else:
+        endpoint_config = config_derivation_agent(env_file)
     return UpdateEndpoint(
-        agent_iri="http://update", # just placeholder value, not used by anything
-        time_interval=60, # just placeholder value, not used by anything
-        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL, # just placeholder value, not used by anything
-        kg_url=sparql_endpoint
+        agent_iri=endpoint_config.ONTOAGENT_SERVICE_IRI, # just placeholder value, not used by anything
+        time_interval=endpoint_config.DERIVATION_PERIODIC_TIMESCALE, # just placeholder value, not used by anything
+        derivation_instance_base_url=endpoint_config.DERIVATION_INSTANCE_BASE_URL, # just placeholder value, not used by anything
+        kg_url=sparql_endpoint if sparql_endpoint is not None else endpoint_config.SPARQL_QUERY_ENDPOINT
     )
 
 

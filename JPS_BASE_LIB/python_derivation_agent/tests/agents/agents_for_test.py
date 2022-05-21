@@ -21,7 +21,7 @@ class UpdateEndpoint(DerivationAgent):
         diff_iri = sparql_client.getDifferenceIRI()
         diff_derivation = self.derivationClient.getDerivationsOf([diff_iri])[diff_iri]
         self.derivationClient.unifiedUpdateDerivation(diff_derivation)
-        return {"status": "updated derivation <" + diff_derivation + ">"}
+        return {"status": "successfully requested update derivation <" + diff_derivation + ">, will be done in due course"}
 
 
 class DifferenceAgent(DerivationAgent):
