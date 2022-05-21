@@ -40,7 +40,7 @@ DERIVATION_INSTANCE_BASE_URL = 'http://www.asyncagent.com/triplestore/repository
 DERIVATION_PERIODIC_TIMESCALE = 3
 
 # Configuration env files
-# NOTE the triple store URL provided in the agent.*.env files are the URL to access blazegraph container WITHIN the docker stack
+# NOTE the triple store URL provided in the agent.*.env.test files are the URL to access blazegraph container WITHIN the docker stack
 RNGAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.rng.env.test')
 MAXAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.max.env.test')
 MINAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.min.env.test')
@@ -203,7 +203,7 @@ def initialise_agent(initialise_triple_store):
             DERIVATION_INSTANCE_BASE_URL
         )
 
-        # Initialise Async Agent with temporary docker container endpoint
+        # Initialise derivation agents with temporary docker container endpoint
         rng_agent = create_rng_agent(RNGAGENT_ENV, endpoint)
         min_agent = create_min_agent(MINAGENT_ENV, endpoint)
         max_agent = create_max_agent(MAXAGENT_ENV, endpoint)
@@ -211,7 +211,7 @@ def initialise_agent(initialise_triple_store):
 
         yield sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent
 
-        # Tear down scheduler of doe agent
+        # Tear down scheduler of derivation agents
         rng_agent.scheduler.shutdown()
         min_agent.scheduler.shutdown()
         max_agent.scheduler.shutdown()

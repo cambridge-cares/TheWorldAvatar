@@ -58,12 +58,9 @@ class DerivationAgent(object):
 
         # create a JVM module view and use it to import the required java classes
         self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(
-            self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.agent.*")
-        jpsBaseLibGW.importPackages(
-            self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-        jpsBaseLibGW.importPackages(
-            self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.derivation.*")
+        jpsBaseLibGW.importPackages(self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.agent.*")
+        jpsBaseLibGW.importPackages(self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+        jpsBaseLibGW.importPackages(self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.derivation.*")
 
         # initialise flask app with its configuration
         self.app = app
@@ -154,78 +151,53 @@ class DerivationAgent(object):
                 self.logger.info("Asynchronous derivation <%s> has status type: %s." % (
                     derivation, statusType))
 
-                # # If "PendingUpdate", check the immediate upstream derivations if they are up-to-date
-                # if statusType == 'PENDINGUPDATE':
-                #     immediateUpstreamDerivationToUpdate = self.derivationClient.checkAtPendingUpdate(derivation)
-                #     if immediateUpstreamDerivationToUpdate is not None:
-                #         self.logger.info(
-                #             "Derivation <%s> has a list of immediate upstream derivations to be updated: <%s>." % (derivation, ">, <".join(immediateUpstreamDerivationToUpdate))
-                #         )
-                #     else:
-                #         self.logger.info("All immediate upstream derivations of derivation <%s> are up-to-date." % (derivation))
-
                 # If "Requested", check the immediate upstream derivations if they are up-to-date
                 # if any of the asynchronous derivations are still outdated, skip, otherwise, request update of all synchronous derivations
                 # then retrieve inputs, marks as "InProgress", start job, update status at job completion
                 if statusType == 'REQUESTED':
-                    immediateUpstreamDerivationToUpdate = self.derivationClient.checkImmediateUpstreamDerivation(
-                        derivation)
+                    immediateUpstreamDerivationToUpdate = self.derivationClient.checkImmediateUpstreamDerivation(derivation)
                     if self.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN in immediateUpstreamDerivationToUpdate:
                         self.logger.info("Asynchronous derivation <" + derivation
                                          + "> has a list of immediate upstream asynchronous derivations to be updated: "
                                          + str(immediateUpstreamDerivationToUpdate))
                     else:
-                        syncDerivationsToUpdate = self.derivationClient.groupSyncDerivationsToUpdate(
-                            immediateUpstreamDerivationToUpdate)
+                        syncDerivationsToUpdate = self.derivationClient.groupSyncDerivationsToUpdate(immediateUpstreamDerivationToUpdate)
                         if bool(syncDerivationsToUpdate):
                             self.logger.info("Asynchronous derivation <" + derivation
                                              + "> has a list of immediate upstream synchronous derivations to be updated: "
                                              + str(syncDerivationsToUpdate))
-                            self.derivationClient.updatePureSyncDerivations(
-                                syncDerivationsToUpdate)
-                            self.logger.info(
-                                "Update of synchronous derivation is done for: " + str(syncDerivationsToUpdate))
+                            self.derivationClient.updatePureSyncDerivations(syncDerivationsToUpdate)
+                            self.logger.info("Update of synchronous derivation is done for: " + str(syncDerivationsToUpdate))
                         if not bool(self.derivationClient.checkImmediateUpstreamDerivation(derivation)):
-                            agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(
-                                derivation, self.agentIRI))
+                            agentInputs = str(self.derivationClient.retrieveAgentInputIRIs(derivation, self.agentIRI))
                             self.logger.info("Agent <%s> retrieved inputs of asynchronous derivation <%s>: %s." % (
                                 self.agentIRI, derivation, agentInputs))
-                            self.logger.info(
-                                "Asynchronous derivation <%s> is in progress." % (derivation))
+                            self.logger.info("Asynchronous derivation <%s> is in progress." % (derivation))
 
                             # Preprocessing inputs to be sent to agent for setting up job, this is now in dict datatype
-                            agent_input_json = json.loads(agentInputs) if not isinstance(
-                                agentInputs, dict) else agentInputs
-                            agent_input_key = str(
-                                self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
+                            agent_input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
+                            agent_input_key = str(self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
                             if agent_input_key in agent_input_json:
                                 inputs_to_send = agent_input_json[agent_input_key]
                             else:
                                 self.logger.error("Agent input key (%s) might be missing. Received input: %s." % (
                                     agent_input_key, agent_input_json.__dict__))
-                            # The inputs_to_send should be a dictionary format,
-                            # for example: {'OntoXX:Concept_A': 'Instance_A', 'OntoXX:Concept_B': 'Instance_B'}
-                            # Developer can directly use it with dictionary operations
-                            derivationInputs = self.jpsBaseLib_view.DerivationInputs(
-                                inputs_to_send)
-                            derivation_inputs = DerivationInputs(
-                                derivationInputs)
+                            # The inputs_to_send should be a key-values pair format,
+                            # for example: {'OntoXX:Concept_A': ['Instance_A'], 'OntoXX:Concept_B': ['Instance_B']}
+                            derivationInputs = self.jpsBaseLib_view.DerivationInputs(inputs_to_send)
+                            derivation_inputs = DerivationInputs(derivationInputs)
                             derivationOutputs = self.jpsBaseLib_view.DerivationOutputs()
-                            derivation_outputs = DerivationOutputs(
-                                derivationOutputs)
-                            self.process_request_parameters(
-                                derivation_inputs, derivation_outputs)
+                            derivation_outputs = DerivationOutputs(derivationOutputs)
+                            self.process_request_parameters(derivation_inputs, derivation_outputs)
 
                             newDerivedIRI = derivationOutputs.getNewDerivedIRI()
                             newTriples = derivationOutputs.getOutputTriples()
-                            self.derivationClient.updateStatusAtJobCompletion(
-                                derivation, newDerivedIRI, newTriples)
+                            self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, newTriples)
                             self.logger.info("Asynchronous derivation <%s> generated new derived IRI: <%s>." % (
                                 derivation, ">, <".join(newDerivedIRI)))
                             self.logger.info("Asynchronous derivation <" + derivation +
                                              "> has all new generated triples: " + str([t.getQueryString() for t in newTriples]))
-                            self.logger.info(
-                                "Asynchronous derivation <" + derivation + "> is now finished, to be cleaned up.")
+                            self.logger.info("Asynchronous derivation <" + derivation + "> is now finished, to be cleaned up.")
 
                 # If "InProgress", pass
                 elif statusType == 'INPROGRESS':
@@ -233,10 +205,8 @@ class DerivationAgent(object):
 
                 # If "Finished", do all the clean-up steps
                 elif statusType == 'FINISHED':
-                    self.derivationClient.cleanUpFinishedDerivationUpdate(
-                        derivation)
-                    self.logger.info(
-                        "Asynchronous derivation <%s> is now cleand up." % (derivation))
+                    self.derivationClient.cleanUpFinishedDerivationUpdate(derivation)
+                    self.logger.info("Asynchronous derivation <%s> is now cleand up." % (derivation))
 
                 # If anything else, pass
                 else:
@@ -245,8 +215,7 @@ class DerivationAgent(object):
                     pass
 
         else:
-            self.logger.info(
-                "Currently, no asynchronous derivation <isDerivedUsing> <%s>." % (self.agentIRI))
+            self.logger.info("Currently, no asynchronous derivation <isDerivedUsing> <%s>." % (self.agentIRI))
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         """
@@ -278,38 +247,30 @@ class DerivationAgent(object):
         self.logger.info("Monitor asynchronous derivations job is started with a time interval of %d seconds." % (
             self.time_interval))
 
-        self.add_url_pattern(
-            self.agentEndpoint, self.agentEndpoint[1:], self.handle_sync_derivations, methods=['GET'])
-        self.logger.info(
-            "Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
+        self.add_url_pattern(self.agentEndpoint, self.agentEndpoint[1:], self.handle_sync_derivations, methods=['GET'])
+        self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
     def handle_sync_derivations(self):
         requestParams = json.loads(unquote(request.url[len(request.base_url):])[
             len("?query="):])
         res = {}
         if self.validate_inputs(requestParams):
-            inputs = self.jpsBaseLib_view.DerivationInputs(
-                requestParams[self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY])
-            self.logger.info(
-                "Received derivation request parameters: " + str(requestParams))
+            inputs = self.jpsBaseLib_view.DerivationInputs(requestParams[self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY])
+            self.logger.info("Received derivation request parameters: " + str(requestParams))
             derivationIRI = requestParams[self.jpsBaseLib_view.DerivationClient.DERIVATION_KEY]
             derivationType = requestParams[self.jpsBaseLib_view.DerivationClient.DERIVATION_TYPE_KEY]
             outputs = self.jpsBaseLib_view.DerivationOutputs()
             outputs.setThisDerivation(derivationIRI)
             outputs.setRetrievedInputsAt(int(time.time()))
-            outputs.setOldEntitiesMap(
-                requestParams[self.jpsBaseLib_view.DerivationClient.BELONGSTO_KEY])
-            outputs.setOldEntitiesDownstreamDerivationMap(
-                requestParams[self.jpsBaseLib_view.DerivationClient.DOWNSTREAMDERIVATION_KEY])
+            outputs.setOldEntitiesMap(requestParams[self.jpsBaseLib_view.DerivationClient.BELONGSTO_KEY])
+            outputs.setOldEntitiesDownstreamDerivationMap(requestParams[self.jpsBaseLib_view.DerivationClient.DOWNSTREAMDERIVATION_KEY])
 
             # apply agent logic to convert inputs to outputs
             derivation_inputs = DerivationInputs(inputs)
             derivation_outputs = DerivationOutputs(outputs)
-            self.process_request_parameters(
-                derivation_inputs, derivation_outputs)
+            self.process_request_parameters(derivation_inputs, derivation_outputs)
 
-            derivation = self.jpsBaseLib_view.Derivation(
-                derivationIRI, derivationType)
+            derivation = self.jpsBaseLib_view.Derivation(derivationIRI, derivationType)
             if not derivation.isDerivationAsyn() and not derivation.isDerivationWithTimeSeries():
                 # construct and fire SPARQL update given DerivationOutputs objects, if normal
                 # derivation NOTE this makes sure that the new generated instances/triples will
@@ -319,22 +280,20 @@ class DerivationAgent(object):
                 # https://github.com/cambridge-cares/TheWorldAvatar/issues/184
                 triplesChangedForSure = self.derivationClient.reconnectNewDerivedIRIs(
                     outputs.getOutputTriples(), outputs.getNewEntitiesDownstreamDerivationMap(),
-                    outputs.getThisDerivation(), outputs.getRetrievedInputsAt())
+                    outputs.getThisDerivation(), outputs.getRetrievedInputsAt()
+                )
 
                 # for normal Derivation, we need to return both timestamp and the new derived
                 if triplesChangedForSure:
                     # if we know the triples are changed for sure, we return the triples
                     # computed by this agent
                     res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = outputs.getRetrievedInputsAt()
-                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = json.loads(str(
-                        outputs.getNewEntitiesJsonMap()))
-                    self.logger.info(
-                        "Derivation update is done in the knowledge graph, returned response: " + str(res))
+                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = json.loads(str(outputs.getNewEntitiesJsonMap()))
+                    self.logger.info("Derivation update is done in the knowledge graph, returned response: " + str(res))
                 else:
                     # if we are not certain, query the knowledge graph to get the accurate
                     # information
-                    updated = self.derivationClient.getDerivation(
-                        derivationIRI)
+                    updated = self.derivationClient.getDerivation(derivationIRI)
                     res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = updated.getTimestamp()
                     res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = updated.getBelongsToMap()
                     self.logger.info("Unable to determine if the SPARQL update mutated triples, returned latest information in knowledge graph: "
