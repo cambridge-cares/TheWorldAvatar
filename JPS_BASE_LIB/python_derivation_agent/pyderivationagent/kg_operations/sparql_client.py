@@ -1,13 +1,15 @@
-from rdflib import Graph, URIRef, Namespace, Literal, BNode
-from rdflib.namespace import RDF
 import json
+import requests
+from requests import status_codes
+from datetime import datetime
+from typing import Tuple
 
 from pyderivationagent.kg_operations.gateway import jpsBaseLibGW
 
 from pyderivationagent.data_model import *
 
 class PySparqlClient:
-    def __init__(self, query_endpoint, update_endpoint, kg_user=None, kg_password=None) -> None:
+    def __init__(self, query_endpoint, update_endpoint, kg_user=None, kg_password=None, fs_url=None, fs_user=None, fs_pwd=None) -> None:
         # create a JVM module view and use it to import the required java classes
         self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
         jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
@@ -17,6 +19,11 @@ class PySparqlClient:
             self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
         else:
             self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+
+        # Also initialise the fileserver URL and auth info
+        # TODO in the future development, make use of pyuploader
+        self.fs_url = fs_url
+        self.fs_auth = (fs_user, fs_pwd)
 
     def checkInstanceClass(self, instance, instance_class):
         """
@@ -77,3 +84,31 @@ class PySparqlClient:
         """
         javaFile = self.jpsBaseLib_view.java.io.File(filePath)
         self.kg_client.uploadFile(javaFile)
+
+    def uploadFile(self, local_file_path) -> Tuple[str, float]:
+        """This function uploads the file at the given local file path to file server."""
+        if self.fs_url is None or self.fs_auth is None:
+            raise Exception("ERROR: Fileserver URL and auth are not provided correctly.")
+        with open(local_file_path, 'rb') as file_obj:
+            files = {'file': file_obj}
+            timestamp_upload, response = datetime.now().timestamp(), requests.post(self.fs_url, auth=self.fs_auth, files=files)
+
+            # If the upload succeeded, write the remote file path to KG
+            if (response.status_code == status_codes.codes.OK):
+                remote_file_path = response.headers['file']
+
+                return remote_file_path, timestamp_upload
+            else:
+                raise Exception("ERROR: Local file (%s) upload to file server <%s> failed with code %d and response body: %s" % (
+                    local_file_path, self.fs_url, response.status_code, str(response.content)))
+
+    def downloadFile(self, remote_file_path, downloaded_file_path):
+        """This function downloads a file given the remote file path and the local file path to store the downloaded file."""
+        response = requests.get(remote_file_path, auth=self.fs_auth)
+        if (response.status_code == status_codes.codes.OK):
+            with open(downloaded_file_path, 'wb') as file_obj:
+                for chunk in response.iter_content(chunk_size=128):
+                    file_obj.write(chunk)
+        else:
+            raise Exception("ERROR: File <%s> download failed with code %d and response body: %s" % (
+                remote_file_path, response.status_code, str(response.content)))
