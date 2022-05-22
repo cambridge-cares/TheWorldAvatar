@@ -3,7 +3,7 @@ import os
 
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .SPARQLWarehouse import ONTOSPECIES_GET_SMILES
-from .location import JPS_MODELS_DIR, JPS_QUERY_DIR
+from .location import JPS_MODELS_DIR, JPS_QUERY_DIR, AGENT_QUERY_DIR
 from .Lookup import find_nearest_match
 
 
@@ -14,20 +14,22 @@ class OntoSpecies:
 
         with open(os.path.join(JPS_QUERY_DIR, 'JPS_DICTS', 'ONTOSPECIES_KEYS')) as f:
             self.keys = json.loads(f.read())
-        # with open('OntoSpeciesLog', 'w') as f:
-        #     f.write('')
-        #     f.close()
-        # self.dictionary = {}
-        # mappings = open(r'C:\TWA\TheWorldAvatar\JPS_Chatbot\jps-chatbot\UI\source\Agent_Query\cc.txt').readlines()[1:]
-        # for m in mappings:
-        #     old, new = m.split(',')
-        #     self.dictionary[old.strip()] = new.strip()
+        with open('OntoSpeciesLog', 'w') as f:
+            f.write('')
+            f.close()
+        self.dictionary = {}
+        mappings = open(os.path.join(AGENT_QUERY_DIR, 'cc.txt')).readlines()[1:]
+        for m in mappings:
+            old, new = m.split(',')
+            self.dictionary[old.strip()] = new.strip()
 
     def findSMILES(self, IRI):
         print('IRI IN FIND SMILES', IRI)
         if type(IRI) == type([]):
             IRI = IRI[0]
 
+        if IRI in self.dictionary:
+            IRI = self.dictionary[IRI]
         query = ONTOSPECIES_GET_SMILES % (IRI)
         SMILES = []
         namespace = "ontospecies"

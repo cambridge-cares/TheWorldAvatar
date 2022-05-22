@@ -19,6 +19,7 @@ else:
     from .LDA.LDA_classifier import LDAClassifier
     from .Agent_Query.AgentUtil.util.MarieLogger import MarieIOLog, MarieMessage, MarieError
 
+
 class CoordinateAgent:
     def __init__(self):
         # self.agent_nlu_model = AGENT_NLU_MODEL
@@ -82,5 +83,30 @@ class CoordinateAgent:
 
 
 if __name__ == '__main__':
+
+    question_list = ['What is enthalpy of C3H5N3O at the temperature of 294.62 degree Celsius?',
+                     'What is the power conversion efficiency of OPF with donor of styryltrimethylsilane?',
+                     'What is C6H7NSe’s enthalpy at 181.09 Fahrenheit?',
+                     'What is C2H3IO’s entropy at 230.84 kelvin and 1.01325 bar?',
+                     'What is CH3’s heat capacity at 61.11 degrees in temperature?',
+                     'What is heat capacity at constant pressure of C6H11O3 at room temperature?',
+                     'What is internal energy of NH4OH at -95 F?',
+                     'What is heat capacity of InChI=1/C7H5N/c8-6-7-4-2-1-3-5-7/h1-5H under 30 C?',
+                     'What is COC1CC1=C(C)C’s entropy at 162 Fahrenheit?',
+                     'What is pce of InChI=1/C7H12/c1-4-5-6-7(2)3/h1?',
+                     'What is pce of OPF with donor of C=CC(C)=O?',
+                     'What is power conversion efficiency of C2H6B4?',
+                     'What is power conversion efficiency of CH3COCHO?',
+                     'What is pce of OPF with donor of (CH3)3C-CN?',
+                     'What is power conversion efficiency of nicaethan?',
+                     'Show me CC1=C(C)CCC1’s heat capacity at constant pressure at 150 kelvin',
+                     'What is the heat capacity of CO2'
+                     ]
+
+    question_list = ['What is internal energy of NH4OH at -95 F?']
+
     ca = CoordinateAgent()
-    ca.run('what is the heat capacity of co2')
+    for q in question_list:
+        rst = ca.run(q)
+        pprint(rst)
+        x = input('waiting for your command sir')
