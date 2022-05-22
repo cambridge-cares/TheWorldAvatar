@@ -29,4 +29,4 @@ services:
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: tests/dummy_services_secrets/blazegraph_passwd.txt
+    file: doeagent/tests/dummy_services_secrets/blazegraph_passwd.txt

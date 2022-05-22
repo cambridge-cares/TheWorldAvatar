@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-
+# TODO this file needs a clean-up once the pyderivationagent is released to PyPI
 setup(
     name='doeagent',
     version='0.0.1',
