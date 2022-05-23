@@ -22,12 +22,6 @@ logger = logging.getLogger('chemistry_and_robots_sparql_client')
 logging.getLogger('py4j').setLevel(logging.INFO)
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
-    # TODO consider where to put the fileserver bit? part of PySparqlClient? or make use of pyuploader? (need to verify the version requirement for py4jps)
-    def __init__(self, query_endpoint, update_endpoint, kg_user=None, kg_password=None, fs_url=None, fs_user=None, fs_pwd=None) -> None:
-        super().__init__(query_endpoint, update_endpoint, kg_user, kg_password)
-        # Also initialise the fileserver URL and auth info
-        self.fs_url = fs_url
-        self.fs_auth = (fs_user, fs_pwd)
 
     def collect_triples_for_new_experiment(self, doe: DesignOfExperiment, newExp: List[ReactionExperiment]) -> Graph:
         """
@@ -1338,42 +1332,36 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             return response[0]['report_dir'], file_extension
 
     def upload_raw_hplc_report_to_fs_kg(self, local_file_path, timestamp_last_modified, hplc_digital_twin) -> str:
-        if self.fs_url is None or self.fs_auth is None:
-            raise Exception("Fileserver URL and auth are not provided correctly.")
-        with open(local_file_path, 'rb') as file_obj:
-            files = {'file': file_obj}
-            timestamp_upload, response = datetime.now().timestamp(), requests.post(self.fs_url, auth=self.fs_auth, files=files)
-            logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> with a response statue code %s at %f" % (
-                    local_file_path, self.fs_url, response.status_code, timestamp_upload))
+        try:
+            remote_file_path, timestamp_upload = self.uploadFile(local_file_path)
+            logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> at %f with remote file path at: %s " % (
+                    local_file_path, self.fs_url, timestamp_upload, remote_file_path))
+        except Exception as e:
+            logger.error(e)
+            # TODO need to think a way to inform the post proc agent about the failure of uploading the file
+            raise Exception("HPLC raw report (%s) upload failed with code %d" % (local_file_path))
 
-            # If the upload succeeded, write the remote file path to KG
-            if (response.status_code == status_codes.codes.OK):
-                remote_file_path = response.headers['file']
-                logger.info("The remote file path of the new uploaded HPLCReport is: <%s>" % remote_file_path)
-                hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
-                hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
-                logger.info("The initialised HPLCReport IRI is: <%s>; the initialised HPLCJob IRI is: <%s>" % (hplc_report_iri, hplc_job_iri))
+        hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
+        hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
+        logger.info("The initialised HPLCReport IRI is: <%s>; the initialised HPLCJob IRI is: <%s>" % (hplc_report_iri, hplc_job_iri))
 
-                rxn_exp_iri = self.identify_rxn_exp_when_uploading_hplc_report(hplc_digital_twin, remote_file_path)
-                logger.info("The identified ReactionExperiment for HPLCReport <%s> (remote path: %s) is: <%s>" % (hplc_report_iri, remote_file_path, rxn_exp_iri))
+        rxn_exp_iri = self.identify_rxn_exp_when_uploading_hplc_report(hplc_digital_twin, remote_file_path)
+        logger.info("The identified ReactionExperiment for HPLCReport <%s> (remote path: %s) is: <%s>" % (hplc_report_iri, remote_file_path, rxn_exp_iri))
 
-                # TODO
-                hplc_method_iri = self.identify_hplc_method_when_uploading_hplc_report()
-                logger.info("The HPLCReport <%s> (remote path: %s) was generated using HPLCMethod <%s>" % (hplc_report_iri, remote_file_path, hplc_method_iri))
+        # TODO
+        hplc_method_iri = self.identify_hplc_method_when_uploading_hplc_report()
+        logger.info("The HPLCReport <%s> (remote path: %s) was generated using HPLCMethod <%s>" % (hplc_report_iri, remote_file_path, hplc_method_iri))
 
-                update = PREFIX_XSD + """INSERT DATA {<%s> <%s> <%s>.
-                    <%s> a <%s>; <%s> <%s>; <%s> <%s>; <%s> <%s>.
-                    <%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
-                    hplc_digital_twin, ONTOHPLC_HASJOB, hplc_job_iri,
-                    hplc_job_iri, ONTOHPLC_HPLCJOB, ONTOHPLC_CHARACTERISES, rxn_exp_iri, ONTOHPLC_USESMETHOD, hplc_method_iri, ONTOHPLC_HASREPORT, hplc_report_iri,
-                    hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_file_path, ONTOHPLC_LOCALREPORTFILE, local_file_path,
-                    ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
-                self.performUpdate(update)
+        update = PREFIX_XSD + """INSERT DATA {<%s> <%s> <%s>.
+            <%s> a <%s>; <%s> <%s>; <%s> <%s>; <%s> <%s>.
+            <%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
+            hplc_digital_twin, ONTOHPLC_HASJOB, hplc_job_iri,
+            hplc_job_iri, ONTOHPLC_HPLCJOB, ONTOHPLC_CHARACTERISES, rxn_exp_iri, ONTOHPLC_USESMETHOD, hplc_method_iri, ONTOHPLC_HASREPORT, hplc_report_iri,
+            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_file_path, ONTOHPLC_LOCALREPORTFILE, local_file_path,
+            ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
+        self.performUpdate(update)
 
-                return hplc_report_iri
-            else:
-                # TODO need to think a way to inform the post proc agent about the failure of uploading the file
-                raise Exception("HPLC raw report (%s) upload failed with code %d" % (local_file_path, response.status_code))
+        return hplc_report_iri
 
     def identify_rxn_exp_when_uploading_hplc_report(self, hplc_digital_twin: str, hplc_remote_file_path: str) -> str:
         hplc_digital_twin = trimIRI(hplc_digital_twin)
@@ -1872,13 +1860,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         return hplc_job_instance
 
     def download_remote_raw_hplc_report(self, remote_file_path, downloaded_file_path):
-        response = requests.get(remote_file_path, auth=self.fs_auth)
-        if (response.status_code == status_codes.codes.OK):
-            with open(downloaded_file_path, 'wb') as file_obj:
-                for chunk in response.iter_content(chunk_size=128):
-                    file_obj.write(chunk)
-        else:
-            raise Exception("ERROR: File <%s> download failed with code %d " % (remote_file_path, response.status_code))
+        self.downloadFile(remote_file_path, downloaded_file_path)
+        logger.info("Remote raw HPLC report <%s> was successfully downloaded to: %s" % (remote_file_path, downloaded_file_path))
 
     def connect_hplc_report_with_chemical_solution(self, hplc_report_iri: str, chemical_solution_iri: str):
         hplc_report_iri = trimIRI(hplc_report_iri)
