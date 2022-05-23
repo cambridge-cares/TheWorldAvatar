@@ -147,8 +147,8 @@ def initialise_triples(get_service_url, get_service_auth):
         sparql_client.uploadOntology(filePath)
 
     # Initialise PostProcAgent
-    post_proc_agent = PostProcAgent(
-        fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd,
+    post_proc_agent = AgilentPostProcAgent(
+        fs_url=fs_url, fs_user=fs_user, fs_password=fs_pwd,
         agent_iri=POSTPROC_ONTOAGENT_SERVICE, time_interval=DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL, kg_url=sparql_endpoint, logger_name='dev',
         flask_config=FlaskConfigTest() # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"

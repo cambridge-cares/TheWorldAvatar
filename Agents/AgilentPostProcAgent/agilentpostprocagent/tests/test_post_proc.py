@@ -8,13 +8,13 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 pytest_plugins = ["docker_compose"]
 
 @pytest.mark.parametrize(
-    "rxn_exp_iri,report_path_in_pkg,hplc_digital_twin,chemical_solution_iri,derivation_outputs",
+    "rxn_exp_iri,report_path_in_pkg,hplc_digital_twin,chemical_solution_iri",
     [
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.PLACEHOLDER_PERFORMANCE_INDICATOR_LIST_1),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.PLACEHOLDER_PERFORMANCE_INDICATOR_LIST_2),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2),
     ],
 )
-def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_solution_iri, derivation_outputs):
+def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_solution_iri):
     sparql_client, post_proc_agent = initialise_triples
 
     # Verify that knowledge base is NOT empty
@@ -36,21 +36,17 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
     # Construct derivation_inputs with the iri of HPLCReport
     derivation_inputs = [hplc_report_iri]
 
-    # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = post_proc_agent.derivationClient.createAsynDerivation(derivation_outputs, post_proc_agent.agentIRI, derivation_inputs)
-
-    # Check if the derivation instance is created correctly
-    assert sparql_client.checkInstanceClass(derivation_iri, conftest.ONTODERIVATION_DERIVATIONASYN)
-
     # Iterate over the list of inputs to add and update the timestamp
     for input in derivation_inputs:
         post_proc_agent.derivationClient.addTimeInstance(input)
         # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
         post_proc_agent.derivationClient.updateTimestamp(input)
 
-    # Update the asynchronous derivation, it will be marked as "Requested"
-    # The actual update will be handled by monitorDerivation method periodically run by PostProc agent
-    post_proc_agent.derivationClient.updateDerivationAsyn(derivation_iri)
+    # Create derivation instance given above information, the timestamp of this derivation is 0
+    derivation_iri = post_proc_agent.derivationClient.createAsyncDerivationForNewInfo(post_proc_agent.agentIRI, derivation_inputs)
+
+    # Check if the derivation instance is created correctly
+    assert sparql_client.checkInstanceClass(derivation_iri, conftest.ONTODERIVATION_DERIVATIONASYN)
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
     currentTimestamp_derivation = 0
@@ -68,13 +64,9 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
     response = sparql_client.performQuery(query_new_derived_iri)
     new_derived_iri = [list(r.values())[0] for r in response]
 
-    # Check the new generated instance NewExperiment is different from the original one provided in the example
-    assert all([iri not in derivation_outputs for iri in new_derived_iri])
-
     # Reload the ReactionExperiment instance and check all its information (OutputChemical and PerformanceIndicator) are uploaded and parsed correctly
     reload_rxn_rxp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
     reload_pi_lst = [pi.instance_iri for pi in reload_rxn_rxp_instance.hasPerformanceIndicator]
-    assert all([iri in reload_pi_lst for iri in new_derived_iri])
     assert all([iri in new_derived_iri for iri in reload_pi_lst])
     for pi in reload_rxn_rxp_instance.hasPerformanceIndicator:
         assert pi.hasValue.hasUnit is not None

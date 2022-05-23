@@ -1883,6 +1883,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             return response[0]['remote_path']
 
+    def collect_triples_for_performance_indicators(self, lst_performance_indicator: List[PerformanceIndicator], g: Graph = Graph()) -> Graph:
+        for pi in lst_performance_indicator:
+            g = pi.create_instance_for_kg(g)
+        return g
+
+    # TODO delete below method, should use collect_triples_for_performance_indicators instead
     def write_performance_indicator_back_to_kg(self, lst_performance_indicator: List[PerformanceIndicator]):
         filePath = f'{str(uuid.uuid4())}.ttl'
         g = Graph()
@@ -1893,6 +1899,18 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Delete generated Turtle file
         os.remove(filePath)
 
+    def collect_triples_for_output_chemical_of_chem_sol(self, chemical_solution: ChemicalSolution, rxn_exp_iri: str, g: Graph = Graph()):
+        # NOTE we do NOT call create_instance_for_kg for chemical_solution here
+        # NOTE as the triples about the chemical_solution itself (and vial) should already be in the KG
+        # <chemical_solution> <refersToMaterial> <output_chemical>
+        g.add((URIRef(chemical_solution.instance_iri), URIRef(ONTOCAPE_REFERSTOMATERIAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
+        # Also add triples related to the OutputChemical
+        g = chemical_solution.refersToMaterial.create_instance_for_kg(g)
+        # <rxn_exp_iri> <hasOutputChemical> <output_chemical>
+        g.add((URIRef(rxn_exp_iri), URIRef(ONTORXN_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
+        return g
+
+    # TODO delete below method, should use collect_triples_for_output_chemical_of_chem_sol instead
     def write_output_chemical_of_chem_sol_back_to_kg(self, chemical_solution: ChemicalSolution, rxn_exp_iri: str):
         filePath = f'{str(uuid.uuid4())}.ttl'
         g = Graph()

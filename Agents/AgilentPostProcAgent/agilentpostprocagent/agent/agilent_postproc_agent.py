@@ -1,4 +1,8 @@
-from pyasyncagent import AsyncAgent, FlaskConfig
+from pyderivationagent import DerivationAgent
+from pyderivationagent import DerivationInputs
+from pyderivationagent import DerivationOutputs
+from pyderivationagent import FlaskConfig
+
 from flask import Flask
 from pathlib import Path
 
@@ -7,25 +11,18 @@ from agilentpostprocagent.data_model import *
 import agilentpostprocagent.hypo_rxn as hypo
 from agilentpostprocagent.conf import *
 
-class AgilentPostProcAgent(AsyncAgent):
-    def __init__(self, fs_url: str, fs_user: str, fs_pwd: str,
-        agent_iri: str, time_interval: int, derivation_instance_base_url: str,
-        kg_url: str, kg_user: str = None, kg_password: str = None,
-        app: Flask = Flask(__name__), flask_config: FlaskConfig = FlaskConfig(), logger_name: str = "dev"
-    ):
-        super().__init__(agent_iri, time_interval, derivation_instance_base_url, kg_url, kg_user, kg_password, app, flask_config, logger_name)
-        self.fs_url = fs_url
-        self.fs_user = fs_user
-        self.fs_pwd = fs_pwd
-
-    def setupJob(self, agentInputs) -> list:
+class AgilentPostProcAgent(DerivationAgent):
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         """This method takes iri of OntoHPLC:HPLCReport and generates a list of iris of OntoRxn:PerformanceIndicator."""
         # Create sparql_client
         self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUrl, kg_user=self.kgUser, kg_password=self.kgPassword, fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_pwd
+            self.kgUrl, self.kgUrl, kg_user=self.kgUser, kg_password=self.kgPassword, fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_password
         )
-        # Get the HPLCReport iri from the agent inputs
-        hplc_report_iri = self.collectInputsInformation(agentInputs)
+        # Get the HPLCReport iri from the agent inputs (derivation_inputs)
+        try:
+            hplc_report_iri = derivation_inputs.getIris(ONTOHPLC_HPLCREPORT)[0]
+        except Exception as e:
+            self.logger.error(e)
 
         # Retrieve the ReactionExperiment instance that the HPLCReport is generated for
         rxn_exp_instance = self.sparql_client.get_rxn_exp_associated_with_hplc_report(hplc_report_iri)
@@ -51,28 +48,30 @@ class AgilentPostProcAgent(AsyncAgent):
             )[0] # [0] is used here to simplify the implementation as we know there will be only one performance indicator for such clz type
             lst_performance_indicator.append(pi)
 
-        # Write the generated OutputChemical triples and PerformanceIndicator triples back to KG
-        self.sparql_client.write_performance_indicator_back_to_kg(lst_performance_indicator)
-        self.sparql_client.write_output_chemical_of_chem_sol_back_to_kg(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri)
+        # Collect the generated OutputChemical triples and PerformanceIndicator triples to a rdflib.Graph instance
+        g = self.sparql_client.collect_triples_for_performance_indicators(lst_performance_indicator)
+        g = self.sparql_client.collect_triples_for_output_chemical_of_chem_sol(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri, g)
+        # self.sparql_client.write_performance_indicator_back_to_kg(lst_performance_indicator)
+        # self.sparql_client.write_output_chemical_of_chem_sol_back_to_kg(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri)
 
-        # Return a list of PerformanceIndicator iri as agent output (new derived IRI)
-        return [pi.instance_iri for pi in lst_performance_indicator]
+        # Write all the generated triples to derivation_outputs
+        derivation_outputs.addGraph(g)
 
-    def collectInputsInformation(self, agent_inputs) -> str:
-        """
-            This function checks the agent input against the I/O signature as declared in the PostProc Agent OntoAgent instance and collects information.
-        """
-        self.logger.info("Checking arguments...")
-        exception_string = """Inputs are not provided in correct form. An example is: 
-                                {
-                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCReport": "https://www.example.com/triplestore/ontohplc/HPLC_1/HPLCReport_1",
-                                }"""
-        # If the input JSON string is missing mandatory keys, raise error with "exception_string"
-        if ONTOHPLC_HPLCREPORT in agent_inputs:
-            return agent_inputs[ONTOHPLC_HPLCREPORT]
-        else:
-            self.logger.error('OntoHPLC:HPLCReport instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
-            raise Exception('OntoHPLC:HPLCReport instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
+    # def collectInputsInformation(self, agent_inputs) -> str:
+    #     """
+    #         This function checks the agent input against the I/O signature as declared in the PostProc Agent OntoAgent instance and collects information.
+    #     """
+    #     self.logger.info("Checking arguments...")
+    #     exception_string = """Inputs are not provided in correct form. An example is: 
+    #                             {
+    #                                 "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCReport": "https://www.example.com/triplestore/ontohplc/HPLC_1/HPLCReport_1",
+    #                             }"""
+    #     # If the input JSON string is missing mandatory keys, raise error with "exception_string"
+    #     if ONTOHPLC_HPLCREPORT in agent_inputs:
+    #         return agent_inputs[ONTOHPLC_HPLCREPORT]
+    #     else:
+    #         self.logger.error('OntoHPLC:HPLCReport instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
+    #         raise Exception('OntoHPLC:HPLCReport instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
 
 def default():
     """
