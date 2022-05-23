@@ -26,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
-@WebServlet(urlPatterns = {DifferenceAgent.API_PATTERN})
+@WebServlet(urlPatterns = { DifferenceAgent.API_PATTERN }, loadOnStartup = 1) // agent init() once deployed
 public class DifferenceAgent extends DerivationAgent {
 	
 	private static final Logger LOGGER = LogManager.getLogger(DifferenceAgent.class);

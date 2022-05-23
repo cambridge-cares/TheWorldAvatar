@@ -1,0 +1,3 @@
+git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
+testcontainers
+pytest
