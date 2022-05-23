@@ -93,10 +93,10 @@ function install_project {
     echo "-----------------------------------------------"
     echo
     get_pip_path
-    $PIPPATH --disable-pip-version-check install $DEV_INSTALL $SPATH
+    $PIPPATH --disable-pip-version-check install --no-cache-dir $DEV_INSTALL $SPATH
     if [[ "${DEV_INSTALL}" == "-e" ]];
     then
-        $PIPPATH --disable-pip-version-check install -e $SPATH"[dev]"
+        $PIPPATH --disable-pip-version-check install --no-cache-dir -e $SPATH"[dev]"
     fi
     if [ $? -eq 0 ]; then
     	echo ""
@@ -118,7 +118,7 @@ function install_agentlogging_workaround {
     echo "-----------------------------------------------"
     echo "As PyPI does NOT allow install_requires direct"
     echo "links, so we could NOT add package agentlogging"
-    echo "from 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'"
+    echo "from 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'"
     echo "as dependency, therefore, in order to pass the"
     echo "run_pyderivationagent_tests() and release_to_pypi(),"
     echo " we here introduce a workaround here to install"
@@ -127,7 +127,7 @@ function install_agentlogging_workaround {
     echo "-----------------------------------------------"
     echo
     get_pip_path
-    $PIPPATH --disable-pip-version-check install "git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils"
+    $PIPPATH --disable-pip-version-check install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
     if [ $? -eq 0 ]; then
         echo ""

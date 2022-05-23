@@ -99,7 +99,7 @@ run_pyderivationagent_tests() {
     echo
     echo
     echo $1
-    $1 -m pytest tests/
+    $1 -m pytest tests/ --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
     TEST_RESULT=$?
     if [ $TEST_RESULT -eq 0 ]; then
         echo "All tests have completed successfully"
@@ -213,7 +213,9 @@ test_release() {
     fi
     $PYTHON_EXEC -m pip install pytest
     $PYTHON_EXEC -m pip install testcontainers
-    $PYTHON_EXEC -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils"
+    $PYTHON_EXEC -m pip install pytest-docker-compose
+    $PYTHON_EXEC -m pip install pytest-rerunfailures
+    $PYTHON_EXEC -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
     run_pyderivationagent_tests $PYTHON_EXEC
 
