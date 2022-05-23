@@ -114,9 +114,11 @@ public class DerivationOutputsTest {
 	}
 
 	@Test
-	public void testSetOldEntitiesMap()
+	public void testSetOldEntitiesMap1()
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException,
 			IllegalAccessException {
+		// this test case tests public void setOldEntitiesMap(JSONObject
+		// oldEntitiesRdfType)
 		JSONObject oldEntitiesRdfType = new JSONObject();
 		oldEntitiesRdfType.put(instance1, class1);
 		oldEntitiesRdfType.put(instance2, class2);
@@ -141,8 +143,33 @@ public class DerivationOutputsTest {
 	}
 
 	@Test
-	public void testSetOldEntitiesDownstreamDerivationMap()
+	public void testSetOldEntitiesMap2()
+			throws NoSuchFieldException, SecurityException, IllegalArgumentException,
+			IllegalAccessException {
+		// this test case tests public void setOldEntitiesMap(Map<String, String>
+		// oldEntitiesRdfTypeMap)
+		Map<String, String> oldEntitiesRdfType = new HashMap<>();
+		oldEntitiesRdfType.put(instance1, class1);
+		oldEntitiesRdfType.put(instance2, class2);
+		oldEntitiesRdfType.put(instance3, class3);
+		DerivationOutputs devOutputs = new DerivationOutputs();
+		devOutputs.setOldEntitiesMap(oldEntitiesRdfType);
+		// Retrieve the value of the private field 'outputs' of the client
+		Field outputs = devOutputs.getClass().getDeclaredField("oldEntitiesMap");
+		outputs.setAccessible(true);
+		Map<String, String> map = (Map<String, String>) outputs.get(devOutputs);
+		// the retrieved value should correctly processed the JSONObject
+		Assert.assertEquals(class1, map.get(instance1));
+		Assert.assertEquals(class2, map.get(instance2));
+		Assert.assertEquals(class3, map.get(instance3));
+	}
+
+	@Test
+	public void testSetOldEntitiesDownstreamDerivationMap1()
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		// this test case tests public void
+		// setOldEntitiesDownstreamDerivationMap(JSONObject
+		// oldEntitiesDownstreamDerivation)
 		JSONObject oldEntitiesDownstreamDerivation = new JSONObject();
 		oldEntitiesDownstreamDerivation.put(instance1, new JSONArray(Arrays.asList(derivation1_1, derivation1_2)));
 		oldEntitiesDownstreamDerivation.put(instance2,
@@ -166,6 +193,28 @@ public class DerivationOutputsTest {
 		Assert.assertTrue(e.getMessage()
 				.contains(DerivationOutputs.OLD_ENTITIES_DOWNSTREAM_DERIVATION_MAP_ERROR
 						+ oldEntitiesDownstreamDerivation.toString()));
+	}
+
+	@Test
+	public void testSetOldEntitiesDownstreamDerivationMap2()
+			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		// this test case tests public void
+		// setOldEntitiesDownstreamDerivationMap(Map<String, List<String>>
+		// oldEntitiesDownstreamDerivationMap)
+		Map<String, List<String>> oldEntitiesDownstreamDerivation = new HashMap<>();
+		oldEntitiesDownstreamDerivation.put(instance1, Arrays.asList(derivation1_1, derivation1_2));
+		oldEntitiesDownstreamDerivation.put(instance2, Arrays.asList(derivation2_1, derivation2_2, derivation2_3));
+		oldEntitiesDownstreamDerivation.put(instance3, Arrays.asList(derivation3_1));
+		DerivationOutputs devOutputs = new DerivationOutputs();
+		devOutputs.setOldEntitiesDownstreamDerivationMap(oldEntitiesDownstreamDerivation);
+		// Retrieve the value of the private field 'outputs' of the client
+		Field outputs = devOutputs.getClass().getDeclaredField("oldEntitiesDownstreamDerivationMap");
+		outputs.setAccessible(true);
+		Map<String, List<String>> map = (Map<String, List<String>>) outputs.get(devOutputs);
+		// the retrieved value should correctly processed the JSONObject
+		Assert.assertTrue(equalLists(Arrays.asList(derivation1_1, derivation1_2), map.get(instance1)));
+		Assert.assertTrue(equalLists(Arrays.asList(derivation2_1, derivation2_2, derivation2_3), map.get(instance2)));
+		Assert.assertTrue(equalLists(Arrays.asList(derivation3_1), map.get(instance3)));
 	}
 
 	@Test
