@@ -1,8 +1,10 @@
 git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
-git+https://github.com/cambridge-cares/TheWorldAvatar@152-dev-pyderivationagent#subdirectory=JPS_BASE_LIB/python_derivation_agent
 git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots
+pyderivationagent
 summit
 pandas
 pydantic
 testcontainers
 pytest
+pytest-docker-compose
+pytest-rerunfailures

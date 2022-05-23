@@ -7,7 +7,7 @@ The DoE Agent is designed to automate the design of experiment exercise. It does
 ## Building the Docker image
 Requirements:
 
-* The Python code of this Agent requires the `pyderivationagent` library, which can be downloaded from the external PyPi website (will be released soon). It should be noted that `pyderivationagent` library relies on the `py4jps` package to utilise the functions provided in `jps-base-lib`. Therefore, in case one need to use new functions in a version of `jps-base-lib` that is NOT yet released as part of `py4jps`, developer may build it by oneself from the `JPS_BASE_LIB` in the branch where the new functions are developed. Given that (1) you are at correct branch (the one contains your new functions), (2) maven is correctly installed on your machine, and most importantly, (3) you provided the correct credentials to access the Github in your `.m2` settings file, the build can be done using below commands:
+* The Python code of this Agent requires the `pyderivationagent` library, which can be downloaded from the external PyPI website (https://pypi.org/project/pyderivationagent/). It should be noted that `pyderivationagent` library relies on the `py4jps` package to utilise the functions provided in `jps-base-lib`. Therefore, in case one need to use new functions in a version of `jps-base-lib` that is NOT yet released as part of `py4jps`, developer may build it by oneself from the `JPS_BASE_LIB` in the branch where the new functions are developed. Given that (1) you are at correct branch (the one contains your new functions), (2) maven is correctly installed on your machine, and most importantly, (3) you provided the correct credentials to access the Github in your `.m2` settings file, the build can be done using below commands:
     ```cmd
     git pull
     git checkout <your_branch_with_new_functions>
@@ -101,7 +101,7 @@ The dockerised integration test can be invoked via below commands:
 `(Linux)`
 ```sh
 cd /your_absolute_path_to/TheWorldAvatar/Agents/DoEAgent
-pytest -s doeagent/tests/test_docker_integration.py --docker-compose=./docker-compose.test.yml
+pytest -s doeagent/tests/test_docker_integration.py --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
 ```
 
 If everything is working as expected, an output on console should be expected similar to the one below (this might take a few minutes) (**Please make a note of the IRI in the response as `<createdDerivationInstance>`, you will need this for querying later**):
@@ -143,5 +143,5 @@ Another dockerised integration test is provided in the similar setting, except t
 `(Linux)`
 ```sh
 cd /your_absolute_path_to/TheWorldAvatar/Agents/DoEAgent
-pytest -s doeagent/tests/test_example_doe.py
+pytest -s doeagent/tests/test_example_doe.py --reruns 5 --reruns-delay 5
 ```
