@@ -17,7 +17,7 @@
             <groupId>uk.ac.cam.cares.jps.agent.ldf-server</groupId>
             <artifactId>trained_models</artifactId>
             <type>zip</type>
-            <version>2.0.0</version>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 
