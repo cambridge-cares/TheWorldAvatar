@@ -59,7 +59,7 @@ def get_dataloaders(train, val, test, batch_size, column_x, column_y, transforme
 
     return train_dl, val_dl, test_dl
 
-class MlpWithLightning(util_lightning.OscmlModule):
+class MlpWithLightning(util_lightning.LightningModelWrapper):
 
     def __init__(self, mlp_units, mlp_dropouts, transformer, optimizer):
         super().__init__(optimizer, transformer)

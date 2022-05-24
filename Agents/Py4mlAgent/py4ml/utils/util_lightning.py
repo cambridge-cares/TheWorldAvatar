@@ -35,13 +35,13 @@ def get_standard_params_for_trainer(metric, save_checkpoints=True):
 
     return params
 
-class OscmlModule(pl.LightningModule):
+class LightningModelWrapper(pl.LightningModule):
 
     def __init__(self, optimizer, transformer):
         super().__init__()
 
         params = {'optimizer': optimizer, 'transformer': transformer}
-        logging.info('initializing OscmlModule with %s', params)
+        logging.info('initializing LightningModelWrapper with %s', params)
 
         self.optimizer = optimizer
         self.transformer = transformer
