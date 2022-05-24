@@ -345,6 +345,7 @@ def NN_ModelPredict(trial, model, data, objConfig, objParams):
         else:
             obj_value = model(batch).numpy()[0]
             obj_value= transformer.inverse_transform_y(obj_value)
+            obj_value = obj_value[0]
         obj_values.append(obj_value)
     _logModelPredict(trial, model, data, objConfig, objParams, obj_values)
     return obj_values
@@ -380,16 +381,6 @@ def _logModelPredict(trial, model, data, objConfig, objParams, obj_values):
         logging.info('objective value: %s , actual value: %s for input: %s', obj_val, act_out, predict_input)
     df = pd.DataFrame(predicted_results, columns=['predicted Y', 'actual Y','x'])
 
-    if actual_output:
-        for obj_val, predict_input, act_out in zip(obj_values,predict_inputs,actual_output):
-            predicted_results.append([obj_val, act_out, predict_input])
-            logging.info('objective value: %s , actual value: %s for input: %s', obj_val, act_out, predict_input)
-        df = pd.DataFrame(predicted_results, columns=['predicted Y', 'actual Y','x'])
-    else:
-        for obj_val, predict_input in zip(obj_values,predict_inputs):
-            predicted_results.append([obj_val, predict_input])
-            logging.info('objective value: %s for input: %s', obj_val, predict_input)
-        df = pd.DataFrame(predicted_results, columns=['predicted Y', 'x'])
     df.to_csv(path_or_buf=os.path.join(log_dir,'model_predict.csv'), index=False)
 
 def NN_empty_torch_cache():

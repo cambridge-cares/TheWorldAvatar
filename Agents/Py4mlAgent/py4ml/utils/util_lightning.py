@@ -45,13 +45,6 @@ class OscmlModule(pl.LightningModule):
 
         self.optimizer = optimizer
         self.transformer = transformer
-        self.inverse_transform_y = None
-        if self.transformer.transform_y_cols:
-            self.inverse_transform_y = lambda x : x * self.transformer.std_y + self.transformer.mean_y
-
-        self.inverse_transform_x = None
-        if self.transformer.transform_x_cols:
-            self.inverse_transform_x = lambda x : x * self.transformer.std_x + self.transformer.mean_x
 
         self.test_predictions = None
 
@@ -81,7 +74,7 @@ class OscmlModule(pl.LightningModule):
     def validation_epoch_end(self, outputs):
         result, _, _ = shared_epoch_end(
             outputs, is_validation=True, epoch=self.current_epoch,
-            inverse_transform_fct=self.inverse_transform_y)
+            transformer=self.transformer)
 
         for key, value in result.items():
             self.log(key, value)
@@ -96,7 +89,7 @@ class OscmlModule(pl.LightningModule):
     def test_epoch_end(self, outputs):
         result, y, y_hat = shared_epoch_end(
             outputs, is_validation=False, epoch=self.current_epoch,
-            inverse_transform_fct=self.inverse_transform_y)
+            transformer=self.transformer)
 
         for key, value in result.items():
             self.log(key, value)
@@ -104,7 +97,7 @@ class OscmlModule(pl.LightningModule):
         self.test_predictions = (y, y_hat)
         return super().test_epoch_end(outputs)
 
-def shared_epoch_end(tensor_step_outputs, is_validation, epoch, inverse_transform_fct):
+def shared_epoch_end(tensor_step_outputs, is_validation, epoch, transformer):
     y_complete = np.array([])
     y_hat_complete = np.array([])
     for outputs in tensor_step_outputs:
@@ -121,9 +114,9 @@ def shared_epoch_end(tensor_step_outputs, is_validation, epoch, inverse_transfor
         y_hat_complete = np.concatenate((y_hat_complete, y_hat))
 
     loss = sklearn.metrics.mean_squared_error(y_complete, y_hat_complete, squared=True)
-    if inverse_transform_fct:
-        y_complete = inverse_transform_fct(y_complete)
-        y_hat_complete = inverse_transform_fct(y_hat_complete)
+    if transformer:
+        y_complete = transformer.inverse_transform_y(y_complete)
+        y_hat_complete = transformer.inverse_transform_y(y_hat_complete)
     metrics = calculate_metrics(y_complete, y_hat_complete)
 
     if is_validation:
