@@ -13,7 +13,8 @@ def main():
     args = KGEArgParser().get_args(sys.argv[1:])
 
     # Preparing data and cache the data for later usage
-    knowledge_graph = KnowledgeGraph(dataset=args.dataset_name, custom_dataset_path=args.dataset_path)
+    #knowledge_graph = KnowledgeGraph(dataset=args.dataset_name, custom_dataset_path=args.dataset_path)
+    knowledge_graph = KnowledgeGraph(dataset=args.dataset_name, custom_dataset_path=r'../../../Dataset')
     knowledge_graph.prepare_data()
 
     # Extracting the corresponding model config and definition from Importer().
@@ -29,3 +30,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+    # To start the training, use the following command.
+    #  pykg2vec-train -exp True -mn TransE -ds pubchem -dsp '../../../Dataset' -hpf config.yaml
