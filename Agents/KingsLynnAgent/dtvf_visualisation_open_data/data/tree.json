@@ -28,10 +28,5 @@
         "layerName": "Flood areas",
         "defaultState": "visible",
         "layerIDs": ["flood-areas", "flood-warnings"]
-    },
-	{
-        "layerName": "Restricted areas",
-        "defaultState": "visible",
-        "layerIDs": ["parks-and-gardens"]
     }
 ]
