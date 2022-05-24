@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.agent;
+package uk.ac.cam.cares.jps.base.router;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
-import uk.ac.cam.cares.jps.base.router.AgentRouter;
 
 /**
  * Agent Caller class to send HTTP requests to an agent with a given "agentID" (name).

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.agent.test;
+package uk.ac.cam.cares.jps.base.router.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,9 +12,9 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
-import uk.ac.cam.cares.jps.base.agent.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.http.Http;
+import uk.ac.cam.cares.jps.base.router.AgentCaller;
 
 @WireMockTest()
 class AgentCallerTest {
