@@ -13,3 +13,4 @@ CURRENT_DIR=$PWD
 pushd $1
 ./$2 -w $CURRENT_DIR/
 popd
+

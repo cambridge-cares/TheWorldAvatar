@@ -111,7 +111,7 @@ public class IntegrationTest extends TestCase {
 
         // the response is a JSON object containing the IRIs of the initialised instances, refer to InitialiseInstances for the keys
         InitialiseInstances initialisation = new InitialiseInstances();
-        response = initialisation.initialise(sparqlClient, devClient);
+        response = initialisation.initialise6(sparqlClient, devClient);
 
         // create the instance of the asyn agents, init() method will be called later in the test case
         rngAgent = new RNGAgent(storeClient, Config.derivationInstanceBaseURL);
@@ -182,23 +182,11 @@ public class IntegrationTest extends TestCase {
         Assert.assertEquals(currentTimestamp_minvalue_derivation, 0);
         Assert.assertEquals(currentTimestamp_rng_derivation, 0);
 
-        // get IRIs of initialise instances, the keys are located in the servlet InitialiseInstances
-        // instances
-        String listofrandompoints_instance = response.getString("ListOfRandomPoints instance");
-        String maxvalue_instance = response.getString("MaxValue instance");
-        String minvalue_instance = response.getString("MinValue instance");
-        String difference_instance = response.getString("Difference instance");
-        
-        // test if only one instance was created for each type of derived quantities
-        Assert.assertEquals(listofrandompoints_instance, sparqlClient.getListOfRandomPointsIRI());
-        Assert.assertEquals(maxvalue_instance, sparqlClient.getMaxValueIRI());
-        Assert.assertEquals(minvalue_instance, sparqlClient.getMinValueIRI());
-        Assert.assertEquals(difference_instance, sparqlClient.getDifferenceIRI());
-        
-        // test if the derived quantities are initiliased with predefined value
-        Assert.assertEquals(0, sparqlClient.getValue(maxvalue_instance));
-        Assert.assertEquals(0, sparqlClient.getValue(minvalue_instance));
-        Assert.assertEquals(0, sparqlClient.getValue(difference_instance));
+        // test that NO instance should be created for each type of derived quantities
+        Assert.assertTrue(sparqlClient.getListOfRandomPointsIRI().isEmpty());
+        Assert.assertTrue(sparqlClient.getMaxValueIRI().isEmpty());
+        Assert.assertTrue(sparqlClient.getMinValueIRI().isEmpty());
+        Assert.assertTrue(sparqlClient.getDifferenceIRI().isEmpty());
 
         // test if all derivations were marked as Requested
         Assert.assertEquals(StatusType.REQUESTED, (StatusType) getStatusType.invoke(devSparql, difference_derivation));
@@ -231,9 +219,10 @@ public class IntegrationTest extends TestCase {
         }
         // wait arbitrary amount of time so that the cleaning up is finished
         TimeUnit.SECONDS.sleep(5);
-        Assert.assertNotEquals(response.getString("ListOfRandomPoints instance"), sparqlClient.getListOfRandomPointsIRI());
         // test if it contains correct number of points
         Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()), sparqlClient.getAmountOfPointsInList());
+        Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()),
+                sparqlClient.getAmountOfPointsInKG());
     }
 
     @Test
@@ -251,7 +240,6 @@ public class IntegrationTest extends TestCase {
         // wait arbitrary amount of time so that the cleaning up is finished
         TimeUnit.SECONDS.sleep(5);
         String maxvalue_instance = sparqlClient.getMaxValueIRI();
-        Assert.assertNotEquals(response.getString("MaxValue instance"), maxvalue_instance);
         // test if the value is the same as the max value
         Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getListOfRandomPointsIRI(), true), sparqlClient.getValue(maxvalue_instance));
     }
@@ -270,7 +258,6 @@ public class IntegrationTest extends TestCase {
         // wait arbitrary amount of time so that the cleaning up is finished
         TimeUnit.SECONDS.sleep(5);
         String minvalue_instance = sparqlClient.getMinValueIRI();
-        Assert.assertNotEquals(response.getString("MinValue instance"), minvalue_instance);
         // test if the value is the same as the min value
         Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getListOfRandomPointsIRI(), false), sparqlClient.getValue(minvalue_instance));
     }
@@ -288,8 +275,6 @@ public class IntegrationTest extends TestCase {
         }
         // wait arbitrary amount of time so that the cleaning up is finished
         TimeUnit.SECONDS.sleep(5);
-        String difference_instance = sparqlClient.getDifferenceIRI();
-        Assert.assertNotEquals(response.getString("Difference instance"), difference_instance);
         // test if the value is the same as the difference value
         int difference = sparqlClient.getValue(sparqlClient.getMaxValueIRI()) - sparqlClient.getValue(sparqlClient.getMinValueIRI());
         Assert.assertEquals(difference, sparqlClient.getValue(sparqlClient.getDifferenceIRI()));
