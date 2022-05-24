@@ -10,16 +10,24 @@ class DataTransformer():
         self.transform_x_cols = transform_x_cols
         self.mean_x = None
         self.std_x = None
+        self.mean_y = None
+        self.std_y = None
         self.transform_type = transform_type
 
+        # Only z-transform currently supported.
+        # This requires serious re-write btw so that more transform types are allowed etc..
+        # Transform could be a separate object in itself..
         if self.transform_type == 'z-transform':
-            self.mean_x = list(df[transform_x_cols].mean())
-            self.std_x = list(df[transform_x_cols].std(ddof=0))
+            self.mean_x = df[transform_x_cols].mean().to_list()
+            self.std_x = df[transform_x_cols].std(ddof=0).to_list()
             logging.info('calculated features mean_x=%s, std_x=%s', self.mean_x, self.std_x)
 
-            self.mean_y = [df[transform_y_cols].mean()]
-            self.std_y = [df[transform_y_cols].std(ddof=0)]
+            self.mean_y = [df[transform_y_cols].mean().item()]
+            self.std_y = [df[transform_y_cols].std(ddof=0).item()]
             logging.info('calculated target mean_y=%s, std_y=%s', self.mean_y, self.std_y)
+
+    def __str__(self):
+        return f"transform_type = {self.transform_type}, mean_x = {self.mean_x} std_x = {self.std_x}, mean_y = {self.mean_y} std_y = {self.std_y}"
 
     def transform_x(self, data):
         if self.transform_type == 'z-transform':
