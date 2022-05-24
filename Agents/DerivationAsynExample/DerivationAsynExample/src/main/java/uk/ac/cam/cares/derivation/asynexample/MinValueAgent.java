@@ -26,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
-@WebServlet(urlPatterns = {MinValueAgent.API_PATTERN})
+@WebServlet(urlPatterns = { MinValueAgent.API_PATTERN }, loadOnStartup = 1) // agent init() once deployed
 public class MinValueAgent extends DerivationAgent {
 	
 	private static final Logger LOGGER = LogManager.getLogger(MinValueAgent.class);

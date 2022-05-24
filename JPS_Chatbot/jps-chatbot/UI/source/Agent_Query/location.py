@@ -19,6 +19,8 @@ SOURCE_DIR = os.path.join(ROOT_DIR, 'source')
 DATA_PREPARATION_DIR = os.path.join(ROOT_DIR, 'data_preparation')
 FILE_DIR = os.path.join(DATA_PREPARATION_DIR, 'files')
 
+
+
 print('SOURCE_DIR', SOURCE_DIR)
 
 # print('AGENT_QUERY_DIR', AGENT_QUERY_DIR)

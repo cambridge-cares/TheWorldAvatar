@@ -105,12 +105,6 @@ public class InitialiseInstances extends JPSAgent {
 			throw new JPSRuntimeException(e);
 		}
 
-		// invoke all asynchronous agents so that they can be initialised
-		AgentCaller.executeGet(Config.agentHttpUrlRNG);
-		AgentCaller.executeGet(Config.agentHttpUrlMaxValue);
-		AgentCaller.executeGet(Config.agentHttpUrlMinValue);
-		AgentCaller.executeGet(Config.agentHttpUrlDifference);
-
 		return response;
 	}
 

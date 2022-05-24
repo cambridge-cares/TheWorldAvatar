@@ -73,8 +73,8 @@ slug: marie
 	<ul>
 		<li><div class="sample-question">What is the lennard jones well depth of C2H2O2</div></li>
 		<li><div class="sample-question">Polarizability of C2H2O2</div></li>
-		<li><div class="sample-question">What is the dipole moment of C2H2O2</div></li>
-		<li><div class="sample-question">Rotational relaxation collision number of HOCH2O2H</div></li>
+		<!--<li><div class="sample-question">What is the dipole moment of C2H2O2</div></li>-->
+		<!--<li><div class="sample-question">Rotational relaxation collision number of HOCH2O2H</div></li>-->
 	</ul>
 </div>
 
@@ -94,8 +94,8 @@ slug: marie
 <div class="accordion-panel">
 	To query properties of a certain class of molecules.
 	<ul>
-		<li><div class="sample-question">Mass of aromatic hydrocarbons</div></li>
-		<li><div class="sample-question">Molecular model of aromatic hydrocarbons</div></li>
+		<!--<li><div class="sample-question">Mass of aromatic hydrocarbons</div></li>-->
+		<!--<li><div class="sample-question">Molecular model of aromatic hydrocarbons</div></li>-->
 		<li><div class="sample-question">Chemical structure of aromatic hydrocarbons</div></li>
 	</ul>
 </div>
@@ -104,7 +104,7 @@ slug: marie
 <div class="accordion-panel">
 	To find molecules meeting certain conditions.
 	<ul>
-		<li><div class="sample-question">Chemical formula of alkanol with heat capacity less than 15</div></li>
+		<!--<li><div class="sample-question">Chemical formula of alkanol with heat capacity less than 15</div></li>-->
 		<li><div class="sample-question">Mass of aromatic hydrocarbons with mass less than 170</div></li>
 		<li><div class="sample-question">Aromatic hydrocarbons with mass less than 170</div></li>
 		<li><div class="sample-question">Chemical formula of alkanol with heat capacity less than 15</div></li>
@@ -115,8 +115,8 @@ slug: marie
 <div class="accordion-panel">
 	To find molecules by their SMILES.
 	<ul>
-		<li><div class="sample-question">What is the molecular weight of c1ccccc1</div></li>
-		<li><div class="sample-question">Show me the molecular model of CH2=CHCHO</div></li>
+		<!--<li><div class="sample-question">What is the molecular weight of c1ccccc1</div></li>-->
+		<!--<li><div class="sample-question">Show me the molecular model of CH2=CHCHO</div></li>-->
 		<li><div class="sample-question">Show me the ionization energy of C1=CC=CC=C1</div></li>
 		<li><div class="sample-question">What is the heat capacity of c1=cc=cc=c1</div></li>
 	</ul>
@@ -129,7 +129,7 @@ slug: marie
 		<li><div class="sample-question">Molecular weight of ch4</div></li>
 		<li><div class="sample-question">Chemical structure of benzene</div></li>
 		<!--<li><div class="sample-question">Standard enthalpy of formation of methane</div></li>-->
-		<li><div class="sample-question">What is the conjugate base of ethanedionic acid</div></li>
+		<!--<li><div class="sample-question">What is the conjugate base of ethanedionic acid</div></li>-->
 	</ul>
 </div>
 <br>
