@@ -92,7 +92,7 @@ class JobHandler:
             # get the data, and
             # - if cross_validation on: splits them into train, val and test
             crossValidation = self.configParams['training']['cross_validation'] > 1
-            transferLearning = self.configParams['post_processing']['transfer'] and self.goals[0].name == 'transfer_learning'
+            transferLearning = self.goals[0].name == 'transfer_learning'
 
             self._initData(crossValidation=crossValidation, transferLearning=transferLearning, nestedCvFolds=nestedCvFolds)
             for cvFold in range(nestedCvFolds):

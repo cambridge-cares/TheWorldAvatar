@@ -113,14 +113,10 @@ def shared_epoch_end(tensor_step_outputs, is_validation, epoch, transformer):
         y_hat = y_hat.numpy()
         y_hat_complete = np.concatenate((y_hat_complete, y_hat))
 
-    loss = sklearn.metrics.mean_squared_error(y_complete, y_hat_complete, squared=True)
-    if transformer:
-        y_complete = transformer.inverse_transform_y(y_complete)
-        y_hat_complete = transformer.inverse_transform_y(y_hat_complete)
     metrics = calculate_metrics(y_complete, y_hat_complete)
 
     if is_validation:
-        result = {'phase': 'val', 'val_loss': loss}
+        result = {'phase': 'val'}
     else: # test
         result = {'phase': 'test'}
 
