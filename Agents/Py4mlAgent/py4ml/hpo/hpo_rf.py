@@ -7,6 +7,7 @@ from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
                                 BL_bestTrialRetrainDataPreproc, \
                                 BL_loadModelFromCheckpoint, BL_ModelPredict
 from py4ml.utils.util_config import set_config_param
+import copy
 import pandas as pd
 import numpy as np
 
@@ -61,7 +62,7 @@ def addHpoSettings(objective, crossValidation):
 def model_create(trial, data, objConfig, objParams):
     # set model parameters from the config file
     #--------------------------------------
-    model_conf = objConfig['config']['model']['model_specific']
+    model_conf = copy.deepcopy(objConfig['config']['model']['model_specific'])
     metric = objParams['training']['metric']
     model_params = {}
     for key, value in model_conf.items():

@@ -9,6 +9,7 @@ from py4ml.hpo.hpo_utils import NN_logBestTrialRetraining
 from py4ml.hpo.hpo_utils import NN_valDataCheck, NN_loadModelFromCheckpoint, NN_ModelPredict
 import torch
 import torch.utils.data
+import copy
 import pandas as pd
 
 def getObjectiveMLP(
@@ -73,16 +74,16 @@ def addHpoSettings(objective, crossValidation, config):
 def model_create(trial, data, objConfig, objParams, modelCreatorClass):
     transformer = data['transformer']
 
-    batch_size = objParams['training']['batch_size']
     optimizer = objParams['training']['optimiser']
+    model_specific = copy.deepcopy(objConfig['config']['model']['model_specific'])
 
     # set model parameters from the config file
     model_params = {}
-    for key, value in objConfig['config']['model']['model_specific'].items():
+    for key, value in model_specific.items():
         model_params.update({key: set_config_param(trial=trial,param_name=key,param=value, all_params=model_params)})
 
     # add output dimension to the mlp_units
-    model_params['mlp_units'] = model_params.get('mlp_units', []) + [1]
+    model_params['mlp_units'] = model_params.get('mlp_units', []) + [len(data['y_column'])]
 
     mlp_units_with_input_dim = [model_params.pop('in_features', len(data['x_column']))]
     mlp_units_with_input_dim.extend(model_params['mlp_units'])
