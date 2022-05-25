@@ -10,8 +10,11 @@ import os
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
-from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
+from pyderivationagent.conf import config_derivation_agent
+
+from agilentpostprocagent.kg_operations import ChemistryAndRobotsSparqlClient
 from agilentpostprocagent.agent import *
+from flask import Flask
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
@@ -51,9 +54,10 @@ PLACEHOLDER_PERFORMANCE_INDICATOR_LIST_2 = [
     DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_cost_2'
 ]
 
-POSTPROC_ONTOAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__PostProc#Service'
-DERIVATION_PERIODIC_TIMESCALE = 20
-DERIVATION_INSTANCE_BASE_URL = 'http://localhost:8080/ontolab/'
+# Configuration env files
+# NOTE the triple store URL provided in the agent.*.env files are the URL to access blazegraph container WITHIN the docker stack
+POSTPROCAGENT_ENV = os.path.join(THIS_DIR,'agent.postproc.env.test')
+
 
 class FlaskConfigTest(FlaskConfig):
     # NOTE this to prevent below Exception when instantiating the HPLCInputAgent in the second-fourth test cases:
@@ -147,12 +151,7 @@ def initialise_triples(get_service_url, get_service_auth):
         sparql_client.uploadOntology(filePath)
 
     # Initialise PostProcAgent
-    post_proc_agent = AgilentPostProcAgent(
-        fs_url=fs_url, fs_user=fs_user, fs_password=fs_pwd,
-        agent_iri=POSTPROC_ONTOAGENT_SERVICE, time_interval=DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL, kg_url=sparql_endpoint, logger_name='dev',
-        flask_config=FlaskConfigTest() # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
-    )
+    post_proc_agent = create_postproc_agent(POSTPROCAGENT_ENV, sparql_endpoint)
 
     yield sparql_client, post_proc_agent
 
@@ -177,6 +176,27 @@ def retrieve_hplc_report():
         return local_file_path, timestamp_last_modified
     return _retrieve_hplc_report
 
+def create_postproc_agent(env_file: str = None, sparql_endpoint: str = None):
+    if env_file is None:
+        agent_config = config_derivation_agent()
+    else:
+        agent_config = config_derivation_agent(env_file)
+    return AgilentPostProcAgent(
+        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
+        kg_user=agent_config.KG_USERNAME,
+        kg_password=agent_config.KG_PASSWORD,
+        fs_url=agent_config.FILE_SERVER_ENDPOINT,
+        fs_user=agent_config.FILE_SERVER_USERNAME,
+        fs_password=agent_config.FILE_SERVER_PASSWORD,
+        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        app=Flask(__name__),
+        flask_config=FlaskConfigTest(), # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
+        logger_name='dev'
+    )
+
 def generate_random_download_path(filename_extension):
     return os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+filename_extension)
 
@@ -189,3 +209,9 @@ def clear_loggers():
         handlers = getattr(logger, 'handlers', [])
         for handler in handlers:
             logger.removeHandler(handler)
+
+def get_timestamp(derivation_iri: str, sparql_client):
+    query_timestamp = """SELECT ?time WHERE { <%s> <%s>/<%s>/<%s> ?time .}""" % (
+        derivation_iri, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION)
+    # the queried results must be converted to int, otherwise it will not be comparable
+    return int(sparql_client.performQuery(query_timestamp)[0]['time'])

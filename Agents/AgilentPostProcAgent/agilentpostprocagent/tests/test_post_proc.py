@@ -3,7 +3,9 @@ import logging
 import pytest
 import time
 
+
 logging.getLogger("py4j").setLevel(logging.INFO)
+logger = logging.getLogger("test_post_proc")
 
 pytest_plugins = ["docker_compose"]
 
@@ -21,8 +23,8 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
     res = sparql_client.getAmountOfTriples()
     assert res > 0
 
-    # Start the agent to monitor the derivations
-    post_proc_agent.start_monitoring_derivations()
+    # # Start the agent to monitor the derivations
+    # post_proc_agent.start_monitoring_derivations()
 
     # Upload HPLC report to file server
     local_file_path, timestamp_last_modified = retrieve_hplc_report(report_path_in_pkg)
@@ -44,20 +46,15 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
     derivation_iri = post_proc_agent.derivationClient.createAsyncDerivationForNewInfo(post_proc_agent.agentIRI, derivation_inputs)
-
-    # Check if the derivation instance is created correctly
-    assert sparql_client.checkInstanceClass(derivation_iri, conftest.ONTODERIVATION_DERIVATIONASYN)
+    logger.info("-------------------------------------------------------------------------------------")
+    logger.info("created derivation iri: "+derivation_iri)
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
     currentTimestamp_derivation = 0
-    query_timestamp = """SELECT ?time WHERE { <%s> <%s>/<%s>/<%s> ?time .}""" % (
-        derivation_iri, conftest.TIME_HASTIME, conftest.TIME_INTIMEPOSITION, conftest.TIME_NUMERICPOSITION)
     while currentTimestamp_derivation == 0:
         time.sleep(20)
-        currentTimestamp_derivation = int(sparql_client.performQuery(query_timestamp)[0]['time'])
-
-    # Wait some arbitrary time until the cleaning up is done by the derivation client
-    time.sleep(20)
+        currentTimestamp_derivation = conftest.get_timestamp(derivation_iri, sparql_client)
+        logger.info("current timestamp: "+str(currentTimestamp_derivation))
 
     # Query the new derived IRI
     query_new_derived_iri = """SELECT ?new_iri WHERE {?new_iri <%s> <%s>.}""" % (conftest.ONTODERIVATION_BELONGSTO, derivation_iri)
@@ -69,6 +66,10 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
     reload_pi_lst = [pi.instance_iri for pi in reload_rxn_rxp_instance.hasPerformanceIndicator]
     assert all([iri in new_derived_iri for iri in reload_pi_lst])
     for pi in reload_rxn_rxp_instance.hasPerformanceIndicator:
+        if pi.hasValue is None:
+            logger.info("============================================")
+            logger.error("reloaded experiment instance: " + str(reload_rxn_rxp_instance.dict()))
+            logger.info("============================================")
         assert pi.hasValue.hasUnit is not None
         assert pi.hasValue.hasNumericalValue is not None
     reload_output_chemical_lst = reload_rxn_rxp_instance.hasOutputChemical
@@ -85,5 +86,5 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
         assert all([conc in reload_phase_comp_conc_lst for conc in reload_conc_lst])
         assert all([conc in reload_conc_lst for conc in reload_phase_comp_conc_lst])
 
-    # Shutdown the scheduler to clean up before the next test
-    post_proc_agent.scheduler.shutdown()
+    # # Shutdown the scheduler to clean up before the next test
+    # post_proc_agent.scheduler.shutdown()
