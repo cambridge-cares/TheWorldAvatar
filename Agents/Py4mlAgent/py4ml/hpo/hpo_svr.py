@@ -8,6 +8,7 @@ from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
                                 BL_ModelPredict
 from py4ml.hpo.objclass import Objective
 from py4ml.utils.util_sklearn import train_model_hpo, best_model_retraining
+import copy
 import numpy as np
 import pandas as pd
 
@@ -64,7 +65,7 @@ def model_create(trial, data, objConfig, objParams):
         'kernel'
         'gamma_structural'
     """
-    model_conf = objConfig['config']['model']['model_specific']
+    model_conf = copy.deepcopy(objConfig['config']['model']['model_specific'])
     model_params = {}
     for key, value in model_conf.items():
         model_params.update({key: set_config_param(trial=trial,param_name=key,param=value, all_params=model_params)})
