@@ -13,3 +13,4 @@ dist/
 .vscode/
 
 # Miscellaneous files/folders:
+*.env

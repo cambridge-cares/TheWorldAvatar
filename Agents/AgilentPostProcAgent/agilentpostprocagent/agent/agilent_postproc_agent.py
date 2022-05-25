@@ -9,7 +9,6 @@ from pathlib import Path
 from agilentpostprocagent.kg_operations import *
 from agilentpostprocagent.data_model import *
 import agilentpostprocagent.hypo_rxn as hypo
-from agilentpostprocagent.conf import *
 
 class AgilentPostProcAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
@@ -51,33 +50,15 @@ class AgilentPostProcAgent(DerivationAgent):
         # Collect the generated OutputChemical triples and PerformanceIndicator triples to a rdflib.Graph instance
         g = self.sparql_client.collect_triples_for_performance_indicators(lst_performance_indicator)
         g = self.sparql_client.collect_triples_for_output_chemical_of_chem_sol(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri, g)
-        # self.sparql_client.write_performance_indicator_back_to_kg(lst_performance_indicator)
-        # self.sparql_client.write_output_chemical_of_chem_sol_back_to_kg(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri)
 
         # Write all the generated triples to derivation_outputs
         derivation_outputs.addGraph(g)
-
-    # def collectInputsInformation(self, agent_inputs) -> str:
-    #     """
-    #         This function checks the agent input against the I/O signature as declared in the PostProc Agent OntoAgent instance and collects information.
-    #     """
-    #     self.logger.info("Checking arguments...")
-    #     exception_string = """Inputs are not provided in correct form. An example is: 
-    #                             {
-    #                                 "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#HPLCReport": "https://www.example.com/triplestore/ontohplc/HPLC_1/HPLCReport_1",
-    #                             }"""
-    #     # If the input JSON string is missing mandatory keys, raise error with "exception_string"
-    #     if ONTOHPLC_HPLCREPORT in agent_inputs:
-    #         return agent_inputs[ONTOHPLC_HPLCREPORT]
-    #     else:
-    #         self.logger.error('OntoHPLC:HPLCReport instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
-    #         raise Exception('OntoHPLC:HPLCReport instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
 
 def default():
     """
         Instructional message at the app root.
     """
     msg  = "This is an asynchronous agent that capable of post-processing experiment raw data generated from lab equipment.<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/PostProcAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/PostProcAgent#readme, before merging back to develop branch
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/AgilentPostProcAgent#readme<BR>"
+    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/AgilentPostProcAgent#readme, before merging back to main branch
     return msg

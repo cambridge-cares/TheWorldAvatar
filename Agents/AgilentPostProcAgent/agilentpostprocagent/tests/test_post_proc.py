@@ -23,9 +23,6 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
     res = sparql_client.getAmountOfTriples()
     assert res > 0
 
-    # # Start the agent to monitor the derivations
-    # post_proc_agent.start_monitoring_derivations()
-
     # Upload HPLC report to file server
     local_file_path, timestamp_last_modified = retrieve_hplc_report(report_path_in_pkg)
     hplc_report_iri = sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=local_file_path,
@@ -46,15 +43,18 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
     derivation_iri = post_proc_agent.derivationClient.createAsyncDerivationForNewInfo(post_proc_agent.agentIRI, derivation_inputs)
-    logger.info("-------------------------------------------------------------------------------------")
-    logger.info("created derivation iri: "+derivation_iri)
+    logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
     currentTimestamp_derivation = 0
+    query_performance_indicator = conftest.PREFIX_RDF + conftest.PREFIX_RDFS + """SELECT ?performance_indicator WHERE {?performance_indicator <%s> <%s>; rdf:type/rdfs:subClassOf* <%s>.}""" % (
+        conftest.ONTODERIVATION_BELONGSTO, derivation_iri, conftest.ONTORXN_PERFORMANCEINDICATOR)
+    logger.info("Generated performance indicator: " + str(sparql_client.performQuery(query_performance_indicator)))
     while currentTimestamp_derivation == 0:
-        time.sleep(20)
+        time.sleep(3)
         currentTimestamp_derivation = conftest.get_timestamp(derivation_iri, sparql_client)
-        logger.info("current timestamp: "+str(currentTimestamp_derivation))
+        logger.info("The current timestamp for the derivation <%s> is %d" % (derivation_iri, currentTimestamp_derivation))
+        logger.info("Generated performance indicator: " + str(sparql_client.performQuery(query_performance_indicator)))
 
     # Query the new derived IRI
     query_new_derived_iri = """SELECT ?new_iri WHERE {?new_iri <%s> <%s>.}""" % (conftest.ONTODERIVATION_BELONGSTO, derivation_iri)
@@ -86,5 +86,4 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
         assert all([conc in reload_phase_comp_conc_lst for conc in reload_conc_lst])
         assert all([conc in reload_conc_lst for conc in reload_phase_comp_conc_lst])
 
-    # # Shutdown the scheduler to clean up before the next test
-    # post_proc_agent.scheduler.shutdown()
+    logger.info("All checks passed.")

@@ -5,3 +5,5 @@ pandas
 pydantic
 testcontainers
 pytest
+pytest-docker-compose
+pytest-rerunfailures
