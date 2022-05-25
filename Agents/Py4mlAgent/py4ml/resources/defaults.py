@@ -21,6 +21,7 @@ DEFAULTS_ = {
         "metric": "mse",
         "cross_validation": 0,
         "nested_cross_validation": 0,
+        "es_mode": "auto",
         "direction": "minimize",
         "trials": 10,
         "jobs": 1,

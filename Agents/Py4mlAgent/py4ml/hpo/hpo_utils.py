@@ -30,9 +30,10 @@ class MetricsCallback(pl.Callback):
 def NN_model_train(trial, model, data, objConfig, objParams, dataPreproc):
     epochs = objParams['training']['epochs']
     metric = objParams['training']['metric']
-    direction = objParams['training']['direction']
-    patience = objParams['training']['patience']
-    min_delta = objParams['training']['min_delta']
+    es_monitor = objParams['training'].get('es_monitor', metric)
+    es_mode = objParams['training'].get('es_mode', 'auto')
+    es_patience = objParams['training']['es_patience']
+    es_min_delta = objParams['training']['es_min_delta']
     n_trials = objParams['training']['trials']
     log_head = objConfig['log_head']
     log_dir = objConfig['log_dir']
@@ -51,8 +52,8 @@ def NN_model_train(trial, model, data, objConfig, objParams, dataPreproc):
     #    pruning_callback = optuna.integration.PyTorchLightningPruningCallback(trial, monitor=metric)
     #    callbacks.append(pruning_callback)
 
-    if patience > 0:
-        early_stopping_callback = EarlyStopping(monitor=metric, min_delta=min_delta, patience=patience, verbose=False, mode=direction)
+    if es_patience > 0:
+        early_stopping_callback = EarlyStopping(monitor=es_monitor, min_delta=es_min_delta, patience=es_patience, verbose=False, mode=es_mode)
         callbacks.append(early_stopping_callback)
 
     for key, val in objParams.items():
@@ -97,15 +98,15 @@ def NN_model_train(trial, model, data, objConfig, objParams, dataPreproc):
     trainer.fit(model, train_dataloader=data['train'], val_dataloaders=data['val'])
 
     # return the value for the metric specified in the start script
-    if patience > 0:
+    if es_patience > 0:
         # return the best score while early stopping is applied
-        val_error = early_stopping_callback.best_score.item()
+        obj_error = early_stopping_callback.best_score.item()
     else:
-        val_error = metrics_callback.metrics[-1][metric].item()
+        obj_error = metrics_callback.metrics[-1][metric].item()
 
-    logging.info('%s finished fitting for trial %s with %s = %s', log_head, trial.number, metric, val_error)
+    logging.info('%s finished fitting for trial %s with %s = %s', log_head, trial.number, metric, obj_error)
 
-    return val_error
+    return obj_error
 
 def NN_model_train_cross_validate(trial, model, data, objConfig, objParams, dataPreproc):
     seed = objConfig['config']['numerical_settings']['seed']
