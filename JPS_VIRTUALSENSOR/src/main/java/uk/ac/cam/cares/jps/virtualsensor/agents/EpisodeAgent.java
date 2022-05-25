@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,6 +35,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -43,6 +50,7 @@ import java.nio.file.Files;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
@@ -52,15 +60,14 @@ import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentProperty;
-import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
+import uk.ac.cam.cares.jps.virtualsensor.visualisation.VisualisationWriter;
 
 @WebServlet(urlPatterns = {"/EpisodeAgent"}, loadOnStartup=1)
 public class EpisodeAgent extends JPSAgent{
@@ -170,16 +177,21 @@ public class EpisodeAgent extends JPSAgent{
 //              }
                 jsonforslurm.put("runWholeScript",value); // read by citychem shell script
                 jsonforslurm.put(jobPathKey,dataPath); // used in output annotation
-                jsonforslurm.put(simStartKey, Instant.now().getEpochSecond()); // used in output annotation
+                jsonforslurm.put(simStartKey, Instant.now()); // used in output annotation
                 jsonforslurm.put(DispSimSparql.SimKey, sim_iri); // used in output annotation
 
 				// ship locations used for visualisation
 				JSONArray ships_array = new JSONArray();
 				for (Ship ship : ships) {
+					JSONObject shipjson = new JSONObject();
+					shipjson.put("IRI", ship.getIri());
+
 					JSONArray coordinates = new JSONArray();
 					coordinates.put(ship.getXCoord());
 					coordinates.put(ship.getYCoord());
-					ships_array.put(coordinates);
+
+					shipjson.put("coordinates", coordinates);
+					ships_array.put(shipjson);
 				}
 				jsonforslurm.put("ships", ships_array);
 
@@ -951,12 +963,14 @@ public class EpisodeAgent extends JPSAgent{
 
 			JSONObject jobInfo = new JSONObject(Files.readAllLines(Paths.get(jobFolder.getAbsolutePath(), "input.json")).get(0));
 			String jobPath = jobInfo.getString(jobPathKey);
+			
+			String visfolder = Paths.get(jobPath,"vis").toString();
 			String outputPath = Paths.get(jobPath, "output").toString(); // scenario folder written during job submission
 			String sim_iri = jobInfo.getString(DispSimSparql.SimKey);
 			
-			if (!DispSimSparql.CheckOutputPathExist(sim_iri, outputPath)) { 
+			// if (!DispSimSparql.CheckOutputPathExist(sim_iri, outputPath)) { 
 				// avoid duplicate annotation, sometimes the slurm api submits the same job twice
-				long simStart = jobInfo.getLong(simStartKey); // time stamp
+				Instant simStart = Instant.parse(jobInfo.getString(simStartKey)); // time stamp
 				
 				String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
 				
@@ -975,12 +989,48 @@ public class EpisodeAgent extends JPSAgent{
 				new QueryBroker().putLocal(destinationUrl3, file3);
 				
 				// python script reads in conc file and produces a geojson file next to it
-				createGeoJSON(jobPath,DispSimSparql.GetSimCRS(sim_iri));
+				String crsName = DispSimSparql.GetSimCRS(sim_iri);
+				byte[] dispMatrixBytes = Files.readAllBytes(Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA));
+				String dispMatrix = new String(dispMatrixBytes);
 				
+				URIBuilder url = new URIBuilder("http://localhost:5000/getGeoJSON");
+				url.addParameter("dispMatrix", dispMatrix);
+				url.addParameter("crsName", crsName);
+				
+				HttpGet httpGet = new HttpGet(url.build());
+				CloseableHttpClient httpclient = HttpClients.createDefault();
+				CloseableHttpResponse pyresponse = httpclient.execute(httpGet);
+				JSONObject pyresponse_json = new JSONObject(EntityUtils.toString(pyresponse.getEntity()));
+
+				List<String> pollutants = new ArrayList<>();
+				Iterator<String> pol_iter = pyresponse_json.keySet().iterator();
+				while(pol_iter.hasNext()) {
+					String pol = pol_iter.next();
+					// refer to python_service/episode for information on the keys used
+					// dz = array of z cells
+					if (!pol.contentEquals("dz")) {
+						pollutants.add(pol);
+					}
+				}
+				Scope sim_scope = DispSimSparql.GetScope(sim_iri);
+				
+				// make a copy of the scope centre
+				Point centre = new Point(sim_scope.getScopeCentre());
+				centre.transform("EPSG:4326");
+
+				logger.info("Creating visualisation files");
+				VisualisationWriter.makeDirectories(visfolder, pollutants, simStart);
+				VisualisationWriter.writeMainMetaFile(visfolder, pollutants, centre);
+				VisualisationWriter.writeTree(visfolder);
+				VisualisationWriter.writeTimestepMetaFile(visfolder, pollutants, simStart);
+				VisualisationWriter.writeIndividualMetaFile(visfolder, pollutants, simStart);
+				VisualisationWriter.writeGeoJSONContours(visfolder, pollutants, simStart, pyresponse_json);
+				VisualisationWriter.writeShipGeoJSON(visfolder, pollutants, simStart, jobInfo.getJSONArray("ships"));
+
 				System.out.println("metadata annotation started");
 	
 				// update triple-store
-				DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart);
+				DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart.getEpochSecond());
 	
 				// update all air quality stations associated with this sim
 				String[] station_iri = DispSimSparql.GetAirQualityStations(sim_iri);
@@ -994,9 +1044,9 @@ public class EpisodeAgent extends JPSAgent{
 				}
 				
 				System.out.println("metadata annotation finished");
-			} else {
-				System.out.println("Duplicate detected, skipping annotation");
-			}
+			// } else {
+			// 	System.out.println("Duplicate detected, skipping annotation");
+			// }
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			logger.error("EpisodeAgent: Output Annotating Task could not finish");
@@ -1006,19 +1056,6 @@ public class EpisodeAgent extends JPSAgent{
 		}
 		return true;
 	}
+    
 	
-	private void createGeoJSON(String destDir, String simCRS) {
-		Path pyWorkingDir =  Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "python");
-		ArrayList<String> args = new ArrayList<String>();
-
-		args.add(SensorVenv.pyexe.toString());
-		args.add("sensorpy.py");
-		args.add("postprocessEpisode");
-		args.add("--pathToConcFile");
-		args.add(destDir);
-		args.add("--simCRS");
-		args.add(simCRS);
-
-		CommandHelper.executeCommands(pyWorkingDir.toString(), args);
-	}
 }

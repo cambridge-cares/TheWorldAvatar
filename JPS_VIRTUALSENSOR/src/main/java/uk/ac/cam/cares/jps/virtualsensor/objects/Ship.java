@@ -10,8 +10,10 @@ public class Ship {
 	private double x;
 	private double y;
 	private Chimney chim;
+	private String iri;
 	
     public Ship (String shipIRI, boolean withChimney) {
+		this.iri = shipIRI;
     	if (withChimney) {
     		double[] coordinates = ShipSparql.queryShipCoordinates(shipIRI);
     		this.x = coordinates[0];
@@ -39,4 +41,7 @@ public class Ship {
     public double getYCoord() {
     	return this.y;
     }
+	public String getIri() {
+		return this.iri;
+	}
 }
