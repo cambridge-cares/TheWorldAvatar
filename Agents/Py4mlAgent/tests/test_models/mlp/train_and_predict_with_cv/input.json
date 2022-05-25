@@ -74,9 +74,11 @@
         },
         "batch_size": 10,
         "epochs": 5,
-        "patience": 5,
-        "min_delta": 0.0,
-        "metric": "val_loss",
+        "es_patience": 5,
+        "es_min_delta": 0.0,
+        "es_metric": "mse",
+        "es_mode": "min",
+        "metric": "mse",
         "direction": "minimize",
         "cross_validation": 2,
         "trials": 1,
@@ -88,9 +90,7 @@
     },
     "post_processing": {
         "contour_plot_alt_dir": null,
-        "z_transform_inverse_prediction": true,
-        "regression_plot": false,
-        "transfer": false
+        "regression_plot": false
     },
     "predict_settings": {
         "ckpt_path": "./tests/test_models/mlp/train_and_predict_with_cv/test_data/best_trial_retrain/trial_*/best_trial_retrain_model*.ckpt",
