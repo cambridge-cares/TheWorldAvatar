@@ -1,7 +1,7 @@
 import logging
 import sklearn.svm
 from py4ml.utils.util_config import set_config_param
-from py4ml.hpo.hpo_utils import preproc_training_params, BL_model_train
+from py4ml.hpo.hpo_utils import preproc_training_params, BL_model_train, sample_params
 from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
                                 BL_bestTrialRetrainDataPreproc, \
                                 BL_loadModelFromCheckpoint, \
@@ -65,10 +65,11 @@ def model_create(trial, data, objConfig, objParams):
         'kernel'
         'gamma_structural'
     """
-    model_conf = copy.deepcopy(objConfig['config']['model']['model_specific'])
-    model_params = {}
-    for key, value in model_conf.items():
-        model_params.update({key: set_config_param(trial=trial,param_name=key,param=value, all_params=model_params)})
+
+    model_params = sample_params(
+        model_params=objConfig['config']['model']['model_specific'],
+        trial = trial
+    )
 
     logging.info('model params=%s', model_params)
 

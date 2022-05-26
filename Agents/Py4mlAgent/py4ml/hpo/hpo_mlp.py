@@ -3,7 +3,7 @@ from py4ml.utils.util_config import set_config_param
 from py4ml.hpo.objclass import Objective
 from py4ml.hpo.hpo_utils import preproc_training_params
 from py4ml.models.model_mlp import MlpWithLightning, get_dataloaders
-from py4ml.hpo.hpo_utils import NN_model_train, NN_model_train_cross_validate
+from py4ml.hpo.hpo_utils import NN_model_train, NN_model_train_cross_validate, sample_params
 from py4ml.hpo.hpo_utils import NN_addBestModelRetrainCallback
 from py4ml.hpo.hpo_utils import NN_logBestTrialRetraining
 from py4ml.hpo.hpo_utils import NN_valDataCheck, NN_loadModelFromCheckpoint, NN_ModelPredict
@@ -75,12 +75,12 @@ def model_create(trial, data, objConfig, objParams, modelCreatorClass):
     transformer = data['transformer']
 
     optimizer = objParams['training']['optimiser']
-    model_specific = copy.deepcopy(objConfig['config']['model']['model_specific'])
 
     # set model parameters from the config file
-    model_params = {}
-    for key, value in model_specific.items():
-        model_params.update({key: set_config_param(trial=trial,param_name=key,param=value, all_params=model_params)})
+    model_params = sample_params(
+        model_params=objConfig['config']['model']['model_specific'],
+        trial = trial
+    )
 
     # add output dimension to the mlp_units
     model_params['mlp_units'] = model_params.get('mlp_units', []) + [len(data['y_column'])]

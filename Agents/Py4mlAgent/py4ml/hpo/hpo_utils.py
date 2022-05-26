@@ -16,7 +16,7 @@ import os
 from py4ml.visualization.util_sns_plot import prediction_plot
 import re
 import dill
-
+import copy
 
 class MetricsCallback(pl.Callback):
 
@@ -411,3 +411,18 @@ def getLastCheckpointPath(ckpt_path):
                 max_version = version_
                 max_version_ind = i
     return ckpt_list[max_version_ind]
+
+def sample_params(model_params, trial):
+    model_params_copy = copy.deepcopy(model_params)
+    sampled_model_params = {}
+    for key, value in model_params_copy.items():
+        sampled_model_params.update(
+            {
+                key: set_config_param(
+                        trial=trial,
+                        param_name=key,param=value,
+                        all_params=sampled_model_params
+                    )
+            }
+        )
+    return sampled_model_params

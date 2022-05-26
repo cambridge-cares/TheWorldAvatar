@@ -2,7 +2,7 @@ import logging
 from sklearn.ensemble import RandomForestRegressor
 from py4ml.utils.util_sklearn import train_model_hpo, best_model_retraining
 from py4ml.hpo.objclass import Objective
-from py4ml.hpo.hpo_utils import preproc_training_params, BL_model_train
+from py4ml.hpo.hpo_utils import preproc_training_params, BL_model_train, sample_params
 from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
                                 BL_bestTrialRetrainDataPreproc, \
                                 BL_loadModelFromCheckpoint, BL_ModelPredict
@@ -62,11 +62,14 @@ def addHpoSettings(objective, crossValidation):
 def model_create(trial, data, objConfig, objParams):
     # set model parameters from the config file
     #--------------------------------------
-    model_conf = copy.deepcopy(objConfig['config']['model']['model_specific'])
     metric = objParams['training']['metric']
-    model_params = {}
-    for key, value in model_conf.items():
-        model_params.update({key: set_config_param(trial=trial,param_name=key,param=value, all_params=model_params)})
+
+    model_params = sample_params(
+        model_params=objConfig['config']['model']['model_specific'],
+        trial = trial
+    )
+
+
     logging.info('model params=%s', model_params)
     model = RandomForestRegressor(**model_params, criterion=metric, n_jobs=1, verbose=0)#, random_state=0)
     return model
