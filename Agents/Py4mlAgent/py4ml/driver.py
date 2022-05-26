@@ -20,8 +20,6 @@ Usage:
         --jobs=JOBS                               No. of parallel hpo jobs (default 1)
         --epochs=EPOCHS                           No. of epochs to use during training (if applicable, no default)
         --batch_size=BATCHSIZE                    Batch size to use during training (if applicable, no default)
-        --patience=PATIENCE                       Early stopping patience parameter to use during training (if applicable, no default)
-        --min_delta=MINDELTA                      Early stopping min delta parameter to use during training (if applicable, no default)
         --cross_validation=CROSSVAL               No. of inner cross validation folds (default 0)
         --nested_cross_validation=NESTCROSSVAL    No. of outer cross validation folds (default 0)
         --study_name=STUDYNAME                    Name of the study (default 'py4ml_study')
