@@ -39,19 +39,19 @@ def init_plot():
     plt.rcParams["patch.force_edgecolor"] = True
 
 
-def plot(file_path, df):
-    g = sns.jointplot(x="Measured Y", y="Predicted Y", data=df,
+def plot(file_path, df, col_1, col_2):
+    g = sns.jointplot(x=col_1, y=col_2, data=df,
                       kind='reg', scatter_kws={'alpha': 0.5, 's': 20}, height=5)
 
-    g.ax_marg_x.set_xlim(min([df['Measured Y'].min(), df['Predicted Y'].min()]),
-                         max([df['Measured Y'].max(), df['Predicted Y'].max()]))
-    g.ax_marg_y.set_ylim(min([df['Measured Y'].min(), df['Predicted Y'].min()]),
-                         max([df['Measured Y'].max(), df['Predicted Y'].max()]))
+    g.ax_marg_x.set_xlim(min([df[col_1].min(), df[col_2].min()]),
+                         max([df[col_1].max(), df[col_2].max()]))
+    g.ax_marg_y.set_ylim(min([df[col_1].min(), df[col_2].min()]),
+                         max([df[col_1].max(), df[col_2].max()]))
 
-    g.ax_joint.set_xlabel('Measured Y (%)')
-    g.ax_joint.set_ylabel('Predicted Y (%)')
+    g.ax_joint.set_xlabel(f"{col_1} (%)")
+    g.ax_joint.set_ylabel(f"{col_2} (%)")
 
-    slope, intercept, r_value, p_value, std_err = stats.linregress(df['Measured Y'], df['Predicted Y'])
+    slope, intercept, r_value, p_value, std_err = stats.linregress(df[col_1], df[col_2])
 
     text = "r = {:0.2}".format(r_value)
     plt.annotate(text,
@@ -60,19 +60,16 @@ def plot(file_path, df):
     plt.savefig(file_path)
 
 
-def prediction_plot(figure_dir, train_pred, val_pred, test_pred):
+def prediction_plot(figure_dir, train_pred, val_pred, test_pred, cols):
     init_plot()
-    # df_results_metric = pd.read_csv(results_metric, index_col=[0])
-    df_train_pred = pd.read_csv(train_pred, index_col=[0])
-    if path.exists(val_pred):
-        df_val_pred = pd.read_csv(val_pred, index_col=[0])
-        df_train_val = df_train_pred.append(df_val_pred, ignore_index=True, sort=False)
-        plot(figure_dir + "train_val_reg.svg", df_train_val)
-    else:
-        plot(figure_dir + "train_reg.svg", df_train_pred)
 
-    df_test_pred = pd.read_csv(test_pred, index_col=[0])
-    plot(figure_dir + "test_reg.svg", df_test_pred)
+    for i, (col_1, col_2) in enumerate(cols):
+        if train_pred is not None:
+            plot(figure_dir + f"train_reg_{i+1}.svg", train_pred, col_1, col_2)
+        if val_pred is not None:
+            plot(figure_dir + f"val_reg_{i+1}.svg", val_pred, col_1, col_2)
+        if test_pred is not None:
+            plot(figure_dir + f"test_reg_{i+1}.svg", test_pred, col_1, col_2)
 
 
 def enter():

@@ -113,6 +113,8 @@ def train_model_hpo(trial, model, objParams, metric, x_train, y_train, x_val, y_
 
 def calculate_metrics(model, x, y, metric, ml_phase, log_head):
     y_pred = model.predict(x)
+    if len(y_pred.shape) == 1:
+        y_pred = y_pred.reshape((-1,1))
     if metric == 'mse':
         result = py4ml.utils.util.calculate_metrics(y, y_pred)
     elif metric == 'all':
@@ -131,15 +133,18 @@ def log_and_plot(model, x_train, y_train, x_test, y_test, dirpath, transformer=N
     def _getMetrics(model, x_, y_, transformer, index_, log_head):
         test_results, y_pred = calculate_metrics(model, x_, y_, 'all', index_, log_head)
 
-        pred_df = pd.DataFrame(y_, columns=['Measured Y'])
-        pred_df['Predicted Y'] = y_pred
+        pred_df = pd.DataFrame()
+        for i in range(y_.shape[1]):
+            pred_df[f"Measured Y{i+1}"] = y_[:,i]
+            pred_df[f"Predicted Y{i+1}"] = y_pred[:,i]
 
-        if transformer.transform_type is not None:
-            pred_df[f"Measured Y untransformed"] = transformer.inverse_transform_y(y_)
-            pred_df[f"Predicted Y untransformed"] = transformer.inverse_transform_y(y_pred)
+            if transformer.transform_type is not None:
+                pred_df[f"Measured untransformed Y{i+1}"] = transformer.inverse_transform_y(y_[:,i], ind=i)
+                pred_df[f"Predicted untransformed Y{i+1}"] = transformer.inverse_transform_y(y_pred[:,i], ind=i)
 
         pred_df.to_csv(os.path.join(dirpath,f"predictions_{index_.replace(' ', '_')}.csv"))
-        return test_results
+        pred_df = pred_df[[col for col in pred_df.columns if "untransformed" not in col]]
+        return test_results, pred_df
 
 
     index_ml = ['training set', 'test set']
@@ -147,19 +152,28 @@ def log_and_plot(model, x_train, y_train, x_test, y_test, dirpath, transformer=N
     y_ml = [y_train, y_test]
 
     results_metric = []
+    pred_dfs = {'training set': None, 'validation set': None, 'test set': None}
     for index_, x_, y_ in zip(index_ml, x_ml, y_ml):
-        results_metric.append(
-            _getMetrics(model, x_, y_, transformer, index_, log_head)
-        )
+        metrics, pred_df = _getMetrics(model, x_, y_, transformer, index_, log_head)
+        results_metric.append(metrics)
+        pred_dfs[index_] = pred_df
+
 
     pd.DataFrame(results_metric).to_csv(dirpath + 'best_trial_retrain_model.csv')
 
     if regression_plot:
+
+        columns = []
+        for i in range(y_ml[0].shape[1]):
+            columns.append([f"Measured Y{i+1}", f"Predicted Y{i+1}"])
+
         py4ml.visualization.util_sns_plot.prediction_plot(
             figure_dir= dirpath+'\\',
-            train_pred = os.path.join(dirpath,'predictions_training_set.csv'),
-            val_pred = os.path.join(dirpath,'predictions_validation_set.csv'),
-            test_pred = os.path.join(dirpath,'predictions_test_set.csv'))
+            train_pred = pred_dfs["training set"],
+            val_pred = pred_dfs["validation set"],
+            test_pred = pred_dfs["test set"],
+            cols = columns
+        )
 
 def standard_score_transform(transformer, y):
     y_transform = (y - transformer.target_mean) / transformer.target_std
