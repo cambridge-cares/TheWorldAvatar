@@ -27,12 +27,12 @@ class DatasetForMLP(torch.utils.data.Dataset):
         #
         # index - row index in the dataframe
         x = self.df.iloc[index, [self.df.columns.get_loc(c) for c in self.column_x]]
-        y = self.df.iloc[index, [self.df.columns.get_loc(self.column_y)]]
+        y = self.df.iloc[index, [self.df.columns.get_loc(c) for c in self.column_y]]
 
         # gpu / cpu training
         device = py4ml.utils.params.cfg[py4ml.utils.params.PYTORCH_DEVICE]
         xtensor = torch.as_tensor(x, dtype = torch.float32, device = device) # type: ignore
-        ytensor = torch.as_tensor(np.array(y, dtype=np.float32), device = device) # type: ignore
+        ytensor = torch.as_tensor(y, dtype=torch.float32, device = device) # type: ignore
 
         return [xtensor, ytensor]
 
