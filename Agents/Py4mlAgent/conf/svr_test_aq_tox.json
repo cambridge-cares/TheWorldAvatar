@@ -45,21 +45,21 @@
             "kernel": "rbf",
             "C": {
                 "type": "loguniform",
-                "low": 0.1,
-                "high": 20.0
+                "low": 1e-8,
+                "high": 10000.0
             },
             "epsilon": {
                 "type": "loguniform",
-                "low": 0.001,
-                "high": 10.0
+                "low": 1e-15,
+                "high": 1.0
             }
         }
     },
     "training": {
         "metric": "mse",
-        "cross_validation": false,
+        "cross_validation": 5,
         "direction": "minimize",
-        "trials": 1,
+        "trials": 100,
         "study_name": "svr_test_aq_tox",
         "storage": "sqlite:///logs/svr/svr_test_aq_tox.db",
         "storage_timeout": 1000,
