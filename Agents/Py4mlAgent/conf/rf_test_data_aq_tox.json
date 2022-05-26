@@ -99,7 +99,6 @@
     },
     "post_processing": {
         "contour_plot_alt_dir": null,
-        "regression_plot": true,
-        "transfer": false
+        "regression_plot": true
     }
 }
