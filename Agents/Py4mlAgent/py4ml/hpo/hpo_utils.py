@@ -245,17 +245,20 @@ def _logAndPlotResults(trial, model, data, objConfig, objParams, fileName):
         test_result = trainer.test(model, test_dataloaders=dataset_dl)[0]
         test_result['phase'] = f"{data_type}"
 
-        predictions = list(model.test_predictions)
-        pred_df = pd.DataFrame(predictions[0], columns=[f"Measured Y"])
-        pred_df[f"Predicted Y"] = predictions[1]
+        ycol_num = len(dataset_dl.dataset.column_y)
+        pred_df = pd.DataFrame()
 
-        if transformer.transform_type is not None:
-            pred_df[f"Measured Y untransformed"] = transformer.inverse_transform_y(predictions[0])
-            pred_df[f"Predicted Y untransformed"] = transformer.inverse_transform_y(predictions[1])
+        for i in range(ycol_num):
+            pred_df[f"Measured Y{i+1}"] = model.test_predictions[0][i::ycol_num]
+            pred_df[f"Predicted Y{i+1}"] = model.test_predictions[1][i::ycol_num]
 
+            if transformer.transform_type is not None:
+                pred_df[f"Measured Y{i+1} untransformed"] = transformer.inverse_transform_y(pred_df[f"Measured Y{i+1}"], ind = i)
+                pred_df[f"Predicted Y{i+1} untransformed"] = transformer.inverse_transform_y(pred_df[f"Predicted Y{i+1}"], ind = i)
 
         pred_df.to_csv(os.path.join(dirpath,f"predictions_{index_.replace(' ', '_')}.csv"))
-        return test_result
+        pred_df = pred_df[[col for col in pred_df.columns if "untransformed" not in col]]
+        return test_result, pred_df
 
     transformer = data['transformer']
     regression_plot = objConfig['config']['post_processing']['regression_plot']
@@ -276,40 +279,49 @@ def _logAndPlotResults(trial, model, data, objConfig, objParams, fileName):
 
     dataset_dl_list = [train_dl, val_dl, test_dl]
     results_metric = []
+    pred_dfs = {index_dl[0]: None, index_dl[1]: None, index_dl[2]: None}
     for index_, dataset_dl in zip(index_dl, dataset_dl_list):
-        results_metric.append(
-            _getMetrics(dataset_dl, data_type=index_, model=model, transformer = transformer)
-        )
+        metrics, pred_df = _getMetrics(dataset_dl, data_type=index_, model=model, transformer = transformer)
+        results_metric.append(metrics)
+        pred_dfs[index_] = pred_df
 
     pd.DataFrame(results_metric).to_csv(os.path.join(dirpath,fileName+'.csv'))
 
     if regression_plot:
+
+        columns = []
+        ycol_num = len(train_dl.dataset.column_y)
+        for i in range(ycol_num):
+            columns.append([f"Measured Y{i+1}", f"Predicted Y{i+1}"])
+
         prediction_plot(
             figure_dir= dirpath+'\\',
-            train_pred = os.path.join(dirpath,'predictions_training_set.csv'),
-            val_pred = os.path.join(dirpath,'predictions_validation_set.csv'),
-            test_pred =  os.path.join(dirpath,'predictions_test_set.csv'))
+            train_pred = pred_dfs[index_dl[0]],
+            val_pred = pred_dfs[index_dl[1]],
+            test_pred = pred_dfs[index_dl[2]],
+            cols = columns
+        )
 
 def NN_addBestModelRetrainCallback(trial, model, data, objConfig, objParams):
-    metric = objParams['training']['metric']
-    direction = objParams['training']['direction']
+    chp_monitor = objParams['training']['chp_monitor']
+    chp_mode = objParams['training']['chp_mode']
     log_dir = objConfig['log_dir']
 
     dirpath = log_dir + '/trial_' + str(trial.number) + '/'
-    checkpoint_callback = ModelCheckpoint(monitor=metric, dirpath=dirpath.replace('//', '/'),
+    checkpoint_callback = ModelCheckpoint(monitor=chp_monitor, dirpath=dirpath.replace('//', '/'),
                                             filename='best_trial_retrain_model',
-                                            save_top_k=1, mode=direction[0:3])
+                                            save_top_k=1, mode=chp_mode)
     return checkpoint_callback
 
 def NN_transferLearningCallback(trial, model, data, objConfig, objParams):
-    metric = objParams['training']['metric']
-    direction = objParams['training']['direction']
+    chp_monitor = objParams['training']['chp_monitor']
+    chp_mode = objParams['training']['chp_mode']
     log_dir = objConfig['log_dir']
 
     dirpath = log_dir + '/trial_' + str(trial.number) + '/'
-    checkpoint_callback = ModelCheckpoint(monitor=metric, dirpath=dirpath.replace('//', '/'),
+    checkpoint_callback = ModelCheckpoint(monitor=chp_monitor, dirpath=dirpath.replace('//', '/'),
                                             filename='transfer_learning_model',
-                                            save_top_k=1, mode=direction[0:3])
+                                            save_top_k=1, mode=chp_mode)
     return checkpoint_callback
 
 def NN_prepareTransferLearningModel(trial, model, data, objConfig, objParams):
