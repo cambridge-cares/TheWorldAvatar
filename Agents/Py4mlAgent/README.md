@@ -7,7 +7,7 @@ This repository contains a generic python code base for training and optimising 
 - goals - these define what actions will be taken, choose from:
     - `hpo` (hyper-parameter optimisation, if no hpo sampling options defined, e.g. all model parameters are fixed, this is equivalent to model training)
     - `best_trial_retraining` (hpo can be followed by the best trial retraining, this step trains the best model again, but this time on combined training and validation datasets)
-    - `predict` (use trained models in production)
+    - `predict` (use trained models to make predictions)
     - `contour_plot` (only makes sense with the hpo goal and a rather large number of trials)
     - `transfer_learning` (currently not supported by any of the default models)
 
@@ -96,8 +96,6 @@ After successful installation, the package can be used via the following command
         --jobs=JOBS                               No. of parallel hpo jobs (default 1)
         --epochs=EPOCHS                           No. of epochs to use during training (if applicable, no default)
         --batch_size=BATCHSIZE                    Batch size to use during training (if applicable, no default)
-        --patience=PATIENCE                       Early stopping patience parameter to use during training (if applicable, no default)
-        --min_delta=MINDELTA                      Early stopping min delta parameter to use during training (if applicable, no default)
         --cross_validation=CROSSVAL               No. of inner cross validation folds (default 0)
         --nested_cross_validation=NESTCROSSVAL    No. of outer cross validation folds (default 0)
         --study_name=STUDYNAME                    Name of the study (default 'py4ml_study')
@@ -190,7 +188,7 @@ The `transform_type` is used to specify how to transform the data. Note that cur
 
 The `x_column` is used to specify which dataset columns should be included as features.
 
-The `y_column` is used to specify which dataset column should be included as an output.
+The `y_column` is used to specify which dataset column(s) should be included as an output.
 
 The `split` option controls how the dataset is split into the training, validation and test sets respectively. The dataset can be either split at runtime, by providing the size ratio of each sub-dataset, e.g. `"split": [0.7, 0.15, 0.15]` would correspond to the training set containing 70\% of data and validation and test sets containing 15\% each. An alternative option is to include the split in the dataset itself by introducing an extra "ml_phase" (or "ml_phase_fold_n" in case of nested cross validation) column. As an example, the following data set:
 
@@ -214,6 +212,8 @@ x1  ,  x2,  x3,   y,ml_phase_fold_0,ml_phase_fold_1,ml_phase_fold_2
 ...
 ```
 
+Note that the Random Forests regressor and Multilayer Perceptron support multiple target variables (y). In such case, simply include extra columns in the dataset and list them in the `y_column` parameter. Support Vector regressor does support multiple columns. In general, training a model for multiple targets is much harder than if there is only one target. A better strategy could be to train separate models for each target.
+
 ## Model settings
 
 The model settings allow to specify a model and set its hyper-parameters to use in the simulation. The example model section in the json file is presented below:
@@ -224,9 +224,8 @@ The model settings allow to specify a model and set its hyper-parameters to use 
         "name": "Model_Name",
         "model_specific": {
             // model specific parameters
-            }
         }
-    },
+    }
 }
 ```
 
@@ -242,12 +241,12 @@ The `model_specific` section contains all model specific hyper-parameter setting
 
 Note that the number of neurons in the input and output layers is automatically set based on the features and target data size.
 
-In case of Random Forests and Support Vector Machines regressors these are any parameters listed in the `sklearn` documentation for each model constructor (see [RF](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html) and [SVR](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html))
+In case of Random Forests and Support Vector Machines regressors these are any parameters listed in the `sklearn` documentation for each model constructor (see [RF](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html) and [SVR](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html)).
 
-Do note that each supported model has its own module defining how the parameters are created and pre-processed before passing them to the model constructor. If any modifications are required, simply look into the `py4ml.hpo.hpo_<model_name>` module and look into the `model_create` function. The default behaviour is to pass the parameters as they are defined in the input file.
+Do note that each supported model has its own module defining how the parameters are created and pre-processed before passing them to the model constructor. If any modifications are required, simply look into the `py4ml.hpo.hpo_<model_name>.py` module and look into the `model_create` function. The default behaviour is to pass the parameters as they are defined in the input file.
 
 
-Defining model specific hyper-parameters offers some flexibility. The syntax follows the optuna syntax for setting hyper-parameters with a couple of modifications. The list below shows some example options, whereas for a mode detailed overview please visit the [optuna documentation](https://optuna.readthedocs.io/en/stable/reference/distributions.html):
+Defining model specific hyper-parameters offers some flexibility. The syntax follows the optuna syntax for setting hyper-parameters with a couple of modifications. The list below shows some example options, whereas for a more detailed overview please visit the [optuna documentation](https://optuna.readthedocs.io/en/stable/reference/distributions.html):
 
 ```json
 {
@@ -333,7 +332,7 @@ The training settings control specifics of the model training and hyper-paramete
 
 ```json
 {
-    // OPTIONS SPECIFIC TO TORCH NEURAL NETWORK MODELS
+    // OPTIONS SPECIFIC TO TORCH NEURAL NETWORK MODELS ONLY
     // ---------------------------------------------------------------
     // These are torch optimiser settings, only relevant for the
     // torch neural models. See https://pytorch.org/docs/stable/optim.html
@@ -349,20 +348,25 @@ The training settings control specifics of the model training and hyper-paramete
     "epochs": 100,
     // These are early stopping parameters. See torch documentation
     // for further details
+    // note that setting patience to zero, disables early stopping
+    // regularization
     "es_patience": 80,
     "es_min_delta": 0.0,
     "es_mode": "min",
     // choose from supported metrics that are defined below
     // note that some metrics will require different es_mode,
-    // if not defined, defaults to the chosen "metric" parameter
+    // if not defined, defaults to the "mse"
     "es_monitor": "mse",
+    // Checkpoint callback settings
+    "chp_monitor": "mse",
+    "chp_mode": "min",
     //
-    // HPO settings
+    // COMMON HPO OPTIONS
     // ---------------------------------------------------------------
     // optimisation direction, see optuna documentation
     "direction": "minimize",
     // metric used for the model hyper-parameter optimisation
-    // choose from: "mse", "rmse", "mae", "R2" and "r"
+    // choose from: "mse", "rmse", "mae" and "R2"
     "metric": "mse",
     // number of hpo trials
     "trials": 100,
@@ -396,7 +400,7 @@ The training settings control specifics of the model training and hyper-paramete
     // no nested cross-validation is performed
     // it is usually easier to perform nested cross validation manually
     // as n separate runs rather than via this setting as then it is easier
-    // to restart each outer fold if someting goes wrong.
+    // to restart each outer fold if something goes wrong.
     // use this option for rather quick studies that do not require restart
     // capabilities
     "nested_cross_validation": 0
@@ -428,7 +432,17 @@ The `ckpt_path` parameter defines path to the model checkpoint file. The path su
 
 The `predict_input` is used to set data (x features) for model prediction. The same type of data should be used here as the one used for the model training. If the `z-transform` was used during the model training, the predict input data will be automatically transformed.
 
-The `actual_output` is an optional field that allows to pass the actual target values (y column) corresponding to the predict inputs. If the `z-transform` was used during the model training, the predicted outputs will be automatically transformed back for a direct comparison.
+The `actual_output` is an optional field that allows to pass the actual target values (y column(s)) corresponding to the predict inputs. If the `z-transform` was used during the model training, the predicted outputs will be automatically transformed back for a direct comparison. The example above is for a case with only a single y column. In case of multiple y columns, the following syntax should be used:
+
+```json
+{
+    "actual_output": [
+        [ 0.7, 0.4, ... ],
+        [ 0.8, 0.1, ... ],
+        [ 0.9, 0.3, ... ]
+    ]
+}
+```
 
 
 ## Post-processing settings
@@ -445,7 +459,6 @@ These settings control certain aspects of the simulation goals defined above. Th
         // this is used only if the best trial retraining goal is
         // enabled and allows to create an extra regression plot
         "regression_plot": false,
-        "transfer": false
     },
 }
 ```
@@ -475,6 +488,23 @@ The `use_date_time` controls whether or not to include the current date and time
 The `log_file_name` parameter defines the log file base name. Defaults to the `py4ml.log` if not defined.
 
 The `log_config_file` defines location of the logging configuration file that allows to customise the application logging behaviour.
+
+
+# Note to developers
+
+The `py4ml` code is provided as is, without any guarantee that it will work in all cases. The code still requires major refactoring and cleanup, however, it is believed it might be useful even in its current state. For any further development it is strongly recommended to choose a machine on which all the regression tests will be run and uncomment the `#pd.testing.assert_frame_equal(refData[key],testData[key], rtol=0.05, atol=1e-5)` line in the `test_models.py` file, which would enable numerical results checking.
+
+The code has been tested on fake data as part of included automated tests as well as on open source [aquatic toxicity data](https://archive.ics.uci.edu/ml/datasets/QSAR+aquatic+toxicity). The provided examples in the `conf` directory contain input files for training models on the `aquatic toxicity data`. Simply download the data from the provided link, replace `;` field separator with `,` and add the column headers and put such processed data file into `data\processed` directory. The provided examples, hopefully, should work out of the box.
+
+The state of the `py4ml` code is not ideal. There is quite a lot of duplication, shortcuts and bad coding practices. This is due to a very short time scale of the `PCE` project during which the code was developed and due to ever changing requirements. Besides, producing a `generic` ML code base was not the main goal of the `PCE` project. Nevertheless, some effort has been undertaken to extract the generic bits out of the `PCE` code. This is how the `py4ml` materialised. It is believed that another round of proper refactoring is required to bring this code to a maintainable state.
+
+In order to add another model to `py4ml` please follow the following steps:
+- if the model creation is somewhat complicated and requires some customisation, add the `py4ml.models.model_<model_name>.py` model that would contain model construction specifics (e.g. mlp model),
+- add `py4ml.hpo.hpo_<model_name>.py` module that would specify all the objectives / goals that the new model supports,
+- add the model objective call to the `JobHandler._initObjective` method,
+- add tests
+
+
 
 
 # Authors #
