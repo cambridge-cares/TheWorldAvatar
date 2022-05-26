@@ -43,8 +43,7 @@ DEFAULTS_ = {
     },
     "post_processing":{
         "contour_plot_alt_dir": None,
-        "regression_plot": False,
-        "transfer": False
+        "regression_plot": False
     },
     "transfer_learning": {
         "freeze_and_train": False,
