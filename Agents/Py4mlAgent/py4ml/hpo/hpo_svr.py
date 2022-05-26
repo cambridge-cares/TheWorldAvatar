@@ -78,7 +78,7 @@ def model_create(trial, data, objConfig, objParams):
 
 def data_preproc(trial, data, objConfig, objParams):
     x_column = data['x_column']
-    y_column = data['y_column'][0]
+    y_column = data['y_column']
 
     data_processed = {
         'train': None,
