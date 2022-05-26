@@ -8,3 +8,4 @@ exit /b 0
 :ProcessError
 echo Please follow README.TXT setup instructions before running the SLM.
 exit /b 1
+

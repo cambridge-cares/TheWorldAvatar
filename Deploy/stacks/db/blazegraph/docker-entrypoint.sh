@@ -14,3 +14,4 @@ sed -i "s/BLAZEGRAPH_PASSWORD/$(cat $BLAZEGRAPH_PASSWORD_FILE)/" /usr/local/tomc
 
 # Start tomcat (deploys modified war file)
 catalina.sh run
+
