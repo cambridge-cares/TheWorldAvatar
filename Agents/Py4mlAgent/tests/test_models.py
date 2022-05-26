@@ -55,7 +55,7 @@ def compareResults(testDir, model, test):
         assert testData[key].size == refData[key].size
         # do not check for the exact results equality as this is hardware specific
         # but this is how one might do it...
-        pd.testing.assert_frame_equal(refData[key],testData[key], rtol=0.05, atol=1e-5)
+        # pd.testing.assert_frame_equal(refData[key],testData[key], rtol=0.05, atol=1e-5)
 
 def _getTestData(testDir):
     testData = {}
