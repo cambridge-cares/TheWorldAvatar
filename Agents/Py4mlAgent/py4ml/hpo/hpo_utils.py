@@ -172,16 +172,24 @@ def BL_model_train_cross_validate(trial, model, data, objConfig, objParams, data
 
 def preproc_training_params(trial, data, objConfig, objParams):
     training_settings = objConfig['config']['training']
-    training_params = {}
-    for key, value in training_settings.items():
-        if key == 'optimiser':
-            optimiser = {}
-            for opt_key, opt_value in training_settings[key].items():
-                optimiser.update({opt_key: set_config_param(trial=trial,param_name=opt_key,param=opt_value, all_params=optimiser)})
-            training_params[key] = optimiser
-        else:
-            training_params[key] = set_config_param(trial=trial,param_name=key,param=value, all_params=training_params)
-    return training_params
+    if 'optimiser' in training_settings:
+        # remove optimiser inner nested dict from the training settings
+        # as the sample_params cannot handle such nested constructs
+        optimiser = training_settings.pop('optimiser')
+
+        # sample optimiser
+        optimiser_sampled = sample_params(optimiser, trial)
+        # sample other params
+        training_params_sampled = sample_params(training_settings, trial)
+        # add sampled optimiser params
+        training_params_sampled['optimiser'] = optimiser_sampled
+
+        # add back popped default optimiser settings
+        training_settings['optimiser'] = optimiser
+    else:
+        training_params_sampled = sample_params(training_settings, trial)
+
+    return training_params_sampled
 
 def NN_valDataCheck(data, jobConfig, transferLearning=False):
     if data['val'] is not None:
