@@ -105,5 +105,5 @@ def calculate_metrics(y_true_np, y_pred_np):
     mse = sklearn.metrics.mean_squared_error(y_true_np, y_pred_np, squared=True)
     rmse = sklearn.metrics.mean_squared_error(y_true_np, y_pred_np, squared=False)
     R2 = sklearn.metrics.r2_score(y_true_np, y_pred_np)
-    r_Pearson = np.corrcoef(y_true_np, y_pred_np)
-    return {'mse':mse, 'rmse': rmse, 'R2':R2, 'r':r_Pearson[0,1], 'mae': mae, 'count': len(y_true_np)}
+
+    return {'mse':mse, 'rmse': rmse, 'R2':R2, 'mae': mae, 'count': len(y_true_np)}
