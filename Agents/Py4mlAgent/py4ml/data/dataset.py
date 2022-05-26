@@ -22,34 +22,46 @@ class DataTransformer():
             self.std_x = df[transform_x_cols].std(ddof=0).to_list()
             logging.info('calculated features mean_x=%s, std_x=%s', self.mean_x, self.std_x)
 
-            self.mean_y = [df[transform_y_cols].mean().item()]
-            self.std_y = [df[transform_y_cols].std(ddof=0).item()]
+            self.mean_y = df[transform_y_cols].mean().to_list()
+            self.std_y = df[transform_y_cols].std(ddof=0).to_list()
             logging.info('calculated target mean_y=%s, std_y=%s', self.mean_y, self.std_y)
 
     def __str__(self):
         return f"transform_type = {self.transform_type}, mean_x = {self.mean_x} std_x = {self.std_x}, mean_y = {self.mean_y} std_y = {self.std_y}"
 
-    def transform_x(self, data):
+    def transform_x(self, data, ind = None):
         if self.transform_type == 'z-transform':
-            return (data - self.mean_x) / self.std_x
+            if ind is not None:
+                return (data - self.mean_x[ind]) / self.std_x[ind]
+            else:
+                return (data - self.mean_x) / self.std_x
         else:
             return data
 
-    def transform_y(self, data):
+    def transform_y(self, data, ind = None):
         if self.transform_type == 'z-transform':
-            return (data - self.mean_y) / self.std_y
+            if ind is not None:
+                return (data - self.mean_y[ind]) / self.std_y[ind]
+            else:
+                return (data - self.mean_y) / self.std_y
         else:
             return data
 
-    def inverse_transform_x(self, data):
+    def inverse_transform_x(self, data, ind = None):
         if self.transform_type == 'z-transform':
-            return data * self.std_x + self.mean_x
+            if ind is not None:
+                return data * self.std_x[ind] + self.mean_x[ind]
+            else:
+                return data * self.std_x + self.mean_x
         else:
             return data
 
-    def inverse_transform_y(self, data):
+    def inverse_transform_y(self, data, ind = None):
         if self.transform_type == 'z-transform':
-            return data * self.std_y + self.mean_y
+            if ind is not None:
+                return data * self.std_y[ind] + self.mean_y[ind]
+            else:
+                return data * self.std_y + self.mean_y
         else:
             return data
 
@@ -103,7 +115,7 @@ def get_dataframes(dataset, seed=200, cvFold=None, nestedCvFolds=None):
 
     src = dataset['src']
     x_column = dataset['x_column']
-    y_column = dataset['y_column'][0]
+    y_column = dataset['y_column']
     transform_type = dataset.get('transform_type')
 
     if cvFold is not None:
