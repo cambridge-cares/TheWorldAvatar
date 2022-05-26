@@ -2,11 +2,9 @@ import datetime
 import logging
 import numpy as np
 import pytorch_lightning as pl
-import sklearn
 import torch
 import torch.optim
 import torch.nn
-
 from py4ml.utils.util import calculate_metrics
 
 def get_standard_params_for_trainer(metric, save_checkpoints=True):

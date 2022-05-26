@@ -6,8 +6,6 @@ from py4ml.hpo.hpo_utils import preproc_training_params, BL_model_train, sample_
 from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
                                 BL_bestTrialRetrainDataPreproc, \
                                 BL_loadModelFromCheckpoint, BL_ModelPredict
-from py4ml.utils.util_config import set_config_param
-import copy
 import pandas as pd
 import numpy as np
 

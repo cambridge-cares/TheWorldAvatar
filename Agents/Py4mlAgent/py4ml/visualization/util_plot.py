@@ -8,7 +8,7 @@ def plot_heatmap(matrix):
                 linewidths=.05)
     f.subplots_adjust(top=0.93)
     t= f.suptitle('Correlation Heatmap', fontsize=14)
-    
+
 def plot_scatter(df, column_x, column_y):
     plt.figure(figsize=(4, 4))
     left, width = 0.1, 0.65
@@ -23,7 +23,7 @@ def plot_scatter(df, column_x, column_y):
     plt.ylabel(column_y)
     plt.legend(loc='upper left')
     plt.show()
-    
+
 def plot(y, y_pred, column_target=''):
     plt.figure(figsize=(8, 8))
     left, width = 0.1, 0.65
@@ -38,7 +38,7 @@ def plot(y, y_pred, column_target=''):
     plt.ylabel(column_target + " predicted")
     plt.legend(loc='upper left')
     plt.show()
-    
+
 def plot_3d(x, y, z, xlabel='x', ylabel='y'):
     fig = plt.figure()
     ax = fig.gca(projection='3d')

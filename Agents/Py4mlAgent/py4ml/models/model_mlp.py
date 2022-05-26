@@ -1,14 +1,10 @@
-from matplotlib.transforms import Transform
 import torch.nn
 import py4ml.utils.util_pytorch as pytorch_utils
 import torch
 import torch.utils.data
 import py4ml.utils.params
 import py4ml.utils.util_lightning as util_lightning
-import numpy as np
 import logging
-
-
 
 class DatasetForMLP(torch.utils.data.Dataset):
 

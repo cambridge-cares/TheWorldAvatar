@@ -8,7 +8,6 @@ from py4ml.utils.util_lightning import get_standard_params_for_trainer
 import numpy as np
 from py4ml.utils.util_sklearn import train_model_cross_validate
 from py4ml.utils.util_sklearn import train_model
-from py4ml.utils.util_sklearn import standard_score_transform
 import glob
 import torch
 import pandas as pd

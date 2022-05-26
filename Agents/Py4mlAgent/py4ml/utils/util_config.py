@@ -43,7 +43,6 @@ def set_config_param(trial, param_name, param, all_params):
         param_suggestion = set_config_param_single(trial, param_name, param)
     return param_suggestion
 
-
 def get_length_value(param, all_params):
     length = param.get('length')
     if length is not None:

@@ -1,10 +1,7 @@
 import logging
-
 import sklearn
-import numpy as np
 import pandas as pd
 from pathlib import Path
-from sklearn.model_selection import ShuffleSplit
 import dill
 import os
 import py4ml.utils.util
@@ -30,11 +27,6 @@ def calculate_mean_prediction(regressors, x, y):
     mse_mean = mse_sum / len(regressors)
     metrics_y_mean = py4ml.utils.util.calculate_metrics(y, y_mean)
     return mse_mean, metrics_y_mean
-
-def get_length(z):
-    if z is None:
-        return None
-    return len(z)
 
 def train_model_cross_validate(trial, model, data, objConfig, objParams):
     # use cross_validate instead of cross_val_score to get more information about scores
@@ -110,7 +102,6 @@ def train_model_hpo(trial, model, objParams, metric, x_train, y_train, x_val, y_
         result = calculate_metrics(model, x_test, y_test, metric, 'test', log_head)
     return objective_value
 
-
 def calculate_metrics(model, x, y, metric, ml_phase, log_head):
     y_pred = model.predict(x)
     if len(y_pred.shape) == 1:
@@ -162,7 +153,6 @@ def log_and_plot(model, x_train, y_train, x_test, y_test, dirpath, transformer=N
     pd.DataFrame(results_metric).to_csv(dirpath + 'best_trial_retrain_model.csv')
 
     if regression_plot:
-
         columns = []
         for i in range(y_ml[0].shape[1]):
             columns.append([f"Measured Y{i+1}", f"Predicted Y{i+1}"])
@@ -174,10 +164,6 @@ def log_and_plot(model, x_train, y_train, x_test, y_test, dirpath, transformer=N
             test_pred = pred_dfs["test set"],
             cols = columns
         )
-
-def standard_score_transform(transformer, y):
-    y_transform = (y - transformer.target_mean) / transformer.target_std
-    return y_transform
 
 def best_model_retraining(trial, model, objParams, metric, x_train, y_train, x_val, y_val,
                                 x_test, y_test, log_head, log_dir, transformer, regression_plot):

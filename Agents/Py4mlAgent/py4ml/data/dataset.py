@@ -65,7 +65,6 @@ class DataTransformer():
         else:
             return data
 
-
 def create_transformer(df, transform_y_cols = None, transform_x_cols = None, transform_type = None):
     return DataTransformer(
         df = df,
@@ -73,12 +72,6 @@ def create_transformer(df, transform_y_cols = None, transform_x_cols = None, tra
         transform_y_cols=transform_y_cols,
         transform_type = transform_type
     )
-
-
-def store(df, filepath):
-    logging.info('storing %s', filepath)
-    # store without the internal index of Pandas Dataframe
-    df.to_csv(filepath, index=False)
 
 def read_and_split_by_size(filepath, split_size_array, seed):
     logging.info('reading %s', filepath)
@@ -143,7 +136,6 @@ def get_dataframes(dataset, seed=200, cvFold=None, nestedCvFolds=None):
     df_test[y_column] = transformer.transform_y(df_test[y_column])
 
     return (df_train, df_val, df_test, transformer)
-
 
 def add_k_fold_columns(df, k, seed, column_name_prefix='ml_phase'):
     kfold = sklearn.model_selection.KFold(n_splits=k, shuffle=True, random_state=seed)

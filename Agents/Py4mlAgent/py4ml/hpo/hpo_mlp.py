@@ -1,5 +1,4 @@
 import logging
-from py4ml.utils.util_config import set_config_param
 from py4ml.hpo.objclass import Objective
 from py4ml.hpo.hpo_utils import preproc_training_params
 from py4ml.models.model_mlp import MlpWithLightning, get_dataloaders
@@ -9,7 +8,6 @@ from py4ml.hpo.hpo_utils import NN_logBestTrialRetraining
 from py4ml.hpo.hpo_utils import NN_valDataCheck, NN_loadModelFromCheckpoint, NN_ModelPredict
 import torch
 import torch.utils.data
-import copy
 import pandas as pd
 
 def getObjectiveMLP(

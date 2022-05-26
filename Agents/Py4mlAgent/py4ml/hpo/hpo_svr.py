@@ -1,6 +1,5 @@
 import logging
 import sklearn.svm
-from py4ml.utils.util_config import set_config_param
 from py4ml.hpo.hpo_utils import preproc_training_params, BL_model_train, sample_params
 from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
                                 BL_bestTrialRetrainDataPreproc, \
@@ -8,7 +7,6 @@ from py4ml.hpo.hpo_utils import BL_model_train_cross_validate, \
                                 BL_ModelPredict
 from py4ml.hpo.objclass import Objective
 from py4ml.utils.util_sklearn import train_model_hpo, best_model_retraining
-import copy
 import numpy as np
 import pandas as pd
 

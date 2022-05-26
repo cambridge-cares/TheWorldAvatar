@@ -2,13 +2,8 @@ import logging
 import logging.config
 import os
 import pprint
-import pytorch_lightning as pl
-from time import sleep
 import yaml
-import numpy as np
 import sklearn.metrics
-from tqdm import tqdm
-from py4ml.utils.params import cfg
 import pkg_resources
 import datetime
 
@@ -60,18 +55,6 @@ def init_file_logging(log_config_file='default', log_main_dir='default', \
     logging.info(concat('initialized logging with config file=', log_config_file, ', log file=', log_file))
     return log_file
 
-
-def init_logging(src_directory, dst_directory):
-
-    # file and console logging with Python's standard logging library
-    log_config_file = src_directory + '/conf/logging.yaml'
-    log_dir = dst_directory + '/logs'
-    name = 'py4ml'
-    init_file_logging(log_config_file, log_dir + '/' + name + '.log')
-
-    # metric logging with PyTorch Lightning
-    return pl.loggers.CSVLogger(save_dir=log_dir, name=name, version=None)
-
 def concat(*args):
     if len(args) == 1:
         return args[0]
@@ -81,25 +64,7 @@ def concat(*args):
             message += str(m) + ' '
         return message
 
-def log(*args):
-    logging.info(concat(*args))
-
-def logm(*args):
-    logging.getLogger().info(args)
-
-
 def calculate_metrics(y_true_np, y_pred_np):
-    """
-    mean squared error: $mse = \frac{1}{n} \sum_i ( y_i - \hat{y}_i )^2$
-
-    coefficient of determination: $R^2 = 1 - \text{residual sum of squares} \div \text{total sum of squares} = 1 - \sum_i (y_i - \hat{y}_i)^2 \div \sum_i (y_i - \bar{y})^2$
-
-    Pearson correlation coefficient: $r = \text{cov}(Y, \hat{Y})  \div \sigma(Y) \space \sigma(\hat{Y}) = \sum_i (y_i -\bar{y}) (\hat{y}_i - \bar{\hat{y}}) \div \sqrt{\sum_i (y_i - \bar{y})^2} \sqrt{\sum_i (\hat{y}_i - \bar{\hat{y}})^2}$
-
-    This method calculates all three metrics for two numpy arrays of $y_1,\dots,y_n$ and $\hat{y}_1,\dots,\hat{y}_n$.
-
-    When using normalized values for training, we have to transform back the predicted values (on the validation and training set) before calling calculate_metrics.
-    """
     mae = sklearn.metrics.mean_absolute_error(y_true_np, y_pred_np)
     # mse is the mean squared error because squared=True by default
     mse = sklearn.metrics.mean_squared_error(y_true_np, y_pred_np, squared=True)
