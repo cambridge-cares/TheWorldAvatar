@@ -12,11 +12,13 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
     "model, test",
     [
     ('rf','train_and_predict_no_cv'),
+    ('rf','train_and_predict_no_cv_mult_y'),
     ('rf','train_and_predict_with_cv'),
     ('svr','train_and_predict_no_cv'),
     ('svr','train_and_predict_with_cv'),
     ('mlp','train_and_predict_no_cv'),
-    ('mlp','train_and_predict_with_cv')
+    ('mlp','train_and_predict_with_cv'),
+    ('mlp','train_and_predict_no_cv_mult_y')
 ])
 def test_models(model, test):
     print('========================================================')
@@ -33,6 +35,7 @@ def test_models(model, test):
     print('========================================================')
     print()
     print()
+
 
 def clean_test_dir(testDir):
     reg_test_dir = os.path.join(testDir,'test_data')
@@ -52,7 +55,7 @@ def compareResults(testDir, model, test):
         assert testData[key].size == refData[key].size
         # do not check for the exact results equality as this is hardware specific
         # but this is how one might do it...
-        #pd.testing.assert_frame_equal(refData[key],testData[key], rtol=0.05, atol=1e-5)
+        pd.testing.assert_frame_equal(refData[key],testData[key], rtol=0.05, atol=1e-5)
 
 def _getTestData(testDir):
     testData = {}

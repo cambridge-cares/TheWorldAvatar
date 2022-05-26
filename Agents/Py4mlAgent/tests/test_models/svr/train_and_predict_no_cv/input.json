@@ -64,7 +64,7 @@
     },
     "post_processing": {
         "contour_plot_alt_dir": null,
-        "regression_plot": false
+        "regression_plot": true
     },
     "predict_settings": {
         "ckpt_path": "./tests/test_models/svr/train_and_predict_no_cv/test_data/best_trial_retrain/trial_*/best_trial_retrain_model.ckpt",

@@ -68,8 +68,6 @@
     },
     "post_processing": {
         "contour_plot_alt_dir": null,
-        "z_transform_inverse_prediction": true,
-        "regression_plot": true,
-        "transfer": false
+        "regression_plot": true
     }
 }

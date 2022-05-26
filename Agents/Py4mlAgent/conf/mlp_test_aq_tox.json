@@ -1,6 +1,6 @@
 {
     "goals": {
-        "hpo": false,
+        "hpo": true,
         "contour_plot": false,
         "best_trial_retraining": true,
         "transfer_learning": false,
@@ -45,18 +45,18 @@
             "mlp_layers": {
                 "type": "int",
                 "low": 1,
-                "high": 4
+                "high": 20
             },
             "mlp_units": {
                 "type": "int",
-                "low": 8,
-                "high": 256,
+                "low": 1,
+                "high": 200,
                 "length": "mlp_layers"
             },
             "mlp_dropouts": {
                 "type": "uniform",
                 "low": 0.0,
-                "high": 0.3,
+                "high": 0.6,
                 "direction": "constant",
                 "length": "mlp_layers"
             }
@@ -67,23 +67,27 @@
             "name": "Adam",
             "lr": {
                 "type": "loguniform",
-                "low": 1e-5,
+                "low": 1e-8,
                 "high": 1e-2
             },
             "weight_decay": {
                 "type": "loguniform",
-                "low": 1e-5,
-                "high": 0.01
+                "low": 1e-8,
+                "high": 1e-2
             }
         },
         "batch_size": 20,
-        "epochs": 2,
-        "patience": 20,
-        "min_delta": 0.0,
-        "metric": "val_loss",
+        "epochs": 100,
+        "es_patience": 0,
+        "es_min_delta": 0.0,
+        "es_monitor": "mse",
+        "es_mode": "min",
+        "chp_monitor": "mse",
+        "chp_mode": "min",
+        "metric": "mse",
         "direction": "minimize",
         "cross_validation": 0,
-        "trials": 1,
+        "trials": 20,
         "study_name": "mlp_aq_tox",
         "storage": "sqlite:///logs/mlp/mlp_aq_tox.db",
         "storage_timeout": 1000,
