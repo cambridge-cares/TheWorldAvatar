@@ -21,11 +21,6 @@
       <id>GeoSolutions</id>
       <url>https://maven.geo-solutions.it/</url>
     </repository>
-
-    <repository>
-      <id>clojars.org</id>
-      <url>https://clojars.org/repo</url>
-    </repository>
   </repositories>
 
   <dependencies>
@@ -49,9 +44,9 @@
     </dependency>
 
     <dependency>
-      <groupId>nginx-clojure</groupId>
-      <artifactId>nginx-clojure</artifactId>
-      <version>0.5.3</version>
+      <groupId>com.github.odiszapc</groupId>
+      <artifactId>nginxparser</artifactId>
+      <version>0.9.3</version>
     </dependency>
 
     <dependency>

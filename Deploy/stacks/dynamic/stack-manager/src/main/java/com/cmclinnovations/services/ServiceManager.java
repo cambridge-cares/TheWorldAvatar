@@ -3,7 +3,6 @@ package com.cmclinnovations.services;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -24,7 +23,7 @@ public class ServiceManager {
     @JsonIgnore
     private final Map<String, Service> services = new HashMap<>();
 
-    public ServiceManager() throws IOException, URISyntaxException {
+    public ServiceManager() {
         try {
             URL url = ServiceManager.class.getResource("defaults");
             loadConfigs(url);
@@ -34,8 +33,8 @@ public class ServiceManager {
     }
 
     public void loadConfig(URL url) throws IOException {
-            serviceConfigs.put(FileUtils.getFileNameWithoutExtension(url),
-                    objectMapper.readValue(url, ServiceConfig.class));
+        serviceConfigs.put(FileUtils.getFileNameWithoutExtension(url),
+                objectMapper.readValue(url, ServiceConfig.class));
     }
 
     public void loadConfig(URI uri) throws IOException {
@@ -44,7 +43,7 @@ public class ServiceManager {
 
     public void loadConfig(Path path) throws IOException {
         loadConfig(path.toUri());
-        }
+    }
 
     public void loadConfigs(Path configDir) throws IOException {
         loadConfigs(configDir.toUri().toURL());
@@ -60,16 +59,15 @@ public class ServiceManager {
         return serviceConfigs.get(serviceName);
     }
 
-    public <S extends Service> S initialiseService(String stackName, String serviceName)
-            throws URISyntaxException, IOException {
+    public <S extends Service> S initialiseService(String stackName, String serviceName) {
         ServiceConfig config = serviceConfigs.get(serviceName);
         String type = config.getType();
 
         Class<S> typeClass = AbstractService.getTypeClass(type.toLowerCase());
         if (null == typeClass) {
-                    throw new IllegalArgumentException("Service '" + serviceName + "' is of type '" + type
+            throw new IllegalArgumentException("Service '" + serviceName + "' is of type '" + type
                     + "', which does not have a specific class defined.");
-                }
+        }
 
         final Service newService;
         try {
@@ -88,6 +86,11 @@ public class ServiceManager {
             DockerService dockerService = this.<DockerService>getService("docker");
             if (null != dockerService) {
                 dockerService.startContainer(newContainerService);
+            }
+
+            ReverseProxyService reverseProxyService = this.<ReverseProxyService>getService("nginx");
+            if (null != reverseProxyService) {
+                reverseProxyService.addService(newContainerService);
             }
         }
 

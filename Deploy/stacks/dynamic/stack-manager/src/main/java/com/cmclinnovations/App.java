@@ -1,7 +1,6 @@
 package com.cmclinnovations;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.cmclinnovations.services.ServiceManager;
@@ -11,7 +10,7 @@ import com.cmclinnovations.services.ServiceManager;
  *
  */
 public class App {
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) throws MalformedURLException {
         String stackName = "stack1";
         URL hostURL = new URL("http://localhost");
 

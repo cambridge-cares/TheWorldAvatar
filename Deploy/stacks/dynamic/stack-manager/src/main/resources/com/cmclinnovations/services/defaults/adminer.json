@@ -1,0 +1,10 @@
+{
+    "name": "adminer",
+    "image": "adminer",
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080",
+            "externalPath": "/adminer/ui"
+        }
+    }
+}

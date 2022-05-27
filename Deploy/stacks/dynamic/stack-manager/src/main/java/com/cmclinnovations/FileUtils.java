@@ -108,4 +108,19 @@ public final class FileUtils {
         }
         return uris;
     }
+
+    public static String fixSlashs(String path, boolean leading, boolean trailing) {
+        if (leading) {
+            path = path.replaceAll("^([^/])", "/$1");
+        } else {
+            path = path.replaceAll("^/", "");
+        }
+        if (trailing) {
+            path = path.replaceAll("([^/])$", "$1/");
+        } else {
+            path = path.replaceAll("/$", "");
+        }
+        return path;
+    }
+
 }

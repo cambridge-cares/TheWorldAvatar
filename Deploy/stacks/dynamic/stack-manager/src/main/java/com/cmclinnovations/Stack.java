@@ -1,7 +1,5 @@
 package com.cmclinnovations;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.cmclinnovations.services.ServiceManager;
@@ -13,7 +11,7 @@ public class Stack {
 
     private final ServiceManager manager;
 
-    public Stack(String name, URL hostURL, ServiceManager manager) throws IOException, URISyntaxException {
+    public Stack(String name, URL hostURL, ServiceManager manager) {
         this.name = name;
         this.hostURL = hostURL;
 
@@ -26,6 +24,8 @@ public class Stack {
         manager.initialiseService(name, "blazegraph");
 
         manager.initialiseService(name, "postgis");
+
+        manager.initialiseService(name, "adminer");
 
     }
 
