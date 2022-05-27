@@ -1,9 +1,18 @@
 package com.cmclinnovations;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class FileUtils {
@@ -46,5 +55,57 @@ public final class FileUtils {
 
     public static boolean filterOnExtension(Path path, String extension) {
         return path.getFileName().toString().endsWith(extension);
+    }
+
+    public static Collection<URI> listFiles(URL dirURL, String fileExtension) throws IOException {
+        return listFiles(dirURL).stream().filter(uri -> uri.toString().endsWith(fileExtension))
+                .collect(Collectors.toList());
+    }
+
+    public static Collection<URI> listFiles(URL dirURL) throws IOException {
+        if (dirURL != null) {
+            switch (dirURL.getProtocol()) {
+                case "file":
+                    // A file path: easy enough
+                    return listFileFromPath(Paths.get(dirURL.getPath()));
+                case "jar":
+                    // A JAR path
+                    return listFilesFromJar(dirURL);
+                default:
+            }
+        }
+
+        throw new UnsupportedOperationException(
+                "Cannot load config files from URL '" + dirURL + "'. Only 'file' and 'jar' protocols are supported.");
+    }
+
+    private static Set<URI> listFileFromPath(Path configDir) throws IOException {
+        try (Stream<Path> stream = Files.list(configDir)) {
+            return stream.map(Path::toUri).collect(Collectors.toSet());
+        }
+    }
+
+    private static Set<URI> listFilesFromJar(URL dirURL) throws IOException {
+        Set<URI> uris = new HashSet<>();
+        // strip out only the JAR file
+        String[] urlComponents = dirURL.getPath().split("!");
+        String jarPath = urlComponents[0].replaceFirst("file:", "");
+        String path = urlComponents[1].substring(1) + "/";
+        try (JarFile jar = new JarFile(jarPath)) {
+            Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries in jar
+            while (entries.hasMoreElements()) {
+                String name = entries.nextElement().getName();
+                if (name.startsWith(path)) { // filter according to the path
+                    String entry = name.substring(path.length());
+                    if (!entry.isEmpty()) {
+                        int checkSubdir = entry.indexOf("/");
+                        if (checkSubdir == -1) {
+                            uris.add(URI.create(dirURL.toString() + "/" + entry));
+                        }
+                    }
+                }
+            }
+        }
+        return uris;
     }
 }
