@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.agent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
+@Deprecated
 public class AsynAgent extends JPSAgent implements AsynAgentInterface {
 	
 	/**
@@ -80,7 +82,8 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
 			LOGGER.info("Derivation <" + derivation +"> has status type: " + statusType +".");
     		switch (statusType) {
 			case REQUESTED:
-				List<String> immediateUpstreamDerivationToUpdate = devClient.checkImmediateUpstreamDerivation(derivation);
+					Map<String, List<String>> immediateUpstreamDerivationToUpdate = devClient
+							.checkImmediateUpstreamDerivation(derivation);
 				if (!immediateUpstreamDerivationToUpdate.isEmpty()) {
 					LOGGER.info("Derivation <" + derivation + "> has a list of immediate upstream derivations to be updated: " + immediateUpstreamDerivationToUpdate.toString());
 				} else {
@@ -89,7 +92,9 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
 					LOGGER.info("Derivation <" + derivation + "> is now in progress.");
 					List<String> newDerivedIRI = setupJob(agentInputs);
 					LOGGER.info("Derivation <" + derivation + "> has new generated derived IRI: " + newDerivedIRI.toString() + ".");
-					devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+						// TODO below lines are only changed to make the code compile
+						// TODO its functions are NOT tested due to marked as Deprecated
+						devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI, new ArrayList<>());
 					LOGGER.info("Derivation <" + derivation + "> is now finished, to be cleaned up.");
 				}
 				break;

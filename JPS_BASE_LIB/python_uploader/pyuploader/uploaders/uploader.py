@@ -1,6 +1,6 @@
 import pyuploader.common.utils as utils
 import pyuploader.errorhandling.appexceptions as appexcept
-from typing import Dict, Tuple, Optional, Callable
+from typing import Dict, Tuple, Optional, Callable, List
 from abc import ABC, abstractmethod
 import pathlib
 import logging
@@ -11,12 +11,14 @@ logger = logging.getLogger(__name__)
 BASE_URL_ENV_VAR_KEY = 'url_file'
 BASE_AUTH_ENV_VAR_KEY = 'auth_file'
 
+Upload_Client = Callable[[str, Optional[str]], str]
+
 class Uploader(ABC):
     """Abstract uploader class."""
     def __init__(
         self,
         uploader_name: str = 'uploader',
-        supported_file_ext: str = 'all',
+        supported_file_ext: List[str] = ['all'],
         url: Optional[str] = None,
         auth_file: Optional[str] = None,
         no_auth: bool = False,
@@ -41,11 +43,11 @@ class Uploader(ABC):
         if no_auth is False:
             auth = self._get_auth(auth_file=auth_file)
 
-        self._upload_client: Callable[[str], str] =  self._get_upload_client(url=url, auth=auth)
+        self._upload_client: Upload_Client =  self._get_upload_client(url=url, auth=auth)
 
 
     @abstractmethod
-    def _get_upload_client(self, url: str, auth: Tuple[str,str])->Callable[[str],str]:
+    def _get_upload_client(self, url: str, auth: Tuple[str,str]) -> Upload_Client:
         """Abstract method for setting up the upload client function. The function
            should accept a single str argument, which is a filepath and return the
            file location on a server after the upload."""
@@ -77,9 +79,9 @@ class Uploader(ABC):
             logger.info(f"#######################")
             logger.info(f"")
 
-        if self._supported_file_ext != 'all':
+        if 'all' not in self._supported_file_ext:
             for file_ext_i in file_ext.split(','):
-                if file_ext_i.strip() != self._supported_file_ext:
+                if file_ext_i.strip() not in self._supported_file_ext:
                     raise NotImplementedError(f"Only {self._supported_file_ext} files are currently supported.")
         files = utils.get_files_by_extensions(file_or_dir,file_ext)
 
@@ -94,7 +96,7 @@ class Uploader(ABC):
                 logger.info(f"Uploading file: {basenf} to the {self.uploader_name}.")
                 if not dry_run:
                     try:
-                        location = self._upload_client(f)
+                        location = self._upload_client(f, file_ext)
                     except Exception as e:
                         raise appexcept.FileUploadError(textwrap.dedent("""
                             Error: Failed to upload file: #f#
