@@ -21,10 +21,8 @@ abstract class MapHandler {
 
     /**
      * Create and cache a new map object.
-     * 
-     * @param options dictionary of map options
      */
-    public abstract initialiseMap(options: Object);
+    public abstract initialiseMap();
 
     /**
      * Plot the contents of the input data group on the map.
@@ -32,13 +30,13 @@ abstract class MapHandler {
      * @param group data group to plot.
      * 
      */
-    public plotGroup(group: DataGroup): Promise<any> {
-        let allLayers = group.flattenUp();
-        allLayers.forEach(layer => {
-            this.plotLayer(group, layer);
-        });
+    public plotGroup(group: DataGroup) {
+        // let allLayers = group.flattenUp();
+        // allLayers.forEach(layer => {
+        //     this.plotLayer(group, layer);
+        // });
 
-        return new Promise((reject, resolve) => resolve(null));
+        // return new Promise((reject, resolve) => resolve(null));
     }
 
     /**

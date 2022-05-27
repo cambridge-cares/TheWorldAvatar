@@ -3,12 +3,15 @@
  */
 class DataSource {
 
-    public static allowedTypes = ["geojson", "vector", "raster", "image", "video"];
+    /**
+     * 
+     */
+    public static allowedTypes = ["vector", "raster"];
 
     /**
      * Unique name/id for this source.
      */
-    public name: string;
+    public id: string;
 
     /**
      * Type of data.
@@ -29,10 +32,10 @@ class DataSource {
         this.validateJSON(json);
 
         this.definition = json;
-        this.name = json["name"];
+        this.id = json["id"];
         this.type = json["type"];
 
-        console.info("Created DataSource instance '" + this.name + "'.");
+        console.info("Created DataSource instance '" + this.id + "'.");
     }    
 
     /**
@@ -45,7 +48,7 @@ class DataSource {
         if(json == null) throw new ReferenceError("'json' is not a non-null object.");
 
         // Must have a name
-        if(!("name" in json)) throw new ReferenceError("Must contain a 'name' property.");
+        if(!("id" in json)) throw new ReferenceError("Must contain a 'id' property.");
 
         // Must have a valid type
         if(!("type" in json)) throw new ReferenceError("Must contain a 'type' property.");

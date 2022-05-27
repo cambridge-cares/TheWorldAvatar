@@ -87,3 +87,52 @@
         overflow-y: auto;
     }
 }
+.hummingbird-treeview label {
+    background-color: transparent !important;
+    color: white !important;
+    font-family: "Inter", sans-serif !important;
+    font-size: 9pt !important;
+
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.hummingbird-base {
+    padding-inline-start: 0px !important;
+}
+
+.hummingbird-treeview ul {
+    padding-inline-start: 15px;
+}
+.end-node {
+    padding-inline-start: 15px;
+}
+
+.fa-chevron-down {
+    font-size: 10pt !important;
+    line-height: inherit !important;
+    vertical-align: middle;
+    padding-right: 4px;
+    padding-bottom: 4px;
+}
+.fa-chevron-up {
+    font-size: 10pt !important;
+    line-height: inherit !important;
+    vertical-align: middle;
+    padding-right: 4px;
+    padding-bottom: 4px;
+}
+
+.hummingbird-treeview, .hummingbird-treeview * {
+    line-height: 18px !important;
+}
+.hummingbird-treeview input[type=checkbox] {
+    margin-right: 4px !important;
+    vertical-align: middle;
+    width: 14px !important;
+    height: 14px !important;
+}
+.hummingbird-treeview  span {
+    vertical-align: middle;
+    font-size: 9pt !important;
+}

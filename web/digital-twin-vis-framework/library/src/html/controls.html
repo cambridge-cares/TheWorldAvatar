@@ -1,10 +1,25 @@
 <html>
     <head>
+        <!-- This HTML file has been written so that it can be loaded and edited by JS, before being piped into 
+        a larger HTML page. As such it may not work in isolation; it needs to be loaded into an environment that
+        has access to jQuery. -->
+
+        <!-- Required Stylesheets -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v2.1.7/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="./controls.css" rel="stylesheet" />
+
+        <!-- Required Javascript -->
+        
+
+        <script>
+            $(document).ready(function() {
+                console.log("Controls document ready?");
+            });
+        </script>
     </head>
 
     <body>
-
         <!-- Container for all controls  -->
         <div id="controlContainer">
 
@@ -65,13 +80,11 @@
                 <!-- Container for dynamic layer tree -->
                 <div class="controlContents">
                     <div id="layerTreeContainer">
-                        TREE-GOES-HERE
+                        <!-- Items to be added dynamically via JS -->
+                        <div id="treeview" class="hummingbird-treeview-converter"></div>
                     </div>
                 </div>
 			</div>
-
-            <!-- Container for data group selections -->
-			<div id="selectionsContainer" class="controlBlock"></div>
 
             <!-- Container for developer info -->
 			<div id="developerContainer" class="controlBlock"></div>

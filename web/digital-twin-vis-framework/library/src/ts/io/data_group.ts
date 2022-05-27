@@ -3,8 +3,6 @@
  */
 class DataGroup {
 
-    public location: string;
-
     public parentGroup: DataGroup;
 
     public dataSources: Array<DataSource> = [];
@@ -17,12 +15,13 @@ class DataGroup {
 
     public subLabel: string;
 
-    public groupMeta: Object;
+    public mapOptions: Object;
 
-    constructor(location: string, parentGroup: DataGroup) {
-        this.location = location;
-        this.parentGroup = parentGroup;
-        console.info("Created DataGroup instance for directory: " + location);
+    // Unique, dynamically generated, ID
+    public id: string;
+
+    constructor() {
+        // Empty
     }
 
     /**
@@ -35,15 +34,6 @@ class DataGroup {
     public parseDataSources(sourcesJSON) {
         for(var i = 0; i < sourcesJSON.length; i++) {
             let node = sourcesJSON[i];
-
-            // If geojson (the only type that supports local files), if not using a
-            // remote URL, then ensure the location is relative to the root dir.
-            if(node["type"] === "geojson") {
-                let location = node["data"];
-                if(!location.includes("http")) {
-                    node["data"] = this.location + "/" + location;
-                }
-            }
 
             // Create and store source
             let source = new DataSource(node);
@@ -67,12 +57,13 @@ class DataGroup {
 
         for(var i = 0; i < layersJSON.length; i++) {
             let node = layersJSON[i];
-            let source = this.getSourceWithName(node["source"]);
+            let source = this.getSourceWithID(node["source"]);
 
             let layer = null;
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
-                    layer = new MapBoxLayer(node["name"], source);
+                    let layerID = this.id + "." + node["id"];
+                    layer = new MapBoxLayer(layerID, node["name"], source);
                 break;
     
                 default:
@@ -93,8 +84,8 @@ class DataGroup {
      * 
      * @return matching DataSource, null if not present.
      */
-      public getSourceWithName(name: string): DataSource {
-          return this.dataSources.find(source => source.name === name);
+    public getSourceWithID(id: string): DataSource {
+          return this.dataSources.find(source => source.id === id);
     }
 
     /**
@@ -105,8 +96,8 @@ class DataGroup {
      * 
      * @return matching DataLayer, null if not present.
      */
-    public getLayerWithName(name: string): DataLayer {
-        return this.dataLayers.find(layer => layer.name === name);
+    public getLayerWithID(id: string): DataLayer {
+        return this.dataLayers.find(layer => layer.id === id);
     }
 
     /**
@@ -125,7 +116,7 @@ class DataGroup {
      * Recursively work up the group tree to collect DataLayer instances.
      */
     private recurseFlattenUpLayers(array, currentGroup) {
-        if (currentGroup !== null) {
+        if (currentGroup !== null && currentGroup !== undefined) {
             currentGroup.dataLayers.forEach((dataLayer) => {
                 array.push(dataLayer);
             });

@@ -51,7 +51,7 @@ class Manager {
      * 
      */
     public onLayerChange(control: Object) {
-        this.controlHandler.onLayerChange(control);
+        //this.controlHandler.onLayerChange(control);
     }
 
     /**
@@ -60,32 +60,30 @@ class Manager {
      * @param mapOptionsOverride dictionary of default map options. If passed this will be used
      * when initialising the map rather than any meta data stored within DataGroups.
      */
-    public initialiseMap(mapOptionsOverride: Object) {
-        let mapOptions = mapOptionsOverride;
-
-        // If data has been loaded, check if the first root node contains a
-        // "mapOptions" node, if so use this as the default map setting.
-        if(mapOptionsOverride === undefined && this.dataStore.dataGroups.length > 0) {
-            let defaultRoot = this.dataStore.dataGroups[0];
-            if(defaultRoot.groupMeta !== undefined && defaultRoot.groupMeta["mapOptions"]) {
-                mapOptions = defaultRoot.groupMeta["mapOptions"];
-            }
-        }
-
+    public initialiseMap() {
         // Initialise the map
-        this.mapHandler.initialiseMap(mapOptions);
+        this.mapHandler.initialiseMap();
+
+        this.controlHandler.showControls();
+        this.controlHandler.rebuildTree(this.dataStore);
     }
 
     /**
-     * Given a directory this method parses and loads the definitions of all groups
-     * and data sources defined within.
+     * Given the location of one (or more) visualisation files, query and parse
+     * them all into object definitions. 
      * 
-     * @param dataDir location of data directory
+     * @param visFiles visualisation file URLs
      * 
      * @returns promise object
      */
-    public loadDataDirectory(dataDir: string) {
-        return this.dataStore.loadDataGroups(dataDir);
+    public loadDefinitions(visFiles: string[]) {
+        let promises = [];
+
+        visFiles.forEach(visFile => {
+            promises.push(this.dataStore.loadDataGroups(visFile));
+        })
+
+        return Promise.all(promises);
     }
 
     /**
@@ -109,7 +107,7 @@ class Manager {
      */
     public plotGroup(groupNames: string[]) {
         let group = this.getDefaultGroup();
-        
+
         // If group names are passed, find that group
         if(groupNames !== undefined && groupNames.length > 0) {
             group = this.dataStore.getGroup(groupNames);
@@ -119,16 +117,8 @@ class Manager {
         if(group !== null) {
             Manager.CURRENT_GROUP = group;
 
-            // Read the tree file (if needed)...
-            this.controlHandler.readTreeFile(group).then(() => {
-               
-                // ..then plot the data group...
-                this.mapHandler.plotGroup(group).then(() => {
-
-                    // ... then rebuild the layer tree
-                    this.controlHandler.showControls();
-                });
-            });
+            // ..then plot the data group...
+            this.mapHandler.plotGroup(group);
         }
     }
 }

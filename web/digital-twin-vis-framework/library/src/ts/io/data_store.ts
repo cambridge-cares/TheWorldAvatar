@@ -50,85 +50,72 @@ class DataStore {
     }
     
     /**
-     * Recursively find and load all DataGroups defined within the input
-     * root directory.
+     * Recursively find and load all DataGroups defined within the visualisation.json
+     * file.
      * 
-     * WARNING: No checking takes place to determine if this directory
-     * has already been scanned and loaded.
-     * 
-     * @param rootDir absolute root directory to load data for
+     * @param visFile location of the visualisation.json file
      * 
      * @returns Promise that fulfills when all loading is complete
      */
-    public loadDataGroups(rootDir: string) {
-        let rootGroup = new DataGroup(rootDir, null);
-        this.dataGroups.push(rootGroup);
-        return this.recurseLoadDataGroups(rootGroup);
+    public loadDataGroups(visFile: string) {
+        let self = this;
+
+        return $.getJSON(visFile, function(json) {
+            console.info("Parsing visualisation file...");
+            self.recurseLoadDataGroups(json, null, self.dataGroups.length);
+            console.info("...file parsed and objects created.");
+            
+        }).fail((error) => {
+            throw error;
+        });    
     }
 
     /**
-     * 
-     * @param currentDir directory of current data group
-     * @param currentGroup current data group
-     * @returns 
+     * Recursively parses the visualisation definition file into hierarchal
+     * DataGroup instances.
      */
-    private recurseLoadDataGroups(currentGroup: DataGroup) {
-        // Look for the meta.json file in the rootDir
-        let currentDir = currentGroup.location;
-        currentDir = (currentDir.endsWith("/")) ? currentDir : currentDir + "/";
+    private recurseLoadDataGroups(currentNode: Object, parentGroup: DataGroup, groupID: number) {
+        if(!currentNode["name"]) {
+            throw new Error("Cannot parse a DataGroup that has no name!")
+        }
 
-        let metaFile = currentDir + "meta.json";
-        let self = this;
+        // Initialise data group
+        let dataGroup = new DataGroup();
+        dataGroup.name = currentNode["name"];
+        dataGroup.id = groupID.toString();
+        if(parentGroup !== null) {
+            dataGroup.id = parentGroup.id + "." + groupID;
+        }
 
-        // Load the JSON
-        var promise = $.getJSON(metaFile, function(json) {
-            return json;
-        }).fail((error) => {
-            console.error("Could not read invalid JSON file at " + metaFile);
-        });
+        // Store parent (if not root)
+        if(parentGroup === null || parentGroup === undefined) {
+            this.dataGroups.push(dataGroup);
+        } else {
+            dataGroup.parentGroup = parentGroup;
+            parentGroup.subGroups.push(dataGroup);
+        }
+        
+        // Store label used for sub groups
+        if(currentNode["groupsLabel"]) dataGroup.subLabel = currentNode["groupLabels"];
 
-        // Recurse into subgroups
-        return promise.then(
-            function(json) {
-                // Store group name
-                currentGroup.name = json["name"];
-                
-                // Store group meta data (i.e. global)
-                if(json["meta"]) {
-                    currentGroup.groupMeta = json["meta"];
-                }
+        // Store optional mapOptions
+        if(currentNode["mapOptions"]) dataGroup.mapOptions = currentNode["mapOptions"];
 
-                // Store definitions of data sources (if present)
-                if(json["sources"]) {
-                    currentGroup.parseDataSources(json["sources"]);
-                }   
+        // Parse sources and layers (if present)
+        if(currentNode["sources"]) {
+            dataGroup.parseDataSources(currentNode["sources"]);
+        }   
+        if(currentNode["layers"]) {
+            dataGroup.parseDataLayers(currentNode["layers"]);
+        }
 
-                // Store definitions of data layers (if present)
-                if(json["layers"]) {
-                    currentGroup.parseDataLayers(json["layers"]);
-                }
-              
-                // Recurse into sub groups
-                if(json["groups"]) {
-                    currentGroup.subLabel = json["groups"]["label"];
-                    let subPromises = [];
-
-                    for(var i = 0; i < json["groups"]["directories"].length; i++) {
-                        // Get sub group details
-                        let subGroupDir = json["groups"]["directories"][i];
-                        subGroupDir = currentDir + subGroupDir;
-
-                        // Initialise sub group
-                        let subGroup = new DataGroup(subGroupDir, currentGroup);
-                        currentGroup.subGroups.push(subGroup);
-
-                        // Step into
-                        subPromises.push(self.recurseLoadDataGroups(subGroup));
-                    }
-                
-                    return Promise.all(subPromises);
-                }
+        // Recurse into sub groups (if present)
+        if(currentNode["groups"]) {
+            for(var i = 0; i < currentNode["groups"].length; i++) {
+                let subNode = currentNode["groups"][i];
+                this.recurseLoadDataGroups(subNode, dataGroup, i);
             }
-        );
+        }
     }
+
 }

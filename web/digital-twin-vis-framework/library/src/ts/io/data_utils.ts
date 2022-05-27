@@ -62,7 +62,7 @@ class DataUtils {
      * @returns root group.
      */
     public static getRootGroup(currentGroup: DataGroup): DataGroup {
-        if(currentGroup.parentGroup === null) {
+        if(currentGroup.parentGroup === null || currentGroup.parentGroup === undefined) {
             return currentGroup;
         } else {
             return DataUtils.getRootGroup(currentGroup.parentGroup);
@@ -73,13 +73,70 @@ class DataUtils {
      * 
      */
     public static getMapOptions(dataGroup: DataGroup): Object {
-        // Get the root group
-        let rootGroup = DataUtils.getRootGroup(dataGroup);
+        // // Get the root group
+        // let rootGroup = DataUtils.getRootGroup(dataGroup);
 
-        // If it has map options, apply them
-        if(rootGroup !== null && rootGroup.groupMeta !== null && rootGroup.groupMeta["mapOptions"]) {
-            return rootGroup.groupMeta["mapOptions"];
-        }
+        // // If it has map options, apply them
+        // if(rootGroup !== null && rootGroup.groupMeta !== null && rootGroup.groupMeta["mapOptions"]) {
+        //     return rootGroup.groupMeta["mapOptions"];
+        // }
         return null;
+    }
+
+    /**
+     * 
+     */
+    public static getLayer(dataStore: DataStore, treeID: string): DataLayer {
+        let parts = [];
+        if (treeID.includes(".")) {
+            parts = treeID.split(".");
+        } else {
+            parts.push(treeID);
+        }
+
+        let group = DataUtils.findGroup(
+            dataStore.dataGroups[treeID[0]],
+            parts.slice(1, -1),
+            0
+        );
+        
+        let layerID = parts[-1];
+        return group.getLayerWithID[layerID];
+    }
+
+    /**
+     * 
+     */
+    private static findGroup(currentGroup: DataGroup, parts: number[], depth: number) {
+        if(currentGroup.subGroups.length > 0 && depth < parts.length) {
+            let index = parts[depth];
+            return DataUtils.findGroup(currentGroup.subGroups[index], parts, depth + 1);
+        } else {
+            return currentGroup;
+        }
+    }
+
+    /**
+     * 
+     */
+    public static getAllLayerIDs(dataStore: DataStore) {
+        let layerIDs = [];
+        dataStore.dataGroups.forEach(group => {
+            DataUtils.getLayerIDs(layerIDs, group);
+        })
+        return layerIDs;
+    }
+
+    /**
+     * 
+     */
+    private static getLayerIDs(layerIDs: string[], dataGroup: DataGroup) {
+        dataGroup.dataLayers.forEach(layer => {
+            layerIDs.push(layer.id);
+        });
+
+        dataGroup.subGroups.forEach(subGroup => {
+            DataUtils.getLayerIDs(layerIDs, subGroup);
+        });
     }
 }

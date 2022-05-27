@@ -12,13 +12,13 @@ class MapHandler_MapBox extends MapHandler {
     /**
      * Initialise and store a new map object.
      */
-    public initialiseMap(options: Object) {
+    public initialiseMap() {
         // Set the mapbox api key
         // @ts-ignore
         mapboxgl.accessToken = MapHandler.MAP_API;
 
         // Check the options for required parameters, provide defaults if missing
-        let newOptions = (options === null) ? {} : {...options};
+        let newOptions = {};
         if(!newOptions["container"]) newOptions["container"] = "map"
         if(!newOptions["center"]) newOptions["center"] = [-0.1280432939529419, 51.50805967151767];
         if(!newOptions["zoom"]) newOptions["zoom"] = 16;
@@ -72,7 +72,7 @@ class MapHandler_MapBox extends MapHandler {
         } else if (features.length === 1) {
 
             // Click on single feature (or single cluster)
-            let layer = Manager.CURRENT_GROUP.getLayerWithName(features[0]["layer"]["id"]);
+            let layer = Manager.CURRENT_GROUP.getLayerWithID(features[0]["layer"]["id"]);
             layer.handleClick(features[0]);
         }
     }
@@ -113,7 +113,7 @@ class MapHandler_MapBox extends MapHandler {
             MapHandler.MAP.getCanvas().style.cursor = 'pointer';
 
             let feature = features[0];
-            let layer = Manager.CURRENT_GROUP.getLayerWithName(feature["layer"]["id"]);
+            let layer = Manager.CURRENT_GROUP.getLayerWithID(feature["layer"]["id"]);
 
             if(layer != null && layer instanceof MapBoxLayer) {
                 (<MapBoxLayer> layer).handleMouseEnter(feature);
@@ -131,21 +131,25 @@ class MapHandler_MapBox extends MapHandler {
      * @param group data group to plot.
      * 
      */
-    public plotGroup(group: DataGroup): Promise<any> {
+    public plotGroup(group: DataGroup) {
+        console.log("plotting?");
         // Get the root group
         let rootGroup = DataUtils.getRootGroup(group);
 
+        console.log("GOT ROOT");
         // Handle loading icons that may be required by the layers
-        return this.handleIcons(rootGroup).then(() => {
+        //return this.handleIcons(rootGroup).then(() => {
             // Once images are loaded, add layers
-            console.log("All images have been loaded?");
+            //console.log("All images have been loaded?");
 
             // Plot the layers
             let allLayers = group.flattenUp();
+            console.log("FLATTENED");
+
             allLayers.forEach(layer => {
                 this.plotLayer(group, layer);
             });
-        });
+        //});
     }
 
     /**
@@ -173,14 +177,13 @@ class MapHandler_MapBox extends MapHandler {
      */
     private addSource(source: DataSource) {
         // @ts-ignore
-        let collision = MapHandler.MAP.getSource(source.name);
+        let collision = MapHandler.MAP.getSource(source.id);
 
         if(collision === null || collision === undefined) {
             // Clone the original source definition
             let options = {...source.definition};
 
             // Remove properties not expected by MapBox
-            delete options["name"];
             if(options["metaFiles"]) delete options["metaFiles"];
             if(options["timeseriesFiles"]) delete options["timeseriesFiles"];
 
@@ -192,8 +195,8 @@ class MapHandler_MapBox extends MapHandler {
             }
 
             // Add to the map
-            MapHandler.MAP.addSource(source.name, options);
-            console.info("Added source to MapBox map: " + source.name);
+            MapHandler.MAP.addSource(source.id, options);
+            console.info("Added source to MapBox map: " + source.id);
         }
     }
 
@@ -203,7 +206,7 @@ class MapHandler_MapBox extends MapHandler {
      * @param layer layer to add.
      */
     private addLayer(layer: DataLayer) {
-        let collision = MapHandler.MAP.getLayer(layer.name);
+        let collision = MapHandler.MAP.getLayer(layer.id);
 
         if(collision === null || collision === undefined) {
             // Clone the original layer definition
@@ -225,13 +228,15 @@ class MapHandler_MapBox extends MapHandler {
                 options["metadata"]["clickable"] = true
             }
 
-            // Change 'name' field to 'id'
-            options["id"] = layer.name;
+            // Update to unique ID
+            options["id"] = layer.id;
+
+            // Remove fields not required by MapBox
             delete options["name"];
 
             // Add to the map
             MapHandler.MAP.addLayer(options);
-            console.info("Added layer to MapBox map: " + layer.name);
+            console.info("Added layer to MapBox map '" + layer.id + "'.");
         }
     }
 
@@ -239,45 +244,45 @@ class MapHandler_MapBox extends MapHandler {
      * 
      */
     private async handleIcons(rootGroup: DataGroup) {
-        let iconFile = rootGroup.location + "/icons.json";
+        // let iconFile = rootGroup.location + "/icons.json";
 
-        // Load the JSON
-        let json = await $.getJSON(iconFile, function(json) {
-            return json;
-        }).fail((error) => {
-            console.warn("Could not read 'icons.json' file; it's an optional file so skipping...")
-        });
+        // // Load the JSON
+        // let json = await $.getJSON(iconFile, function(json) {
+        //     return json;
+        // }).fail((error) => {
+        //     console.warn("Could not read 'icons.json' file; it's an optional file so skipping...")
+        // });
         
-        // Load images once JSON has loaded
-        var promises = [];
-        for(var key of Object.keys(json)) {
+        // // Load images once JSON has loaded
+        // var promises = [];
+        // for(var key of Object.keys(json)) {
 
-            // Create a promise that resolves once the image is loaded AND added
-            let promise = new Promise((resolve, reject) => {
-                let imageName = key;
-                let imageFile = rootGroup.location + "/" + json[key];
+        //     // Create a promise that resolves once the image is loaded AND added
+        //     let promise = new Promise((resolve, reject) => {
+        //         let imageName = key;
+        //         let imageFile = rootGroup.location + "/" + json[key];
 
-                let hasImage = MapHandler.MAP.hasImage(imageName);
-                if(!hasImage) {
+        //         let hasImage = MapHandler.MAP.hasImage(imageName);
+        //         if(!hasImage) {
 
-                    MapHandler.MAP.loadImage(
-                        imageFile,
-                        (error, image) => {
-                            if(error) {
-                                console.log(error);
-                                reject(error);
-                            }
+        //             MapHandler.MAP.loadImage(
+        //                 imageFile,
+        //                 (error, image) => {
+        //                     if(error) {
+        //                         console.log(error);
+        //                         reject(error);
+        //                     }
 
-                            MapHandler.MAP.addImage(imageName, image);
-                            resolve([]);
-                        }
-                    );
-                }
-            });
-            promises.push(promise);
-        }
+        //                     MapHandler.MAP.addImage(imageName, image);
+        //                     resolve([]);
+        //                 }
+        //             );
+        //         }
+        //     });
+        //     promises.push(promise);
+        // }
 
-        return Promise.all(promises);
+        // return Promise.all(promises);
     }
 
 }

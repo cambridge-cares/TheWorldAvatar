@@ -7,11 +7,16 @@
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
         <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
         <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+        <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
+
         <script src="./dtvf.temp.js"></script>
 
         <!-- CSS -->
         <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="./dtvf.min.css" rel="stylesheet" />
+        <link href="./controls.css" rel="stylesheet" />
 
         <style>
             body, html, #map {
@@ -27,7 +32,71 @@
         <div id="map"></div>
 
         <!-- Element the map controls will be added to (normally on the left) -->
-        <div id="controlsContainer"></div>
+        <div id="controlsContainer">
+
+             <!-- Container for all controls  -->
+            <div id="controlContainer">
+
+                <!-- Camera controls -->
+                <div id="cameraContainer" class="controlBlock">
+                    <!-- Title and toggle for DoF -->
+                    <div id="controlTitle" class="controlTitle">
+                        <p>Camera</p>
+                        <div class="tooltip">
+                            <label class="switch"><input type="checkbox" onclick="MapBoxUtils.setTiltshift(this.checked)"><span class="slider round"><p>DoF</p></label>
+                            <span class="tooltiptext">Toggle depth of field effect</span>
+                        </div>
+                    </div>
+                    <div class="controlContents">
+                        <a href="#" onclick="MapBoxUtils.changeCamera('bird')">Bird's Eye</a><br/>
+                        <a href="#" onclick="MapBoxUtils.changeCamera('pitch')">Pitched</a>
+                    </div>
+                </div>
+
+                <!-- Terrain controls -->
+                <div id="terrainContainer" class="controlBlock">
+                    <!-- Title and toggle for 3d terrain -->
+                    <div id="controlTitle" class="controlTitle">
+                        <p>Terrain</p>
+                        <div class="tooltip">
+                            <label class="switch"><input type="checkbox" onclick="MapBoxUtils.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
+                            <span class="tooltiptext">Toggle 3D terrain</span>
+                        </div>
+                    </div>
+                    <div class="controlContents">
+                        <input type="radio" name="terrain" id="light" onclick="MapBoxUtils.changeTerrain('light')" checked>
+                        <label for="light">Light</label><br/>
+                        <input type="radio" name="terrain" id="dark" onclick="MapBoxUtils.changeTerrain('dark')">
+                        <label for="dark">Dark</label><br/>
+                        <input type="radio" name="terrain" id="outdoors" onclick="MapBoxUtils.changeTerrain('outdoors')">
+                        <label for="outdoors">Outdoors</label><br/>
+                        <input type="radio" name="terrain" id="satellite" onclick="MapBoxUtils.changeTerrain('satellite')">
+                        <label for="satellite">Satellite</label><br/>
+                    </div>
+                </div>
+
+                <!-- Layer controls -->
+                <div id="layerContainer" class="controlBlock">
+                    <!-- Title and toggle for place names -->
+                    <div id="controlTitle"  class="controlTitle">
+                        <p>Layers</p>
+                        <div class="tooltip" id="placenameContainer">
+                            <label class="switch"><input type="checkbox" onclick="MapBoxUtils.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
+                            <span class="tooltiptext">Toggle place names, labels, and roads </span>
+                        </div>
+                    </div>
+                    <!-- Container for dynamic layer tree -->
+                    <div class="controlContents">
+                        <div id="layerTreeContainer">
+                            <div class="hummingbird-treeview-converter"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Container for developer info -->
+                <div id="developerContainer" class="controlBlock"></div>
+            </div>
+        </div>
 
         <!-- Element for depth of field overlay -->
         <div id="tiltShift"></div>
@@ -38,10 +107,12 @@
             var manager = new Manager(MapProvider.MAPBOX);
 
             // Load the definitions of sample data
-            var dataPromiseOne = manager.loadDataDirectory("./data/cambridge");
-            var dataPromiseTwo = manager.loadDataDirectory("./data/singapore");
-
-            Promise.all([dataPromiseOne, dataPromiseTwo]).then(() => {
+            var dataPromise = manager.loadDefinitions([
+                "./visualisation-1.json",
+                "./visualisation-2.json"
+            ]);
+            
+            dataPromise.then(() => {
                 // Only start the map after data definitions have been read.
                 start();
             });

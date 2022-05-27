@@ -324,7 +324,7 @@ class MapBoxUtils {
 	 * @param {boolean} visible desired visibility.
 	 */
 	public static toggleLayer(layerID, visible) {
-		if(MapHandler.MAP.getLayer(layerID) == null) return;
+		if(MapHandler.MAP.getLayer(layerID) === undefined) return;
 		
         MapHandler.MAP.setLayoutProperty(
             layerID,

@@ -4,9 +4,14 @@
 abstract class DataLayer {
 
     /**
+     * Public facing name of layer.
+     */
+    public name: string;
+
+    /**
      * Unique name of layer.
      */
-    public name: String;
+    public id: string;
 
     /**
      * Source of the layer's data.
@@ -21,11 +26,12 @@ abstract class DataLayer {
     /**
      * Initialise a new DataLayer instance.
      */
-    constructor(name: String, source: DataSource) {
+    constructor(id: string, name: string, source: DataSource) {
+        this.id = id;
         this.name = name;
         this.source = source;
 
-        console.info("Created DataLayer instance '" + this.name + "'.");
+        console.info("Created DataLayer instance '" + this.name + "' with id '" + this.id + "'.");
     }
 
     /**
