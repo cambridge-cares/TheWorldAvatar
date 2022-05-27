@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class PostGISService extends ContainerService {
 
-    static final String TYPE = "postgis";
+    public static final String TYPE = "postgres";
 
     public PostGISService(String stackName, ServiceManager serviceManager, ServiceConfig config) throws IOException {
         super(stackName, serviceManager, config);

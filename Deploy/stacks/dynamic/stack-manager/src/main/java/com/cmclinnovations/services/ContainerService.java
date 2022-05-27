@@ -8,6 +8,8 @@ import com.github.dockerjava.api.model.HostConfig;
 
 public class ContainerService extends AbstractService {
 
+    public static final String TYPE = "container";
+
     private final String stackName;
     private String containerId;
 

@@ -1,6 +1,7 @@
 package com.cmclinnovations.services;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -64,35 +65,35 @@ public class ServiceManager {
         ServiceConfig config = serviceConfigs.get(serviceName);
         String type = config.getType();
 
-        final Service newService;
-        switch (type.toLowerCase()) {
-            case DockerService.TYPE:
-                newService = new DockerService(this, config);
-                ((DockerService) newService).createNetwork(stackName);
-                break;
-            case NginxService.TYPE:
-                newService = new NginxService(stackName, this, config);
-                break;
-            case PostGISService.TYPE:
-                newService = new PostGISService(stackName, this, config);
-                break;
-            default:
-                if (null != config.getImage()) {
-                    newService = new ContainerService(stackName, this, config);
-                    break;
-                } else {
+        Class<S> typeClass = AbstractService.getTypeClass(type.toLowerCase());
+        if (null == typeClass) {
                     throw new IllegalArgumentException("Service '" + serviceName + "' is of type '" + type
-                            + "', which does not have a specific class defined, and no Docker 'image' was specified.");
+                    + "', which does not have a specific class defined.");
                 }
+
+        final Service newService;
+        try {
+            newService = typeClass
+                    .getConstructor(String.class, ServiceManager.class, ServiceConfig.class)
+                    .newInstance(stackName, this, config);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+            throw new IllegalArgumentException("Service '" + serviceName + "', of type '" + type
+                    + "', could not be created.", ex);
         }
 
         if (newService instanceof ContainerService) {
-            this.<DockerService>getService("docker").startContainer((ContainerService) newService);
+            ContainerService newContainerService = (ContainerService) newService;
+
+            DockerService dockerService = this.<DockerService>getService("docker");
+            if (null != dockerService) {
+                dockerService.startContainer(newContainerService);
+            }
         }
 
         services.put(serviceName, newService);
 
-        return (S) newService;
+        return typeClass.cast(newService);
     }
 
     <S extends Service> S getService(String otherServiceName) {

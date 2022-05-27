@@ -26,12 +26,12 @@ import com.github.dockerjava.transport.DockerHttpClient;
 
 public class DockerService extends AbstractService {
 
-    static final String TYPE = "docker";
+    public static final String TYPE = "docker";
 
     private final DockerClient dockerClient;
     private Network network;
 
-    public DockerService(ServiceManager serviceManager, ServiceConfig config) throws URISyntaxException {
+    public DockerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(serviceManager, config);
 
         Builder dockerConfigBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder();
@@ -52,6 +52,8 @@ public class DockerService extends AbstractService {
                 .build();
 
         dockerClient = DockerClientBuilder.getInstance(dockerConfig).withDockerHttpClient(httpClient).build();
+
+        createNetwork(stackName);
     }
 
     public void createNetwork(String name) {

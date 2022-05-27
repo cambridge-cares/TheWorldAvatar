@@ -28,7 +28,7 @@ public class ServiceConfig {
 
     public ServiceConfig() {
         name = null;
-        type = "default";
+        type = "container";
         endpoints = new HashMap<>();
         username = null;
         passwordFile = null;
