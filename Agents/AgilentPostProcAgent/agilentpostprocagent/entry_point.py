@@ -8,20 +8,7 @@ import logging
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
-    print("at start")
     agent_config = config_derivation_agent()
-
-    print(agent_config.ONTOAGENT_SERVICE_IRI)
-    print(agent_config.DERIVATION_PERIODIC_TIMESCALE)
-    print(agent_config.DERIVATION_INSTANCE_BASE_URL)
-    print(agent_config.SPARQL_QUERY_ENDPOINT)
-    print(agent_config.SPARQL_UPDATE_ENDPOINT)
-    print(agent_config.KG_USERNAME)
-    print(agent_config.KG_PASSWORD)
-    print(agent_config.FILE_SERVER_ENDPOINT)
-    print(agent_config.FILE_SERVER_USERNAME)
-    print(agent_config.FILE_SERVER_PASSWORD)
-    print(agent_config.ONTOAGENT_OPERATION_HTTP_URL)
 
     agent = AgilentPostProcAgent(
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
@@ -37,11 +24,8 @@ def create_app():
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         logger_name='prod'
     )
-    print("agilent agent created")
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
-    print("something")
 
     agent.start_monitoring_derivations()
-    print("started monitoring")
     return agent.app
