@@ -132,6 +132,7 @@ public class DockerService extends AbstractService {
                 // The container is already running, all is fine.
                 break;
             case "created":
+            case "exited":
                 // The container is not running, start it.
                 try (StartContainerCmd startContainerCmd = dockerClient.startContainerCmd(containerId)) {
                     startContainerCmd.exec();
