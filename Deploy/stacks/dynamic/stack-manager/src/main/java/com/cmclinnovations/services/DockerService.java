@@ -1,14 +1,22 @@
 package com.cmclinnovations.services;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.ConnectToNetworkCmd;
+import com.github.dockerjava.api.command.CopyArchiveToContainerCmd;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.CreateNetworkCmd;
+import com.github.dockerjava.api.command.ExecCreateCmd;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.api.command.InspectNetworkCmd;
 import com.github.dockerjava.api.command.ListContainersCmd;
 import com.github.dockerjava.api.command.ListNetworksCmd;
@@ -23,6 +31,9 @@ import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
+
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 public class DockerService extends AbstractService {
 
@@ -155,6 +166,40 @@ public class DockerService extends AbstractService {
         }
 
         service.setContainerId(containerId);
+    }
+
+    public void sendFiles(String containerId, Map<String, String> files, String remotePath) throws IOException {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            try (TarArchiveOutputStream tar = new TarArchiveOutputStream(bos)) {
+                for (Entry<String, String> file : files.entrySet()) {
+                    String filePath = file.getKey().replace('\\', '/');
+                    String fileContent = file.getValue();
+                    TarArchiveEntry entry = new TarArchiveEntry(filePath);
+                    entry.setSize(fileContent.getBytes().length);
+                    entry.setMode(0755);
+                    tar.putArchiveEntry(entry);
+                    tar.write(fileContent.getBytes());
+                    tar.closeArchiveEntry();
+                }
+            }
+
+            try (InputStream is = new ByteArrayInputStream(bos.toByteArray());
+                    CopyArchiveToContainerCmd copyArchiveToContainerCmd = dockerClient
+                            .copyArchiveToContainerCmd(containerId)) {
+                copyArchiveToContainerCmd.withTarInputStream(is)
+                        .withRemotePath(remotePath).exec();
+            }
+        }
+    }
+
+    public void executeCommand(String containerId, String... cmd) {
+        try (ExecCreateCmd execCreateCmd = dockerClient.execCreateCmd(containerId)) {
+            ExecCreateCmdResponse execResponse = execCreateCmd.withCmd(cmd)
+                    .withAttachStdin(true)
+                    .withAttachStderr(true)
+                    .exec();
+            Map<String, Object> rawValues = execResponse.getRawValues();
+        }
     }
 
 }
