@@ -2,7 +2,6 @@ package com.cmclinnovations.services;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -15,7 +14,8 @@ public class ServiceConfig {
 
     private final String name;
     private final String type;
-    private final Map<String, URI> endpoints;
+    private final Map<String, Connection> endpoints;
+    private final Map<String, Connection> incomingConnections;
     private final String username;
     private final String passwordFile;
 
@@ -30,6 +30,7 @@ public class ServiceConfig {
         name = null;
         type = "container";
         endpoints = new HashMap<>();
+        incomingConnections = new HashMap<>();
         username = null;
         passwordFile = null;
 
@@ -42,8 +43,12 @@ public class ServiceConfig {
         return name;
     }
 
-    public Map<String, URI> getEndpoints() {
+    public Map<String, Connection> getEndpoints() {
         return endpoints;
+    }
+
+    public Map<String, Connection> getIncomingConnections() {
+        return incomingConnections;
     }
 
     public String getUsername() {

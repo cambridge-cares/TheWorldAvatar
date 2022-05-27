@@ -47,7 +47,7 @@ public class DockerService extends AbstractService {
 
         Builder dockerConfigBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
-        URI endpoint = getEndpoint("dockerHost");
+        URI endpoint = getEndpoint("dockerHost").getUri();
         if (null != endpoint) {
             dockerConfigBuilder.withDockerHost(endpoint.toString());
             // TODO need to set up TLS so that the unsecured Docker port "2375" doesn't need

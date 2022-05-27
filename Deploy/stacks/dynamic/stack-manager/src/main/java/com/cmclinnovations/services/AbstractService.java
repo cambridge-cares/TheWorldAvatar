@@ -68,12 +68,20 @@ public abstract class AbstractService implements Service {
         return config.getName();
     }
 
-    public Map<String, URI> getEndpoints() {
+    public Map<String, Connection> getEndpoints() {
         return config.getEndpoints();
     }
 
-    public URI getEndpoint(String endpointName) {
+    public Connection getEndpoint(String endpointName) {
         return config.getEndpoints().get(endpointName);
+    }
+
+    public Map<String, Connection> getIncomingConnections() {
+        return config.getIncomingConnections();
+    }
+
+    public Connection getIncomingConnection(String incommingConnectionName) {
+        return config.getIncomingConnections().get(incommingConnectionName);
     }
 
     public String getEnvironmentVariable(String key) {
