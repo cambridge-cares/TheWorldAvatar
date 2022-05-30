@@ -12,9 +12,6 @@ from chemistry_and_robots.data_model.base_ontology import BaseOntology
 from chemistry_and_robots.data_model.ontodoe import *
 from chemistry_and_robots.data_model.ontorxn import *
 
-# TODO add below IRIs to pyasyncagent.data_model.iris, also TBox CSV/OWL if applicable
-ONTOLAB_WASGENERATEDFOR = ONTOLAB + 'wasGeneratedFor'
-ONTOLAB_TRANSLATESTOPARAMETERSETTING = ONTOLAB + 'translatesToParameterSetting'
 
 class ParameterSetting(BaseOntology):
     # NOTE Here hasQuantity is pointing to either IRI or the actual instance of om:Quantity

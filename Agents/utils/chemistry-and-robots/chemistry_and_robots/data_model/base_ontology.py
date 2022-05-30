@@ -9,36 +9,6 @@ import base64
 from chemistry_and_robots.data_model.iris import *
 from pyderivationagent.data_model.utils import *
 
-# TODO add below IRIs to pyasyncagent.data_model.iris, also TBox CSV/OWL if applicable
-OM_CELSIUSTEMPERATURE = UNITS_OF_MEASURE + 'CelsiusTemperature'
-ONTODERIVATION_BELONGSTO = ONTODERIVATION + 'belongsTo'
-ONTODERIVATION_ISDERIVEDUSING = ONTODERIVATION + 'isDerivedUsing'
-ONTODERIVATION_HASSTATUS = ONTODERIVATION + 'hasStatus'
-DOEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__DoE#Service'
-EXEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service'
-OM_MINUTETIME = UNITS_OF_MEASURE + 'minute-Time'
-OM_MASS = UNITS_OF_MEASURE + 'Mass'
-OM_DENSITY = UNITS_OF_MEASURE + 'Density'
-OM_SPECIFICAMOUNTOFMONEY = UNITS_OF_MEASURE + 'SpecificAmountOfMoney'
-OM_AMOUNTOFSUBSTANCE = UNITS_OF_MEASURE + 'AmountOfSubstance'
-OM_MOLE = UNITS_OF_MEASURE + 'mole'
-OM_MOLEPERLITRE = UNITS_OF_MEASURE + 'molePerLitre'
-OM_LITRE = UNITS_OF_MEASURE + 'litre'
-OM_KILOGRAMPERLITRE = UNITS_OF_MEASURE + 'kilogramPerLitre'
-OM_KILOGRAM = UNITS_OF_MEASURE + 'kilogram'
-OM_KILOGRAMPERMOLE = UNITS_OF_MEASURE + 'kilogramPerMole'
-OM_MILLILITRE = UNITS_OF_MEASURE + 'millilitre'
-ONTOUOM_GRAMPERMOLE = ONTOUOM + 'gramPerMole' # TODO add this to OM TBox
-ONTOSPECIES_HASMOLECULARWEIGHT = ONTOSPECIES + 'hasMolecularWeight'
-ONTOSPECIES_UNITS = ONTOSPECIES + 'units'
-ONTOSPECIES_VALUE = ONTOSPECIES + 'value'
-ONTOUOM_POUNDSTERLINGPERLITRE = ONTOUOM + 'pound_sterling_per_litre' # TODO OntoRxn:RunMaterialCost should have the unit of OM_POUNDSTERLING
-OM_ONE = UNITS_OF_MEASURE + 'one'
-OM_DEGREECELSIUS = UNITS_OF_MEASURE + 'degreeCelsius'
-OM_DEGREEFAHRENHEIT = UNITS_OF_MEASURE + 'degreeFahrenheit'
-OM_KELVIN = UNITS_OF_MEASURE + 'kelvin'
-ONTOUOM_KILOGRAMPERLITREPERMINUTE = ONTOUOM + 'kilogram_per_litre_per_minute'
-OM_POUNDSTERLING = UNITS_OF_MEASURE + 'poundSterling'
 
 class InstanceIRIInitialisationError(Exception):
     instance_iri_missing = """IRI of instance_iri is missing, please put it as pyasyncagent.data_model.utils.INSTANCE_IRI_TO_BE_INITIALISED \

@@ -45,5 +45,4 @@ OntoRxn:hasRunMaterialCost rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
 ############################################################################
 ## Subclass relationship between ReactionExperiment and ReactionVariation ##
 ############################################################################
-OntoRxn:ReactionVariation rdf:type OntoRxn:ReactionExperiment .
-# in fact, the above line should be OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
+OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .

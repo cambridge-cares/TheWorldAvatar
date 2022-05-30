@@ -577,7 +577,7 @@ def test_upload_download_process_raw_hplc_report(initialise_triples, generate_ra
     assert hplc_report_instance.instance_iri == hplc_report_iri
     assert hplc_report_instance.hasReportPath == remote_file_path
     assert hplc_report_instance.localReportFile == local_file_path
-    assert round(hplc_report_instance.lastLocalModifiedAt, 5) == round(timestamp_last_modified, 5)
+    assert (hplc_report_instance.lastLocalModifiedAt - timestamp_last_modified) <= 0.00001
     assert hplc_report_instance.lastUploadedAt > hplc_report_instance.lastLocalModifiedAt
     list_chrom_pts = hplc_report_instance.records
     for pt in list_chrom_pts:

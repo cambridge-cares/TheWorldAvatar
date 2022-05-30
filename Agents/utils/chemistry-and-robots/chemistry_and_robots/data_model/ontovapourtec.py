@@ -8,17 +8,9 @@ from pyderivationagent.data_model.utils import *
 from chemistry_and_robots.data_model.base_ontology import *
 from chemistry_and_robots.data_model.ontolab import *
 
-# TODO add below IRIs to pyasyncagent.data_model.iris, also TBox CSV/OWL if applicable
-# TODO NOTE ONTOVAPOURTEC_HASWARNINGLEVEL is probably not needed?
-ONTOVAPOURTEC_LOCATIONID = ONTOVAPOURTEC + 'locationID'
-ONTOVAPOURTEC_HASREACTORTEMPERATUREUPPERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureUpperLimit'
-ONTOVAPOURTEC_HASREACTORTEMPERATURELOWERLIMIT = ONTOVAPOURTEC + 'hasReactorTemperatureLowerLimit'
-ONTOVAPOURTEC_STOICHIOMETRYRATIOSETTING = ONTOVAPOURTEC + 'StoichiometryRatioSetting'
-ONTOVAPOURTEC_HASSTOICHIOMETRYRATIOSETTING = ONTOVAPOURTEC + 'hasStoichiometryRatioSetting'
 LIST_ONTOVAPOURTEC_VALIDSTATE = [ONTOVAPOURTEC_IDLE, ONTOVAPOURTEC_NULL, ONTOVAPOURTEC_FAULTY,
 ONTOVAPOURTEC_INACTIVE, ONTOVAPOURTEC_CLEANINGREACTION, ONTOVAPOURTEC_REACTIONCOMPLETED,
-ONTOVAPOURTEC_RUNNINGREACTOR] # TODO should be ONTOVAPOURTEC_RUNNINGREACTION
-# ONTOVAPOURTEC_CONDUCTED = ONTOVAPOURTEC + 'conducted'
+ONTOVAPOURTEC_RUNNINGREACTION]
 
 class SampleLoopVolumeSetting(VolumeSetting):
     clz: str = ONTOVAPOURTEC_SAMPLELOOPVOLUMESETTING
@@ -93,6 +85,7 @@ class Vial(BaseOntology):
     isFilledWith: ChemicalSolution
     hasFillLevel: OM_Volume
     # hasWarningLevel: OM_Volume # NOTE hasWarningLevel is temporarily commented out before a decision is made whether keep it
+    # TODO bring hasWarningLevel back, this is needed when the fill level is below certain amount to remind the reseachers to add liquid
     hasMaxLevel: OM_Volume
     isHeldIn: str # NOTE here we simplify the implementation to use str instead of the actual AutoSamplerSite
 

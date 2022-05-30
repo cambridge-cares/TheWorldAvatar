@@ -7,21 +7,9 @@ from pyderivationagent.data_model.utils import *
 from chemistry_and_robots.data_model.base_ontology import BaseOntology, OM_Quantity, OM_Duration, OM_QuantityOfDimensionOne
 from chemistry_and_robots.data_model.ontolab import *
 
-# TODO add below IRIs to pyasyncagent.data_model.iris, also TBox CSV/OWL if applicable
-ONTOHPLC_LOCALREPORTDIRECTORY = ONTOHPLC + 'localReportDirectory'
-ONTOHPLC_REPORTEXTENSION = ONTOHPLC + 'reportExtension'
-DBPEDIA_XLSFILE = 'http://dbpedia.org/resource/Microsoft_Excel'
-DBPEDIA_CSVFILE = 'http://dbpedia.org/resource/Comma-separated_values'
-DBPEDIA_TXTFILE = 'http://dbpedia.org/resource/Text_file'
-# DBPEDIA_XLSFILE, DBPEDIA_CSVFILE, and DBPEDIA_TXTFILE all have rdf:type DBPEDIA_WIKICATFILENAMEEXTENSIONS
-DBPEDIA_WIKICATFILENAMEEXTENSIONS = 'http://dbpedia.org/class/yago/WikicatFilenameExtensions'
-ONTOHPLC_CHARACTERISES = ONTOHPLC + 'characterises'
 TXTFILE_EXTENSION = 'txt'
 XLSFILE_EXTENSION = 'xls'
-ONTOHPLC_LASTLOCALMODIFIEDAT = ONTOHPLC + 'lastLocalModifiedAt'
-ONTOHPLC_LASTUPLOADEDAT = ONTOHPLC + 'lastUploadedAt'
 MAPPING_FILENAMEEXTENSION = {DBPEDIA_XLSFILE:XLSFILE_EXTENSION, DBPEDIA_TXTFILE:TXTFILE_EXTENSION}
-ONTOHPLC_LOCALREPORTFILE = ONTOHPLC + 'localReportFile'
 
 class PeakArea(OM_Quantity):
     clz: str = ONTOHPLC_PEAKAREA
@@ -58,6 +46,8 @@ class HPLCMethod(BaseOntology):
     hasRetentionTime: List[RetentionTime]
     usesInternalStandard: InternalStandard
     rdfs_comment: str
+    localFilePath: Optional[str] # TODO bring back to compulsory once formalise the HPLCMethod at deployment
+    remoteFilePath: Optional[str] # TODO bring back to compulsory once formalise the HPLCMethod at deployment
 
 class HPLCJob(BaseOntology):
     clz: str = ONTOHPLC_HPLCJOB
