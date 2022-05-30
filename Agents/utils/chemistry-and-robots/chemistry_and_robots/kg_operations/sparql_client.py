@@ -1331,6 +1331,49 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 raise NotImplementedError("Handling HPLC local report with (%s) as filename extension is NOT supported yet." % (response[0]['report_extension']))
             return response[0]['report_dir'], file_extension
 
+    def upload_raw_hplc_report_to_fs_y_collect_triples(self, local_file_path, timestamp_last_modified, hplc_digital_twin) -> Tuple[str, Graph]:
+        try:
+            remote_file_path, timestamp_upload = self.uploadFile(local_file_path)
+            logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> at %f with remote file path at: %s " % (
+                    local_file_path, self.fs_url, timestamp_upload, remote_file_path))
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            # TODO need to think a way to inform the post proc agent about the failure of uploading the file
+            raise Exception("HPLC raw report (%s) upload failed with exception %s" % (local_file_path, str(e.args)))
+
+        hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
+        hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
+        logger.info("The initialised HPLCReport IRI is: <%s>; the initialised HPLCJob IRI is: <%s>" % (hplc_report_iri, hplc_job_iri))
+
+        rxn_exp_iri = self.identify_rxn_exp_when_uploading_hplc_report(hplc_digital_twin, remote_file_path)
+        logger.info("The identified ReactionExperiment for HPLCReport <%s> (remote path: %s) is: <%s>" % (hplc_report_iri, remote_file_path, rxn_exp_iri))
+
+        # TODO
+        hplc_method_iri = self.identify_hplc_method_when_uploading_hplc_report()
+        logger.info("The HPLCReport <%s> (remote path: %s) was generated using HPLCMethod <%s>" % (hplc_report_iri, remote_file_path, hplc_method_iri))
+
+        # update = PREFIX_XSD + """INSERT DATA {<%s> <%s> <%s>.
+        #     <%s> a <%s>; <%s> <%s>; <%s> <%s>; <%s> <%s>.
+        #     <%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
+        #     hplc_digital_twin, ONTOHPLC_HASJOB, hplc_job_iri,
+        #     hplc_job_iri, ONTOHPLC_HPLCJOB, ONTOHPLC_CHARACTERISES, rxn_exp_iri, ONTOHPLC_USESMETHOD, hplc_method_iri, ONTOHPLC_HASREPORT, hplc_report_iri,
+        #     hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_file_path, ONTOHPLC_LOCALREPORTFILE, local_file_path,
+        #     ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
+
+        g = Graph()
+        g.add((URIRef(hplc_digital_twin), URIRef(ONTOHPLC_HASJOB), URIRef(hplc_job_iri)))
+        g.add((URIRef(hplc_job_iri), RDF.type, URIRef(ONTOHPLC_HPLCJOB)))
+        g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_CHARACTERISES), URIRef(rxn_exp_iri)))
+        g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_USESMETHOD), URIRef(hplc_method_iri)))
+        g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_HASREPORT), URIRef(hplc_report_iri)))
+        g.add((URIRef(hplc_report_iri), RDF.type, URIRef(ONTOHPLC_HPLCREPORT)))
+        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_HASREPORTPATH), Literal(remote_file_path)))
+        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LOCALREPORTFILE), Literal(local_file_path)))
+        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LASTLOCALMODIFIEDAT), Literal(timestamp_last_modified)))
+        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LASTUPLOADEDAT), Literal(timestamp_upload)))
+        return hplc_report_iri, g
+
+    # TODO delete below, use upload_raw_hplc_report_to_fs_y_collect_triples instead
     def upload_raw_hplc_report_to_fs_kg(self, local_file_path, timestamp_last_modified, hplc_digital_twin) -> str:
         try:
             remote_file_path, timestamp_upload = self.uploadFile(local_file_path)

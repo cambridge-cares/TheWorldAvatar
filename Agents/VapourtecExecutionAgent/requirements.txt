@@ -1,7 +1,9 @@
-flask==1.1.2
-gunicorn==20.0.4
-git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils
-py4jps
-Flask-APScheduler
+git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
+git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots
+pyderivationagent
 pandas
-rdflib
+pydantic
+testcontainers
+pytest
+pytest-docker-compose
+pytest-rerunfailures
