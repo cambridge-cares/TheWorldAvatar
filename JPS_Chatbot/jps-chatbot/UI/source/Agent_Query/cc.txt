@@ -121,3 +121,12 @@ http://www.theworldavatar.com/kb/ontospecies/s00010451.owl/Species_7258807646376
 http://www.theworldavatar.com/kb/ontospecies/s00010482.owl/Species_7258811939624000,http://www.theworldavatar.com/kb/ontospecies/Species_f157c9d6-8656-4e1c-be52-314888caf917
 http://www.theworldavatar.com/kb/ontospecies/s00010861.owl/Species_7258880016199700,http://www.theworldavatar.com/kb/ontospecies/Species_a3755d47-cd9a-4d9d-b50f-b3efd8bc70f7
 http://www.theworldavatar.com/kb/ontospecies/s00009360.owl/Species_7258652483811000,http://www.theworldavatar.com/kb/ontospecies/Species_355109b1-2989-4a06-9547-21271b40e19b
+http://www.theworldavatar.com/kb/ontospecies/s00003499.owl/Species_7257999358987000,http://www.theworldavatar.com/kb/ontospecies/Species_c23597ce-5d31-425c-a4ae-ca1c8ba0e02f
+http://www.theworldavatar.com/kb/ontospecies/s00006629.owl/Species_7258297176440900,http://www.theworldavatar.com/kb/ontospecies/Species_12238c7c-98b6-49e3-8c14-31c1edc97a9c
+http://www.theworldavatar.com/kb/ontospecies/s00002535.owl/Species_7257924867552500,http://www.theworldavatar.com/kb/ontospecies/Species_6555b1a0-6e58-40f3-83e6-659589bee021
+http://www.theworldavatar.com/kb/ontospecies/s00010492.owl/Species_7258813280632000,http://www.theworldavatar.com/kb/ontospecies/Species_1e7d8a91-2ea9-4c75-b9ed-8396f13573bb
+http://www.theworldavatar.com/kb/ontospecies/s00005937.owl/Species_7258220783539200,http://www.theworldavatar.com/kb/ontospecies/Species_c2ebdaaf-1cd5-46ae-a2fe-f2e33cffc455
+http://www.theworldavatar.com/kb/ontospecies/s00009866.owl/Species_7258722861828600,http://www.theworldavatar.com/kb/ontospecies/Species_78b569d8-2592-4ff3-a479-565d29c7536d
+http://www.theworldavatar.com/kb/ontospecies/s00007263.owl/Species_7258373823823300,http://www.theworldavatar.com/kb/ontospecies/Species_12238c7c-98b6-49e3-8c14-31c1edc97a9c
+http://www.theworldavatar.com/kb/ontospecies/s00006953.owl/Species_7258335825826800,http://www.theworldavatar.com/kb/ontospecies/Species_c2ebdaaf-1cd5-46ae-a2fe-f2e33cffc455
+http://www.theworldavatar.com/kb/ontospecies/s00006934.owl/Species_7258333558973300,http://www.theworldavatar.com/kb/ontospecies/Species_ac81baa1-aafd-4124-88d0-92a4df71d4b9

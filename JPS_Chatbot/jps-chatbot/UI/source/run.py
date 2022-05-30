@@ -16,8 +16,12 @@ from functools import lru_cache
 
 # sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
 # sys.path.append('/source')
-from .CoordinateAgent import CoordinateAgent
-from .full_test import FullTest
+if __name__ == "__main__":
+    from CoordinateAgent import CoordinateAgent
+    from full_test import FullTest
+else:
+    from .CoordinateAgent import CoordinateAgent
+    from .full_test import FullTest
 
 app = Flask(__name__)
 CORS(app)

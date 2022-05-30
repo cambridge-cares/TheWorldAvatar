@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +13,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
@@ -963,8 +972,11 @@ public class DerivationClient {
 	 * 
 	 * @param derivation
 	 * @param graph
+	 * @throws IOException
+	 * @throws ClientProtocolException
 	 */
-	private void updatePureSyncDerivation(Derivation derivation, DirectedAcyclicGraph<String, DefaultEdge> graph) {
+	private void updatePureSyncDerivation(Derivation derivation, DirectedAcyclicGraph<String, DefaultEdge> graph)
+			throws ClientProtocolException, IOException {
 		// inputs that are part of another derivation (for recursive call)
 		// don't need direct inputs here
 		List<Derivation> upstreamDerivations = derivation.getInputsWithBelongsTo();
@@ -1007,8 +1019,39 @@ public class DerivationClient {
 				LOGGER.debug("Updating <" + derivation.getIri() + "> using agent at <" + agentURL
 						+ "> with http request " + requestParams);
 
-				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
+				// execute update via HTTP GET, note that below block replaces the previous way
+				// of execute HTTP reqeust via calling AgentCaller.executeGetWithURLAndJSON,
+				// i.e.:
+				// String response = AgentCaller.executeGetWithURLAndJSON(agentURL,
+				// requestParams.toString());
+				// TODO we may be able to re-use AgentCaller once the dependency is resolved:
+				// this change is motivated by the fact that the Java dependency javax is not
+				// packaged in py4jps so an error will be thrown in python side when derivation
+				// agent requesting update for sync derivation when dealing with mixed
+				// derivation DAG (all the Java agents working fine as such dependency is
+				// provided in tomcat at deployment), the error message:
+				// java.lang.NoClassDefFoundError: javax/servlet/ServletInputStream
+				// at
+				// uk.ac.cam.cares.jps.base.discovery.AgentCaller.createURIWithURLandJSON(AgentCaller.java:185)
+				// at
+				// uk.ac.cam.cares.jps.base.discovery.AgentCaller.executeGetWithURLAndJSON(AgentCaller.java:178)
+				// at
+				// uk.ac.cam.cares.jps.base.derivation.DerivationClient.updatePureSyncDerivation(DerivationClient.java:1010)
+				HttpResponse httpResponse;
+				CloseableHttpClient httpClient = HttpClients.createDefault();
+				String originalRequest = agentURL + "?query=" + requestParams.toString();
+				HttpGet httpGet = new HttpGet(agentURL + "?query="
+						+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
 
+				httpResponse = httpClient.execute(httpGet);
+				if (httpResponse.getStatusLine().getStatusCode() != 200) {
+					String msg = "Failed to update derivation <" + derivation.getIri() + "> with original request: "
+							+ originalRequest;
+					String body = EntityUtils.toString(httpResponse.getEntity());
+					LOGGER.error(msg);
+					throw new JPSRuntimeException(msg + " Error body: " + body);
+				}
+				String response = EntityUtils.toString(httpResponse.getEntity());
 				LOGGER.debug("Obtained http response from agent: " + response);
 
 				// NOTE difference 3 - as the update on knowledge graph will be done by the
