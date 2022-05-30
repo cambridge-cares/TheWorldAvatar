@@ -97,7 +97,7 @@ public class JenaHelper {
 	
 	public static void readFromFile(File owlFile, OntModel model) {
 		try {
-			if (owlFile.isFile() && owlFile.getName().endsWith(".owl")) {
+			if (owlFile.isFile() && (owlFile.getName().endsWith(".owl") || owlFile.getName().endsWith(".rdf"))) {
 				InputStream is = new FileInputStream(owlFile);
 				read(is, model);
 			}
