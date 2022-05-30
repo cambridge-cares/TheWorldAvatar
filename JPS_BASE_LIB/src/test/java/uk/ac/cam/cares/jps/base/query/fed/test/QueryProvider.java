@@ -15,12 +15,48 @@ import com.google.gson.JsonParser;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryFactory;
+import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryInterface;
 import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
+import uk.ac.cam.cares.jps.base.query.test.RemoteStoreClientTest;
 
+/**
+ * This is the base class for multiple test configurations of integration tests for executing federated queries. 
+ * The current test configurations (subclasses) are:
+ * <p>
+ * (1) FedX ({@link FedXIntegrationTest}): a federated query engine which is part of RDF4J. 
+ * It accepts SPARQL 1.0 queries without SERVICE clauses as federated queries.<br>
+ * (2) RDF4J with given endpoints ({@link FedQueryRdf4jGivenEndpointsIntegrationTest}): 
+ * The usual RDF4J server (which is different to FedX) can also be used as federated query engine 
+ * for SPARQL 1.1 queries with SERVICE clauses and specified endpoint URLs.<br>
+ * (3) Blazegraph with given endpoints ({@link FedQueryBlazegraphGivenEndpointsIntegrationTest}): 
+ * The usual Blazegraph server can be used for the same SPARQL 1.1 queries as in (2).<br>
+ * (4) RDF4j with unbounded SERVICE variables ({@link FedQueryRdf4jSourceSelectionIntegrationTest}): 
+ * Given a SPARQL 1.1. queries with SERVICE clauses but unbounded SERVICe variables,
+ * relevant datasets / endpoints are selected and added as VALUES clauses. The derived query is
+ * executed as in (2).
+ * <p>
+ * In principle, the datasource selection algorithm applied in (4) could be combined with Blazegraph in (3). 
+ * However, the integration tests for configuration (3) show that Blazegraph returns sometimes wrong results 
+ * (with duplicated result rows) and is thus not further considered for federated queries.
+ * <p>
+ * Each test configuration uses the {@link FederatedQueryFactory} to create the corresponding engine 
+ * and the same method {@link FederatedQueryInterface#executeFederatedQuery(String)} to execute a federated query.
+ * An federated query example is shown in {@link FederatedQueryFactory#createForQueriesWithGivenEndpoints(String)}.
+ * While all test configurations use the same queries with the same basic triple patterns, 
+ * a query may and may not include SERVICE or VALUES clauses. For this reason, a helper class {@link Query} is defined
+ * that allows to format the same query by means of three parameters,
+ * see {@link Query#formatQuery(boolean, boolean, boolean)}.
+ */
 public abstract class QueryProvider extends TestCase {
 	
+	/**
+	 * A helper class to format the "same" federated query in different ways
+	 * for different test configurations.
+	 *
+	 */
 	public class Query {
 		
 		public class Pair {
@@ -33,6 +69,9 @@ public abstract class QueryProvider extends TestCase {
 			}
 		}
 		
+		/**
+		 * The plain SPARQL string containing some %s placeholder to insert SERVICE and VALUES clauses.
+		 */
 		String sparql = null;
 		List<Pair> serviceList = new ArrayList<Pair>();
 		String result = null;
@@ -41,6 +80,11 @@ public abstract class QueryProvider extends TestCase {
 			serviceList.add(new Pair(paramName, Arrays.asList(endpoints)));
 		}
 		
+		/**
+		 * Returns all relevant endpoint URLs. 
+		 * 
+		 * @return
+		 */
 		public List<String> getEndpoints() {
 			Set<String> endpoints = new HashSet<String>();
 			for (Pair pair : serviceList) {
@@ -49,6 +93,23 @@ public abstract class QueryProvider extends TestCase {
 			return new ArrayList<String>(endpoints);
 		}
 
+		/**
+		 * Formats the "plain" SPARQL string containing some %s placeholders 
+		 * that can be replaced by SERVICE and VALUES clauses. 
+		 * Only the following combinations make sense:
+		 * <p>
+		 * (1) false, false, false: returns a valid SPARQL 1.0 without SERVICE and VALUES clauses as used by FedX<br>
+		 * (2) true, false, false: returns a valid and complete SPARQL 1.1 query with specified endpoint URLs<br>
+		 * (3) false, true, true: returns a valid and complete SPARQL 1.1 query where SERVICE variables are 
+		 * specified by VALUES clauses<br>
+		 * (4) false, true, false: returns an invalid, incomplete SPARQL 1.1 query; used by the automated
+		 * data selection procedures which adds VALUES clauses to specify the SERVICE variables
+		 * 
+		 * @param addServiceUrls inserts SERVICE clauses with endpoint URLs at the placeholders
+		 * @param addServiceParams inserts SERVICE clauses with SERVICE variables at the placeholders
+		 * @param addValuesClauses inserts VALUES clauses with endpoint URLS at the placeholders
+		 * @return
+		 */
 		public Query formatQuery(boolean addServiceUrls, boolean addServiceParams, boolean addValuesClauses) {
 			
 			if (addServiceUrls && addServiceParams) {
@@ -106,14 +167,13 @@ public abstract class QueryProvider extends TestCase {
 		}
 	}
 	
-	
-	
-	
 	static final Logger LOGGER = LogManager.getLogger(QueryProvider.class);
 	
+	// the configuration parameters to format queries 
 	private boolean addServiceUrls = false;
 	private boolean addServiceParams = false;
 	private boolean addValuesClauses = true;
+	// the parameters to manipulate endpoints URLs in DOCKER test environment
 	private boolean useDockerServiceUrl = false;
 	private String fixedServiceUrl = null;
 	
@@ -139,6 +199,13 @@ public abstract class QueryProvider extends TestCase {
 		return ServiceDescriptionIndexerTest.getSmallTestIndexer();
 	}
 	
+	/**
+	 * Returns the complete endpoint URL for a given namespace / dataset.
+	 * If useDockerServiceUrl is true, the corresponding Docker container related endpoint URL is returned.
+	 * 
+	 * @param namespace
+	 * @return
+	 */
 	public String endpoint(String namespace) {
 		if (fixedServiceUrl == null) {	
 			if (useDockerServiceUrl) {
@@ -290,6 +357,12 @@ public abstract class QueryProvider extends TestCase {
 		return format(query);
 	}
 	
+	/**
+	 * A federated query constructed from two separate queries in  
+	 * {@link https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BIODIESELPLANT/src/uk/ac/cam/cares/jps/bio/CrossDomainQuery.java}.
+	 * 
+	 * @return
+	 */
 	public Query getSparqlBiodieselCityGML() {
 		Query query = new Query();
 		query.sparql = PrefixToUrlMap.getPrefixesForSPARQL(Prefixes.OCPSYST, Prefixes.OCPPERF, Prefixes.ONTOCITYGML, Prefixes.BLAZEGRAPH_GEO)
@@ -346,12 +419,10 @@ public abstract class QueryProvider extends TestCase {
 		return format(query);
 	}
 
-	// example from https://rdf4j.org/documentation/programming/federation/ 
-	// 11 seconds
-	// number of queries:
-	//### Request monitoring: 
-	//	http://query.wikidata.org => 360
-	//	http://dbpedia.org => 9
+	/**
+	 * An federated query for dbpedia and wikidata used in from {@link https://rdf4j.org/documentation/programming/federation/} .
+	 * @return
+	 */
 	public Query getSparqlWikidataDBpedia() {
 		Query query = new Query();
 		query.sparql = PrefixToUrlMap.getPrefixesForSPARQL(Prefixes.WIKIDATA, Prefixes.WIKIDATAT)
@@ -369,10 +440,12 @@ public abstract class QueryProvider extends TestCase {
 		query.result = "[{\"country\":\"http://dbpedia.org/resource/Netherlands\",\"gdp\":\"830572618850\",\"countrySameAs\":\"http://www.wikidata.org/entity/Q29999\"},{\"country\":\"http://dbpedia.org/resource/Czech_Republic\",\"gdp\":\"250681000000\",\"countrySameAs\":\"http://www.wikidata.org/entity/Q213\"}]\r\n";
 		return format(query);
 	}
-
-
-	// adapted from RemoteStoreClientTest.performMechanismCountQueryTest
-	// A federated query developed to execute against the endpoints of OntoSpecies and OntoCompChem Knowledge Bases.  
+  
+	/**
+	 * A federated query as in {@link RemoteStoreClientTest#performMechanismCountQueryTest()}.
+	 * 
+	 * @return
+	 */
 	public Query getSparqlOntoSpeciesOntoCompChemLarge() {
 		
 		//jsonObject.put("scfEnergyValue", "-464.940687165");
@@ -409,9 +482,13 @@ public abstract class QueryProvider extends TestCase {
 		query.result = "[]";
 		return format(query);
 	}
-	
-	// adapted from RemoteStoreClientTest.performMechanismCountQueryTest
-	// A federated query developed to execute against the endpoints of OntoSpecies and OntoCompChem Knowledge Bases.  
+	 
+	/**
+	 * A federated query adapted from {@link RemoteStoreClientTest#performMechanismCountQueryTest()}
+	 * with only one basic triple pattern for datasource ontospecies.
+	 * 
+	 * @return
+	 */
 	public Query getSparqlOntoSpeciesOntoCompChemMedium() {
 		Query query = new Query();
 		query.sparql = "PREFIX ontospecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>\r\n"
@@ -444,6 +521,12 @@ public abstract class QueryProvider extends TestCase {
 		return format(query);
 	}
 	
+	/**
+	 * A federated query adapted from {@link RemoteStoreClientTest#performMechanismCountQueryTest()}
+	 * with only one basic triple patterns for datasources ontospecies and ontocompchem.
+	 * 
+	 * @return
+	 */
 	public Query getSparqlOntoSpeciesOntoCompChemSmall() {
 		Query query = new Query();
 		query.sparql = "PREFIX ontospecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>\r\n"

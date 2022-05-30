@@ -44,7 +44,7 @@ public class BlazegraphRepositoryWrapperIntegrationTest extends TestCase {
 		BlazegraphRepositoryWrapper wrapper = new BlazegraphRepositoryWrapper(serviceUrl);
 
 		String newnamespace = "testEmpty";
-		Properties props = TripleStoreProvider.readStandardNamespaceProperties();
+		Properties props = TripleStoreProvider.readStandardNamespacePropertiesForBlazegraph();
 		wrapper.createNamespace(newnamespace, props);
 		
 		// assert namespace 

@@ -39,6 +39,7 @@ public class FederatedQueryFactory {
 	 * FedX is a federated query engine and part of the RDF4J project. 
 	 * Given a SPARQL 1.0 query, FedX sends ASK queries for each basic triple pattern 
 	 * to determine on-the-fly which of the federation members may contribute to the query result set. 
+	 * See {@link https://rdf4j.org/documentation/programming/federation/} for details.
 	 * 
 	 * @param federationMembers a list of URLs of SPARQL endpoints considered for query 
 	 * @return

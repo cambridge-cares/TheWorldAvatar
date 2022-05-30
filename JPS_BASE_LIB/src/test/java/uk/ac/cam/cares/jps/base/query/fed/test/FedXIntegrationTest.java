@@ -9,6 +9,9 @@ import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryFactory;
 import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryInterface;
 
 // https://rdf4j.org/documentation/programming/federation/
+/**
+ * One of multiple test configurations, see {@link QueryProvider} for details.
+ */
 public class FedXIntegrationTest extends QueryProvider { 
 	
 	private static final Logger LOGGER = LogManager.getLogger(FedXIntegrationTest.class);

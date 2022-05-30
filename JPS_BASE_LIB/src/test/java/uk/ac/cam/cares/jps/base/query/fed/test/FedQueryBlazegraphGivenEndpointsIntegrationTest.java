@@ -6,6 +6,9 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryFactory;
 import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryInterface;
 
+/**
+ * One of multiple test configurations, see {@link QueryProvider} for details.
+ */
 public class FedQueryBlazegraphGivenEndpointsIntegrationTest extends QueryProvider {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FedQueryBlazegraphGivenEndpointsIntegrationTest.class);

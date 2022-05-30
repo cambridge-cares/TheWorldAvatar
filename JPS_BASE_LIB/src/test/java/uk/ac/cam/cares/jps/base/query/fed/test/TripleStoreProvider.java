@@ -27,8 +27,38 @@ import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.fed.BlazegraphRepositoryWrapper;
 
+/**
+ * This class creates multiple Docker test containers on-the-fly.
+ * Each container hosts a triple store including SPARQL endpoints and RDF data. 
+ * The created test environment can be used for integration tests for federated queries.
+ * It allows to test various engines and configurations for executing federated SPARQL queries.
+ * <p>
+ * The org.testcontainers framework allows to create containers easily.
+ * It also provides 
+ * <a href="https://www.testcontainers.org/features/networking/#advanced-networking">
+ * communication between containers</a>.
+ * However, it is not straight-forward to resolve a SPARQL endpoint URL 
+ * which may appear in a SPARQL 1.1 SERVICE clause or in a SPARQL service description.
+ * This may lead to HTTP 4xx errors if a request for a SPARQL endpoint is send 
+ * from one container to another. The class solves this problem by converting localhost
+ * IP addresses into Docker IP addresses.
+ * For instance, the endpoint URL for Blazegraph has usually the following form: 
+ * <pre>
+ * http://localhost:8080/blazegraph/namespace/lab_1/sparql</pre>
+ * 
+ * where http://localhost:8080/blazegraph is the service URL and lab_1 is the namespace (dataset). The conversion would
+ * replace localhost:8080 in the endpoint URL e.g. by 172.17.0.3:8080 which can be used internally for requests. 
+ * <p>
+ * The test environment can be extended by further containers (triple stores) and datasets by
+ * extending the method {@link #init}. The environment is created as singleton and the initialization is
+ * started as soon as {@link #getInstance()} is called.
+ */
 public class TripleStoreProvider extends TestCase {
 	
+	/**
+	 * A helper class that contains a created container and the SPARQL service URL. 
+	 *
+	 */
 	private class ContainerInfo {
 		
 		GenericContainer<?> container = null;
@@ -40,6 +70,14 @@ public class TripleStoreProvider extends TestCase {
 		}
 	}
 	
+	/**
+	 * A helper class that allows to construct the complete endpoint URL, e.g.
+	 * <pre>
+	 * http://localhost:54168/rdf4j-server/repositories/rdf4j_empty </pre>
+	 * 
+	 * In this example, http://localhost:54168/rdf4j-server is the service URL
+	 * and /repositories/rdf4j_empty is the path.
+	 */
 	private class EndpointInfo {
 		
 		String containerId = null;
@@ -54,21 +92,34 @@ public class TripleStoreProvider extends TestCase {
 	static final Logger LOGGER = LogManager.getLogger(TripleStoreProvider.class);
 	public final static String DIR_TEST_RESOURCES = "./src/test/resources";
 	
+	// container IDs
 	public final static String ID_BLAZEGRAPH_1 = "blazegraph_1";
 	public final static String ID_BLAZEGRAPH_2 = "blazegraph_2";
 	public final static String ID_RDF4J_1 = "rdf4j_1";
 	
+	// namespaces (i.e. datasets, repos, etc.)
 	public final static String NAMESPACE_LAB_1 = "lab_1";
 	public final static String NAMESPACE_LAB_2 = "lab_2";
 	public final static String NAMESPACE_DOE_CHEMRXN = "doe_chemrxn";
 	public final static String NAMESPACE_WIKIDATA_SMALL = "wikidata_small";
 	public final static String NAMESPACE_BLAZEGRAPH_EMTPY = "blazegraph_empty";
-	
 	public static final String NAMESPACE_RDF4J_EMPTY = "rdf4j_empty";
 
 	private static TripleStoreProvider instance = null;
+	/**
+	 * maps a container id to a container info object containing the created test container and the service URL
+	 */
 	private Map<String, ContainerInfo> id2container = new HashMap<String, ContainerInfo>();
+	/**
+	 * maps the namespace to an endpoint info object that allows to identify the triple store (container) and
+	 * to construct the full endpoint URL
+	 */
 	private Map<String, EndpointInfo> namespace2endpoint = new HashMap<String, EndpointInfo>();
+	/**
+	 * host2host is used to convert host addresses; 
+	 * conversion may necessary e.g. in a test environment with Docker containers where Blazegraph servers return endpoint URLs
+	 * with wrong host addresses (such as "localhost:8080")  
+	 */
 	private Map<String, String> host2host = new HashMap<String, String>();
 	
 	private TripleStoreProvider() {
@@ -82,15 +133,31 @@ public class TripleStoreProvider extends TestCase {
 	    return instance;
 	}
 	
+	/**
+	 * Creates a container for a given image. If the image is not found in the local repository, 
+	 * it is downloaded once. 
+	 * <p>
+	 * The image name "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0" 
+	 * requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
+	 * For this reason, method {@link #createBlazegraphContainerByBuilder(String)} is used instead in case of Blazegraph.
+	 * For more information regarding the registry, 
+	 * see {@link https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry}.
+	 * 
+	 * @param imageName
+	 * @return
+	 */
 	private GenericContainer<?> createContainerByImage(String imageName) {
 		return new GenericContainer<>(DockerImageName.parse(imageName));
 	}
 	
 	/**
+	 * Builds an image with a Blazegraph server by using the same commands as in the
+	 * corresponding CMCL Docker file and returns a container for this image.
+	 * 
 	 * @param imageName if null image will be deleted after test; if not null the image can be reused when restarting the test 
 	 * @return
 	 */
-	private GenericContainer<?> createContainerByBuilder(String imageName) {
+	private GenericContainer<?> createBlazegraphContainerByBuilder(String imageName) {
 		ImageFromDockerfile dockerfile = null;
 		if (imageName == null) {
 			dockerfile = new ImageFromDockerfile();
@@ -109,12 +176,12 @@ public class TripleStoreProvider extends TestCase {
 		return new GenericContainer<>(dockerfile);
 	}
 	
-	// Will create a container that is shared between tests.
-	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-	//@Container
-	//private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
-	//		.withExposedPorts(9999);
+	/**
+	 * Creates a container with a Blazegraph server. 
+	 * 
+	 * @param port exposed container port
+	 * @return
+	 */
 	private GenericContainer<?> createBlazegraphTripleStore(int port) {
 		String imageName = "blazegraphtest";
 		GenericContainer<?> tripleStore = null;
@@ -124,13 +191,19 @@ public class TripleStoreProvider extends TestCase {
 			LOGGER.debug("Docker image was started, name=" + imageName + ", port=" + port);
 		} catch (ContainerLaunchException exc) {
 			LOGGER.debug("Docker image was not found, name=" + imageName + ", port=" + port);
-			tripleStore = createContainerByBuilder(imageName).withExposedPorts(port);
+			tripleStore = createBlazegraphContainerByBuilder(imageName).withExposedPorts(port);
 			tripleStore.start();
 			LOGGER.debug("Docker image was created and started, name=" + imageName + ", port=" + port);
 		}
 		return tripleStore;
 	}
 	
+	/**
+	 * Creates a container with an RDF4j server and workbench. 
+	 * 
+	 * @param port exposed container port
+	 * @return
+	 */
 	private GenericContainer<?> createRDF4JServer(int port) {
 		String imageName = "eclipse/rdf4j-workbench:3.7.4";
 		GenericContainer<?> tripleStore = createContainerByImage(imageName).withExposedPorts(port);
@@ -143,12 +216,26 @@ public class TripleStoreProvider extends TestCase {
 		return container.getHost() + ":" + container.getFirstMappedPort();
 	}
 	
+	/**
+	 * Returns the "IP:port" where IP it the IP address internally used for the container 
+	 * in the default Docker network. 
+	 * 
+	 * @param container
+	 * @param port
+	 * @return
+	 */
 	private String getDockerIp(GenericContainer<?> container, int port) {
 		InspectContainerResponse info = container.getContainerInfo();
 		String ipAddress = info.getNetworkSettings().getIpAddress();
 		return ipAddress + ":" + port; 
 	}
 	
+	/**
+	 * Returns the service URL for a given dataset (namespace)
+	 * 
+	 * @param namespace
+	 * @return
+	 */
 	private static String getServiceUrlByNamespace(String namespace) {
 		String id = getInstance().namespace2endpoint.get(namespace).containerId;
 		return getInstance().id2container.get(id).serviceUrl;
@@ -168,6 +255,13 @@ public class TripleStoreProvider extends TestCase {
 		return getEndpointUrl(serviceUrl, namespace);
 	}
 	
+	/**
+	 * Returns the full endpoint URL for a given namespace where the IP address
+	 * is replaced by the IP address internally used by Docker. 
+	 * 
+	 * @param namespace
+	 * @return
+	 */
 	public static String getDockerEndpointUrl(String namespace) {
 		String serviceUrl = getServiceUrlByNamespace(namespace);
 		Map<String, String> host2host = getInstance().host2host;
@@ -185,7 +279,12 @@ public class TripleStoreProvider extends TestCase {
 		return getInstance().host2host;
 	}
 	
-	public static Properties readStandardNamespaceProperties() {
+	/**
+	 * Reads the default properties required for creating a new dataset on Blazegraph.
+	 * 
+	 * @return default properties 
+	 */
+	public static Properties readStandardNamespacePropertiesForBlazegraph() {
 		try (InputStream input = new FileInputStream("./src/test/resources/FedQuery/RWStore.properties")) {
             Properties props = new Properties();
             props.load(input);
@@ -195,12 +294,19 @@ public class TripleStoreProvider extends TestCase {
         }
 	}
 	
+	/**
+	 * Uploads the triples from a collection of files to the specified endpoint.
+	 * 
+	 * @param endpointUrl
+	 * @param files
+	 * @return
+	 */
 	public static int uploadFiles(String endpointUrl, Collection<File> files) {
 		RemoteStoreClient storeClient = new RemoteStoreClient(endpointUrl, endpointUrl);
-		int count = 0;
+		//int count = 0;
 		//LOGGER.debug("uploading files to endpointURL=" + endpointUrl + ", number of files=" + files.size());
 		for (File file : files) {
-			count += 1;
+			//count += 1;
 			//LOGGER.debug("uploading file (" + count + "/" + files.size() + ")=" + file.getName());
 			storeClient.uploadFile(file);
 		}		
@@ -208,6 +314,12 @@ public class TripleStoreProvider extends TestCase {
 		return files.size();
 	}
 	
+	/**
+	 * If a directory is given, all contained files are added to the returned collection.
+	 * 
+	 * @param dataDirOrFiles a mixed list of file and directory paths
+	 * @return
+	 */
 	public static Collection<File> getFiles(String... dataDirOrFiles) {
 		Collection<File> files = new ArrayList<File>();
 		for (String current : dataDirOrFiles) {
@@ -222,6 +334,9 @@ public class TripleStoreProvider extends TestCase {
 		return files; 
 	}
 	
+	/**
+	 * Creates the test containers and datasets (endpoints).
+	 */
 	private void init() {
 		LOGGER.debug("initializing triple stores ...");		
 		String dirTestResources = DIR_TEST_RESOURCES + "/FedQuery/datasets/";
@@ -294,7 +409,7 @@ public class TripleStoreProvider extends TestCase {
 		// create namespace
 		String serviceUrl = getServiceUrl(containerId);
 		BlazegraphRepositoryWrapper wrapper = new BlazegraphRepositoryWrapper(serviceUrl);
-		Properties props = readStandardNamespaceProperties();
+		Properties props = readStandardNamespacePropertiesForBlazegraph();
 		wrapper.createNamespace(namespace, props);
 		wrapper.close();
 		

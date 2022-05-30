@@ -16,6 +16,9 @@ import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryFactory;
 import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryInterface;
 import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer;
 
+/**
+ * One of multiple test configurations, see {@link QueryProvider} for details.
+ */
 public class FedQueryRdf4jSourceSelectionIntegrationTest extends QueryProvider {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FedQueryRdf4jSourceSelectionIntegrationTest.class);
