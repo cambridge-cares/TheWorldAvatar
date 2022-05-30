@@ -15,7 +15,7 @@ services:
   # DOME vis
   dome-vis:
     ports:
-      - 40087:80
+      - 40088:80
       
   # Flood Map
   flood-map:

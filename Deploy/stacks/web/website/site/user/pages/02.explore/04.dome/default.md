@@ -6,7 +6,7 @@ slug: dome
 
 <div class="intro-container three-quarter-width">
 	<div class="intro-left">
-		<a href="https://digitaltwinhub.co.uk/dome/" target="_blank" >
+		<a href="https://dome40.eu/" target="_blank" >
 			<img src="/user/images/dome/header.jpg" class="header-image" alt="DOME" />
 		</a>
 	</div>
@@ -27,6 +27,6 @@ slug: dome
 
 <div id="map-container" class="full-width" style="height: 960px; margin-top: 50px;">
 	<div id="map-inner" style="width: 75%; height: 100%; margin: 0 auto; position: relative;">
-		<iframe id="map-frame" width="100%" height="100%" src="https://kg.cmclinnovations.com/dome/visualisation/" />
+		<iframe id="map-frame" width="100%" height="100%" src="http://kg.cmclinnovations.com:81/dome/visualisation/" />
 	</div>
 </div>
