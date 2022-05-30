@@ -12,7 +12,7 @@
     details on how version numbers should be selected -->
 
 
-    <version>1.9.1</version>
+    <version>1.11.0</version>
 
     <!-- Project Properties -->
     <properties>
@@ -408,6 +408,14 @@
             <version>3.5.7</version>
             <scope>test</scope>
         </dependency>        
+
+		 <!-- For mocking APIs --> 
+        <dependency>
+		    <groupId>com.github.tomakehurst</groupId>
+		    <artifactId>wiremock-jre8-standalone</artifactId>
+		    <version>2.33.2</version>
+		    <scope>test</scope>
+		</dependency>
 
         <!-- Used to mock environment variables in testing -->
         <dependency>
