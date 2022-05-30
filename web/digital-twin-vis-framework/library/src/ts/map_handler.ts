@@ -22,22 +22,12 @@ abstract class MapHandler {
     /**
      * Create and cache a new map object.
      */
-    public abstract initialiseMap();
+    public abstract initialiseMap(mapOptions: Object);
 
     /**
      * Plot the contents of the input data group on the map.
-     * 
-     * @param group data group to plot.
-     * 
      */
-    public plotGroup(group: DataGroup) {
-        // let allLayers = group.flattenUp();
-        // allLayers.forEach(layer => {
-        //     this.plotLayer(group, layer);
-        // });
-
-        // return new Promise((reject, resolve) => resolve(null));
-    }
+    public abstract plotData(dataStore: DataStore);
 
     /**
      * Creates a visual layer on the map based on the input layer definition.

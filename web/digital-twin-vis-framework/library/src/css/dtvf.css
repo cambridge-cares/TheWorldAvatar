@@ -55,11 +55,12 @@ h6 {
 
 /* Side Panel */
 #sidePanel {
-    z-index: 1;
+    z-index: 999;
     background-color: white;
     box-sizing: border-box;
     border: 1px solid grey;
     font-size: 11pt;
+    height: 100%;
 }
 
 #slideButtonContainer img {
@@ -175,7 +176,6 @@ h6 {
 }
 
 #contentContainer {
-    margin-top: 10px;
     width: 100%;
     margin-bottom: 70px;
     overflow-y: hidden;
@@ -200,10 +200,11 @@ h6 {
 
 #footerContainer {
     text-align: center;
-    width: 100%;
     height: 40px;
     position: absolute;
     bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 #returnContainer {

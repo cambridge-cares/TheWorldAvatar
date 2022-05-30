@@ -12,13 +12,13 @@ class MapHandler_MapBox extends MapHandler {
     /**
      * Initialise and store a new map object.
      */
-    public initialiseMap() {
+    public initialiseMap(mapOptions: Object) {
         // Set the mapbox api key
         // @ts-ignore
         mapboxgl.accessToken = MapHandler.MAP_API;
 
         // Check the options for required parameters, provide defaults if missing
-        let newOptions = {};
+        let newOptions = (mapOptions !== null) ? mapOptions : {};
         if(!newOptions["container"]) newOptions["container"] = "map"
         if(!newOptions["center"]) newOptions["center"] = [-0.1280432939529419, 51.50805967151767];
         if(!newOptions["zoom"]) newOptions["zoom"] = 16;
@@ -47,6 +47,12 @@ class MapHandler_MapBox extends MapHandler {
 
             MapHandler.MAP.jumpTo(newOptions);
         }
+
+        // Store terrain URL
+        if(mapOptions["style"].includes("light")) window.terrain = "light";
+        if(mapOptions["style"].includes("dark")) window.terrain = "dark";
+        if(mapOptions["style"].includes("outdoors")) window.terrain = "outdoors";
+        if(mapOptions["style"].includes("satellite")) window.terrain = "satellite";
     }
 
     /**
@@ -127,29 +133,15 @@ class MapHandler_MapBox extends MapHandler {
 
     /**
      * OVERRIDE: Plot the contents of the input data group on the map.
-     * 
-     * @param group data group to plot.
-     * 
      */
-    public plotGroup(group: DataGroup) {
-        console.log("plotting?");
-        // Get the root group
-        let rootGroup = DataUtils.getRootGroup(group);
-
-        console.log("GOT ROOT");
-        // Handle loading icons that may be required by the layers
-        //return this.handleIcons(rootGroup).then(() => {
-            // Once images are loaded, add layers
-            //console.log("All images have been loaded?");
-
-            // Plot the layers
-            let allLayers = group.flattenUp();
-            console.log("FLATTENED");
-
+    public plotData(dataStore: DataStore) {
+        dataStore.dataGroups.forEach(rootGroup => {
+            console.log("Plotting root group?");
+            let allLayers = rootGroup.flattenDown();
             allLayers.forEach(layer => {
-                this.plotLayer(group, layer);
+                this.plotLayer(rootGroup, layer);
             });
-        //});
+        });
     }
 
     /**

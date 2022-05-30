@@ -44,16 +44,12 @@ class ControlHandler {
 	 * @param {string} treeFile JSON file defining layer tree
 	 */
 	showControls() {
-        // Load controls.html file
-        //return loadHTML("./html/controls.html").then(text => {
-            //document.getElementById("controlsContainer").innerHTML = text;
-            this.setupCollapses();
+        this.setupCollapses();
 
-            //Ensure selected terrain option is right
-            let terrainContainer = document.getElementById("terrainContainer");
-            let terrainSelect = terrainContainer.querySelector("input[id='" + window.terrain + "']") as HTMLInputElement;
-            if(terrainSelect != null) terrainSelect.checked = true;
-        //});
+        //Ensure selected terrain option is right
+        let terrainContainer = document.getElementById("terrainContainer");
+        let terrainSelect = terrainContainer.querySelector("input[id='" + window.terrain + "']") as HTMLInputElement;
+        if(terrainSelect != null) terrainSelect.checked = true;
 	}
 
 	/**

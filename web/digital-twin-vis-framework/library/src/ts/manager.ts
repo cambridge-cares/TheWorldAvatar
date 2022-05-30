@@ -29,11 +29,17 @@ class Manager {
     private controlHandler: ControlHandler;
 
     /**
+     * 
+     */
+    private panelHandler: PanelHandler;
+
+    /**
      * Initialise a new Manager instance.
      */
     constructor(mapProvider: MapProvider) {
         Manager.PROVIDER = mapProvider;
         this.controlHandler = new ControlHandler();
+        this.panelHandler = new PanelHandler();
 
         // Initialise the map handler instance
         switch(mapProvider) {
@@ -55,17 +61,34 @@ class Manager {
     }
 
     /**
+     * 
+     */
+    public getPanelHandler() {
+        return this.panelHandler;
+    }
+
+    /**
      * Initialise the (blank) map instance via the map handler.
      * 
      * @param mapOptionsOverride dictionary of default map options. If passed this will be used
      * when initialising the map rather than any meta data stored within DataGroups.
      */
-    public initialiseMap() {
+    public initialiseMap(mapOptions: Object) {
         // Initialise the map
-        this.mapHandler.initialiseMap();
 
+        if(mapOptions === null || mapOptions === undefined) {
+            // Try to pick up map options from the first listed stack
+            let firstRoot = this.dataStore.dataGroups[0];
+            if(firstRoot.mapOptions !== null) {
+                mapOptions = firstRoot.mapOptions;
+            }
+        }
+
+        this.mapHandler.initialiseMap(mapOptions);
         this.controlHandler.showControls();
         this.controlHandler.rebuildTree(this.dataStore);
+
+        this.panelHandler.toggleMode();
     }
 
     /**
@@ -102,23 +125,8 @@ class Manager {
      * Given an array of hierarchal group names, find the data group that
      * corresponds to it and plot it. If no group names are passed, the
      * default group is used.
-     * 
-     * @param groupNames hierarchal name of group to plot.
      */
-    public plotGroup(groupNames: string[]) {
-        let group = this.getDefaultGroup();
-
-        // If group names are passed, find that group
-        if(groupNames !== undefined && groupNames.length > 0) {
-            group = this.dataStore.getGroup(groupNames);
-        }
-
-        // Plot the group
-        if(group !== null) {
-            Manager.CURRENT_GROUP = group;
-
-            // ..then plot the data group...
-            this.mapHandler.plotGroup(group);
-        }
+    public plotData() {
+        this.mapHandler.plotData(this.dataStore);
     }
 }

@@ -48,6 +48,8 @@ class TreeHandler {
         element.innerHTML += htmlBuilder.join("");
 
         // @ts-ignore
+        $.fn.hummingbird.defaults.SymbolPrefix = "fas";
+        // @ts-ignore
         $.fn.hummingbird.defaults.collapsedSymbol = "fa-chevron-down";
         // @ts-ignore
         $.fn.hummingbird.defaults.expandedSymbol = "fa-chevron-up";

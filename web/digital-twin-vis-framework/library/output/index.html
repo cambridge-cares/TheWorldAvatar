@@ -1,5 +1,4 @@
 <html>
-
     <head>
         <title>DTVF v2.0.0</title>
 
@@ -8,38 +7,28 @@
         <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
         <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
-
         <script src="./dtvf.temp.js"></script>
 
         <!-- CSS -->
         <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="./dtvf.min.css" rel="stylesheet" />
         <link href="./controls.css" rel="stylesheet" />
-
-        <style>
-            body, html, #map {
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-        </style>
     </head>
     <body>
         <!-- Container the map will be added to -->
         <div id="map"></div>
 
+        <!-- Element for depth of field overlay -->
+        <div id="tiltShift"></div>
+
         <!-- Element the map controls will be added to (normally on the left) -->
         <div id="controlsContainer">
-
-             <!-- Container for all controls  -->
             <div id="controlContainer">
 
                 <!-- Camera controls -->
                 <div id="cameraContainer" class="controlBlock">
-                    <!-- Title and toggle for DoF -->
                     <div id="controlTitle" class="controlTitle">
                         <p>Camera</p>
                         <div class="tooltip">
@@ -55,7 +44,6 @@
 
                 <!-- Terrain controls -->
                 <div id="terrainContainer" class="controlBlock">
-                    <!-- Title and toggle for 3d terrain -->
                     <div id="controlTitle" class="controlTitle">
                         <p>Terrain</p>
                         <div class="tooltip">
@@ -77,7 +65,6 @@
 
                 <!-- Layer controls -->
                 <div id="layerContainer" class="controlBlock">
-                    <!-- Title and toggle for place names -->
                     <div id="controlTitle"  class="controlTitle">
                         <p>Layers</p>
                         <div class="tooltip" id="placenameContainer">
@@ -85,7 +72,6 @@
                             <span class="tooltiptext">Toggle place names, labels, and roads </span>
                         </div>
                     </div>
-                    <!-- Container for dynamic layer tree -->
                     <div class="controlContents">
                         <div id="layerTreeContainer">
                             <div class="hummingbird-treeview-converter"></div>
@@ -98,10 +84,32 @@
             </div>
         </div>
 
-        <!-- Element for depth of field overlay -->
-        <div id="tiltShift"></div>
+        <!-- Side panel for content and metdata -->
+        <div id="sidePanel" class="large expanded">
+            <div class="tooltip" id="slideButtonContainer">
+                <i class="fas fa-chevron-left" id="slideButton" width="16px" class="leftButton" height="16px" onclick="manager.getPanelHandler().togglePanelExpansion()"></i>
+                <span class="tooltiptext">Expand/Collapse</span>
+            </div>
+            <div class="tooltip" id="expandButtonContainer">
+                <i class="fas fa-expand-arrows" id="expandButton" width="16px" class="rightButton" height="16px" onclick="manager.getPanelHandler().togglePanelMode()"></i>
+                <span class="tooltiptext">Maximise/Minimise</span>
+            </div>
+            <div id="sidePanelInner">
+                <div id="titleContainer"></div>
+                <div id="contentContainer"></div>
+                <div id="legendContainer"></div>
+                <div id="footerContainer">
+                    <div id="footerContent"></div>
+                    <div id="returnContainer">
+                        <a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Code entry point -->
         <script>
+
             // Create a new manager instance
             MapHandler.MAP_API = "pk.eyJ1IjoibWhpbGxtYW4iLCJhIjoiY2t1NW5wMDF3MnBzaDJ2cWhyZ2MxbHh4diJ9.TPv5CXdhGvFPkL28tTeXTA";
             var manager = new Manager(MapProvider.MAPBOX);
@@ -112,23 +120,46 @@
                 "./visualisation-2.json"
             ]);
             
-            dataPromise.then(() => {
-                // Only start the map after data definitions have been read.
-                start();
-            });
+             // Only start the map after data definitions have been read.
+            dataPromise.then(() => start());
 
             /**
              * 
              */
             function start() {
+                // Override default map options
+                let optionsOverride = {
+                    "center": [0.121971, 52.205253],
+                    "zoom": 12,
+                    "bearing": 0,
+                    "pitch": 45,
+                    "style": "mapbox://styles/mapbox/dark-v10?optimize=true"
+                };
+
                 // Create a map with default settings
-                manager.initialiseMap();
+                manager.initialiseMap(optionsOverride);
                 
+                // Set default side panel content
+                manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
+                manager.getPanelHandler().setContent(`
+                    <p style="font-weight: bold;">Here's some sample introduction text, pulled from nowhere in particular.</p>
+                    <p>"Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It's not a story the Jedi 
+                    would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise 
+                    he could use the Force to influence the midichlorians to create life...</p>
+                    <p>He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. 
+                    The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... 
+                    the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he 
+                    taught his apprentice everything he knew, then his apprentice killed him in his sleep. It's ironic he could 
+                    save others from death, but not himself."</p>
+                `);
+                manager.getPanelHandler().toggleLegend(false);
+                manager.getPanelHandler().setFooter("CMCL Innovations © " + new Date().getFullYear());
+                manager.getPanelHandler().storeDefault();
+
+                // Once the underlying style has loaded...
                 MapHandler.MAP.on("style.load", function() {
-                    console.info("Map has loaded, proceeding to add data...");
-                    
-                    // Plot the default data group
-                    manager.plotGroup();
+                    // Plot the default visible data
+                    manager.plotData();
                 });
             }
           

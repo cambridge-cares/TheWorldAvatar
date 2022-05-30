@@ -101,29 +101,29 @@ class DataGroup {
     }
 
     /**
-     * Working from this group up through the tree, collect and
+     * Working from this group down through the tree, collect and
      * return the list of all defined DataSource instances.
      * 
-     * @returns all data sources from this group and it's parents
+     * @returns all data sources from this group and its children
      */
-    public flattenUp() {
+    public flattenDown() {
         let flatLayers = [];
-        this.recurseFlattenUpLayers(flatLayers, this);
+        this.recurseFlattenDownLayers(flatLayers, this);
         return flatLayers;
     }
     
     /**
-     * Recursively work up the group tree to collect DataLayer instances.
+     * Recursively work down the group tree to collect DataLayer instances.
      */
-    private recurseFlattenUpLayers(array, currentGroup) {
+    private recurseFlattenDownLayers(array, currentGroup) {
         if (currentGroup !== null && currentGroup !== undefined) {
             currentGroup.dataLayers.forEach((dataLayer) => {
                 array.push(dataLayer);
             });
 
-            if(currentGroup.parentGroup !== null) {
-                this.recurseFlattenUpLayers(array, currentGroup.parentGroup);
-            }
+            currentGroup.subGroups.forEach(subGroup => {
+                this.recurseFlattenDownLayers(array, subGroup);
+            });
         }
     }
 }

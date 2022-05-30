@@ -160,8 +160,6 @@ class MapBoxUtils {
             MapHandler.MAP.setStyle("mapbox://styles/mapbox/dark-v10?optimize=true");
         } else if(mode === "outdoors") {
             MapHandler.MAP.setStyle("mapbox://styles/mapbox/outdoors-v11?optimize=true");
-        } else if(mode === "blueprint") {
-            MapHandler.MAP.setStyle("mapbox://styles/cmclinnovations-credo/ckzfn4jg3007x14l9zomsv7sd");
         } else if(mode === "satellite") {
             MapHandler.MAP.setStyle("mapbox://styles/mapbox/satellite-streets-v11?optimize=true");
         }

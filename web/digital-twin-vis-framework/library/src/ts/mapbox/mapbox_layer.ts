@@ -36,7 +36,6 @@ class MapBoxLayer extends DataLayer {
      */
     public isVisible(): boolean {
         let onMap = MapHandler.MAP.getLayer(this.id) !== undefined;
-
         if(onMap) {
             return MapHandler.MAP.getLayoutProperty(this.id, "visibility") === "visible";
         } else {
