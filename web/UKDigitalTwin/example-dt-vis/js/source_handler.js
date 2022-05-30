@@ -128,8 +128,8 @@ class SourceHandler {
             let options = {
                 "type": "geojson",
                 "data": json,
-                "generateId": false,
-                "attribution": "CMCL Innovations"
+                "generateId": true,
+                "attribution": "CMCL Innovations",
             };
 
             // Add clustering settings if present in dataSet definition
