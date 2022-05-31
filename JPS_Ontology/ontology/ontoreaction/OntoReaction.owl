@@ -751,17 +751,10 @@
     
 
 
-    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings -->
+    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings -->
 
 
-    <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings"/>
-    
-
-
-    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor -->
-
-
-    <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor"/>
+    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings"/>
     
 
 
@@ -901,7 +894,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEquipmentSettings"/>
-                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings"/>
+                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -961,7 +954,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isAssignedTo"/>
-                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor"/>
+                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -1152,6 +1145,13 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ratio expressing the efficiency of a mass conversion process.�[doi:10.1351/goldbook.Y06724]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
     </owl:Class>
+    
+
+
+    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor -->
+
+
+    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor"/>
     
 
 
