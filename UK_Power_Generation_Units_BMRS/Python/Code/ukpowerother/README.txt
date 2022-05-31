@@ -1,6 +1,10 @@
 Above are four different query scripts with more specific functionality. These query the BMRS via the API and apply some processing to output. They require excel/csv files for input and output. 
+These files all take an input range of dates to begin and end, as well as an initial index (0 or 7, as documented within the script), and use this to fill the excel used for output. 
 
-These files may be found in "\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\_JPS Development\data\ukpowergeneration" in the "OTHER_COPY_FILES" folder. There the names of the folders will match those found in this directory - containing the excel / csv files within. 
+These (csv/excel) files may be found in "\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\_JPS Development\data\ukpowergeneration" in the "OTHER_COPY_FILES" folder. There the names of the folders will match those found in this directory - containing the excel / csv files within. 
+
+While performing this task they will save the results monthly as well as when the final date is reached (printing the next index). If there is some error (eg. in querying) that halts their operation, then this query (beginning with the first day of the uploaded month, and the index) may be used as a new start point. 
+Note that the index is equivalent to the (excel column - 2), this is because excel counts from 1, while python's dataframe counts from 0 (which explains -1), and that the first column's value is used as the column's name in python, rather than an entry (which explains the other -1). 
 
 Description of functionalities: 
 Below the functionalities of these scripts will be noted. 
