@@ -67,7 +67,19 @@ public abstract class AbstractService implements Service {
     }
 
     public String getName() {
-        return config.getName();
+        return checkPropertyNonNull("name", config.getName());
+    }
+
+    public String getUsername() {
+        return checkPropertyNonNull("username", config.getUsername());
+    }
+
+    public String getPasswordFile() {
+        return checkPropertyNonNull("passwordFile", config.getPasswordFile());
+    }
+
+    public String getPassword() {
+        return config.getPassword();
     }
 
     public Map<String, Connection> getEndpoints() {
@@ -75,23 +87,33 @@ public abstract class AbstractService implements Service {
     }
 
     public Connection getEndpoint(String endpointName) {
-        return config.getEndpoints().get(endpointName);
-    }
-
-    public Map<String, Connection> getIncomingConnections() {
-        return config.getIncomingConnections();
-    }
-
-    public Connection getIncomingConnection(String incommingConnectionName) {
-        return config.getIncomingConnections().get(incommingConnectionName);
+        return getEndpoints().get(endpointName);
     }
 
     public String getEnvironmentVariable(String key) {
         return config.getEnvironment().get(key);
     }
 
-    public void setEnvironmentVariable(String key, String value) {
+    protected void setEnvironmentVariable(String key, String value) {
         config.getEnvironment().put(key, value);
+    }
+
+    protected void setEnvironmentVariableIfAbsent(String key, String value) {
+        config.getEnvironment().putIfAbsent(key, value);
+    }
+
+    private <T> T checkPropertyNonNull(String propertyName, T value) {
+        Objects.requireNonNull(value,
+                "The service '" + getName() + "' requires the '" + propertyName
+                        + "' property to be specified in its config file.");
+        return value;
+    }
+
+    protected void checkEnvironmentVariableNonNull(String key) {
+        String value = this.getEnvironmentVariable(key);
+        Objects.requireNonNull(value,
+                "The service '" + getName() + "' requires the environment variable '" + key
+                        + "' to be specified in its config file.");
     }
 
     <S extends Service> S getService(String otherServiceName) {

@@ -1,7 +1,6 @@
 package com.cmclinnovations.services.config;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -59,7 +58,7 @@ public class ServiceConfig {
         return passwordFile;
     }
 
-    public String getPassword() throws IOException {
+    public String getPassword() {
         final String password;
         if (null == passwordFile) {
             password = "";
@@ -69,6 +68,9 @@ public class ServiceConfig {
                     throw new IllegalArgumentException("The password file '" + passwordFile
                             + "' specified for the container '" + name + "' is empty.");
                 }
+            } catch (Exception ex) {
+                throw new IllegalArgumentException("The password file '" + passwordFile
+                        + "' specified for the container '" + name + "' could not be read.", ex);
             }
         }
         return password;
