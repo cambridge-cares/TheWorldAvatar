@@ -21,6 +21,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.router.AbstractCachedRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 /**
@@ -33,7 +34,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class StoreRouter{
+public class StoreRouter extends AbstractCachedRouter<String, String>{
 	private static Logger LOGGER = LogManager.getLogger(StoreRouter.class);
 	public static final String FILE="file://";
 	public static final String HTTP="http://";
@@ -272,6 +273,8 @@ public class StoreRouter{
 				.addVar( QUESTION_MARK.concat(FILE_PATH) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_FILE_PATH), QUESTION_MARK.concat(FILE_PATH) );
+		//TODO getStoreClient
+		//TODO getFromStore
 		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
@@ -304,6 +307,8 @@ public class StoreRouter{
 				.addVar( QUESTION_MARK.concat(QUERY_ENDPOINT) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) );
+		//TODO getStoreClient
+		//TODO getFromStore
 		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
@@ -336,6 +341,8 @@ public class StoreRouter{
 				.addVar( QUESTION_MARK.concat(UPDATE_ENDPOINT) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_UPDATE_ENDPOINT), QUESTION_MARK.concat(UPDATE_ENDPOINT) );
+		//TODO getStoreClient
+		//TODO getFromStore
 		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
