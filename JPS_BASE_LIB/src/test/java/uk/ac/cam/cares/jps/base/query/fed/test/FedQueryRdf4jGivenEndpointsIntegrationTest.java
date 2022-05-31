@@ -49,15 +49,23 @@ public class FedQueryRdf4jGivenEndpointsIntegrationTest extends QueryProvider {
 		queryAndAssert(getSparqlDistributedLab_3_inverted_service_order());
 	}
 	
-	public void testRemoteSparqlBiodieselCityGML() {
+	public void testRemoteSparqlOntoSpeciesOntoCompChemSmall() {
+		queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
+	}
+	
+	public void testRemoteSparqlOntoSpeciesOntoCompChemMedium() {
+		queryAndAssert(getSparqlOntoSpeciesOntoCompChemMedium());
+	}
+	
+	public void xxxtestRemoteSparqlOntoSpeciesOntoCompChemLarge() {
+		queryAndAssert(getSparqlOntoSpeciesOntoCompChemLarge());
+	}
+	
+	public void xxxtestRemoteSparqlBiodieselCityGML() {
 		queryAndAssert(getSparqlBiodieselCityGML());
 	}
 	
-	public void testRemoteSparqlWikidataDBpedia() {
+	public void xxxtestRemoteSparqlWikidataDBpedia() {
 		queryAndAssert(getSparqlWikidataDBpedia());
-	}
-	
-	public void xxxtestRemoteSparqlOntoSpeciesOntoCompChemSmall() {
-		queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
 	}
 }

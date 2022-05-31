@@ -9,6 +9,7 @@ import org.junit.runners.Suite.SuiteClasses;
     SimpleMultiIndexTest.class,
     ServiceDescriptionIndexerTest.class,
 	DataSourceSelectorTest.class,
+	DatasetGeneratorTest.class,
 	BlazegraphRepositoryWrapperIntegrationTest.class, 
 	FedXIntegrationTest.class,
 	FedQueryBlazegraphGivenEndpointsIntegrationTest.class,

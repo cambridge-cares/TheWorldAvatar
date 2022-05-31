@@ -23,6 +23,7 @@ import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
@@ -110,10 +111,25 @@ public class JenaHelper {
 		InputStream is = new ByteArrayInputStream( s.getBytes(StandardCharsets.UTF_8) );
 		read(is, model);
 	}
+	
+	public static void readFromString(String s, OntModel model, Lang format) {
+		InputStream is = new ByteArrayInputStream( s.getBytes(StandardCharsets.UTF_8) );
+		read(is, model, format);
+	}
 
 	public static void read(InputStream is, OntModel model) {
 		try {
 			model.read(is, null);
+			is.close();
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+	}
+	
+	public static void read(InputStream is, OntModel model, Lang format) {
+		try {
+			String f = (format==null)? null : format.getName();
+			model.read(is, null, f);
 			is.close();
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);

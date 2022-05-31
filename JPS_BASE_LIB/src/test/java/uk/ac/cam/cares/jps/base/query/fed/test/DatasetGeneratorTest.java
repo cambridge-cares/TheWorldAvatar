@@ -6,10 +6,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.riot.Lang;
+import org.json.JSONArray;
 
-public class DatasetGeneratorTest extends TestCase {
+import junit.framework.AssertionFailedError;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+
+public class DatasetGeneratorTest extends QueryProvider {
 	
 	public void testSupplierList() {
 		List<Object> list = Arrays.asList(10, 20, 30);
@@ -53,49 +59,95 @@ public class DatasetGeneratorTest extends TestCase {
 		}
 	}
 	
-	public String[] generateOntoSpeciesOntoCompChem(int sizeOntoSpecies, int sizeOntoCompChem, int sizeJoin) {
+	public void testSupplierOptional() {
+		Supplier<Object> supplier = DatasetGenerator.supplierConstant("A");
+		supplier = DatasetGenerator.supplierOptional(supplier, 2);
+		assertEquals("A", supplier.get());
+		assertEquals("A", supplier.get());
+		assertNull(supplier.get());
+		assertNull(supplier.get());
+	}
+	
+	public void testGetOrderedVariableNames() {
 		
-		DatasetGenerator genSpecies = createGeneratorOntoSpecies();		
-		genSpecies.generateVariableValues(sizeOntoSpecies);
+		DatasetGenerator generator = new DatasetGenerator("").
+				generator("?scfEnergy", DatasetGenerator.supplierConstant("constant1")).
+				generator("?scfEnergyValue", DatasetGenerator.supplierConstant("constant2")); 
 		
-		StringBuffer b = new StringBuffer();
-		genSpecies.build(b);	
-		return new String[] { b.toString() };
+		List<String> varNames = generator.getOrderedVariableNames();
+		assertEquals("?scfEnergyValue", varNames.get(0));
+		assertEquals("?scfEnergy", varNames.get(1));
 	}
 
-	public DatasetGenerator createGeneratorOntoSpecies() {
-		String prefixes = "@prefix ontospecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .\r\n"
-				+ "@prefix ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> .\r\n"
-				+ "@prefix gc: <http://purl.org/gc/> .\r\n"
-				+ "@prefix kbontospecies: <http://www.theworldavatar.com/kb/ontospecies/> .\r\n";
+	public void testBuild() {
+		DatasetGenerator generator = new DatasetGenerator("").
+				pattern("?species ontospecies:casRegistryID ?crid").
+				pattern("?species ontospecies:hasStandardEnthalpyOfFormation ?enthalpy").
+				pattern("?enthalpy ontospecies:value ?enthalpyOfFormationValue").
+				generator("?species", DatasetGenerator.supplierConstant("SPECIES")).
+				generator("?crid", DatasetGenerator.supplierConstant("CRID")).
+				generator("?enthalpy", DatasetGenerator.supplierConstant("ENTHALPY")).
+				generator("?enthalpyOfFormationValue", DatasetGenerator.supplierConstant("ENTHALPYVALUE"));
 		
-		String template = "?species ontospecies:casRegistryID ?crid .\r\n"
-				+ "?species ontospecies:hasAtomicBond ?atomicBond .\r\n"
-				+ "?species ontospecies:hasGeometry ?geometry . \r\n"
-				+ "?species ontospecies:hasStandardEnthalpyOfFormation ?enthalpy .\r\n"
-				+ "?enthalpy ontospecies:value ?enthalpyOfFormationValue .\r\n";
+		String dataset = generator.generateVariableValues(1).build();
 		
-		DatasetGenerator generator = new DatasetGenerator(prefixes, template);
+		String expected = "\r\n"
+				+ "\r\n"
+				+ "SPECIES ontospecies:casRegistryID CRID .\r\n"
+				+ "SPECIES ontospecies:hasStandardEnthalpyOfFormation ENTHALPY .\r\n"
+				+ "ENTHALPY ontospecies:value ENTHALPYVALUE .\r\n"
+				+ "\r\n";
 		
-		Supplier<Object> supplier = DatasetGenerator.supplierUUID("kbontospecies:Species_", ""); 
-		generator.bindVariable("?species", supplier);
-		supplier = DatasetGenerator.supplierUUID("\"107-18-6", "\""); 
-		generator.bindVariable("?crid", supplier);
-		supplier = DatasetGenerator.supplierUUID("\"5 1 1 6 1 1 1 2 2 8 3 1 2 3 1 2 7 1 10 4 1 3 4 1 3 9 1", "\""); 
-		generator.bindVariable("?atomicBond", supplier);
-		supplier = DatasetGenerator.supplierUUID("\"C -0.923508 -0.555332 -1.207091 C -0.508887 -0.407765 0.049627 C 0.368786 0.714318 0.522948 O 1.573496 0.239793 1.13319 H -0.648316 0.15453 -1.982095 H -1.557937 -1.381879 -1.506737 H -0.792092 -1.134554 0.808132 H 0.589914 1.398858 -0.30644 H -0.133639 1.289675 1.305278 H 2.032282 -0.317645 0.495588", "\""); 
-		generator.bindVariable("?geometry", supplier);
-		supplier = DatasetGenerator.supplierUUID("kbontospecies:StandardEnthalpyOfFormation_", ""); 
-		generator.bindVariable("?enthalpy", supplier);
-		supplier = DatasetGenerator.supplierConstant("-123.6"); 
-		generator.bindVariable("?enthalpyOfFormationValue", supplier);
+		assertEquals(expected, dataset);
+	}
+	
+	public void testBuildWithSupplierOptional() {
 		
-		return generator;
+		DatasetGenerator generator = new DatasetGenerator("").
+				pattern("?species ontospecies:casRegistryID ?crid").
+				pattern("?species ontospecies:hasStandardEnthalpyOfFormation ?enthalpy").
+				generator("?species", DatasetGenerator.supplierConstant("SPECIES")).
+				generator("?crid", DatasetGenerator.supplierConstant("CRID"), 2). // 2 time CRID, then null
+				generator("?enthalpy", DatasetGenerator.supplierConstant("ENTHALPY"));
+		
+		String dataset = generator.generateVariableValues(4).build();
+		
+		System.out.println("XXX");
+		System.out.println(dataset);
+		System.out.println("YYY");
+		
+		String expected = "\r\n"
+				+ "\r\n"
+				+ "SPECIES ontospecies:casRegistryID CRID .\r\n"
+				+ "SPECIES ontospecies:hasStandardEnthalpyOfFormation ENTHALPY .\r\n"
+				+ "\r\n"
+				+ "SPECIES ontospecies:casRegistryID CRID .\r\n"
+				+ "SPECIES ontospecies:hasStandardEnthalpyOfFormation ENTHALPY .\r\n"
+				+ "\r\n"
+				+ "SPECIES ontospecies:hasStandardEnthalpyOfFormation ENTHALPY .\r\n"
+				+ "\r\n"
+				+ "SPECIES ontospecies:hasStandardEnthalpyOfFormation ENTHALPY .\r\n"
+				+ "\r\n";
+		
+		assertEquals(expected, dataset);
 	}
 	
 	public void testGenerateOntoSpeciesOntoCompChem() {
-		String[] datasets = generateOntoSpeciesOntoCompChem(3, 4, 2);
 		
-		System.out.println(datasets[0]);
+		int sizeJoin = 25;
+		String[] datasets = DatasetProvider.generateOntoSpeciesOntoCompChem(100, 200, sizeJoin, -1);
+		
+		// merge the triple of both datasets into one RDF graph
+		OntModel model = JenaHelper.createModel();	
+		JenaHelper.readFromString(datasets[0], model, Lang.TURTLE);
+		JenaHelper.readFromString(datasets[1], model, Lang.TURTLE);
+		
+		// assert that the non-federated query has result set of size sizeJoin
+		setQueryFormatParams(false, false, false);
+		Query query = getSparqlOntoSpeciesOntoCompChemLarge();	
+		ResultSet result = JenaHelper.query(model, query.sparql);
+		String resultW3C = JenaResultSetFormatter.convertToJSONW3CStandard(result);
+		JSONArray ja = JenaResultSetFormatter.convertToSimplifiedJsonArray(resultW3C);
+		assertEquals(sizeJoin, ja.length());
 	}
 }

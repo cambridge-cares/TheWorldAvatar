@@ -22,10 +22,12 @@ import org.testcontainers.utility.DockerImageName;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.fed.BlazegraphRepositoryWrapper;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /**
  * This class creates multiple Docker test containers on-the-fly.
@@ -33,8 +35,8 @@ import uk.ac.cam.cares.jps.base.query.fed.BlazegraphRepositoryWrapper;
  * The created test environment can be used for integration tests for federated queries.
  * It allows to test various engines and configurations for executing federated SPARQL queries.
  * <p>
- * The org.testcontainers framework allows to create containers easily.
- * It also provides 
+ * The class uses the org.testcontainers framework which allows to create containers easily.
+ * The framework also provides 
  * <a href="https://www.testcontainers.org/features/networking/#advanced-networking">
  * communication between containers</a>.
  * However, it is not straight-forward to resolve a SPARQL endpoint URL 
@@ -50,7 +52,7 @@ import uk.ac.cam.cares.jps.base.query.fed.BlazegraphRepositoryWrapper;
  * replace localhost:8080 in the endpoint URL e.g. by 172.17.0.3:8080 which can be used internally for requests. 
  * <p>
  * The test environment can be extended by further containers (triple stores) and datasets by
- * extending the method {@link #init}. The environment is created as singleton and the initialization is
+ * extending the method {@link #init}. The test environment is created as singleton and the initialization is
  * started as soon as {@link #getInstance()} is called.
  */
 public class TripleStoreProvider extends TestCase {
@@ -103,6 +105,8 @@ public class TripleStoreProvider extends TestCase {
 	public final static String NAMESPACE_DOE_CHEMRXN = "doe_chemrxn";
 	public final static String NAMESPACE_WIKIDATA_SMALL = "wikidata_small";
 	public final static String NAMESPACE_BLAZEGRAPH_EMTPY = "blazegraph_empty";
+	public final static String NAMESPACE_ONTOSPECIES = "ontospecies";
+	public final static String NAMESPACE_ONTOCOMPCHEM = "ontocompchem";
 	public static final String NAMESPACE_RDF4J_EMPTY = "rdf4j_empty";
 
 	private static TripleStoreProvider instance = null;
@@ -343,6 +347,7 @@ public class TripleStoreProvider extends TestCase {
 		initBlazegraph1(dirTestResources);
 		initBlazegraph2(dirTestResources);
 		initRdf4j1(dirTestResources);
+		initEndpointsForGeneratedDatasets();
 	}
 	
 	private void initBlazegraph1(String dirTestResources) {
@@ -355,7 +360,7 @@ public class TripleStoreProvider extends TestCase {
 		host2host.put(host, dockerHost);
 		ContainerInfo info = new ContainerInfo(container, serviceUrl);
 		id2container.put(ID_BLAZEGRAPH_1, info);
-		LOGGER.debug("container created with id=" + ID_BLAZEGRAPH_1 + ", serviceUrl=" + serviceUrl, ", dockerHost" + dockerHost);
+		LOGGER.debug("created container for id=" + ID_BLAZEGRAPH_1 + ", serviceUrl=" + serviceUrl, ", dockerHost" + dockerHost);
 		
 		Collection<File> files = new ArrayList<File>();
 		String path = BlazegraphRepositoryWrapper.getPathForBlazegraph(NAMESPACE_BLAZEGRAPH_EMTPY);
@@ -384,7 +389,7 @@ public class TripleStoreProvider extends TestCase {
 		host2host.put(host, dockerHost);
 		ContainerInfo info = new ContainerInfo(container, serviceUrl);
 		id2container.put(ID_BLAZEGRAPH_2, info);
-		LOGGER.debug("container created with id=" + ID_BLAZEGRAPH_2 + ", serviceUrl=" + serviceUrl, ", dockerHost" + dockerHost);
+		LOGGER.debug("created container for id=" + ID_BLAZEGRAPH_2 + ", serviceUrl=" + serviceUrl, ", dockerHost" + dockerHost);
 
 		Collection<File> files = getFiles(dirTestResources + "lab_2.ttl");
 		String path = BlazegraphRepositoryWrapper.getPathForBlazegraph(NAMESPACE_LAB_2);
@@ -400,7 +405,7 @@ public class TripleStoreProvider extends TestCase {
 		host2host.put(host, dockerHost);
 		ContainerInfo info = new ContainerInfo(container, serviceUrl);
 		id2container.put(ID_RDF4J_1, info);
-		LOGGER.debug("container created with id=" + ID_RDF4J_1 + ", serviceUrl=" + serviceUrl, ", dockerHost" + dockerHost);
+		LOGGER.debug("created container for id=" + ID_RDF4J_1 + ", serviceUrl=" + serviceUrl, ", dockerHost" + dockerHost);
 		
 		createEmptyDatasetRdf4j(ID_RDF4J_1, serviceUrl, NAMESPACE_RDF4J_EMPTY);
 	}
@@ -419,7 +424,7 @@ public class TripleStoreProvider extends TestCase {
 		// upload data
 		String url = getEndpointUrl(serviceUrl, namespace);
 		uploadFiles(url, files);
-		LOGGER.debug("created dataset and uploaded data, url=" + url);
+		LOGGER.debug("created endpoint with url=" + url);
 	}
 	
 	// see https://rdf4j.org/documentation/reference/rest-api/#repository-creation
@@ -451,5 +456,42 @@ public class TripleStoreProvider extends TestCase {
 		
 		EndpointInfo info = new EndpointInfo(containerId, endpointPath);
 		namespace2endpoint.put(namespace, info);
+		
+		LOGGER.debug("created endpoint with url=" + endpointUrl);
+	}
+	
+	/**
+	 * Generates datasets (instead of reading datasets from file), 
+	 * creates endpoints and uploads the generated data.
+	 */
+	private void initEndpointsForGeneratedDatasets() {
+	
+		// the method for uploading data expects a file as input parameter
+		// for this reason, all generated datasets have to be stored locally
+		// in future, the file input parameter may be replaced by an input stream
+		String pwd = "./tmp/generateddatasets";
+		try {
+			pwd = AgentLocator.getPathToJpsWorkingDir() + "/generateddatasets";
+		} catch (Exception e){
+			LOGGER.warn("JPS working directory was not found");
+		}
+		LOGGER.info("initializing endpoints and generating datasets, tmp directory=" + pwd);
+		
+		String[] datasets = DatasetProvider.generateOntoSpeciesOntoCompChem(1000, 2000, 25, 100);
+		
+		String namespace = NAMESPACE_ONTOSPECIES;
+		String path = pwd + "/dataset_" + namespace + ".ttl";
+		FileUtil.writeFileLocally(path , datasets[0]);
+		Collection<File> files = getFiles(path);
+		path = BlazegraphRepositoryWrapper.getPathForBlazegraph(namespace);
+		createDatasetBlazegraph(ID_BLAZEGRAPH_1, namespace, path, files);
+		
+		
+		namespace = NAMESPACE_ONTOCOMPCHEM;
+		path = pwd + "/dataset_" + namespace + ".ttl";
+		FileUtil.writeFileLocally(path , datasets[1]);
+		files = getFiles(path);
+		path = BlazegraphRepositoryWrapper.getPathForBlazegraph(namespace);
+		createDatasetBlazegraph(ID_BLAZEGRAPH_2, namespace, path, files);
 	}
 }

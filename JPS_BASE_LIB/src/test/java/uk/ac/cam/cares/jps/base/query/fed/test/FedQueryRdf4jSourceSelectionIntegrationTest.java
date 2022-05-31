@@ -32,20 +32,9 @@ public class FedQueryRdf4jSourceSelectionIntegrationTest extends QueryProvider {
 		setServiceUrlParams(null, true);
 		if (engine == null) {
 			LOGGER.info("Creating engine with endpoint selection");
-			String fedEngineUrl = TripleStoreProvider.getEndpointUrl(TripleStoreProvider.NAMESPACE_RDF4J_EMPTY);
-			List<String> serviceUrls = new ArrayList<String>();
-			serviceUrls.add(TripleStoreProvider.getServiceUrl(TripleStoreProvider.ID_BLAZEGRAPH_1));
-			serviceUrls.add(TripleStoreProvider.getServiceUrl(TripleStoreProvider.ID_BLAZEGRAPH_2));
+			String fedEngineUrl = TripleStoreProvider.getEndpointUrl(TripleStoreProvider.NAMESPACE_RDF4J_EMPTY);			
+			ServiceDescriptionIndexer indexer = getIndexer();
 			Map<String,String> host2host = TripleStoreProvider.getHostConversionMap();
-			
-			// additional federation members for the test with remote queries
-			List<String> federationMembers = new ArrayList<String>();
-			federationMembers.add("http://www.theworldavatar.com/blazegraph/namespace/sgbiodieselplants/sparql");
-			federationMembers.add("http://www.theworldavatar.com:83/citieskg/namespace/singaporeEPSG24500/sparql");
-			federationMembers.add("http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql");
-		    federationMembers.add("http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql");
-			
-			ServiceDescriptionIndexer indexer = FederatedQueryFactory.getIndexer(true, serviceUrls, federationMembers);
 			engine = FederatedQueryFactory.createWithEndpointSelection(fedEngineUrl, indexer, host2host);
 		}
 	}
@@ -109,15 +98,23 @@ public class FedQueryRdf4jSourceSelectionIntegrationTest extends QueryProvider {
 		queryAndAssert(getSparqlDistributedLab_3_inverted_service_order());
 	}	
 	
+	public void testRemoteSparqlOntoSpeciesOntoCompChemSmall() {
+		queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
+	}
+	
+	public void testRemoteSparqlOntoSpeciesOntoCompChemMedium() {
+		queryAndAssert(getSparqlOntoSpeciesOntoCompChemMedium());
+	}
+	
+	public void xxxtestRemoteSparqlOntoSpeciesOntoCompChemLarge() {
+		queryAndAssert(getSparqlOntoSpeciesOntoCompChemLarge());
+	}
+	
 	public void xxxtestRemoteSparqlBiodieselCityGML() {
 		queryAndAssert(getSparqlBiodieselCityGML());
 	}
 	
 	public void xxxtestRemoteSparqlWikidataDBpedia() {
 		queryAndAssert(getSparqlWikidataDBpedia());
-	}
-	
-	public void xxxtestRemoteSparqlOntoSpeciesOntoCompChemSmall() {
-		queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
 	}
 }

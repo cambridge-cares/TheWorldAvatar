@@ -60,6 +60,12 @@ public class ServiceDescriptionIndexer {
 		public ServiceDescriptionSummary(int id) {
 			this.id = id;
 		}
+		
+		@Override
+		public String toString() {
+			return "Summary[#t=" + ntriples + ",#e=" +nentities 
+					+ ",#c=" + nclasses + ",#p=" + nproperties + ",url=" + endpointURL + "]";
+		}
 	}
 	
 	public class PostingsListElement implements Comparable<PostingsListElement>{
@@ -224,7 +230,6 @@ public class ServiceDescriptionIndexer {
 	 * @param path a file or URL
 	 */
 	private void add(String path) {
-		LOGGER.debug("Adding service description=" + path);
 		
 		OntModel model = null;
 		if (path.startsWith("http")) {
@@ -251,6 +256,9 @@ public class ServiceDescriptionIndexer {
 			PostingsListElement elem = new PostingsListElement(summary.id, map.get(key));
 			index.add(INDEX_NAME, key, elem);
 		}
+		
+		
+		LOGGER.debug("Added service description=" + summary + " from path=" + path);
 	}
 	
 	/**

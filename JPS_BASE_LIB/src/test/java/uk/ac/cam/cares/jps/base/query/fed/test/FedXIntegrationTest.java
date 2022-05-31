@@ -16,14 +16,11 @@ public class FedXIntegrationTest extends QueryProvider {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FedXIntegrationTest.class);
 	
-	boolean useAllEndpoints = false; 
-	
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		TripleStoreProvider.getInstance();
 		setQueryFormatParams(false, false, false);
-		useAllEndpoints = false; 
 	}
 	
 	protected void queryAndAssert(Query query) {
@@ -32,9 +29,7 @@ public class FedXIntegrationTest extends QueryProvider {
 		
 	private void queryAndAssert(String sparql, List<String> endpoints, String expectedResult) {
 		LOGGER.debug("FedX with number of endpoints=" + endpoints.size());
-		if (useAllEndpoints) {
-			endpoints = QueryProvider.getIndexer(true).getEndpointUrls();
-		}		
+		endpoints = getIndexer().getEndpointUrls();
 		FederatedQueryInterface repo = FederatedQueryFactory.createFedX(endpoints);
 		String actualJson = repo.executeFederatedQuery(sparql);
 		assertQueryResult(expectedResult, actualJson);
@@ -56,6 +51,18 @@ public class FedXIntegrationTest extends QueryProvider {
 		queryAndAssert(getSparqlDistributedLab_3_inverted_service_order());
 	}
 	
+	public void testRemoteSparqlOntoSpeciesOntoCompChemSmall() {
+		queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
+	}
+	
+	public void testRemoteSparqlOntoSpeciesOntoCompChemMedium() {
+		queryAndAssert(getSparqlOntoSpeciesOntoCompChemMedium());
+	}
+	
+	public void testRemoteSparqlOntoSpeciesOntoCompChemLarge() {
+		queryAndAssert(getSparqlOntoSpeciesOntoCompChemLarge());
+	}
+	
 	public void xxxtestRemoteSparqlBiodieselCityGML() {
 		queryAndAssert(getSparqlBiodieselCityGML());
 	}
@@ -63,14 +70,4 @@ public class FedXIntegrationTest extends QueryProvider {
 	public void xxxtestRemoteSparqlWikidataDBpedia() {
 		queryAndAssert(getSparqlWikidataDBpedia());
 	}
-	
-	public void xxxtestRemoteSparqlOntoSpeciesOntoCompChemSmall() {
-		queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
-	}
-	
-	public void xxxtestRemoteSparqlLocalWikidataWithPubChemCID887() {
-		queryAndAssert(getSparqlLocalWikidataWithPubChemCID887());
-	}
-	
-
 }

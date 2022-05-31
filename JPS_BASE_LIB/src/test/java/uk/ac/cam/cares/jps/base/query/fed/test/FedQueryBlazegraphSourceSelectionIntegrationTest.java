@@ -1,17 +1,20 @@
 package uk.ac.cam.cares.jps.base.query.fed.test;
 
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryFactory;
 import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryInterface;
+import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer;
 
 /**
  * One of multiple test configurations, see {@link QueryProvider} for details.
  */
-public class FedQueryBlazegraphGivenEndpointsIntegrationTest extends QueryProvider {
+public class FedQueryBlazegraphSourceSelectionIntegrationTest extends QueryProvider {
 	
-	private static final Logger LOGGER = LogManager.getLogger(FedQueryBlazegraphGivenEndpointsIntegrationTest.class);
+	private static final Logger LOGGER = LogManager.getLogger(FedQueryBlazegraphSourceSelectionIntegrationTest.class);
 	
 	@Override
 	public void setUp() throws Exception {
@@ -26,9 +29,12 @@ public class FedQueryBlazegraphGivenEndpointsIntegrationTest extends QueryProvid
 	}
 	
 	private void queryAndAssert(String sparql, String expectedResult) {
-		LOGGER.debug("Federated query for Blazegraph with given service endpoints and without data selection");
+		LOGGER.debug("Federated query for Blazegraph with endpoint selection");
 		String fedEngineUrl = TripleStoreProvider.getEndpointUrl(TripleStoreProvider.NAMESPACE_BLAZEGRAPH_EMTPY);
-		FederatedQueryInterface repo = FederatedQueryFactory.createForQueriesWithGivenEndpoints(fedEngineUrl);
+		ServiceDescriptionIndexer indexer = getIndexer();
+		Map<String,String> host2host = TripleStoreProvider.getHostConversionMap();
+		FederatedQueryInterface repo = FederatedQueryFactory.createWithEndpointSelection(fedEngineUrl, indexer, host2host);
+		//FederatedQueryInterface repo = FederatedQueryFactory.createForQueriesWithGivenEndpoints(fedEngineUrl);
 		String actualJson = repo.executeFederatedQuery(sparql);	
 		assertQueryResult(expectedResult, actualJson);
 	}
