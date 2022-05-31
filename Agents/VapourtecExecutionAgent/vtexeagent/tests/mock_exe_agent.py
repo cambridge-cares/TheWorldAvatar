@@ -26,7 +26,7 @@ class MockExecutionAgent(VapourtecExecutionAgent):
             self.kgUrl, self.kgUpdateUrl, self.kgUser, self.kgPassword, self.fs_url, self.fs_user, self.fs_password
         )
 
-        self._rxn_exp_iri = derivation_inputs.getIris(ONTORXN_REACTIONEXPERIMENT)[0]
+        self._rxn_exp_iri = derivation_inputs.getIris(ONTOREACTION_REACTIONEXPERIMENT)[0]
 
         # Random choose the type of report to be used for mock testing
         num = random.randint(0, 1)
@@ -44,7 +44,7 @@ class MockExecutionAgent(VapourtecExecutionAgent):
         chemical_solution_iri = "http://placeholder_chemical_solution/ChemicalSolution_" + str(uuid.uuid4())
         self.sparql_client.connect_hplc_report_with_chemical_solution(hplc_report_iri, chemical_solution_iri)
 
-        g.add((URIRef(self._rxn_exp_iri), URIRef(ONTORXN_ISASSIGNEDTO), URIRef("http://example.com/blazegraph/namespace/testlab/dummy_lab/VapourtecR4_Dummy")))
+        g.add((URIRef(self._rxn_exp_iri), URIRef(ONTOREACTION_ISASSIGNEDTO), URIRef("http://example.com/blazegraph/namespace/testlab/dummy_lab/VapourtecR4_Dummy")))
         g.add((URIRef(hplc_digital_twin), URIRef(ONTOHPLC_REPORTEXTENSION), URIRef(extension)))
         vial_iri = "http://placeholder_vial/Vial_" + str(uuid.uuid4())
         g.add((URIRef(chemical_solution_iri), URIRef(ONTOVAPOURTEC_FILLS), URIRef(vial_iri)))

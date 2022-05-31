@@ -40,7 +40,7 @@ class AgilentPostProcAgent(DerivationAgent):
 
         # Calculate each PerformanceIndicator
         lst_performance_indicator = []
-        for perf_clz in [ONTORXN_YIELD, ONTORXN_CONVERSION, ONTORXN_ECOSCORE, ONTORXN_ENVIRONMENTALFACTOR, ONTORXN_SPACETIMEYIELD, ONTORXN_RUNMATERIALCOST]:
+        for perf_clz in [ONTOREACTION_YIELD, ONTOREACTION_CONVERSION, ONTOREACTION_ECOSCORE, ONTOREACTION_ENVIRONMENTALFACTOR, ONTOREACTION_SPACETIMEYIELD, ONTOREACTION_RUNMATERIALCOST]:
             pi = hypo.calculate_performance_indicator(
                 hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
                 rxn_exp_instance=rxn_exp_instance, target_clz=perf_clz, expected_amount=1

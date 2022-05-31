@@ -95,22 +95,22 @@ def test_getExpReactionCondition(initialise_triples, rxnexp_iri, rxnexp_conditio
     for con in rxn_condition_list:
         assert all([isinstance(con, onto.ReactionCondition), con.clz is not None, isinstance(con.objPropWithExp, list),
             con.hasValue.hasUnit is not None, con.hasValue.hasNumericalValue is not None, con.instance_iri in rxnexp_condition_iri])
-        if con.clz == onto.ONTORXN_STOICHIOMETRYRATIO:
+        if con.clz == onto.ONTOREACTION_STOICHIOMETRYRATIO:
             assert con.indicatesMultiplicityOf is not None
-        elif con.clz == onto.ONTORXN_REACTIONSCALE:
+        elif con.clz == onto.ONTOREACTION_REACTIONSCALE:
             assert con.indicateUsageOf is not None
 
 @pytest.mark.parametrize(
     "rxnexp_iri,rxnexp_pref_indicator_iri,rxn_type",
     [# here we are testing that the function should work wether the passed in iri is already a list or not
-        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_4_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_5_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.NEW_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONVARIATION),
-        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONVARIATION),
-        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTORXN_REACTIONVARIATION),
+        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_4_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_5_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.NEW_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTOREACTION_REACTIONVARIATION),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTOREACTION_REACTIONVARIATION),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value, onto.ONTOREACTION_REACTIONVARIATION),
     ],
 )
 def test_getExpPerformanceIndicator(initialise_triples, rxnexp_iri, rxnexp_pref_indicator_iri, rxn_type):
@@ -119,10 +119,10 @@ def test_getExpPerformanceIndicator(initialise_triples, rxnexp_iri, rxnexp_pref_
     assert len(rxnexp_pref_indicator_iri) == len(perf_ind_list)
     for ind in perf_ind_list:
         assert all([isinstance(ind, onto.PerformanceIndicator), ind.clz is not None, isinstance(ind.objPropWithExp, list), ind.instance_iri in rxnexp_pref_indicator_iri])
-    if rxn_type == onto.ONTORXN_REACTIONEXPERIMENT:
+    if rxn_type == onto.ONTOREACTION_REACTIONEXPERIMENT:
         for ind in perf_ind_list:
             assert all([ind.hasValue.hasUnit is not None, ind.hasValue.hasNumericalValue is not None])
-    elif rxn_type == onto.ONTORXN_REACTIONVARIATION:
+    elif rxn_type == onto.ONTOREACTION_REACTIONVARIATION:
         for ind in perf_ind_list:
             assert all([ind.hasValue is None])
     else:
@@ -131,14 +131,14 @@ def test_getExpPerformanceIndicator(initialise_triples, rxnexp_iri, rxnexp_pref_
 @pytest.mark.parametrize(
     "rxnexp_iri,expected_rxn_type",
     [# here we are testing that the function should work wether the passed in iri is already a list or not
-        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT),
-        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, onto.ONTORXN_REACTIONVARIATION),
-        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, onto.ONTORXN_REACTIONVARIATION),
-        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, onto.ONTORXN_REACTIONVARIATION),
+        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT),
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, onto.ONTOREACTION_REACTIONVARIATION),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, onto.ONTOREACTION_REACTIONVARIATION),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, onto.ONTOREACTION_REACTIONVARIATION),
     ],
 )
 def test_get_rdf_type_of_rxn_exp(initialise_triples, rxnexp_iri, expected_rxn_type):
@@ -401,37 +401,37 @@ def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_e
 @pytest.mark.parametrize(
     "rxn_exp_iri,rxn_type,chem_rxn_iri,reactant,product,catalyst,solvent",
     [
-        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, onto.ONTORXN_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, onto.ONTORXN_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, onto.ONTOREACTION_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, onto.ONTORXN_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, onto.ONTOREACTION_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
-        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, onto.ONTORXN_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, onto.ONTOREACTION_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
         TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
     ],
 )
 def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_rxn_iri, reactant, product, catalyst, solvent):
     sparql_client = initialise_triples
-    if rxn_type == onto.ONTORXN_REACTIONEXPERIMENT:
+    if rxn_type == onto.ONTOREACTION_REACTIONEXPERIMENT:
         chem_rxn = sparql_client.get_chemical_reaction(rxn_exp_iri)
-    elif rxn_type == onto.ONTORXN_REACTIONVARIATION:
+    elif rxn_type == onto.ONTOREACTION_REACTIONVARIATION:
         chem_rxn = sparql_client.get_chemical_reaction_of_rxn_variation(rxn_exp_iri)
     else:
         assert False

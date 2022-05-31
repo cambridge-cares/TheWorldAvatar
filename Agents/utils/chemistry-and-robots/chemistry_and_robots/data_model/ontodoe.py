@@ -5,7 +5,7 @@ from chemistry_and_robots.data_model.iris import *
 from pyderivationagent.data_model.utils import *
 
 from chemistry_and_robots.data_model.base_ontology import BaseOntology
-from chemistry_and_robots.data_model.ontorxn import *
+from chemistry_and_robots.data_model.ontoreaction import *
 
 class Strategy(BaseOntology):
     pass

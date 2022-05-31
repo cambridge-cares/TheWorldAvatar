@@ -76,7 +76,7 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
     # The new created ReactionVariation instances <isVariationOf> this ReactionExperiment
     # Most of the information from this ReactionExperiment will be copied to the new created ReactionVariation instance
     # NOTE the ReactionVariation MUST and ONLY <isVariationOf> instance of ReactionExperiment, otherwise it will create huge overhead in recursive querying function getReactionExperiment
-    first_rxn_exp = [rxn_exp for rxn_exp in doe.utilisesHistoricalData.refersTo if rxn_exp.clz == ONTORXN_REACTIONEXPERIMENT][0]
+    first_rxn_exp = [rxn_exp for rxn_exp in doe.utilisesHistoricalData.refersTo if rxn_exp.clz == ONTOREACTION_REACTIONEXPERIMENT][0]
 
     # Iterate over the new suggested experiments to create each of them
     # NOTE below design works for multiple (>1) experiments

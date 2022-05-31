@@ -10,7 +10,7 @@ from rdflib import Graph, URIRef, Namespace, Literal, BNode
 
 from chemistry_and_robots.data_model.base_ontology import BaseOntology
 from chemistry_and_robots.data_model.ontodoe import *
-from chemistry_and_robots.data_model.ontorxn import *
+from chemistry_and_robots.data_model.ontoreaction import *
 
 
 class ParameterSetting(BaseOntology):
@@ -70,8 +70,8 @@ class EquipmentSettings(BaseOntology):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
         # <equip_settings> <OntoLab:wasGeneratedFor> <rxnexp>
         g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_WASGENERATEDFOR), URIRef(self.wasGeneratedFor)))
-        # <reactionExperiment> <OntoRxn:hasEquipmentSettings> <reactorSetting>
-        g.add((URIRef(self.wasGeneratedFor), URIRef(ONTORXN_HASEQUIPMENTSETTINGS), URIRef(self.instance_iri)))
+        # <reactionExperiment> <OntoReaction:hasEquipmentSettings> <reactorSetting>
+        g.add((URIRef(self.wasGeneratedFor), URIRef(ONTOREACTION_HASEQUIPMENTSETTINGS), URIRef(self.instance_iri)))
 
         # <equip_settings> <OntoLab:specifies> <lab_equipment>
         g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_SPECIFIES), URIRef(self.specifies.instance_iri)))

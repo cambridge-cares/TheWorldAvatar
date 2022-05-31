@@ -111,13 +111,13 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
     reactant_dct = {s:species_role_dct[s] for s in species_role_dct if species_role_dct[s] == ONTOKIN_REACTANT}
 
     # Construct a dct of catalyst
-    catalyst_dct = {s:species_role_dct[s] for s in species_role_dct if species_role_dct[s] == ONTORXN_CATALYST}
+    catalyst_dct = {s:species_role_dct[s] for s in species_role_dct if species_role_dct[s] == ONTOREACTION_CATALYST}
 
     # Construct a dct of internal standard
     internal_standard_dct = {s:species_role_dct[s] for s in species_role_dct if species_role_dct[s] == ONTOHPLC_INTERNALSTANDARD}
 
     # Construct a dct of solvent
-    solvent_dct = {s:species_role_dct[s] for s in species_role_dct if species_role_dct[s] == ONTORXN_SOLVENT}
+    solvent_dct = {s:species_role_dct[s] for s in species_role_dct if species_role_dct[s] == ONTOREACTION_SOLVENT}
 
     # Construct a dct of (reactant+catalyst) combined
     reactant_n_catalyst_dct = {**reactant_dct, **catalyst_dct}
@@ -148,8 +148,8 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
         if ic != reference_input_chemical:
             if ONTOKIN_REACTANT in species_role_in_input_chemical_dct[ic]:
                 _temp_role = ONTOKIN_REACTANT
-            elif ONTORXN_CATALYST in species_role_in_input_chemical_dct[ic]:
-                _temp_role = ONTORXN_CATALYST
+            elif ONTOREACTION_CATALYST in species_role_in_input_chemical_dct[ic]:
+                _temp_role = ONTOREACTION_CATALYST
             _temp_species = species_role_in_input_chemical_dct[ic][_temp_role]
             calc_run_mol_n_volume_of_other_solute(input_chemical=ic, species=_temp_species, eq_ratio=stoi_ratio_dct[ic].hasNumericalValue,
                 ref_solute_run_mol=run_mol_dct[reference_input_chemical][reference_solute], pump_conc=species_pump_conc_dct[ic][_temp_role][_temp_species],
@@ -163,8 +163,8 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
             _temp_species = species_role_in_input_chemical_dct[ic][_temp_role]
             _is_run_mol = utils.unit_conversion_return_value_dq(species_pump_conc_dct[ic][_temp_role][_temp_species], utils.UNIFIED_CONCENTRATION_UNIT) * run_volume_dct[ic].hasNumericalValue
             utils.deep_update(run_mol_dct, {ic:{_temp_species:utils.DimensionalQuantity(hasUnit=utils.UNIFIED_MOLE_UNIT, hasNumericalValue=_is_run_mol)}})
-        if ONTORXN_SOLVENT in species_role_in_input_chemical_dct[ic]:
-            _temp_role = ONTORXN_SOLVENT
+        if ONTOREACTION_SOLVENT in species_role_in_input_chemical_dct[ic]:
+            _temp_role = ONTOREACTION_SOLVENT
             _temp_species = species_role_in_input_chemical_dct[ic][_temp_role]
             _solvent_run_mol = utils.unit_conversion_return_value_dq(species_pump_conc_dct[ic][_temp_role][_temp_species], utils.UNIFIED_CONCENTRATION_UNIT) * run_volume_dct[ic].hasNumericalValue
             utils.deep_update(run_mol_dct, {ic:{_temp_species:utils.DimensionalQuantity(hasUnit=utils.UNIFIED_MOLE_UNIT, hasNumericalValue=_solvent_run_mol)}})
@@ -203,7 +203,7 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
                 run_conc=utils.DimensionalQuantity(hasUnit=utils.UNIFIED_CONCENTRATION_UNIT,hasNumericalValue=_sp_run_conc),
                 run_mol=utils.DimensionalQuantity(hasUnit=run_mol_dct[ic][_species_iri].hasUnit,hasNumericalValue=run_mol_dct[ic][_species_iri].hasNumericalValue)
             )
-            if species_role_dct[_species_iri] == ONTORXN_SOLVENT:
+            if species_role_dct[_species_iri] == ONTOREACTION_SOLVENT:
                 lst_solvent.append(hypo_species)
             else:
                 lst_solute.append(hypo_species)
@@ -225,7 +225,7 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
 
     # Collect information on reactor volume and residence time
     _reactor_vol, _reactor_vol_unit = sparql_client.get_reactor_volume_given_reactor(rxn_exp_instance.isAssignedTo)
-    _res_time_con = [con for con in rxn_exp_instance.hasReactionCondition if con.clz == ONTORXN_RESIDENCETIME]
+    _res_time_con = [con for con in rxn_exp_instance.hasReactionCondition if con.clz == ONTOREACTION_RESIDENCETIME]
     if len(_res_time_con) > 1:
         raise Exception("More than ONE instance of OntoRxn:ResidenceTime identified as ReactionCondition within ReactionExperiment instance <%s>: %s" % (
             rxn_exp_instance.instance_iri, str(_res_time_con)))
@@ -236,7 +236,7 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
         _res_time_unit = _res_time_con[0].hasValue.hasUnit
 
     # NOTE TODO here we assume the ReactionTemperature is the actual temperature within the reactor, ideally we will use the actual data collected from sensors if possible
-    _rxn_temp_con = [con for con in rxn_exp_instance.hasReactionCondition if con.clz == ONTORXN_REACTIONTEMPERATURE]
+    _rxn_temp_con = [con for con in rxn_exp_instance.hasReactionCondition if con.clz == ONTOREACTION_REACTIONTEMPERATURE]
     if len(_rxn_temp_con) > 1:
         raise Exception("More than ONE instance of OntoRxn:ReactionTemperature identified as ReactionCondition within ReactionExperiment instance <%s>: %s" % (
             rxn_exp_instance.instance_iri, str(_rxn_temp_con)))

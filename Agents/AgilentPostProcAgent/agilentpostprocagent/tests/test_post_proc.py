@@ -48,7 +48,7 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
     # Query timestamp of the derivation for every 20 seconds until it's updated
     currentTimestamp_derivation = 0
     query_performance_indicator = conftest.PREFIX_RDF + conftest.PREFIX_RDFS + """SELECT ?performance_indicator WHERE {?performance_indicator <%s> <%s>; rdf:type/rdfs:subClassOf* <%s>.}""" % (
-        conftest.ONTODERIVATION_BELONGSTO, derivation_iri, conftest.ONTORXN_PERFORMANCEINDICATOR)
+        conftest.ONTODERIVATION_BELONGSTO, derivation_iri, conftest.ONTOREACTION_PERFORMANCEINDICATOR)
     logger.info("Generated performance indicator: " + str(sparql_client.performQuery(query_performance_indicator)))
     while currentTimestamp_derivation == 0:
         time.sleep(3)
@@ -74,7 +74,7 @@ def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, 
         assert pi.hasValue.hasNumericalValue is not None
     reload_output_chemical_lst = reload_rxn_rxp_instance.hasOutputChemical
     for oc in reload_output_chemical_lst:
-        assert oc.clz == conftest.ONTORXN_OUTPUTCHEMICAL
+        assert oc.clz == conftest.ONTOREACTION_OUTPUTCHEMICAL
         assert oc.instance_iri is not None
         reload_phase_comp_lst = oc.thermodynamicBehaviour.isComposedOfSubsystem
         for phase_comp in reload_phase_comp_lst:

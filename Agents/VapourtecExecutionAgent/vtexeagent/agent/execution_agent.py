@@ -25,7 +25,7 @@ class VapourtecExecutionAgent(DerivationAgent):
 
         # Check if the input is in correct format, and return OntoRxn.ReactionExperiment/ReactionVariation instance
         list_rxn_exp_instance = self.sparql_client.getReactionExperiment(
-            derivation_inputs.getIris(ONTORXN_REACTIONEXPERIMENT))
+            derivation_inputs.getIris(ONTOREACTION_REACTIONEXPERIMENT))
         if len(list_rxn_exp_instance) > 1:
             raise Exception(
                 "Only one instance of OntoRxn:ReactionExperiment should be used for generating OntoLab:EquipmentSettings per ExpSetup Derivation, collected: <%s>" % (
@@ -101,20 +101,20 @@ class VapourtecExecutionAgent(DerivationAgent):
     #     self.logger.info("Checking arguments...")
     #     exception_string = """Inputs are not provided in correct form. An example is:
     #                             {
-    #                                 "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoRxn.owl#ReactionExperiment": "https://www.example.com/triplestore/ontorxn/Rxn_1/ReactionExperiment_1",
+    #                                 "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoRxn.owl#ReactionExperiment": "https://www.example.com/triplestore/ontorxn/Rxn_1/ReactionExperiment_1",
     #                             }"""
     #     # If the input JSON string is missing mandatory keys, raise error with "exception_string"
-    #     if ONTORXN_REACTIONEXPERIMENT in agent_inputs:
+    #     if ONTOREACTION_REACTIONEXPERIMENT in agent_inputs:
     #         try:
     #             # Get the information from OntoRxn:ReactionExperiment instance
-    #             list_rxn_exp_instance = self.sparql_client.getReactionExperiment(agent_inputs[ONTORXN_REACTIONEXPERIMENT])
+    #             list_rxn_exp_instance = self.sparql_client.getReactionExperiment(agent_inputs[ONTOREACTION_REACTIONEXPERIMENT])
     #             if len(list_rxn_exp_instance) > 1:
     #                 raise Exception(
     #                     "Only one instance of OntoRxn:ReactionExperiment should be used for generating OntoLab:EquipmentSettings per ExpSetup Derivation, collected: <%s>" % (">, <".join([rxnexp.instance_iri for rxnexp in list_rxn_exp_instance]))
     #                 )
     #         except ValueError:
-    #             self.logger.error("Unable to interpret reaction experiment ('%s') as an IRI." % agent_inputs[ONTORXN_REACTIONEXPERIMENT])
-    #             raise Exception("Unable to interpret reaction experiment ('%s') as an IRI." % agent_inputs[ONTORXN_REACTIONEXPERIMENT])
+    #             self.logger.error("Unable to interpret reaction experiment ('%s') as an IRI." % agent_inputs[ONTOREACTION_REACTIONEXPERIMENT])
+    #             raise Exception("Unable to interpret reaction experiment ('%s') as an IRI." % agent_inputs[ONTOREACTION_REACTIONEXPERIMENT])
     #     else:
     #         self.logger.error('OntoRxn:ReactionExperiment instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
     #         raise Exception('OntoRxn:ReactionExperiment instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)

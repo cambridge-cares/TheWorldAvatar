@@ -147,7 +147,7 @@ Meanwhile, the testing script checks the progress by querying `{?performance_ind
 
 ```sparql
 PREFIX OntoDerivation:     <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
-PREFIX OntoRxn:            <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#>
+PREFIX OntoRxn:            <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#>
 PREFIX rdf:                <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs:               <http://www.w3.org/2000/01/rdf-schema#>
 

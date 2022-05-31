@@ -41,15 +41,15 @@ class HypoStreamSpecies(pydantic.BaseModel):
 
         if __pydantic_self__.def_role == ONTOKIN_REACTANT:
             __pydantic_self__._is_reactant = True
-        elif __pydantic_self__.def_role == ONTORXN_CATALYST:
+        elif __pydantic_self__.def_role == ONTOREACTION_CATALYST:
             __pydantic_self__._is_catalyst = True
         elif __pydantic_self__.def_role == ONTOHPLC_INTERNALSTANDARD:
             __pydantic_self__._is_internal_standard = True
-        elif __pydantic_self__.def_role == ONTORXN_SOLVENT:
+        elif __pydantic_self__.def_role == ONTOREACTION_SOLVENT:
             __pydantic_self__._is_solvent = True
-        elif __pydantic_self__.def_role == ONTORXN_TARGETPRODUCT:
+        elif __pydantic_self__.def_role == ONTOREACTION_TARGETPRODUCT:
             __pydantic_self__._is_target_product = True
-        elif __pydantic_self__.def_role == ONTORXN_IMPURITY:
+        elif __pydantic_self__.def_role == ONTOREACTION_IMPURITY:
             __pydantic_self__._is_impurity = True
         else:
             raise Exception("Role type <%s> NOT supported for Species <%s>." % (__pydantic_self__.def_role, __pydantic_self__.species_iri))

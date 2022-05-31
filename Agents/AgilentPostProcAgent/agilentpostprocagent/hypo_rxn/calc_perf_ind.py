@@ -25,17 +25,17 @@ def calculate_performance_indicator(
     # NOTE that the length of the list should match the amount of expected_amount, an exception will be throw if not meet the condition
     lst_placeholder = locate_placeholder_performance_indicator(rxn_exp_instance, target_clz, expected_amount)
     # Create and return the list of PerformanceIndicator instances depends on target_clz
-    if target_clz == ONTORXN_YIELD:
+    if target_clz == ONTOREACTION_YIELD:
         return [calculate_yield(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
-    elif target_clz == ONTORXN_CONVERSION:
+    elif target_clz == ONTOREACTION_CONVERSION:
         return [calculate_conversion(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
-    elif target_clz == ONTORXN_ECOSCORE:
+    elif target_clz == ONTOREACTION_ECOSCORE:
         return [calculate_eco_score(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
-    elif target_clz == ONTORXN_ENVIRONMENTALFACTOR:
+    elif target_clz == ONTOREACTION_ENVIRONMENTALFACTOR:
         return [calculate_enviromental_factor(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
-    elif target_clz == ONTORXN_SPACETIMEYIELD:
+    elif target_clz == ONTOREACTION_SPACETIMEYIELD:
         return [calculate_space_time_yield(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
-    elif target_clz == ONTORXN_RUNMATERIALCOST:
+    elif target_clz == ONTOREACTION_RUNMATERIALCOST:
         return [calculate_run_material_cost(hypo_reactor, hypo_end_stream, pi) for pi in lst_placeholder]
     else:
         raise NotImplementedError("Requested target clz <%s> as PerformanceIndicator is NOT yet supported when post-processing ReactionExperiment: %s." % (

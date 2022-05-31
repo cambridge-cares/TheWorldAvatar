@@ -27,22 +27,22 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         """
             This method is used to collect the suggested new experiments as triples.
             It first serialises the ReactionVariation/ReactionExperiment instance to rdflib.Graph().
-            It then add the triple that connects the OntoDoE:DesignOfExperiment instance and the new created OntoRxn:ReactionExperiment/ReactionVariation instance.
+            It then add the triple that connects the OntoDoE:DesignOfExperiment instance and the new created OntoReaction:ReactionExperiment/ReactionVariation instance.
 
             Arguments:
                 doe - instance of dataclass OntoDoE.DesignOfExperiment
-                newExp - a list of instance of dataclass OntoRxn.ReactionExperiment
+                newExp - a list of instance of dataclass OntoReaction.ReactionExperiment
         """
         # (1) first serialise ReactionVariation/ReactionExperiment instance to rdflib.Graph()
         # All information should already be prepared and added to the instance
         # Method create_instance_for_kg will write all information to rdflib Graph on-the-fly
         g = Graph()
-        # NOTE although here we loop through the list of OntoRxn:ReactionVariation/ReactionExperiment
+        # NOTE although here we loop through the list of OntoReaction:ReactionVariation/ReactionExperiment
         # NOTE in theory, the len(newExp) should be 1 (as we decided to make DoE Agent only suggest 1 experiment per derivation)
         # NOTE the loop is added for the future development
         for exp in newExp:
             g = exp.create_instance_for_kg(g)
-            # (2) add triple that connects the OntoDoE:DesignOfExperiment with OntoRxn:ReactionVariation/ReactionExperiment
+            # (2) add triple that connects the OntoDoE:DesignOfExperiment with OntoReaction:ReactionVariation/ReactionExperiment
             g.add((URIRef(doe.instance_iri), URIRef(ONTODOE_PROPOSESNEWEXPERIMENT), URIRef(exp.instance_iri)))
 
         return g
@@ -52,26 +52,26 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         """
             This method is used to populate the suggested new experiments back to the knowledge graph.
             It firstly first serialise and upload ReactionVariation/ReactionExperiment instance to the knowledge graph.
-            It then replace the link between the OntoDoE:DesignOfExperiment instance and the old OntoRxn:ReactionExperiment/ReactionVariation instance with the new created OntoRxn:ReactionExperiment/ReactionVariation instance.
+            It then replace the link between the OntoDoE:DesignOfExperiment instance and the old OntoReaction:ReactionExperiment/ReactionVariation instance with the new created OntoReaction:ReactionExperiment/ReactionVariation instance.
 
             Arguments:
                 doe - instance of dataclass OntoDoE.DesignOfExperiment
-                newExp - a list of instance of dataclass OntoRxn.ReactionExperiment
+                newExp - a list of instance of dataclass OntoReaction.ReactionExperiment
         """
         # (1) first serialise and upload ReactionVariation/ReactionExperiment instance to KG
-        # Generate a file path that is used to store the created OntoRxn:ReactionVariation instance
+        # Generate a file path that is used to store the created OntoReaction:ReactionVariation instance
         filePath = f'{str(uuid.uuid4())}.ttl'
-        # Serialise the created OntoRxn:ReactionVariation/ReactionExperiment instance as a XML file
+        # Serialise the created OntoReaction:ReactionVariation/ReactionExperiment instance as a XML file
         # All information should already be prepared and added to the instance
         # Method create_instance_for_kg will write all information to rdflib Graph on-the-fly
         g = Graph()
-        # NOTE although here we loop through the list of OntoRxn:ReactionVariation/ReactionExperiment
+        # NOTE although here we loop through the list of OntoReaction:ReactionVariation/ReactionExperiment
         # NOTE in theory, the len(newExp) should be 1 (as we decided to make DoE Agent only suggest 1 experiment per derivation)
         # NOTE the loop is added for the future development
         for exp in newExp:
             g = exp.create_instance_for_kg(g)
         g.serialize(filePath, format='ttl')
-        # Upload the created OntoRxn:ReactionVariation/ReactionExperiment instance to knowledge graph
+        # Upload the created OntoReaction:ReactionVariation/ReactionExperiment instance to knowledge graph
         self.uploadOntology(filePath)
         # Delete generated Turtle file
         os.remove(filePath)
@@ -273,20 +273,20 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def getReactionExperiment(self, rxnexp_iris: str or list) -> List[ReactionExperiment]:
         """
-            This method retrieves information given a list of instance iri of OntoRxn:ReactionExperiment.
+            This method retrieves information given a list of instance iri of OntoReaction:ReactionExperiment.
 
             Arguments:
-                rxnexp_iris - iri of OntoRxn:ReactionExperiment instance, can be either str of one instance, or a list of instances
+                rxnexp_iris - iri of OntoReaction:ReactionExperiment instance, can be either str of one instance, or a list of instances
         """
 
-        # TODO implement logic of querying information for OntoRxn:ReactionExperiment (most importantly parsing InputChemical and OutputChemical)
+        # TODO implement logic of querying information for OntoReaction:ReactionExperiment (most importantly parsing InputChemical and OutputChemical)
         if not isinstance(rxnexp_iris, list):
             rxnexp_iris = [rxnexp_iris]
 
         list_exp = []
         for exp_iri in rxnexp_iris:
             rdf_type_rxn = self.get_rdf_type_of_rxn_exp(exp_iri)
-            if rdf_type_rxn == ONTORXN_REACTIONEXPERIMENT:
+            if rdf_type_rxn == ONTOREACTION_REACTIONEXPERIMENT:
                 list_exp.append(
                     ReactionExperiment(
                         instance_iri=exp_iri,
@@ -299,7 +299,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         isOccurenceOf=self.get_chemical_reaction(exp_iri)
                     )
                 )
-            elif rdf_type_rxn == ONTORXN_REACTIONVARIATION:
+            elif rdf_type_rxn == ONTOREACTION_REACTIONVARIATION:
                 reference_reaction_exp = self.get_rxn_exp_iri_given_rxn_variation(exp_iri)
                 list_exp.append(
                     ReactionVariation(
@@ -318,13 +318,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_rxn_exp_iri_given_rxn_variation(self, rxn_variation_iri: str) -> str:
         rxn_variation_iri = trimIRI(rxn_variation_iri)
-        query = """SELECT ?rxn_exp WHERE { <%s> <%s> ?rxn_exp. }""" % (rxn_variation_iri, ONTORXN_ISVARIATIONOF)
+        query = """SELECT ?rxn_exp WHERE { <%s> <%s> ?rxn_exp. }""" % (rxn_variation_iri, ONTOREACTION_ISVARIATIONOF)
         response = self.performQuery(query)
         if len(response) > 1:
-            raise Exception("OntoRxn:ReactionVariation instance <%s> is found to be variation of multiple instance of OntoRxn:ReactionExperiment: %s" % (
+            raise Exception("OntoReaction:ReactionVariation instance <%s> is found to be variation of multiple instance of OntoReaction:ReactionExperiment: %s" % (
                 rxn_variation_iri, str(response)))
         elif len(response) < 1:
-            raise Exception("OntoRxn:ReactionVariation instance <%s> is NOT found to be variation of any instance of OntoRxn:ReactionExperiment" % rxn_variation_iri)
+            raise Exception("OntoReaction:ReactionVariation instance <%s> is NOT found to be variation of any instance of OntoReaction:ReactionExperiment" % rxn_variation_iri)
         else:
             return [list(r.values())[0] for r in response][0]
 
@@ -346,11 +346,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                        ?product rdf:type ?prod_type; <%s> ?prod_species.
                        optional{VALUES ?cata_type {<%s> <%s>}. ?chem_rxn <%s> ?catalyst. ?catalyst rdf:type ?cata_type; <%s> ?cata_species.}
                        optional{VALUES ?solv_type {<%s> <%s>}. ?chem_rxn <%s> ?solvent. ?solvent rdf:type ?solv_type; <%s> ?solv_species.}
-                   }""" % (ONTOKIN_SPECIES, ONTOKIN_REACTANT, ONTOKIN_SPECIES, ONTOKIN_PRODUCT, ONTORXN_TARGETPRODUCT, ONTORXN_IMPURITY,
-                   rxnexp_iri, ONTORXN_ISOCCURENCEOF, ONTOCAPE_HASREACTANT, ONTOCAPE_HASPRODUCT,
+                   }""" % (ONTOKIN_SPECIES, ONTOKIN_REACTANT, ONTOKIN_SPECIES, ONTOKIN_PRODUCT, ONTOREACTION_TARGETPRODUCT, ONTOREACTION_IMPURITY,
+                   rxnexp_iri, ONTOREACTION_ISOCCURENCEOF, ONTOCAPE_HASREACTANT, ONTOCAPE_HASPRODUCT,
                    ONTOSPECIES_HASUNIQUESPECIES, ONTOSPECIES_HASUNIQUESPECIES,
-                   ONTOKIN_SPECIES, ONTORXN_CATALYST, ONTOCAPE_CATALYST, ONTOSPECIES_HASUNIQUESPECIES,
-                   ONTOKIN_SPECIES, ONTORXN_SOLVENT, ONTORXN_HASSOLVENT, ONTOSPECIES_HASUNIQUESPECIES)
+                   ONTOKIN_SPECIES, ONTOREACTION_CATALYST, ONTOCAPE_CATALYST, ONTOSPECIES_HASUNIQUESPECIES,
+                   ONTOKIN_SPECIES, ONTOREACTION_SOLVENT, ONTOREACTION_HASSOLVENT, ONTOSPECIES_HASUNIQUESPECIES)
         response = self.performQuery(query)
         logger.debug(response)
 
@@ -395,13 +395,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     species = OntoKin_Reactant(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
                 elif u_s_info[species_type] == ONTOKIN_PRODUCT:
                     species = OntoKin_Product(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
-                elif u_s_info[species_type] == ONTORXN_TARGETPRODUCT:
+                elif u_s_info[species_type] == ONTOREACTION_TARGETPRODUCT:
                     species = TargetProduct(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
-                elif u_s_info[species_type] == ONTORXN_IMPURITY:
+                elif u_s_info[species_type] == ONTOREACTION_IMPURITY:
                     species = Impurity(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
-                elif u_s_info[species_type] == ONTORXN_CATALYST:
+                elif u_s_info[species_type] == ONTOREACTION_CATALYST:
                     species = Catalyst(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
-                elif u_s_info[species_type] == ONTORXN_SOLVENT:
+                elif u_s_info[species_type] == ONTOREACTION_SOLVENT:
                     species = Solvent(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
                 else:
                     raise Exception("Species type (%s) NOT supported for: %s" % (u_s_info[species_type], str(u_s_info)))
@@ -411,30 +411,30 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_rdf_type_of_rxn_exp(self, rxnexp_iri: str) -> str:
         rxnexp_iri = trimIRI(rxnexp_iri)
-        query = PREFIX_RDF + """SELECT ?type WHERE { VALUES ?type {<%s> <%s>}. <%s> rdf:type ?type. }""" % (ONTORXN_REACTIONEXPERIMENT, ONTORXN_REACTIONVARIATION, rxnexp_iri)
+        query = PREFIX_RDF + """SELECT ?type WHERE { VALUES ?type {<%s> <%s>}. <%s> rdf:type ?type. }""" % (ONTOREACTION_REACTIONEXPERIMENT, ONTOREACTION_REACTIONVARIATION, rxnexp_iri)
         response = self.performQuery(query)
         if len(response) > 1:
             raise Exception("Multiple rdf:type identified for reaction experiment <%s>: %s" % (rxnexp_iri, str(response)))
         elif len(response) < 1:
-            raise Exception("Reaction experiment <%s> is missing rdf:type as either OntoRxn:ReactionExperiment or OntoRxn:ReactionVariation." % (rxnexp_iri))
+            raise Exception("Reaction experiment <%s> is missing rdf:type as either OntoReaction:ReactionExperiment or OntoReaction:ReactionVariation." % (rxnexp_iri))
         else:
             return response[0]['type']
 
     def get_input_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[InputChemical]:
         rxnexp_iri = trimIRI(rxnexp_iri)
-        return self.get_ontocape_material(rxnexp_iri, ONTORXN_HASINPUTCHEMICAL)
+        return self.get_ontocape_material(rxnexp_iri, ONTOREACTION_HASINPUTCHEMICAL)
 
     def get_output_chemical_of_rxn_exp(self, rxnexp_iri: str) -> List[OutputChemical]:
         rxnexp_iri = trimIRI(rxnexp_iri)
-        return self.get_ontocape_material(rxnexp_iri, ONTORXN_HASOUTPUTCHEMICAL)
+        return self.get_ontocape_material(rxnexp_iri, ONTOREACTION_HASOUTPUTCHEMICAL)
 
     def get_ontocape_material(self, subject_iri, predicate_iri, desired_type: str=None) -> List[OntoCAPE_Material]:
         subject_iri = trimIRI(subject_iri)
         predicate_iri = trimIRI(predicate_iri)
 
-        if predicate_iri == ONTORXN_HASINPUTCHEMICAL:
+        if predicate_iri == ONTOREACTION_HASINPUTCHEMICAL:
             ocm_query_key = 'input_chemical'
-        elif predicate_iri == ONTORXN_HASOUTPUTCHEMICAL:
+        elif predicate_iri == ONTOREACTION_HASOUTPUTCHEMICAL:
             ocm_query_key = 'output_chemical'
         else:
             ocm_query_key = 'ontocape_material'
@@ -482,9 +482,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 # validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase, one instance of OntoCAPE_StateOfAggregation and one instance of OntoCAPE_Composition, otherwise raise an Exception
                 unique_single_phase_iri = self.get_unique_values_in_list_of_dict(list_om, 'single_phase')
                 if len(unique_single_phase_iri) > 1:
-                    raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoCAPE:Material %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
+                    raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoReaction:InputChemical/OntoReaction:OutputChemical/OntoCAPE:Material %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
                 elif len(unique_single_phase_iri) < 1:
-                    raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoRxn:InputChemical/OntoRxn:OutputChemical/OntoCAPE:Material: %s" % (ontocape_material_iri))
+                    raise Exception("No instance of thermodynamicBehavior OntoCAPE:SinglePhase was identified given instance of OntoReaction:InputChemical/OntoReaction:OutputChemical/OntoCAPE:Material: %s" % (ontocape_material_iri))
                 else:
                     unique_single_phase_iri = unique_single_phase_iri[0]
 
@@ -538,15 +538,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 )
 
                 if desired_type is None:
-                    if predicate_iri == ONTORXN_HASINPUTCHEMICAL:
+                    if predicate_iri == ONTOREACTION_HASINPUTCHEMICAL:
                         ocm_instance = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
-                    elif predicate_iri == ONTORXN_HASOUTPUTCHEMICAL:
+                    elif predicate_iri == ONTOREACTION_HASOUTPUTCHEMICAL:
                         ocm_instance = OutputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
                     else:
                         ocm_instance = OntoCAPE_Material(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
-                elif desired_type == ONTORXN_INPUTCHEMICAL:
+                elif desired_type == ONTOREACTION_INPUTCHEMICAL:
                     ocm_instance = InputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
-                elif desired_type == ONTORXN_OUTPUTCHEMICAL:
+                elif desired_type == ONTOREACTION_OUTPUTCHEMICAL:
                     ocm_instance = OutputChemical(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
                 else:
                     ocm_instance = OntoCAPE_Material(instance_iri=ontocape_material_iri,thermodynamicBehaviour=single_phase)
@@ -708,10 +708,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def getExpReactionCondition(self, rxnexp_iri: str) -> List[ReactionCondition]:
         """
-            This method retrieves a list of ReactionCondition pointed by the given instance of OntoRxn:ReactionExperiment/ReactionVariation.
+            This method retrieves a list of ReactionCondition pointed by the given instance of OntoReaction:ReactionExperiment/ReactionVariation.
 
             Arguments:
-                rxnexp_iri - IRI of instance of OntoRxn:ReactionExperiment/ReactionVariation
+                rxnexp_iri - IRI of instance of OntoReaction:ReactionExperiment/ReactionVariation
         """
 
         # Delete "<" and ">" around the IRI
@@ -725,8 +725,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 OPTIONAL {?condition <%s> ?id .} .
                 OPTIONAL {?condition <%s> ?multi .} .
                 OPTIONAL {?condition <%s> ?usage .} .
-                }""" % (ONTORXN_HASREACTIONCONDITION, rxnexp_iri, ONTORXN_REACTIONCONDITION,
-                OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, ONTODOE_POSITIONALID, ONTORXN_INDICATESMULTIPLICITYOF, ONTORXN_INDICATESUSAGEOF)
+                }""" % (ONTOREACTION_HASREACTIONCONDITION, rxnexp_iri, ONTOREACTION_REACTIONCONDITION,
+                OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, ONTODOE_POSITIONALID, ONTOREACTION_INDICATESMULTIPLICITYOF, ONTOREACTION_INDICATESUSAGEOF)
 
         # Perform SPARQL query
         response = self.performQuery(query)
@@ -766,10 +766,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def getExpPerformanceIndicator(self, rxnexp_iri: str) -> List[PerformanceIndicator]:
         """
-            This method retrieves a list of PerformanceIndicator pointed by the given instance of OntoRxn:ReactionExperiment/ReactionVariation.
+            This method retrieves a list of PerformanceIndicator pointed by the given instance of OntoReaction:ReactionExperiment/ReactionVariation.
 
             Arguments:
-                rxnexp_iri - IRI of instance of OntoRxn:ReactionExperiment/ReactionVariation
+                rxnexp_iri - IRI of instance of OntoReaction:ReactionExperiment/ReactionVariation
         """
 
         # Delete "<" and ">" around the IRI
@@ -781,7 +781,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 ?perf rdf:type ?clz . FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <%s>) .
                 OPTIONAL {?perf <%s> ?id .} .
                 OPTIONAL {?perf <%s> ?measure . ?measure <%s> ?unit; <%s> ?val .} .
-                }""" % (ONTORXN_HASPERFORMANCEINDICATOR, rxnexp_iri, ONTORXN_PERFORMANCEINDICATOR, ONTODOE_POSITIONALID,
+                }""" % (ONTOREACTION_HASPERFORMANCEINDICATOR, rxnexp_iri, ONTOREACTION_PERFORMANCEINDICATOR, ONTODOE_POSITIONALID,
                 OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
         # Perform SPARQL query
         response = self.performQuery(query)
@@ -901,12 +901,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             hasResidenceTimeSetting=ResidenceTimeSetting(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTORXN_RESIDENCETIME),
+                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTOREACTION_RESIDENCETIME),
                 namespace_for_init=getNameSpace(rxnexp.instance_iri)
             ),
             hasReactorTemperatureSetting=ReactorTemperatureSetting(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTORXN_REACTIONTEMPERATURE),
+                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTOREACTION_REACTIONTEMPERATURE),
                 namespace_for_init=getNameSpace(rxnexp.instance_iri)
             ),
             namespace_for_init=getNameSpace(rxnexp.instance_iri),
@@ -918,7 +918,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         # TODO add support for PumpSettings
         # first identify the reference reactant
-        dict_stoi_ratio = {cond.indicatesMultiplicityOf:cond for cond in rxnexp.hasReactionCondition if cond.clz == ONTORXN_STOICHIOMETRYRATIO}
+        dict_stoi_ratio = {cond.indicatesMultiplicityOf:cond for cond in rxnexp.hasReactionCondition if cond.clz == ONTOREACTION_STOICHIOMETRYRATIO}
         reference_input_chemical = [chem for chem in dict_stoi_ratio if abs(dict_stoi_ratio.get(chem).hasValue.hasNumericalValue - 1) < 0.000001]
         if len(reference_input_chemical) > 1:
             raise Exception("Multiple reference chemicals are identified: " + str(reference_input_chemical) + " for reaction experiment: " + str(rxnexp.dict()))
@@ -927,7 +927,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             reference_input_chemical = reference_input_chemical[0]
 
-        reaction_scale = [cond for cond in rxnexp.hasReactionCondition if cond.clz == ONTORXN_REACTIONSCALE]
+        reaction_scale = [cond for cond in rxnexp.hasReactionCondition if cond.clz == ONTOREACTION_REACTIONSCALE]
         if len(reaction_scale) > 1:
             raise Exception("Multiple reaction scale are identified: " + str(reaction_scale) + " for reaction experiment: " + str(rxnexp.dict()))
         elif len(reaction_scale) < 1:
@@ -1053,7 +1053,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 vapourtec_rs400 = self.get_vapourtec_rs400_given_autosampler(autosampler)
                 list_reactor = [lab_equip for lab_equip in vapourtec_rs400.consistsOf if isinstance(lab_equip, VapourtecR4Reactor)]
 
-                temp_condition = [cond.hasValue.hasNumericalValue for cond in rxnexp.hasReactionCondition if cond.clz == ONTORXN_REACTIONTEMPERATURE]
+                temp_condition = [cond.hasValue.hasNumericalValue for cond in rxnexp.hasReactionCondition if cond.clz == ONTOREACTION_REACTIONTEMPERATURE]
                 if len(temp_condition) > 1:
                     raise Exception("Multiple reaction temperature conditions are found in the given reaction experiment: %s" % rxnexp)
                 elif len(temp_condition) < 1:
@@ -1143,7 +1143,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         r4_reactor_iri = trimIRI(r4_reactor_iri)
         query = """
                 SELECT ?rxnexp WHERE {?rxnexp <%s> <%s>.}
-                """ % (ONTORXN_ISASSIGNEDTO, r4_reactor_iri)
+                """ % (ONTOREACTION_ISASSIGNEDTO, r4_reactor_iri)
         response = self.performQuery(query)
         list_rxn = [res['rxnexp'] for res in response]
         return list_rxn
@@ -1152,14 +1152,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     # def get_rxn_exp_pending_for_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
     #     r4_reactor_iri = trimIRI(r4_reactor_iri)
     #     query = """SELECT ?rxnexp WHERE { ?rxnexp <%s> <%s>. FILTER NOT EXISTS { <%s> <%s> ?rxnexp. } }""" % (
-    #         ONTORXN_ISASSIGNEDTO, r4_reactor_iri, r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
+    #         ONTOREACTION_ISASSIGNEDTO, r4_reactor_iri, r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
     #     response = self.performQuery(query)
     #     list_rxn = [res['rxnexp'] for res in response]
     #     return list_rxn
 
     def get_r4_reactor_rxn_exp_assigned_to(self, rxn_exp_iri: str) -> str:
         rxn_exp_iri = trimIRI(rxn_exp_iri)
-        query = """SELECT ?r4_reactor WHERE { <%s> <%s> ?r4_reactor. }""" % (rxn_exp_iri, ONTORXN_ISASSIGNEDTO)
+        query = """SELECT ?r4_reactor WHERE { <%s> <%s> ?r4_reactor. }""" % (rxn_exp_iri, ONTOREACTION_ISASSIGNEDTO)
         response = self.performQuery(query)
         r4_reactor_iri = [res['r4_reactor'] for res in response]
         if len(r4_reactor_iri) > 1:
@@ -1284,14 +1284,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def assign_rxn_exp_to_r4_reactor(self, rxn_exp_iri: str, r4_reactor_iri: str):
         rxn_exp_iri = trimIRI(rxn_exp_iri)
         r4_reactor_iri = trimIRI(r4_reactor_iri)
-        update = """INSERT DATA {<%s> <%s> <%s>}""" % (rxn_exp_iri, ONTORXN_ISASSIGNEDTO, r4_reactor_iri)
+        update = """INSERT DATA {<%s> <%s> <%s>}""" % (rxn_exp_iri, ONTOREACTION_ISASSIGNEDTO, r4_reactor_iri)
         self.performUpdate(update)
         logger.info("ReactionExperiment <%s> is now assigned to VapourtecR4Reactor <%s>." % (rxn_exp_iri, r4_reactor_iri))
 
     def remove_rxn_exp_from_r4_reactor(self, rxn_exp_iri: str, r4_reactor_iri: str):
         rxn_exp_iri = trimIRI(rxn_exp_iri)
         r4_reactor_iri = trimIRI(r4_reactor_iri)
-        update = """DELETE DATA {<%s> <%s> <%s>}""" % (rxn_exp_iri, ONTORXN_ISASSIGNEDTO, r4_reactor_iri)
+        update = """DELETE DATA {<%s> <%s> <%s>}""" % (rxn_exp_iri, ONTOREACTION_ISASSIGNEDTO, r4_reactor_iri)
         self.performUpdate(update)
         logger.info("ReactionExperiment <%s> is no longer assigned to VapourtecR4Reactor <%s>." % (rxn_exp_iri, r4_reactor_iri))
 
@@ -1310,8 +1310,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     filter(?timestamp < ?specific_timestamp)
                 }
                 """ % (rxn_exp_iri, ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDUSING, DOEAGENT_SERVICE, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION,
-                ONTORXN_REACTIONEXPERIMENT, ONTORXN_REACTIONVARIATION, ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDUSING, DOEAGENT_SERVICE,
-                TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION, ONTORXN_ISASSIGNEDTO, ONTODERIVATION_ISDERIVEDUSING, EXEAGENT_SERVICE, ONTODERIVATION_HASSTATUS)
+                ONTOREACTION_REACTIONEXPERIMENT, ONTOREACTION_REACTIONVARIATION, ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDUSING, DOEAGENT_SERVICE,
+                TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION, ONTOREACTION_ISASSIGNEDTO, ONTODERIVATION_ISDERIVEDUSING, EXEAGENT_SERVICE, ONTODERIVATION_HASSTATUS)
         response = self.performQuery(query)
         rxn_exp_queue = {res['rxn']:res['timestamp'] for res in response}
         return rxn_exp_queue
@@ -1717,7 +1717,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         # create output chemical instance
         # generate instance_iri for output_chemical (so that it can be used in OntoCAPE_SinglePhase)
-        output_chemical_iri = initialiseInstanceIRI(getNameSpace(hplc_report_iri), ONTORXN_OUTPUTCHEMICAL)
+        output_chemical_iri = initialiseInstanceIRI(getNameSpace(hplc_report_iri), ONTOREACTION_OUTPUTCHEMICAL)
         output_chemical = OutputChemical(
             instance_iri=output_chemical_iri,
             thermodynamicBehaviour=OntoCAPE_SinglePhase(
@@ -1846,7 +1846,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             records=self.get_chromatogram_point_of_hplc_report(hplc_report_iri),
             generatedFor=ChemicalSolution(
                 instance_iri=chem_sol_iri,
-                refersToMaterial=self.get_ontocape_material(chem_sol_iri, ONTOCAPE_REFERSTOMATERIAL, ONTORXN_OUTPUTCHEMICAL)[0],
+                refersToMaterial=self.get_ontocape_material(chem_sol_iri, ONTOCAPE_REFERSTOMATERIAL, ONTOREACTION_OUTPUTCHEMICAL)[0],
                 fills=chem_sol_vial
             )
         )
@@ -1950,7 +1950,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Also add triples related to the OutputChemical
         g = chemical_solution.refersToMaterial.create_instance_for_kg(g)
         # <rxn_exp_iri> <hasOutputChemical> <output_chemical>
-        g.add((URIRef(rxn_exp_iri), URIRef(ONTORXN_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
+        g.add((URIRef(rxn_exp_iri), URIRef(ONTOREACTION_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
         return g
 
     # TODO delete below method, should use collect_triples_for_output_chemical_of_chem_sol instead
@@ -1964,7 +1964,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Also add triples related to the OutputChemical
         g = chemical_solution.refersToMaterial.create_instance_for_kg(g)
         # <rxn_exp_iri> <hasOutputChemical> <output_chemical>
-        g.add((URIRef(rxn_exp_iri), URIRef(ONTORXN_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
+        g.add((URIRef(rxn_exp_iri), URIRef(ONTOREACTION_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
         g.serialize(filePath, format='ttl')
         self.uploadOntology(filePath)
         # Delete generated Turtle file
