@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import com.cmclinnovations.services.config.ServiceConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Assert;
