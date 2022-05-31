@@ -7,7 +7,7 @@ Three csv files are required. These are not version controlled, but can be found
 > \Dropbox (Cambridge CARES)\CoMo shared\ja685\BMRS\Script-BMRS-API
 Their names are: 
 > Input-Template.csv
-> generator.tripple.csv
+> generatortripple.csv
 > powerplanttripple.csv
 
 These should be copied to:
@@ -77,7 +77,7 @@ Firstly, from the BMRS data there is an EIC value, which is the same as in the E
 The following steps are made in attempting to match the names: 
 - Exact match of names. 
 - Roman numeral vs decimal number difference only match of names (also considered in all below where applicable). 
-- Simplified match (eg. strip: ‘*’, ‘ ‘, ‘-‘, ‘'’, ‘’’, “_”, “&”, etc...) of names (also considered in all below where applicable). 
+- Simplified match (eg. strip: '*', ' ', '-', ''', '‘', '’', '_', '&', etc...) of names (also considered in all below where applicable). 
 - Name extension change match (sometimes naming conventions might differ slightly, such as including a "GT" after a name, or a single letter - eg. Station Name GT, or Station Name A). A match is attempted accounting for this being used in only one of the two names. 
 - First word (if exclusive) word in EIC matches DUKES name. 
 - First words (if exclusive) of EIC and DUKES names match. 
