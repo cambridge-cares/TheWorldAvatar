@@ -1,4 +1,4 @@
-package com.cmclinnovations.services;
+package com.cmclinnovations.services.config;
 
 import java.net.URI;
 import java.net.URL;

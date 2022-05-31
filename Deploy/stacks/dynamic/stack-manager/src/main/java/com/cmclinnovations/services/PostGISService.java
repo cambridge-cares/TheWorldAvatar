@@ -3,6 +3,8 @@ package com.cmclinnovations.services;
 import java.io.IOException;
 import java.util.Objects;
 
+import com.cmclinnovations.services.config.ServiceConfig;
+
 public class PostGISService extends ContainerService {
 
     public static final String TYPE = "postgres";

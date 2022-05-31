@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.HostConfig;
 
 public class ContainerService extends AbstractService {

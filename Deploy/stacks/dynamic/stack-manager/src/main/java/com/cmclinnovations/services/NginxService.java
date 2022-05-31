@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 
 import com.cmclinnovations.FileUtils;
 import com.cmclinnovations.exceptions.InvalidTemplateException;
+import com.cmclinnovations.services.config.Connection;
+import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.odiszapc.nginxparser.NgxBlock;
 import com.github.odiszapc.nginxparser.NgxConfig;
 import com.github.odiszapc.nginxparser.NgxDumper;
