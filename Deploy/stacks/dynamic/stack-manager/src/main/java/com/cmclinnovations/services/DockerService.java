@@ -37,7 +37,7 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
-public class DockerService extends AbstractService {
+public final class DockerService extends AbstractService {
 
     public static final String TYPE = "docker";
 

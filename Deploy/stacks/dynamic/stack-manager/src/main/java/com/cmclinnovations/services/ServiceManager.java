@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ServiceManager {
+public final class ServiceManager {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

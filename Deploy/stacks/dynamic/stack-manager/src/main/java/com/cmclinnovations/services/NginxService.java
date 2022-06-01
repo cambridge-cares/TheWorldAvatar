@@ -21,14 +21,15 @@ import com.github.odiszapc.nginxparser.NgxEntry;
 import com.github.odiszapc.nginxparser.javacc.NginxConfigParser;
 import com.github.odiszapc.nginxparser.javacc.ParseException;
 
-public class NginxService extends ContainerService implements ReverseProxyService {
+public final class NginxService extends ContainerService implements ReverseProxyService {
 
     public static final String TYPE = "nginx";
 
     private static final String TEMPLATE_TYPE = "Nginx config";
-    private static final String SERVER_CONF_TEMPLATE = "nginx/configs/default_server.conf";
-    private static final String LOCATIONS_CONF_TEMPLATE = "nginx/configs/default_locations.conf";
-    private static final String UPSTREAM_CONF_TEMPLATE = "nginx/configs/default_upstream.conf";
+    private static final String NGINX_CONFIGS_DIR = "nginx/configs/";
+    private static final String SERVER_CONF_TEMPLATE = NGINX_CONFIGS_DIR + "default_server.conf";
+    private static final String LOCATIONS_CONF_TEMPLATE = NGINX_CONFIGS_DIR + "default_locations.conf";
+    private static final String UPSTREAM_CONF_TEMPLATE = NGINX_CONFIGS_DIR + "default_upstream.conf";
 
     private static final String CMD = "nginx";
 

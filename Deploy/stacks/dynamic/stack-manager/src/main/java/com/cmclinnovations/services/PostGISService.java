@@ -2,7 +2,7 @@ package com.cmclinnovations.services;
 
 import com.cmclinnovations.services.config.ServiceConfig;
 
-public class PostGISService extends ContainerService {
+public final class PostGISService extends ContainerService {
 
     public static final String TYPE = "postgres";
 

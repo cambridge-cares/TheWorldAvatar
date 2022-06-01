@@ -27,37 +27,37 @@ public class ContainerService extends AbstractService {
         this.stackName = stackName;
     }
 
-    String getContainerName() {
+    final String getContainerName() {
         return stackName + "_" + getName();
     }
 
-    String getImage() {
+    final String getImage() {
         return getConfig().getImage();
     }
 
-    HostConfig getHostConfig() {
+    final HostConfig getHostConfig() {
         return getConfig().getDockerHostConfig();
     }
 
-    List<String> getEnvironment() {
+    final List<String> getEnvironment() {
         return getConfig().getEnvironment().entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
                 .collect(Collectors.toList());
     }
 
-    void setContainerId(String containerId) {
+    final void setContainerId(String containerId) {
         this.containerId = containerId;
     }
 
-    void setDockerService(DockerService dockerService) {
+    final void setDockerService(DockerService dockerService) {
         this.dockerService = dockerService;
     }
 
-    public void sendFiles(Map<String, byte[]> files, String remotePath) throws IOException {
+    public final void sendFiles(Map<String, byte[]> files, String remotePath) throws IOException {
         dockerService.sendFiles(containerId, files, remotePath);
     }
 
-    public void executeCommand(String... cmd) {
+    public final void executeCommand(String... cmd) {
         dockerService.executeCommand(containerId, cmd);
     }
 
