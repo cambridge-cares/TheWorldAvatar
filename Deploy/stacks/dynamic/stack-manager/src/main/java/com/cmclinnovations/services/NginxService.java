@@ -139,20 +139,21 @@ public class NginxService extends ContainerService implements ReverseProxyServic
         return hostname + ":" + ((-1 == port) ? 80 : port);
     }
 
-    private class ConfigSender {
-        Map<String, String> files = new HashMap<>();
+    private final class ConfigSender {
+        Map<String, byte[]> files = new HashMap<>();
 
         private void addConfig(NgxConfig config, String filepath) {
             NgxDumper dumper = new NgxDumper(config);
             String fileContents = dumper.dump();
-            files.put(filepath, fileContents);
+            files.put(filepath, fileContents.getBytes());
         }
 
         public void sendConfigs() throws IOException {
-            DockerService docker = getService("docker");
-            docker.sendFiles(getContainerId(), files, "/etc/nginx/conf.d");
-            docker.executeCommand(getContainerId(), CMD, "-s", "reload");
+            sendFiles(files, "/etc/nginx/conf.d");
+            executeCommand(CMD, "-s", "reload");
             files.clear();
         }
+
     }
+
 }

@@ -167,19 +167,20 @@ public class DockerService extends AbstractService {
         }
 
         service.setContainerId(containerId);
+        service.setDockerService(this);
     }
 
-    public void sendFiles(String containerId, Map<String, String> files, String remotePath) throws IOException {
+    public void sendFiles(String containerId, Map<String, byte[]> files, String remotePath) throws IOException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             try (TarArchiveOutputStream tar = new TarArchiveOutputStream(bos)) {
-                for (Entry<String, String> file : files.entrySet()) {
+                for (Entry<String, byte[]> file : files.entrySet()) {
                     String filePath = file.getKey().replace('\\', '/');
-                    String fileContent = file.getValue();
+                    byte[] fileContent = file.getValue();
                     TarArchiveEntry entry = new TarArchiveEntry(filePath);
-                    entry.setSize(fileContent.getBytes().length);
+                    entry.setSize(fileContent.length);
                     entry.setMode(0755);
                     tar.putArchiveEntry(entry);
-                    tar.write(fileContent.getBytes());
+                    tar.write(fileContent);
                     tar.closeArchiveEntry();
                 }
             }
