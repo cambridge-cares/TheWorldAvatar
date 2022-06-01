@@ -486,6 +486,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PostalCode"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/PropertyUsageCategory"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
     

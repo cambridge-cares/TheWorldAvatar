@@ -65,6 +65,7 @@ ParkHome,Class,PropertyType,IS-A,,,,Typically offsite manufactured bungalow-styl
 Maisonette,Class,PropertyType,IS-A,,,,A self-contained apartment (usually on two floors) in a larger building and with its own entrance from the outside.,https://www.theworldavatar.com/kg/ontobuiltenv/,Maisonette
 PropertyUsageCategory,Class,,,,,,Description of the (intended) usage and/or function of a property.,https://www.theworldavatar.com/kg/ontobuiltenv/,Property usage category
 hasUsageCategory,Object Property,,,Property,PropertyUsageCategory,,,https://www.theworldavatar.com/kg/ontobuiltenv/,has usage category
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,PropertyUsageCategory,string,exactly 1,A relationship between the (intended) usage classification and a textual description of it.,https://www.theworldavatar.com/kg/ontobuiltenv/,label
 Domestic,Class,PropertyUsageCategory,IS-A,,,,A property that serves as living space for one or more parties.,https://www.theworldavatar.com/kg/ontobuiltenv/,Domestic
 Non-Domestic,Class,PropertyUsageCategory,IS-A,,,,"A property that serves non-living purposes (i.e. commercial, industrial, public propertys).",https://www.theworldavatar.com/kg/ontobuiltenv/,Non-Domestic
 SingleResidential,Class,Domestic,IS-A,,,,A property that serves as living space for one party.,https://www.theworldavatar.com/kg/ontobuiltenv/,Single residential
