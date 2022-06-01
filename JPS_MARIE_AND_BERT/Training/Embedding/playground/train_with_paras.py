@@ -15,11 +15,11 @@ def main():
 
     # Preparing data and cache the data for later usage
     #knowledge_graph = KnowledgeGraph(dataset=args.dataset_name, custom_dataset_path=args.dataset_path)
-    knowledge_graph = KnowledgeGraph(dataset='pubchemini', custom_dataset_path=r'../../../Dataset/test')
+    knowledge_graph = KnowledgeGraph(dataset=args.dataset_name, custom_dataset_path=r'../../../Dataset')
     knowledge_graph.prepare_data()
 
     # Extracting the corresponding model config and definition from Importer().
-    config_def, model_def = Importer().import_model_config('transr')
+    config_def, model_def = Importer().import_model_config(args.model_name.lower())
     config = config_def(args)
 
     model = model_def(**config.__dict__)
