@@ -1,6 +1,9 @@
 package com.cmclinnovations.services;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,6 +59,22 @@ public class ContainerService extends AbstractService {
 
     public void executeCommand(String... cmd) {
         dockerService.executeCommand(containerId, cmd);
+    }
+
+    protected final void downloadFileAndSendItToContainer(URL url, String folderPath,
+            String filename,
+            boolean overwrite) {
+        Path filePath = Path.of(folderPath, filename);
+        if (overwrite || !dockerService.fileExists(containerId, filePath.toString())) {
+            try (InputStream downloadStream = url.openStream()) {
+                byte[] bytes = downloadStream.readAllBytes();
+                Map<String, byte[]> files = Map.of(filename, bytes);
+                dockerService.sendFiles(containerId, files, folderPath);
+            } catch (IOException ex) {
+                throw new RuntimeException("Failed to download file from '" + url + "' and send it to '"
+                        + folderPath + "' in the container '" + getName() + "'.", ex);
+            }
+        }
     }
 
 }

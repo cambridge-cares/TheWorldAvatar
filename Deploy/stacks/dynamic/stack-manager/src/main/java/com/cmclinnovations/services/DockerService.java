@@ -18,6 +18,7 @@ import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.CreateNetworkCmd;
 import com.github.dockerjava.api.command.ExecCreateCmd;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
+import com.github.dockerjava.api.command.InspectExecCmd;
 import com.github.dockerjava.api.command.InspectNetworkCmd;
 import com.github.dockerjava.api.command.ListContainersCmd;
 import com.github.dockerjava.api.command.ListNetworksCmd;
@@ -170,6 +171,33 @@ public class DockerService extends AbstractService {
         service.setDockerService(this);
     }
 
+    public ExecCreateCmdResponse executeCommand(String containerId, String... cmd) {
+        try (ExecCreateCmd execCreateCmd = dockerClient.execCreateCmd(containerId)) {
+            return execCreateCmd.withCmd(cmd)
+                    .withAttachStdin(true)
+                    .withAttachStderr(true)
+                    .exec();
+        }
+    }
+
+    public long getCommandErrorCode(ExecCreateCmdResponse execResponse) {
+        try (InspectExecCmd inspectExecCmd = dockerClient.inspectExecCmd(execResponse.getId())) {
+            return inspectExecCmd.exec().getExitCodeLong();
+        }
+    }
+
+    public boolean fileExists(String containerId, String filePath) {
+        return 0 == getCommandErrorCode(executeCommand(containerId, "test", "-f", filePath));
+    }
+
+    public void deleteFile(String containerId, String filePath) {
+        executeCommand(containerId, "rm", filePath);
+    }
+
+    public void deleteDirectory(String containerId, String directoryPath) {
+        executeCommand(containerId, "rm -r", directoryPath);
+    }
+
     public void sendFiles(String containerId, Map<String, byte[]> files, String remotePath) throws IOException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             try (TarArchiveOutputStream tar = new TarArchiveOutputStream(bos)) {
@@ -191,16 +219,6 @@ public class DockerService extends AbstractService {
                 copyArchiveToContainerCmd.withTarInputStream(is)
                         .withRemotePath(remotePath).exec();
             }
-        }
-    }
-
-    public void executeCommand(String containerId, String... cmd) {
-        try (ExecCreateCmd execCreateCmd = dockerClient.execCreateCmd(containerId)) {
-            ExecCreateCmdResponse execResponse = execCreateCmd.withCmd(cmd)
-                    .withAttachStdin(true)
-                    .withAttachStderr(true)
-                    .exec();
-            Map<String, Object> rawValues = execResponse.getRawValues();
         }
     }
 
