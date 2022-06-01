@@ -104,7 +104,7 @@ public abstract class AbstractService implements Service {
 
     private <T> T checkPropertyNonNull(String propertyName, T value) {
         Objects.requireNonNull(value,
-                "The service '" + getName() + "' requires the '" + propertyName
+                "The service '" + config.getName() + "' requires the '" + propertyName
                         + "' property to be specified in its config file.");
         return value;
     }
@@ -112,7 +112,7 @@ public abstract class AbstractService implements Service {
     protected void checkEnvironmentVariableNonNull(String key) {
         String value = this.getEnvironmentVariable(key);
         Objects.requireNonNull(value,
-                "The service '" + getName() + "' requires the environment variable '" + key
+                "The service '" + config.getName() + "' requires the environment variable '" + key
                         + "' to be specified in its config file.");
     }
 
