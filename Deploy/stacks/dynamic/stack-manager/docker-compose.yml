@@ -4,10 +4,9 @@ services:
     build: .
     container_name: stack-manager
     volumes:
-      - ./config/data:/data/input
-    secrets:
-      - postgis_password
-
-secrets:
-  postgis_password:
-    file: ./config/secrets/postgis_password.txt
+      - ./inputs/data:/inputs/data
+      - ./inputs/config:/inputs/config
+      # Add secret files here as Docker compose doesn't handle "secrets" well
+      # Ensure all secret files are mapped to the /run/secrets/ directory
+      # and are read only inside the container (add ":ro" on the end)
+      - ./inputs/secrets:/run/secrets:ro
