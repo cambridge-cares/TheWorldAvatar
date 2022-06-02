@@ -447,7 +447,7 @@
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation">
         <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a building and its corresponding instance IRI in OntoCityGml.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has OntoCityGML representation</rdfs:label>
