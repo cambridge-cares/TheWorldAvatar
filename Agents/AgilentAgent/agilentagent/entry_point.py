@@ -1,4 +1,4 @@
-from agilenthplcinputagent.agent import *
+from agilentagent.agent import *
 
 import logging
 

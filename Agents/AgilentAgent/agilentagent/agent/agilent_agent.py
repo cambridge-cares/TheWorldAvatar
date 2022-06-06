@@ -8,9 +8,9 @@ import os
 
 from pyasyncagent import AsyncAgent, FlaskConfig
 from flask import Flask
-from agilenthplcinputagent.kg_operations import *
-from agilenthplcinputagent.data_model import *
-from agilenthplcinputagent.conf import *
+from agilentagent.kg_operations import *
+from agilentagent.data_model import *
+from agilentagent.conf import *
 
 class AgilentHPLCInputAgent(AsyncAgent):
     # TODO consider making __init__ of AsyncAgent to accept **kwargs

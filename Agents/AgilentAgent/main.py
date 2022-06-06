@@ -1,4 +1,4 @@
-from agilenthplcinputagent import create_app
+from agilentagent import create_app
 
 if __name__ == '__main__':
     app = create_app()

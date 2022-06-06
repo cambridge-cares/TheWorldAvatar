@@ -5,7 +5,7 @@ import time
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
-from agilenthplcinputagent.agent import *
+from agilentagent.agent import *
 
 pytest_plugins = ["docker_compose"]
 
