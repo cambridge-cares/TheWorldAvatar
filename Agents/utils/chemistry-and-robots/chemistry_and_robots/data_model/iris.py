@@ -379,6 +379,7 @@ ONTOHPLC_LASTUPLOADEDAT = ONTOHPLC + 'lastUploadedAt'
 ONTOHPLC_LOCALREPORTFILE = ONTOHPLC + 'localReportFile'
 ONTOHPLC_LOCALFILEPATH = ONTOHPLC + 'localFilePath' # TODO replace localReportFile with localFilePath
 ONTOHPLC_REMOTEFILEPATH = ONTOHPLC + 'remoteFilePath' # TODO replace hasReportPath with remoteFilePath
+ONTOHPLC_HASPASTREPORT = ONTOHPLC + 'hasPastReport'
 
 
 ###--- IRIs for OntoBPR ---###

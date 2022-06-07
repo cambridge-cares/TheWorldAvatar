@@ -59,3 +59,4 @@ class HPLC(LabEquipment):
     clz: str = ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY
     reportExtension: str # this should be DBPEDIA_WIKICATFILENAMEEXTENSIONS but we simplify as str
     hasJob: List[HPLCJob]
+    hasPastReport: List[HPLCReport] # TODO add this relationship to OntoHPLC

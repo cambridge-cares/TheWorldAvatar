@@ -1,0 +1,15 @@
+# This file is provided in order to upload an image to the github Docker registry
+version: "3.8"
+
+services:
+  agilentagent:
+    image: ghcr.io/cambridge-cares/agilent_agent:1.0.0-SNAPSHOT
+    container_name: agilent_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      labels:
+        authors: "jb2197@cam.ac.uk"
+        description: "Monitor the local report folder of Agilent HPLC and upload the new reports to knowledge graph."

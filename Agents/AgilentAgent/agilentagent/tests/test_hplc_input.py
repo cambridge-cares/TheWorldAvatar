@@ -16,10 +16,10 @@ HPLC_ONTOAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service_
 DERIVATION_PERIODIC_TIMESCALE = 120
 DERIVATION_INSTANCE_BASE_URL = 'http://localhost:8080/ontolab/'
 
-class FlaskConfigTest(FlaskConfig):
-    # NOTE this to prevent below Exception when instantiating the HPLCInputAgent in the second-fourth test cases:
-    # "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
-    SCHEDULER_API_ENABLED = False
+# class FlaskConfigTest(FlaskConfig):
+#     # NOTE this to prevent below Exception when instantiating the HPLCInputAgent in the second-fourth test cases:
+#     # "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
+#     SCHEDULER_API_ENABLED = False
 
 # NOTE the hplc_report_periodic_timescale (8-11) are chosen randomly for the test cases
 @pytest.mark.parametrize(
@@ -31,18 +31,19 @@ class FlaskConfigTest(FlaskConfig):
         (HPLC_DIGITAL_TWIN_2, 11, TXTFILE_EXTENSION),
     ],
 )
-def test_hplc_input_agent(initialise_triples, create_test_report, generate_random_download_path, hplc_digital_twin, hplc_report_periodic_timescale, filename_extension):
-    sparql_client, sparql_endpoint, fs_url, fs_user, fs_pwd = initialise_triples
+def test_monitor_local_report_folder(initialise_triples, create_test_report, generate_random_download_path, create_agilent_agent, hplc_digital_twin, hplc_report_periodic_timescale, filename_extension):
+    sparql_client = initialise_triples
 
-    hplc_input_agent = AgilentHPLCInputAgent(
-        hplc_digital_twin=hplc_digital_twin, hplc_report_periodic_timescale=hplc_report_periodic_timescale,
-        fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd,
-        agent_iri=HPLC_ONTOAGENT_SERVICE, time_interval=DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL, kg_url=sparql_endpoint, logger_name='dev',
-        flask_config=FlaskConfigTest() # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
-    )
+    # hplc_input_agent = AgilentAgent(
+    #     hplc_digital_twin=hplc_digital_twin, hplc_report_periodic_timescale=hplc_report_periodic_timescale,
+    #     fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd,
+    #     agent_iri=HPLC_ONTOAGENT_SERVICE, time_interval=DERIVATION_PERIODIC_TIMESCALE,
+    #     derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL, kg_url=sparql_endpoint, logger_name='dev',
+    #     flask_config=FlaskConfigTest() # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
+    # )
+    agilent_agent = create_agilent_agent(hplc_digital_twin, hplc_report_periodic_timescale)
 
-    hplc_input_agent.start_monitoring_local_report_folder()
+    agilent_agent.start_monitoring_local_report_folder()
 
     # Create a random file to be uploaded
     time.sleep(hplc_report_periodic_timescale * 2)
@@ -62,4 +63,17 @@ def test_hplc_input_agent(initialise_triples, create_test_report, generate_rando
     assert filecmp.cmp(generated_file_path,full_downloaded_path)
 
     # Shutdown the scheduler to clean up before the next test
-    hplc_input_agent.scheduler.shutdown()
+    agilent_agent.scheduler.shutdown()
+
+def test_monitor_derivation():
+    # Create and start monitor derivation in the conftest
+    # Instantiate derivation instance here
+    # Wait for a bit, create triples about the HPLC report in the kg
+    # Wait until the timestamp of derivation is changed, check if all the desired triples are created
+    
+    pass
+
+def test_docker_integration():
+    # Deploy docker stuff, create file at the desired folder
+    # Wait for a bit until the timestamp of derivation is changed, check if all the desired triples are created, if the file is uploaded correctly
+    pass

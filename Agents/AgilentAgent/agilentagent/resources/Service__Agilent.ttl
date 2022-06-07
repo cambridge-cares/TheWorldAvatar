@@ -1,0 +1,51 @@
+@prefix ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#> .
+@prefix ontoreaction:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
+@prefix ontolab:             <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#> .
+@prefix ontohplc:            <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
+@prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
+@prefix :                    <http://www.theworldavatar.com/resource/agents/Service__Agilent__CAM#> .
+
+:Service
+    rdf:type ontoagent:Service;
+    ontoagent:hasOperation :Operation;
+.
+
+:Operation
+    rdf:type ontoagent:Operation;
+    ontoagent:hasInput :MessageContent_input;
+    ontoagent:hasOutput :MessageContent_output;
+    ontoagent:hasHttpUrl "http://localhost:7000/agilent/placeholder"^^xsd:string;
+.
+
+:MessageContent_input
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_rxnexp;
+    ontoagent:hasMandatoryPart :MessagePart_chemsol;
+.
+
+:MessageContent_output
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_hplcjob;
+.
+
+:MessagePart_rxnexp
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType ontoreaction:ReactionExperiment;
+    ontoagent:hasName "reactionExperiment"^^xsd:string;
+.
+
+:MessagePart_chemsol
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType ontolab:ChemicalSolution;
+    ontoagent:hasName "chemicalSolution"^^xsd:string;
+.
+
+:MessagePart_hplcjob
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType ontohplc:HPLCJob;
+    ontoagent:hasName "hplcJob"^^xsd:string;
+.

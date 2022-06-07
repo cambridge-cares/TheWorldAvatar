@@ -1316,6 +1316,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         rxn_exp_queue = {res['rxn']:res['timestamp'] for res in response}
         return rxn_exp_queue
 
+    # TODO delete this method
     def get_hplc_local_report_folder_path_n_file_extension(self, hplc_iri: str) -> Tuple[str, str]:
         hplc_iri = trimIRI(hplc_iri)
         query = """SELECT ?report_dir ?report_extension WHERE { <%s> <%s> ?report_dir; <%s> ?report_extension. }""" % (hplc_iri, ONTOHPLC_LOCALREPORTDIRECTORY, ONTOHPLC_REPORTEXTENSION)
@@ -1331,6 +1332,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 raise NotImplementedError("Handling HPLC local report with (%s) as filename extension is NOT supported yet." % (response[0]['report_extension']))
             return response[0]['report_dir'], file_extension
 
+    # TODO delete this method
     def upload_raw_hplc_report_to_fs_y_collect_triples(self, local_file_path, timestamp_last_modified, hplc_digital_twin) -> Tuple[str, Graph]:
         try:
             remote_file_path, timestamp_upload = self.uploadFile(local_file_path)
@@ -1373,7 +1375,87 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LASTUPLOADEDAT), Literal(timestamp_upload)))
         return hplc_report_iri, g
 
-    # TODO delete below, use upload_raw_hplc_report_to_fs_y_collect_triples instead
+    # TODO create unit test case
+    def detect_new_hplc_report(self, hplc_digital_twin, start_timestamp, end_timestamp):
+        query = """SELECT ?hplc_report WHERE { <%s> <%s> ?hplc_report. ?hplc_report <%s> ?timestamp.
+                FILTER(?timestamp > %f && ?timestamp < %f)}""" % (
+            hplc_digital_twin, ONTOHPLC_HASPASTREPORT, ONTOHPLC_LASTUPLOADEDAT, start_timestamp, end_timestamp)
+        response = self.performQuery(query)
+        if len(response) > 1:
+            raise Exception("Multiple HPLCReport found between given period of time for HPLC <%s>: %s" % (hplc_digital_twin, str(response)))
+        elif len(response) < 1:
+            return None
+        else:
+            return response[0]['hplc_report']
+
+    # TODO create unit test case
+    def collect_triples_for_hplc_job(
+        self,
+        rxn_exp_iri, chemical_solution_iri,
+        hplc_digital_twin, hplc_report_iri,
+        g: Graph=Graph()
+    ):
+        hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
+        logger.info("The initialised HPLCJob IRI is: <%s>" % (hplc_job_iri))
+
+        # TODO
+        hplc_method_iri = self.identify_hplc_method_when_uploading_hplc_report()
+        logger.info("The HPLCReport <%s> was generated using HPLCMethod <%s>" % (hplc_report_iri, hplc_method_iri))
+
+        g.add((URIRef(hplc_digital_twin), URIRef(ONTOHPLC_HASJOB), URIRef(hplc_job_iri)))
+        g.add((URIRef(hplc_job_iri), RDF.type, URIRef(ONTOHPLC_HPLCJOB)))
+        g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_CHARACTERISES), URIRef(rxn_exp_iri)))
+        g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_USESMETHOD), URIRef(hplc_method_iri)))
+        g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_HASREPORT), URIRef(hplc_report_iri)))
+        g.add((URIRef(hplc_report_iri), RDF.type, URIRef(ONTOHPLC_HPLCREPORT)))
+        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_GENERATEDFOR), URIRef(chemical_solution_iri)))
+        return g
+
+    # TODO create unit test case
+    def upload_raw_hplc_report_to_kg(self, local_file_path, timestamp_last_modified, remote_report_subdir, hplc_digital_twin) -> str:
+        try:
+            remote_file_path, timestamp_upload = self.uploadFile_(local_file_path, remote_report_subdir)
+            logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> at %f with remote file path at: %s " % (
+                    local_file_path, self.fs_url, timestamp_upload, remote_file_path))
+        except Exception as e:
+            logger.error(e)
+            # TODO need to think a way to inform the post proc agent about the failure of uploading the file
+            raise Exception("HPLC raw report (%s) upload failed with code %d" % (local_file_path))
+
+        hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
+        logger.info("The initialised HPLCReport IRI is: <%s>" % (hplc_report_iri))
+
+        update = PREFIX_XSD + """INSERT DATA {<%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f. <%s> <%s> <%s>.}""" % (
+            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_file_path,
+            ONTOHPLC_LOCALREPORTFILE, local_file_path, ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified,
+            ONTOHPLC_LASTUPLOADEDAT, timestamp_upload, hplc_digital_twin, ONTOHPLC_HASPASTREPORT, hplc_report_iri
+        )
+        self.performUpdate(update)
+
+        return hplc_report_iri
+
+    # TODO this should be made part of pyderivationagent.kg_operations.sparql_client.py
+    def uploadFile_(self, local_file_path, filename_with_subdir: str=None) -> Tuple[str, float]:
+        """This function uploads the file at the given local file path to file server."""
+        if self.fs_url is None or self.fs_auth is None:
+            raise Exception("ERROR: Fileserver URL and auth are not provided correctly.")
+        with open(local_file_path, 'rb') as file_obj:
+            files = {'file': file_obj}
+            timestamp_upload, response = datetime.now().timestamp(), requests.post(
+                self.fs_url+filename_with_subdir if filename_with_subdir is not None else self.fs_url,
+                auth=self.fs_auth, files=files
+            )
+
+            # If the upload succeeded, return the remote file path and the timestamp when the file was uploaded
+            if (response.status_code == status_codes.codes.OK):
+                remote_file_path = response.headers['file']
+
+                return remote_file_path, timestamp_upload
+            else:
+                raise Exception("ERROR: Local file (%s) upload to file server <%s> failed with code %d and response body: %s" % (
+                    local_file_path, self.fs_url, response.status_code, str(response.content)))
+
+    # TODO delete below
     def upload_raw_hplc_report_to_fs_kg(self, local_file_path, timestamp_last_modified, hplc_digital_twin) -> str:
         try:
             remote_file_path, timestamp_upload = self.uploadFile(local_file_path)
@@ -1915,8 +1997,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_remote_hplc_report_path_given_local_file(self, hplc_digital_twin: str, hplc_local_file: str) -> str:
         hplc_digital_twin = trimIRI(hplc_digital_twin)
-        query = PREFIX_XSD+"""SELECT ?remote_path WHERE {<%s> <%s>/<%s> ?hplc_report. ?hplc_report <%s> "%s"^^xsd:string; <%s> ?remote_path.}""" % (
-            hplc_digital_twin, ONTOHPLC_HASJOB, ONTOHPLC_HASREPORT, ONTOHPLC_LOCALREPORTFILE, hplc_local_file, ONTOHPLC_HASREPORTPATH)
+        query = PREFIX_XSD+"""SELECT ?remote_path WHERE {<%s> <%s> ?hplc_report. ?hplc_report <%s> "%s"^^xsd:string; <%s> ?remote_path.}""" % (
+            hplc_digital_twin, ONTOHPLC_HASPASTREPORT, ONTOHPLC_LOCALREPORTFILE, hplc_local_file, ONTOHPLC_HASREPORTPATH)
         response = self.performQuery(query)
         if len(response) > 1:
             raise Exception("Multiple records of HPLCReport remote path identified for local file '%s' of HPLC <%s>: %s" % (

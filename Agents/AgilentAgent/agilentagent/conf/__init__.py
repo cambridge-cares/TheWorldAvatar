@@ -1,1 +1,1 @@
-from .agent_properties import HPLCInputAgentConfig
+from .agilent_conf import config_agilent
