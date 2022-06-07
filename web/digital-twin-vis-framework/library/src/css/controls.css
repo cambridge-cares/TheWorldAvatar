@@ -51,11 +51,6 @@
     display: none;
 }
 
-.collapsed .tooltip {
-    display: none;
-}
-
-
 .controlTitle p {
     cursor: pointer;
 }

@@ -7,12 +7,14 @@
         <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
         <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="./dtvf.temp.js"></script>
 
         <!-- CSS -->
         <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
+        <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
         <link href="./dtvf.min.css" rel="stylesheet" />
         <link href="./controls.css" rel="stylesheet" />
     </head>
@@ -87,11 +89,11 @@
         <!-- Side panel for content and metdata -->
         <div id="sidePanel" class="large expanded">
             <div class="tooltip" id="slideButtonContainer">
-                <i class="fas fa-chevron-left" id="slideButton" width="16px" class="leftButton" height="16px" onclick="manager.getPanelHandler().togglePanelExpansion()"></i>
+                <i class="fas fa-chevron-right" id="slideButton" width="16px" class="leftButton" height="16px" onclick="manager.getPanelHandler().toggleExpansion()"></i>
                 <span class="tooltiptext">Expand/Collapse</span>
             </div>
             <div class="tooltip" id="expandButtonContainer">
-                <i class="fas fa-expand-arrows" id="expandButton" width="16px" class="rightButton" height="16px" onclick="manager.getPanelHandler().togglePanelMode()"></i>
+                <i class="fas fa-expand" id="expandButton" width="16px" class="rightButton" height="16px" onclick="manager.getPanelHandler().toggleMode()"></i>
                 <span class="tooltiptext">Maximise/Minimise</span>
             </div>
             <div id="sidePanelInner">
@@ -116,8 +118,7 @@
 
             // Load the definitions of sample data
             var dataPromise = manager.loadDefinitions([
-                "./visualisation-1.json",
-                "./visualisation-2.json"
+                "./test-data-1"
             ]);
             
              // Only start the map after data definitions have been read.
@@ -137,7 +138,7 @@
                 };
 
                 // Create a map with default settings
-                manager.initialiseMap(optionsOverride);
+                manager.initialiseMap(/*optionsOverride*/);
                 
                 // Set default side panel content
                 manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");

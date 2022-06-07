@@ -13,8 +13,6 @@ class DataGroup {
 
     public name: string;
 
-    public subLabel: string;
-
     public mapOptions: Object;
 
     // Unique, dynamically generated, ID
@@ -37,6 +35,10 @@ class DataGroup {
 
             // Create and store source
             let source = new DataSource(node);
+
+            let sourceID = this.id + "." + node["id"];
+            source.id = sourceID;
+
             this.dataSources.push(source);
         }
     }
@@ -57,6 +59,8 @@ class DataGroup {
 
         for(var i = 0; i < layersJSON.length; i++) {
             let node = layersJSON[i];
+            node["source"] = this.id + "." + node["source"];
+
             let source = this.getSourceWithID(node["source"]);
 
             let layer = null;
@@ -85,7 +89,23 @@ class DataGroup {
      * @return matching DataSource, null if not present.
      */
     public getSourceWithID(id: string): DataSource {
-          return this.dataSources.find(source => source.id === id);
+        let array = [];
+        this.recurseFindSource(array, this, id);
+        return (array.length === 1) ? array[0] : null;
+    }
+
+    /**
+     */
+    private recurseFindSource(array, currentGroup, target) {
+        let source =  this.dataSources.find(source => source.id === target);
+
+        if(source === null || source === undefined) {
+            currentGroup.subGroups.forEach(subGroup => {
+                this.recurseFindSource(array, subGroup, target);
+            });
+        } else {
+            array.push(source);
+        }
     }
 
     /**
@@ -97,7 +117,23 @@ class DataGroup {
      * @return matching DataLayer, null if not present.
      */
     public getLayerWithID(id: string): DataLayer {
-        return this.dataLayers.find(layer => layer.id === id);
+        let array = [];
+        this.recurseFindLayer(array, this, id);
+        return (array.length === 1) ? array[0] : null;
+    }
+
+    /**
+     */
+    private recurseFindLayer(array, currentGroup, target) {
+        let layer = currentGroup.dataLayers.find(layer => layer.id === target);
+
+        if(layer === null || layer === undefined) {
+            currentGroup.subGroups.forEach(subGroup => {
+                this.recurseFindLayer(array, subGroup, target);
+            });
+        } else {
+            array.push(layer);
+        }
     }
 
     /**

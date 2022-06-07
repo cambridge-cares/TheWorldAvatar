@@ -4,11 +4,6 @@
 class DataSource {
 
     /**
-     * 
-     */
-    public static allowedTypes = ["vector", "raster"];
-
-    /**
      * Unique name/id for this source.
      */
     public id: string;
@@ -50,10 +45,7 @@ class DataSource {
         // Must have a name
         if(!("id" in json)) throw new ReferenceError("Must contain a 'id' property.");
 
-        // Must have a valid type
+        // Must have a type
         if(!("type" in json)) throw new ReferenceError("Must contain a 'type' property.");
-        if(!DataSource.allowedTypes.includes(json["type"])) {
-            throw new TypeError("Must contain a 'type' property with supported value.");
-        }
     }
 }

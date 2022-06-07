@@ -48,18 +48,4 @@ abstract class DataLayer {
         return false;
     }
 
-    /**
-     * Handles a click event on the input feature.
-     * 
-     * @param feature feature with layer that's been clicked on.
-     */
-    public abstract handleClick(feature: Object);
-
-    /**
-     * Handles a mouse event on the input feature.
-     * 
-     * @param feature feature with layer that's been entered.
-     */
-    public abstract handleMouseEnter(feature: Object);
-
 }

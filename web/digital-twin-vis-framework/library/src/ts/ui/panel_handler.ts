@@ -63,7 +63,16 @@ class PanelHandler {
 		if(sidePanel.classList.contains("large")) {
 			document.getElementById("controlsParent").style.visibility = "hidden";
 		}
+        console.log("content set!");
 	}
+
+    /**
+     * 
+     */
+    public appendContent(contentHTML) {
+        document.getElementById("sidePanel").style.visibility = "visible";
+		document.getElementById("contentContainer").innerHTML += contentHTML;
+    }
 
 	/**
 	 * Override the legend content.
@@ -115,18 +124,18 @@ class PanelHandler {
 	public toggleMode() {
 		var sidePanel = document.getElementById("sidePanel");
 		var leftButton = document.getElementById("slideButton");
-		var rightButton = document.getElementById("expandButton") as HTMLImageElement;
+		var rightButton = document.getElementById("expandButton");
 		var legend = document.getElementById("legendContainer");
 
 		if(sidePanel.classList.contains("small")) {
 			// Make large
-
 			sidePanel.classList.replace("small", "large");
+            rightButton.classList.replace("fa-expand", "fa-compress");
+
 			document.getElementById("map").style.width = "100%";
 			document.getElementById("controlsContainer").style.visibility = "hidden";
 
 			leftButton.style.visibility = "hidden";
-			rightButton.src = "./img/collapse.png";
 
 			// Hide the legend
 			this._previousLegendVisibility = legend.style.visibility;
@@ -138,13 +147,13 @@ class PanelHandler {
 
 		} else if(sidePanel.classList.contains("large")) {
 			// Make small
-
 			sidePanel.classList.replace("large", "small");
+            rightButton.classList.replace("fa-compress", "fa-expand");
+
 			document.getElementById("map").style.width = "calc(100% - 500px)";
 			document.getElementById("controlsContainer").style.visibility = "visible";
 
 			leftButton.style.visibility = "visible";
-			rightButton.src = "./img/expand.png";
 
 			// Show the legend (if it was visible beforehand)
 			legend.style.visibility = this._previousLegendVisibility;
@@ -161,13 +170,16 @@ class PanelHandler {
 	public toggleExpansion() {
 		var sidePanel = document.getElementById("sidePanel");
 		var sidePanelInner = document.getElementById("sidePanelInner");
-		var rightButton = document.getElementById("expandButton");
+		var leftButton = document.getElementById("slideButton");
+        var rightButton = document.getElementById("expandButton");
 
 		if(sidePanel.classList.contains("small")) {
 
 			if(sidePanel.classList.contains("collapsed")) {
 				// Expand
-				sidePanel.classList.replace("collapsed", "expanded")
+				sidePanel.classList.replace("collapsed", "expanded");
+                leftButton.classList.replace("fa-chevron-left", "fa-chevron-right");
+
 				document.getElementById("map").style.width = "calc(100% - 500px)";
 				document.getElementById("legendContainer").style.visibility = "visible";
 
@@ -176,7 +188,9 @@ class PanelHandler {
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
-				sidePanel.classList.replace("expanded", "collapsed")
+				sidePanel.classList.replace("expanded", "collapsed");
+                leftButton.classList.replace("fa-chevron-right", "fa-chevron-left");
+
 				document.getElementById("map").style.width = "calc(100% - 28px)";
 				document.getElementById("legendContainer").style.visibility = "hidden";
 
@@ -188,4 +202,53 @@ class PanelHandler {
 		MapHandler.MAP.resize();
 	}
 
+
+    public addMetadata(url: string) {
+        console.log("Reading metadata...");
+        this.prepareMetaContainers(true, false);
+
+        var promise = $.getJSON(url, function(json) {
+
+
+            
+            console.log("... metadata read and parsed.");
+        });
+        return promise;
+    }
+
+    public addTimeseries(url: string) {
+        this.prepareMetaContainers(false, true);
+    }
+
+    private prepareMetaContainers(addMeta: boolean, addTime: boolean) {
+        let metaContainer = document.getElementById("metaContainer");
+        if(metaContainer === null || metaContainer === undefined) {
+            this.appendContent("<div id='metaContainer'></div>");
+            metaContainer = document.getElementById("metaContainer") as HTMLInputElement;
+        }
+
+        let metaTabs = document.getElementById("metaTabs");
+        if(metaTabs === null || metaTabs === undefined) {
+            metaContainer.innerHTML = "<div id='metaTabs'></div>"
+            metaTabs = document.getElementById("metaTabs") as HTMLInputElement;
+        }
+
+        if(addMeta) {
+            if(document.getElementById("treeButton") === null) {
+                metaTabs.innerHTML += `<button id="treeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTreeContainer')">Metadata</button>`;
+            }
+            if(document.getElementById("metaTreeContainer") === null) {
+                metaContainer.innerHTML += "<div id='metaTreeContainer'></div>"
+            }
+        }
+
+        if(addTime) {
+            if(document.getElementById("timeButton") === null) {
+                metaTabs.innerHTML += `<button id="timeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTimeContainer')">Time Series</button>`;
+            }
+            if(document.getElementById("metaTimeContainer") === null) {
+                metaContainer.innerHTML += "<div id='metaTimeContainer'></div>"
+            }
+        }
+    }
 }

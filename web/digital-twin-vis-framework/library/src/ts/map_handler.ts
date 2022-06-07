@@ -20,6 +20,23 @@ abstract class MapHandler {
     public static ALLOW_CLICKS: boolean = true;
 
     /**
+     * 
+     */
+    public static MAP_OPTIONS;
+
+    /**
+     * 
+     */
+    protected manager;
+
+    /**
+     * 
+     */
+    constructor(manager: Manager) {
+        this.manager = manager;
+    }
+
+    /**
      * Create and cache a new map object.
      */
     public abstract initialiseMap(mapOptions: Object);

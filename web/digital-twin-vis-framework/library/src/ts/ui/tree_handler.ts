@@ -82,22 +82,38 @@ class TreeHandler {
         let needDeeper = (currentGroup.dataLayers.length > 0 || currentGroup.subGroups.length > 0);
         if(needDeeper) groupHTML += "<ul>";
 
-        // Layers within the group?
-        for(var i = 0; i < currentGroup.dataLayers.length; i++) {
-            let layer = currentGroup.dataLayers[i];
+        // Sort layers in the gropu via name (there may be duplicates)
+        let sortedLayers = {};
+        currentGroup.dataLayers.forEach(layer => {
+            if(sortedLayers[layer.name] === null || sortedLayers[layer.name] === undefined) {
+                sortedLayers[layer.name] = [];
+            }
+            sortedLayers[layer.name].push(layer);
+        });
 
+        console.log(sortedLayers);
+
+        for(const [key, value] of Object.entries(sortedLayers)) {
+
+            // Build dataID
+            let layers = value as Array<DataLayer>;
+            let dataID = "";
+            layers.forEach(layer => {
+                dataID += layer.id + "|";
+            });
+
+            // Build HTML
             let layerHTML = "<li class='end-node'>";
             layerHTML += "<label>"
-            layerHTML += "<input class='hummingbird-end-node' id='" + layer.id + "' data-id='" + layer.id + "' type='checkbox'/><span>";
-            layerHTML += layer.name;
+            layerHTML += "<input class='hummingbird-end-node' id='" + dataID + "' data-id='" + dataID + "' type='checkbox'/><span>";
+            layerHTML += key;
             layerHTML += "</span></label>";
             layerHTML += "</li>";
-
             groupHTML += layerHTML;
 
             // Store if this needs to be prechecked
-            if(layer instanceof MapBoxLayer && (<MapBoxLayer> layer).isVisible()) {
-                preCheck.push(layer.id);
+            if(value[0] instanceof MapBoxLayer && (<MapBoxLayer> value[0]).isVisible()) {
+                preCheck.push(dataID);
             }
         }
 

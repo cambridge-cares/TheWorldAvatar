@@ -4,11 +4,6 @@
 class Manager {
 
     /**
-     * Group currently being plotted.
-     */
-    public static CURRENT_GROUP: DataGroup;
-
-    /**
      * 
      */
     public static PROVIDER: MapProvider;
@@ -16,7 +11,7 @@ class Manager {
     /**
      * Stores definitions of data sources.
      */
-    public dataStore: DataStore = new DataStore();
+    public static DATA_STORE: DataStore = new DataStore();
 
     /**
      * Map handler instance.
@@ -44,7 +39,7 @@ class Manager {
         // Initialise the map handler instance
         switch(mapProvider) {
             case MapProvider.MAPBOX:
-                this.mapHandler = new MapHandler_MapBox();
+                this.mapHandler = new MapHandler_MapBox(this);
             break;
 
             default:
@@ -78,7 +73,7 @@ class Manager {
 
         if(mapOptions === null || mapOptions === undefined) {
             // Try to pick up map options from the first listed stack
-            let firstRoot = this.dataStore.dataGroups[0];
+            let firstRoot = Manager.DATA_STORE.dataGroups[0];
             if(firstRoot.mapOptions !== null) {
                 mapOptions = firstRoot.mapOptions;
             }
@@ -86,7 +81,7 @@ class Manager {
 
         this.mapHandler.initialiseMap(mapOptions);
         this.controlHandler.showControls();
-        this.controlHandler.rebuildTree(this.dataStore);
+        this.controlHandler.rebuildTree(Manager.DATA_STORE);
 
         this.panelHandler.toggleMode();
     }
@@ -95,15 +90,16 @@ class Manager {
      * Given the location of one (or more) visualisation files, query and parse
      * them all into object definitions. 
      * 
-     * @param visFiles visualisation file URLs
+     * @param endPoints visualisation endpoints
      * 
      * @returns promise object
      */
-    public loadDefinitions(visFiles: string[]) {
+    public loadDefinitions(endPoints: string[]) {
         let promises = [];
 
-        visFiles.forEach(visFile => {
-            promises.push(this.dataStore.loadDataGroups(visFile));
+        endPoints.forEach(endPoint => {
+            let visFile = (endPoint.endsWith("/")) ? (endPoint + "visualisation.json") : (endPoint + "/visualisation.json");
+            promises.push(Manager.DATA_STORE.loadDataGroups(visFile));
         })
 
         return Promise.all(promises);
@@ -114,10 +110,10 @@ class Manager {
      * default source of plotted data.
      */
     private getDefaultGroup(): DataGroup {
-        if(this.dataStore.dataGroups.length === 0) {
+        if(Manager.DATA_STORE.dataGroups.length === 0) {
             throw new Error("No data has been loaded!");
         }
-        let firstRoot = this.dataStore.dataGroups[0];
+        let firstRoot = Manager.DATA_STORE.dataGroups[0];
         return DataUtils.getDefaultGroup(firstRoot);
     }
 
@@ -127,6 +123,61 @@ class Manager {
      * default group is used.
      */
     public plotData() {
-        this.mapHandler.plotData(this.dataStore);
+        this.mapHandler.plotData(Manager.DATA_STORE);
     }
+
+    /**
+     * 
+     */
+    public async featureSelectChange(select: HTMLInputElement) {
+        if(window.selectFeatures !== null && window.selectFeatures !== undefined) {
+            let feature = window.selectFeatures[select.value];
+            this.showFeature(feature);
+        } else {
+            console.error("Could not find feature cached with key: " + select.value);
+        }
+        
+        // Clear cache
+        window.selectFeatures = {};
+    }
+
+    public showFeature(feature: Object) {
+        // Title
+        let name = feature["properties"]["name"];
+        if(name === null || name === undefined) {
+            name = "Feature " + feature["id"];
+        }
+        this.panelHandler.setTitle("<h3>" + name + "</h2");
+
+        // Description
+        let desc = feature["properties"]["description"];
+        if(desc === null && feature["properties"]["desc"]) {
+            desc = feature["properties"]["desc"];
+        }
+        if(desc !== null && desc !== undefined) {
+            this.panelHandler.setContent("<div class='description'>" + desc + "</div>");
+        } else {
+            this.panelHandler.setContent("");
+        }
+
+        // Metadata
+        let metadataURL = feature["properties"]["metadataURL"];
+        if(metadataURL !== null) {
+            this.panelHandler.addMetadata(metadataURL);
+        }
+
+        // Timeseries
+        let timeseriesURL = feature["properties"]["timeseriesURL"];
+        if(timeseriesURL !== null) {
+            this.panelHandler.addTimeseries(timeseriesURL);
+        }
+
+        // Update footer
+        document.getElementById("footerContainer").innerHTML = `
+            <div id="returnContainer">
+                <a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
+            </div>
+        `;
+    }
+
 }

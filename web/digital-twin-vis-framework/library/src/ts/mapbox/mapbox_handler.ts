@@ -10,6 +10,13 @@ class MapHandler_MapBox extends MapHandler {
     public static POPUP;
 
     /**
+     * 
+     */
+    constructor(manager: Manager) {
+        super(manager);
+    }
+
+    /**
      * Initialise and store a new map object.
      */
     public initialiseMap(mapOptions: Object) {
@@ -28,9 +35,10 @@ class MapHandler_MapBox extends MapHandler {
             // Create new map (note the settings used here may be overriden when the map is loaded with data).
             // @ts-ignore
             MapHandler.MAP = new mapboxgl.Map(newOptions);
+            MapHandler.MAP_OPTIONS = newOptions;
 
             // Setup mouse interactions
-            MapHandler.MAP.on("click", (event) => this.handleClick(event));
+            MapHandler.MAP.on("click", (event) => this.handleClick(event, null));
             MapHandler.MAP.on("mousemove", (event) => this.handleMouse(event));
 
             // Create popup
@@ -60,11 +68,16 @@ class MapHandler_MapBox extends MapHandler {
      * 
      * @param event mouse event
      */
-    private handleClick(event) {
+    public handleClick(event, feature) {
         if(!MapHandler.ALLOW_CLICKS) return;
 
         // Get all visible features under the mouse click
-        let features = MapHandler.MAP.queryRenderedFeatures(event.point);
+        let features = [];
+        if(feature !== null && feature !== undefined) {
+            features.push(feature);
+        } else {
+            features = MapHandler.MAP.queryRenderedFeatures(event.point);
+        }
 
         // Filter out non-CMCL layers
         features = features.filter(feature => {
@@ -76,10 +89,16 @@ class MapHandler_MapBox extends MapHandler {
             this.clickMultiple(features);
 
         } else if (features.length === 1) {
+            let feature = features[0];
 
-            // Click on single feature (or single cluster)
-            let layer = Manager.CURRENT_GROUP.getLayerWithID(features[0]["layer"]["id"]);
-            layer.handleClick(features[0]);
+            if(MapBoxUtils.isCluster(feature)) {
+                // Clicked on a clustered feature, handle as if multiple
+                this.clickMultiple(features);
+
+            } else {
+                // Click on single feature
+                this.manager.showFeature(feature);
+            }
         }
     }
 
@@ -91,9 +110,76 @@ class MapHandler_MapBox extends MapHandler {
      */
     private async clickMultiple(features: Array<Object>) {
         let leafs = [];
-        await MapBoxUtils.recurseFeatureNames(leafs, features);
+        await MapBoxUtils.recurseFeatures(leafs, features);
 
-        // TODO - Use leafs variable to build drop-down tree.
+        // Cache features offered by the select box
+        window.selectFeatures = {};
+
+        // Sort the leafs by layer name
+        let sortedLeafs = {};
+
+        // Group the features by layer
+        leafs.forEach(leaf => {
+            let layerID = leaf["layer"]["id"];
+            let layer = Manager.DATA_STORE.getLayerWithID(layerID);
+
+            if(sortedLeafs[layer.name] === null || sortedLeafs[layer.name] === undefined) {
+                sortedLeafs[layer.name] = [];
+            }
+            sortedLeafs[layer.name].push(leaf);
+        });
+
+        // Build drop down
+        let html = `
+            <p>
+                Multiple closely spaced features are located at these coordinates. 
+                <br/><br/>
+                Please choose which individual feature you'd like to select using the drop-down box below. 
+                Features are grouped by their containing layer.
+            </p>
+            </br>
+            <div id="featureSelectContainer">
+                <select name="features" id="featureSelect" onchange="manager.featureSelectChange(this)">
+                    <option value="" disabled selected>Select a feature from a layer...</option>
+        `;
+
+        // Add option header for each layer
+        for(const [key, value] of Object.entries(sortedLeafs)) {
+            let leafs = value as Array<Object>;
+            html += "<optgroup label='" + key + "'>";
+
+            // Add option for each feature
+            leafs.forEach(leaf => {
+                let featureName = (leaf["properties"]["name"] !== null) ? leaf["properties"]["name"] : "Feature #" + leaf["id"];
+                let layerID = leaf["layer"]["id"];
+                let value = leaf["id"] + "@" + layerID;
+
+                let optionHTML = `
+                    <option value="` + value + `">` + 
+                    featureName +
+                    `</option>
+                `;
+                html += optionHTML;
+
+                // Cache feature
+                window.selectFeatures[value] = leaf;
+            });
+            html += "</optgroup>";
+        }
+
+        // Close HTML
+        html += `
+                </select>
+            </div>
+        `;
+
+        // Update the side panel
+        document.getElementById("titleContainer").innerHTML = "<h2>Multiple locations...</h2>";
+        document.getElementById("contentContainer").innerHTML = html;
+
+        // Update select using select2 library
+        // @ts-ignore
+        //$('#featureSelect').select2();
     }
 
     /**
@@ -102,7 +188,6 @@ class MapHandler_MapBox extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
-        
         // Get a list of features under the mouse
         let features = MapHandler.MAP.queryRenderedFeatures(event.point);
         features = features.filter(feature => {
@@ -114,30 +199,27 @@ class MapHandler_MapBox extends MapHandler {
             MapHandler.MAP.getCanvas().style.cursor = '';
             if(MapHandler_MapBox.POPUP !== null) MapHandler_MapBox.POPUP.remove();
 
-        } else if(features.length === 1) {
+        } else if(features.length > 0) {
             // Mouse over single feature
             MapHandler.MAP.getCanvas().style.cursor = 'pointer';
 
             let feature = features[0];
-            let layer = Manager.CURRENT_GROUP.getLayerWithID(feature["layer"]["id"]);
+            let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
 
             if(layer != null && layer instanceof MapBoxLayer) {
-                (<MapBoxLayer> layer).handleMouseEnter(feature);
-            }
-
-        } else {
-            // Mouse over multiple features
-            MapHandler.MAP.getCanvas().style.cursor = 'pointer';
-        }
+                if(feature !== null) MapBoxUtils.showPopup(event, feature);
+            } 
+        } 
     }
 
     /**
-     * OVERRIDE: Plot the contents of the input data group on the map.
+     * Plot the contents of the input data group on the map.
      */
     public plotData(dataStore: DataStore) {
         dataStore.dataGroups.forEach(rootGroup => {
             console.log("Plotting root group?");
             let allLayers = rootGroup.flattenDown();
+            
             allLayers.forEach(layer => {
                 this.plotLayer(rootGroup, layer);
             });
@@ -176,6 +258,7 @@ class MapHandler_MapBox extends MapHandler {
             let options = {...source.definition};
 
             // Remove properties not expected by MapBox
+            if(options["id"]) delete options["id"];
             if(options["metaFiles"]) delete options["metaFiles"];
             if(options["timeseriesFiles"]) delete options["timeseriesFiles"];
 
@@ -231,50 +314,4 @@ class MapHandler_MapBox extends MapHandler {
             console.info("Added layer to MapBox map '" + layer.id + "'.");
         }
     }
-
-    /**
-     * 
-     */
-    private async handleIcons(rootGroup: DataGroup) {
-        // let iconFile = rootGroup.location + "/icons.json";
-
-        // // Load the JSON
-        // let json = await $.getJSON(iconFile, function(json) {
-        //     return json;
-        // }).fail((error) => {
-        //     console.warn("Could not read 'icons.json' file; it's an optional file so skipping...")
-        // });
-        
-        // // Load images once JSON has loaded
-        // var promises = [];
-        // for(var key of Object.keys(json)) {
-
-        //     // Create a promise that resolves once the image is loaded AND added
-        //     let promise = new Promise((resolve, reject) => {
-        //         let imageName = key;
-        //         let imageFile = rootGroup.location + "/" + json[key];
-
-        //         let hasImage = MapHandler.MAP.hasImage(imageName);
-        //         if(!hasImage) {
-
-        //             MapHandler.MAP.loadImage(
-        //                 imageFile,
-        //                 (error, image) => {
-        //                     if(error) {
-        //                         console.log(error);
-        //                         reject(error);
-        //                     }
-
-        //                     MapHandler.MAP.addImage(imageName, image);
-        //                     resolve([]);
-        //                 }
-        //             );
-        //         }
-        //     });
-        //     promises.push(promise);
-        // }
-
-        // return Promise.all(promises);
-    }
-
 }

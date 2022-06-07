@@ -42,7 +42,12 @@ class MapBoxUtils {
      * 
      * @param feature selected feature
      */
-    public static showPopup(feature: Object) {
+    public static showPopup(event: Object, feature: Object) {
+        if(MapBoxUtils.isCluster(feature)) {
+            MapBoxUtils.showClusterPopup(event, feature);
+            return;
+        }
+
         let properties = feature["properties"];
 
         // Get feature details
@@ -64,10 +69,8 @@ class MapBoxUtils {
             html += "<img class='thumbnail' src='" + properties["thumbnail"] + "'>";
         }
 
-        // Show popup at the center of the feature
-        let location = getCenter(feature);
-
-        MapHandler_MapBox.POPUP.setLngLat(location)
+        // Show popup
+        MapHandler_MapBox.POPUP.setLngLat(event["lngLat"])
             .setHTML(html)
             .addTo(MapHandler.MAP);
     }
@@ -75,16 +78,38 @@ class MapBoxUtils {
     /**
      * 
      */
-    public static async recurseFeatureNames(leafs: Array<Object>, features) {
-        for(let feature of features) {
+    private static showClusterPopup(event: Object, feature: Object) {
+        let name = "Multiple locations";
+        let desc = `
+            This feature represents a cluster of ` + feature["properties"]["point_count"] + 
+            ` closely spaced, individual locations.<br/>Click to see details on the underlying locations.
+        `;
+
+        // Show popup
+        let html = "<h3>" + name + "</h3>" + desc;
+        MapHandler_MapBox.POPUP.setLngLat(event["lngLat"])
+            .setHTML(html)
+            .addTo(MapHandler.MAP);
+    }   
+
+    /**
+     * 
+     */
+    public static async recurseFeatures(leafs: Array<Object>, features) {
+        for(let i = 0; i < features.length; i++) {
+            let feature = features[i];
+
             if(MapBoxUtils.isCluster(feature)) {
                 // Clustered point, get leafs
-                let sourceName = feature["layer"]["source"];
-                let source = MapHandler.MAP.getSource(sourceName);
+                let result = await MapBoxUtils.getClusterLeaves(feature, feature["layer"]["source"], 999, 0) as Array<Object>;
 
-                let result = await MapBoxUtils.getClusterLeaves(feature, 999, 0);
-                MapBoxUtils.recurseFeatureNames(leafs, result);
+                result.forEach(leaf => {
+                    if(leaf["layer"] === null || leaf["layer"] === undefined) {
+                        leaf["layer"] = feature["layer"];
+                    }
+                });
 
+                MapBoxUtils.recurseFeatures(leafs, result);
             } else {
                 leafs.push(feature);
             }
@@ -94,9 +119,8 @@ class MapBoxUtils {
     /**
      * 
      */
-    public static async getClusterLeaves(cluster, limit, offset) {
-        let sourceName = cluster["layer"]["source"];
-        let source = MapHandler.MAP.getSource(sourceName);
+    public static async getClusterLeaves(cluster, sourceID, limit, offset) {
+        let source = MapHandler.MAP.getSource(sourceID);
 
         return new Promise((resolve, reject) => {
             source.getClusterLeaves(cluster["id"], limit, offset, (error, leafs) => {
@@ -112,8 +136,8 @@ class MapBoxUtils {
     /**
      * 
      */
-    public static async isCluster(feature: Object) {
-        return (feature["properties"] && feature["properties"]["point_count"]);
+    public static isCluster(feature: Object) {
+        return (feature["properties"].hasOwnProperty("cluster") && feature["properties"]["cluster"]);
     }
 
     /**
@@ -190,7 +214,7 @@ class MapBoxUtils {
      * @param {String} mode {"bird", "pitch"}
      */
     public static changeCamera(mode) {
-        let mapOptions = DataUtils.getMapOptions(Manager.CURRENT_GROUP);
+        let mapOptions = MapHandler.MAP_OPTIONS;
 
         if(mode === "bird") {
             MapHandler.MAP.flyTo({
@@ -323,7 +347,10 @@ class MapBoxUtils {
 	 */
 	public static toggleLayer(layerID, visible) {
 		if(MapHandler.MAP.getLayer(layerID) === undefined) return;
-		
+        if(layerID.endsWith("_cluster")) return;
+
+        console.log("Toggling layer " + layerID + " to " + visible);
+        
         MapHandler.MAP.setLayoutProperty(
             layerID,
             "visibility",
@@ -341,6 +368,7 @@ class MapBoxUtils {
 
         // Is there a corresponding _cluster layer?
         if(MapHandler.MAP.getLayer(layerID + "_cluster") != null) {
+            console.log("GOT CLUSTER LAYER");
             MapHandler.MAP.setLayoutProperty(
                 layerID + "_cluster",
                 "visibility",

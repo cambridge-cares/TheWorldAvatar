@@ -58,6 +58,7 @@ class DataStore {
      * @returns Promise that fulfills when all loading is complete
      */
     public loadDataGroups(visFile: string) {
+        console.log("Reading definition file at: "+ visFile);
         let self = this;
 
         return $.getJSON(visFile, function(json) {
@@ -95,9 +96,6 @@ class DataStore {
             parentGroup.subGroups.push(dataGroup);
         }
         
-        // Store label used for sub groups
-        if(currentNode["groupsLabel"]) dataGroup.subLabel = currentNode["groupLabels"];
-
         // Store optional mapOptions
         if(currentNode["mapOptions"]) dataGroup.mapOptions = currentNode["mapOptions"];
 
@@ -116,6 +114,17 @@ class DataStore {
                 this.recurseLoadDataGroups(subNode, dataGroup, i);
             }
         }
+    }
+
+    /**
+     * 
+     */
+    public getLayerWithID(id: string): DataLayer {
+        for(var i = 0; i < this.dataGroups.length; i++) {
+            let result = this.dataGroups[i].getLayerWithID(id);
+            if(result !== null) return result;
+        }
+        return null;
     }
 
 }
