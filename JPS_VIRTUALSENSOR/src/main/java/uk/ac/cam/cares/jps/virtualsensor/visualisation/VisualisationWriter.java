@@ -35,7 +35,7 @@ public class VisualisationWriter {
         JSONObject json = new JSONObject();
         
         JSONObject global = new JSONObject();
-        global.put("defaultCentre", new JSONArray().put(centre.getX()).put(centre.getY()));
+        global.put("defaultCenter", new JSONArray().put(centre.getX()).put(centre.getY()));
         global.put("defaultZoom", 8.75);
         global.put("defaultBearing", 0.0);
         global.put("defaultPitch", 0.0);
@@ -117,7 +117,7 @@ public class VisualisationWriter {
         JSONObject ships = new JSONObject();
         ships.put("dataLocation", "ships.geojson");
         ships.put("name", "Ships");
-        ships.put("locationType", "point");
+        ships.put("locationType", "symbol");
 
         dataSets.put(ships);
 
@@ -140,7 +140,7 @@ public class VisualisationWriter {
             // each contour is a collection of polygons
             for (int i = 0; i < features.length(); i++) {
                 JSONObject properties = features.getJSONObject(i).getJSONObject("properties");
-                properties.put("name", properties.getString("title"));
+                properties.put("name", properties.getString("title") + " \u03BCg m\u00B3");
                 properties.remove("title");
                 properties.put("fill-color", properties.getString("fill"));
                 properties.remove("fill");
@@ -164,10 +164,11 @@ public class VisualisationWriter {
 
             // display properties
             JSONObject property = new JSONObject();
-            property.put("circle-color", "#000000");
-			property.put("circle-stroke-width", 1);
-			property.put("circle-stroke-color", "#000000"); // black
-			property.put("circle-opacity", 0.75);
+            // property.put("circle-color", "#000000");
+			// property.put("circle-stroke-width", 1);
+			// property.put("circle-stroke-color", "#000000"); // black
+			// property.put("circle-opacity", 0.75);
+            property.put("icon-image", "ship");
             property.put("displayName", ships.getJSONObject(i).getString("IRI"));
 
             feature.put("properties", property);
