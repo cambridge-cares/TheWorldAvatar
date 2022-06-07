@@ -2,10 +2,12 @@ import pandas as pd
 import numpy as np
 import re, json
 import matplotlib.pyplot as plt
-# import matplotlib.axes as ax
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 from io import StringIO
 from pyproj import Transformer
 import geojsoncontour
+import os
 
 def postprocessEpisode(dispMatrix,crsName):
     content = re.sub(r'[ ]+',',',re.sub(r'[ ]+\n','\n',dispMatrix))
@@ -57,7 +59,6 @@ def postprocessEpisode(dispMatrix,crsName):
 
         pol_result[pol] = pol_matrix
 
-    fig, ax = plt.subplots()
     levels = 20
 
     hydrocarbons = ["C2H6", "HCHO", "CH3CHO", "C2H4", "PAN", "nC4H10", "CH3COC2H5", "C3H6", "oXylene", "isoprene"]
@@ -68,37 +69,97 @@ def postprocessEpisode(dispMatrix,crsName):
     result["dz"] = z_set
 
     # sum hydrocarbon concentrations
-    hc = np.empty((len(x_set),len(y_set),len(z_set)))
+    hc = np.zeros((len(x_set),len(y_set),len(z_set)))
     for species in hydrocarbons:
-        hc += pol_result[species]
+        hc = np.add(pol_result[species], hc)
     
     # collect geojson layers for each height for hc
     result["HC"] = []
+    if not os.path.exists("/root/HC"):
+        os.mkdir("/root/HC")
     for i in range(len(z_set)):
-        CS = ax.contourf(x_matrix, y_matrix, hc[:,:,i], levels=levels,cmap=plt.cm.jet)
-        geojsonstring = geojsoncontour.contourf_to_geojson(contourf=CS,fill_opacity=0.5)
+        # create a new figure each time, necessary to create new colorbars
+        figure = Figure(frameon=False)
+        FigureCanvas(figure)
+        ax = figure.add_subplot(111)
+        ax.set_axis_off()
+
+        contourf = ax.contourf(x_matrix, y_matrix, hc[:,:,i], levels=levels,cmap=plt.cm.jet)
+        geojsonstring = geojsoncontour.contourf_to_geojson(contourf=contourf,fill_opacity=0.5)
         geojson = json.loads(geojsonstring)
         result["HC"].append(geojson)
+
+        # create colorbar image
+        cbar = figure.colorbar(contourf)
+        cbar.set_label("HC [$\\mu$g m$^3$] at {z} m".format(z = z_set[i]))
+        ax.set_visible(False)
+        figure.savefig(
+            "/root/HC/HC_{z}.png".format(z = z_set[i]),
+            dpi=150,
+            bbox_inches='tight',
+            pad_inches=0,
+            transparent=True
+        )
     
     # sum nox concentrations
-    nox = np.empty((len(x_set),len(y_set),len(z_set)))
+    nox = np.zeros((len(x_set),len(y_set),len(z_set)))
     for species in nox_species:
-        nox += pol_result[species]
+        nox = np.add(pol_result[species], nox)
     
     # collect geojson layers for each height for nox
     result["NOx"] = []
+    if not os.path.exists("/root/NOx"):
+        os.mkdir("/root/NOx")
     for i in range(len(z_set)):
-        CS = ax.contourf(x_matrix, y_matrix, nox[:,:,i], levels=levels,cmap=plt.cm.jet)
-        geojsonstring = geojsoncontour.contourf_to_geojson(contourf=CS,fill_opacity=0.5)
+        # create a new figure each time, necessary to create new colorbars
+        figure = Figure(frameon=False)
+        FigureCanvas(figure)
+        ax = figure.add_subplot(111)
+        ax.set_axis_off()
+
+        contourf = ax.contourf(x_matrix, y_matrix, nox[:,:,i], levels=levels,cmap=plt.cm.jet)
+        geojsonstring = geojsoncontour.contourf_to_geojson(contourf=contourf,fill_opacity=0.5)
         geojson = json.loads(geojsonstring)
         result["NOx"].append(geojson)
 
+        # create colorbar image
+        cbar = figure.colorbar(contourf)
+        cbar.set_label("NO$_x$ [$\\mu$g m$^3$] at {z} m".format(z = z_set[i]))
+        ax.set_visible(False)
+        figure.savefig(
+            "/root/NOx/NOx_{z}.png".format(z = z_set[i]),
+            dpi=150,
+            bbox_inches='tight',
+            pad_inches=0,
+            transparent=True
+        )
+
     for pol in others:
         result[pol] = []
+        if not os.path.exists("/root/{pol}".format(pol=pol)):
+            os.mkdir("/root/{pol}".format(pol=pol))
         for i in range(len(z_set)):
-            CS = ax.contourf(x_matrix, y_matrix, pol_result[pol][:,:,i], levels=levels,cmap=plt.cm.jet)
-            geojsonstring = geojsoncontour.contourf_to_geojson(contourf = CS, fill_opacity = 0.5)
+            # create a new figure each time, necessary to create new colorbars
+            figure = Figure(frameon=False)
+            FigureCanvas(figure)
+            ax = figure.add_subplot(111)
+            ax.set_axis_off()
+
+            contourf = ax.contourf(x_matrix, y_matrix, pol_result[pol][:,:,i], levels=levels,cmap=plt.cm.jet)
+            geojsonstring = geojsoncontour.contourf_to_geojson(contourf = contourf, fill_opacity = 0.5)
             geojson = json.loads(geojsonstring)
             result[pol].append(geojson)
+
+            # create colorbar image
+            cbar = figure.colorbar(contourf)
+            cbar.set_label("{pol} [$\\mu$g m$^3$] at {z} m".format(pol=pol, z = z_set[i]))
+            ax.set_visible(False)
+            figure.savefig(
+                "/root/{pol}/{pol}_{z}.png".format(z = z_set[i],pol=pol),
+                dpi=150,
+                bbox_inches='tight',
+                pad_inches=0,
+                transparent=True
+            )
 
     return result
