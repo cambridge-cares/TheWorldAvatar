@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.time.Instant;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,21 +21,19 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ServicePattern;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ValuesPattern;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 /**
  * contains a collection of methods to query and update the KG
@@ -47,17 +44,33 @@ public class FloodSparql {
     private StoreClientInterface storeClient;
     
     // prefix
- 	private static String ontostation = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#";
-    private static Prefix p_station = SparqlBuilder.prefix("station",iri(ontostation));
+	private static String ontoems = "http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#";
+    private static Prefix p_ems = SparqlBuilder.prefix("ems",iri(ontoems));
     private static Prefix p_time = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
     private static Prefix p_geo = SparqlBuilder.prefix("geo",iri("http://www.bigdata.com/rdf/geospatial#"));
+	private static Prefix p_om = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
     
     // classes
-    private static Iri Station = p_station.iri("Station");
+	private static Iri ReportingStation = p_ems.iri("ReportingStation");
     private static Iri Instant = p_time.iri("Instant");
+
+	// subclass of Quantity
+	private static Iri WaterLevel = p_ems.iri("WaterLevel");
+	private static Iri Rainfall = p_ems.iri("Rainfall");
+	private static Iri WaterFlow = p_ems.iri("WaterFlow");
+	private static Iri AirTemperature = p_ems.iri("AirTemperature");
+	private static Iri WindSpeed = p_ems.iri("WindSpeed");
+	private static Iri WindDirection = p_ems.iri("WindDirection");
+	private static Iri WetBulbTemperature = p_ems.iri("WetBulbTemperature");
 	
+	private static Iri Measure = p_om.iri("Measure");
+
     // properties
-    private static Iri hasCoordinates = p_station.iri("hasCoordinates");
+	private static Iri hasObservationLocation = p_ems.iri("hasObservationLocation");
+	private static Iri hasObservationElevation = p_ems.iri("hasObservationElevation");
+	private static Iri dataSource = p_ems.iri("dataSource");
+	private static Iri hasValue = p_om.iri("hasValue");
+	private static Iri reports = p_ems.iri("reports");
     private static Iri measures = iri("http://environment.data.gov.uk/flood-monitoring/def/core/measures");
     private static Iri hasTime = p_time.iri("hasTime");
     private static Iri inXSDDate = p_time.iri("inXSDDate");
@@ -69,7 +82,10 @@ public class FloodSparql {
     private static Iri unitName = iri("http://environment.data.gov.uk/flood-monitoring/def/core/unitName");
     private static Iri parameterName = iri("http://environment.data.gov.uk/flood-monitoring/def/core/parameterName");
 	private static Iri qualifier = iri("http://environment.data.gov.uk/flood-monitoring/def/core/qualifier");
-    
+
+	private static Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
+	private static Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(FloodSparql.class);
     
@@ -78,40 +94,137 @@ public class FloodSparql {
 	}
 	
 	/**
-	 * returns a list of stations
+	 * returns a list of stations before adding OntoEMS concepts
 	 * it is assumed that there is only one RDF collection in the namespace
 	 * a good illustration of how an RDF collection look like 
 	 * http://www-kasm.nii.ac.jp/~koide/SWCLOS2/Manual/07RDFCollection.htm
 	 * @return
 	 */
-	List<String> getStations() {
+	List<Station> getStationsOriginal() {
 		SelectQuery query = Queries.SELECT();
 		
 		Variable station = query.var();
+		Variable measure = query.var();
+		Variable param = query.var();
+		Variable qual = query.var();
+		Variable lat = query.var();
+		Variable lon = query.var();
 		
-		GraphPattern queryPattern = query.var().has(RDF.FIRST, station);
+		GraphPattern stationPattern = query.var().has(RDF.FIRST, station);
+		GraphPattern stationPropertiesPattern = station.has(measures, measure).andHas(lat_prop,lat).andHas(lon_prop,lon);
+		GraphPattern measurePropertiesPattern = measure.has(parameterName,param).andHas(qualifier,qual);
+		GraphPattern queryPattern = GraphPatterns.and(stationPattern, stationPropertiesPattern, measurePropertiesPattern);
 		
-		query.select(station).where(queryPattern);
+		query.where(queryPattern).select(station,measure,param,qual,lat,lon).distinct();
 		
-	    @SuppressWarnings("unchecked")
-		List<String> stations = storeClient.executeQuery(query.getQueryString()).toList().stream()
-	    .map(stationiri -> ((HashMap<String,String>) stationiri).get(station.getQueryString().substring(1))).collect(Collectors.toList());
-	    
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		Map<String, Station> station_map = new HashMap<>(); // iri to station object map
+		List<Station> stations = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			String stationIri = queryResult.getJSONObject(i).getString(station.getQueryString().substring(1));
+			String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
+    		String measureName = queryResult.getJSONObject(i).getString(param.getQueryString().substring(1));
+    		String subTypeName = queryResult.getJSONObject(i).getString(qual.getQueryString().substring(1));
+			String latString = queryResult.getJSONObject(i).getString(lat.getQueryString().substring(1));
+			String lonString = queryResult.getJSONObject(i).getString(lon.getQueryString().substring(1));
+    		
+    		Station stationObject;
+    		if (station_map.containsKey(stationIri)) {
+    			stationObject = station_map.get(stationIri);
+    		} else {
+    			stationObject = new Station(stationIri);
+				stations.add(stationObject);
+			}
+			stationObject.setMeasureName(measureIri, measureName);
+			stationObject.setMeasureSubTypeName(measureIri, subTypeName);
+			stationObject.setLat(Double.parseDouble(latString));
+			stationObject.setLon(Double.parseDouble(lonString));
+		}
 	    return stations;
 	}
 	
-	void addStationRdfType(List<String> stations) {
+	/**
+	 * add triples related to OntoEMS
+	 * @param stations
+	 */
+	void addStationTypeAndCoordinates(List<Station> stations) {
 		ModifyQuery modify = Queries.MODIFY();
 		
-		for (String station : stations) {
-			modify.insert(iri(station).isA(Station));
+		for (Station station : stations) {
+			modify.insert(iri(station.getIri()).isA(ReportingStation));
+			modify.insert(iri(station.getIri()).has(dataSource, "Environment Agency Real Time flood-monitoring"));
+
+			// blazegraph custom literal
+			String latlon = String.valueOf(station.getLat()) + "#" + String.valueOf(station.getLon());
+			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon, lat_lon);
+			modify.insert(iri(station.getIri()).has(hasObservationLocation,coordinatesLiteral));
 		}
 		
-		modify.prefix(p_station);
+		modify.prefix(p_ems);
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
+	/**
+	 * replace original triple <station> <measures> <measure> with
+	 * <station> <reports> <quantity>, <quantity> <hasValue> <measure>
+	 */
+    void replaceMeasures(List<Station> stations) {
+		// delete all <station> <measures> <measure> triple
+		ModifyQuery modify = Queries.MODIFY();
+		Variable stationvar = SparqlBuilder.var("station");
+		Variable measurevar = SparqlBuilder.var("measure");
+		modify.delete(stationvar.has(measures,measurevar)).where(stationvar.has(measures,measurevar));
+
+		// add the new ontoEMS triples
+		for (Station station : stations) {
+			for (String measure : station.getMeasures()) {
+				Iri quantityIri = null;
+				String paramName = station.getMeasureName(measure);
+				String qual = station.getMeasureSubTypeName(measure);
+				// determine class of quantity
+				switch (paramName) {
+					case "Water Level":
+						quantityIri = iri(station.getIri() + "/WaterLevel");
+						modify.insert(quantityIri.isA(WaterLevel));
+						break;
+					case "Flow":
+						quantityIri = iri(station.getIri() + "/Flow");
+						modify.insert(quantityIri.isA(WaterFlow));
+						break;
+					case "Rainfall":
+						quantityIri = iri(station.getIri() + "/Rainfall");
+						modify.insert(quantityIri.isA(Rainfall));
+						break;
+					case "Wind":
+						if (qual.contentEquals("Direction")) {
+							quantityIri = iri(station.getIri() + "/WindDirection");
+							modify.insert(quantityIri.isA(WindDirection));
+						} else if (qual.contentEquals("Speed")) {
+							quantityIri = iri(station.getIri() + "/WindSpeed");
+							modify.insert(quantityIri.isA(WindSpeed));
+						}
+						break;
+					case "Temperature":
+						if (qual.contentEquals("Wet Bulb")) {
+							quantityIri = iri(station.getIri() + "/WetBulbTemperature");
+							modify.insert(quantityIri.isA(WetBulbTemperature));
+						} else {
+							quantityIri = iri(station.getIri() + "/Temperature");
+							modify.insert(quantityIri.isA(AirTemperature));
+						}
+						break;
+				}
+				modify.insert(iri(station.getIri()).has(reports, quantityIri));
+				modify.insert(quantityIri.has(hasValue, iri(measure)));
+				modify.insert(iri(measure).isA(Measure));
+			}
+		}
+		modify.prefix(p_ems,p_om);
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
 	/**
 	 * returns all the measures in the endpoint, each station may measure 1-4 quantities
 	 * ignores stations without coordinates
@@ -124,10 +237,10 @@ public class FloodSparql {
 		Variable station = query.var();
 		Variable coord = query.var();
 				
-		GraphPattern queryPattern = station.has(measures, measure)
-				.andHas(hasCoordinates, coord);
+		GraphPattern queryPattern = station.has(hasObservationLocation, coord)
+		.andHas(PropertyPaths.path(reports,hasValue), measure); 
 		
-		query.select(measure).where(queryPattern).prefix(p_station);
+		query.select(measure).where(queryPattern).prefix(p_ems);
 		
 	    @SuppressWarnings("unchecked")
 		List<String> measure_iri_list = storeClient.executeQuery(query.getQueryString()).toList().stream()
@@ -147,7 +260,7 @@ public class FloodSparql {
 		Variable measure = query.var();
 		Variable station = query.var();
 				
-		GraphPattern queryPattern = station.has(measures, measure);
+		GraphPattern queryPattern = station.has(PropertyPaths.path(reports,hasValue), measure);
 		List<String> stationIri_list = new ArrayList<>(stations.keySet());
 		ValuesPattern stationPattern = new ValuesPattern(station, stationIri_list.stream().map(s -> iri(s)).collect(Collectors.toList()));
 		
@@ -177,44 +290,17 @@ public class FloodSparql {
 	 * Blazegraph requires them to be in the form of lat#lon
 	 * visID is purely for visualisation purpose
 	 */
-	void addBlazegraphCoordinatesAndVisID() {
-		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
-		Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
-		
-		// first query both lat and lon for each station
-		SelectQuery query = Queries.SELECT();
-		
-		Variable station = query.var();
-		Variable lat = query.var();
-		Variable lon = query.var();
-		
-		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
-				.andHas(lon_prop,lon));
-		
-		query.where(queryPattern).select(station,lat,lon);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		// then add the combined literal and upload it
-		List<String> latlon = new ArrayList<>(queryResult.length());
-		List<String> stations = new ArrayList<>(queryResult.length());
-		List<Integer> visID = new ArrayList<>(queryResult.length());
-		
-		for (int i = 0; i < queryResult.length(); i++) {
-			latlon.add(i,queryResult.getJSONObject(i).getString(lat.getQueryString().substring(1)) +
-					"#" + queryResult.getJSONObject(i).getString(lon.getQueryString().substring(1)));
-			stations.add(i, queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
-			visID.add(i,i);
-		}
-		
+	void addBlazegraphCoordinatesAndVisID(List<Station> stations) {
 		ModifyQuery modify = Queries.MODIFY();
-		modify.prefix(p_station);
+		modify.prefix(p_ems);
+		int visID = 0;
 		// one triple per station
-		for (int i = 0; i < queryResult.length(); i++) {
+		for (Station station : stations) {
 			// blazegraph's custom literal type
-			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon.get(i), lat_lon);
-			modify.insert(iri(stations.get(i)).has(hasCoordinates,coordinatesLiteral));
-			modify.insert(iri(stations.get(i)).has(hasVisID,visID.get(i)));
+			String latlon = String.valueOf(station.getLat()) + "#" + String.valueOf(station.getLon());
+			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon, lat_lon);
+			modify.insert(iri(station.getIri()).has(hasObservationLocation,coordinatesLiteral));
+			modify.insert(iri(station.getIri()).has(hasVisID,visID + 1));
 		}
 		
 		storeClient.executeUpdate(modify.getQueryString());
@@ -229,11 +315,46 @@ public class FloodSparql {
 	 */
 	void addMeasureToStation(String station, String measure, String unit,
 			String paramName, String qual) {
+
 		ModifyQuery modify = Queries.MODIFY();
-		modify.insert(iri(station).has(measures,iri(measure)));
+
+		Iri quantityIri = null;
+		// determine class of quantity
+		switch (paramName) {
+			case "Water Level":
+			    quantityIri = iri(station + "/WaterLevel");
+				modify.insert(quantityIri.isA(WaterLevel));
+			case "Flow":
+			    quantityIri = iri(station + "/Flow");
+				modify.insert(quantityIri.isA(WaterFlow));
+			case "Rainfall":
+			    quantityIri = iri(station + "/Rainfall");
+				modify.insert(quantityIri.isA(Rainfall));
+			case "Wind":
+				if (qual.contentEquals("Direction")) {
+					quantityIri = iri(station + "/WindDirection");
+					modify.insert(quantityIri.isA(WindDirection));
+				} else if (qual.contentEquals("Speed")) {
+					quantityIri = iri(station + "/WindSpeed");
+					modify.insert(quantityIri.isA(WindSpeed));
+				}
+			case "Temperature":
+			    if (qual.contentEquals("Wet Bulb")) {
+					quantityIri = iri(station + "/WetBulbTemperature");
+					modify.insert(quantityIri.isA(WetBulbTemperature));
+				} else {
+					quantityIri = iri(station + "/Temperature");
+					modify.insert(quantityIri.isA(AirTemperature));
+				}
+		}
+
+		modify.insert(iri(station).has(reports,quantityIri));
+
+		modify.insert(quantityIri.has(hasValue, iri(measure)));
 		modify.insert(iri(measure).has(unitName, unit)
 				.andHas(parameterName, paramName)
-				.andHas(qualifier,qual));
+				.andHas(qualifier,qual)
+				.andIsA(Measure));
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
@@ -245,15 +366,10 @@ public class FloodSparql {
 	boolean areStationsInitialised() {
 		SelectQuery query = Queries.SELECT();
 		Variable station = query.var();
-		Variable measure = query.var();
-		Variable timeseries = query.var();
 		
-		Iri hasTimeSeries = iri(TimeSeriesSparql.ns_ontology + "hasTimeSeries");
+		GraphPattern queryPattern = station.isA(ReportingStation);
 		
-		GraphPattern queryPattern = GraphPatterns.and(station.has(measures, measure).andIsA(Station),
-				measure.has(hasTimeSeries,timeseries));
-		
-		query.prefix(p_station).where(queryPattern).limit(10);
+		query.prefix(p_ems).where(queryPattern).limit(10);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
@@ -334,8 +450,6 @@ public class FloodSparql {
 	 * returns a map of station iri to station object
 	 */
 	Map<String, Station> getStationsWithCoordinates(String southwest, String northeast) {
-		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
-		Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
 		Iri river_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/riverName");
 		Iri catchment_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/catchmentName");
 		Iri town_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/town");
@@ -364,7 +478,7 @@ public class FloodSparql {
     	Variable unit = query.var();
 		
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
-				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id).andHas(measures, measure));
+				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id).andHas(PropertyPaths.path(reports,hasValue), measure));
 		
 		GraphPattern stationProperties = GraphPatterns.and(station.has(iri(RDFS.LABEL), label).optional(),
 				station.has(river_prop, river).optional(),
@@ -378,14 +492,14 @@ public class FloodSparql {
 		if (southwest != null && northeast != null) {
 			GraphPattern coordinatesPattern = GraphPatterns.and(station.has(p_geo.iri("search"), "inRectangle")
 					.andHas(p_geo.iri("searchDatatype"),lat_lon)
-					.andHas(p_geo.iri("predicate"), hasCoordinates)
+					.andHas(p_geo.iri("predicate"), hasObservationLocation)
 					.andHas(p_geo.iri("spatialRectangleSouthWest"), southwest)
 					.andHas(p_geo.iri("spatialRectangleNorthEast"), northeast));
 
 	    	GraphPattern geoPattern = new ServicePattern(p_geo.iri("search").getQueryString()).service(coordinatesPattern);
-	    	query.where(queryPattern,geoPattern,stationProperties,measurePropertiesPattern).prefix(p_geo,p_station);
+	    	query.where(queryPattern,geoPattern,stationProperties,measurePropertiesPattern).prefix(p_geo,p_ems);
 		} else {
-			query.where(queryPattern,stationProperties,measurePropertiesPattern).prefix(p_station);
+			query.where(queryPattern,stationProperties,measurePropertiesPattern).prefix(p_ems);
 		}
 		
 		query.select(station,lat,lon,ref,id,river,catchment,town,dateOpened,label,measure,param,qual,unit);
@@ -433,7 +547,6 @@ public class FloodSparql {
 			
 			// measure properties
 			// stations may measure more than 1 properties
-			stationObject.addMeasure(measureIri);
 			stationObject.setMeasureName(measureIri, measureName);
     		stationObject.setMeasureSubTypeName(measureIri, subTypeName);
     		stationObject.setMeasureUnit(measureIri, unitName);
@@ -445,9 +558,9 @@ public class FloodSparql {
     boolean checkStationExists(String station) {
     	SelectQuery query = Queries.SELECT();
     	
-    	GraphPattern queryPattern = iri(station).isA(Station);
+    	GraphPattern queryPattern = iri(station).isA(ReportingStation);
     	
-    	query.prefix(p_station).where(queryPattern);
+    	query.prefix(p_ems).where(queryPattern);
     	
 	    if(storeClient.executeQuery(query.getQueryString()).length() == 1) {
 	    	return true;
@@ -464,12 +577,12 @@ public class FloodSparql {
     	String blazegraph_latlon = String.valueOf(lat) + "#" + String.valueOf(lon);
     	StringLiteral coordinatesLiteral = Rdf.literalOfType(blazegraph_latlon, 
     			lat_lon);
-    	modify.insert(station_iri.has(hasCoordinates,coordinatesLiteral));
+    	modify.insert(station_iri.has(hasObservationLocation,coordinatesLiteral));
     	
-    	modify.insert(station_iri.isA(Station));
+    	modify.insert(station_iri.isA(ReportingStation));
     	modify.insert(station_iri.has(stationReference, name));
     	modify.insert(station_iri.has(hasVisID, getNumID()+1));
-    	modify.prefix(p_station);
+    	modify.prefix(p_ems);
     	
     	storeClient.executeUpdate(modify.getQueryString());
     }

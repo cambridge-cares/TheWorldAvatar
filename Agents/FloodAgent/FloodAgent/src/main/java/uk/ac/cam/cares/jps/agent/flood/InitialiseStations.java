@@ -15,6 +15,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -72,16 +73,14 @@ public class InitialiseStations {
     	initFloodStationsWithAPI(InitialiseStations.api, InitialiseStations.storeClient);
     	
     	// obtain stations added to blazegraph
-        List<String> stations = sparqlClient.getStations();
+        List<Station> stations = sparqlClient.getStationsOriginal();
         
-        // add RDF:type to each station instance
-		sparqlClient.addStationRdfType(stations);
-		
-		// add coordinates required by blazegraph geospatial support
-		sparqlClient.addBlazegraphCoordinatesAndVisID();
+        // add triples for OntoEMS
+		sparqlClient.addStationTypeAndCoordinates(stations);
+		sparqlClient.replaceMeasures(stations);
 		
 		// create a table for each measure uploaded to Blazegraph
-    	initTimeSeriesTables(sparqlClient, tsClient);
+    	initTimeSeriesTables(tsClient, stations);
     }
     
 	/** 
@@ -118,10 +117,15 @@ public class InitialiseStations {
 	/**
 	 * create a table for each measure
 	 */
-	static void initTimeSeriesTables(FloodSparql sparqlClient, TimeSeriesClient<Instant> tsClient) {
+	static void initTimeSeriesTables(TimeSeriesClient<Instant> tsClient, List<Station> stations) {
 		LOGGER.info("Initialising time series tables");
 		
-		List<String> measures = sparqlClient.getMeasures();
+		List<String> measures = new ArrayList<>();
+		for (Station station : stations) {
+			for (String measure : station.getMeasures()){
+				measures.add(measure);
+			}
+		}
 		List<List<String>> ts_list = new ArrayList<>(measures.size());
 		List<List<Class<?>>> classes = new ArrayList<>(measures.size());
 		

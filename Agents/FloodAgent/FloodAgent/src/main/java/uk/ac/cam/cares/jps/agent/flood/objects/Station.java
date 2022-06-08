@@ -30,7 +30,6 @@ public class Station {
     private String town;
     private String dateOpened;
     private Map<String, String> displayProperties;
-    private List<String> measures; // IRIs of measures
     private List<TimeSeries<Instant>> ts_list;
     private Map<String, String> measureNameMap; // measure IRI to parameter name
     private Map<String, String> measureUnitMap; // measure IRI to unit
@@ -58,18 +57,14 @@ public class Station {
     	this.dateOpened = "";
     	this.displayProperties = new HashMap<String, String>();
     	this.ts_list = new ArrayList<>();
-    	this.measures = new ArrayList<>();
     	this.measureNameMap = new HashMap<>();
     	this.measureUnitMap = new HashMap<>();
     	this.measureSubTypeMap = new HashMap<>();
     }
     
-    public void addMeasure(String measure) {
-    	this.measures.add(measure);
-    }
-    
+	// return IRIs of measures in this station
     public List<String> getMeasures() {
-    	return this.measures;
+    	return new ArrayList<>(this.measureNameMap.keySet()); // measureUnitMap and MeasureSubTypeMap should give the same result
     }
     
     public void setLabel(String label) {
