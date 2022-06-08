@@ -63,6 +63,14 @@
             <artifactId>maven-war-plugin</artifactId>
             <!-- Version, configuration, and executions should be pulled from the 
             parent POM unless overridden here. -->
+            <configuration>
+				<webResources>
+					<resource>
+						<directory>WEB-INF</directory>
+						<targetPath>WEB-INF</targetPath>
+					</resource>
+				</webResources>
+			</configuration>
         </plugin>
         
         <!-- Downloads and extracts ZIP archives from Maven repository -->
