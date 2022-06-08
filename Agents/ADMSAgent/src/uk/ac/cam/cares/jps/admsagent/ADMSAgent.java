@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.dispersion.general;
+package uk.ac.cam.cares.jps;
 
 import java.io.File;
 import java.util.ArrayList;
