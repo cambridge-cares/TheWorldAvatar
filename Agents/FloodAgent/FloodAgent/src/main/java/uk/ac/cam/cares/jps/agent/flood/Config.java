@@ -43,7 +43,7 @@ public class Config{
 			if (Config.outputdir != null) {
 				LOGGER.info("Detected environment variable OUTPUT_DIR, script will write files to " + Config.outputdir);
 			} else {
-				throw new RuntimeException("The environment variable OUTPUT_DIR is not set");
+				LOGGER.warn("The environment variable OUTPUT_DIR is not set");
 			}
 			
 			// construct postgres jdbc url

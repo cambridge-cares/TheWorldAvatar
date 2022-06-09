@@ -29,8 +29,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
  * Downloads high level station information from http://environment.data.gov.uk/flood-monitoring/id/stations?_view=full.rdf
- * and post it to Blazegraph. The endpoint and credentials need to be saved at
- * credentials.properties
+ * and post it to Blazegraph. The endpoint and credentials are specified via environment variables
  * @author Kok Foong Lee
  *
  */
@@ -59,7 +58,11 @@ public class InitialiseStations {
     }
     
     public static void main(String[] args) {
-    	Config.initProperties();
+		try {
+			Config.initProperties();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage()); // not critical for unit tests
+		}
     	
     	// if these are null, they are in deployed mode, otherwise they should
     	// be set with mocks using their respective setters
@@ -98,8 +101,10 @@ public class InitialiseStations {
 		// add datum triples for OntoEMS
 		// File specified by DATUM_FILE needs to exist
 		try {
-			JSONObject datum_json = new JSONObject(Files.readString(Paths.get(Config.DATUM_FILE)));
-			sparqlClient.addDatum(datum_json);
+			if (Config.DATUM_FILE != null) {
+				JSONObject datum_json = new JSONObject(Files.readString(Paths.get(Config.DATUM_FILE)));
+				sparqlClient.addDatum(datum_json);
+			}
 		} catch (JSONException | IOException e) {
 			LOGGER.error("Failed to read datum file");
 			LOGGER.error(e.getMessage());

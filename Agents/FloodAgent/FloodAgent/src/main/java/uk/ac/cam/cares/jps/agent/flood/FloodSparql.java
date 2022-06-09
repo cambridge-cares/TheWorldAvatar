@@ -252,7 +252,7 @@ public class FloodSparql {
 		GraphPattern queryPattern = station.has(hasObservationLocation, coord)
 		.andHas(PropertyPaths.path(reports,hasValue), measure); 
 		
-		query.select(measure).where(queryPattern).prefix(p_ems);
+		query.select(measure).where(queryPattern).prefix(p_ems,p_om);
 		
 	    @SuppressWarnings("unchecked")
 		List<String> measure_iri_list = storeClient.executeQuery(query.getQueryString()).toList().stream()
