@@ -7,13 +7,18 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.ParseException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -89,7 +94,7 @@ public class UpdateStations {
     		UpdateStations.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	}
     	
-    	if (!sparqlClient.checkUpdateDateExists(date)) {
+    	if (!sparqlClient.checkUpdateDateExists(tsClient,date)) {
     		LOGGER.info("Updating data for " + date);
     		
 			List<Map<?,?>> processed_data;
@@ -106,7 +111,7 @@ public class UpdateStations {
 	        uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
 	        
 	        // update last updated date
-	        sparqlClient.addUpdateDate(date);
+	        addUpdateDate(tsClient,date);
     	} else {
     		LOGGER.info("Data for " + date + " exists, ignoring update request");
     	}
@@ -219,14 +224,12 @@ public class UpdateStations {
 					
 					// check if station exists, if not, instantiate
 					if (!sparqlClient.checkStationExists(station)) {
-						response = new APIConnector(station).getData();
-						response_jo = new JSONObject(EntityUtils.toString(response));
-						items = response_jo.getJSONObject("items");
-						double lat = items.getDouble("lat");
-						double lon = items.getDouble("long");
-						String stationRef = items.getString("stationReference");
-						
-						sparqlClient.addNewStation(station, lat, lon, stationRef);
+						HttpEntity newstation = new APIConnector(station).getData();
+						JSONObject newstation_jo = new JSONObject(EntityUtils.toString(newstation));
+						if (newstation_jo.getJSONObject("items").has("lat")) {
+							LOGGER.info("Instantiating a new station as it is without OntoEMS");
+							sparqlClient.postToRemoteStore(new APIConnector(station+".rdf").getData());
+						}
 					}
 					
 					tsClient.initTimeSeries(Arrays.asList(dataIRI), Arrays.asList(Double.class), null);
@@ -271,4 +274,13 @@ public class UpdateStations {
         
         tsClient.disconnectRDB();
 	}
+
+	static void addUpdateDate(TimeSeriesClient<Instant> tsClient, LocalDate date) {
+		List<List<?>> values = new ArrayList<>();
+		values.add(Arrays.asList(date));
+		TimeSeries<Instant> ts = new TimeSeries<Instant>(Arrays.asList(Instant.now()), Arrays.asList(Config.TIME_IRI), values);
+		tsClient.addTimeSeriesData(ts);
+	}
+
+	
 }

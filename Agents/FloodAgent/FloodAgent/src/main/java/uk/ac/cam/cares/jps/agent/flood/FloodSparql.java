@@ -6,19 +6,24 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.Instant;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
-import org.eclipse.rdf4j.model.vocabulary.XSD;
-import org.eclipse.rdf4j.sparqlbuilder.core.OrderCondition;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -39,6 +44,8 @@ import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ServicePattern;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ValuesPattern;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
  * contains a collection of methods to query and update the KG
@@ -365,6 +372,7 @@ public class FloodSparql {
 				.andHas(parameterName, paramName)
 				.andHas(qualifier,qual)
 				.andIsA(Measure));
+		modify.prefix(p_ems,p_om);
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
@@ -389,69 +397,32 @@ public class FloodSparql {
 			return false;
 		}
 	}
-	
-	/**
-	 * adds triples to say the database contains data of this date
-	 * @param date
-	 */
-	void addUpdateDate(LocalDate date) {
-		Iri stations = iri("http://environment.data.gov.uk/flood-monitoring/id/stations");
-		Iri instant = iri("http://environment.data.gov.uk/flood-monitoring/id/stations/time");
-		
-		ModifyQuery modify = Queries.MODIFY();
-		modify.insert(stations.has(hasTime,instant));
-		modify.insert(instant.isA(Instant).andHas(inXSDDate, Rdf.literalOfType(date.toString(), XSD.DATE)));
-		modify.prefix(p_time);
-		
-		storeClient.executeUpdate(modify.getQueryString());
-	}
-	
-	LocalDate getLatestUpdate() {
-		Iri stations = iri("http://environment.data.gov.uk/flood-monitoring/id/stations");
-		SelectQuery query = Queries.SELECT();
-        Variable instant = query.var();
-        Variable date = query.var();
-		
-		GraphPattern queryPattern = GraphPatterns.and(stations.has(hasTime,instant),
-				instant.has(inXSDDate, date));
-		
-		// descending date
-		OrderCondition dateDesc = SparqlBuilder.desc(date);
-		
-		query.select(date).prefix(p_time).where(queryPattern).orderBy(dateDesc).limit(1);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
+
+	LocalDate getLatestUpdate(TimeSeriesClient<Instant> tsClient) {
+		TimeSeries<Instant> ts = tsClient.getLatestData(Config.TIME_IRI);
 		try {
-			String latestDate = queryResult.getJSONObject(0).getString(date.getQueryString().substring(1));
-			return LocalDate.parse(latestDate);
-		} catch (Exception e) {
+			return LocalDate.parse(ts.getValuesAsString(Config.TIME_IRI).get(0));
+		} catch (IndexOutOfBoundsException e) {
 			LOGGER.error(e.getMessage());
-			LOGGER.error("Failed to query latest update date");
-			throw new JPSRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
 	/**
-	 * returns true if provided data on the given date exists
+	 * returns true if given date exists
 	 * @param date
 	 * @return
 	 */
-	boolean checkUpdateDateExists(LocalDate date) {
-		Iri stations = iri("http://environment.data.gov.uk/flood-monitoring/id/stations");
-		SelectQuery query = Queries.SELECT();
-		Variable instant = query.var();
-		
-		GraphPattern queryPattern = GraphPatterns.and(stations.has(hasTime,instant),
-				instant.has(inXSDDate, Rdf.literalOfType(date.toString(), XSD.DATE)));
-		
-		query.prefix(p_time).where(queryPattern);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.length() == 1)
-			return true;
-		else {
+	boolean checkUpdateDateExists(TimeSeriesClient<Instant> tsClient, LocalDate date) {
+		TimeSeries<Instant> ts = tsClient.getLatestData(Config.TIME_IRI);
+		if (ts.getValues(Config.TIME_IRI).size() > 0) {
+			LocalDate latestDate = LocalDate.parse(ts.getValuesAsString(Config.TIME_IRI).get(0));
+			if(date.equals(latestDate)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
 			return false;
 		}
 	}
@@ -472,7 +443,6 @@ public class FloodSparql {
 		Variable lon = query.var();
 		Variable station = query.var();
 		Variable ref = query.var();
-		Variable id = query.var();
 		Variable river = query.var();
 		Variable catchment = query.var();
 		Variable town = query.var();
@@ -488,7 +458,7 @@ public class FloodSparql {
     	Variable unit = query.var();
 		
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
-				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id).andHas(PropertyPaths.path(reports,hasValue), measure));
+				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(PropertyPaths.path(reports,hasValue), measure));
 		
 		GraphPattern stationProperties = GraphPatterns.and(station.has(iri(RDFS.LABEL), label).optional(),
 				station.has(river_prop, river).optional(),
@@ -507,15 +477,15 @@ public class FloodSparql {
 					.andHas(p_geo.iri("spatialRectangleNorthEast"), northeast));
 
 	    	GraphPattern geoPattern = new ServicePattern(p_geo.iri("search").getQueryString()).service(coordinatesPattern);
-	    	query.where(queryPattern,geoPattern,stationProperties,measurePropertiesPattern).prefix(p_geo,p_ems);
+	    	query.where(queryPattern,geoPattern,stationProperties,measurePropertiesPattern).prefix(p_geo,p_ems,p_om);
 		} else {
-			query.where(queryPattern,stationProperties,measurePropertiesPattern).prefix(p_ems);
+			query.where(queryPattern,stationProperties,measurePropertiesPattern).prefix(p_ems,p_om);
 		}
 		
-		query.select(station,lat,lon,ref,id,river,catchment,town,dateOpened,label,measure,param,qual,unit);
+		query.select(station,lat,lon,ref,river,catchment,town,dateOpened,label,measure,param,qual,unit);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
+		int visid = 0;
 		Map<String, Station> station_map = new HashMap<>(); // iri to station object map
 		for (int i = 0; i < queryResult.length(); i++) {
 			String stationIri = queryResult.getJSONObject(i).getString(station.getQueryString().substring(1));
@@ -535,7 +505,8 @@ public class FloodSparql {
     			stationObject.setIdentifier(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
     			stationObject.setLat(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
     			stationObject.setLon(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
-    			stationObject.setVisId(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
+				visid += 1;
+    			stationObject.setVisId(visid);
     			
     			// optional station properties
     			if (queryResult.getJSONObject(i).has(river.getQueryString().substring(1))) {
@@ -568,33 +539,15 @@ public class FloodSparql {
     boolean checkStationExists(String station) {
     	SelectQuery query = Queries.SELECT();
     	
-    	GraphPattern queryPattern = iri(station).isA(ReportingStation);
+    	GraphPattern queryPattern = iri(station).has(query.var(),query.var());
     	
-    	query.prefix(p_ems).where(queryPattern);
+    	query.where(queryPattern);
     	
-	    if(storeClient.executeQuery(query.getQueryString()).length() == 1) {
+	    if(storeClient.executeQuery(query.getQueryString()).length() > 1) {
 	    	return true;
 	    } else {
 	    	return false;
 	    }
-    }
-    
-    void addNewStation(String station, double lat, double lon, String name) {
-    	ModifyQuery modify = Queries.MODIFY();
-    	Iri station_iri = iri(station);
-    	
-    	// blazegraph coordinates
-    	String blazegraph_latlon = String.valueOf(lat) + "#" + String.valueOf(lon);
-    	StringLiteral coordinatesLiteral = Rdf.literalOfType(blazegraph_latlon, 
-    			lat_lon);
-    	modify.insert(station_iri.has(hasObservationLocation,coordinatesLiteral));
-    	
-    	modify.insert(station_iri.isA(ReportingStation));
-    	modify.insert(station_iri.has(stationReference, name));
-    	modify.insert(station_iri.has(hasVisID, getNumID()+1));
-    	modify.prefix(p_ems);
-    	
-    	storeClient.executeUpdate(modify.getQueryString());
     }
     
     /**
@@ -657,6 +610,28 @@ public class FloodSparql {
 
 		for (String station : datum_json.keySet()) {
 			double datum = datum_json.getDouble(station);
+			modify.insert(iri(station).has(hasObservationElevation, datum));
 		}
+
+		modify.prefix(p_ems);
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
+	void postToRemoteStore(HttpEntity entity) throws ClientProtocolException, IOException {
+		// use Blazegraph's REST API to upload RDF data to a SPARQL endpoint
+		LOGGER.info("Posting data to " + storeClient.getUpdateEndpoint());
+	        
+		// tried a few methods to add credentials, this seems to be the only way that works
+		// i.e. setting it manually in the header
+		String auth = storeClient.getUser() + ":" + storeClient.getPassword();
+		String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes()); 
+		HttpPost postRequest = new HttpPost(storeClient.getUpdateEndpoint());
+		postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+		
+		// add contents downloaded from the API to the post request 
+		postRequest.setEntity(entity);
+		// then send the post request
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		httpclient.execute(postRequest);
 	}
 }
