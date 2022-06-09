@@ -35,6 +35,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -122,14 +123,14 @@ public class testInitialiseStations {
 	
 	@Test
 	public void testInitTimeSeriesTables() throws UnsupportedCharsetException, IOException, URISyntaxException {
-		// InitialiseStations.initFloodStationsWithAPI(api,storeClient);
+		InitialiseStations.initFloodStationsWithAPI(api,storeClient);
+		List<Station> stations = sparqlClient.getStationsOriginal();
+		InitialiseStations.initTimeSeriesTables(tsClient, stations);
+        List<String> measures = sparqlClient.getMeasures();
 		
-		// InitialiseStations.initTimeSeriesTables(sparqlClient, tsClient);
-        // List<String> measures = sparqlClient.getMeasures();
-		
-		// for (String measure : measures) {
-		// 	Assertions.assertTrue(tsClient.checkDataHasTimeSeries(measure));
-		// }
+		for (String measure : measures) {
+			Assertions.assertTrue(tsClient.checkDataHasTimeSeries(measure));
+		}
 	}
 	
 	@Test
