@@ -31,6 +31,8 @@ Optional variables:
 - POSTGRES_HOST
 - POSTGRES_PORT
 - SKIP_RIVER (if set to true, this code will be skipped)
+- DOWNLOAD_DATUM (if set to true, code will download stageScale for each station)
+- DATUM_FILE (location of file containing DATUM data for each station)
 
 In addition to the credentials for the databases, a directory to write the geojson and flood needs to be specified.
 
