@@ -26,6 +26,9 @@ public class Config{
 	private static String kg_port;
 	private static String kg_path;
 	private static String kg_protocol;
+
+	public static boolean DOWNLOAD_DATUM = Boolean.parseBoolean(System.getenv("DOWNLOAD_DATUM"));
+	public static String DATUM_FILE = System.getenv("DATUM_FILE");
 	
 	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 	

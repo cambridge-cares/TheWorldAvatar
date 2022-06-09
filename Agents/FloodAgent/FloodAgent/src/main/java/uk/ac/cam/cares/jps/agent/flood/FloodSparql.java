@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.flood;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -28,6 +32,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ServicePattern;
@@ -324,12 +329,15 @@ public class FloodSparql {
 			case "Water Level":
 			    quantityIri = iri(station + "/WaterLevel");
 				modify.insert(quantityIri.isA(WaterLevel));
+				break;
 			case "Flow":
 			    quantityIri = iri(station + "/Flow");
 				modify.insert(quantityIri.isA(WaterFlow));
+				break;
 			case "Rainfall":
 			    quantityIri = iri(station + "/Rainfall");
 				modify.insert(quantityIri.isA(Rainfall));
+				break;
 			case "Wind":
 				if (qual.contentEquals("Direction")) {
 					quantityIri = iri(station + "/WindDirection");
@@ -338,6 +346,7 @@ public class FloodSparql {
 					quantityIri = iri(station + "/WindSpeed");
 					modify.insert(quantityIri.isA(WindSpeed));
 				}
+				break;
 			case "Temperature":
 			    if (qual.contentEquals("Wet Bulb")) {
 					quantityIri = iri(station + "/WetBulbTemperature");
@@ -346,6 +355,7 @@ public class FloodSparql {
 					quantityIri = iri(station + "/Temperature");
 					modify.insert(quantityIri.isA(AirTemperature));
 				}
+				break;
 		}
 
 		modify.insert(iri(station).has(reports,quantityIri));
@@ -601,4 +611,52 @@ public class FloodSparql {
     	
     	return queryResult.length();
     }
+
+	/**
+	 * datum is not within the original dataset, steps in this function
+	 * 1) query stageScale for each station
+	 * 2) download stageScale
+	 */
+	JSONObject downloadDatum(List<Station> stations) {
+		List<Iri> station_iris = stations.stream().map(s -> iri(s.getIri())).collect(Collectors.toList());
+		
+		// query stagescale URL for each station
+		SelectQuery query = Queries.SELECT();
+		Variable stationvar = query.var();
+		Variable stageScaleVar = query.var();
+		ValuesPattern valuesPattern = new ValuesPattern(stationvar, station_iris);
+		GraphPattern queryPattern = stationvar.has(iri("http://environment.data.gov.uk/flood-monitoring/def/core/stageScale"), stageScaleVar);
+
+		query.select(stationvar,stageScaleVar).where(valuesPattern, queryPattern).distinct();
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		JSONObject datumMap = new JSONObject();
+		// download stageScale and append triple for each station
+		for (int i = 0; i < queryResult.length(); i++) {
+			String station_iri = queryResult.getJSONObject(i).getString(stationvar.getQueryString().substring(1));
+			String stageScale_iri = queryResult.getJSONObject(i).getString(stageScaleVar.getQueryString().substring(1));
+
+			APIConnector api = new APIConnector(stageScale_iri);
+			try {
+				HttpEntity result = api.getData();
+				JSONObject result_jo = new JSONObject(EntityUtils.toString(result));
+				double datum = result_jo.getJSONObject("items").getDouble("datum");
+
+				datumMap.put(station_iri, datum);
+			} catch (IOException | URISyntaxException e) {
+				LOGGER.warn("Download from " + stageScale_iri + " failed");
+			}
+		}
+	
+		return datumMap;
+	}
+
+	void addDatum(JSONObject datum_json) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		for (String station : datum_json.keySet()) {
+			double datum = datum_json.getDouble(station);
+		}
+	}
 }

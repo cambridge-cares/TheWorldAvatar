@@ -122,14 +122,14 @@ public class testInitialiseStations {
 	
 	@Test
 	public void testInitTimeSeriesTables() throws UnsupportedCharsetException, IOException, URISyntaxException {
-		InitialiseStations.initFloodStationsWithAPI(api,storeClient);
+		// InitialiseStations.initFloodStationsWithAPI(api,storeClient);
 		
-		InitialiseStations.initTimeSeriesTables(sparqlClient, tsClient);
-        List<String> measures = sparqlClient.getMeasures();
+		// InitialiseStations.initTimeSeriesTables(sparqlClient, tsClient);
+        // List<String> measures = sparqlClient.getMeasures();
 		
-		for (String measure : measures) {
-			Assertions.assertTrue(tsClient.checkDataHasTimeSeries(measure));
-		}
+		// for (String measure : measures) {
+		// 	Assertions.assertTrue(tsClient.checkDataHasTimeSeries(measure));
+		// }
 	}
 	
 	@Test
@@ -141,17 +141,6 @@ public class testInitialiseStations {
 		InitialiseStations.setTsClient(tsClient);
 		
 		InitialiseStations.main(new String[0]);
-		
-		// check for added rdf type
-		List<String> stations = sparqlClient.getStations();
-		
-		// query <station> a ?something
-		for (String station : stations) {
-			SelectQuery query = Queries.SELECT();
-			GraphPattern queryPattern = iri(station).isA(query.var());
-			query.where(queryPattern);
-			Assertions.assertFalse(storeClient.executeQuery(query.getQueryString()).getJSONObject(0).isEmpty());
-		}
 	}
 	
 	@AfterEach

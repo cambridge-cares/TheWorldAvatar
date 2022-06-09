@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Paths;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -14,6 +16,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -58,6 +61,7 @@ public class InitialiseStations {
     	// be set with mocks using their respective setters
     	if (api == null) {
     		InitialiseStations.api = new APIConnector("http://environment.data.gov.uk/flood-monitoring/id/stations.rdf");
+			InitialiseStations.api.setParameter("_view", "full");
     	}
     	if (storeClient == null) {
     		InitialiseStations.storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
@@ -78,6 +82,17 @@ public class InitialiseStations {
         // add triples for OntoEMS
 		sparqlClient.addStationTypeAndCoordinates(stations);
 		sparqlClient.replaceMeasures(stations);
+		
+		// set to false by default, a copy of the file is saved in the resources folder
+		// takes a while to download because there is no API to download everything in 1 go
+		if (Config.DOWNLOAD_DATUM) {
+			JSONObject datumMap = sparqlClient.downloadDatum(stations);
+			File file = new File(Config.DATUM_FILE);
+			writeToFile(file, datumMap.toString(4));
+		}
+
+		// add datum triples for OntoEMS
+		
 		
 		// create a table for each measure uploaded to Blazegraph
     	initTimeSeriesTables(tsClient, stations);
@@ -136,5 +151,19 @@ public class InitialiseStations {
 		
 		tsClient.bulkInitTimeSeries(ts_list, classes, null);
 		tsClient.disconnectRDB();
+	}
+
+	private static void writeToFile(File file, String output) {
+		try {
+			file.createNewFile();
+			FileOutputStream outputStream = new FileOutputStream(file);
+			byte[] strToBytes = output.getBytes();
+			outputStream.write(strToBytes);
+			outputStream.close();
+			LOGGER.info("Created " + file.getAbsolutePath());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
 	}
 }
