@@ -1,9 +1,12 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -16,6 +19,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
@@ -24,7 +28,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * Downloads high level station information from http://environment.data.gov.uk/flood-monitoring/id/stations.rdf
+ * Downloads high level station information from http://environment.data.gov.uk/flood-monitoring/id/stations?_view=full.rdf
  * and post it to Blazegraph. The endpoint and credentials need to be saved at
  * credentials.properties
  * @author Kok Foong Lee
@@ -83,7 +87,7 @@ public class InitialiseStations {
 		sparqlClient.addStationTypeAndCoordinates(stations);
 		sparqlClient.replaceMeasures(stations);
 		
-		// set to false by default, a copy of the file is saved in the resources folder
+		// set to false by default, download it once and save it locally
 		// takes a while to download because there is no API to download everything in 1 go
 		if (Config.DOWNLOAD_DATUM) {
 			JSONObject datumMap = sparqlClient.downloadDatum(stations);
@@ -92,9 +96,16 @@ public class InitialiseStations {
 		}
 
 		// add datum triples for OntoEMS
+		// File specified by DATUM_FILE needs to exist
+		try {
+			JSONObject datum_json = new JSONObject(Files.readString(Paths.get(Config.DATUM_FILE)));
+			sparqlClient.addDatum(datum_json);
+		} catch (JSONException | IOException e) {
+			LOGGER.error("Failed to read datum file");
+			LOGGER.error(e.getMessage());
+		}
 		
-		
-		// create a table for each measure uploaded to Blazegraph
+		// create a table for each measure uploaded to Blazegraph and a table to record last updated date
     	initTimeSeriesTables(tsClient, stations);
     }
     
@@ -148,6 +159,10 @@ public class InitialiseStations {
 			ts_list.add(Arrays.asList(measures.get(i)));
 			classes.add(Arrays.asList(Double.class));
 		}
+
+		// table to record last updated time
+		ts_list.add(Arrays.asList(Config.TIME_IRI));
+		classes.add(Arrays.asList(LocalDate.class));
 		
 		tsClient.bulkInitTimeSeries(ts_list, classes, null);
 		tsClient.disconnectRDB();

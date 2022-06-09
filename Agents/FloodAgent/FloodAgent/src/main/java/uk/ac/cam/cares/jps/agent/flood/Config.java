@@ -29,6 +29,8 @@ public class Config{
 
 	public static boolean DOWNLOAD_DATUM = Boolean.parseBoolean(System.getenv("DOWNLOAD_DATUM"));
 	public static String DATUM_FILE = System.getenv("DATUM_FILE");
+
+	public static String TIME_IRI = "http://environment.data.gov.uk/flood-monitoring/id/stations/time";
 	
 	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 	
