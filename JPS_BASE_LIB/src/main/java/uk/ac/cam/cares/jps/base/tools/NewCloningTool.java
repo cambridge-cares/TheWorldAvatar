@@ -62,11 +62,11 @@ public class NewCloningTool {
 		this.overlap = overlap;
 	}
 	
-	public void cloneOverlap(String sourceURL, String targetURL ) {
-		cloneOverlap(sourceURL, targetURL, targetURL);
+	public void clone(String sourceURL, String targetURL ) {
+		clone(sourceURL, targetURL, targetURL);
 	}
 	
-	public void cloneOverlap(String sourceURL, String targetURLQuery, String targetURLUpdate) {
+	public void clone(String sourceURL, String targetURLQuery, String targetURLUpdate) {
 		
 		RemoteStoreClient source = new RemoteStoreClient(sourceURL);
 		RemoteStoreClient target = new RemoteStoreClient(targetURLQuery,targetURLUpdate);
@@ -109,58 +109,6 @@ public class NewCloningTool {
 		times.add(new timeStep(n,targetCount));
 		
 	}
-		
-	
-	public void doubleClone(String sourceURL, String targetURL) {
-		
-		RemoteStoreClient source = new RemoteStoreClient(sourceURL);
-		RemoteStoreClient target = new RemoteStoreClient(targetURL,targetURL);
-		
-		int sourceCount = source.getTotalNumberOfTriples();		
-		
-		int n = sourceCount/limit + 1;
-		
-		times.add(new timeStep(0,0));
-		
-		for(int i=0; i<n; i++) {
-			
-			int N = i*limit;
-			
-			String constructQuery = getSparqlConstruct(limit, N);
-			Model model = source.executeConstruct(constructQuery);
-			target.executeUpdate(getSparqlInsert(model));
-			
-			int targetCount = target.getTotalNumberOfTriples();
-			
-			times.add(new timeStep(N+limit,targetCount));
-			
-			System.out.print(targetCount);
-		}
-		
-		//second round offset by half the limit
-		String constructQuery = getSparqlConstruct(limit/2, 0);
-		Model model = source.executeConstruct(constructQuery);
-		target.executeUpdate(getSparqlInsert(model));
-		int targetCount = target.getTotalNumberOfTriples();
-		times.add(new timeStep(limit/2,targetCount));
-		System.out.print(targetCount);
-		
-		int N=0;
-		for(int i=1; i<n+1; i++) {
-			
-			N = i*limit-limit/2;
-			
-			constructQuery = getSparqlConstruct(limit, N);
-			model = source.executeConstruct(constructQuery);
-			target.executeUpdate(getSparqlInsert(model));
-			
-			targetCount = target.getTotalNumberOfTriples();
-			times.add(new timeStep(limit+N,targetCount));
-			System.out.print(targetCount);
-		}
-		
-	}
-	
 
 	public void writeTimesToFile(String path) throws IOException {
 		
@@ -195,8 +143,5 @@ public class NewCloningTool {
 		"WHERE {?s ?p ?o."
 		+ "FILTER(  isblank(?s) || isblank(?o) )}";
 	}
-	
-
 
 }
-

@@ -14,24 +14,7 @@ import uk.ac.cam.cares.jps.base.tools.NewCloningTool;
 class NewCloningToolTest {
 
 	@Test
-	void testDoubleClone() throws IOException {
-		
-		String path = "C:\\Users\\CLIN01\\Documents\\Codes\\cloning.txt";
-		
-		//String sourceURL = "http://localhost:8080/blazegraph/namespace/kb/sparql"; 
-		//String targetURL = "http://localhost:8080/blazegraph/namespace/kb2/sparql";
-		String sourceURL = "http://localhost:8080/blazegraph/namespace/ontokin/sparql"; 
-		String targetURL = "http://localhost:8080/blazegraph/namespace/ontokin2/sparql";
-		
-		NewCloningTool tool = new NewCloningTool();
-		tool.setLimit(1000000);
-		tool.doubleClone(sourceURL, targetURL);
-		
-		tool.writeTimesToFile(path);
-	}
-	
-	@Test
-	void testCloneOverlap() throws IOException {
+	void testClone() throws IOException {
 		
 		String path = "C:\\Users\\CLIN01\\Documents\\Codes\\cloning_overlap_blank.txt";
 		
@@ -43,13 +26,13 @@ class NewCloningToolTest {
 		NewCloningTool tool = new NewCloningTool();
 		
 		tool.setLimitOverlap(500000, 10000);
-		tool.cloneOverlap(sourceURL, targetURL);
+		tool.clone(sourceURL, targetURL);
 		
 		tool.writeTimesToFile(path);
 	}
 	
 	@Test
-	void testCloneOverlapFuseki() throws IOException {
+	void testCloneFuseki() throws IOException {
 		
 		String path = "C:\\Users\\CLIN01\\Documents\\Codes\\cloning_overlap_fuseki.txt";
 		
@@ -62,26 +45,10 @@ class NewCloningToolTest {
 		NewCloningTool tool = new NewCloningTool();
 		
 		tool.setLimitOverlap(500000, 10000);
-		tool.cloneOverlap(sourceURL, targetURLQuery, targetURLUpdate);
+		tool.clone(sourceURL, targetURLQuery, targetURLUpdate);
 		
 		tool.writeTimesToFile(path);
 	}
 	
-	@Test
-	void testOldCloningTool() throws IOException {
-		
-		String path = "C:\\Users\\CLIN01\\Documents\\Codes\\cloning_oldtool.txt";
-		
-		String sourceURL = "http://localhost:8080/blazegraph/namespace/ontokin/sparql"; 
-		String targetURL = "http://localhost:8080/blazegraph/namespace/ontokin2/sparql";
-		
-		RemoteStoreClient source = new RemoteStoreClient(sourceURL,sourceURL);
-		RemoteStoreClient target = new RemoteStoreClient(targetURL,targetURL);
-		
-		CloningTool cloningTool = new CloningTool(500000);
-		cloningTool.setTripleStore();
-		cloningTool.clone(source, target);
-		
-		cloningTool.writeTimesToFile(path);
-	}
+	
 }
