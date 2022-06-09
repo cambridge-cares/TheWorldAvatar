@@ -14,12 +14,13 @@ import org.apache.jena.sparql.expr.Expr;
 import org.apache.jena.sparql.expr.ExprVar;
 import org.apache.jena.update.UpdateRequest;
 
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class NewCloningTool {
 
 	int limit = 100000;
-	int overlap = (int) (limit*0.1); //10% overlap
+	int overlap = (int) (limit*0.1); //10% overlap by default
 	
 	static ExprFactory exprFactory = new ExprFactory();
 	
@@ -57,19 +58,12 @@ public class NewCloningTool {
 		this.overlap = (int) (limit*0.1);
 	}
 	
-	public void setLimitOverlap(int limit, int overlap) {
+	public void setLimitAndOverlap(int limit, int overlap) {
 		this.limit = limit;
 		this.overlap = overlap;
 	}
 	
-	public void clone(String sourceURL, String targetURL ) {
-		clone(sourceURL, targetURL, targetURL);
-	}
-	
-	public void clone(String sourceURL, String targetURLQuery, String targetURLUpdate) {
-		
-		RemoteStoreClient source = new RemoteStoreClient(sourceURL);
-		RemoteStoreClient target = new RemoteStoreClient(targetURLQuery,targetURLUpdate);
+	public void clone(StoreClientInterface source, StoreClientInterface target) {
 		
 		//TODO should filter out blanks here
 		int sourceCount = source.getTotalNumberOfTriples();		
