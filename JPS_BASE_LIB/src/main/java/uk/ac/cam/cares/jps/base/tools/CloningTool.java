@@ -1,7 +1,11 @@
 package uk.ac.cam.cares.jps.base.tools;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.ExprFactory;
@@ -23,6 +27,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.tools.NewCloningTool.timeStep;
 
 /**
  * Cloning Tool
@@ -71,6 +76,42 @@ public class CloningTool {
 	// STR(?s)
 	static Expr exprStrS = exprFactory.str(exprS);
 	
+	///////////////////////////
+	///////////////////////////
+	class timeStep{
+		
+		long timeStamp;
+		int targetCount;
+		int cloneCount;
+		
+		timeStep(int cloneCount, int targetCount){
+			this.timeStamp = System.nanoTime();
+			this.cloneCount = cloneCount;
+			this.targetCount = targetCount;
+		}
+		
+		String get() {
+			String line = Long.toString(timeStamp)+","+Integer.toString(targetCount)+","+Integer.toString(cloneCount)+",";
+			return line;
+		}
+	}
+	
+	ArrayList<timeStep> times = new ArrayList<timeStep>();
+	
+	public void writeTimesToFile(String path) throws IOException {
+		
+		FileWriter fileWriter = new FileWriter(path);
+	    PrintWriter printWriter = new PrintWriter(fileWriter);
+		
+		for(int i=0; i<times.size(); i++) {
+			printWriter.print(times.get(i).get());
+			printWriter.println();
+		}
+		
+		printWriter.close();
+	}
+	///////////////////////////
+	///////////////////////////
 	///////////////////////// Constructors
 	
 	/**
@@ -209,6 +250,8 @@ public class CloningTool {
 		int steps = count/stepSize;
 		if(count%stepSize > 0) {steps++;}
 				 
+		times.add(new timeStep(0,0));
+		
 		for(int i = 0; i<steps; i++) {
 			// Iterate tag
 			Expr exprTagN = buildExprTagN(i);
@@ -249,6 +292,8 @@ public class CloningTool {
 			// Insert triples to target
 			UpdateRequest update = buildInsert(targetGraph, dataset.getDefaultModel());
 			targetKB.executeUpdate(update);
+			
+			times.add(new timeStep((i+1)*stepSize,targetKB.getTotalNumberOfTriples()));
 		}
 		
 		// Clone everything that is not tagged i.e. blank nodes
@@ -263,6 +308,8 @@ public class CloningTool {
 		UpdateRequest update = buildInsert(targetGraph, triples);
 		targetKB.executeUpdate(update);
 		
+		times.add(new timeStep(-1,targetKB.getTotalNumberOfTriples()));
+		
 		// Remove tags from source
 		for(int i = 0; i<steps; i++) {
 			Expr exprTagN = buildExprTagN(i);
@@ -273,6 +320,8 @@ public class CloningTool {
 			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereTagged, stepSize, quads);
 			sourceKB.executeUpdate(tagUpdate);
 		}
+		
+		times.add(new timeStep(-2,targetKB.getTotalNumberOfTriples()));
 	}
 	
 	/**
