@@ -38,10 +38,11 @@ tt=dt.timetuple()
 
 
 try:
-	weatherData = json.loads(sys.argv[2].replace('$','"'))
+	weatherData = json.loads(sys.argv[2].replace("'",'"'))
 	fullPath = sys.argv[1]
-	
+
 	cloudCover = weatherData['hascloudcover']['hascloudcovervalue']
+
 	cloudCover = (float(cloudCover)) * 8
 	if weatherData['haswind']['hasdirection'] == '':
 		windDirection = 180
@@ -56,7 +57,6 @@ try:
 	precitipation = weatherData['hasprecipation']['hasintensity']
 	temperature = weatherData['hasexteriortemperature']['hasvalue']
 	relativehumidity=weatherData['hashumidity']['hasvalue']
-	
 except:
 	print("ERROR: Invalid Input")
 

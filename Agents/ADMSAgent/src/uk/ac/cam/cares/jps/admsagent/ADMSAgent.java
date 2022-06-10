@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -140,7 +141,7 @@ public class ADMSAgent extends JPSAgent {
             throw new BadRequestException("In the requestParam object one of the keys:city,agent and stationiri are either not present or incorrectly assigned.");
         } else if(!checkRegion(requestParams)){
             throw new BadRequestException("In the requestParam object either the key:region is missing or is null or is empty.");
-        }else if(!checkShip(requestParams) || !checkPlant(requestParams)){
+        }else if((!checkShip(requestParams) && !requestParams.has("plant")) ||   ( !requestParams.has("ship") && !checkPlant(requestParams)) ){
             throw new BadRequestException("In the requestParam object one of either the keys:ship or plant are either not present or incorrectly assigned.");
         } else{
             if (!checkSrsname(requestParams)) {
@@ -152,7 +153,7 @@ public class ADMSAgent extends JPSAgent {
             if (!checkUpperCorner(requestParams)) {
                 throw new BadRequestException("In the region object the structure of key:uppercorner is incorrect. Check if all keys in uppercorner are assigned.");
             }
-            if (!checkItems(requestParams)) {
+            if (requestParams.has("ship") && !checkItems(requestParams)) {
                 throw new BadRequestException("In the ship object check the keys: mmsi,lat and lon. Either they are missing or incorrectly assigned.");
             }
         }
@@ -262,11 +263,11 @@ public class ADMSAgent extends JPSAgent {
             validate =false;
         }else{
             JSONArray stationIRI= requestParams.getJSONArray("stationiri");
-            if(stationIRI.isEmpty()){
+            if(stationIRI.isEmpty() || stationIRI.equals(JSONObject.NULL)){
                 validate=false;
             } else{
                 for (int i=0;i<stationIRI.length();i++) {
-                    if (stationIRI.get(i).toString().isEmpty()) {
+                    if (stationIRI.get(i).toString().isEmpty() || stationIRI.isNull(i)) {
                         validate = false;
                         break;
                     }
@@ -307,11 +308,15 @@ public class ADMSAgent extends JPSAgent {
         JSONObject ship = requestParams.getJSONObject("ship");
         if( !ship.has("container") || ship.isNull("container") ){
             validate=false;
-        }else if( !(ship.getJSONObject("container").keySet().contains("items")) || ship.getJSONObject("container").isNull("items")){
+        }else if( !(ship.getJSONObject("container").keySet().contains("items")) || ship.getJSONObject("container").getJSONArray("items").isEmpty()){
             validate= false;
         }else{
             JSONArray items= ship.getJSONObject("container").getJSONArray("items");
             for (int i=0;i<items.length();i++){
+                if(items.get(i).equals(JSONObject.NULL)){
+                    validate=false;
+                    break;
+                }
                 if(!checkLat(items.getJSONObject(i)) || !checkLon(items.getJSONObject(i)) || !checkMMSI(items.getJSONObject(i))){
                     validate=false;
                     break;
@@ -390,7 +395,7 @@ public class ADMSAgent extends JPSAgent {
          */
         String speed[] = new String[2];
         speed[0]="speed";
-        speed[1]="12";
+        speed[1]="12.0";
         String direction[] = new String[2];
         direction[0]="direction";
         direction[1]="200.0";
@@ -550,7 +555,7 @@ public class ADMSAgent extends JPSAgent {
         args.add("admsMetWriter.py");
         args.add(fullPath);
         // TODO-AE replacing " by $, maybe better by ' as is done in method writeAPLFile
-        args.add(weatherInJSON.toString().replace("\"", "$"));
+        args.add(weatherInJSON.toString().replace("\"", "'"));//replaced dollar with single quotes for simplicity
 
         CommandHelper.executeCommands(targetFolder, args);
     }
@@ -562,7 +567,7 @@ public class ADMSAgent extends JPSAgent {
         args.add("python");
         args.add("admsBgdWriter.py");
         args.add(fullPath);
-        args.add(bkgInJSON.toString().replace("\"", "$"));
+        args.add(bkgInJSON.toString().replace("\"", "'"));//replaced dollar symbol with single quotes for simplicity
 
         CommandHelper.executeCommands(targetFolder, args);
     }
@@ -670,11 +675,18 @@ public class ADMSAgent extends JPSAgent {
 //        SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(city, buildingIRIs);
 //        String argument = new Gson().toJson(result);
 //        return argument;
-        
-        //String resultdata=execute("/JPS/BuildingsData", req.toString());
+
+        /**
+         * Original code
+         */
+
+        //String resultdata= AgentCaller.executeGet("/JPS/BuildingsData", "query",req.toString());
+        //return resultdata;
+
         /**
          * Mock values
          */
+
         JSONObject building= new JSONObject();
         JSONArray bldIRI= new JSONArray();
         bldIRI.put("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingB09332fb1-0b21-4bca-a52c-c71f8cd0e5a1");
@@ -706,6 +718,7 @@ public class ADMSAgent extends JPSAgent {
         String resultdata= building.toString();
 
         return resultdata;
+
     }
 
     public void executeModel(String targetFolder) {

@@ -1,14 +1,30 @@
 package uk.ac.cam.cares.jps.admsagent;
 
+import com.bigdata.service.ndx.pipeline.IndexWriteTask;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+import org.mockito.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.stubbing.Answer;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.admsagent.ADMSAgent;
 
+import javax.ws.rs.BadRequestException;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ADMSAgentTest {
+
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void testCheckRegion() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
@@ -435,7 +451,704 @@ public class ADMSAgentTest {
     }
 
     @Test
-    public void testCheckItems(){
+    public void testCheckItems() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ADMSAgent admsAgent= new ADMSAgent();
+        Method checkItems= admsAgent.getClass().getDeclaredMethod("checkItems", JSONObject.class);
+        checkItems.setAccessible(true);
+
+        //check case with no container key
+        JSONObject requestParams= new JSONObject();
+        JSONObject ship = new JSONObject();
+        requestParams.put("ship",ship);
+        String val= checkItems.invoke(admsAgent,requestParams).toString();
+        Assert.assertEquals("false",val);
+
+        //check case with empty container key
+        JSONObject container= new JSONObject();
+        ship.put("container",container);
+        val= checkItems.invoke(admsAgent,requestParams).toString();
+        Assert.assertEquals("false",val);
+
+        //check case with no items key
+        container.put("key","value");
+        val= checkItems.invoke(admsAgent,requestParams).toString();
+        Assert.assertEquals("false",val);
+
+        //check case with items key with empty value
+        JSONArray items= new JSONArray();
+        container.put("items",items);
+        val= checkItems.invoke(admsAgent,requestParams).toString();
+        Assert.assertEquals("false",val);
+
+        //check case with items key with null value
+        items.put(JSONObject.NULL);
+        val= checkItems.invoke(admsAgent,requestParams).toString();
+        Assert.assertEquals("false",val);
+
+        //check individual cases for mmsi, lat , lon in items array
+        //case with where none of the keys is inside items
+        items = new JSONArray();
+        JSONObject obj= new JSONObject();
+        obj.put("key","value");
+        items.put(obj);
+        container.put("items",items);
+        val= checkItems.invoke(admsAgent,requestParams).toString();
+        Assert.assertEquals("false",val);
+
+        //check case with keys having null value
+        items = new JSONArray();
+        obj.put("mmsi", JSONObject.NULL);
+        obj.put("lat",JSONObject.NULL);
+        obj.put("lon",JSONObject.NULL);
+        val=checkItems.invoke(admsAgent,requestParams).toString();
+        Assert.assertEquals("false",val);
+
+        //check case with keys having empty value
+        items = new JSONArray();
+        obj.put("mmsi","");
+        obj.put("lon","");
+        obj.put("lat","");
+        val=checkItems.invoke(admsAgent,requestParams).toString();
+        Assert.assertEquals("false",val);
+
+        //check case with valid key:value pair
+        items = new JSONArray();
+        obj.put("mmsi","563009850");
+        obj.put("lon","114.15338");
+        obj.put("lat","22.28822");
+        val=checkItems.invoke(admsAgent,requestParams).toString();
+        Assert.assertEquals("true",val);
+    }
+
+    @Test
+    public void testValidateInput() throws NoSuchMethodException,IllegalAccessException,InvocationTargetException {
+        ADMSAgent admsAgent= new ADMSAgent();
+        JSONObject requestParams= new JSONObject();
+
+        //case where requestParams is empty
+       try {
+           admsAgent.validateInput(requestParams);
+           Assert.fail();
+       }catch (BadRequestException e){
+           Assert.assertEquals("RequestParam is empty.",e.getMessage());
+       }
+
+        //case where city,agent,stationiri keys are missing
+        requestParams.put("key","value");
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the requestParam object one of the keys:city,agent and stationiri are either not present or incorrectly assigned.",e.getMessage());
+        }
+        //case where city,agent,stationiri keys are empty
+        requestParams.put("city","");
+        requestParams.put("agent","");
+        JSONArray stationIRI= new JSONArray();
+        requestParams.put("stationiri",stationIRI);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the requestParam object one of the keys:city,agent and stationiri are either not present or incorrectly assigned.",e.getMessage());
+        }
+        //case where city,agent,stationiri keys are null
+        requestParams.put("city",JSONObject.NULL);
+        requestParams.put("agent",JSONObject.NULL);
+        requestParams.put("stationiri",JSONObject.NULL);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the requestParam object one of the keys:city,agent and stationiri are either not present or incorrectly assigned.",e.getMessage());
+        }
+        //case where region key is missing
+        requestParams.put("city","Singapore");
+        requestParams.put("agent","testAgent");
+        stationIRI.put("http://SingaporeStationIRI/test");
+        requestParams.put("stationiri",stationIRI);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the requestParam object either the key:region is missing or is null or is empty.",e.getMessage());
+        }
+        //case where region key is empty
+        JSONObject region = new JSONObject();
+        requestParams.put("region",region);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the requestParam object either the key:region is missing or is null or is empty.",e.getMessage());
+        }
+        //case where region key is null
+        requestParams.put("region",JSONObject.NULL);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the requestParam object either the key:region is missing or is null or is empty.",e.getMessage());
+        }
+        //case with no ship or plant key
+        region.put("key","value");
+        requestParams.put("region",region);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the requestParam object one of either the keys:ship or plant are either not present or incorrectly assigned.",e.getMessage());
+        }
+        //ship key is empty
+        JSONObject ship = new JSONObject();
+        requestParams.put("ship",ship);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the requestParam object one of either the keys:ship or plant are either not present or incorrectly assigned.",e.getMessage());
+        }
+        //ship key is null
+        requestParams.put("ship",JSONObject.NULL);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the requestParam object one of either the keys:ship or plant are either not present or incorrectly assigned.",e.getMessage());
+        }
+        //srsname key not present in the region object
+        ship.put("key","value");
+        requestParams.put("ship",ship);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the region object either the key:srsname is missing or is null or is empty.",e.getMessage());
+        }
+        //srsname key is empty
+        region.put("srsname","");
+        requestParams.put("region",region);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the region object either the key:srsname is missing or is null or is empty.",e.getMessage());
+        }
+        //srsname key is null
+        region.put("srsname",JSONObject.NULL);
+        requestParams.put("region",region);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the region object either the key:srsname is missing or is null or is empty.",e.getMessage());
+        }
+        //lowercorner object is incorrect
+        JSONObject lowercorner= new JSONObject();
+        region.put("srsname","mySrs");
+        region.put("lowercorner",lowercorner);
+        requestParams.put("region",region);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the region object the structure of key:lowercorner is incorrect. Check if all keys in lowercorner are assigned.",e.getMessage());
+        }
+        //null values assigned to the keys inside the lowercorner
+        lowercorner.put("lowerx",JSONObject.NULL);
+        lowercorner.put("lowery",JSONObject.NULL);
+        region.put("lowercorner",lowercorner);
+        requestParams.put("region",region);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the region object the structure of key:lowercorner is incorrect. Check if all keys in lowercorner are assigned.",e.getMessage());
+        }
+        //uppercorner object is incorrect
+        lowercorner.put("lowerx",50);
+        lowercorner.put("lowery",100);
+        JSONObject uppercorner= new JSONObject();
+        region.put("srsname","mySrs");
+        region.put("lowercorner",lowercorner);
+        region.put("upperconer",uppercorner);
+        requestParams.put("region",region);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the region object the structure of key:uppercorner is incorrect. Check if all keys in uppercorner are assigned.",e.getMessage());
+        }
+        //null values assigned to the keys inside the uppercorner
+        uppercorner.put("upperx",JSONObject.NULL);
+        uppercorner.put("uppery",JSONObject.NULL);
+        region.put("uppercorner",uppercorner);
+        requestParams.put("region",region);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the region object the structure of key:uppercorner is incorrect. Check if all keys in uppercorner are assigned.",e.getMessage());
+        }
+        //container key missing from ship object
+        uppercorner.put("upperx",100);
+        uppercorner.put("uppery",300);
+        region.put("uppercorner",uppercorner);
+        requestParams.put("region",region);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the ship object check the keys: mmsi,lat and lon. Either they are missing or incorrectly assigned.",e.getMessage());
+        }
+        //container key is empty
+        JSONObject container= new JSONObject();
+        ship.put("container",container);
+        requestParams.put("ship",ship);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the ship object check the keys: mmsi,lat and lon. Either they are missing or incorrectly assigned.",e.getMessage());
+        }
+        //items array is empty
+        JSONArray items= new JSONArray();
+        container.put("items",items);
+        ship.put("container",container);
+        requestParams.put("ship",ship);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the ship object check the keys: mmsi,lat and lon. Either they are missing or incorrectly assigned.",e.getMessage());
+        }
+        //items array contains null value
+        items.put(JSONObject.NULL);
+        container.put("items",items);
+        ship.put("container",container);
+        requestParams.put("ship",ship);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the ship object check the keys: mmsi,lat and lon. Either they are missing or incorrectly assigned.",e.getMessage());
+        }
+        //items does not contain the keys
+        JSONObject obj= new JSONObject();
+        obj.put("key","value");
+        items.put(obj);
+        container.put("items",items);
+        ship.put("container",container);
+        requestParams.put("ship",ship);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the ship object check the keys: mmsi,lat and lon. Either they are missing or incorrectly assigned.",e.getMessage());
+        }
+        //the keys in items are null
+        items.remove(0);
+        obj.remove("key");
+        obj.put("mmsi",JSONObject.NULL);
+        obj.put("lat",JSONObject.NULL);
+        obj.put("lon",JSONObject.NULL);
+        items.put(obj);
+        container.put("items",items);
+        ship.put("container",container);
+        requestParams.put("ship",ship);
+        try{
+            admsAgent.validateInput(requestParams);
+            Assert.fail();
+        }catch (BadRequestException e){
+            Assert.assertEquals("In the ship object check the keys: mmsi,lat and lon. Either they are missing or incorrectly assigned.",e.getMessage());
+        }
+        // the keys in items are valid
+        items.remove(0);
+        obj.remove("key");
+        obj.put("mmsi","123456789");
+        obj.put("lat",22);
+        obj.put("lon",120);
+        items.put(obj);
+        container.put("items",items);
+        ship.put("container",container);
+        requestParams.put("ship",ship);
+        boolean actual=admsAgent.validateInput(requestParams);
+        Assert.assertTrue(actual);
+
+        //remove ship key and try a valid plant key
+        requestParams.remove("ship");
+        requestParams.put("plant","http://testPlant/myIRI");
+        actual=admsAgent.validateInput(requestParams);
+        Assert.assertTrue(actual);
+    }
+
+    @Test
+    public void testRetrieveBuildingDataInJSON() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ADMSAgent admsAgent = new ADMSAgent();
+        Method retrieveBuildingDataInJSON = admsAgent.getClass().getDeclaredMethod("retrieveBuildingDataInJSON", JSONObject.class, String.class);
+        retrieveBuildingDataInJSON.setAccessible(true);
+
+        JSONObject region = new JSONObject();
+        JSONObject upperCorner= new JSONObject();
+        upperCorner.put("upperx",100);
+        upperCorner.put("uppery",300);
+        JSONObject lowerCorner= new JSONObject();
+        lowerCorner.put("lowerx",50);
+        lowerCorner.put("lowery",100);
+        region.put("uppercorner",upperCorner);
+        region.put("lowercorner",lowerCorner);
+        region.put("srsname","testSrsName");
+        String city="http://dbpedia.org/resource/Singapore";
+
+        /**
+         * Test based on
+         * the original code in the method
+         */
+/*
+        JSONObject req= new JSONObject();
+        req.put("region",region);
+        req.put("city",city);
+        String expected="testString";
+        try(MockedStatic<AgentCaller>ac=Mockito.mockStatic(AgentCaller.class)){
+            ac.when(()->AgentCaller.executeGet("/JPS/BuildingsData","query",req.toString())).thenReturn(expected);
+            String actual=(String) retrieveBuildingDataInJSON.invoke(admsAgent,region,city);
+            Assert.assertEquals(expected,actual);
+        }
+*/
+        /**
+         * Test based on the mock values
+         * directly specified in the method.
+         */
+
+        JSONObject building= new JSONObject();
+        JSONArray bldIRI= new JSONArray();
+        bldIRI.put("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingB09332fb1-0b21-4bca-a52c-c71f8cd0e5a1");
+        building.put("BldIRI",bldIRI);
+        JSONArray bldName= new JSONArray();
+        bldName.put("a-a52c-c71f8cd0e5a1");
+        building.put("BldName",bldName);
+        JSONArray bldType= new JSONArray();
+        bldType.put("0");
+        building.put("BldType",bldType);
+        JSONArray bldX= new JSONArray();
+        bldX.put("30283.28271214908");
+        building.put("BldX",bldX);
+        JSONArray bldY= new JSONArray();
+        bldY.put("816155.3357251927");
+        building.put("BldY",bldY);
+        JSONArray bldHeight= new JSONArray();
+        bldHeight.put("130.79999999999998");
+        building.put("BldHeight",bldHeight);
+        JSONArray bldLength= new JSONArray();
+        bldLength.put("16.278820596099706");
+        building.put("BldLength",bldLength);
+        JSONArray bldWidth= new JSONArray();
+        bldWidth.put("17.392230495361243");
+        building.put("BldWidth",bldWidth);
+        JSONArray bldAngle= new JSONArray();
+        bldAngle.put("42.510447078000844");
+        building.put("BldAngle",bldAngle);
+        String expected= building.toString();
+
+        String actual=(String)retrieveBuildingDataInJSON.invoke(admsAgent,region,city);
+        Assert.assertEquals(expected,actual);
+
+    }
+
+    @Test
+    public void testGetBuildingData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ADMSAgent admsAgent = new ADMSAgent();
+        Method getBuildingData= admsAgent.getClass().getDeclaredMethod("getBuildingData", JSONObject.class, String.class);
+        getBuildingData.setAccessible(true);
+
+
+        JSONObject region = new JSONObject();
+        JSONObject upperCorner= new JSONObject();
+        upperCorner.put("upperx",100);
+        upperCorner.put("uppery",300);
+        JSONObject lowerCorner= new JSONObject();
+        lowerCorner.put("lowerx",50);
+        lowerCorner.put("lowery",100);
+        region.put("uppercorner",upperCorner);
+        region.put("lowercorner",lowerCorner);
+        region.put("srsname","testSrsName");
+        String city="http://dbpedia.org/resource/Singapore";
+
+        JSONObject building= new JSONObject();
+        JSONArray bldIRI= new JSONArray();
+        bldIRI.put("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingB09332fb1-0b21-4bca-a52c-c71f8cd0e5a1");
+        building.put("BldIRI",bldIRI);
+        JSONArray bldName= new JSONArray();
+        bldName.put("a-a52c-c71f8cd0e5a1");
+        building.put("BldName",bldName);
+        JSONArray bldType= new JSONArray();
+        bldType.put("0");
+        building.put("BldType",bldType);
+        JSONArray bldX= new JSONArray();
+        bldX.put("30283.28271214908");
+        building.put("BldX",bldX);
+        JSONArray bldY= new JSONArray();
+        bldY.put("816155.3357251927");
+        building.put("BldY",bldY);
+        JSONArray bldHeight= new JSONArray();
+        bldHeight.put("130.79999999999998");
+        building.put("BldHeight",bldHeight);
+        JSONArray bldLength= new JSONArray();
+        bldLength.put("16.278820596099706");
+        building.put("BldLength",bldLength);
+        JSONArray bldWidth= new JSONArray();
+        bldWidth.put("17.392230495361243");
+        building.put("BldWidth",bldWidth);
+        JSONArray bldAngle= new JSONArray();
+        bldAngle.put("42.510447078000844");
+        building.put("BldAngle",bldAngle);
+        String expected= building.toString();
+        expected= expected.replace("\"","\'");
+
+        String actual=(String)getBuildingData.invoke(admsAgent,region,city);
+        Assert.assertEquals(expected,actual);
+
+    }
+
+    @Test
+    public void testGetTargetCRS() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ADMSAgent admsAgent = new ADMSAgent();
+        Method getTargetCRS= admsAgent.getClass().getDeclaredMethod("getTargetCRS", String.class);
+        getTargetCRS.setAccessible(true);
+
+        String cityIRI= "http://dbpedia.org/resource/Berlin";
+        String expected="EPSG:25833";
+        String actual=(String) getTargetCRS.invoke(admsAgent,cityIRI);
+        Assert.assertEquals(expected,actual);
+
+        cityIRI= "http://dbpedia.org/resource/The_Hague";
+        expected="EPSG:28992";
+        actual=(String) getTargetCRS.invoke(admsAgent,cityIRI);
+        Assert.assertEquals(expected,actual);
+
+        cityIRI="http://dbpedia.org/resource/Singapore";
+        expected="EPSG:3414";
+        actual=(String) getTargetCRS.invoke(admsAgent,cityIRI);
+        Assert.assertEquals(expected,actual);
+
+        cityIRI="http://dbpedia.org/resource/Hong_Kong";
+        expected="EPSG:2326";
+        actual=(String) getTargetCRS.invoke(admsAgent,cityIRI);
+        Assert.assertEquals(expected,actual);
+
+        cityIRI="http://dbpedia.org/resource/Stockholm";
+        expected="EPSG:3857";
+        actual=(String) getTargetCRS.invoke(admsAgent,cityIRI);
+        Assert.assertEquals(expected,actual);
+    }
+
+    @Test
+    public void testGetEntityCoordinates() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ADMSAgent admsAgent = new ADMSAgent();
+        Method getEntityCoordiantes = admsAgent.getClass().getDeclaredMethod("getEntityCoordinates", JSONObject.class);
+        getEntityCoordiantes.setAccessible(true);
+
+        //case where input object is empty
+        JSONObject input= new JSONObject();
+        JSONArray expected= new JSONArray();
+        JSONArray actual= (JSONArray)getEntityCoordiantes.invoke(admsAgent,input);
+        Assert.assertEquals(expected.length(),actual.length());
+        for (int i=0; i<actual.length();i++){
+            Assert.assertEquals(expected.get(i).toString(),actual.get(i).toString());
+        }
+
+        //case where input object only contains collection key but without the correct JSONObject
+        JSONObject collection=  new JSONObject();
+        input.put("collection",collection);
+        actual= (JSONArray)getEntityCoordiantes.invoke(admsAgent,input);
+        Assert.assertEquals(expected.length(),actual.length());
+        for (int i=0; i<actual.length();i++){
+            Assert.assertEquals(expected.get(i).toString(),actual.get(i).toString());
+        }
+
+        //case where input object only contains collection key and items key but items key does not contain lat,lon and mmsi
+        JSONArray items= new JSONArray();
+        JSONObject obj= new JSONObject();
+        obj.put("key","value");
+        items.put(obj);
+        collection.put("items",items);
+        actual= (JSONArray)getEntityCoordiantes.invoke(admsAgent,input);
+        Assert.assertEquals(expected.length(),actual.length());
+        for (int i=0; i<actual.length();i++){
+            Assert.assertEquals(expected.get(i).toString(),actual.get(i).toString());
+        }
+
+        //case where all keys are present
+        obj.put("mmsi","12345689");
+        obj.put("lat","22");
+        obj.put("lon","112");
+        JSONObject expectedLatLon= new JSONObject();
+        expectedLatLon.put("mmsi",obj.get("mmsi"));
+        expectedLatLon.put("lat",obj.getDouble("lat"));
+        expectedLatLon.put("lon",obj.getDouble("lon"));
+        expected.put(expectedLatLon);
+        actual= (JSONArray)getEntityCoordiantes.invoke(admsAgent,input);
+        Assert.assertEquals(expected.length(),actual.length());
+        for (int i=0; i<actual.length();i++){
+            Assert.assertEquals(expected.get(i).toString(),actual.get(i).toString());
+        }
+    }
+
+    @Test
+    public void testGetSourceData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ADMSAgent admsAgent = new ADMSAgent();
+        Method getSourceData= admsAgent.getClass().getDeclaredMethod("getSourceData", JSONObject.class, String.class);
+        getSourceData.setAccessible(true);
+
+        JSONObject object= new JSONObject();
+        object.put("city","http://dbpedia.org/resource/Berlin");
+        object.put("plant","http://myPlants.org/BerlinPlantIRI");
+        String expected="http://myPlants.org/BerlinPlantIRI";
+        String actual=(String) getSourceData.invoke(admsAgent,object,object.get("city"));
+        Assert.assertEquals(expected,actual);
+
+        object.put("city","http://dbpedia.org/resource/TheHague");
+        object.put("plant","http://myPlants.org/TheHaguePlantIRI");
+        expected="http://myPlants.org/TheHaguePlantIRI";
+        actual=(String) getSourceData.invoke(admsAgent,object,object.get("city"));
+        Assert.assertEquals(expected,actual);
+
+        object.put("city","http://dbpedia.org/resource/Singapore");
+        expected=null;
+        actual=(String) getSourceData.invoke(admsAgent,object,object.get("city"));
+        Assert.assertEquals(expected,actual);
+
+        object.put("city","http://dbpedia.org/resource/Hong_Kong");
+        expected=null;
+        actual=(String) getSourceData.invoke(admsAgent,object,object.get("city"));
+        Assert.assertEquals(expected,actual);
+    }
+
+    @Test
+    public void testCreateWeatherInput() throws IOException {
+        ADMSAgent admsAgent= new ADMSAgent();
+
+        //create temp folder
+        File tempFolder1 = folder.newFolder( "tempFolder");
+        String fullPath= tempFolder1.getPath();
+
+        //Mock file name passed as an argument
+        String filename="testFilename";
+
+        //Mock stationIRI passed as an argument
+        List<String> stationIRI= new ArrayList<>();
+        stationIRI.add("testStationIRI1");
+        stationIRI.add("testStationIRI2");
+
+        //create weather data in JSON format
+        JSONObject weatherInJSON= new JSONObject();
+        JSONObject wind = new JSONObject();
+        JSONObject temperature = new JSONObject();
+        JSONObject relativehumidity= new JSONObject();
+        JSONObject cloudcover= new JSONObject();
+        JSONObject precipation = new JSONObject();
+
+        wind.put("hasspeed","12.0");
+        wind.put("hasdirection","200.0");
+        temperature.put("hasvalue","12.0");
+        relativehumidity.put("hasvalue","20.0");
+        cloudcover.put("hascloudcovervalue","1.0");
+        precipation.put("hasintensity","12.0");
+
+        weatherInJSON.put("haswind",wind);
+        weatherInJSON.put("hasexteriortemperature",temperature);
+        weatherInJSON.put("hashumidity",relativehumidity);
+        weatherInJSON.put("hasprecipation",precipation);
+        weatherInJSON.put("hascloudcover",cloudcover);
+
+
+        admsAgent.createWeatherInput(fullPath,filename,stationIRI);
+        File metFile= new File(fullPath+"/test.met");
+        Assert.assertTrue(metFile.exists());//check if the file is created
+        Assert.assertTrue(metFile.length()>0);//check if there is data inside the file
+
+    }
+
+    @Test
+    public void testWriteMetFile() throws IOException {
+        ADMSAgent admsAgent= new ADMSAgent();
+
+        //create temp folder
+        File tempFolder1 = folder.newFolder( "tempFolder");
+        String fullPath= tempFolder1.getPath();
+
+        //create weather data in JSON format
+        JSONObject weatherInJSON= new JSONObject();
+        JSONObject wind = new JSONObject();
+        JSONObject temperature = new JSONObject();
+        JSONObject relativehumidity= new JSONObject();
+        JSONObject cloudcover= new JSONObject();
+        JSONObject precipation = new JSONObject();
+
+        wind.put("hasspeed",12.0);
+        wind.put("hasdirection",200.0);
+        temperature.put("hasvalue",12.0);
+        relativehumidity.put("hasvalue",0.2);
+        cloudcover.put("hascloudcovervalue",1.0);
+        precipation.put("hasintensity",50);
+
+        weatherInJSON.put("haswind",wind);
+        weatherInJSON.put("hasexteriortemperature",temperature);
+        weatherInJSON.put("hashumidity",relativehumidity);
+        weatherInJSON.put("hasprecipation",precipation);
+        weatherInJSON.put("hascloudcover",cloudcover);
+
+        admsAgent.writeMetFile(weatherInJSON,fullPath);
+        File metFile= new File(fullPath+"/test.met");
+        Assert.assertTrue(metFile.exists());//check if the file is created
+        Assert.assertTrue(metFile.length()>0);//check if there is data inside the file
+    }
+
+    @Test
+    public void testWriteBkgFile() throws IOException {
+        ADMSAgent agent = new ADMSAgent();
+
+        //create temp folder
+        File tempFolder1 = folder.newFolder( "tempFolder");
+        String fullPath= tempFolder1.getPath();
+
+        //create mock region object
+        JSONObject region = new JSONObject();
+        JSONObject upperCorner= new JSONObject();
+        upperCorner.put("upperx",100);
+        upperCorner.put("uppery",300);
+        JSONObject lowerCorner= new JSONObject();
+        lowerCorner.put("lowerx",50);
+        lowerCorner.put("lowery",100);
+        region.put("uppercorner",upperCorner);
+        region.put("lowercorner",lowerCorner);
+        region.put("srsname","testSrsName");
+
+        agent.writeBkgFile(region,fullPath);
+        File bgdFile= new File(fullPath+"/testbackgrnd.bgd");
+        Assert.assertTrue(bgdFile.exists());//check if the file is created
+        Assert.assertTrue(bgdFile.length()>0);//check if there is data inside the file
+
+    }
+
+    @Test
+    public void testCreateEmissionInput(){
+
+    }
+
+    @Test
+    public void testExecuteModel() {
+        ADMSAgent admsAgent = new ADMSAgent();
+        String folder= "testFolder";
+        String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
+        try(MockedStatic<CommandHelper>ch= Mockito.mockStatic(CommandHelper.class)){
+            ch.when(() -> CommandHelper.executeSingleCommand(folder,startADMSCommand)).thenAnswer((Answer<Void>) invocation -> null);
+            admsAgent.executeModel(folder);
+        }
+    }
+
+    @Test
+    public void testProcessRequestParameters(){
 
     }
 }
