@@ -58,13 +58,11 @@ public class FloodSparql {
     // prefix
 	private static String ontoems = "http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#";
     private static Prefix p_ems = SparqlBuilder.prefix("ems",iri(ontoems));
-    private static Prefix p_time = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
     private static Prefix p_geo = SparqlBuilder.prefix("geo",iri("http://www.bigdata.com/rdf/geospatial#"));
 	private static Prefix p_om = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
     
     // classes
 	private static Iri ReportingStation = p_ems.iri("ReportingStation");
-    private static Iri Instant = p_time.iri("Instant");
 
 	// subclass of Quantity
 	private static Iri WaterLevel = p_ems.iri("WaterLevel");
@@ -77,19 +75,23 @@ public class FloodSparql {
 	
 	private static Iri Measure = p_om.iri("Measure");
 
+	//ranges
+	private static Iri NormalRange = p_ems.iri("NormalRange");
+	private static Iri HighRange = p_ems.iri("HighRange");
+	private static Iri LowRange = p_ems.iri("LowRange");
+	private static Iri UnavailableRange = p_ems.iri("UnavailableRange");
+
     // properties
 	private static Iri hasObservationLocation = p_ems.iri("hasObservationLocation");
 	private static Iri hasObservationElevation = p_ems.iri("hasObservationElevation");
+	private static Iri hasCurrentRange = p_ems.iri("hasCurrentRange");
 	private static Iri dataSource = p_ems.iri("dataSource");
 	private static Iri hasValue = p_om.iri("hasValue");
+	private static Iri hasUnit = p_om.iri("hasUnit");
 	private static Iri reports = p_ems.iri("reports");
     private static Iri measures = iri("http://environment.data.gov.uk/flood-monitoring/def/core/measures");
-    private static Iri hasTime = p_time.iri("hasTime");
-    private static Iri inXSDDate = p_time.iri("inXSDDate");
     private static Iri stationReference = iri("http://environment.data.gov.uk/flood-monitoring/def/core/stationReference");
-    private static Iri lat_lon = iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon");
-    // made up by KFL, purely for mapbox requirement
-    private static Iri hasVisID = iri("http://environment.data.gov.uk/flood-monitoring/def/core/visID"); 
+    private static Iri lat_lon = iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"); 
     
     private static Iri unitName = iri("http://environment.data.gov.uk/flood-monitoring/def/core/unitName");
     private static Iri parameterName = iri("http://environment.data.gov.uk/flood-monitoring/def/core/parameterName");
@@ -98,9 +100,25 @@ public class FloodSparql {
 	private static Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
 	private static Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
 
+	private static Iri stageScale = iri("http://environment.data.gov.uk/flood-monitoring/def/core/stageScale");
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(FloodSparql.class);
     
+    static Map<String, Iri> unitMap = new HashMap<>() {
+		{
+			put("mAOD", iri("http://theworldavatar.com/resource/ontouom/metreAOD"));
+			put("m", iri("http://theworldavatar.com/resource/ontouom/metreUnspecified"));
+			put("mASD", iri("http://theworldavatar.com/resource/ontouom/metreASD"));
+			put("mm", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/millimetre"));
+			put("mBDAT", iri("http://theworldavatar.com/resource/ontouom/metreBDAT"));
+			put("l/s", iri("http://theworldavatar.com/resource/ontouom/litrePerSecond"));
+			put("m3/s", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/cubicMetrePerSecond-Time"));
+			put("deg", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/degree"));
+			put("m/s", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/PrefixedMetrePerSecond-Time"));
+			put("Knots", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/knot-International"));
+		}
+	};
+
 	public FloodSparql(StoreClientInterface storeClient) {
 		this.storeClient = storeClient;
 	}
@@ -119,15 +137,16 @@ public class FloodSparql {
 		Variable measure = query.var();
 		Variable param = query.var();
 		Variable qual = query.var();
+		Variable unit = query.var();
 		Variable lat = query.var();
 		Variable lon = query.var();
 		
 		GraphPattern stationPattern = query.var().has(RDF.FIRST, station);
 		GraphPattern stationPropertiesPattern = station.has(measures, measure).andHas(lat_prop,lat).andHas(lon_prop,lon);
-		GraphPattern measurePropertiesPattern = measure.has(parameterName,param).andHas(qualifier,qual);
+		GraphPattern measurePropertiesPattern = measure.has(parameterName,param).andHas(qualifier,qual).andHas(unitName,unit);
 		GraphPattern queryPattern = GraphPatterns.and(stationPattern, stationPropertiesPattern, measurePropertiesPattern);
 		
-		query.where(queryPattern).select(station,measure,param,qual,lat,lon).distinct();
+		query.where(queryPattern).select(station,measure,param,qual,lat,lon,unit).distinct();
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
@@ -138,6 +157,7 @@ public class FloodSparql {
 			String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
     		String measureName = queryResult.getJSONObject(i).getString(param.getQueryString().substring(1));
     		String subTypeName = queryResult.getJSONObject(i).getString(qual.getQueryString().substring(1));
+			String unitName = queryResult.getJSONObject(i).getString(unit.getQueryString().substring(1));
 			String latString = queryResult.getJSONObject(i).getString(lat.getQueryString().substring(1));
 			String lonString = queryResult.getJSONObject(i).getString(lon.getQueryString().substring(1));
     		
@@ -150,6 +170,7 @@ public class FloodSparql {
 			}
 			stationObject.setMeasureName(measureIri, measureName);
 			stationObject.setMeasureSubTypeName(measureIri, subTypeName);
+			stationObject.setMeasureUnit(measureIri, unitName);
 			stationObject.setLat(Double.parseDouble(latString));
 			stationObject.setLon(Double.parseDouble(lonString));
 		}
@@ -231,6 +252,14 @@ public class FloodSparql {
 				modify.insert(iri(station.getIri()).has(reports, quantityIri));
 				modify.insert(quantityIri.has(hasValue, iri(measure)));
 				modify.insert(iri(measure).isA(Measure));
+
+				// unit
+				if (unitMap.containsKey(station.getMeasureUnit(measure))) {
+					modify.insert(iri(measure).has(hasUnit, unitMap.get(station.getMeasureUnit(measure))));
+				}
+
+				// add dummy triple for range so that sparql update will work
+				modify.insert(iri(measure).has(hasCurrentRange, UnavailableRange));
 			}
 		}
 		modify.prefix(p_ems,p_om);
@@ -298,27 +327,6 @@ public class FloodSparql {
 	}
 	
 	/**
-	 * original data has lat and lon on different triples
-	 * Blazegraph requires them to be in the form of lat#lon
-	 * visID is purely for visualisation purpose
-	 */
-	void addBlazegraphCoordinatesAndVisID(List<Station> stations) {
-		ModifyQuery modify = Queries.MODIFY();
-		modify.prefix(p_ems);
-		int visID = 0;
-		// one triple per station
-		for (Station station : stations) {
-			// blazegraph's custom literal type
-			String latlon = String.valueOf(station.getLat()) + "#" + String.valueOf(station.getLon());
-			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon, lat_lon);
-			modify.insert(iri(station.getIri()).has(hasObservationLocation,coordinatesLiteral));
-			modify.insert(iri(station.getIri()).has(hasVisID,visID + 1));
-		}
-		
-		storeClient.executeUpdate(modify.getQueryString());
-	}
-	
-	/**
 	 * add a measure that was not present in the initial RDF file, but present
 	 * in the data downloaded later
 	 * adds a triple <station> <measures> <measure>
@@ -372,6 +380,15 @@ public class FloodSparql {
 				.andHas(parameterName, paramName)
 				.andHas(qualifier,qual)
 				.andIsA(Measure));
+
+		// add ems unit 
+		if (unitMap.containsKey(unit)) {
+			modify.insert(iri(measure).has(hasUnit, unitMap.get(unit)));
+		}
+
+		// dummy range triple to modified in sparql update
+		modify.insert(iri(measure).has(hasCurrentRange, UnavailableRange));
+
 		modify.prefix(p_ems,p_om);
 		storeClient.executeUpdate(modify.getQueryString());
 	}
@@ -549,21 +566,6 @@ public class FloodSparql {
 	    	return false;
 	    }
     }
-    
-    /**
-     * returns number of IDs currently in the kg, to generate a unique ID
-     */
-    int getNumID() {
-    	SelectQuery query = Queries.SELECT();
-    	
-    	GraphPattern queryPattern = query.var().has(hasVisID,query.var());
-    	
-    	query.where(queryPattern);
-    	
-    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-    	
-    	return queryResult.length();
-    }
 
 	/**
 	 * datum is not within the original dataset, steps in this function
@@ -578,7 +580,7 @@ public class FloodSparql {
 		Variable stationvar = query.var();
 		Variable stageScaleVar = query.var();
 		ValuesPattern valuesPattern = new ValuesPattern(stationvar, station_iris);
-		GraphPattern queryPattern = stationvar.has(iri("http://environment.data.gov.uk/flood-monitoring/def/core/stageScale"), stageScaleVar);
+		GraphPattern queryPattern = stationvar.has(stageScale, stageScaleVar);
 
 		query.select(stationvar,stageScaleVar).where(valuesPattern, queryPattern).distinct();
 
@@ -633,5 +635,24 @@ public class FloodSparql {
 		// then send the post request
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		httpclient.execute(postRequest);
+	}
+
+	void addRanges(TimeSeriesClient<Instant> tsClient, List<String> dataIRIs) {
+		// first query the upper and lower bounds for each data
+		SelectQuery query = Queries.SELECT();
+		Variable station = query.var();
+		Variable upperBound = query.var();
+		Variable lowerBound = query.var();
+		Variable measure = query.var();
+
+		GraphPattern gp1 = station.has(PropertyPaths.path(reports,hasValue), measure)
+		.andHas(PropertyPaths.path(stageScale, iri("http://environment.data.gov.uk/flood-monitoring/def/core/typicalRangeLow")), lowerBound)
+		.andHas(PropertyPaths.path(stageScale, iri("http://environment.data.gov.uk/flood-monitoring/def/core/typicalRangeHigh")), upperBound);
+
+		ValuesPattern vp = new ValuesPattern(measure, dataIRIs.stream().map(s -> iri(s)).collect(Collectors.toList()));
+
+		query.select(measure,station,upperBound,lowerBound).where(gp1,vp).prefix(p_om,p_ems);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 	}
 }

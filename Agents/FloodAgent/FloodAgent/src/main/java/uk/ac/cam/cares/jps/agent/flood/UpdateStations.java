@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
@@ -39,9 +40,6 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 public class UpdateStations {
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(UpdateStations.class);
-    
-    // boolean to check if RDB data is uploaded
-    static boolean updated;
     
     // err msg
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
@@ -105,11 +103,10 @@ public class UpdateStations {
 	    		LOGGER.error(e.getMessage());
 	    		throw new JPSRuntimeException(e);
 	    	}
-	        
-	        updated = false;
+
 	        // upload to postgres
 	        uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
-	        
+
 	        // update last updated date
 	        addUpdateDate(tsClient,date);
     	} else {
@@ -267,11 +264,6 @@ public class UpdateStations {
         }
         
         LOGGER.info("Failed to add " + Integer.toString(num_failures) + " data set out of the processed data");
-        // consider updated if at least one was updated..
-        if (num_failures < datatime_map.size()) {
-        	updated = true;
-        }
-        
         tsClient.disconnectRDB();
 	}
 
@@ -281,6 +273,4 @@ public class UpdateStations {
 		TimeSeries<Instant> ts = new TimeSeries<Instant>(Arrays.asList(Instant.now()), Arrays.asList(Config.TIME_IRI), values);
 		tsClient.addTimeSeriesData(ts);
 	}
-
-	
 }
