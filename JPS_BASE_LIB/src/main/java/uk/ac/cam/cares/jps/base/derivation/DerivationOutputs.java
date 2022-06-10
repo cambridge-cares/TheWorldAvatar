@@ -77,6 +77,17 @@ public class DerivationOutputs {
 		this.oldEntitiesMap = map;
 	}
 
+	/**
+	 * This method does the same as
+	 * setOldEntitiesMap(JSONObject). It is added to enable
+	 * python-Java communication via py4jps.
+	 * 
+	 * @param oldEntitiesRdfTypeMap
+	 */
+	public void setOldEntitiesMap(Map<String, String> oldEntitiesRdfTypeMap) {
+		this.oldEntitiesMap = oldEntitiesRdfTypeMap;
+	}
+
 	public void setOldEntitiesDownstreamDerivationMap(JSONObject oldEntitiesDownstreamDerivation) {
 		// construct oldEntitiesDownstreamDerivationMap
 		Map<String, List<String>> map = new HashMap<>();
@@ -94,6 +105,17 @@ public class DerivationOutputs {
 			}
 		}
 		this.oldEntitiesDownstreamDerivationMap = map;
+	}
+
+	/**
+	 * This method does the same as
+	 * setOldEntitiesDownstreamDerivationMap(JSONObject). It is added to enable
+	 * python-Java communication via py4jps.
+	 * 
+	 * @param oldEntitiesDownstreamDerivationMap
+	 */
+	public void setOldEntitiesDownstreamDerivationMap(Map<String, List<String>> oldEntitiesDownstreamDerivationMap) {
+		this.oldEntitiesDownstreamDerivationMap = oldEntitiesDownstreamDerivationMap;
 	}
 
 	////////////////////////////////////////////////////////////////////

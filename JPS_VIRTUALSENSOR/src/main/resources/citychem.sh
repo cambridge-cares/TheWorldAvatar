@@ -41,3 +41,4 @@ cd ${inputDir}/OUTPUT
 zip -r ${inputDir}/output.zip *.*
 
 echo "Simulation Completed."
+

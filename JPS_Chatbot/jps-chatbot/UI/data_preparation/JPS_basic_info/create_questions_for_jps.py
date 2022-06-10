@@ -1,9 +1,13 @@
 import json
-import math
 import random
 import re
-
+import os
+from location import TRAINING_FILES_DIR
 import nltk
+
+
+def get_file_folder_dir(filename):
+    return os.path.join(TRAINING_FILES_DIR, filename)
 
 
 def get_pos_tags(p_label):
@@ -58,6 +62,33 @@ def process_equations(equation):
                                                                                random.choice([' add_sign ', ' and ']))
 
     return equation, random_species, half_equation, reactants_string, products_string
+
+
+def query_pce():
+    name = 'query_pce_agent'
+    questions = []
+    with open(os.path.join(TRAINING_FILES_DIR, 'PCE_SMILES_LIST')) as f:
+        PCE_SMILES_LIST = json.loads(f.read())
+        f.close()
+    properties = ['pce', 'power conversion efficiency']
+    template_1 = '[%s](attribute) OPV with SMILES [%s](species)'
+    template_2 = '[%s](attribute) of [%s](species)'
+    templates = [template_1, template_2]
+    for pce_smiles in PCE_SMILES_LIST:
+        template = random.choice(templates)
+        attribute = random.choice(properties)
+        question = template % (attribute, pce_smiles)
+        questions.append(question)
+
+    block = '\n ## intent:%s\n' % name + '\n - ' + '\n - '.join(questions)
+    return block
+
+
+
+def query_thermocalculation():
+    name = 'query_thermo_agent'
+    questions = []
+
 
 
 # 'what is the reaction rate of xx + xx '
@@ -166,12 +197,13 @@ def select_reaction_by_species():
         produce_word = random.choice(produce_words)
         q_1 = '%s %s %s' % (reaction_word, use_word, reactant_string)  # 1,2
         q_2 = '%s %s %s' % (reaction_word, produce_word, product_string)  # 1,2
-        q_3 = '%s %s %s and %s %s' % (reaction_word, use_word, reactant_string, produce_word, product_string) #3
+        q_3 = '%s %s %s and %s %s' % (reaction_word, use_word, reactant_string, produce_word, product_string)  # 3
 
         # reactions with xx/ (xx and xx) as reactants
         q_4 = '%s %s %s [as %s](reaction use ahead)' % (reaction_word, connecting_word, reactant_string, reactant_word)
         # reactions with xx/ (xx and xx) as products
-        q_5 = '%s %s %s [as %s](reaction produce ahead)' % (reaction_word, connecting_word, product_string, product_word)
+        q_5 = '%s %s %s [as %s](reaction produce ahead)' % (
+        reaction_word, connecting_word, product_string, product_word)
         q_6 = '%s %s %s [as %s](reaction use ahead) and %s [as %s](reaction produce ahead)' \
               % (reaction_word, connecting_word, reactant_string, reactant_word, product_string, product_word)
         #
@@ -244,32 +276,33 @@ def query_quantum_chemistry():
 
 factor = 1
 
-with open('EXTRA_PROPERTIES') as f:
+with open(get_file_folder_dir('EXTRA_PROPERTIES')) as f:
     EXTRA_PROPERTIES = json.loads(f.read())
     f.close()
 
-with open('common_species') as f:
+with open(get_file_folder_dir('common_species')) as f:
     common_species = json.loads(f.read())
     f.close()
 
-with open('ontocompchem_species') as f:
+with open(get_file_folder_dir('ontocompchem_species')) as f:
     ontocompchem_species = json.loads(f.read())['species']
     ontocompchem_species = json.loads(ontocompchem_species)
     f.close()
 
-with open('ontokin_species_and_equations') as f:
+with open(get_file_folder_dir('ontokin_species_and_equations')) as f:
     ontokin_species_and_equations = json.loads(f.read())
     f.close()
 
-with open('ontokin_properties') as f:
+with open(get_file_folder_dir('ontokin_properties')) as f:
     ontokin_properties = json.loads(f.read())
     f.close()
 
-with open('ontocompchem_properties') as f:
+with open(get_file_folder_dir('ontocompchem_properties')) as f:
     ontocompchem_properties = json.loads(f.read())
     f.close()
 
-with open('../Wiki_basic_info/FORMULA_NAME_DICT') as f:
+
+with open(get_file_folder_dir('FORMULA_NAME_DICT')) as f:
     FORMULA_NAME_DICT = json.loads(f.read())
     f.close()
 
@@ -282,22 +315,22 @@ ontokin_species = json.loads(ontokin_species_and_equations['species'])
 ontokin_equations = json.loads(ontokin_species_and_equations['equations'])
 
 full_block = query_thermodynamic() + '\n' + query_quantum_chemistry() + '\n' + query_reaction_property() + '\n' \
-             + select_mechanism_by_reaction() + '\n' + select_reaction_by_species()
+             + select_mechanism_by_reaction() + '\n' + select_reaction_by_species() + '\n' + query_pce()
 full_block = full_block.lower()
 
 _RE_COMBINE_WHITESPACE = re.compile(r"[ ]+")
 full_block = _RE_COMBINE_WHITESPACE.sub(" ", full_block).strip()
 
 ontokin_part = query_thermodynamic() + query_reaction_property() + \
-               select_mechanism_by_reaction() +  select_reaction_by_species() # reactions and thermo
+               select_mechanism_by_reaction() + select_reaction_by_species()  # reactions and thermo
 
 ontocompchem_part = query_quantum_chemistry()
 
-with open('ontokin_corpus', 'w', encoding='utf-8') as f:
+with open(get_file_folder_dir('ontokin_corpus'), 'w', encoding='utf-8') as f:
     f.write(ontokin_part)
     f.close()
 
-with open('ontocompchem_corpus', 'w', encoding='utf-8') as f:
+with open(get_file_folder_dir('ontocompchem_corpus'), 'w', encoding='utf-8') as f:
     f.write(ontocompchem_part)
     f.close()
 
