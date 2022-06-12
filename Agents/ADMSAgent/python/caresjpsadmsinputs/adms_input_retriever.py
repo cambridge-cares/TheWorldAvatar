@@ -34,14 +34,18 @@ class CliInputContext(object):
 class CliInputStrategy(object):
 
     def __init__(self, args):
-        self.sourceCRS = Proj(init=Constants.CRS_EPSG_4326)
+        #original code
+        #self.sourceCRS = Proj(init=Constants.CRS_EPSG_4326)
+        self.sourceCRS = Proj(Constants.CRS_EPSG_4326)
         self.entity_type = args[1]
         self.bdn_data = json.loads(args[2].replace("'", '"'))
         self.coor_data = str(args[3]).replace("'", '"')
         self.entity = str(args[4])
         self.working_dir = str(args[5])
         self.coord_sys = args[6][5:]
-        self.targetCRS = Proj(init=args[6][:4].lower() + args[6][4:])
+        #original code
+        #self.targetCRS = Proj(init=args[6][:4].lower() + args[6][4:])
+        self.targetCRS = Proj(args[6][:4].lower() + args[6][4:])
         self.input = None
         self.BDN = None
         self.coords = {}
@@ -136,7 +140,9 @@ class CliInputStrategy(object):
             self.address = addr
             if connect_type is Constants.KEY_CONN_PARSE:
                 self.g = Graph()
-                self.g.parse(addr)
+                #original code being commented out
+                #self.g.parse(addr)
+                self.g.parse(addr,format="application/rdf+xml")
 
         self.q_method_map = {Constants.KEY_CONN_PARSE: self.query_local_graph,
                              Constants.KEY_CONN_ENDPOINT: self.query_endpoint}
@@ -157,21 +163,30 @@ class CliInputStrategy(object):
         """
         sources = []
 
-        q1, q2, q3 = self.get_src_queries()
+        #original code commented out
+        #q1, q2, q3 = self.get_src_queries()
 
-        for src in self.entity:
-            new_src = self.get_new_src(src, q1, q2, q3)
+        #for src in self.entity:
+            #new_src = self.get_new_src(src, q1, q2, q3)
 
-            sources.append(new_src)
+            #sources.append(new_src)
+        new_src=self.get_new_src(self)
+        sources.append(new_src)
 
         return sources
 
-    def get_new_src(self, src, q1, q2, q3):
-        iri = self.get_src_iri(src)
-        qdata = self.query(q1)
-        qdata_c = self.query(q2)
-        qdata_erate = self.query(q3)
-        aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
+#original method commented out for the time being
+#     def get_new_src(self, src, q1, q2, q3):
+#         iri = self.get_src_iri(src)
+#         qdata = self.query(q1)
+#         qdata_c = self.query(q2)
+#         qdata_erate = self.query(q3)
+#         aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
+#         return self.make_src(aresult, sorteder, pollutantnames)
+
+    def get_new_src(self,src):
+        iri = "http://localhost:8080/kb/ships/563009850/Chimney-1.owl"
+        aresult, sorteder, pollutantnames = self.get_new_src_data(iri)
         return self.make_src(aresult, sorteder, pollutantnames)
 
     def get_src_queries(self):
@@ -181,8 +196,13 @@ class CliInputStrategy(object):
         if src is not None:
             return self.connect_db(src, Constants.KEY_CONN_PARSE)
 
-    def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
+# original method commented out for the time being
+#     def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
+#         return [], [], []
+
+    def get_new_src_data(self):
         return [], [], []
+
 
     def make_src(self, aresult, sorteder, pollutantnames):
         return self.make_common_src(aresult, sorteder, pollutantnames)
@@ -199,7 +219,7 @@ class CliInputStrategy(object):
                       src_density=float(aresult[Constants.KEY_DENSITY].toPython()),
                       src_spec_heat_cap=aresult[Constants.KEY_HEAT_CAP].toPython(),
                       src_num_pollutants=len(pollutantnames),
-                      src_mass_flux=aresult[Constants.KEY_MASS_FLOW].toPython())
+                      src_mass_flux=aresult[Constants.KEY_MASS_FLOW].toPython() *1e1) # scaling introduced for ADMS to find the massflux value acceptable
         return src
 
     def get_opt(self, pol_names, src_names):
@@ -271,10 +291,16 @@ class CliInputStrategy(object):
         X, Y are equal and  calculated as function of the distance between upper and lower corner coordinates.
         :return: None
         """
-        distance = geopy.distance.distance(transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MAX_X],
-                                                     self.coords[Constants.KEY_MAX_Y])[::-1],
-                                           transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MIN_X],
-                                                     self.coords[Constants.KEY_MIN_Y])[::-1]).km
+# original code commented out for the time being
+#         distance = geopy.distance.distance(transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MAX_X],
+#                                                      self.coords[Constants.KEY_MAX_Y])[::-1],
+#                                            transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MIN_X],
+#                                                      self.coords[Constants.KEY_MIN_Y])[::-1]).km
+
+        distance = geopy.distance.distance(transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MAX_Y],
+                                                             self.coords[Constants.KEY_MAX_X]),
+                                                   transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MIN_Y],
+                                                             self.coords[Constants.KEY_MIN_X])).km
         # Rounds to 200 for ~35.5km distance, in case of default HK area size,
         # and to 80 for ~4.5km distance, in case of default SG area size
         rounded = int(round(distance * 4 + 62, -1))
@@ -372,35 +398,69 @@ class ShipCliInputStrategy(CliInputStrategy):
 
         return q1, q2, q3
 
-    def get_new_src(self, src, q1, q2, q3):
-        new_src = super(ShipCliInputStrategy, self).get_new_src(src, q1, q2, q3)
-        new_src.set_name(str(src[Constants.KEY_MMSI]) + '-' + str(uuid.uuid4()))
+# original method commented out for the time being
+#     def get_new_src(self, src, q1, q2, q3):
+#         new_src = super(ShipCliInputStrategy, self).get_new_src(src, q1, q2, q3)
+#         new_src.set_name(str(src[Constants.KEY_MMSI]) + '-' + str(uuid.uuid4()))
+#         return new_src
+
+    def get_new_src(self,src):
+        new_src = super(ShipCliInputStrategy, self).get_new_src(src)
+        #provide a hardcoded mmsi value
+        new_src.set_name(str(563009850) + '-' + str(uuid.uuid4()))
         return new_src
 
     def get_src_iri(self, src):
         return self.connect_chimney_db(src)
 
-    def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
-        aresult, = [row.asdict() for row in qdata]
-        contents = [row[Constants.KEY_CONTENT].toPython() for row in qdata_c]
-        pollutantnames = [self.pol_iri_name(content) for content in contents]
-        if None in pollutantnames:
-            pollutantnames.remove(None)
-            pollutantnames = pollutantnames + list(self.em_rates[iri].keys())
+#  original method being commented out
+#     def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
+#         aresult, = [row.asdict() for row in qdata]
+#         contents = [row[Constants.KEY_CONTENT].toPython() for row in qdata_c]
+#         pollutantnames = [self.pol_iri_name(content) for content in contents]
+#         if None in pollutantnames:
+#             pollutantnames.remove(None)
+#             pollutantnames = pollutantnames + list(self.em_rates[iri].keys())
+#
+#         emissionrates = {row[Constants.KEY_ER].toPython(): row[Constants.KEY_V].toPython() for row in qdata_erate}
+#
+#         sorteder = []
+#         for content in contents:
+#             name = content.split('#')[1]
+#             for ername, v in emissionrates.items():
+#                 if name in ername:
+#                     if Constants.POL_PART_001 in name.replace('-', ''):
+#                         sorteder = sorteder + list(self.em_rates[iri].values())
+#                     else:
+#                         sorteder.append(v)
+#
+#         return aresult, sorteder, pollutantnames
 
-        emissionrates = {row[Constants.KEY_ER].toPython(): row[Constants.KEY_V].toPython() for row in qdata_erate}
+    def get_new_src_data(self, iri):
+         #hardcoded values
+         aresult = {'o': rdflib.term.URIRef('http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Chimney-1'), 'diameter': rdflib.term.Literal('2.0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'temp': rdflib.term.Literal('616.12736479669', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'height': rdflib.term.Literal('20.0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'massflow': rdflib.term.Literal('0.0192143028723584', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'heatcapa': rdflib.term.Literal('1334.86958348868', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'density': rdflib.term.Literal('0.577544330505469', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'moleweight': rdflib.term.Literal('28.638811393753', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double'))}
+         #hardcoded values
+         contents = ['http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__dioxide', 'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__monoxide', 'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Nitrogen__dioxide', 'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon', 'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Sulfur__dioxide', 'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides', 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001']
+         pollutantnames = [self.pol_iri_name(content) for content in contents]
+         if None in pollutantnames:
+             pollutantnames.remove(None)
+             pollutantnames = pollutantnames + list(self.em_rates[iri].keys())
 
-        sorteder = []
-        for content in contents:
-            name = content.split('#')[1]
-            for ername, v in emissionrates.items():
-                if name in ername:
-                    if Constants.POL_PART_001 in name.replace('-', ''):
-                        sorteder = sorteder + list(self.em_rates[iri].values())
-                    else:
-                        sorteder.append(v)
+        #hardcoded values
+         emissionrates ={'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001_EmissionRate': 0.000253528, 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#massF_WasteStream-001': 0.0192143028723584, 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ChemSpecies_Carbon__dioxide_EmissionRate': 14.8566682568053, 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#PseudoComponent_Nitrogen__oxides_EmissionRate': 3.822570740164, 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ChemSpecies_Carbon__monoxide_EmissionRate': 0.43801859297671103, 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ChemSpecies_Sulfur__dioxide_EmissionRate': 0.27449167, 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ChemSpecies_Ozone_EmissionRate': 0.0, 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#PseudoComponent_Unburned_Hydrocarbon_EmissionRate': 1.23609160023103, 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ChemSpecies_Nitrogen__dioxide_EmissionRate': 2.1756208305716}
 
-        return aresult, sorteder, pollutantnames
+         sorteder = []
+         for content in contents:
+             name = content.split('#')[1]
+             for ername, v in emissionrates.items():
+                 if name in ername:
+                     if Constants.POL_PART_001 in name.replace('-', ''):
+                         sorteder = sorteder + list(self.em_rates[iri].values())
+                     else:
+                         sorteder.append(v)
+
+         return aresult, sorteder, pollutantnames
+
 
     def get_pol(self):
         """
@@ -414,25 +474,40 @@ class ShipCliInputStrategy(CliInputStrategy):
         pol_data = []
         diam_dens = set()
         pol_names = {}
-        q1 = prepareQuery(QueryStrings.SPARQL_DIAMETER_DENSITY_MASSFRACTION)
-        q2 = prepareQuery(QueryStrings.SPARQL_MASSRATE)
-        i = 0
-        k = 0
+        i=0
+        k=0
+# original code commented out for the time being
+#         q1 = prepareQuery(QueryStrings.SPARQL_DIAMETER_DENSITY_MASSFRACTION)
+#         q2 = prepareQuery(QueryStrings.SPARQL_MASSRATE)
+#
+#         for src in self.entity:
+#             iri = self.connect_chimney_db(src)
+#             self.em_rates[iri] = {}
+#             qb = self.query(q1)
+#             massrate = self.query(q2).__iter__().__next__()[Constants.KEY_MASS_RATE].toPython()
+#
+#             for row in qb:
+#                 dd = (row[Constants.KEY_DIAMETER].toPython(), row[Constants.KEY_DENSITY].toPython())
+#                 mf = float(row[Constants.KEY_MASS_FRACTION]) * massrate
+#                 pol_data.append({Constants.KEY_DIAMETER + Constants.KEY_DENSITY: dd,
+#                                  Constants.KEY_MASS_FLOW: mf,
+#                                  Constants.KEY_SRC: iri})
+#                 diam_dens.add(dd)
+#                 self.em_rates[iri][dd] = mf
 
-        for src in self.entity:
-            iri = self.connect_chimney_db(src)
-            self.em_rates[iri] = {}
-            qb = self.query(q1)
-            massrate = self.query(q2).__iter__().__next__()[Constants.KEY_MASS_RATE].toPython()
-
-            for row in qb:
-                dd = (row[Constants.KEY_DIAMETER].toPython(), row[Constants.KEY_DENSITY].toPython())
-                mf = float(row[Constants.KEY_MASS_FRACTION]) * massrate
-                pol_data.append({Constants.KEY_DIAMETER + Constants.KEY_DENSITY: dd,
-                                 Constants.KEY_MASS_FLOW: mf,
-                                 Constants.KEY_SRC: iri})
-                diam_dens.add(dd)
-                self.em_rates[iri][dd] = mf
+        #hardcoded values
+        iri = "http://localhost:8080/kb/ships/563009850/Chimney-1.owl"
+        self.em_rates[iri] = {}
+        dd_values=[(1.0000000000000002e-06, 1800),(5.9948425031894e-09, 1800),(1.6681005372000602e-08, 1800),(2.15443469003188e-09, 1800),(3.59381366380463e-07, 1800),(1.29154966501488e-07, 1800),(2.782559402207e-06, 1800),(4.64158883361278e-08, 1800)]
+        mf_values=[2.78e-05,4.36e-07,1.12e-06,1.72e-07,0.00014,5.53e-05,1.58e-05,1.29e-05]
+        for i in range(len(dd_values)):
+            dd = dd_values[i]
+            mf = mf_values[i]
+            pol_data.append({Constants.KEY_DIAMETER + Constants.KEY_DENSITY: dd,
+                                      Constants.KEY_MASS_FLOW: mf,
+                                      Constants.KEY_SRC: iri})
+            diam_dens.add(dd)
+            self.em_rates[iri][dd] = mf
 
         dd_srt = sorted(diam_dens, key=lambda tup: tup[0], reverse=True)[0:limit]
         for diam, dens in dd_srt:
@@ -487,10 +562,15 @@ class ShipCliInputStrategy(CliInputStrategy):
         ship_coordinates_list = []
 
         for ship in self.entity:
-            x_coordinate_value = float(ship[Constants.KEY_LON])
+# original code commented out for the time being
+#             x_coordinate_value = float(ship[Constants.KEY_LON])
+#             y_coordinate_value = float(ship[Constants.KEY_LAT])
+#             ship_coordinates_list.append(
+#                 list(transform(self.sourceCRS, self.targetCRS, x_coordinate_value, y_coordinate_value)))
+
             y_coordinate_value = float(ship[Constants.KEY_LAT])
-            ship_coordinates_list.append(
-                list(transform(self.sourceCRS, self.targetCRS, x_coordinate_value, y_coordinate_value)))
+            x_coordinate_value = float(ship[Constants.KEY_LON])
+            ship_coordinates_list.append(list(transform(self.sourceCRS, self.targetCRS, y_coordinate_value, x_coordinate_value)))
 
         return ship_coordinates_list
 
@@ -512,15 +592,22 @@ class ShipCliInputStrategy(CliInputStrategy):
 
         latitudemid = (float(self.coords[Constants.KEY_MIN_Y]) + float(self.coords[Constants.KEY_MAX_Y])) / 2
         longitudemid = (float(self.coords[Constants.KEY_MIN_X]) + float(self.coords[Constants.KEY_MAX_X])) / 2
-        xmid, ymid = transform(self.targetCRS, self.sourceCRS, longitudemid, latitudemid)
 
-        self.input[Constants.KEY_LAT.title()] = ymid
+        #original code commented out for the time being
+        #xmid, ymid = transform(self.targetCRS, self.sourceCRS, longitudemid, latitudemid)
+        xmid, ymid = transform(self.targetCRS, self.sourceCRS, latitudemid, longitudemid)
+
+        #original code being commented out
+        #self.input[Constants.KEY_LAT.title()] = ymid
+        self.input[Constants.KEY_LAT.title()] = xmid
 
     def set_input_ship_indicators(self):
-        if str(2326) in self.coord_sys:
-            self.input[Constants.KEY_INDICATOR_TERR] = 1
-        else:
-            self.input[Constants.KEY_INDICATOR_TERR] = 0
+# original code being commented out
+#         if str(2326) in self.coord_sys:
+#             self.input[Constants.KEY_INDICATOR_TERR] = 1
+#         else:
+#             self.input[Constants.KEY_INDICATOR_TERR] = 0
+        self.input[Constants.KEY_INDICATOR_TERR] = 0
 
         self.input[Constants.KEY_INDICATOR_CHEM] = 1
         self.input[Constants.KEY_INDICATOR_WET] = 1
@@ -528,12 +615,15 @@ class ShipCliInputStrategy(CliInputStrategy):
     def set_input_ship_night(self):
         now = datetime.datetime.now()
         hournow = now.hour + 1
-        if not (6 <= hournow <= 18):
-            self.input[Constants.KEY_NIGHT] = 1
-            self.input[Constants.KEY_DIR_NIGHT] = Constants.FILEPATH_NIGHT
-        else:
-            self.input[Constants.KEY_NIGHT] = 0
-            self.input[Constants.KEY_DIR_NIGHT] = ""
+# original code being commented out
+#         if not (6 <= hournow <= 18):
+#             self.input[Constants.KEY_NIGHT] = 1
+#             self.input[Constants.KEY_DIR_NIGHT] = Constants.FILEPATH_NIGHT
+#         else:
+#             self.input[Constants.KEY_NIGHT] = 0
+#             self.input[Constants.KEY_DIR_NIGHT] = ""
+        self.input[Constants.KEY_NIGHT]=0
+        self.input[Constants.KEY.KEY_DIR_NIGHT]= ""
 
     def get_washouts(self):
         annual_precipitation = self.precipitation * 365 * 24

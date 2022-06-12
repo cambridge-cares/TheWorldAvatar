@@ -1,10 +1,12 @@
 import sys
-from caresjpsutil import PythonLogger
+#original code commented out
+#from caresjpsutil import PythonLogger
 from config import Constants
 from adms_apl_builder import AplDirector, AdmsAplPlantBuilder, AdmsAplShipBuilder
 from adms_input_retriever import CliInputContext
 
-pythonLogger = PythonLogger('adms_processor.py')
+# original code commented out
+#pythonLogger = PythonLogger('adms_processor.py')
 
 
 class AdmsProcessor(object):
