@@ -560,7 +560,6 @@ def retrieve_timeseries_information_from_api(ts_ids=[]) -> dict:
 
     # Initialise return dictionary
     infos = {}
-
     # Extract relevant information from JSON response
     for ts in ts_raw:
         info = {}

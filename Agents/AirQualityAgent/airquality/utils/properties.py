@@ -1,10 +1,10 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 31 Mar 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 31 Mar 2022                            #
+################################################
 
 # The purpose of this module is to read the properties file with relevant
-# settings (i.e. for the Time Series Client) and the MetOffice API key
+# settings (i.e. for the Time Series Client)
 
 import os
 
