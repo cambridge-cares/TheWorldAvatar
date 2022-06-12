@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 27 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 27 Apr 2022                            #
+################################################
 
 # The purpose of this module is to provide functionality which eases handling
 # of IRIs and PREFIXES while creating SPARQL queries
@@ -28,8 +28,7 @@ PREFIXES = {
     'ems':  EMS,
     'ts':   TS,
     'uom':  UOM,
-    'kb':   KB,
-    'tsa':  TSA,
+    'kb':   KB
 }
 
 

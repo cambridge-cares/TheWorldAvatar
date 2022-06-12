@@ -13,12 +13,11 @@ M3L = 'http://purl.org/iot/vocab/m3-lite#'
 WEATHER = 'https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#'
 SIO = 'http://semanticscience.org/resource/'
 # CoMo / CARES ontologies
-EMS = 'http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#'
+EMS = 'https://www.theworldavatar.com/kg/ontoems/'
 TS = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#'
 UOM = 'http://theworldavatar.com/resource/ontouom/'
 # Knowledge base
-KB = 'http://www.theworldavatar.com/kb/ontoems/'
-TSA = 'http://www.theworldavatar.com/kb/ontotimeseries/'
+KB = 'https://www.theworldavatar.com/kg/ontoems/'
 
 
 ###--- IRIs for OntoEMS ---###
