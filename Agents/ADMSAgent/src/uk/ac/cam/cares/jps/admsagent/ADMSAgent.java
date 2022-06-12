@@ -145,7 +145,7 @@ public class ADMSAgent extends JPSAgent {
             throw new BadRequestException("In the requestParam object one of either the keys:ship or plant are either not present or incorrectly assigned.");
         } else{
             if (!checkSrsname(requestParams)) {
-                throw new BadRequestException("In the region object either the key:srsname is missing or is null or is empty.");
+                throw new BadRequestException("In the region object the key:srsname is missing.");
             }
             if (!checkLowerCorner(requestParams)) {
                 throw new BadRequestException("In the region object the structure of key:lowercorner is incorrect. Check if all keys in lowercorner are assigned.");
@@ -176,13 +176,8 @@ public class ADMSAgent extends JPSAgent {
     private boolean checkSrsname(JSONObject requestParams){
         boolean validate=true;
         JSONObject region = requestParams.getJSONObject("region");
-        if(!region.has("srsname") || region.isNull("srsname")){
+        if(!region.has("srsname") ){
             validate=false;
-        }
-        if(validate){
-            String srs=region.getString("srsname");
-            if(srs.isEmpty())
-                validate=false;
         }
         return validate;
     }
@@ -306,12 +301,12 @@ public class ADMSAgent extends JPSAgent {
     private boolean checkItems(JSONObject requestParams){
         boolean validate= true;
         JSONObject ship = requestParams.getJSONObject("ship");
-        if( !ship.has("container") || ship.isNull("container") ){
+        if( !ship.has("collection") || ship.isNull("collection") ){
             validate=false;
-        }else if( !(ship.getJSONObject("container").keySet().contains("items")) || ship.getJSONObject("container").getJSONArray("items").isEmpty()){
+        }else if( !(ship.getJSONObject("collection").keySet().contains("items")) || ship.getJSONObject("collection").getJSONArray("items").isEmpty()){
             validate= false;
         }else{
-            JSONArray items= ship.getJSONObject("container").getJSONArray("items");
+            JSONArray items= ship.getJSONObject("collection").getJSONArray("items");
             for (int i=0;i<items.length();i++){
                 if(items.get(i).equals(JSONObject.NULL)){
                     validate=false;
@@ -624,7 +619,7 @@ public class ADMSAgent extends JPSAgent {
         args.add(regionInJSON.toString().replace("\"", "'")); //TODO ZXC: We should solve the encoding problem once for all
         logger.info(regionInJSON.toString().replace("\"", "'"));
 // 		args.add(plantIRI.replace("\"", "'"));
-        args.add(sourceJSONFormatData);
+        args.add(sourceJSONFormatData.toString().replace("\"", "'"));
 // 		//system.out.println(plantIRI.replace("\"", "'"));
         logger.info(sourceJSONFormatData);
 
@@ -695,25 +690,25 @@ public class ADMSAgent extends JPSAgent {
         bldName.put("a-a52c-c71f8cd0e5a1");
         building.put("BldName",bldName);
         JSONArray bldType= new JSONArray();
-        bldType.put("0");
+        bldType.put(0);
         building.put("BldType",bldType);
         JSONArray bldX= new JSONArray();
-        bldX.put("30283.28271214908");
+        bldX.put(30283.28271214908);
         building.put("BldX",bldX);
         JSONArray bldY= new JSONArray();
-        bldY.put("816155.3357251927");
+        bldY.put(816155.3357251927);
         building.put("BldY",bldY);
         JSONArray bldHeight= new JSONArray();
-        bldHeight.put("130.79999999999998");
+        bldHeight.put(130.79999999999998);
         building.put("BldHeight",bldHeight);
         JSONArray bldLength= new JSONArray();
-        bldLength.put("16.278820596099706");
+        bldLength.put(16.278820596099706);
         building.put("BldLength",bldLength);
         JSONArray bldWidth= new JSONArray();
-        bldWidth.put("17.392230495361243");
+        bldWidth.put(17.392230495361243);
         building.put("BldWidth",bldWidth);
         JSONArray bldAngle= new JSONArray();
-        bldAngle.put("42.510447078000844");
+        bldAngle.put(42.510447078000844);
         building.put("BldAngle",bldAngle);
         String resultdata= building.toString();
 

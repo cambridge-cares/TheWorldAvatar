@@ -12,6 +12,7 @@ from config import Constants, QueryStrings, ExceptionStrings
 from adms_src import AdmsSrc
 from adms_pol import AdmsPol
 import uuid
+import rdflib
 
 
 class CliInputContext(object):
@@ -40,7 +41,10 @@ class CliInputStrategy(object):
         self.entity_type = args[1]
         self.bdn_data = json.loads(args[2].replace("'", '"'))
         self.coor_data = str(args[3]).replace("'", '"')
-        self.entity = str(args[4])
+        #original code
+        #self.entity=str(args[4])
+        self.entity = str(args[4].replace("'",'"'))
+
         self.working_dir = str(args[5])
         self.coord_sys = args[6][5:]
         #original code
@@ -73,6 +77,7 @@ class CliInputStrategy(object):
                          [Constants.BLD_NUM, Constants.BLD_NAME, Constants.BLD_TYPE, Constants.BLD_X,
                           Constants.BLD_Y, Constants.BLD_HEIGHT, Constants.BLD_LRNGTH, Constants.BLD_WIDTH,
                           Constants.BLD_ANGLE])
+
         bdn.BldName = buildingdata[Constants.BLD_NAME]
         bdn.BldNumBuildings = len(bdn.BldName)
         bdn.BldType = buildingdata[Constants.BLD_TYPE]
@@ -242,6 +247,7 @@ class CliInputStrategy(object):
     def core_bdn_src(self):
         y_midpoint = (self.range[1][0] + self.range[1][1]) / 2
         x_midpoint = (self.range[0][0] + self.range[0][1]) / 2
+
         for src in self.raw_src:
             closed, dclosed, first = None, sys.maxsize, True
             for i in range(len(self.BDN.BldX)):
@@ -366,6 +372,7 @@ class ShipCliInputStrategy(CliInputStrategy):
         self.precipitation = float(str(args[7]))
         self.pollutants = [Constants.POL_CO2, Constants.POL_CO, Constants.POL_NO2, Constants.POL_HC, Constants.POL_NOX,
                            Constants.POL_PART_SO2, Constants.POL_PART_O3]
+
         self.ship_coordinates_list = None
         self.coords = None
         self.BDN = None
@@ -560,13 +567,13 @@ class ShipCliInputStrategy(CliInputStrategy):
 
     def get_ship_coordinates(self):
         ship_coordinates_list = []
-
         for ship in self.entity:
 # original code commented out for the time being
 #             x_coordinate_value = float(ship[Constants.KEY_LON])
 #             y_coordinate_value = float(ship[Constants.KEY_LAT])
 #             ship_coordinates_list.append(
 #                 list(transform(self.sourceCRS, self.targetCRS, x_coordinate_value, y_coordinate_value)))
+
 
             y_coordinate_value = float(ship[Constants.KEY_LAT])
             x_coordinate_value = float(ship[Constants.KEY_LON])
@@ -623,7 +630,7 @@ class ShipCliInputStrategy(CliInputStrategy):
 #             self.input[Constants.KEY_NIGHT] = 0
 #             self.input[Constants.KEY_DIR_NIGHT] = ""
         self.input[Constants.KEY_NIGHT]=0
-        self.input[Constants.KEY.KEY_DIR_NIGHT]= ""
+        self.input[Constants.KEY_DIR_NIGHT]= ""
 
     def get_washouts(self):
         annual_precipitation = self.precipitation * 365 * 24

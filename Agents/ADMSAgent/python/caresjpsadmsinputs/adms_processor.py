@@ -37,8 +37,11 @@ def main(args):
     try:
         processor = AdmsProcessor()
         processor.save_apl(args)
-    except Exception as e:
-        pythonLogger.postErrorToLogServer(e)
+    except ValueError:
+        raise
+    # original code commented out
+    #except Exception as e:
+        #pythonLogger.postErrorToLogServer(e)
 
 
 if __name__ == "__main__":
