@@ -62,11 +62,13 @@ public class TimeSeries<T> {
     	List<?> v = getValues(dataIRI);
     	if (v == null) {
     		return null;
-    	} else if (v.get(0) instanceof Number) {
-    		return v.stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());    		
     	} else {
-    		throw new JPSRuntimeException("TimeSeries: Values for provided dataIRI are not castable to \"Number\"");
-    	}   	
+            try {
+                return v.stream().map(value -> value == null ? null : ((Number) value).doubleValue()).collect(Collectors.toList());
+            } catch (Exception e) {
+                throw new JPSRuntimeException("TimeSeries: Values for provided dataIRI are not castable to \"Number\"");
+            }
+        }
     }    
     
     /**
@@ -77,19 +79,21 @@ public class TimeSeries<T> {
     	List<?> v = getValues(dataIRI);
     	if (v == null) {
     		return null;
-    	} else if (v.get(0) instanceof Number) {
-    		return v.stream().map(value -> ((Number) value).intValue()).collect(Collectors.toList());    		
     	} else {
-    		throw new JPSRuntimeException("TimeSeries: Values for provided dataIRI are not castable to \"Number\"");
-    	}  
+            try {
+                return v.stream().map(value -> value == null ? null : ((Number) value).intValue()).collect(Collectors.toList());
+            } catch (Exception e) {
+                throw new JPSRuntimeException("TimeSeries: Values for provided dataIRI are not castable to \"Number\"");
+            }
+        }
     }
-    
+
     /**
      * Retrieve time series values for provided data IRI as Strings
      * @param dataIRI data IRI provided as string
      */
     public List<String> getValuesAsString(String dataIRI) {
-    	return values.get(dataIRI).stream().map(Object::toString).collect(Collectors.toList());
+    	return values.get(dataIRI).stream().map(value -> value == null ? null : value.toString()).collect(Collectors.toList());
     }
     
     /**

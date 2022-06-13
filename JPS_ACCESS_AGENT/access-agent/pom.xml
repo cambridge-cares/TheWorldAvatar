@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.cam.cares.jps</groupId>
   <artifactId>access-agent</artifactId>
-  <version>1.2.0</version>
+  <version>1.3.0</version>
   <packaging>war</packaging>
   <name>AccessAgent</name>
   
@@ -63,6 +63,14 @@
             <artifactId>maven-war-plugin</artifactId>
             <!-- Version, configuration, and executions should be pulled from the 
             parent POM unless overridden here. -->
+            <configuration>
+				<webResources>
+					<resource>
+						<directory>WEB-INF</directory>
+						<targetPath>WEB-INF</targetPath>
+					</resource>
+				</webResources>
+			</configuration>
         </plugin>
         
         <!-- Downloads and extracts ZIP archives from Maven repository -->
@@ -81,9 +89,9 @@
   	<dependency>
     	<groupId>uk.ac.cam.cares.jps</groupId>
     	<artifactId>jps-base-lib</artifactId>
-    	<version>1.6.0</version>
+    	<version>1.11.0</version>
     </dependency>
-    
+   
     <!-- Java servlet API -->
     <dependency>
 	    <groupId>javax.servlet</groupId>
