@@ -65,11 +65,14 @@ OM_HECTO_PASCAL = OM + 'hectopascal'
 OM_PERCENT = OM + 'percent'
 OM_MPH = OM + 'mile-StatutePerHour'
 OM_DEGREE = OM + 'degree'
+OM_MILLIG_M3 = UOM + 'milligramPerCubicmetre'
 # OM extension
 OM_MICROG_M3 = UOM + 'microgramPerCubicMetre'
+OM_NANOG_M3 = UOM + 'nanogramPerCubicMetre'
 
 # Data types
 RDF_TYPE = RDF + 'type'
+RDFS_COMMENT = RDFS + 'comment'
 RDFS_LABEL = RDFS + 'label'
 XSD_STRING = XSD + 'string'
 XSD_FLOAT = XSD + 'float'
