@@ -2,12 +2,16 @@ package uk.ac.cam.cares.jps.agent.flood;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,10 +43,11 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.opencsv.CSVReader;
+
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ServicePattern;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ValuesPattern;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -86,6 +91,7 @@ public class FloodSparql {
 	private static Iri hasObservationElevation = p_ems.iri("hasObservationElevation");
 	private static Iri hasCurrentRange = p_ems.iri("hasCurrentRange");
 	private static Iri dataSource = p_ems.iri("dataSource");
+	private static Iri hasDownstreamStation = p_ems.iri("hasDownstreamStation");
 	private static Iri hasValue = p_om.iri("hasValue");
 	private static Iri hasUnit = p_om.iri("hasUnit");
 	private static Iri reports = p_ems.iri("reports");
@@ -104,7 +110,7 @@ public class FloodSparql {
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(FloodSparql.class);
     
-    static Map<String, Iri> unitMap = new HashMap<>() {
+    static Map<String, Iri> unitMap = new HashMap<String, Iri>() {
 		{
 			put("mAOD", iri("http://theworldavatar.com/resource/ontouom/metreAOD"));
 			put("m", iri("http://theworldavatar.com/resource/ontouom/metreUnspecified"));
@@ -654,5 +660,84 @@ public class FloodSparql {
 		query.select(measure,station,upperBound,lowerBound).where(gp1,vp).prefix(p_om,p_ems);
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+	}
+
+	void addConnections(File connectionsFile) {
+		// this will be used to query the IRIs of the stations
+		List<Integer> RLOIidList = new ArrayList<>();
+		Map<Integer,Integer> upstreamToDownstreamMap = new HashMap<>();
+
+		try (Reader reader = Files.newBufferedReader(connectionsFile.toPath())) {
+			CSVReader csvReader = new CSVReader(reader);
+			List<String[]> readAll = csvReader.readAll();
+
+			// skip header
+			for (int i = 1; i < readAll.size(); i++) {
+				if (!readAll.get(i)[4].isEmpty()){
+					int upstream = Integer.parseInt(readAll.get(i)[1]);
+					int downstream = Integer.parseInt(readAll.get(i)[4]);
+					
+					if (upstreamToDownstreamMap.containsKey(upstream)) {
+						LOGGER.warn("Duplicate connection?");
+					}
+					upstreamToDownstreamMap.put(upstream, downstream);
+
+					if (!RLOIidList.contains(upstream)) {
+						RLOIidList.add(upstream);
+					}
+
+					if (!RLOIidList.contains(downstream)) {
+						RLOIidList.add(downstream);
+					}
+				}
+			}
+			csvReader.close();
+		} catch (IOException e) {
+			LOGGER.error("Possible error reading csv file");
+			LOGGER.error(e.getMessage());
+		}
+
+		Map<Integer, String> RLOIidToIRIMap = new HashMap<>();
+		if (RLOIidList.size() > 0) {
+			// now query the station IRIs
+			SelectQuery query = Queries.SELECT();
+			Iri RLOIid = iri("http://environment.data.gov.uk/flood-monitoring/def/core/RLOIid");
+			Variable station = query.var();
+			Variable idVar = query.var();
+
+			ValuesPattern valuesPattern = new ValuesPattern(idVar, RLOIidList);
+			GraphPattern queryPattern = station.has(RLOIid, idVar);
+
+			query.select(station,idVar).where(valuesPattern, queryPattern);
+
+			JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+			for (int i = 0; i < queryResult.length(); i++) {
+				String stationIri = queryResult.getJSONObject(i).getString(station.getQueryString().substring(1));
+				String id = queryResult.getJSONObject(i).getString(idVar.getQueryString().substring(1));
+				RLOIidToIRIMap.put(Integer.parseInt(id), stationIri);
+			}
+
+			// now that we have the station IRIs, we can add the triples for each connection
+			ModifyQuery modify = Queries.MODIFY();
+			Iterator<Integer> upstreamID_iterator = upstreamToDownstreamMap.keySet().iterator();
+
+			while (upstreamID_iterator.hasNext()) {
+				int upstreamID = upstreamID_iterator.next();
+				int downstreamID = upstreamToDownstreamMap.get(upstreamID);
+
+				String upstreamIRI = RLOIidToIRIMap.get(upstreamID);
+				String downstreamIRI = RLOIidToIRIMap.get(downstreamID);
+
+				if (upstreamIRI != null && downstreamIRI != null) {
+					modify.insert(iri(upstreamIRI).has(hasDownstreamStation, iri(downstreamIRI)));
+				} else {
+					LOGGER.warn("Null IRI detected, upstreamID and downstreamID = " + upstreamID + " " + downstreamID);
+				}
+				
+			}
+			modify.prefix(p_ems);
+			storeClient.executeUpdate(modify.getQueryString());
+		}
 	}
 }

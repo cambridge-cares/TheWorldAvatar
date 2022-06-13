@@ -110,6 +110,16 @@ public class InitialiseStations {
 			LOGGER.error(e.getMessage());
 		}
 		
+		// instantiate connections between stations, e.g. <station1> <hasDownstreamStation> <station2>
+		if (Config.INSTANTIATE_CONNECTIONS) {
+			File connectionsFile = new File(Config.CONNECTIONS_FILE);
+			if (connectionsFile.exists()) {
+				sparqlClient.addConnections(connectionsFile);
+			} else {
+				LOGGER.warn("File containing connections between stations does not exist");
+			}
+		}
+
 		// create a table for each measure uploaded to Blazegraph and a table to record last updated date
     	initTimeSeriesTables(tsClient, stations);
     }
