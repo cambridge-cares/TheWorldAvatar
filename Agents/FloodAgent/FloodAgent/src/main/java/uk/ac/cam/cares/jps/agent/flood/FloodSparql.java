@@ -28,14 +28,12 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ServicePattern;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ValuesPattern;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 /**
@@ -62,10 +60,7 @@ public class FloodSparql {
     private static Iri hasTime = p_time.iri("hasTime");
     private static Iri inXSDDate = p_time.iri("inXSDDate");
     private static Iri stationReference = iri("http://environment.data.gov.uk/flood-monitoring/def/core/stationReference");
-    private static Iri lat_lon = iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon");
-    // made up by KFL, purely for mapbox requirement
-    private static Iri hasVisID = iri("http://environment.data.gov.uk/flood-monitoring/def/core/visID"); 
-    
+    private static Iri lat_lon = iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon");    
     private static Iri unitName = iri("http://environment.data.gov.uk/flood-monitoring/def/core/unitName");
     private static Iri parameterName = iri("http://environment.data.gov.uk/flood-monitoring/def/core/parameterName");
 	private static Iri qualifier = iri("http://environment.data.gov.uk/flood-monitoring/def/core/qualifier");
@@ -198,13 +193,11 @@ public class FloodSparql {
 		// then add the combined literal and upload it
 		List<String> latlon = new ArrayList<>(queryResult.length());
 		List<String> stations = new ArrayList<>(queryResult.length());
-		List<Integer> visID = new ArrayList<>(queryResult.length());
 		
 		for (int i = 0; i < queryResult.length(); i++) {
 			latlon.add(i,queryResult.getJSONObject(i).getString(lat.getQueryString().substring(1)) +
 					"#" + queryResult.getJSONObject(i).getString(lon.getQueryString().substring(1)));
 			stations.add(i, queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
-			visID.add(i,i);
 		}
 		
 		ModifyQuery modify = Queries.MODIFY();
@@ -214,7 +207,6 @@ public class FloodSparql {
 			// blazegraph's custom literal type
 			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon.get(i), lat_lon);
 			modify.insert(iri(stations.get(i)).has(hasCoordinates,coordinatesLiteral));
-			modify.insert(iri(stations.get(i)).has(hasVisID,visID.get(i)));
 		}
 		
 		storeClient.executeUpdate(modify.getQueryString());
@@ -348,7 +340,6 @@ public class FloodSparql {
 		Variable lon = query.var();
 		Variable station = query.var();
 		Variable ref = query.var();
-		Variable id = query.var();
 		Variable river = query.var();
 		Variable catchment = query.var();
 		Variable town = query.var();
@@ -364,7 +355,7 @@ public class FloodSparql {
     	Variable unit = query.var();
 		
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
-				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id).andHas(measures, measure));
+				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(measures, measure));
 		
 		GraphPattern stationProperties = GraphPatterns.and(station.has(iri(RDFS.LABEL), label).optional(),
 				station.has(river_prop, river).optional(),
@@ -388,7 +379,7 @@ public class FloodSparql {
 			query.where(queryPattern,stationProperties,measurePropertiesPattern).prefix(p_station);
 		}
 		
-		query.select(station,lat,lon,ref,id,river,catchment,town,dateOpened,label,measure,param,qual,unit);
+		query.select(station,lat,lon,ref,river,catchment,town,dateOpened,label,measure,param,qual,unit);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
@@ -411,7 +402,7 @@ public class FloodSparql {
     			stationObject.setIdentifier(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
     			stationObject.setLat(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
     			stationObject.setLon(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
-    			stationObject.setVisId(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
+    			stationObject.setVisId(i);
     			
     			// optional station properties
     			if (queryResult.getJSONObject(i).has(river.getQueryString().substring(1))) {
@@ -468,24 +459,8 @@ public class FloodSparql {
     	
     	modify.insert(station_iri.isA(Station));
     	modify.insert(station_iri.has(stationReference, name));
-    	modify.insert(station_iri.has(hasVisID, getNumID()+1));
     	modify.prefix(p_station);
     	
     	storeClient.executeUpdate(modify.getQueryString());
-    }
-    
-    /**
-     * returns number of IDs currently in the kg, to generate a unique ID
-     */
-    int getNumID() {
-    	SelectQuery query = Queries.SELECT();
-    	
-    	GraphPattern queryPattern = query.var().has(hasVisID,query.var());
-    	
-    	query.where(queryPattern);
-    	
-    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-    	
-    	return queryResult.length();
     }
 }
