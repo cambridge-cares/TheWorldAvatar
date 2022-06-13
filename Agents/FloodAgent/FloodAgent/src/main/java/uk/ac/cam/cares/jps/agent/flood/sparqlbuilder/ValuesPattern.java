@@ -19,9 +19,9 @@ public class ValuesPattern implements GraphPattern {
 	public String getQueryString() {
 		String queryString = "VALUES " + var.getQueryString() + " {";
 		for (Object value : values) {
-			if (value.getClass() == Iri.class) {
+			try {
 				queryString += ((Iri) value).getQueryString() + " ";
-			} else {
+			} catch (ClassCastException e) { // for literals
 				queryString += "\"" + value.toString() + "\" ";
 			}
 		}
