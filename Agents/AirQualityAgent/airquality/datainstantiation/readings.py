@@ -1,6 +1,6 @@
-###############################################
+################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 05 Apr 2022                            #
+# Date: 13 Jun 2022                            #
 ################################################
 
 # The purpose of this module is to provide functions to retrieve 
@@ -189,7 +189,9 @@ def instantiate_station_readings(instantiated_sites_list: list,
                                  query_endpoint: str = QUERY_ENDPOINT,
                                  update_endpoint: str = UPDATE_ENDPOINT) -> int:
     """
-        Instantiates readings for the provided list of measurement stations
+        Instantiates all readings' information for the provided list of 
+        measurement stations (i.e. "static" readings information, but not time
+        series data itself)
         
         Arguments:
             instantiated_sites_list - list of dictionaries with instantiated
@@ -197,11 +199,7 @@ def instantiate_station_readings(instantiated_sites_list: list,
     """
 
     # Create MetOffice client to retrieve readings via API
-    try:
-        metclient = metoffer.MetOffer(api_key)
-    except Exception as ex:
-        #logger.error("MetOffer client could not be created to retrieve station readings. " + ex)
-        raise APIException("MetOffer client could not be created to retrieve station readings.")
+    r = retrieve_readings_information_from_api()
     
     # Initialise update query
     triples = f""
@@ -329,13 +327,20 @@ def instantiate_station_readings(instantiated_sites_list: list,
 
 
 def instantiate_all_station_readings(query_endpoint: str = QUERY_ENDPOINT,
-                                     update_endpoint: str = UPDATE_ENDPOINT) -> int:
+                                     update_endpoint: str = UPDATE_ENDPOINT,
+                                     circle_center: str = None,
+                                     circle_radius: str = None) -> int:
     """
         Instantiates all readings for all instantiated stations
     """
 
     stations = get_all_airquality_stations(query_endpoint=query_endpoint,
-                                           update_endpoint=update_endpoint)
+                                           update_endpoint=update_endpoint, 
+                                           circle_center=circle_center,
+                                           circle_radius=circle_radius)
+    
+    # TODO: remove
+    stations = {k:stations[k] for k in list(stations.keys())[:5]}
     
     instantiated = instantiate_station_readings(instantiated_sites_list=stations,
                                                 query_endpoint=query_endpoint,
@@ -380,88 +385,94 @@ def update_all_stations(query_endpoint: str = QUERY_ENDPOINT,
     # return new_stations, new_readings, updated_ts
 
 
-# def add_readings_for_station(station_iri: str,
-#                              readings: list, readings_iris: list = None, 
-#                              is_observation: bool = True,
-#                              quantity_comments: list = None):
-#     """
-#         Return SPARQL update query string to instantiate readings for given 
-#         station IRI (query string to be included in overarching INSERT DATA query)
-
-#         Arguments:
-#             station_iri - Station IRI without trailing '<' and '>'
-#             readings - list of station readings to instantiate
-#                        (i.e. OntoEMS concept names)
-#             readings_iris - list of IRIs for station readings (only relevant to
-#                             link observation and forecast readings for same quantity
-#                             to same instance instead of creating duplicates)
-#             is_observation - boolean to indicate whether readings are measure
-#                              or forecast
-#             quantity_comments - comments to be attached to quantities
-        
-#         Returns
-#             triples - triples to be added to INSERT DATA query
-#             created_reading_iris - list of newly created quantity IRIs
-#             dataIRIs, dataClasses, timeUnit - to be appended to input arguments
-#                                               to TimSeriesClient bulkInit call
-#     """
-
-#     if readings_iris and (len(readings) != len(readings_iris)):
-#         #logger.error("Length or readings and readings_iris does not match.")
-#         raise ValueError("Length or readings and readings_iris does not match.")
-
-#     # Initialise "creation" time for forecasts
-#     t = dt.datetime.utcnow().strftime('%Y-%m-%dT%H:00:00Z')
-
-#     # Initialise return values : triples for INSERT DATA query & input lists
-#     # for bulkInit function using TimeSeriesClient
-#     triples = ''
-#     dataIRIs = []
-#     dataClasses = []
-#     timeUnit = TIME_FORMAT
-#     # List for all created station readings IRIs
-#     created_reading_iris = []
-
-#     # Get concepts and create IRIs
-#     for i in range(len(readings)):
-#         r = readings[i]
-#         # Create IRI for reported quantity
-#         quantity_type = EMS + r
-#         if not readings_iris:
-#             quantity_iri = KB + r + '_' + str(uuid.uuid4())
-#             created_reading_iris.append(quantity_iri)
-#         else:
-#             quantity_iri = readings_iris[i]
-#         # Create Measure / Forecast IRI
-#         if is_observation:
-#             data_iri = KB + 'Measure_' + str(uuid.uuid4())
-#             data_iri_type = OM_MEASURE
-#             creation_time = None
-#         else:
-#             data_iri = KB + 'Forecast_' + str(uuid.uuid4())
-#             data_iri_type = EMS_FORECAST
-#             creation_time = t
-
-#         unit = UNITS_MAPPING[r][0]
-#         symbol = UNITS_MAPPING[r][1]
-
-#         # Add triples to instantiate
-#         comment = quantity_comments[i] if quantity_comments else None
-#         triples += add_om_quantity(station_iri, quantity_iri, quantity_type,
-#                                    data_iri, data_iri_type, unit, symbol,
-#                                    is_observation, creation_time=creation_time, 
-#                                    comment=comment)
-
-#         # Get data to bulkInit time series
-#         dataIRIs.append(data_iri)
-#         dataClasses.append(DATACLASS)
-
-#     return triples, created_reading_iris, dataIRIs, dataClasses, timeUnit
-
-
-def retrieve_readings_data_from_api(crs: str = 'EPSG:4326') -> list:
+def add_readings_for_station(station_iri: str,
+                             readings: list, readings_iris: list = None, 
+                             is_observation: bool = True,
+                             quantity_comments: list = None):
     """
-        Retrieve and condition station readings data from UK Air API
+        Return SPARQL update query string to instantiate readings for given 
+        station IRI (query string to be included in overarching INSERT DATA query)
+
+        Arguments:
+            station_iri - Station IRI without trailing '<' and '>'
+            readings - list of station readings to instantiate
+                       (i.e. OntoEMS concept names)
+            readings_iris - list of IRIs for station readings (only relevant to
+                            link observation and forecast readings for same quantity
+                            to same instance instead of creating duplicates)
+            is_observation - boolean to indicate whether readings are measure
+                             or forecast
+            quantity_comments - comments to be attached to quantities
+        
+        Returns
+            triples - triples to be added to INSERT DATA query
+            created_reading_iris - list of newly created quantity IRIs
+            dataIRIs, dataClasses, timeUnit - to be appended to input arguments
+                                              to TimSeriesClient bulkInit call
+    """
+
+    if readings_iris and (len(readings) != len(readings_iris)):
+        #logger.error("Length or readings and readings_iris does not match.")
+        raise ValueError("Length or readings and readings_iris does not match.")
+
+    # Initialise "creation" time for forecasts
+    t = dt.datetime.utcnow().strftime('%Y-%m-%dT%H:00:00Z')
+
+    # Initialise return values : triples for INSERT DATA query & input lists
+    # for bulkInit function using TimeSeriesClient
+    triples = ''
+    dataIRIs = []
+    dataClasses = []
+    timeUnit = TIME_FORMAT
+    # List for all created station readings IRIs
+    created_reading_iris = []
+
+    # Get concepts and create IRIs
+    for i in range(len(readings)):
+        r = readings[i]
+        # Create IRI for reported quantity
+        quantity_type = EMS + r
+        if not readings_iris:
+            quantity_iri = KB + r + '_' + str(uuid.uuid4())
+            created_reading_iris.append(quantity_iri)
+        else:
+            quantity_iri = readings_iris[i]
+        # Create Measure / Forecast IRI
+        if is_observation:
+            data_iri = KB + 'Measure_' + str(uuid.uuid4())
+            data_iri_type = OM_MEASURE
+            creation_time = None
+        else:
+            data_iri = KB + 'Forecast_' + str(uuid.uuid4())
+            data_iri_type = EMS_FORECAST
+            creation_time = t
+
+        unit = UNITS_MAPPING[r][0]
+        symbol = UNITS_MAPPING[r][1]
+
+        # Add triples to instantiate
+        comment = quantity_comments[i] if quantity_comments else None
+        triples += add_om_quantity(station_iri, quantity_iri, quantity_type,
+                                   data_iri, data_iri_type, unit, symbol,
+                                   is_observation, creation_time=creation_time, 
+                                   comment=comment)
+
+        # Get data to bulkInit time series
+        dataIRIs.append(data_iri)
+        dataClasses.append(DATACLASS)
+
+    return triples, created_reading_iris, dataIRIs, dataClasses, timeUnit
+
+
+def retrieve_readings_information_from_api(crs: str = 'EPSG:4326') -> dict:
+    """
+        Retrieve and condition station readings data from UK Air API 
+        (but not the time series data itself)
+        Readings' data collection is done in 2 steps:
+            1) Retrieve detailed station information incl. reported time series
+               per station (i.e. time series IDs) - detailed station info required
+               to construct unique station ID (name + lat#lon)
+            2) Retrieve information about time series IDs
 
         Arguments:
             crs - coordinate reference system in which to return station 
@@ -469,10 +480,11 @@ def retrieve_readings_data_from_api(crs: str = 'EPSG:4326') -> list:
                   are provided as [lat, long] and specifying any other CRS can 
                   potentially result in switched values for lat and lon
         Returns:
-            List of dicts with station data as returned by API
+            Dictionary with readings information and corresponding station ID
+            (timeseries ID as key and information as dictionary)
     """
 
-    # Construct API call to get extended information for all staions (i.e. basic
+    # Construct API call to get extended information for all stations (i.e. basic
     # station data incl. information about reported readings/timeseries)
     if crs and re.match(r"EPSG:\d+", crs):
         url = f'https://uk-air.defra.gov.uk/sos-ukair/api/v1/stations?{crs}&expanded=true'
@@ -492,12 +504,10 @@ def retrieve_readings_data_from_api(crs: str = 'EPSG:4326') -> list:
         #logger.info('Station data successfully retrieved.')
     except Exception as ex:
         #logger.error("Error while retrieving station data from API.")
-        raise APIException("Error while retrieving station data from API.")  
+        raise APIException("Error while retrieving station information from API.")  
 
-    # Create DataFrame from json response and condition data
-    # StationIDs are no unique identifiers for stations (e.g. a station with several
-    # measurement features has different IDs). Hence, the  station name will also 
-    # serve as unique identifier
+    # Create DataFrame from json response and condition data to ensure 
+    # consistency with instantiated station information
     stations = [{'station': s['properties']['label'].split('-')[0],
                  'latitude': s['geometry']['coordinates'][0],
                  'longitude': s['geometry']['coordinates'][1], 
@@ -505,26 +515,33 @@ def retrieve_readings_data_from_api(crs: str = 'EPSG:4326') -> list:
                  'ts_ids': list(s['properties']['timeseries'].keys())
                 } for s in stations_raw ]
     df = pd.DataFrame(stations)
+    # Create separate rows for each reported time series
     df = df.explode('ts_ids', ignore_index=True)
-    
-    # Clean and condition returned API data
+    # Clean and condition returned API data (incl. creation of unique station ID)
     df = clean_api_data(df)
-    #df.set_index('ts_ids', inplace=True)
 
-    # Add timeseries information
-    ts_info = df['ts_ids'].apply(lambda x: retrieve_individual_timeseries_information_from_api(x))
-    df[['pollutant', 'eionet', 'unit']] = ts_info.apply(pd.Series)
+    # Query readings metadata from API
+    ts_ids = list(df['ts_ids'].unique())
+    # Number of days back to check whether the time series has current data
+    # --> only time series with recent data will be considered, as API contains
+    # lots of outdated or inactive timeseries (e.g. last reading 10 years back)
+    days = 14
+    readings = retrieve_timeseries_information_from_api(ts_ids=ts_ids, days_back=days)
 
-    # Add timeseries data
-
+    # Map time series data into DataFrame and remove all rows without ts info
+    df['ts_info'] = df['ts_ids'].map(readings)
+    df = df.dropna(subset=['ts_info'])
+    df[['pollutant', 'eionet', 'unit']] = df['ts_info'].apply(pd.Series)
+    # Extract only relevant information
+    ts_info = df[['ts_ids', 'station_id', 'pollutant', 'eionet', 'unit']]
 
     # Create return list of dicts
-    df.set_index('ts_ids', inplace=True)
-    stations = [{k: v} for k,v in df.to_dict('index').items()]
+    ts_info.set_index('ts_ids', inplace=True)
+    timeseries = {k: v for k,v in ts_info.to_dict('index').items()}
 
-    return stations
+    return timeseries
 
-def retrieve_timeseries_information_from_api(ts_ids=[]) -> dict:
+def retrieve_timeseries_information_from_api(ts_ids=[], days_back=7) -> dict:
     """
         Retrieve information about the nature of particular timeseries/
         station reading(s) (but not the time series data itself)
@@ -532,6 +549,9 @@ def retrieve_timeseries_information_from_api(ts_ids=[]) -> dict:
 
         Arguments:
             ts_ids - (list of) ID(s) of reading/timeseries
+            days_back - Number of days back (as of now) to check whether time
+                        series contains recent data (old/inactive time series
+                        will be neglected)
         Returns:
             Dictionary with readings information (timeseries ID as key and
             information as dictionary)
@@ -545,6 +565,8 @@ def retrieve_timeseries_information_from_api(ts_ids=[]) -> dict:
         url = f'https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries?expanded=true'
     else:
         raise InvalidInput('Provided timeseries ID(s) must be a (list of) string(s).')
+    
+    # Retrieve readings information
     try:
         ts_raw = requests.get(url=url).json()
     except Exception as ex:
@@ -554,14 +576,27 @@ def retrieve_timeseries_information_from_api(ts_ids=[]) -> dict:
     if isinstance(ts_raw, dict):
         ts_raw = [ts_raw]
 
-    # Return information about all timeseries if empty list is provided
+    # Remove meaningless stations / stations with missing data
+    stations_to_remove = ['http://environment.data.gov.uk/air', 'GB_SamplingFeature_missingFOI']
+    ts_adj = [ts for ts in ts_raw if ts.get('station', {}).get('properties', {}).get('label', {}) 
+              not in stations_to_remove]
+
+    # Only keep time series with recent readings
+    t1 = dt.datetime.now()
+    t2 = t1 - dt.timedelta(days=days_back)
+    unix_cutoff = int(t2.timestamp())
+    ts_adj = [ts for ts in ts_adj if isinstance(ts.get('lastValue', {}).get('timestamp', {}), (int, float))]
+    # API timestamp is provided in ms
+    ts_adj = [ts for ts in ts_adj if ts.get('lastValue', {}).get('timestamp', {})/1000 > unix_cutoff]
+
+    # Return information about all timeseries if empty ts_id list is provided
     if not ts_ids:
-        ts_ids = [ts['id'] for ts in ts_raw]
+        ts_ids = [ts['id'] for ts in ts_adj]
 
     # Initialise return dictionary
     infos = {}
     # Extract relevant information from JSON response
-    for ts in ts_raw:
+    for ts in ts_adj:
         info = {}
         # Get information if exists (else returns None)
         id = ts.get('id')
@@ -582,7 +617,8 @@ if __name__ == '__main__':
 
 
     t1 = time.time()
-    d1 = retrieve_timeseries_information_from_api()
+    instantiate_all_station_readings()
+    #d1 = retrieve_timeseries_information_from_api()
     #d2 = retrieve_readings_data_from_api()
     t2 = time.time()
     print(f'Elapsed seconds: {t2-t1: .2} s')

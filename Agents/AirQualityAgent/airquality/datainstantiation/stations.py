@@ -190,7 +190,7 @@ def _condition_airquality_data(station_data: dict) -> dict:
 def clean_api_data(dataframe: pd.DataFrame):
     """
         Clean the DataFrame with the raw station data (as returned from API)
-        (columns: ['station', 'latitude', 'longitude', 'elevation'])
+        (required columns: ['station', 'latitude', 'longitude', 'elevation'])
     """
     # Create local copy of DataFrame to manipulate
     data = dataframe.copy()
@@ -220,6 +220,7 @@ def clean_api_data(dataframe: pd.DataFrame):
     data['longitude'] = data['longitude'].round(6)
 
     # Construct "arbitrary" but unique station ID, as there is none from the API
+    # (e.g. a station with several measurement features has different IDs).
     data['station_id'] = data.apply(lambda x: x['station'] + '_' + str(x['latitude'])
                                               + '#' + str(x['longitude']), axis=1)
 
