@@ -16,13 +16,13 @@ from airquality.kgutils.javagateway import jpsBaseLibGW
 
 # Mapping of observation variables to OntoEMS concepts
 READINGS_MAPPING = {
-    'Nitrogen dioxide in air': EMS_NO2_CONCENTRATION,
-    'Nitrogen oxides in air': EMS_NOX_CONCENTRATION,
-    'Nitrogen monoxide in air': EMS_NO_CONCENTRATION,
-    'PM10 in aerosol': EMS_PM10_CONCENTRATION,
-    'Particulate matter under 2.5 micro m (aerosol)': EMS_PM2_5_CONCENTRATION,
-    'Sulphur dioxide in air': EMS_SO2_CONCENTRATION,
-    'Ozone in air': EMS_O3_CONCENTRATION,
+    'Nitrogen dioxide in air': (NO2_CONCENTRATION, EMS_NO2_CONCENTRATION),
+    'Nitrogen oxides in air': (NOX_CONCENTRATION, EMS_NOX_CONCENTRATION),
+    'Nitrogen monoxide in air': (NO_CONCENTRATION, EMS_NO_CONCENTRATION),
+    'PM10 in aerosol': (PM10_CONCENTRATION, EMS_PM10_CONCENTRATION),
+    'Particulate matter under 2.5 micro m (aerosol)': (PM2_5_CONCENTRATION, EMS_PM2_5_CONCENTRATION),
+    'Sulphur dioxide in air': (SO2_CONCENTRATION, EMS_SO2_CONCENTRATION),
+    'Ozone in air': (O3_CONCENTRATION, EMS_O3_CONCENTRATION)
 }
 
 # Mapping of units to OM units and symbols
