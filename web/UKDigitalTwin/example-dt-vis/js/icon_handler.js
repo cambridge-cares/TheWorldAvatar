@@ -64,6 +64,7 @@ class IconHandler {
                 console.trace();
             }
         }
+        console.log("INFO: All icons have been loaded");
     }
 
 }

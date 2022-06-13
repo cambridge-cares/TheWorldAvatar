@@ -170,6 +170,10 @@ write_env_file()
     rm "$env_filename"
   fi
 
+  if [ -e "${env_filename}.extra" ]; then
+    cp "${env_filename}.extra" "$env_filename"
+  fi
+
   # Determine network name
   local network_name="$stack-$mode"
   if [ $use_test_config -eq $TRUE ]; then
