@@ -63,12 +63,12 @@ def instantiated_airquality_stations_with_details(circle_center: str = None,
     if not circle_center and not circle_radius:
         # Retrieve all stations
         query = f"""
-            SELECT ?stationID ?station ?comment ?latlon ?elevation ?dataIRI
+            SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI
             WHERE {{
             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
                      <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
                      <{EMS_HAS_IDENTIFIER}> ?stationID .
-            OPTIONAL {{ ?station <{RDFS_COMMENT}> ?comment }}
+            OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
             OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
             OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
             OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
@@ -78,7 +78,7 @@ def instantiated_airquality_stations_with_details(circle_center: str = None,
         # Retrieve only stations in provided circle (radius in km)
         query = f"""
             {create_sparql_prefix('geo')}
-            SELECT ?stationID ?station ?comment ?latlon ?elevation ?dataIRI
+            SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI
             WHERE {{
                   SERVICE geo:search {{
                     ?station geo:search "inCircle" .
@@ -90,7 +90,7 @@ def instantiated_airquality_stations_with_details(circle_center: str = None,
                 ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
                          <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
                          <{EMS_HAS_IDENTIFIER}> ?stationID .
-                OPTIONAL {{ ?station <{RDFS_COMMENT}> ?comment }}
+                OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
                 OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
                 OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
                 OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
@@ -101,13 +101,13 @@ def instantiated_airquality_stations_with_details(circle_center: str = None,
 
 
 def add_station_data(station_iri: str = None, dataSource: str = None, 
-                     comment: str = None, id: str = None, location: str = None,
+                     label: str = None, id: str = None, location: str = None,
                      elevation: float = None) -> str:
     if station_iri:
         # Returns triples to instantiate a measurement station according to OntoEMS
         triples = f"<{station_iri}> <{RDF_TYPE}> <{EMS_REPORTING_STATION}> . "
         if dataSource: triples += f"<{station_iri}> <{EMS_DATA_SOURCE}> \"{dataSource}\"^^<{XSD_STRING}> . "
-        if comment: triples += f"<{station_iri}> <{RDFS_COMMENT}> \"{comment}\"^^<{XSD_STRING}> . "
+        if label: triples += f"<{station_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
         if id: triples += f"<{station_iri}> <{EMS_HAS_IDENTIFIER}> \"{id}\"^^<{XSD_STRING}> . "
         if location: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_LOCATION}> \"{location}\"^^<{GEOLIT_LAT_LON}> . "
         if elevation: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_ELEVATION}> \"{elevation}\"^^<{XSD_FLOAT}> . "

@@ -158,7 +158,7 @@ def _condition_airquality_data(station_data: dict) -> dict:
     # Data format as required for "add_station_data" query template
     conditioned = {'dataSource': "UK-AIR Sensor Observation Service",
                    'id': None,
-                   'comment': None,
+                   'label': None,
                    'location': None,
                    'elevation': None
     }
@@ -172,7 +172,7 @@ def _condition_airquality_data(station_data: dict) -> dict:
 
     conditioned['id'] = id
     if 'station' in station_data[id].keys(): 
-        conditioned['comment'] = str(station_data[id]['station'])
+        conditioned['label'] = str(station_data[id]['station'])
     if 'elevation' in station_data[id].keys():
         if math.isnan(station_data[id]['elevation']):
             conditioned['elevation'] = None

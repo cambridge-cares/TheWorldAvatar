@@ -70,7 +70,7 @@ OM_MICROG_M3 = UOM + 'microgramPerCubicMetre'
 
 # Data types
 RDF_TYPE = RDF + 'type'
-RDFS_COMMENT = RDFS + 'comment'
+RDFS_LABEL = RDFS + 'label'
 XSD_STRING = XSD + 'string'
 XSD_FLOAT = XSD + 'float'
 XSD_DATETIME = XSD + 'dateTime'
