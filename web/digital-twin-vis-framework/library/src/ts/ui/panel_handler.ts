@@ -9,6 +9,12 @@ class PanelHandler {
     //
     _previousLegendVisibility: string;
 
+    timeseriesHandler: TimeseriesHandler;
+
+    constructor() {
+        this.timeseriesHandler = new TimeseriesHandler();
+    }
+
     /**
      * 
      */
@@ -208,47 +214,89 @@ class PanelHandler {
         this.prepareMetaContainers(true, false);
 
         var promise = $.getJSON(url, function(json) {
+            // Render metadata tree
+            document.getElementById("metaTreeContainer").innerHTML = "";
 
-
-            
-            console.log("... metadata read and parsed.");
+            // @ts-ignore
+            let metaTree = JsonView.renderJSON(json, document.getElementById("metaTreeContainer"));
+            // @ts-ignore
+            JsonView.expandChildren(metaTree);
+            // @ts-ignore
+            JsonView.selectiveCollapse(metaTree)
         });
         return promise;
     }
 
     public addTimeseries(url: string) {
+        console.log("Reading timeseries...");
         this.prepareMetaContainers(false, true);
+
+        var promise = $.getJSON(url, function(json) {
+            return json;
+        });
+
+        let self = this;
+        return promise.then(
+            function(json) {
+                console.log("Parsing?");
+                console.log(this.timeseriesHandler);
+
+                // Render timeseries
+                document.getElementById("metaTimeContainer").innerHTML = "";
+
+                // Plot data
+                self.timeseriesHandler.parseData(json);
+                self.timeseriesHandler.showData("metaTimeContainer");
+
+                // Auto-select the first option in the dropdown
+                console.log(self.timeseriesHandler);
+                let select = document.getElementById("time-series-select") as HTMLInputElement;
+                select.onchange(null);
+            }
+        );
     }
 
+    public updateTimeseries(setName) {
+        this.timeseriesHandler.update(setName);
+    }
+
+
     private prepareMetaContainers(addMeta: boolean, addTime: boolean) {
-        let metaContainer = document.getElementById("metaContainer");
-        if(metaContainer === null || metaContainer === undefined) {
-            this.appendContent("<div id='metaContainer'></div>");
-            metaContainer = document.getElementById("metaContainer") as HTMLInputElement;
+        let metaTabs = document.getElementById("metaTabs") as HTMLInputElement;
+        if(metaTabs === null || metaTabs === undefined) {
+            this.appendContent("<div id='metaTabs'></div>");
         }
 
-        let metaTabs = document.getElementById("metaTabs");
-        if(metaTabs === null || metaTabs === undefined) {
-            metaContainer.innerHTML = "<div id='metaTabs'></div>"
-            metaTabs = document.getElementById("metaTabs") as HTMLInputElement;
+        let metaContainer = document.getElementById("metaContainer") as HTMLInputElement;
+        if(metaContainer === null || metaContainer === undefined) {
+            this.appendContent("<div id='metaContainer'></div>");
         }
 
         if(addMeta) {
             if(document.getElementById("treeButton") === null) {
-                metaTabs.innerHTML += `<button id="treeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTreeContainer')">Metadata</button>`;
+                document.getElementById("metaTabs").innerHTML += `
+                    <button id="treeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTreeContainer')">Metadata</button>
+                `;
             }
             if(document.getElementById("metaTreeContainer") === null) {
-                metaContainer.innerHTML += "<div id='metaTreeContainer'></div>"
+                document.getElementById("metaContainer").innerHTML += "<div id='metaTreeContainer' class='tabcontent'></div>"
             }
         }
 
         if(addTime) {
             if(document.getElementById("timeButton") === null) {
-                metaTabs.innerHTML += `<button id="timeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTimeContainer')">Time Series</button>`;
+                document.getElementById("metaTabs").innerHTML += `
+                    <button id="timeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTimeContainer')">Time Series</button>
+                `;
             }
             if(document.getElementById("metaTimeContainer") === null) {
-                metaContainer.innerHTML += "<div id='metaTimeContainer'></div>"
+                document.getElementById("metaContainer").innerHTML += "<div id='metaTimeContainer' style='display: none;' class='tabcontent'></div>"
             }
         }
+
+        let returnContainer = document.getElementById("returnContainer");
+        returnContainer.style.display = "block";
+        let footerContent = document.getElementById("footerContent");
+        footerContent.style.display = "none";
     }
 }

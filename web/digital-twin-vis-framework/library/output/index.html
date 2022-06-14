@@ -1,5 +1,6 @@
 <html>
     <head>
+        <!-- TODO: Change this if desired -->
         <title>DTVF v2.0.0</title>
 
         <!-- JS -->
@@ -7,14 +8,15 @@
         <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
         <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="./dtvf.temp.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
 
         <!-- CSS -->
         <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
-        <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
         <link href="./dtvf.min.css" rel="stylesheet" />
         <link href="./controls.css" rel="stylesheet" />
     </head>
@@ -101,10 +103,10 @@
                 <div id="contentContainer"></div>
                 <div id="legendContainer"></div>
                 <div id="footerContainer">
-                    <div id="footerContent"></div>
                     <div id="returnContainer">
                         <a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
                     </div>
+                    <div id="footerContent"></div>
                 </div>
             </div>
         </div>
@@ -117,6 +119,7 @@
             var manager = new Manager(MapProvider.MAPBOX);
 
             // Load the definitions of sample data
+            // TODO: Add endpoint base URLs here.
             var dataPromise = manager.loadDefinitions([
                 "./test-data-1"
             ]);
@@ -129,18 +132,20 @@
              */
             function start() {
                 // Override default map options
+                // TODO: Override default map options here
                 let optionsOverride = {
                     "center": [0.121971, 52.205253],
-                    "zoom": 12,
+                    "zoom": 14,
                     "bearing": 0,
                     "pitch": 45,
-                    "style": "mapbox://styles/mapbox/dark-v10?optimize=true"
+                    "style": "mapbox://styles/mapbox/light-v10?optimize=true"
                 };
 
-                // Create a map with default settings
-                manager.initialiseMap(/*optionsOverride*/);
+                // Initialise the map object
+                manager.initialiseMap(optionsOverride);
                 
                 // Set default side panel content
+                // TODO: Change these as desired.
                 manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
                 manager.getPanelHandler().setContent(`
                     <p style="font-weight: bold;">Here's some sample introduction text, pulled from nowhere in particular.</p>
@@ -155,12 +160,19 @@
                 `);
                 manager.getPanelHandler().toggleLegend(false);
                 manager.getPanelHandler().setFooter("CMCL Innovations © " + new Date().getFullYear());
+
+                // Save panel state as default
                 manager.getPanelHandler().storeDefault();
 
                 // Once the underlying style has loaded...
                 MapHandler.MAP.on("style.load", function() {
-                    // Plot the default visible data
-                    manager.plotData();
+
+                    // Load registered images
+                    manager.loadImages().then(() => {
+
+                        // Plot the default visible data
+                        manager.plotData();
+                    });
                 });
             }
           

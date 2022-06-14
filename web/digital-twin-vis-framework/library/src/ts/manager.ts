@@ -28,6 +28,8 @@ class Manager {
      */
     private panelHandler: PanelHandler;
 
+    private endPoints: string[];
+
     /**
      * Initialise a new Manager instance.
      */
@@ -46,13 +48,6 @@ class Manager {
                 throw new Error("Unknown map provider specified!");
             break;
         }
-    }
-
-    /**
-     * 
-     */
-    public onLayerChange(control: Object) {
-        //this.controlHandler.onLayerChange(control);
     }
 
     /**
@@ -95,13 +90,31 @@ class Manager {
      * @returns promise object
      */
     public loadDefinitions(endPoints: string[]) {
+        this.endPoints = endPoints;
         let promises = [];
 
         endPoints.forEach(endPoint => {
             let visFile = (endPoint.endsWith("/")) ? (endPoint + "visualisation.json") : (endPoint + "/visualisation.json");
             promises.push(Manager.DATA_STORE.loadDataGroups(visFile));
-        })
+        });
 
+        return Promise.all(promises);
+    }
+
+    /**
+     * 
+     */
+    public loadImages() {
+        let promises = [];
+
+        this.endPoints.forEach(endPoint => {
+            if(Manager.PROVIDER === MapProvider.MAPBOX) {
+                let iconFile = (endPoint.endsWith("/")) ? (endPoint + "icons.json") : (endPoint + "/icons.json");
+                promises.push(
+                    (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile)
+                );
+            }
+        });
         return Promise.all(promises);
     }
 
@@ -162,15 +175,20 @@ class Manager {
 
         // Metadata
         let metadataURL = feature["properties"]["metadataURL"];
-        if(metadataURL !== null) {
+        if(metadataURL !== null && metadataURL !== undefined) {
             this.panelHandler.addMetadata(metadataURL);
         }
 
         // Timeseries
         let timeseriesURL = feature["properties"]["timeseriesURL"];
-        if(timeseriesURL !== null) {
+        if(timeseriesURL !== null && timeseriesURL !== undefined) {
+            console.log("timeseriesURL: " + timeseriesURL);
             this.panelHandler.addTimeseries(timeseriesURL);
         }
+
+        // TODO - Enable after further testing
+        // let metaTabs = document.getElementById("metaTabs") as HTMLInputElement;
+        // metaTabs.style.display = (metaTabs.childElementCount < 2) ? "none" : "block";
 
         // Update footer
         document.getElementById("footerContainer").innerHTML = `
@@ -178,6 +196,39 @@ class Manager {
                 <a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
             </div>
         `;
+    }
+
+    /**
+     * Programatically select the metadata or timeseries tabs.
+     * 
+     * @param {String} tabButtonName 
+     * @param {String} tabName 
+     */
+    openMetaTab(tabButtonName, tabName) {
+        console.log(tabButtonName + ", " + tabName);
+        
+        // Declare all variables
+        var i, tabcontent, tablinks;
+      
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+      
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+      
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabButtonName).className += " active";
+    }
+
+    public updateTimeseries(setName) {
+        this.panelHandler.updateTimeseries(setName);
     }
 
 }

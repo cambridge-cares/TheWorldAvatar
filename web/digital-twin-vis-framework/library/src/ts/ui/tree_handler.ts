@@ -18,13 +18,24 @@ class TreeHandler {
             // @ts-ignore
             $("#treeview").hummingbird("getChecked", {list: checkedItems, onlyEndNodes: true});
             
-            // All Layer IDs
-            let allLayers = DataUtils.getAllLayerIDs(dataStore);
-
             // Data IDs of all selected end nodes
-            let visible = checkedItems["dataid"];
+            let checked = checkedItems["dataid"];
+
+            // Parse to visible layer IDs
+            let visible = [];
+            checked.forEach(id => {
+                if(id.includes("|")) {
+                    id.split("|").forEach(part => visible.push(part));
+                } else {
+                    visible.push(id);
+                }
+            });
+
+            // Layers not in visible array are hidden
+            let allLayers = DataUtils.getAllLayerIDs(dataStore);
             let hidden = allLayers.filter(layer => !visible.includes(layer));
 
+            // Update visibility
             visible.forEach(layer => MapBoxUtils.toggleLayer(layer, true));
             hidden.forEach(layer => MapBoxUtils.toggleLayer(layer, false));
         });
@@ -101,6 +112,7 @@ class TreeHandler {
             layers.forEach(layer => {
                 dataID += layer.id + "|";
             });
+            if(dataID.endsWith("|")) dataID = dataID.slice(0, -1);
 
             // Build HTML
             let layerHTML = "<li class='end-node'>";

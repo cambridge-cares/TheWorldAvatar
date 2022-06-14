@@ -82,7 +82,7 @@ class MapBoxUtils {
         let name = "Multiple locations";
         let desc = `
             This feature represents a cluster of ` + feature["properties"]["point_count"] + 
-            ` closely spaced, individual locations.<br/>Click to see details on the underlying locations.
+            ` (or more) closely spaced, individual locations.<br/>Click to see details on the underlying locations.
         `;
 
         // Show popup

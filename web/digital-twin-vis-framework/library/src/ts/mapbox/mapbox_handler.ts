@@ -150,7 +150,7 @@ class MapHandler_MapBox extends MapHandler {
 
             // Add option for each feature
             leafs.forEach(leaf => {
-                let featureName = (leaf["properties"]["name"] !== null) ? leaf["properties"]["name"] : "Feature #" + leaf["id"];
+                let featureName = (leaf["properties"]["name"] !== null && leaf["properties"]["name"] !== undefined) ? leaf["properties"]["name"] : "Feature #" + leaf["id"];
                 let layerID = leaf["layer"]["id"];
                 let value = leaf["id"] + "@" + layerID;
 
@@ -176,10 +176,6 @@ class MapHandler_MapBox extends MapHandler {
         // Update the side panel
         document.getElementById("titleContainer").innerHTML = "<h2>Multiple locations...</h2>";
         document.getElementById("contentContainer").innerHTML = html;
-
-        // Update select using select2 library
-        // @ts-ignore
-        //$('#featureSelect').select2();
     }
 
     /**
@@ -313,5 +309,32 @@ class MapHandler_MapBox extends MapHandler {
             MapHandler.MAP.addLayer(options);
             console.info("Added layer to MapBox map '" + layer.id + "'.");
         }
+    }
+
+    /**
+     * 
+     */
+    public async addIcons(iconFile: string) {
+        console.info("Registering images with MapBox...");
+        let self = this;
+
+        let promise = $.getJSON(iconFile, function(json) {
+            return json;
+        });
+
+        return promise.then(
+            function(json) {
+                let promises = [];
+                let iconHandler = new IconHandler();
+
+                for (var key of Object.keys(json)) {
+                    promises.push(iconHandler.loadIcon(key, json[key]));
+                }
+
+                return Promise.all(promises).then(() => {
+                    console.info("All images have been registered.");
+                });
+            }
+        );
     }
 }

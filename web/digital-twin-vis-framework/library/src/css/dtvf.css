@@ -59,6 +59,7 @@ h6 {
     background-color: white;
     box-sizing: border-box;
     border: 1px solid grey;
+    font-family: "Inter", sans-serif !important;
     font-size: 11pt;
     height: 100%;
 }
@@ -133,6 +134,7 @@ h6 {
     width: calc(100% - 56px);
     margin-left: 28px;
     margin-right: 28px;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     height: calc(100% - 20px);
@@ -140,41 +142,35 @@ h6 {
 
 #titleContainer {
     width: 100%;
-    min-height: 40px;
-    max-height: 80px;
+    height: 50px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     border-bottom: 1px solid lightgray;
+    display: table;
 }
-
+#titleContainer h1, h2, h3, p {
+    display: table-cell;
+    vertical-align: middle;
+}
 #titleContainer img:hover {
     opacity: 50%;
     cursor: pointer;
 }
 
-#propsContainer {
-    margin-top: 10px;
-    width: 100%;
-    height: auto;
-    font-size: 10pt;
-}
-
-#propsContainer td {
-    min-height: 25px;
-}
-
-#propsContainer table {
-    border-bottom: 1px solid lightgrey;
+.description {
+    padding-bottom: 10px;
+    border-bottom: 1px solid lightgray;
 }
 
 #contentContainer {
     width: 100%;
+    height: calc(100% - 65px);
     margin-bottom: 70px;
-    overflow-y: hidden;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    /* flex-grow: 1; */
-    /* justify-content: space-between; */
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 #meta-tree {
@@ -286,23 +282,33 @@ h6 {
 
 #time-series-table-container {
     margin-top: 10px;
-    height: calc(100% - 40px - 350px);
-    max-height: calc(100% - 40px - 350px);
     border: 1px solid grey;
-    position: relative;
+    height: calc(100% - 25px - 335px);
     overflow-y: scroll;
+
 }
 
 #time-series-chart-container {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     height: 300px;
 }
 
 #time-series-control {
-    margin-top: 15px;
     width: 100%;
     height: 25px;
+}
+#time-series-control label {
+    width: 39%;
+    height: 100%;
+    font-family: Inter, sans-serif !important;
+    font-size: 11pt;
+    display: inline-block;
+}
+#time-series-control select {
+    width: 59%;
+    height: 100%;
+    display: inline-block;
 }
 
 #time-series-title {
@@ -330,10 +336,6 @@ h6 {
 .time-series-table {
     border-spacing: 0px;
     border-collapse: separate;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
 }
 
 .time-series-table th {
@@ -405,44 +407,9 @@ h6 {
     font-size: 9pt;
 }
 
-#time-series-chart-container {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    height: 300px;
-}
-
 #chart-canvas {
     height: 100% !important;
     width: 100% !important;
-}
-
-#jsonTree {
-    border-bottom: 1px solid lightgrey;
-    height: calc(100% - 40px);
-}
-
-.json-key {
-    font-weight: bold;
-    margin-right: 0px !important;
-    font-size: 10pt !important;
-    font-family: "Inter", sans-serif !important;
-    color: black !important;
-}
-
-.json-value {
-    color: navy !important;
-    font-size: 10pt !important;
-    font-family: "Inter", sans-serif !important;
-}
-
-.json-separator {
-    line-height: 1.25;
-}
-
-.json-size {
-    font-size: 10pt !important;
-    font-family: "Inter", sans-serif !important;
-    color: rgb(100, 100, 100) !important;
 }
 
 .empty-icon {
@@ -460,44 +427,46 @@ h6 {
 
 
 
-
-#metaContainer {
-    width: calc(100% - 2px);
-    height: 100%;
+#metaTabs {
     margin-top: 20px;
-    margin-bottom: 20px;
-    border: 1px solid red;
+    width: 100%;
+    height: 50px;
 }
-
-
-/* Style the tab */
-.json-tree-tabs {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
-}
-
-/* Style the buttons that are used to open the tab content */
 #metaTabs button {
-    background-color: inherit;
+    border: 1px solid #cccccc;
+    background-color: #dddddd;
     float: left;
-    border: none;
     outline: none;
     cursor: pointer;
     padding: 14px 16px;
     transition: 0.3s;
     width: 50%;
 }
-
-/* Change background color of buttons on hover */
-.json-tree-tabs button:hover {
-    background-color: #ddd;
+#treeButton {
+    border-radius: 10px 0px 0px 10px;
+}
+#timeButton {
+    border-radius: 0px 10px 10px 0px;
+}
+#metaTabs button.active {
+    background-color: #cccccc;
+}
+#metaContainer {
+    width: 100%;
+    margin-top: 10px;
+    overflow-y: hidden;
+}
+#metaTreeContainer {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+#metaTimeContainer {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    height: 100%;
 }
 
-/* Create an active/current tablink class */
-.json-tree-tabs button.active {
-    background-color: #ccc;
-}
 
 /* Style the tab content */
 .json-tree-tabscontent {
@@ -836,90 +805,96 @@ label[for="select-feature"] {
 
 /**
  * CSS for JSON tree library.
- *
- * https://github.com/pgrabovets/json-view
  */
-
- .json-container {
+.json-container {
     font-family: 'Open Sans';
     font-size: 16px;
     background-color: #fff;
     color: #808080;
     box-sizing: border-box;
 }
-
 .json-container .line {
     margin: 4px 0;
     display: flex;
     justify-content: flex-start;
 }
-
 .json-container .caret-icon {
     width: 18px;
     text-align: center;
     cursor: pointer;
+    padding-top: 4px;
 }
-
 .json-container .empty-icon {
     width: 18px;
 }
-
 .json-container .json-type {
     margin-right: 4px;
     margin-left: 4px;
 }
-
 .json-container .json-key {
     color: #444;
     margin-right: 4px;
     margin-left: 4px;
 }
-
 .json-container .json-index {
     margin-right: 4px;
     margin-left: 4px;
 }
-
 .json-container .json-value {
     margin-left: 8px;
 }
-
 .json-container .json-number {
     color: #f9ae58;
 }
-
 .json-container .json-boolean {
     color: #ec5f66;
 }
-
 .json-container .json-string {
     color: #86b25c;
 }
-
 .json-container .json-size {
     margin-right: 4px;
     margin-left: 4px;
 }
-
 .json-container .hide {
     display: none;
 }
-
 .json-container .fas {
     display: inline-block;
     width: 0;
     height: 0;
     border-style: solid;
 }
-
 .json-container .fa-caret-down {
     border-width: 6px 5px 0 5px;
     border-color: #808080 transparent;
 }
-
 .json-container .fa-caret-right {
     border-width: 5px 0 5px 6px;
     border-color: transparent transparent transparent #808080;
+}
+.json-key {
+    font-weight: bold;
+    margin-right: 0px !important;
+    font-size: 9pt !important;
+    font-family: "Inter", sans-serif !important;
+    color: black !important;
+}
+.json-value {
+    color: navy !important;
+    font-size: 9pt !important;
+    font-family: "Inter", sans-serif !important;
+    margin-left: 4px !important;
+}
+.json-separator {
+    font-weight: bold;
+    font-size: 9pt !important;
+    font-family: "Inter", sans-serif !important;
+}
+.json-size {
+    font-size: 9pt !important;
+    font-family: "Inter", sans-serif !important;
+    color: rgb(100, 100, 100) !important;
 }
 
 /* Selection box for multiple feature clicks */
