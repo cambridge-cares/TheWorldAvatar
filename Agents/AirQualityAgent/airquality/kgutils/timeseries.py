@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 08 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 08 Apr 2022                            #
+################################################
 
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB

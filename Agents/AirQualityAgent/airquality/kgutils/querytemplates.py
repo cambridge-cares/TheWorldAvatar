@@ -127,6 +127,7 @@ def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
         <{station_iri}> <{EMS_REPORTS}> <{quantity_iri}> . 
         <{quantity_iri}> <{RDF_TYPE}> <{quantity_type}> . 
         <{quantity_iri}> <{RDFS_COMMENT}> "{comment}"^^<{XSD_STRING}> . 
+        <{quantity_iri}> <{OM_HAS_VALUE}>  <{data_iri}> .
         <{data_iri}> <{RDF_TYPE}> <{data_iri_type}> . 
     """
     if unit: 

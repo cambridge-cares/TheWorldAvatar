@@ -298,10 +298,7 @@ def instantiate_all_station_readings(query_endpoint: str = QUERY_ENDPOINT,
                                            update_endpoint=update_endpoint, 
                                            circle_center=circle_center,
                                            circle_radius=circle_radius)
-    
-    # TODO: remove
-    stations = {k:stations[k] for k in list(stations.keys())[:50]}
-    
+       
     instantiated = instantiate_station_readings(instantiated_sites_dict=stations,
                                                 query_endpoint=query_endpoint,
                                                 update_endpoint=update_endpoint)
@@ -342,7 +339,7 @@ def update_all_stations(query_endpoint: str = QUERY_ENDPOINT,
     # diff = t2-t1
     # print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
 
-    # return new_stations, new_readings, updated_ts
+    return new_stations, new_readings#, updated_ts
 
 
 def add_readings_for_station(station_iri: str, readings: dict):
@@ -578,16 +575,7 @@ def retrieve_timeseries_information_from_api(ts_ids=[], days_back=7) -> dict:
 
 if __name__ == '__main__':
 
-
-    t1 = time.time()
-    r = instantiate_all_station_readings()
-    print(r)
-    #d1 = retrieve_timeseries_information_from_api()
-    #d2 = retrieve_readings_data_from_api()
-    t2 = time.time()
-    print(f'Elapsed seconds: {t2-t1: .2} s')
-
     response = update_all_stations()
     print(f"Number of instantiated stations: {response[0]}")
     print(f"Number of instantiated readings: {response[1]}")
-    print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
+    #print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
