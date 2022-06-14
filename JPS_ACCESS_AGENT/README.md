@@ -6,6 +6,30 @@ The purpose of the AccessAgent is to handle HTTP requests to perform SPARQL quer
 The agent will also perform requests to "get" and "insert" entire graphs. This agent extends the JPSAgent framework and can be called using methods 
 in the AccessAgentCaller class in jps_base_lib.
 
+## Spining up AccessAgent stack and setting up the AccessAgent in a dev environment
+
+The AccessAgent stack (see docker-compose.yml) contains the Access Agent on port 48080 and an empty Blazegraph container on port 48081. The Blazegraph will host the store routing information. 
+Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry, respectively. Credentials are required to pull from the CMCL registry. 
+
+From the command line, in same directory as this README, run:
+```
+docker-compose up -d
+```
+Next, you will need to populate the default "kb" namespace in Blazegraph with your routing information. This can simply be done using the Blazegraph user interface at `localhost:48081/blazegraph`.
+Routing information consists of 5 triples e.g.
+```
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint>	"http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint> "http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource>.
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual>.
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/2000/01/rdf-schema#label> "ontokin".
+```
+The queryStore(String targetResourceID, String sparqlQuery) and updateStore(String targetResourceID, String sparqlUpdate) methods from jps_base_lib can now be used with your local access agent by supplying a targetResourceID of the form `http://localhost:48080/<targetName>`, where <targetName> corresponds to the value of label in the routing information. For example, to use the local access agent to access ontokin based on the routing information shown above:
+```
+targetResourceID = http://localhost:48080/ontokin
+```
+Note: "localhost" won't work from inside a docker container. Use "host.docker.internal" instead, if developing on windows.
+
 ## Building the AccessAgent
 
 The AccessAgent is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central).
