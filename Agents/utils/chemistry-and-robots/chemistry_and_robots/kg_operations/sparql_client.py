@@ -4,6 +4,7 @@
 from datetime import datetime
 from typing import Tuple
 from rdflib import Graph
+from rdflib import XSD
 from pathlib import Path
 import collections
 import requests
@@ -1434,26 +1435,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return hplc_report_iri
 
-    # TODO this should be made part of pyderivationagent.kg_operations.sparql_client.py
-    def uploadFile_(self, local_file_path, filename_with_subdir: str=None) -> Tuple[str, float]:
-        """This function uploads the file at the given local file path to file server."""
-        if self.fs_url is None or self.fs_auth is None:
-            raise Exception("ERROR: Fileserver URL and auth are not provided correctly.")
-        with open(local_file_path, 'rb') as file_obj:
-            files = {'file': file_obj}
-            timestamp_upload, response = datetime.now().timestamp(), requests.post(
-                self.fs_url+filename_with_subdir if filename_with_subdir is not None else self.fs_url,
-                auth=self.fs_auth, files=files
-            )
-
-            # If the upload succeeded, return the remote file path and the timestamp when the file was uploaded
-            if (response.status_code == status_codes.codes.OK):
-                remote_file_path = response.headers['file']
-
-                return remote_file_path, timestamp_upload
-            else:
-                raise Exception("ERROR: Local file (%s) upload to file server <%s> failed with code %d and response body: %s" % (
-                    local_file_path, self.fs_url, response.status_code, str(response.content)))
+    def register_agent_with_hardware(self, agent_iri, hardware_digital_twin):
+        g = Graph()
+        g.add((URIRef(hardware_digital_twin), URIRef(ONTOLAB_ISMANAGEDBY), URIRef(agent_iri)))
+        update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
+        self.performUpdate(update)
 
     # TODO delete below
     def upload_raw_hplc_report_to_fs_kg(self, local_file_path, timestamp_last_modified, hplc_digital_twin) -> str:
@@ -2097,3 +2083,61 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             if key in d:
                 return True
         return False
+
+    ####################################################
+    ## TODO move these functions to pyderivationagent ##
+    ####################################################
+    # TODO this should be made part of pyderivationagent.kg_operations.sparql_client.py
+    def generate_ontoagent_instance(self, service_iri:str, http_url:str, input_types:List[str], output_types:List[str]):
+        operation_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_OPERATION)
+        msg_input_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGECONTENT)
+        msg_output_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGECONTENT)
+
+        g = Graph()
+        g.add((URIRef(service_iri), RDF.type, URIRef(ONTOAGENT_SERVICE)))
+        g.add((URIRef(service_iri), URIRef(ONTOAGENT_HASOPERATION), URIRef(operation_iri)))
+        g.add((URIRef(operation_iri), RDF.type, URIRef(ONTOAGENT_OPERATION)))
+        g.add((URIRef(operation_iri), URIRef(ONTOAGENT_HASINPUT), URIRef(msg_input_iri)))
+        g.add((URIRef(operation_iri), URIRef(ONTOAGENT_HASOUTPUT), URIRef(msg_output_iri)))
+        g.add((URIRef(operation_iri), URIRef(ONTOAGENT_HASHTTPURL), Literal(http_url, datatype=XSD.anyURI)))
+
+        g.add((URIRef(msg_input_iri), RDF.type, URIRef(ONTOAGENT_MESSAGECONTENT)))
+        for each_input in input_types:
+            msg_part_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGEPART)
+            g.add((URIRef(msg_input_iri), URIRef(ONTOAGENT_HASMANDATORYPART), URIRef(msg_part_iri)))
+            g.add((URIRef(msg_part_iri), RDF.type, URIRef(ONTOAGENT_MESSAGEPART)))
+            g.add((URIRef(msg_part_iri), URIRef(ONTOAGENT_HASTYPE), URIRef(each_input)))
+
+        g.add((URIRef(msg_output_iri), RDF.type, URIRef(ONTOAGENT_MESSAGECONTENT)))
+        for each_output in output_types:
+            msg_part_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGEPART)
+            g.add((URIRef(msg_output_iri), URIRef(ONTOAGENT_HASMANDATORYPART), URIRef(msg_part_iri)))
+            g.add((URIRef(msg_part_iri), RDF.type, URIRef(ONTOAGENT_MESSAGEPART)))
+            g.add((URIRef(msg_part_iri), URIRef(ONTOAGENT_HASTYPE), URIRef(each_output)))
+
+        self.uploadGraph(g)
+
+    # TODO this should replace uploadFile in pyderivationagent.kg_operations.sparql_client.py
+    def uploadFile_(self, local_file_path, filename_with_subdir: str=None) -> Tuple[str, float]:
+        """This function uploads the file at the given local file path to file server."""
+        if self.fs_url is None or self.fs_auth is None:
+            raise Exception("ERROR: Fileserver URL and auth are not provided correctly.")
+        with open(local_file_path, 'rb') as file_obj:
+            files = {'file': file_obj}
+            timestamp_upload, response = datetime.now().timestamp(), requests.post(
+                self.fs_url+filename_with_subdir if filename_with_subdir is not None else self.fs_url,
+                auth=self.fs_auth, files=files
+            )
+
+            # If the upload succeeded, return the remote file path and the timestamp when the file was uploaded
+            if (response.status_code == status_codes.codes.OK):
+                remote_file_path = response.headers['file']
+
+                return remote_file_path, timestamp_upload
+            else:
+                raise Exception("ERROR: Local file (%s) upload to file server <%s> failed with code %d and response body: %s" % (
+                    local_file_path, self.fs_url, response.status_code, str(response.content)))
+
+    def uploadGraph(self, g: Graph):
+        update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
+        self.performUpdate(update)
