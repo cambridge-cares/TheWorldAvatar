@@ -1437,7 +1437,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def register_agent_with_hardware(self, agent_iri, hardware_digital_twin):
         g = Graph()
         g.add((URIRef(hardware_digital_twin), URIRef(ONTOLAB_ISMANAGEDBY), URIRef(agent_iri)))
-        update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
+        # NOTE SPARQL update with sub-query to ensure same triple don't get written to KG (although this should not cause any issues)
+        update = """INSERT { %s } WHERE { MINUS { %s } }""" % (
+            g.serialize(format='nt'), g.serialize(format='nt')
+        )
         self.performUpdate(update)
 
     # TODO delete below
@@ -2114,7 +2117,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             g.add((URIRef(msg_part_iri), RDF.type, URIRef(ONTOAGENT_MESSAGEPART)))
             g.add((URIRef(msg_part_iri), URIRef(ONTOAGENT_HASTYPE), URIRef(each_output)))
 
-        self.uploadGraph(g)
+        # NOTE SPARQL update with sub-query to ensure one agent service don't get duplicated entries in KG
+        # NOTE TODO this implies that ONE AGENT SERVICE ONLY HAS ONE ONTOAGENT:OPERATION
+        update = PREFIX_RDF + """INSERT { %s } WHERE { MINUS {<%s> rdf:type <%s>.} }""" % (
+            g.serialize(format='nt'), service_iri, ONTOAGENT_SERVICE
+        )
+        self.performUpdate(update)
 
     # TODO this should replace uploadFile in pyderivationagent.kg_operations.sparql_client.py
     def uploadFile_(self, local_file_path, filename_with_subdir: str=None) -> Tuple[str, float]:
