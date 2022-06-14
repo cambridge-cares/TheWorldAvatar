@@ -327,7 +327,11 @@ public class AccessAgentCaller{
 			//If no authority is given then get the host 
 			if(authority == null) {
 				//TODO this should be done by an "Agent Locator"
-				authority = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
+				authority = System.getenv("ACCESSAGENT_HOST");
+				if(authority == null) {
+					authority = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
+				}
+				LOGGER.info("ACCESSAGENT_HOST set to "+authority);
 			}
 			
 			requestUrl = new URI(scheme,authority,JPSConstants.ACCESS_AGENT_PATH,null,null);
