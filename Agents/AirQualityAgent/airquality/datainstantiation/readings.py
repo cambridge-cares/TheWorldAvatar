@@ -35,6 +35,8 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         
         Arguments:
             instantiated_ts_iris - list of IRIs of instantiated time series
+                                   (add readings data to all iris if no list
+                                   is provided)
     """
 
     def _create_ts_subsets_to_add(times, dataIRIs, values):
@@ -211,11 +213,11 @@ def instantiate_station_readings(instantiated_sites_dict: dict,
             triples += _triples
 
             # Append lists to overarching TimeSeriesClient input lists
-            # TODO: Potentially split dataIRIs is individual time series (as 
-            #       common reporting frequency for individual pollutants unclear)
-            dataIRIs.append(_dataIRIs)
-            dataClasses.append(_dataClasses)
-            timeUnit.append(_timeUnit)
+            # ALL dataIRIs are split into individual time series (as common
+            # reporting frequency for individual pollutants unclear)
+            dataIRIs.extend([[i] for i in _dataIRIs])
+            dataClasses.extend([[i] for i in _dataClasses])
+            timeUnit.extend([_timeUnit for i in _dataClasses])
 
             #logger.info(f'Readings for station {id:>30} successfully added to query.')
 
@@ -584,6 +586,7 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
         df = retrieve_station_details_from_api(crs=crs)
         ts_ids = list(df['ts_id'].unique())
 
+    # TODO: remove
     ts_ids = ts_ids[:500]
     
     # Construct POST request to query readings time series data from API
@@ -609,7 +612,7 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
         df = pd.DataFrame.from_dict(ts_data, orient='index')
         # Remove rows without entries
         df = df[df['values'].astype(bool)]
-        # Unpack time series lists
+        # Unpack time series lists of dicts [{timestamp: value}, ...]
         df = df.explode('values')
         # Unpack dicts to separate columns
         df[['timestamp', 'value']] = df['values'].apply(pd.Series)
@@ -620,15 +623,12 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
         for ts_id in df.index.unique():
             all_ts[ts_id] = {'times': df.loc[ts_id,:]['timestamp'].values.tolist(),
                              'values': df.loc[ts_id,:]['value'].values.tolist() }
-
         i += 1
 
-    print(f'Done: {len(all_ts.keys)}')
+    return all_ts
 
 
 if __name__ == '__main__':
-
-    retrieve_timeseries_data_from_api()
 
     response = update_all_stations()
     print(f"Number of instantiated stations: {response[0]}")
