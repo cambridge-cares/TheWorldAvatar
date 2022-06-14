@@ -193,7 +193,8 @@ public class AccessAgentRemoteStoreIntegrationTest {
 	*/
 	public static void checkStoreRouter() {
 	
-		StoreRouter.setRouterEndpoint(routerEndpoint);
+		//TODO change this
+		//StoreRouter.setRouterEndpoint(routerEndpoint);
 		StoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, true, true);
 		
 		// Is a RemoteStoreClient
