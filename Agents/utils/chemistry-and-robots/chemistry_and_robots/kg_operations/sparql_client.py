@@ -1408,7 +1408,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_CHARACTERISES), URIRef(rxn_exp_iri)))
         g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_USESMETHOD), URIRef(hplc_method_iri)))
         g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_HASREPORT), URIRef(hplc_report_iri)))
-        g.add((URIRef(hplc_report_iri), RDF.type, URIRef(ONTOHPLC_HPLCREPORT)))
         g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_GENERATEDFOR), URIRef(chemical_solution_iri)))
         return g
 

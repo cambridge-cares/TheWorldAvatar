@@ -18,7 +18,7 @@ services:
       - ./agilentagent/tests/agent.agilent.env.test
     volumes:
       - type: bind
-        source: ./folder
+        source: ./agilentagent/tests/_for_docker_integration_test
         target: /app/CHEM32
 
   # Blazegraph

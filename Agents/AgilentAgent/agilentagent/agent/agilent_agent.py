@@ -1,12 +1,7 @@
 from datetime import datetime
-from pathlib import Path
 import glob
 import time
 import os
-
-from typing import Tuple
-import requests
-from requests import status_codes
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -25,6 +20,7 @@ class AgilentAgent(DerivationAgent):
         hplc_report_file_extension: str,
         **kwargs
     ):
+        register = kwargs.pop('register', True)
         super().__init__(**kwargs)
         self.hplc_digital_twin = hplc_digital_twin
         self.hplc_report_periodic_timescale = hplc_report_periodic_timescale
@@ -39,17 +35,19 @@ class AgilentAgent(DerivationAgent):
             fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_password
         )
         print("---------------------------2----------------------------")
+        print(register)
         
 
-        # TODO move this bit to ChemistryAndRobotsSparqlClient as a function? file name extension and other bits should be generated on-the-fly
-        RESOURCE_DIR = os.path.join(str(Path(__file__).absolute().parent.parent),'resources')
-        pathlist = Path(RESOURCE_DIR).glob('**/*.ttl')
-        print("---------------------------3----------------------------")
-        
-        for path in pathlist:
-            print("---------------------------4----------------------------")
-            self.sparql_client.uploadOntology(str(path))
-        print("---------------------------5----------------------------")
+        # TODO think about standardised way of specify if to register?
+        if register:
+            self.sparql_client.generate_ontoagent_instance(
+                self.agentIRI,
+                self.agentEndpoint,
+                [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALSOLUTION],
+                [ONTOHPLC_HPLCJOB]
+            )
+            self.sparql_client.register_agent_with_hardware(self.agentIRI, self.hplc_digital_twin)
+            print("---------------------------5----------------------------")
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Record the time when the job starts
@@ -64,15 +62,18 @@ class AgilentAgent(DerivationAgent):
 
         hplc_report_detected = None
         while not hplc_report_detected:
-            time.sleep(60)
+            time.sleep(self.hplc_report_periodic_timescale)
             end_timestamp = datetime.now().timestamp()
             hplc_report_detected = self.sparql_client.detect_new_hplc_report(
                 self.hplc_digital_twin, start_timestamp, end_timestamp
             )
 
+        # NOTE here we initialise a new g=Graph() to prevent the variable somehow saved in memory of
+        # NOTE g in collect_triples_for_hplc_job got used, i.e. previous collected triples not removed
+        g = Graph()
         g = self.sparql_client.collect_triples_for_hplc_job(
             rxn_exp_iri, chemical_solution_iri,
-            self.hplc_digital_twin, hplc_report_detected
+            self.hplc_digital_twin, hplc_report_detected, g
         )
 
         derivation_outputs.addGraph(g)
@@ -102,13 +103,22 @@ class AgilentAgent(DerivationAgent):
             # Upload the new generated file to KG file server
             hplc_report_path = files_to_upload[0]
             timestamp_last_modified = self.dct_files_check.get(hplc_report_path)
-            if timestamp_last_modified < timestamp_last_check:
-                raise Exception("HPLC report (%s, last modified at %f) is generated at the local folder (%s) of HPLC <%s> before the last check %f but not uploaded to fileserver %s" % (
-                    hplc_report_path, timestamp_last_modified, self.hplc_report_container_dir, self.hplc_digital_twin, timestamp_last_check, self.fs_url))
+            if timestamp_last_modified + min(0.5, 0.2*self.hplc_report_periodic_timescale) < timestamp_last_check:
+                # NOTE added 0.5 sec or 20% of the self.hplc_report_periodic_timescale (whichever is smaller) for contingency
+                # NOTE as sometimes there's a delay in detecting the files
+                raise Exception(
+                    "HPLC report (%s, last modified at %f) is generated at the local folder (%s) of HPLC <%s> before the last check %f and outside the contingency (%f) but not uploaded to fileserver %s" % (
+                    hplc_report_path, timestamp_last_modified, self.hplc_report_container_dir, self.hplc_digital_twin, timestamp_last_check, min(0.5, 0.2*self.hplc_report_periodic_timescale), self.fs_url))
+            # Prepare for the local and remote file path if it starts with '/' or '\'
+            local_file_path = hplc_report_path
+            hplc_report_path = hplc_report_path[1:] if hplc_report_path.startswith('/') else hplc_report_path
+            hplc_report_path = hplc_report_path[1:] if hplc_report_path.startswith('\\') else hplc_report_path
+            remote_report_subdir = os.path.join(getShortName(self.hplc_digital_twin),hplc_report_path)
+            # Upload file to KG file server, inset triples to KG, and get the hplc_report_iri back
             hplc_report_iri = self.sparql_client.upload_raw_hplc_report_to_kg(
-                local_file_path=hplc_report_path,
+                local_file_path=local_file_path,
                 timestamp_last_modified=timestamp_last_modified,
-                remote_report_subdir=getShortName(self.hplc_digital_twin)+'/'+hplc_report_path,
+                remote_report_subdir=remote_report_subdir,
                 hplc_digital_twin=self.hplc_digital_twin
             )
             self.logger.info("Uploaded HPLCReport iri is: <%s>" % (hplc_report_iri))
@@ -140,6 +150,10 @@ class AgilentAgent(DerivationAgent):
         if self.scheduler.app is None:
             self.scheduler.init_app(self.app)
 
+        # NOTE It is assumed that all existing files before the agent got spun up will NOT be uploaded to the KG
+        self.logger.info("Checking the files already exist before starting monitoring the new files...")
+        self.get_dict_of_hplc_files()
+
         self.scheduler.add_job(
             id='monitor_local_report_foler',
             func=self.monitor_local_report_folder,
@@ -147,15 +161,6 @@ class AgilentAgent(DerivationAgent):
             seconds=self.hplc_report_periodic_timescale
         )
         print("monitoring local report folder job added")
-
-        # Get the local report folder path of the HPLC
-        # TODO delete below bit
-        # _hplc_dir, self.hplc_report_file_extension = self.sparql_client.get_hplc_local_report_folder_path_n_hplc_report_file_extension(self.hplc_digital_twin)
-        # print(_hplc_dir, self.hplc_report_file_extension)
-
-        # NOTE It is assumed that all existing files before the agent got spun up will NOT be uploaded to the KG
-        self.logger.info("Checking the files already exist before starting monitoring the new files...")
-        self.get_dict_of_hplc_files()
 
         if not self.scheduler.running:
             self.scheduler.start()

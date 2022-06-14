@@ -1,10 +1,9 @@
 # NOTE courtesy of Daniel (dln22), this file is adapted from https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_uploader/tests/conftest.py
-from chemistry_and_robots.data_model.ontohplc import TXTFILE_EXTENSION, XLSFILE_EXTENSION
-from pathlib import Path
+from rdflib import URIRef
 from rdflib import Graph
+from rdflib import RDF
 from flask import Flask
 import logging
-import pkgutil
 import pytest
 import shutil
 import time
@@ -15,6 +14,7 @@ import os
 from pyderivationagent.conf import config_derivation_agent
 
 from agilentagent.kg_operations import ChemistryAndRobotsSparqlClient
+from agilentagent.data_model import *
 from agilentagent.agent import AgilentAgent
 from agilentagent.conf import config_agilent
 
@@ -29,8 +29,10 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
-HPLC_REPORT_DIR = '/home/jb2197/CHEM32/Placeholder_Test/'
-DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
+RESOURCE_DIR = os.path.join(THIS_DIR,'resources')
+HPLC_REPORT_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
+DOCKER_INTEGRATION_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test')
+DOWNLOADED_DIR = os.path.join(THIS_DIR,'_downloaded_files_for_test')
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
@@ -101,11 +103,11 @@ def get_service_auth():
 
 @pytest.fixture(scope="session")
 def create_test_report():
-    def _create_test_report(filename_extension):
+    def _create_test_report(filename_extension, docker_integration:bool=False):
         if filename_extension == XLSFILE_EXTENSION:
-            file_path = create_hplc_xls_report()
+            file_path = create_hplc_xls_report(docker_integration)
         elif filename_extension == TXTFILE_EXTENSION:
-            file_path = create_hplc_txt_report()
+            file_path = create_hplc_txt_report(docker_integration)
         else:
             raise NotImplementedError("HPLC raw report with a filename extension (%s) is NOT yet supported." % filename_extension)
 
@@ -119,7 +121,13 @@ def generate_random_download_path():
     return _generate_random_download_path
 
 @pytest.fixture(scope="session")
-def initialise_triples(get_service_url, get_service_auth, generate_random_download_path):
+def generate_random_hplc_digital_twin():
+    def _generate_random_hplc_digital_twin(hplc_report_file_extension):
+        return f'http://www.example.com/placeholder/HPLC_{hplc_report_file_extension}_{str(uuid.uuid4())}'
+    return _generate_random_hplc_digital_twin
+
+@pytest.fixture(scope="session")
+def initialise_client(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
     sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
@@ -141,15 +149,6 @@ def initialise_triples(get_service_url, get_service_auth, generate_random_downlo
     if not os.path.exists(DOWNLOADED_DIR):
         os.mkdir(DOWNLOADED_DIR)
 
-    # Upload the example triples for testing
-    for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl', 'sample_data/dummy_lab.ttl',
-        'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
-        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
-        g = Graph().parse(data=data)
-        filePath = generate_random_download_path('ttl')
-        g.serialize(filePath, format='ttl')
-        sparql_client.uploadOntology(filePath)
-
     yield sparql_client
 
     # Clear logger at the end of the test
@@ -161,17 +160,61 @@ def initialise_triples(get_service_url, get_service_auth, generate_random_downlo
 # ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
+def initialise_hplc_digital_twin_triples(initialise_client, generate_random_hplc_digital_twin):
+    def _initialise_hplc_digital_twin_triples(hplc_report_file_extension, predefined_hplc_digital_twin:str=None):
+        sparql_client = initialise_client
+        sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+        if hplc_report_file_extension == 'xls':
+            filename_extension = DBPEDIA_XLSFILE
+        elif hplc_report_file_extension == 'txt':
+            filename_extension = DBPEDIA_TXTFILE
+        else:
+            raise NotImplementedError(f"HPLC report file extention {hplc_report_file_extension} not supported yet.")
+
+        if predefined_hplc_digital_twin is None:
+            hplc_digital_twin = generate_random_hplc_digital_twin(hplc_report_file_extension)
+        else:
+            hplc_digital_twin = predefined_hplc_digital_twin
+
+        g = Graph()
+        g.add((URIRef(hplc_digital_twin), RDF.type, URIRef(ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY)))
+        g.add((URIRef(hplc_digital_twin), URIRef(ONTOHPLC_REPORTEXTENSION), URIRef(filename_extension)))
+        sparql_client.uploadGraph(g)
+        return hplc_digital_twin
+    return _initialise_hplc_digital_twin_triples
+
+
+@pytest.fixture(scope="module")
+def initialise_agilent_derivation_input_triples():
+    def _initialise_agilent_derivation_input_triples(sparql_client):
+        chemical_solution_iri = 'http://www.example.com/placeholder/ChemicalSolution_' + str(uuid.uuid4())
+        rxn_exp_iri = 'http://www.example.com/placeholder/ReactionExperiment_' + str(uuid.uuid4())
+        g = Graph()
+        g.add((URIRef(chemical_solution_iri), RDF.type, URIRef(ONTOLAB_CHEMICALSOLUTION)))
+        g.add((URIRef(rxn_exp_iri), RDF.type, URIRef(ONTOREACTION_REACTIONEXPERIMENT)))
+        sparql_client.uploadGraph(g)
+        return rxn_exp_iri, chemical_solution_iri
+    return _initialise_agilent_derivation_input_triples
+
+
+@pytest.fixture(scope="module")
 def create_agilent_agent():
-    def _create_agilent_agent(hplc_digital_twin:str=None, hplc_report_periodic_timescale:str=None):
+    def _create_agilent_agent(
+        hplc_digital_twin:str=None,
+        hplc_report_periodic_timescale:int=None,
+        hplc_report_file_extension:str=None,
+        derivation_periodic_timescale:int=None,
+        **kwargs
+    ):
         derivation_agent_config = config_derivation_agent(AGILENT_AGENT_ENV)
         hplc_config = config_agilent(AGILENT_AGENT_ENV)
         agilent_agent = AgilentAgent(
             hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
-            hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR,
-            hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION,
+            hplc_report_container_dir=HPLC_REPORT_DIR,
+            hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
             agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI,
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
+            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
             derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
             kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
             kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
@@ -181,7 +224,8 @@ def create_agilent_agent():
             fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
             fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-            app=Flask(__name__)
+            app=Flask(__name__),
+            **kwargs
         )
         return agilent_agent
     return _create_agilent_agent
@@ -191,8 +235,11 @@ def create_agilent_agent():
 # Helper functions
 # ----------------------------------------------------------------------------------
 
-def create_hplc_xls_report():
-    file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.xls')
+def create_hplc_xls_report(docker_integration:bool=False):
+    if docker_integration:
+        file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.xls')
+    else:
+        file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.xls')
     if not os.path.exists(file_path):
         wb = xlwt.Workbook()
         ws = wb.add_sheet("Test Sheet")
@@ -202,8 +249,11 @@ def create_hplc_xls_report():
         wb.save(file_path)
     return file_path
 
-def create_hplc_txt_report():
-    file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.txt')
+def create_hplc_txt_report(docker_integration:bool=False):
+    if docker_integration:
+        file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.txt')
+    else:
+        file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.txt')
     if not os.path.exists(file_path):
         with open(file_path, "w") as file:
             file.truncate(10 ** 3)
