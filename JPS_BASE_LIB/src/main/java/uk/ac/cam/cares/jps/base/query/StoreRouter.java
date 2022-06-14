@@ -63,7 +63,15 @@ public class StoreRouter{
 	public static final String TARGET_RESOURCE = "TargetResource";
 	
 	// get default ontokgrouter endpoint from jps.properties
-	private static String STOREROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);
+	private static String STOREROUTER_ENDPOINT;
+	static{
+		STOREROUTER_ENDPOINT = System.getenv("STOREROUTER_ENDPOINT");
+		if(STOREROUTER_ENDPOINT == null) {
+			LOGGER.error("STOREROUTER_ENDPOINT environment variable not set!");
+			throw new JPSRuntimeException("STOREROUTER_ENDPOINT environment variable not set!");
+		}
+		LOGGER.info("STOREROUTER_ENDPOINT set to "+STOREROUTER_ENDPOINT);
+	}
 	
 	/**
 	 * List of file extensions for file based resources
@@ -71,18 +79,7 @@ public class StoreRouter{
 	 */
 	public static final List<String> fileExtensions = Arrays.asList(".owl",".rdf",".nt"); //File extensions
 	
-	static StoreRouter storeRouter = null;
-		
-	/**
-	 * Set STOREROUTER_ENDPOINT
-	 * @param endpoint
-	 */
-	public static void setRouterEndpoint(String endpoint) {
-		if (storeRouter == null) {
-			storeRouter = new StoreRouter();
-		}
-		STOREROUTER_ENDPOINT = endpoint;
-	}
+	static StoreRouter storeRouter = null;	
 	
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
