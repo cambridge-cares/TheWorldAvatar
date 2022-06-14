@@ -95,7 +95,7 @@ public class UpdateStations {
     	if (!sparqlClient.checkUpdateDateExists(tsClient,date)) {
     		LOGGER.info("Updating data for " + date);
     		
-			List<Map<?,?>> processed_data;
+			List<Map<String,?>> processed_data;
 	    	try {            
 	            // process data into tables before upload
 	            processed_data = processAPIResponse(api);
@@ -106,6 +106,10 @@ public class UpdateStations {
 
 	        // upload to postgres
 	        uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
+
+			List<String> measureIRIs = new ArrayList<>(processed_data.get(0).keySet());
+			sparqlClient.addRangeForStageScale(tsClient, measureIRIs);
+			sparqlClient.addRangeForDownstageScale(tsClient, measureIRIs);
 
 	        // update last updated date
 	        addUpdateDate(tsClient,date);
@@ -122,7 +126,7 @@ public class UpdateStations {
 	 * @throws ParseException 
 	 * @throws URISyntaxException 
 	 */
-	static List<Map<?,?>> processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
+	static List<Map<String,?>> processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
 		LOGGER.info("Processing data from API");
 		HttpEntity response = api.getData();
 		// convert response to JSON Object
@@ -176,7 +180,7 @@ public class UpdateStations {
         	}
         }
         
-        List<Map<?,?>> processed_data = new ArrayList<>();
+        List<Map<String,?>> processed_data = new ArrayList<>();
         processed_data.add(datatime_map);
         processed_data.add(datavalue_map);
         
@@ -189,7 +193,7 @@ public class UpdateStations {
 	
 	@SuppressWarnings("unchecked")
 	static void uploadDataToRDB(LocalDate date, TimeSeriesClient<Instant> tsClient, FloodSparql sparqlClient,
-			List<Map<?,?>> processed_data) {
+			List<Map<String,?>> processed_data) {
 		Map<String, List<Instant>> datatime_map = (Map<String, List<Instant>>) processed_data.get(0);
 		Map<String, List<Double>> datavalue_map = (Map<String, List<Double>>) processed_data.get(1);
         Iterator<String> iter = datatime_map.keySet().iterator();

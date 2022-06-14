@@ -61,7 +61,7 @@ public class FloodSparql {
     private StoreClientInterface storeClient;
     
     // prefix
-	private static String ontoems = "http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#";
+	private static String ontoems = "https://www.theworldavatar.com/kg/ontoems/";
     private static Prefix p_ems = SparqlBuilder.prefix("ems",iri(ontoems));
     private static Prefix p_geo = SparqlBuilder.prefix("geo",iri("http://www.bigdata.com/rdf/geospatial#"));
 	private static Prefix p_om = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
@@ -107,6 +107,10 @@ public class FloodSparql {
 	private static Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
 
 	private static Iri stageScale = iri("http://environment.data.gov.uk/flood-monitoring/def/core/stageScale");
+	private static Iri downstageScale = iri("http://environment.data.gov.uk/flood-monitoring/def/core/downstageScale");
+	private static Iri typicalRangeHigh = iri("http://environment.data.gov.uk/flood-monitoring/def/core/typicalRangeHigh");
+	private static Iri typicalRangeLow = iri("http://environment.data.gov.uk/flood-monitoring/def/core/typicalRangeLow");
+
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(FloodSparql.class);
     
@@ -643,23 +647,125 @@ public class FloodSparql {
 		httpclient.execute(postRequest);
 	}
 
-	void addRanges(TimeSeriesClient<Instant> tsClient, List<String> dataIRIs) {
+	/**
+	 * query ranges from <station> <stageScale> <stageScale>
+	 * @param tsClient
+	 * @param measureIRIs
+	 */
+	void addRangeForStageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs) {
+		ModifyQuery modify = Queries.MODIFY(); // to store triples to add at the end
+		
+		// match meaures with qualifier = Stage
 		// first query the upper and lower bounds for each data
 		SelectQuery query = Queries.SELECT();
 		Variable station = query.var();
-		Variable upperBound = query.var();
-		Variable lowerBound = query.var();
+		Variable upperBoundVar = query.var();
+		Variable lowerBoundVar = query.var();
 		Variable measure = query.var();
 
+		Variable oldrange = query.var(); // used in update query only
+
 		GraphPattern gp1 = station.has(PropertyPaths.path(reports,hasValue), measure)
-		.andHas(PropertyPaths.path(stageScale, iri("http://environment.data.gov.uk/flood-monitoring/def/core/typicalRangeLow")), lowerBound)
-		.andHas(PropertyPaths.path(stageScale, iri("http://environment.data.gov.uk/flood-monitoring/def/core/typicalRangeHigh")), upperBound);
+		.andHas(PropertyPaths.path(stageScale, typicalRangeLow), lowerBoundVar)
+		.andHas(PropertyPaths.path(stageScale, typicalRangeHigh), upperBoundVar);
 
-		ValuesPattern vp = new ValuesPattern(measure, dataIRIs.stream().map(s -> iri(s)).collect(Collectors.toList()));
+		GraphPattern measureGp = measure.has(qualifier, "Stage");
 
-		query.select(measure,station,upperBound,lowerBound).where(gp1,vp).prefix(p_om,p_ems);
+		ValuesPattern vp = new ValuesPattern(measure, measureIRIs.stream().map(s -> iri(s)).collect(Collectors.toList()));
+
+		query.select(measure,station,upperBoundVar,lowerBoundVar).where(gp1,vp,measureGp).prefix(p_om,p_ems);
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		List<String> measureRangesToDelete = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
+			double upperbound = queryResult.getJSONObject(i).getDouble(upperBoundVar.getQueryString().substring(1));
+			double lowerbound = queryResult.getJSONObject(i).getDouble(lowerBoundVar.getQueryString().substring(1));
+
+			// query latest value
+			TimeSeries<Instant> ts = tsClient.getLatestData(measureIri);
+			List<Double> values = ts.getValuesAsDouble(measureIri);
+			if (values.size() > 0) {
+				double latestValue = values.get(values.size()-1);
+				measureRangesToDelete.add(measureIri);
+
+				// determine range
+				if (latestValue < lowerbound) {
+					modify.insert(iri(measureIri).has(hasCurrentRange, LowRange));
+				} else if (latestValue > upperbound) {
+					modify.insert(iri(measureIri).has(hasCurrentRange, HighRange));
+				} else {
+					modify.insert(iri(measureIri).has(hasCurrentRange, NormalRange));
+				}
+			}
+		}
+
+		// delete old ranges
+		vp = new ValuesPattern(measure, measureRangesToDelete.stream().map(s -> iri(s)).collect(Collectors.toList()));
+		modify.delete(measure.has(hasCurrentRange, oldrange)).where(measure.has(hasCurrentRange, oldrange), vp);
+
+		modify.prefix(p_ems);
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
+	/**
+	 * similar to above but for downstage
+	 * @param tsClient
+	 * @param measureIRIs
+	 */
+	void addRangeForDownstageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		// match meaures with qualifier = Downstream Stage
+		// first query the upper and lower bounds for each data
+		SelectQuery query = Queries.SELECT();
+		Variable station = query.var();
+		Variable upperBoundVar = query.var();
+		Variable lowerBoundVar = query.var();
+		Variable measure = query.var();
+
+		Variable oldrange = query.var(); // used in update query
+
+		GraphPattern gp1 = station.has(PropertyPaths.path(reports,hasValue), measure)
+		.andHas(PropertyPaths.path(downstageScale, typicalRangeLow), lowerBoundVar)
+		.andHas(PropertyPaths.path(downstageScale, typicalRangeHigh), upperBoundVar);
+
+		GraphPattern measureGp = measure.has(qualifier, "Downstream Stage");
+
+		ValuesPattern vp = new ValuesPattern(measure, measureIRIs.stream().map(s -> iri(s)).collect(Collectors.toList()));
+
+		query.select(measure,station,upperBoundVar,lowerBoundVar).where(gp1,vp,measureGp).prefix(p_om,p_ems);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		List<String> measureRangesToDelete = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
+			double upperbound = queryResult.getJSONObject(i).getDouble(upperBoundVar.getQueryString().substring(1));
+			double lowerbound = queryResult.getJSONObject(i).getDouble(lowerBoundVar.getQueryString().substring(1));
+
+			// query latest value
+			TimeSeries<Instant> ts = tsClient.getLatestData(measureIri);
+			List<Double> values = ts.getValuesAsDouble(measureIri);
+			if (values.size() > 0) {
+				double latestValue = values.get(values.size()-1);
+				measureRangesToDelete.add(measureIri);
+
+				// determine range
+				if (latestValue < lowerbound) {
+					modify.insert(iri(measureIri).has(hasCurrentRange, LowRange));
+				} else if (latestValue > upperbound) {
+					modify.insert(iri(measureIri).has(hasCurrentRange, HighRange));
+				} else {
+					modify.insert(iri(measureIri).has(hasCurrentRange, NormalRange));
+				}
+			}
+		}
+		// delete old ranges
+		vp = new ValuesPattern(measure, measureRangesToDelete.stream().map(s -> iri(s)).collect(Collectors.toList()));
+		modify.delete(measure.has(hasCurrentRange, oldrange)).where(measure.has(hasCurrentRange, oldrange), vp);
+
+		modify.prefix(p_ems);
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 
 	void addConnections(File connectionsFile) {
