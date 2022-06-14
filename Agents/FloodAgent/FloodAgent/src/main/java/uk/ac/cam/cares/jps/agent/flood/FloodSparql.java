@@ -48,6 +48,7 @@ import org.json.JSONObject;
 import com.opencsv.CSVReader;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
+import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ServicePattern;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ValuesPattern;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -671,7 +672,7 @@ public class FloodSparql {
 	 * @param tsClient
 	 * @param measureIRIs
 	 */
-	void addRangeForStageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs) {
+	List<Measure> addRangeForStageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs) {
 		ModifyQuery modify = Queries.MODIFY(); // to store triples to add at the end
 		
 		// match meaures with qualifier = Stage
@@ -696,11 +697,17 @@ public class FloodSparql {
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		List<String> measureRangesToDelete = new ArrayList<>();
+		List<Measure> measureObjectList = new ArrayList<>();
+
 		for (int i = 0; i < queryResult.length(); i++) {
 			String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
 			double upperbound = queryResult.getJSONObject(i).getDouble(upperBoundVar.getQueryString().substring(1));
 			double lowerbound = queryResult.getJSONObject(i).getDouble(lowerBoundVar.getQueryString().substring(1));
 
+			Measure measureObject = new Measure(measureIri);
+			measureObject.setTypicalRangeHigh(upperbound);
+			measureObject.setTypicalRangeLow(lowerbound);
+			measureObjectList.add(measureObject);
 			// query latest value
 			TimeSeries<Instant> ts = tsClient.getLatestData(measureIri);
 			List<Double> values = ts.getValuesAsDouble(measureIri);
@@ -725,6 +732,7 @@ public class FloodSparql {
 
 		modify.prefix(p_ems);
 		storeClient.executeUpdate(modify.getQueryString());
+		return measureObjectList;
 	}
 
 	/**
@@ -732,7 +740,7 @@ public class FloodSparql {
 	 * @param tsClient
 	 * @param measureIRIs
 	 */
-	void addRangeForDownstageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs) {
+	List<Measure> addRangeForDownstageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// match meaures with qualifier = Downstream Stage
@@ -757,10 +765,20 @@ public class FloodSparql {
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		List<String> measureRangesToDelete = new ArrayList<>();
+
+		// to return
+		List<Measure> measureObjectList = new ArrayList<>();
+
 		for (int i = 0; i < queryResult.length(); i++) {
 			String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
 			double upperbound = queryResult.getJSONObject(i).getDouble(upperBoundVar.getQueryString().substring(1));
 			double lowerbound = queryResult.getJSONObject(i).getDouble(lowerBoundVar.getQueryString().substring(1));
+
+			// add to list and return later
+			Measure measureObject = new Measure(measureIri);
+			measureObject.setTypicalRangeHigh(upperbound);
+			measureObject.setTypicalRangeLow(lowerbound);
+			measureObjectList.add(measureObject);
 
 			// query latest value
 			TimeSeries<Instant> ts = tsClient.getLatestData(measureIri);
@@ -785,6 +803,8 @@ public class FloodSparql {
 
 		modify.prefix(p_ems);
 		storeClient.executeUpdate(modify.getQueryString());
+
+		return measureObjectList;
 	}
 
 	void addConnections(File connectionsFile) {
@@ -868,25 +888,39 @@ public class FloodSparql {
 
 	/**
 	 * queries time series over the last 12 hours
-	 * calculate average gradient between lowerbound and upperbound
-	 * average is weighted by duration
+	 * uses the difference between final and first value
+	 * if the change is greater than 10% based on the typical range, it is marked as either rising or falling
 	 */
-	void addTrends(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs, Instant lowerbound, Instant upperbound) {
+	void addTrends(TimeSeriesClient<Instant> tsClient, List<Measure> measures, Instant lowerbound, Instant upperbound) {
 		ModifyQuery modify = Queries.MODIFY();
 
-		for (String measureIri : measureIRIs) {
-			TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measureIri), lowerbound, upperbound);
-			List<Double> values = ts.getValuesAsDouble(measureIri);
+		List<String> oldMeasureTrendToDelete = new ArrayList<>();
+		for (Measure measure : measures) {
+			TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure.getIri()), lowerbound, upperbound);
+			List<Double> values = ts.getValuesAsDouble(measure.getIri());
 
-			double difference = values.get(values.size()-1) - values.get(0);
+			if (values.size() > 0) {
+				double fraction_difference = (values.get(values.size()-1) - values.get(0)) / (measure.getRangeHigh() - measure.getRangeLow());
+				
+				if (fraction_difference > 0.1) {
+					modify.insert(iri(measure.getIri()).has(hasCurrentTrend, Rising));
+				} else if (fraction_difference < -0.1) {
+					modify.insert(iri(measure.getIri()).has(hasCurrentTrend, Falling));
+				} else {
+					modify.insert(iri(measure.getIri()).has(hasCurrentTrend, Steady));
+				}
 
-			if (difference > 0) {
-				modify.insert(iri(measureIri).has(hasCurrentTrend, Rising));
-			} else if (difference < 0) {
-				modify.insert(iri(measureIri).has(hasCurrentTrend, Falling));
+				oldMeasureTrendToDelete.add(measure.getIri());
 			}
 		}
 
+		// delete old trends
+		Variable oldtrend = SparqlBuilder.var("oldtrend");
+		Variable measureVar = SparqlBuilder.var("measure");
+
+		ValuesPattern vp = new ValuesPattern(measureVar, oldMeasureTrendToDelete.stream().map(s -> iri(s)).collect(Collectors.toList()));
+
+		modify.delete(measureVar.has(hasCurrentTrend, oldtrend)).where(measureVar.has(hasCurrentTrend, oldtrend), vp);
 		modify.prefix(p_ems);
 		storeClient.executeUpdate(modify.getQueryString());
 	}

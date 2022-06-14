@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -102,8 +103,16 @@ public class UpdateStations {
 	        uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
 
 			List<String> measureIRIs = new ArrayList<>(processed_data.get(0).keySet());
-			sparqlClient.addRangeForStageScale(tsClient, measureIRIs);
-			sparqlClient.addRangeForDownstageScale(tsClient, measureIRIs);
+			
+			// checks final value and marks it as normal/high/low
+			List<Measure> stageScaleMeasureList = sparqlClient.addRangeForStageScale(tsClient, measureIRIs);
+			List<Measure> downstageMeasureList = sparqlClient.addRangeForDownstageScale(tsClient, measureIRIs);
+
+			// calculate difference between first and final values, and mark as rising/falling/steady
+			Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+    		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
+			sparqlClient.addTrends(tsClient, stageScaleMeasureList, lowerbound, upperbound);
+			sparqlClient.addTrends(tsClient, downstageMeasureList, lowerbound, upperbound);
 
 	        // update last updated date
 	        addUpdateDate(tsClient,date);
