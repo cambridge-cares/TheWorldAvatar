@@ -27,162 +27,120 @@ from airquality.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, \
 #logger = agentlogging.get_logger("prod")
 
 
-# def add_readings_timeseries(instantiated_ts_iris: list = None,
-#                             api_key: str = DATAPOINT_API_KEY,
-#                             query_endpoint: str = QUERY_ENDPOINT,
-#                             update_endpoint: str = UPDATE_ENDPOINT) -> int:
-#     """
-#         Adds time series data to instantiated time series IRIs
+def add_readings_timeseries(instantiated_ts_iris: list = None,
+                            query_endpoint: str = QUERY_ENDPOINT,
+                            update_endpoint: str = UPDATE_ENDPOINT) -> int:
+    """
+        Adds time series data to instantiated time series IRIs
         
-#         Arguments:
-#             instantiated_ts_iris - list of IRIs of instantiated time series
-#     """
+        Arguments:
+            instantiated_ts_iris - list of IRIs of instantiated time series
+    """
 
-#     def _create_ts_subsets_to_add(times, dataIRIs, values):
-#         # TimeSeriesClient faces issues to add data for all dataIRIs at once,
-#         # if some dataIRIs contain missing values (None, nan); hence, create
-#         # subsets of data to add without any missing entries
-#         df = pd.DataFrame(index=times, data=dict(zip(dataIRIs, values)))
-#         df[df.columns[~df.isnull().any()]]
-#         non_nulls = df[df.columns[~df.isnull().any()]]
-#         # Initialise return lists with data for non null quantities
-#         times = [] if non_nulls.empty else [non_nulls.index.to_list()]
-#         dataIRIs = [] if non_nulls.empty else [non_nulls.columns.to_list()]
-#         values = [] if non_nulls.empty else [[non_nulls[c].values.tolist() for c in non_nulls.columns]]
-#         some_nulls = [c for c in list(df.columns) if c not in list(non_nulls.columns)]
-#         for c in some_nulls:
-#             sub = df[c]
-#             sub.dropna(inplace=True)
-#             dataIRIs.append([c])
-#             times.append(sub.index.to_list())
-#             values.append([sub.values.tolist()])
+    def _create_ts_subsets_to_add(times, dataIRIs, values):
+        # TimeSeriesClient faces issues to add data for all dataIRIs at once,
+        # if some dataIRIs contain missing values (None, nan); hence, create
+        # subsets of data to add without any missing entries
+        df = pd.DataFrame(index=times, data=dict(zip(dataIRIs, values)))
+        df[df.columns[~df.isnull().any()]]
+        non_nulls = df[df.columns[~df.isnull().any()]]
+        # Initialise return lists with data for non null quantities
+        times = [] if non_nulls.empty else [non_nulls.index.to_list()]
+        dataIRIs = [] if non_nulls.empty else [non_nulls.columns.to_list()]
+        values = [] if non_nulls.empty else [[non_nulls[c].values.tolist() for c in non_nulls.columns]]
+        some_nulls = [c for c in list(df.columns) if c not in list(non_nulls.columns)]
+        for c in some_nulls:
+            sub = df[c]
+            sub.dropna(inplace=True)
+            dataIRIs.append([c])
+            times.append(sub.index.to_list())
+            values.append([sub.values.tolist()])
         
-#         return times, dataIRIs, values  
-
-
-#     # Create MetOffice client to retrieve readings via API
-#     try:
-#         metclient = metoffer.MetOffer(api_key)
-#     except:
-#         #logger.error("MetOffer client could not be created to retrieve station readings.")
-#         raise APIException("MetOffer client could not be created to retrieve station readings.")        
+        return times, dataIRIs, values  
     
-#     # Load available observations and forecasts from API
-#     print('Retrieving time series data from API ...')
-#     #logger.info('Retrieving time series data from API ...')
-#     available_obs, available_fcs, issue_time = retrieve_readings_data_per_station(metclient, only_keys=False)
-#     print('Time series data successfully retrieved.')
-#     #logger.info('Time series data successfully retrieved.')
+    # Load available observations from API
+    print('Retrieving time series data from API ...')
+    #logger.info('Retrieving time series data from API ...')
+    available_obs, = retrieve_readings_data_per_station(metclient, only_keys=False)
+    print('Time series data successfully retrieved.')
+    #logger.info('Time series data successfully retrieved.')
     
-#     # Retrieve information about instantiated time series from KG
-#     print('Retrieving time series triples from KG ...')
-#     #logger.info('Retrieving time series triples from KG ...')
-#     instantiated_obs = get_instantiated_observation_timeseries(query_endpoint=query_endpoint,
-#                                                                update_endpoint=update_endpoint)
-#     instantiated_fcs = get_instantiated_forecast_timeseries(query_endpoint=query_endpoint,
-#                                                             update_endpoint=update_endpoint)
-#     print('Time series triples successfully retrieved.')
-#     #logger.info('Time series triples successfully retrieved.')
+    # Retrieve information about instantiated time series from KG
+    print('Retrieving time series triples from KG ...')
+    #logger.info('Retrieving time series triples from KG ...')
+    instantiated_obs = get_instantiated_observation_timeseries(query_endpoint=query_endpoint,
+                                                               update_endpoint=update_endpoint)
+    instantiated_fcs = get_instantiated_forecast_timeseries(query_endpoint=query_endpoint,
+                                                            update_endpoint=update_endpoint)
+    print('Time series triples successfully retrieved.')
+    #logger.info('Time series triples successfully retrieved.')
 
-#     # Keep only the relevant subset for instantiated_ts_iris
-#     if instantiated_ts_iris:
-#         instantiated_obs = instantiated_obs[instantiated_obs['tsIRI'].isin(instantiated_ts_iris)]
-#         instantiated_fcs = instantiated_fcs[instantiated_fcs['tsIRI'].isin(instantiated_ts_iris)]
-#     # Get short version of variable type from full quantity type
-#     instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
-#     instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])   
+    # Keep only the relevant subset for instantiated_ts_iris
+    if instantiated_ts_iris:
+        instantiated_obs = instantiated_obs[instantiated_obs['tsIRI'].isin(instantiated_ts_iris)]
+        instantiated_fcs = instantiated_fcs[instantiated_fcs['tsIRI'].isin(instantiated_ts_iris)]
+    # Get short version of variable type from full quantity type
+    instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
+    instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])   
 
-#     # Initialise update query for creation time
-#     query_string = update_forecast_creation_datetime(issue_time)
+    # Initialise update query for creation time
+    query_string = update_forecast_creation_datetime(issue_time)
 
-#     # Initialise TimeSeriesClient
-#     ts_client = TSClient.tsclient_with_default_settings()
+    # Initialise TimeSeriesClient
+    ts_client = TSClient.tsclient_with_default_settings()
 
-#     added_obs = 0
-#     added_fcs = 0
+    added_obs = 0
+    added_fcs = 0
     
-#     # Loop through all observation timeseries
-#     print('Adding observation time series data ...')
-#     #logger.info('Adding observation time series data ...')
-#     ts_list = []
-#     for tsiri in list(instantiated_obs['tsIRI'].unique()): 
-#         # Extract relevant data      
-#         data = instantiated_obs[instantiated_obs['tsIRI'] == tsiri]
-#         station_id = data['stationID'].iloc[0]
-#         # Construct time series object to be added (skip if previously
-#         # instantiated time series not present in latest retrieved data)
-#         if station_id in available_obs.keys():
-#             times = available_obs[station_id]['times']
-#             dataIRIs = data['dataIRI'].to_list()
-#             # Get instantiated, but potentially missing quantity for reported interval
-#             # and fill missing values with nans
-#             missing_data = [i for i in data['reading'].to_list() if i not in available_obs[station_id]['readings'].keys()]
-#             missing = dict(zip(missing_data, [[nan]*len(times)]*len(missing_data)))
-#             readings = {**available_obs[station_id]['readings'], **missing}
-#             values = [readings[i] for i in data['reading'].to_list()]
-#             # Potentially split time series data addition if None/nan exist in some readings
-#             times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
-#             for i in range(len(times_list)):
-#                 added_obs += len(dataIRIs_list[i])
-#                 ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
-#                 ts_list.append(ts)
-#     ts_client.bulkaddTimeSeriesData(ts_list)
-#     print(f'Time series data for {added_obs} observations successfully added to KG.')
-#     #logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
+    # Loop through all observation timeseries
+    print('Adding observation time series data ...')
+    #logger.info('Adding observation time series data ...')
+    ts_list = []
+    for tsiri in list(instantiated_obs['tsIRI'].unique()): 
+        # Extract relevant data      
+        data = instantiated_obs[instantiated_obs['tsIRI'] == tsiri]
+        station_id = data['stationID'].iloc[0]
+        # Construct time series object to be added (skip if previously
+        # instantiated time series not present in latest retrieved data)
+        if station_id in available_obs.keys():
+            times = available_obs[station_id]['times']
+            dataIRIs = data['dataIRI'].to_list()
+            # Get instantiated, but potentially missing quantity for reported interval
+            # and fill missing values with nans
+            missing_data = [i for i in data['reading'].to_list() if i not in available_obs[station_id]['readings'].keys()]
+            missing = dict(zip(missing_data, [[nan]*len(times)]*len(missing_data)))
+            readings = {**available_obs[station_id]['readings'], **missing}
+            values = [readings[i] for i in data['reading'].to_list()]
+            # Potentially split time series data addition if None/nan exist in some readings
+            times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
+            for i in range(len(times_list)):
+                added_obs += len(dataIRIs_list[i])
+                ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
+                ts_list.append(ts)
+    ts_client.bulkaddTimeSeriesData(ts_list)
+    print(f'Time series data for {added_obs} observations successfully added to KG.')
+    #logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
     
-#     # Loop through all forecast timeseries
-#     print('Adding forecast time series data ...')
-#     #logger.info('Adding forecast time series data ...')
-#     ts_list = []
-#     for tsiri in list(instantiated_fcs['tsIRI'].unique()):  
-#         # Extract relevant data      
-#         data = instantiated_fcs[instantiated_fcs['tsIRI'] == tsiri]
-#         station_id = data['stationID'].iloc[0]
-#         # Construct time series object to be added (skip if previously
-#         # instantiated time series not present in latest retrieved data)
-#         if station_id in available_fcs.keys():
-#             times = available_fcs[station_id]['times']
-#             dataIRIs = data['dataIRI'].to_list()
-#             # Get instantiated, but potentially missing quantity for reported interval
-#             # and fill missing values with nans
-#             missing_data = [i for i in data['reading'].to_list() if i not in available_fcs[station_id]['readings'].keys()]
-#             missing = dict(zip(missing_data, [[nan]*len(times)]*len(missing_data)))
-#             readings = {**available_fcs[station_id]['readings'], **missing}
-#             values = [readings[i] for i in data['reading'].to_list()]
-#             # Potentially split time series data addition if None/nan exist in some readings
-#             times_list, dataIRIs_list, values_list = _create_ts_subsets_to_add(times, dataIRIs, values)
-#             for i in range(len(times_list)):
-#                 added_fcs += len(dataIRIs_list[i])            
-#                 ts = TSClient.create_timeseries(times_list[i], dataIRIs_list[i], values_list[i])
-#                 ts_list.append(ts)
-#                 for iri in dataIRIs_list[i]:
-#                     query_string += f"<{iri}> , "
-#     ts_client.bulkaddTimeSeriesData(ts_list)
-#     print(f'Time series data for {added_fcs} forecasts successfully added.')
-#     #logger.info(f'Time series data for {added_fcs} forecasts successfully added.')
+    # Strip trailing comma and close & perform creation date update query
+    query_string = query_string[:-2]
+    query_string += f") ) }}"
+    kg_client = KGClient(query_endpoint, update_endpoint)
+    kg_client.performUpdate(query_string)
+    #logger.info('Creation time triples successfully updated.')
 
-#     # Strip trailing comma and close & perform creation date update query
-#     query_string = query_string[:-2]
-#     query_string += f") ) }}"
-#     kg_client = KGClient(query_endpoint, update_endpoint)
-#     kg_client.performUpdate(query_string)
-#     #logger.info('Creation time triples successfully updated.')
-
-#     return added_obs + added_fcs
+    return added_obs + added_fcs
 
 
-# def add_all_readings_timeseries(api_key: str = DATAPOINT_API_KEY,
-#                                 query_endpoint: str = QUERY_ENDPOINT,
-#                                 update_endpoint: str = UPDATE_ENDPOINT) -> int:
-#     """
-#         Adds latest time series readings for all instantiated time series
-#     """
+def add_all_readings_timeseries(query_endpoint: str = QUERY_ENDPOINT,
+                                update_endpoint: str = UPDATE_ENDPOINT) -> int:
+    """
+        Adds latest time series readings for all instantiated time series
+    """
 
-#     updated_ts = add_readings_timeseries(api_key=api_key,
-#                                          query_endpoint=query_endpoint,
-#                                          update_endpoint=update_endpoint)
+    updated_ts = add_readings_timeseries(query_endpoint=query_endpoint,
+                                         update_endpoint=update_endpoint)
 
-#     return updated_ts
+    return updated_ts
 
 
 def instantiate_station_readings(instantiated_sites_dict: dict,
@@ -330,16 +288,16 @@ def update_all_stations(query_endpoint: str = QUERY_ENDPOINT,
     diff = t2-t1
     print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
 
-    # # Add latest readings time series to instantiated reading quantities
-    # print('\nUpdate station readings time series data: ')
-    # #logger.info('Update station readings time series data ...')
-    # t1 = time.time()
-    # updated_ts = add_all_readings_timeseries(query_endpoint, update_endpoint)
-    # t2 = time.time()
-    # diff = t2-t1
-    # print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    # Add latest readings time series to instantiated reading quantities
+    print('\nUpdate station readings time series data: ')
+    #logger.info('Update station readings time series data ...')
+    t1 = time.time()
+    updated_ts = add_all_readings_timeseries(query_endpoint, update_endpoint)
+    t2 = time.time()
+    diff = t2-t1
+    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
 
-    return new_stations, new_readings#, updated_ts
+    return new_stations, new_readings, updated_ts
 
 
 def add_readings_for_station(station_iri: str, readings: dict):
@@ -415,15 +373,10 @@ def add_readings_for_station(station_iri: str, readings: dict):
     return triples, created_reading_iris, dataIRIs, dataClasses, timeUnit
 
 
-def retrieve_readings_information_from_api(crs: str = 'EPSG:4326'):
+def retrieve_station_details_from_api(crs: str = 'EPSG:4326'):
     """
-        Retrieve and condition station readings data from UK Air API 
-        (but not the time series data itself)
-        Readings' data collection is done in 2 steps:
-            1) Retrieve detailed station information incl. reported time series
-               per station (i.e. time series IDs) - detailed station info required
-               to construct unique station ID (name + lat#lon)
-            2) Retrieve information about time series IDs
+        Retrieve detailed station information incl. reported time series
+        per station (i.e. time series IDs)
 
         Arguments:
             crs - coordinate reference system in which to return station 
@@ -431,13 +384,12 @@ def retrieve_readings_information_from_api(crs: str = 'EPSG:4326'):
                   are provided as [lat, long] and specifying any other CRS can 
                   potentially result in switched values for lat and lon
 
-        Returns DataFrame with columns: ['stationID', 'ts_id', 'pollutant', 
-                                         'eionet', 'unit']
-            stationID: created unique UK Air station ID for that station
+        Returns DataFrame with columns: ['station', 'latitude', 'longitude', 
+                                         'elevation', 'ts_id', 'stationID']
+            station: non-unique station name / label
+            latitude/longitude/elevation: coordinates of station
             ts_id: unique ID of reported reading / time series
-            pollutant: Label / textual description of measured pollutant
-            eionet: Link to corresponding eionet entry for pollutant
-            unit: unit of measured pollutant
+            stationID: created unique UK Air station ID for that station
     """
 
     # Construct API call to get extended information for all stations (i.e. basic
@@ -475,6 +427,35 @@ def retrieve_readings_information_from_api(crs: str = 'EPSG:4326'):
     df = df.explode('ts_id', ignore_index=True)
     # Clean and condition returned API data (incl. creation of unique station ID)
     df = clean_api_data(df)
+
+    return df
+
+
+def retrieve_readings_information_from_api(crs: str = 'EPSG:4326'):
+    """
+        Retrieve and condition station readings data from UK Air API 
+        (but not the time series data itself)
+        Readings' data collection is done in 2 steps:
+            1) Retrieve detailed station information incl. reported time series
+               per station (i.e. time series IDs) - detailed station info required
+               to construct unique station ID (name + lat#lon)
+            2) Retrieve information about time series IDs
+
+        Arguments:
+            crs - coordinate reference system in which to return station 
+                  locations (as EPSG code, e.g. 'EPSG:4326')
+
+        Returns DataFrame with columns: ['stationID', 'ts_id', 'pollutant', 
+                                         'eionet', 'unit']
+            stationID: created unique UK Air station ID for that station
+            ts_id: unique ID of reported reading / time series
+            pollutant: Label / textual description of measured pollutant
+            eionet: Link to corresponding eionet entry for pollutant
+            unit: unit of measured pollutant
+    """
+
+    # Retrieve and clean detailed station data data (incl. creation of unique station ID)
+    df = retrieve_station_details_from_api(crs=crs)
 
     # Query readings metadata from API
     ts_ids = list(df['ts_id'].unique())
@@ -573,9 +554,83 @@ def retrieve_timeseries_information_from_api(ts_ids=[], days_back=7) -> dict:
     return infos
 
 
+def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[], 
+                                      period='P1D', chunksize=100) -> dict:
+    """
+        Retrieve time series data for instantiated station readings from UK Air API 
+        Time series data collection is done in 2 steps:
+            1) Retrieve detailed station information incl. reported time series
+               per station (i.e. time series IDs)
+            2) Retrieve time series data for IDs
+
+        Arguments:
+            crs - coordinate reference system in which to return station 
+                  locations (as EPSG code, e.g. 'EPSG:4326')
+            ts_ids - (list of) ID(s) of reading/timeseries
+                     (returns information for all available timeseries if empty
+                     list is provided)
+            period - duration for which to retrieve the time series data, in
+                     ISO8601 formatted period notation (default: 1 day)
+            chunksize - number of time series to request at once (to avoid
+                        API time out issues)
+
+        Returns:
+            Dictionary with readings information (timeseries ID as key and
+            information as dictionary)
+    """
+
+    if not ts_ids:
+        # Retrieve and clean detailed station data (incl. time seriesID)
+        df = retrieve_station_details_from_api(crs=crs)
+        ts_ids = list(df['ts_id'].unique())
+
+    ts_ids = ts_ids[:500]
+    
+    # Construct POST request to query readings time series data from API
+    url = 'https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries/getData'
+    headers = {'Content-Type': 'application/json'}
+    now = dt.datetime.utcnow().strftime(TIME_FORMAT)
+    timespan = f'{period}/{now}'
+
+    all_ts = {}
+
+    # Loop to avoid API timeout
+    chunks = [ts_ids[i:i+chunksize] for i in range(0,len(ts_ids),chunksize)]
+    i, j = 1, len(chunks)
+    for chunk in chunks:   
+        body = {"timespan": timespan,
+                "timeseries": chunk
+        }
+        print(f'Retrieving chunk {i:>4}/{j:>4} of time series data from API ...')
+        r = requests.post(url=url, data=json.dumps(body), headers=headers)
+
+        # Extract time series data
+        ts_data = r.json()
+        df = pd.DataFrame.from_dict(ts_data, orient='index')
+        # Remove rows without entries
+        df = df[df['values'].astype(bool)]
+        # Unpack time series lists
+        df = df.explode('values')
+        # Unpack dicts to separate columns
+        df[['timestamp', 'value']] = df['values'].apply(pd.Series)
+        df = df.drop(columns=['values'])
+        df['timestamp'] = df['timestamp'].apply(lambda x: 
+                    dt.datetime.utcfromtimestamp(x/1000).strftime(TIME_FORMAT))
+        # Add time series data to overall dict
+        for ts_id in df.index.unique():
+            all_ts[ts_id] = {'times': df.loc[ts_id,:]['timestamp'].values.tolist(),
+                             'values': df.loc[ts_id,:]['value'].values.tolist() }
+
+        i += 1
+
+    print(f'Done: {len(all_ts.keys)}')
+
+
 if __name__ == '__main__':
+
+    retrieve_timeseries_data_from_api()
 
     response = update_all_stations()
     print(f"Number of instantiated stations: {response[0]}")
     print(f"Number of instantiated readings: {response[1]}")
-    #print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
+    print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")

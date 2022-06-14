@@ -91,7 +91,8 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
                                   circle_radius: str = None):
     """
         Returns DataFrame with all instantiated UK AIR station details
-        (['stationID', 'station', 'comment', 'latlon', 'elevation', 'dataIRI'])
+        (['stationID', 'station', 'label', 'latlon', 'elevation', 'dataIRI'])
+        Some cell entries can potentially contain NaNs (e.g. elevation, dataIRI)
 
         Arguments:
             circle_center - center for Blazegraph's geo:search "inCircle" mode
@@ -118,16 +119,10 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     # Execute query
     results = kg_client.performQuery(query=query_string)
     # Parse results into DataFrame
-    df = pd.DataFrame(columns=['stationID', 'station', 'comment', 'latlon', 
+    df = pd.DataFrame(columns=['stationID', 'station', 'label', 'latlon', 
                                'elevation', 'dataIRI'])
     df = pd.concat([df, pd.DataFrame.from_dict(results)], axis=0)
     df = df.drop_duplicates()
-
-    # # Overwrite NaNs in dataIRI column for stations without any attached dataIRIs
-    # mask=(df['obs_station'] + df['fcs_station'] == 0)
-    # df.loc[mask, 'dataIRI'] = ''
-    # df = df.dropna(subset=['dataIRI'])
-    # df = df.drop_duplicates()
 
     return df
 
@@ -268,12 +263,14 @@ def create_json_output_files(outdir: str, observation_types: list = None,
 
 if __name__ == '__main__':
 
+    s = get_all_stations_with_details()
+
     # Create 1 joint time series output file
     # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
     #                          split_obs_fcs=False)
 
     # Create 2 separate time series output file
-    create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output')
+    #create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output')
 
     # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
     #                          circle_center='52.75#0.4', circle_radius='100')
