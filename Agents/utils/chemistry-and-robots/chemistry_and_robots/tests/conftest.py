@@ -294,7 +294,7 @@ class TargetIRIs(Enum):
     HPLCREPORT_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCReport_Dummy'
     HPLCJOB_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCJob_Dummy'
     HPLC_LOCAL_FOLDER_PATH = '/home/jb2197/CHEM32/**/'
-    HPLCREPORT_DUMMY_REMOTE_PATH = 'placeholder_path'
+    HPLCREPORT_DUMMY_REMOTE_PATH = 'http://placeholder_path'
     HPLCREPORT_DUMMY_LOCAL_PATH = 'placeholder_file_name'
     CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI = DUMMY_LAB_BASE_IRI + 'ChemicalSolution_For_OutputChemical_4'
     CHROMATOGRAMPOINT_1_IRI = DUMMY_LAB_BASE_IRI + 'ChromatogramPoint_Dummy_1'

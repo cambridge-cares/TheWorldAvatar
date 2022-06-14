@@ -493,8 +493,8 @@ def test_get_existing_hplc_report(initialise_triples):
     hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
     assert all(pt in list_chrom_pts for pt in hplc_report.records)
     assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI.value
-    assert hplc_report.hasReportPath is not None
-    assert hplc_report.localReportFile is not None
+    assert hplc_report.remoteFilePath is not None
+    assert hplc_report.localFilePath is not None
     assert hplc_report.lastLocalModifiedAt > 0
     assert hplc_report.lastUploadedAt > 0
 
@@ -575,8 +575,8 @@ def test_upload_download_process_raw_hplc_report(initialise_triples, generate_ra
     # Third process the raw report (as part of PostProc Agent)
     hplc_report_instance = sparql_client.process_raw_hplc_report(hplc_report_iri, internal_standard_species, internal_standard_run_conc)
     assert hplc_report_instance.instance_iri == hplc_report_iri
-    assert hplc_report_instance.hasReportPath == remote_file_path
-    assert hplc_report_instance.localReportFile == local_file_path
+    assert hplc_report_instance.remoteFilePath == remote_file_path
+    assert hplc_report_instance.localFilePath == local_file_path
     assert (hplc_report_instance.lastLocalModifiedAt - timestamp_last_modified) <= 0.00001
     assert hplc_report_instance.lastUploadedAt > hplc_report_instance.lastLocalModifiedAt
     list_chrom_pts = hplc_report_instance.records

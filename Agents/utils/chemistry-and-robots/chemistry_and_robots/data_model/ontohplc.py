@@ -30,10 +30,10 @@ class ChromatogramPoint(BaseOntology):
 
 class HPLCReport(BaseOntology):
     clz: str = ONTOHPLC_HPLCREPORT
-    hasReportPath: str
+    remoteFilePath: str
     records: List[ChromatogramPoint]
     generatedFor: ChemicalSolution
-    localReportFile: str
+    localFilePath: str
     lastLocalModifiedAt: float
     lastUploadedAt: float
 

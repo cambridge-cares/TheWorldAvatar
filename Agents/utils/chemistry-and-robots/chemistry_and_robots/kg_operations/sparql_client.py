@@ -1360,7 +1360,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         #     <%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
         #     hplc_digital_twin, ONTOHPLC_HASJOB, hplc_job_iri,
         #     hplc_job_iri, ONTOHPLC_HPLCJOB, ONTOHPLC_CHARACTERISES, rxn_exp_iri, ONTOHPLC_USESMETHOD, hplc_method_iri, ONTOHPLC_HASREPORT, hplc_report_iri,
-        #     hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_file_path, ONTOHPLC_LOCALREPORTFILE, local_file_path,
+        #     hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_REMOTEFILEPATH, remote_file_path, ONTOHPLC_LOCALFILEPATH, local_file_path,
         #     ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
 
         g = Graph()
@@ -1370,8 +1370,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_USESMETHOD), URIRef(hplc_method_iri)))
         g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_HASREPORT), URIRef(hplc_report_iri)))
         g.add((URIRef(hplc_report_iri), RDF.type, URIRef(ONTOHPLC_HPLCREPORT)))
-        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_HASREPORTPATH), Literal(remote_file_path)))
-        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LOCALREPORTFILE), Literal(local_file_path)))
+        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_REMOTEFILEPATH), Literal(remote_file_path)))
+        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LOCALFILEPATH), Literal(local_file_path)))
         g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LASTLOCALMODIFIEDAT), Literal(timestamp_last_modified)))
         g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LASTUPLOADEDAT), Literal(timestamp_upload)))
         return hplc_report_iri, g
@@ -1426,9 +1426,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
         logger.info("The initialised HPLCReport IRI is: <%s>" % (hplc_report_iri))
 
-        update = PREFIX_XSD + """INSERT DATA {<%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f. <%s> <%s> <%s>.}""" % (
-            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_file_path,
-            ONTOHPLC_LOCALREPORTFILE, local_file_path, ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified,
+        update = PREFIX_XSD + """INSERT DATA {<%s> a <%s>; <%s> "%s"^^xsd:anyURI; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f. <%s> <%s> <%s>.}""" % (
+            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_REMOTEFILEPATH, remote_file_path,
+            ONTOHPLC_LOCALFILEPATH, local_file_path, ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified,
             ONTOHPLC_LASTUPLOADEDAT, timestamp_upload, hplc_digital_twin, ONTOHPLC_HASPASTREPORT, hplc_report_iri
         )
         self.performUpdate(update)
@@ -1468,7 +1468,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             <%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
             hplc_digital_twin, ONTOHPLC_HASJOB, hplc_job_iri,
             hplc_job_iri, ONTOHPLC_HPLCJOB, ONTOHPLC_CHARACTERISES, rxn_exp_iri, ONTOHPLC_USESMETHOD, hplc_method_iri, ONTOHPLC_HASREPORT, hplc_report_iri,
-            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_HASREPORTPATH, remote_file_path, ONTOHPLC_LOCALREPORTFILE, local_file_path,
+            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_REMOTEFILEPATH, remote_file_path, ONTOHPLC_LOCALFILEPATH, local_file_path,
             ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
         self.performUpdate(update)
 
@@ -1496,7 +1496,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_raw_hplc_report_remote_path_and_extension(self, hplc_report_iri: str) -> Tuple[str, str]:
         hplc_report_iri = trimIRI(hplc_report_iri)
         query = """SELECT ?remote_path ?extension WHERE {<%s> <%s> ?remote_path . ?hplc <%s>/<%s> <%s> . ?hplc <%s> ?extension .}""" % (
-            hplc_report_iri, ONTOHPLC_HASREPORTPATH, ONTOHPLC_HASJOB, ONTOHPLC_HASREPORT, hplc_report_iri, ONTOHPLC_REPORTEXTENSION)
+            hplc_report_iri, ONTOHPLC_REMOTEFILEPATH, ONTOHPLC_HASJOB, ONTOHPLC_HASREPORT, hplc_report_iri, ONTOHPLC_REPORTEXTENSION)
         response = self.performQuery(query)
         if len(response) > 1:
             raise Exception("Multiple matches for filepath and extension for raw HPLC report <%s> was found: %s" % (hplc_report_iri, str(response)))
@@ -1801,7 +1801,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # create chemical solution instance
         _response = self.performQuery("""SELECT ?sol ?local_report_file ?last_local_modification ?last_upload ?vial
             WHERE{<%s> <%s> ?sol; <%s> ?local_report_file; <%s> ?last_local_modification; <%s> ?last_upload.
-            ?sol <%s> ?vial.}""" % (hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_LOCALREPORTFILE, ONTOHPLC_LASTLOCALMODIFIEDAT, ONTOHPLC_LASTUPLOADEDAT, ONTOVAPOURTEC_FILLS))
+            ?sol <%s> ?vial.}""" % (hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_LOCALFILEPATH, ONTOHPLC_LASTLOCALMODIFIEDAT, ONTOHPLC_LASTUPLOADEDAT, ONTOVAPOURTEC_FILLS))
         if len(_response) > 1:
             raise Exception("Multiple instances of ChemicalSolution identified for HPLCReport <%s>: %s" % (hplc_report_iri, str(_response)))
         elif len(_response) < 1:
@@ -1822,10 +1822,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # generate hplc report instance
         hplc_report_instance = HPLCReport(
             instance_iri=hplc_report_iri,
-            hasReportPath=remote_hplc_report_path,
+            remoteFilePath=remote_hplc_report_path,
             records=list_chrom_pts,
             generatedFor=chemical_solution,
-            localReportFile=local_report_file,
+            localFilePath=local_report_file,
             lastLocalModifiedAt=last_local_modified,
             lastUploadedAt=last_upload
         )
@@ -1889,7 +1889,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         hplc_report_iri = trimIRI(hplc_report_iri)
         query = """SELECT ?chemical_solution ?report_path ?local_report_file ?lastLocalModifiedAt ?lastUploadedAt ?vial
                    WHERE {<%s> <%s> ?chemical_solution; <%s> ?report_path; <%s> ?local_report_file; <%s> ?lastLocalModifiedAt; <%s> ?lastUploadedAt. ?chemical_solution <%s> ?vial.}""" % (
-                       hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_HASREPORTPATH, ONTOHPLC_LOCALREPORTFILE, ONTOHPLC_LASTLOCALMODIFIEDAT, ONTOHPLC_LASTUPLOADEDAT, ONTOVAPOURTEC_FILLS)
+                       hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_REMOTEFILEPATH, ONTOHPLC_LOCALFILEPATH, ONTOHPLC_LASTLOCALMODIFIEDAT, ONTOHPLC_LASTUPLOADEDAT, ONTOVAPOURTEC_FILLS)
         response = self.performQuery(query)
         if len(response) > 1:
             raise Exception("Multiple instances of ChemicalSolution or HPLCReport path identified for HPLCReport <%s>: %s" % (
@@ -1907,8 +1907,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         hplc_report_instance = HPLCReport(
             instance_iri=hplc_report_iri,
-            hasReportPath=hplc_report_path,
-            localReportFile=local_report_file,
+            remoteFilePath=hplc_report_path,
+            localFilePath=local_report_file,
             lastLocalModifiedAt=lastLocalModifiedAt,
             lastUploadedAt=lastUploadedAt,
             records=self.get_chromatogram_point_of_hplc_report(hplc_report_iri),
@@ -1984,7 +1984,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_remote_hplc_report_path_given_local_file(self, hplc_digital_twin: str, hplc_local_file: str) -> str:
         hplc_digital_twin = trimIRI(hplc_digital_twin)
         query = PREFIX_XSD+"""SELECT ?remote_path WHERE {<%s> <%s> ?hplc_report. ?hplc_report <%s> "%s"^^xsd:string; <%s> ?remote_path.}""" % (
-            hplc_digital_twin, ONTOHPLC_HASPASTREPORT, ONTOHPLC_LOCALREPORTFILE, hplc_local_file, ONTOHPLC_HASREPORTPATH)
+            hplc_digital_twin, ONTOHPLC_HASPASTREPORT, ONTOHPLC_LOCALFILEPATH, hplc_local_file, ONTOHPLC_REMOTEFILEPATH)
         response = self.performQuery(query)
         if len(response) > 1:
             raise Exception("Multiple records of HPLCReport remote path identified for local file '%s' of HPLC <%s>: %s" % (
