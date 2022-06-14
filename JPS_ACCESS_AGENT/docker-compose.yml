@@ -4,7 +4,6 @@ services:
   # access-agent
   access-agent:
     image: ghcr.io/cambridge-cares/access-agent:1.4.0-SNAPSHOT
-    build: .
     container_name: access-agent
     environment:
         LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"

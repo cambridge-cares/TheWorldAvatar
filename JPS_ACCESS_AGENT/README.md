@@ -13,7 +13,7 @@ Images for the two containers are pulled from the Cambridge CARES container regi
 
 From the command line, in same directory as this README, run:
 ```
-docker-compose up -d
+docker-compose up -d --no-build
 ```
 Next, you will need to populate the default "kb" namespace in Blazegraph with your routing information. This can simply be done using the Blazegraph user interface at `localhost:48081/blazegraph`.
 Routing information consists of 5 triples e.g.
@@ -24,11 +24,12 @@ Routing information consists of 5 triples e.g.
 <http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual>.
 <http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/2000/01/rdf-schema#label> "ontokin".
 ```
-The queryStore(String targetResourceID, String sparqlQuery) and updateStore(String targetResourceID, String sparqlUpdate) methods from jps_base_lib can now be used with your local access agent by supplying a targetResourceID of the form `http://localhost:48080/<targetName>`, where <targetName> corresponds to the value of label in the routing information. For example, to use the local access agent to access ontokin based on the routing information shown above:
+The queryStore(String targetResourceID, String sparqlQuery) and updateStore(String targetResourceID, String sparqlUpdate) methods from jps_base_lib can now be used with the local access agent by supplying a targetResourceID of the form `http://localhost:48080/<targetName>`, where <targetName> corresponds to the value of label in the routing information. For example, to use the local access agent to access ontokin based on the routing information shown above:
 ```
 targetResourceID = http://localhost:48080/ontokin
 ```
-Note: "localhost" won't work from inside a docker container. Use "host.docker.internal" instead, if developing on windows.
+Alternatively, in particular if developing a dockerized agent, the environment variable "ACCESSAGENT_HOST" should be set to "http://host.docker.internal:48080". In which case the targetResourceID can then just be passed as <targetName> i.e. "ontokin".
+NOTE: JPS_BASE_LIB version "1.12.1-DEV-ACCESSAGENT-CONFIG-VARIABLES-SNAPSHOT" should be used.
 
 ## Building the AccessAgent
 
