@@ -8,6 +8,7 @@ class AgilentConfig(AgentConfig):
     HPLC_REPORT_PERIODIC_TIMESCALE: int
     HPLC_REPORT_CONTAINER_DIR: str
     HPLC_REPORT_FILE_EXTENSION: str
+    REGISTER_AGENT: bool
 
 
 def config_agilent(env_file: str = None) -> AgilentConfig:

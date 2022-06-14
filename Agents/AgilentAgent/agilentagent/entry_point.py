@@ -17,6 +17,7 @@ def create_app():
         hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE,
         hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR,
         hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION,
+        register_agent=hplc_config.REGISTER_AGENT,
         agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
@@ -33,6 +34,7 @@ def create_app():
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
+    agent.register()
     agent.start_monitoring_derivations()
     agent.start_monitoring_local_report_folder()
 

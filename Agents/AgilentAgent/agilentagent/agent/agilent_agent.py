@@ -18,36 +18,36 @@ class AgilentAgent(DerivationAgent):
         hplc_report_periodic_timescale: str,
         hplc_report_container_dir: str,
         hplc_report_file_extension: str,
+        register_agent: bool=True,
         **kwargs
     ):
-        register = kwargs.pop('register', True)
         super().__init__(**kwargs)
         self.hplc_digital_twin = hplc_digital_twin
         self.hplc_report_periodic_timescale = hplc_report_periodic_timescale
         self.hplc_report_container_dir = hplc_report_container_dir if hplc_report_container_dir.endswith("/") else hplc_report_container_dir + "/"
         self.hplc_report_file_extension = hplc_report_file_extension
-        print("---------------------------1----------------------------")
-
+        self.register_agent = register_agent
 
         # Initialise the sparql_client
         self.sparql_client = ChemistryAndRobotsSparqlClient(
             self.kgUrl, self.kgUrl, kg_user=self.kgUser, kg_password=self.kgPassword,
             fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_password
         )
-        print("---------------------------2----------------------------")
-        print(register)
-        
 
+    def register(self):
         # TODO think about standardised way of specify if to register?
-        if register:
-            self.sparql_client.generate_ontoagent_instance(
-                self.agentIRI,
-                self.agentEndpoint,
-                [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALSOLUTION],
-                [ONTOHPLC_HPLCJOB]
-            )
-            self.sparql_client.register_agent_with_hardware(self.agentIRI, self.hplc_digital_twin)
-            print("---------------------------5----------------------------")
+        if self.register_agent:
+            try:
+                self.sparql_client.generate_ontoagent_instance(
+                    self.agentIRI,
+                    self.agentEndpoint,
+                    [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALSOLUTION],
+                    [ONTOHPLC_HPLCJOB]
+                )
+                self.sparql_client.register_agent_with_hardware(self.agentIRI, self.hplc_digital_twin)
+            except Exception as e:
+                self.logger.error(e, stack_info=True, exc_info=True)
+                raise Exception("Agent <%s> registration failed." % self.agentIRI)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Record the time when the job starts

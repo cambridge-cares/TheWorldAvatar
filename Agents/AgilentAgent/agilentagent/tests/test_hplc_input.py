@@ -14,21 +14,27 @@ pytest_plugins = ["docker_compose"]
 
 # NOTE the hplc_report_periodic_timescale (8, 11) are chosen randomly for the test cases
 @pytest.mark.parametrize(
-    "hplc_report_periodic_timescale,hplc_report_file_extension",
+    "hplc_report_periodic_timescale,hplc_report_container_dir,hplc_report_file_extension",
     [
-        (8, utils.cf.XLSFILE_EXTENSION),
-        (11, utils.cf.TXTFILE_EXTENSION),
+        (8, utils.cf.HPLC_REPORT_DIR, utils.cf.XLSFILE_EXTENSION),
+        (11, utils.cf.HPLC_REPORT_DIR, utils.cf.TXTFILE_EXTENSION),
     ],
 )
 def test_monitor_local_report_folder(
     initialise_client, initialise_hplc_digital_twin_triples, create_agilent_agent,
     create_test_report, generate_random_download_path,
-    hplc_report_periodic_timescale, hplc_report_file_extension
+    hplc_report_periodic_timescale, hplc_report_container_dir, hplc_report_file_extension
 ):
 
     sparql_client = initialise_client
-    hplc_digital_twin = initialise_hplc_digital_twin_triples(hplc_report_file_extension)
-    agilent_agent = create_agilent_agent(hplc_digital_twin, hplc_report_periodic_timescale, hplc_report_file_extension)
+    hplc_digital_twin = initialise_hplc_digital_twin_triples(sparql_client, hplc_report_file_extension)
+    agilent_agent = create_agilent_agent(
+        hplc_digital_twin=hplc_digital_twin,
+        hplc_report_periodic_timescale=hplc_report_periodic_timescale,
+        hplc_report_container_dir=hplc_report_container_dir,
+        hplc_report_file_extension=hplc_report_file_extension,
+        register_agent=True,
+    )
 
     agilent_agent.start_monitoring_local_report_folder()
 
@@ -56,21 +62,29 @@ def test_monitor_local_report_folder(
 # NOTE the hplc_report_periodic_timescale (8, 11) are chosen randomly for the test cases
 # NOTE the derivation_periodic_timescale (5, 8) are chosen randomly for the test cases
 @pytest.mark.parametrize(
-    "hplc_report_periodic_timescale,hplc_report_file_extension,derivation_periodic_timescale",
+    "hplc_report_periodic_timescale,hplc_report_container_dir,hplc_report_file_extension,derivation_periodic_timescale",
     [
-        (8, utils.cf.XLSFILE_EXTENSION, 5),
-        (11, utils.cf.TXTFILE_EXTENSION, 8),
+        (8, utils.cf.HPLC_REPORT_DIR, utils.cf.XLSFILE_EXTENSION, 5),
+        (11, utils.cf.HPLC_REPORT_DIR, utils.cf.TXTFILE_EXTENSION, 8),
     ],
 )
 def test_monitor_derivation(
     initialise_client, initialise_hplc_digital_twin_triples, create_agilent_agent, initialise_agilent_derivation_input_triples,
     create_test_report, generate_random_download_path,
-    hplc_report_periodic_timescale, hplc_report_file_extension, derivation_periodic_timescale
+    hplc_report_periodic_timescale, hplc_report_container_dir, hplc_report_file_extension, derivation_periodic_timescale
 ):
 
     sparql_client = initialise_client
-    hplc_digital_twin = initialise_hplc_digital_twin_triples(hplc_report_file_extension)
-    agilent_agent = create_agilent_agent(hplc_digital_twin, hplc_report_periodic_timescale, hplc_report_file_extension, derivation_periodic_timescale)
+    hplc_digital_twin = initialise_hplc_digital_twin_triples(sparql_client, hplc_report_file_extension)
+    agilent_agent = create_agilent_agent(
+        hplc_digital_twin=hplc_digital_twin,
+        hplc_report_periodic_timescale=hplc_report_periodic_timescale,
+        hplc_report_container_dir=hplc_report_container_dir,
+        hplc_report_file_extension=hplc_report_file_extension,
+        register_agent=True,
+        random_agent_iri=True,
+        derivation_periodic_timescale=derivation_periodic_timescale,
+    )
 
     ## Instantiate derivation instance
     rxn_exp_iri, chemical_solution_iri = initialise_agilent_derivation_input_triples(sparql_client)
@@ -126,8 +140,8 @@ def test_docker_integration(
 ):
 
     sparql_client = initialise_client
-    agilent_agent = create_agilent_agent(register=False)
-    hplc_digital_twin = initialise_hplc_digital_twin_triples(agilent_agent.hplc_report_file_extension, agilent_agent.hplc_digital_twin)
+    agilent_agent = create_agilent_agent(register_agent=True)
+    hplc_digital_twin = initialise_hplc_digital_twin_triples(sparql_client, agilent_agent.hplc_report_file_extension, agilent_agent.hplc_digital_twin)
 
     ## Instantiate derivation instance
     rxn_exp_iri, chemical_solution_iri = initialise_agilent_derivation_input_triples(sparql_client)
@@ -146,12 +160,15 @@ def test_docker_integration(
 
     # Generate random file to the docker integration folder, the agent deployed in docker will pick it up
     generated_file_path = create_test_report(agilent_agent.hplc_report_file_extension, True)
+    # NOTE here we need to replace the first absolute path bit with the mounted folder in docker
+    local_file_path_in_docker = generated_file_path.replace(utils.cf.DOCKER_INTEGRATION_DIR+'/', agilent_agent.hplc_report_container_dir)
 
     ## Check if the content of the uploaded file matches the local file
     # Wait for a bit to let the dockerised agent upload the file
     time.sleep(agilent_agent.hplc_report_periodic_timescale * 2)
     # Query remote file path
-    remote_file_path = sparql_client.get_remote_hplc_report_path_given_local_file(hplc_digital_twin, generated_file_path)
+    # time.sleep(600)
+    remote_file_path = sparql_client.get_remote_hplc_report_path_given_local_file(hplc_digital_twin, local_file_path_in_docker)
     # Genereate random download path
     full_downloaded_path = generate_random_download_path(agilent_agent.hplc_report_file_extension)
     # Download the file and make sure all the content are the same

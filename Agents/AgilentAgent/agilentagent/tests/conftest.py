@@ -149,6 +149,9 @@ def initialise_client(get_service_url, get_service_auth):
     if not os.path.exists(DOWNLOADED_DIR):
         os.mkdir(DOWNLOADED_DIR)
 
+    # Clear triple store before any usage
+    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+
     yield sparql_client
 
     # Clear logger at the end of the test
@@ -160,10 +163,8 @@ def initialise_client(get_service_url, get_service_auth):
 # ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def initialise_hplc_digital_twin_triples(initialise_client, generate_random_hplc_digital_twin):
-    def _initialise_hplc_digital_twin_triples(hplc_report_file_extension, predefined_hplc_digital_twin:str=None):
-        sparql_client = initialise_client
-        sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+def initialise_hplc_digital_twin_triples(generate_random_hplc_digital_twin):
+    def _initialise_hplc_digital_twin_triples(sparql_client, hplc_report_file_extension, predefined_hplc_digital_twin:str=None):
         if hplc_report_file_extension == 'xls':
             filename_extension = DBPEDIA_XLSFILE
         elif hplc_report_file_extension == 'txt':
@@ -202,18 +203,21 @@ def create_agilent_agent():
     def _create_agilent_agent(
         hplc_digital_twin:str=None,
         hplc_report_periodic_timescale:int=None,
+        hplc_report_container_dir:str=None,
         hplc_report_file_extension:str=None,
+        register_agent:bool=False,
+        random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
-        **kwargs
     ):
         derivation_agent_config = config_derivation_agent(AGILENT_AGENT_ENV)
         hplc_config = config_agilent(AGILENT_AGENT_ENV)
         agilent_agent = AgilentAgent(
             hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
-            hplc_report_container_dir=HPLC_REPORT_DIR,
+            hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
             hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI,
+            register_agent=hplc_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
             derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
             kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
@@ -225,8 +229,8 @@ def create_agilent_agent():
             fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
-            **kwargs
         )
+        agilent_agent.register()
         return agilent_agent
     return _create_agilent_agent
 
