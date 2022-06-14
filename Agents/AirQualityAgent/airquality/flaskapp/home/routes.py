@@ -29,7 +29,7 @@ def default():
     # msg += "<BR>"
     msg += "Request to update all stations and associated readings, and add latest data for all time series (GET request):<BR>"
     msg += "(i.e. instantiate missing stations and readings and append latest time series readings):<BR>"
-    msg += "&nbsp&nbsp /api/metofficeagent/update/all"
+    msg += "&nbsp&nbsp /api/airqualityagent/update/all"
     msg += "<BR>"
     msg += "<BR>"
     # msg += "Request to retrieve data about Met Office stations and create respective output files for DTVF (GET request):<BR>"
