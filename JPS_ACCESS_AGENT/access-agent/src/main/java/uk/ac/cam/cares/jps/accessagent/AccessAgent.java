@@ -55,13 +55,7 @@ public class AccessAgent extends JPSAgent{
      * Logger for error output.
      */
     private static final Logger LOGGER = LogManager.getLogger(AccessAgent.class);
-	
-    /**
-     * Get ontokgrouter endpoint from AccessAgent properties file. This overrides the endpoint supplied in JPS_BASE_LIB
-     */
-    private static final String propertiesFile = "/accessagent.properties";
-    private static final String STOREROUTER_ENDPOINT = KeyValueMap.getProperty(propertiesFile, IKeys.URL_STOREROUTER_ENDPOINT);
-    
+	    
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject result = processRequestParameters(requestParams,null);
@@ -217,8 +211,6 @@ public class AccessAgent extends JPSAgent{
 	 */
 	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {
 		try {
-			LOGGER.info("Setting Store Router Endpoint: "+STOREROUTER_ENDPOINT);
-			StoreRouter.setRouterEndpoint(STOREROUTER_ENDPOINT);
 			StoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, isQuery, isUpdate);
 			if (storeClient == null) {
 				throw new RuntimeException();
