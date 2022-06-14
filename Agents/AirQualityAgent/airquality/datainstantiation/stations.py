@@ -107,7 +107,7 @@ def retrieve_station_data_from_api(crs: str = 'EPSG:4326') -> list:
     
     # Clean and condition returned API data
     df = clean_api_data(df)
-    df.set_index('station_id', inplace=True)
+    df.set_index('stationID', inplace=True)
 
     # Create return list of dicts
     stations = [{k: v} for k,v in df.to_dict('index').items()]
@@ -221,7 +221,7 @@ def clean_api_data(dataframe: pd.DataFrame):
 
     # Construct "arbitrary" but unique station ID, as there is none from the API
     # (e.g. a station with several measurement features has different IDs).
-    data['station_id'] = data.apply(lambda x: x['station'] + '_' + str(x['latitude'])
+    data['stationID'] = data.apply(lambda x: x['station'] + '_' + str(x['latitude'])
                                               + '#' + str(x['longitude']), axis=1)
 
     # Drop helper columns

@@ -117,82 +117,53 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
     return triples
 
 
-# def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
-#                     data_iri_type, unit, symbol, is_observation: bool, 
-#                     creation_time=None, comment=None):
-#     """
-#         Create triples to instantiate station measurements
-#     """
-#     # Create triple for measure vs. forecast
-#     if is_observation:
-#         triple = f"""<{quantity_iri}> <{OM_HAS_VALUE}> <{data_iri}> . """
-        
-#     else:
-#         triple = f"<{quantity_iri}> <{EMS_HAS_FORECASTED_VALUE}> <{data_iri}> . "
-#         if creation_time: triple += f"<{data_iri}> <{EMS_CREATED_ON}> \"{creation_time}\"^^<{XSD_DATETIME}> . "
+def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
+                    data_iri_type, unit, symbol, comment, sameas=None):
+    """
+        Create triples to instantiate station measurements according to OntoEMS
+    """
 
-#     # Create triples to instantiate station measurement according to OntoEMS
-#     triples = f"""
-#         <{station_iri}> <{EMS_REPORTS}> <{quantity_iri}> . 
-#         <{quantity_iri}> <{RDF_TYPE}> <{quantity_type}> . 
-#         <{data_iri}> <{RDF_TYPE}> <{data_iri_type}> . 
-#         <{data_iri}> <{OM_HAS_UNIT}> <{unit}> . 
-#         <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . 
-#         <{unit}> <{OM_SYMBOL}> "{symbol}"^^<{XSD_STRING}> . 
-#     """
-#     triples += triple
+    triples = f"""
+        <{station_iri}> <{EMS_REPORTS}> <{quantity_iri}> . 
+        <{quantity_iri}> <{RDF_TYPE}> <{quantity_type}> . 
+        <{quantity_iri}> <{RDFS_COMMENT}> "{comment}"^^<{XSD_STRING}> . 
+        <{data_iri}> <{RDF_TYPE}> <{data_iri_type}> . 
+    """
+    if unit: 
+        triples += f"""<{data_iri}> <{OM_HAS_UNIT}> <{unit}> . 
+                       <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . """
+        if symbol:
+            triples += f"""<{unit}> <{OM_SYMBOL}> "{symbol}"^^<{XSD_STRING}> . """
 
-#     # Create optional comment to quantity
-#     if comment:
-#         triples += f"""<{quantity_iri}> <{RDFS_COMMENT}> "{comment}"^^<{XSD_STRING}> . """
+    # Create optional sameAs for quantity
+    if sameas:
+        triples += f"""<{quantity_iri}> <{SAMEAS}> <{sameas}> . """
 
-#     return triples
+    return triples
 
 
-# def instantiated_observations(station_iris: list = None):
-#     # Returns query to retrieve (all) instantiated observation types per station
-#     if station_iris:
-#         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-#         substring = f"""FILTER (?station IN ({iris}) ) """
-#     else:
-#         substring = f"""
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-#     query = f"""
-#         SELECT ?station ?stationID ?quantityType
-#         WHERE {{
-#             ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-#                      <{EMS_REPORTS}> ?quantity .
-#             {substring}                     
-#             ?quantity <{OM_HAS_VALUE}> ?measure ;
-#                       <{RDF_TYPE}> ?quantityType .
-#         }}
-#         ORDER BY ?station
-#     """
-#     return query
-
-
-# def instantiated_forecasts(station_iris: list = None):
-#     # Returns query to retrieve (all) instantiated forecast types per station
-#     if station_iris:
-#         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-#         substring = f"""FILTER (?station IN ({iris}) ) """
-#     else:
-#         substring = f"""
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-#     query = f"""
-#         SELECT ?station ?stationID ?quantityType
-#         WHERE {{
-#             ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-#                      <{EMS_REPORTS}> ?quantity .
-#             {substring} 
-#             ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?forecast ;
-#                       <{RDF_TYPE}> ?quantityType .
-#         }}
-#         ORDER BY ?station
-#     """
-#     return query
+def instantiated_observations(station_iris: list = None):
+    # Returns query to retrieve (all) instantiated observation types per station
+    if station_iris:
+        iris = ', '.join(['<'+iri+'>' for iri in station_iris])
+        substring = f"""FILTER (?station IN ({iris}) ) """
+    else:
+        substring = f"""
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" . """
+    query = f"""
+        SELECT ?station ?stationID ?quantityType ?dataIRI ?comment
+        WHERE {{
+            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
+                     <{EMS_REPORTS}> ?quantity .
+            {substring}                     
+            ?quantity <{OM_HAS_VALUE}> ?dataIRI ;
+                      <{RDF_TYPE}> ?quantityType ;
+                      <{RDFS_COMMENT}> ?comment . 
+        }}
+        ORDER BY ?station
+    """
+    return query
 
 
 # def instantiated_observation_timeseries(station_iris: list = None):
@@ -221,74 +192,32 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
 #     return query
 
 
-# def instantiated_forecast_timeseries(station_iris: list = None):
-#     # Returns query to retrieve (all) instantiated forecast time series per station
-#     if station_iris:
-#         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-#         substring = f"""FILTER (?station IN ({iris}) ) """
-#     else:
-#         substring = f"""
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-#     query = f"""
-#         SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI
-#         WHERE {{
-#             ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-#                      <{EMS_REPORTS}> ?quantity .
-#             {substring} 
-#             ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?dataIRI ;
-#                       <{RDF_TYPE}> ?quantityType .
-#             ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI ;
-#                      <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit .
-#             ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
-#         }}
-#         ORDER BY ?tsIRI
-#     """
-#     return query
+def split_insert_query(triples: str, max: int):
+    """"
+        Split large SPARQL insert query into list of smaller chunks (primarily
+        to avoid heap size/memory issues when executing large SPARQL updated)
 
+        Arguments
+            triples - original SPARQL update string with individual triples 
+                      separated by " . ", i.e. in the form
+                      <s1> <p1> <o1> .
+                      <s2> <p2> <o2> . 
+                      ...
+            max - maximum number of triples per SPARQL update
+    """
 
-# def split_insert_query(triples: str, max: int):
-#     """"
-#         Split large SPARQL insert query into list of smaller chunks (primarily
-#         to avoid heap size/memory issues when executing large SPARQL updated)
+    # Initialise list of return queries
+    queries = []
 
-#         Arguments
-#             triples - original SPARQL update string with individual triples 
-#                       separated by " . ", i.e. in the form
-#                       <s1> <p1> <o1> .
-#                       <s2> <p2> <o2> . 
-#                       ...
-#             max - maximum number of triples per SPARQL update
-
-#     """
-
-#     # Initialise list of return queries
-#     queries = []
-
-#     # Split original query every max'th occurrence of " . " and append queries list
-#     splits = triples.split(' . ')
-#     cutoffs = list(range(0, len(splits), max))
-#     cutoffs.append(len(splits))
-#     for i in range(len(cutoffs)-1):
-#         start = cutoffs[i]
-#         end = cutoffs[i+1]
-#         query = ' . '.join([t for t in splits[start:end]])
-#         query = " INSERT DATA { " + query + " } "
-#         queries.append(query)
+    # Split original query every max'th occurrence of " . " and append queries list
+    splits = triples.split(' . ')
+    cutoffs = list(range(0, len(splits), max))
+    cutoffs.append(len(splits))
+    for i in range(len(cutoffs)-1):
+        start = cutoffs[i]
+        end = cutoffs[i+1]
+        query = ' . '.join([t for t in splits[start:end]])
+        query = " INSERT DATA { " + query + " } "
+        queries.append(query)
     
-#     return queries
-
-
-# def update_forecast_creation_datetime(issue_time: str):
-#     # Returns beginning of update query to update forecast creation times
-#     query = f"""
-#         DELETE {{
-# 	        ?forecast <{EMS_CREATED_ON}> ?old }}
-#         INSERT {{
-# 	        ?forecast <{EMS_CREATED_ON}> \"{issue_time}\"^^<{XSD_DATETIME}> }}
-#         WHERE {{
-# 	        ?forecast <{EMS_CREATED_ON}> ?old .
-#             FILTER ( ?forecast IN (
-#     """
-
-#     return query
+    return queries

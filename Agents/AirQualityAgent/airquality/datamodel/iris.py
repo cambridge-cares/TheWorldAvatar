@@ -78,3 +78,6 @@ XSD_STRING = XSD + 'string'
 XSD_FLOAT = XSD + 'float'
 XSD_DATETIME = XSD + 'dateTime'
 GEOLIT_LAT_LON = GEOLIT + 'lat-lon'
+
+# Miscellaneous
+SAMEAS = OWL + 'sameAs'
