@@ -869,28 +869,25 @@ public class FloodSparql {
 	/**
 	 * queries time series over the last 12 hours
 	 * calculate average gradient between lowerbound and upperbound
+	 * average is weighted by duration
 	 */
 	void addTrends(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs, Instant lowerbound, Instant upperbound) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		for (String measureIri : measureIRIs) {
 			TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measureIri), lowerbound, upperbound);
-			List<Instant> times = ts.getTimes();
 			List<Double> values = ts.getValuesAsDouble(measureIri);
 
-			double total_gradient = 0;
-			int num = 0;
-			for (int i = 1; i < times.size(); i++) {
-				Duration duration = Duration.between(times.get(i), times.get(i-1));
-				total_gradient += (values.get(i) - values.get(i-1)) / duration.toMinutes();
-				num += 1;
-			}
+			double difference = values.get(values.size()-1) - values.get(0);
 
-			double average = total_gradient/num;
-
-			if (average > 0) {
+			if (difference > 0) {
 				modify.insert(iri(measureIri).has(hasCurrentTrend, Rising));
+			} else if (difference < 0) {
+				modify.insert(iri(measureIri).has(hasCurrentTrend, Falling));
 			}
 		}
+
+		modify.prefix(p_ems);
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 }
