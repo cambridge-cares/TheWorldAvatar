@@ -9,12 +9,14 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.Duration;
 import java.time.Instant;
 
 import org.apache.http.HttpEntity;
@@ -86,10 +88,17 @@ public class FloodSparql {
 	private static Iri LowRange = p_ems.iri("LowRange");
 	private static Iri UnavailableRange = p_ems.iri("UnavailableRange");
 
+	// trends
+	private static Iri Steady = p_ems.iri("Steady");
+	private static Iri Rising = p_ems.iri("Rising");
+	private static Iri Falling = p_ems.iri("Falling");
+	private static Iri UnavailableTrend = p_ems.iri("UnavailableTrend");
+
     // properties
 	private static Iri hasObservationLocation = p_ems.iri("hasObservationLocation");
 	private static Iri hasObservationElevation = p_ems.iri("hasObservationElevation");
 	private static Iri hasCurrentRange = p_ems.iri("hasCurrentRange");
+	private static Iri hasCurrentTrend = p_ems.iri("hasCurrentTrend");
 	private static Iri dataSource = p_ems.iri("dataSource");
 	private static Iri hasDownstreamStation = p_ems.iri("hasDownstreamStation");
 	private static Iri hasValue = p_om.iri("hasValue");
@@ -208,10 +217,19 @@ public class FloodSparql {
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
+
+	/**
+	 * add an additional rdf:type for stations reporting water level
+	 * @param stations
+	 */
+	void addWaterLevelReportingStationType(List<Station> stations) {
+		ModifyQuery modify = Queries.MODIFY();
+	}
 	
 	/**
 	 * replace original triple <station> <measures> <measure> with
 	 * <station> <reports> <quantity>, <quantity> <hasValue> <measure>
+	 * also adds other OntoEMS concepts such as range, trend
 	 */
     void replaceMeasures(List<Station> stations) {
 		// delete all <station> <measures> <measure> triple
@@ -270,6 +288,7 @@ public class FloodSparql {
 
 				// add dummy triple for range so that sparql update will work
 				modify.insert(iri(measure).has(hasCurrentRange, UnavailableRange));
+				modify.insert(iri(measure).has(hasCurrentTrend, UnavailableTrend));
 			}
 		}
 		modify.prefix(p_ems,p_om);
@@ -844,6 +863,34 @@ public class FloodSparql {
 			}
 			modify.prefix(p_ems);
 			storeClient.executeUpdate(modify.getQueryString());
+		}
+	}
+
+	/**
+	 * queries time series over the last 12 hours
+	 * calculate average gradient between lowerbound and upperbound
+	 */
+	void addTrends(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs, Instant lowerbound, Instant upperbound) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		for (String measureIri : measureIRIs) {
+			TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measureIri), lowerbound, upperbound);
+			List<Instant> times = ts.getTimes();
+			List<Double> values = ts.getValuesAsDouble(measureIri);
+
+			double total_gradient = 0;
+			int num = 0;
+			for (int i = 1; i < times.size(); i++) {
+				Duration duration = Duration.between(times.get(i), times.get(i-1));
+				total_gradient += (values.get(i) - values.get(i-1)) / duration.toMinutes();
+				num += 1;
+			}
+
+			double average = total_gradient/num;
+
+			if (average > 0) {
+				modify.insert(iri(measureIri).has(hasCurrentTrend, Rising));
+			}
 		}
 	}
 }
