@@ -17,8 +17,8 @@ from rfc3987 import parse
 class initialiseEBusModelVariable(object):
     
     """This method is the default initialisation"""
+    ## the default method defines one slack bus and the rest of the buses are all of PQ type (load bus)
     def defaultInitialisation(self, EBus_Model_instance, EBus, BusNumber, slackBusNodeIRI):
-       
         if not isinstance (EBus_Model_instance, UK_PG.UKEbusModel):
             raise Exception('The first argument should be an instence of UKEbusModel.')
             
@@ -26,10 +26,13 @@ class initialiseEBusModelVariable(object):
         EBus_Model_instance.BUS = int(BusNumber)
         
         parse(slackBusNodeIRI, rule="IRI")
-        
+       
         if EBus["BusNodeIRI"].strip("\n") == slackBusNodeIRI.strip("\n"): 
             print("...The slack bus is", slackBusNodeIRI)
             EBus_Model_instance.TYPE = 3
+        else: 
+            EBus_Model_instance.TYPE = 1
+       
         EBus_Model_instance.PD_INPUT = round((float(EBus['v_TotalELecConsumption']) * 1000 / (24 * 365)), 3) 
         return EBus_Model_instance
     
@@ -65,7 +68,7 @@ class initialiseEBusModelVariable(object):
         return EBus_Model_instance
 if __name__ == '__main__':    
     iri = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_10fe8504-f3bb-403c-9363-34b258d59711"
-    iri = "asndnafiu"
+    #iri = "asndnafiu"
     parse(iri, rule="IRI")
    
     

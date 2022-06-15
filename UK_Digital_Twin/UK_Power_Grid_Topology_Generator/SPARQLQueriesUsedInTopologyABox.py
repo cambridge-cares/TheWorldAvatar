@@ -393,13 +393,14 @@ if __name__ == '__main__':
     # res = queryRegionBoundaries_testJSON('ons')
     #res = queryEnglandAndWalesAndScotlandBounderies('ons')
     # print(res)
-    res = queryPowerPlantAttributes('ukdigitaltwin_test2')
+    # res = queryPowerPlantAttributes('ukdigitaltwin_test2')
     # res = queryGBOrNIBoundary('ons')
-    # res = queryWithinRegion('E12000007', 'ons')
+    res = queryWithinRegion('W92000004', 'ons')
     # res = queryCardiffBound('ons')
     # res = queryifWithin('E12000007', 'K03000001', 'ons')
     # res = queryElectricitySystemIRI('ukdigitaltwin_test2', 'Great_Britain')
-    print(res[0], len(res))
+    print(res)
+    # print(res[0], len(res))
     
    
    

@@ -213,10 +213,11 @@ class UKElineModel:
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\Sleepycat_EBus"
         self.BranchProperty =  UKElineModel.DataPath + str(numOfBus) + '_bus\\branch_properties.csv' # the branch prop should be calculated from the raw data
         self.BranchModelInitialisation = UKElineModel.DataPath + str(numOfBus) + '_bus\\BranchModelInitialisation.csv'             
+        self.BranchInfo = str(Path(__file__).resolve().parent.parent) + "\Data files\PowerGridTopology\\" + str(numOfBus) + '_bus\\branch_topological_info.csv'
         if initialiserMethod == 'defaultBranchInitialiser':
             self.headerBranchProperty = ["voltage_level_kV", "R_MVA/km", "X_MVA/km", "B_MVA/km", "MVA\n"]
         elif initialiserMethod == 'preSpecifiedBranchInitialiser':
-            self.headerBranchProperty = ["Bus1", "Bus2", "R", "X", "B", "RateA", "RateB", "RateC", "ratio",	"angle", "status", "angmin", "angmax", "BranchNodeIRI\n"]
+            self.headerBranchProperty = ["Bus1", "Bus2", "R", "X", "B", "RateA", "RateB", "RateC", "ratio",	"angle", "status", "angmin", "angmax\n"]
         else:
             self.headerBranchProperty = []
         
@@ -371,12 +372,12 @@ class UKEGenModel_CostFunc(UKEGenModel):
     ShutdownCostKey = "StopCost_"
     genCostnKey = "genCostn_"
 
-    genCost_aKey = "ZeroOrderCoefficient_" #polynomial
-    genCost_bKey = "FirstOrderCoefficient_"
-    genCost_cKey = "SecondOrderCoefficient_"
+    genCost_bKey = "ZeroOrderCoefficient_" 
+    genCost_aKey = "FirstOrderCoefficient_"
+    # genCost_cKey = "SecondOrderCoefficient_"
     
     """Initialise the cost function"""
-    def __init__(self, CarbonTax = 16, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 3): # 2019 base world UK carbon tax is £16/tCO2 eq.               
+    def __init__(self, CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
             self.MODEL = piecewiseOrPolynomial # 1: piecewise linear;  2: polynomial
             self.STARTUP = 0
             self.SHUTDOWN = 0

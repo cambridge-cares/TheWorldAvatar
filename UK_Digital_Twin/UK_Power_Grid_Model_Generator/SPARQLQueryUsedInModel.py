@@ -50,11 +50,9 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint_label):
     print('...queryBusTopologicalInformation is done...')
     
     for r in res:
-        r['BusLatLon'] = [float(r['BusLatLon'].split('#')[0]), float(r['BusLatLon'].split('#')[1])]
-    
-    numOfBus = len(res)
-    
-    return res, numOfBus
+        r['BusLatLon'] = [float(r['BusLatLon'].split('#')[0]), float(r['BusLatLon'].split('#')[1])] 
+    # numOfBus = len(res)
+    return res #, numOfBus
 
 ####EGen information query####
 
@@ -120,10 +118,10 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
                 float((r['FuelCost'].split('\"^^')[0]).replace('\"','')), float((r['CO2EmissionFactor'].split('\"^^')[0]).replace('\"','')), str(r['Bus']), \
                 float((r['Capacity'].split('\"^^')[0]).replace('\"','')), (str(r['PrimaryFuel']).split('#'))[1]] for r in res]
     print('...finishes queryEGenInfo...')
-    print('...starts querying counterBusNumber...')
-    numOfBus = json.loads(performQuery(endPoint_label, counterBusNumber))
-    print('...finishes querying counterBusNumber...')
-    return qres, int(numOfBus[0]["count"])
+    # print('...starts querying counterBusNumber...')
+    # numOfBus = json.loads(performQuery(endPoint_label, counterBusNumber))
+    # print('...finishes querying counterBusNumber...')
+    return qres #, int(numOfBus[0]["count"])
     
 # query the total electricity consumption of a UK official region 
 def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime_of_EnergyConsumption):
@@ -347,7 +345,7 @@ def branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level):
     
     SELECT_CLAUSE = """
     SELECT DISTINCT ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine """
-    #TODO: change the SELECT_CLAUSE
+    #TODO: change the SELECT_CLAUSE, 20220608why?
     for voltage in branch_voltage_level:
        SELECT_CLAUSE += "?Num_OHL_" + str(voltage) + " "
         
@@ -363,7 +361,6 @@ def branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level):
 
     ?ELineNode ontocape_geometry:hasShapeRepresentation/ontocape_geometry:has_length ?Length_ELine .
     ?Length_ELine ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Value_Length_ELine .
-
     """% topologyNodeIRI 
     
     for voltage in branch_voltage_level: 

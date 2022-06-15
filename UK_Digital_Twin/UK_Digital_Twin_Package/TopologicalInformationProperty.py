@@ -26,7 +26,7 @@ class TopologicalInformation:
         self.voltageLevel = voltageLevel
         self.headerBusTopologicalInformation = ["BusNumber", "Region", "LocalAuthority", "x-axis", "y-axis", "Aggregated\n"]
         
-        self.headerBranchTopologicalInformation = ["FromBus", "ToBus"] # the 400 and 275 refers tp the PARALLEL_CONNECTIONS       
+        self.headerBranchTopologicalInformation = ["FromBus", "ToBus", "BranchNodeIRI"] # the 400 and 275 refers tp the PARALLEL_CONNECTIONS       
         for voltage in self.voltageLevel:
              self.headerBranchTopologicalInformation.append(voltage)
                 

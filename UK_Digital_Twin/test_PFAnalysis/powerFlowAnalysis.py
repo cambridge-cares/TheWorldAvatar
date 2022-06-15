@@ -399,13 +399,14 @@ class powerFlowAnalysis:
         ## Initialise the ACCEPT flag to identify whether the selected bus is the proper one 
         ACCEPT = False
         
+        ## Find the Bus that needs to be switched type
         while not ACCEPT and len(self.PVBusName) < (self.NumberOfBus - len(self.SlackBusName)):         
             indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0] 
             normalised_V = delete(normalised_V, indexOfMaxV_firstIteration)
             indexOfMaxV_firstIteration += 1 
             numberOfPEq = self.NumberOfBus - len(self.SlackBusName)
             
-            if indexOfMaxV_firstIteration <= numberOfPEq:
+            if indexOfMaxV_firstIteration <= numberOfPEq: # number of the P equations
                 busToBeSwitched = indexOfMaxV_firstIteration
                 for sb in self.SlackBusName:
                     if busToBeSwitched >= int(getattr(self.ObjectSet.get(sb),"BUS")):

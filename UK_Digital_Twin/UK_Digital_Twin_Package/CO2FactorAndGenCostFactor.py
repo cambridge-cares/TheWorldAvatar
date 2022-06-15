@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 April 2022        #
+# Last Update Date: 07 June 2022         #
 ##########################################
 
 """This class defines the properties of Model Factors"""
@@ -17,8 +17,18 @@ class ModelFactor:
     """Source Data"""
     __ModelFactor = DataPath + "-Node-24h-Tax-Auto - Template.xlsx"
    
-    Renewable = ['Solar', 'Hydro', 'PumpHydro', 'Wind']
-    Bio = ['Waste_anaerobicdigestion', 'Waste_municipalsolidwaste', 'Waste', 'Biomass']
+    # Renewable = ['Solar', 'Hydro', 'PumpHydro', 'Wind']
+
+    SMR = ['http://www.theworldavatar.com/kb/ontoeip/SmallModularReactor']
+    Nuclear = ['Nuclear']
+    Coal = ['Coal']
+    Solar = ['Solar']
+    Hydro = ['Hydro']
+    PumpHydro = ['PumpHydro']
+    WindOnshore = ['http://www.theworldavatar.com/kb/ontoeip/WindOnshore']
+    WindOffshore = ['http://www.theworldavatar.com/kb/ontoeip/WindOffshore']
+    Waste = ['Waste_anaerobicdigestion', 'Waste_municipalsolidwaste', 'Waste']
+    Bio = ['Biomass']
     CCGT = ['http://www.theworldavatar.com/kb/ontoeip/CombinedCycleGasTurbine']
     OCGT = ['http://www.theworldavatar.com/kb/ontoeip/OpenCycleGasTurbine']
     

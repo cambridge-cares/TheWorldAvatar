@@ -164,20 +164,21 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
             BuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.BuiltYearKey + str(uuid.uuid4())
             valueOfBuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + str(uuid.uuid4())
             OwnerIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.OwnerKey + str(uuid.uuid4())
+            powerPlantRelevantPlaceIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
             
             latlon = str(gpslocation[0].strip('\n').strip(' ').replace(' ', '') + '#' + gpslocation[1].strip('\n').strip(' ').replace(' ', '')).replace('\xa0', '')
            
             ## Create rdf graph with identifier
             graph = Graph(store = store, identifier = URIRef(ontologyIRI))
             
-            ## Import T-boxes
+            ## Import T-boxes and add attributes of the ontology
             graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoecape_technical_system)))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoeip_powerplant)))
             graph.set((graph.identifier, RDFS.comment, Literal('This ontology represents power plant entities of the UK energy system.')))
             graph.set((graph.identifier, RDFS.label, Literal('UK Digital Twin - Energy System - Power Plant - ' + plantname)))
             
-            ## Add rdf.type
+            ## Add rdf.type and label to power plant
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoeip_powerplant.PowerPlant.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoecape_technical_system.TechnicalSystem.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontopowsys_PowSysRealization + planttype)))
@@ -185,12 +186,13 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
             graph.add((URIRef(pp_root_node), RDFS.label, Literal(str(plantname)))) 
             graph.add((URIRef(pp_root_node), RDFS.comment, Literal("The DUKES Data Version is " + str(dukes.VERSION))))
             
+            ## Create the enetity of the UK electricity system
             graph.add((URIRef(UKElectricitySystemIRI), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(UKAdministrativeDivisionIRI)))
             graph.add((URIRef(UKAdministrativeDivisionIRI), OWL_NS['sameAs'], URIRef(t_box.dbr + dt.UK)))
             graph.add((URIRef(UKAdministrativeDivisionIRI), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
             graph.add((URIRef(UKAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(LACode['United_Kingdom'])))
             
-            ## Link the power plant with the UK electricity system
+            ## Link the power plant with the UK electricity system and GB or NI electricity system
             if region == dt.NI:
                 graph.add((URIRef(NIElectricitySystemIRI), URIRef(ontocape_upper_level_system.contains.iri), URIRef(pp_root_node)))
                 graph.add((URIRef(NIElectricitySystemIRI), RDF.type, URIRef(ontoenergysystem.ElectricPowerSystem.iri)))
@@ -212,7 +214,7 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
                 graph.add((URIRef(GBAdministrativeDivisionIRI), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
                 graph.add((URIRef(GBAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(LACode['Great_Britain'])))
             
-            ## Add Realization Aspect  
+            ## Add Realization Aspect (PowerGenerator)
             graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRealizationAspect.iri), URIRef(RealizationAspectIRI)))
             graph.add((URIRef(RealizationAspectIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
             graph.add((URIRef(RealizationAspectIRI), URIRef(ontoecape_technical_system.realizes.iri), URIRef(EnergyGenerationIRI)))
@@ -252,9 +254,16 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
             graph.add((URIRef(OwnerIRI), URIRef(ontoeip_upper_level_system_v1.hasName.iri), Literal(owner)))
     
             ## Apply the OntoEnergySystem for representing the asset with LA code and its lat-lon
-            graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(t_box.dbr + region)))
-            graph.add((URIRef(t_box.dbr + region), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
-            graph.add((URIRef(t_box.dbr + region), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(str(LACode[region]))))
+            # graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(t_box.dbr + region)))
+            # graph.add((URIRef(t_box.dbr + region), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
+            # graph.add((URIRef(t_box.dbr + region), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(str(LACode[region]))))
+            # graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasWGS84LatitudeLongitude.iri), \
+            #            Literal(latlon, datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
+            
+            graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(powerPlantRelevantPlaceIRI)))
+            graph.add((URIRef(powerPlantRelevantPlaceIRI), OWL_NS['sameAs'], URIRef(t_box.dbr + region)))
+            graph.add((URIRef(powerPlantRelevantPlaceIRI), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
+            graph.add((URIRef(powerPlantRelevantPlaceIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(str(LACode[region]))))
             graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasWGS84LatitudeLongitude.iri), \
                        Literal(latlon, datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
                 

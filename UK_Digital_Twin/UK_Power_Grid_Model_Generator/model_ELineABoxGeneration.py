@@ -9,7 +9,7 @@ import os
 import owlready2
 from rdflib.extras.infixowl import OWL_NS
 from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
-from rdflib.namespace import RDF, RDFS
+from rdflib.namespace import RDF, RDFS, XSD
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE, VALID_STORE
 import sys
@@ -64,6 +64,7 @@ ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_le
 ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
 ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
 ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
+ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
 
 """User specified folder path"""
 filepath = None
@@ -74,20 +75,19 @@ model_ELine_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_g
 
 ### Functions ###
 """Main function: create the named graph Model_EBus and their sub graphs each ELine"""
-## TODO: numOfBus should only be queried once and should be queried in the model initialiser, Bus and Gen should be changed 
-## TODO: rerun the topologyCreator and reupload the test1 repo 
-def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, AgentIRI, derivationClient, OrderedBusNodeIRIList, initialiserMethod, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"): 
-    # Query the eline topological information and geometry information, the return is a dictionary 
-    ##TODO: delete the ORDER BY ASC(?ELineNode)
+def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, OrderedBusNodeIRIList, derivationClient, \
+    initialiserMethod, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"): 
+    ## Query the eline topological information and geometry information, the return is a dictionary 
+    ## Query returns the ELineNode, From_Bus, To_Bus, Value_Length_ELine; if the branch is composed by OHL of different voltage levels, the query will also return the number of the OHL
     ELineTopoAndGeometryInfo, branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, endpoint_label)
     if len(ELineTopoAndGeometryInfo) == 0:
         raise Exception('ELineTopoAndGeometryInfo is empty, please check the return from queryELineTopologicalInformation.')
     uk_eline_model = UK_PG.UKElineModel(numOfBus, initialiserMethod)
-    uk_topo = UK_Topo.UKPowerGridTopology(numOfBus)
+    # uk_topo = UK_Topo.UKPowerGridTopology(numOfBus)
 
     ## set up the storage path and Sleepycat
     defaultPath_Sleepycat = uk_eline_model.SleepycatStoragePath
-    topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
+    # topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
     defaultStoredPath = uk_eline_model.StoreGeneratedOWLs
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
@@ -95,7 +95,7 @@ def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, AgentIRI, 
     store = LocalGraphStore(storeType)
     # topo_info, busInfoArrays, branchTopoInfoArrays, branchPropertyArrays = createTopologicalInformationPropertyInstance(numOfBus, numOfBranch)
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat 
-    # create conjunctive graph storing the generated graphs in a specified Sleepycat on-disc graph store
+    ## create conjunctive graph storing the generated graphs in a specified Sleepycat on-disc graph store
     if isinstance(store, Sleepycat): 
         print('The store is Sleepycat')
         cg_model_ELine = ConjunctiveGraph(store=store, identifier = model_ELine_cg_id)
@@ -135,48 +135,24 @@ def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, AgentIRI, 
     g.set((g.identifier, RDFS.comment, Literal('This ontology represents mathematical model of the electricity branch of the UK energy system.'))) 
     ## Link topologyNodeIRI with PowerSystemModel and ElectricalBusModelIRI
     g.add((URIRef(powerSystemModelIRI), URIRef(ontopowsys_PowerSystemModel.hasModelingPrinciple.iri), URIRef(topologyNodeIRI)))
+    g.add((URIRef(powerSystemModelIRI), URIRef(ontoecape_space_and_time_extended.hasTimestamp.iri), Literal(powerSystemNodetimeStamp, \
+            datatype = XSD.dateTimeStamp)))
     g.add((URIRef(ElectricalELineModelIRI), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(powerSystemModelIRI)))
     g.add((URIRef(ElectricalELineModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBranchModel')))
     g.add((URIRef(powerSystemModelIRI), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
     
-    counter = 1
+
     for eline in ELineTopoAndGeometryInfo:         
     # if ELineTopoAndGeometryInfo[0] != None: # test
     #     eline = ELineTopoAndGeometryInfo[0] # test
-        
-        ELineNodeIRI = eline['ELineNode']
 
-        # root_uri = eline['ELine'].split('#')[0]
-        # namespace = root_uri + HASH
-        # node_locator = eline['ELine'].split('#')[1]
-        # root_node = namespace + 'Model_' + node_locator
-        # father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, numOfBus, "ELine")
-        
-        # # create a named graph
-        # g = Graph(store = store, identifier = URIRef(root_uri))
-        # # Import T-boxes
-        # g.set((g.identifier, RDF.type, OWL_NS['Ontology']))
-        # g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_mathematical_model)))
-        # g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))  
-        # g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
-        # # Add root node type and the connection between root node and its father node   
-        # g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
-        # g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch_Model")))
-        # g.add((URIRef(father_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
-        # g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
-        # g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBranchModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
-        # g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(root_node)))
-        # # link with ELine node in topology
-        # g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(eline['ELine'])))
-        # g.add((URIRef(eline['ELine']), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
-        
+        ELineNodeIRI = eline['ELineNode']
         ## specify the initialisation method for each branch instance of branch model
         ###1. create an instance of the BranchPropertyInitialisation class and get the initialiser method by applying the 'getattr' function 
         initialisation = BPI.BranchPropertyInitialisation()
         initialiser = getattr(initialisation, initialiserMethod)
         ###2. execute the initialiser with the branch model instance as the function argument  
-        #TODO: modify the initialiser
-        uk_eline_model = initialiser(uk_eline_model, eline, branchVoltageLevel, OrderedBusNodeIRIList, counter) 
+        uk_eline_model = initialiser(ELineNodeIRI, uk_eline_model, eline, branchVoltageLevel, OrderedBusNodeIRIList, endpoint_label) 
 
         ModelInputVariableIRIList = []
         # AddModelVariable to Eline entity
@@ -219,23 +195,55 @@ def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, AgentIRI, 
         g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.ANGMAXKey, float(uk_eline_model.ANGMAX), ontocape_derived_SI_units.degree.iri, ontopowsys_PowerSystemModel.AngleMax.iri) 
         ModelInputVariableIRIList.append(varNode)            
         
-        print(g.serialize(format="pretty-xml").decode("utf-8"))
+        # print(g.serialize(format="pretty-xml").decode("utf-8"))
 
-        #TODO: add derivation and storeclient       
-        # generate/update OWL files
-        if updateLocalOWLFile == True:    
-            # Store/update the generated owl files      
-            if filepath[-2:] != "\\": 
-                filepath_ = filepath + '\\' + 'Model_' + str(numOfBus) + '_Bus_Grid_'  + OWL
-            else:
-                filepath_ = filepath + 'Model_' + str(numOfBus) + '_Bus_Grid_'  + OWL
-            storeGeneratedOWLs(g, filepath_)
-        counter += 1
+        ## add derviation 
+        derivationClient.createAsyncDerivation(list(ModelInputVariableIRIList), AgentIRI, [ELineNodeIRI], False)
+      
+    # generate/update OWL files
+    if updateLocalOWLFile == True:    
+        # Store/update the generated owl files      
+        if filepath[-2:] != "\\": 
+            filepath_ = filepath + '\\' + 'BranchModel_' + str(numOfBus) + '_Bus_Grid'  + OWL
+        else:
+            filepath_ = filepath + 'BranchModel_' + str(numOfBus) + '_Bus_Grid'  + OWL
+        storeGeneratedOWLs(g, filepath_)
+        print(filepath_)
+    #TODO: change the endpoint
+    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+    sparql_client = PySparqlClient(endPointURL, endPointURL)   #(endpoint_iri, endpoint_iri)
+    sparql_client.uploadOntology(filepath_)
+
+    print("################FINISH createModel_ELine#################")
+
     if isinstance(store, Sleepycat):  
         cg_model_ELine.close()       
     return
 
 if __name__ == '__main__':    
-    # createModel_ELine('default', False, 10, 14, 2019, 'defaultBranchInitialiser', None, True)    
-    createModel_ELine('default', False, 29, 99, 2019, 'preSpecifiedBranchInitialiser', None, True)  
-    print('Terminated')
+    jpsBaseLibGW = JpsBaseLib()
+    jpsBaseLibGW.launchGateway()
+
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
+
+    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+    storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
+
+    topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
+    topologyNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
+    powerSystemModelIRI_10bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerSystemModel_22fe8504-f3bb-403c-9363-34b258d59712"
+    powerSystemModelIRI_29bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerSystemModel_19e259a0-7f23-4e42-aed9-bcc66d001cec"
+    AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
+
+    ## set up the derivationInstanceBaseURL
+    derivationInstanceBaseURL = dt.baseURL + '/' + dt.topNode + '/'
+    ## initialise the derivationClient
+    derivationClient = jpsBaseLib_view.DerivationClient(storeClient, derivationInstanceBaseURL)
+
+    OrderedBusNodeIRIList= ['http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_55285d5a-1d0e-4b1f-8713-246d601671e5', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_024c0566-d9f0-497d-955e-f7f4e55d4296', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_6202e767-3077-4910-9cb7-a888e80af788', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_f17335d2-53f6-4044-9d09-c3d9438c0950', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_c4d7dcca-a7f5-4887-a460-31706ab7ec9c', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_d6046ef2-6909-4f20-808f-cd9aa01c8ae5']
+    
+    createModel_ELine(10, topologyNodeIRI_10Bus, powerSystemModelIRI_10bus, AgentIRI, OrderedBusNodeIRIList, derivationClient, "defaultBranchInitialiser", None, True, "default")
+    # createModel_ELine(10, topologyNodeIRI_29Bus, powerSystemModelIRI_29bus, AgentIRI, OrderedBusNodeIRIList, derivationClient, "preSpecifiedBranchInitialiser", None, True, "default")
+    print('***********************Terminated***********************')

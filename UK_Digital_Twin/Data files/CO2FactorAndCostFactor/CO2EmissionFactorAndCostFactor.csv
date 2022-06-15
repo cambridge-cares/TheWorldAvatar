@@ -1,8 +1,14 @@
 FuelType,FixedOperationandMaintenanceCost,VariableOperationandMaintenanceCost,FuelCost,CO2EmissionFactor
-Renewable,0,0,0,0
+SMR,11,50,0,0
 Nuclear,11,5,5,0
 Bio,6,1,72,0.302
-Coal,6,6,24,0.319
+Coal,11,6,24,0.319
 CCGT,2,3,36,0.181
 OCGT,21,3,53,0.181
+Solar,10,0,0,0
+Hydro,15,6,0,0
+PumpHydro,17,42,0,0
+WindOnshore,10,5,0,0
+WindOffshore,17,3,0,0
+Waste,26,25,-110,0
 OtherPeaking,21,3,53,0.187

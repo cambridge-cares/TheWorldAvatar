@@ -20,9 +20,9 @@ class DUKESData:
         self.Owner = self.DataPath + str(self.VERSION) + '\owner.csv'
         self.PrimaryFuel = self.DataPath + str(self.VERSION) + '\primaryFuel.csv'
         self.DesignCapacity = self.DataPath + str(self.VERSION) + '\designcapacity.csv'
-        self.BuiltYear =  self.DataPath + str(self.VERSION) + '\builtyear.csv'
+        self.BuiltYear =  self.DataPath + str(self.VERSION) + '\\builtyear.csv'
         self.GPSLocation = self.DataPath + str(self.VERSION) + '\gpslocation.csv'
-        self.Region = self.DataPath + str(self.VERSION) + '\regionaladdress.csv'
+        self.Region = self.DataPath + str(self.VERSION) + '\\regionaladdress.csv'
         
         """Source Data"""
         self.__DUKES = self.DataPath + str(self.VERSION) + "\DUKES2019.xls"

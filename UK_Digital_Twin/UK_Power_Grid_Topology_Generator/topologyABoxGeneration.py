@@ -1,10 +1,10 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 13 April 2022        #
+# Last Update Date: 07 June 2022         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
-
+import csv
 import owlready2
 # import numpy as np
 from rdflib.extras.infixowl import OWL_NS
@@ -13,7 +13,6 @@ from rdflib.namespace import RDF, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE
 import sys, os
-from UK_Digital_Twin.UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
@@ -114,13 +113,12 @@ def rootNodeAndNameSpace(numOfBus, numOfBranch, endpoint_label, ElectricitySyste
         }
     return topoConfig
 
-""" Create the TopologicalInformationProperty Instance by specifying its numOfBus and numOfBranch"""
+""" Create the TopologicalInformationProperty Instance by specifying its numOfBus and voltageLevel"""
 def createTopologicalInformationPropertyInstance(numOfBus, voltageLevel):
     topo_info = TopoInfo.TopologicalInformation(numOfBus, voltageLevel)   
     busInfoArrays = readFile(topo_info.BusInfo)
     branchTopoInfoArrays = readFile(topo_info.BranchInfo)
-    #TODO: create new method to read and write the file BranchModelInitialisation
-    return topo_info, busInfoArrays, branchTopoInfoArrays
+    return topo_info, busInfoArrays, branchTopoInfoArrays, topo_info.BranchInfo
 
 """Main function: create the sub graph represents the Topology"""
 def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLevel, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):
@@ -142,7 +140,7 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
         return
     store = LocalGraphStore(storeType) 
     ## specify the topology properties according to the model type
-    topo_info, busInfoArrays, branchTopoInfoArrays = createTopologicalInformationPropertyInstance(numOfBus, voltageLevel)
+    topo_info, busInfoArrays, branchTopoInfoArrays, filePathofBranchTopoInfo = createTopologicalInformationPropertyInstance(numOfBus, voltageLevel)
 
     ## initialise the Sleepycat
     if isinstance(store, Sleepycat): 
@@ -165,7 +163,7 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
     graph.set((graph.identifier, RDFS.comment, Literal('This ontology represents topological information of the interconnection of buses and branches of the UK energy system.')))
     graph.set((graph.identifier, RDFS.label, Literal("UK Digital Twin - Energy System - Grid Topology - " + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch")))
     
-    ## Add atrributes to the topology node
+    ## Add attributes to the topology node
     graph.add((URIRef(topology_root_node), RDF.type, URIRef(t_box.ontoenergysystem + "PowerGridTopology")))
     graph.add((URIRef(t_box.ontoenergysystem + "PowerGridTopology"), RDFS.subClassOf, URIRef(ontocape_network_system.NetworkSystem.iri)))
     graph.add((URIRef(topology_root_node), RDFS.label, Literal("UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch")))  
@@ -179,7 +177,7 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
     graph, orderedBusList, orderedLatlon = addBusTopologyNodes(graph, topo_info.headerBusTopologicalInformation, busInfoArrays, ontopowsys_namespace, topology_root_node, uk_topo)
     
     ## create branch nodes
-    graph = addBranchTopologyNodes(graph, numOfBranch, topo_info.headerBranchTopologicalInformation, branchTopoInfoArrays, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo)
+    graph = addBranchTopologyNodes(graph, numOfBranch, topo_info.headerBranchTopologicalInformation, filePathofBranchTopoInfo, branchTopoInfoArrays, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo)
     
     ## create tehe generator nodes
     graph = addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo)
@@ -201,7 +199,6 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
 
 def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace, topology_root_node, uk_topo): 
     print('****************Adding the triples of BusNode****************')
-    
     ## Check the bus data header
     if busDataArray[0] != busTopoheader:
         raise Exception('The bus topoinfo data header is not matched, please check the data file.') 
@@ -228,11 +225,16 @@ def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace
         counter += 1     
     return graph, orderedBusList, orderedLatlon
 
-def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, branchTopoArray, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo): 
+def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, filePathofBranchTopoInfo, branchTopoArray, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo): 
     print("****************Adding the triples of ELineNode****************") 
     ## check the branch topology data header
+
+    for bt in branchTopoArray:
+        bt[-1] = str(bt[-1]).replace("\n", "")
+    # print(repr(branchTopoArray))
+    
     for header in branchTopoArray[0]:
-        if not  header.strip('\n') in branchTopoHeader:   
+        if not header.strip('\n').strip('\"') in branchTopoHeader:   
             raise Exception('The branch topoinfo data header is not matched, please check the data file.')    
     
     if len(branchTopoHeader) != len(branchTopoArray[0]):
@@ -246,14 +248,17 @@ def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, branchTopoArray
         print("The generation of the ELine topology will continue but please check the number of the ELine in the runing model.")
     while counter <= Num_Eline:
         branchTopoData = branchTopoArray[counter]
-        FromBusIndex = int(branchTopoData[0]) - 1
-        ToBusIndex = int(branchTopoData[1]) - 1
+        FromBusIndex = int(branchTopoData[0].strip("\n").strip("\"").strip(" ").strip("")) - 1
+        ToBusIndex = int(branchTopoData[1].strip('\n').strip("\"").strip(" ").strip("")) - 1
         FromBus_iri = orderedBusList[FromBusIndex]
         ToBus_iri = orderedBusList[ToBusIndex]
         
         ## PowerFlow_ELine node uri
         branch_node = ontopowsys_namespace + uk_topo.OverheadLineKey + str(uuid.uuid4())
-       
+
+        ## Map the branch_node with the rank of the branchTopoArray
+        branchTopoArray[counter][2] = branch_node
+
         ## Link line node with root node and specify its type
         graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(branch_node)))
         graph.add((URIRef(branch_node), RDF.type, URIRef(ontopowsys_PowSysRealization.ElectricalLine.iri)))
@@ -287,21 +292,29 @@ def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, branchTopoArray
         graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(ontocape_derived_SI_units.km.iri)))
         graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(Eline_length))))
        
-        ## add the parallel branched
-        if len(branchTopoArray[0]) > 2: # indicates that there are PARALLEL_CONNECTIONS of the branches topology            
-            headerIndex = 2
+        ## add the parallel branches of different voltage levels
+        if len(branchTopoArray[0]) > 3: # indicates that there are PARALLEL_CONNECTIONS of the branches topology            
+            headerIndex = 3
             while headerIndex < len(branchTopoArray[0]):
                 ## parallel connections node uri   
                 PARALLEL_CONNECTIONS = ontopowsys_namespace + uk_topo.OHLKey + str(uuid.uuid4())
                 ##the parallel conection of each branch (400kV and 275kV)
                 graph.add((URIRef(branch_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(PARALLEL_CONNECTIONS)))
                 graph.add((URIRef(PARALLEL_CONNECTIONS), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
-                graph.add((URIRef(PARALLEL_CONNECTIONS), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal(str(branchTopoArray[0][headerIndex].strip('\n')) + KV)))
-                graph.add((URIRef(PARALLEL_CONNECTIONS), URIRef(t_box.ontopowsys_PowSysRealization + 'hasNumberOfParallelLine'), Literal(int(branchTopoData[headerIndex]))))
+                graph.add((URIRef(PARALLEL_CONNECTIONS), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal(str(int(branchTopoArray[0][headerIndex].strip('\n').strip('\"'))) + KV)))
+                graph.add((URIRef(PARALLEL_CONNECTIONS), URIRef(t_box.ontopowsys_PowSysRealization + 'hasNumberOfParallelLine'), Literal(int(branchTopoData[headerIndex].strip('\n').strip("\"").strip(" ").strip("")))))
                 
-                headerIndex +=1
+                headerIndex +=1     
         counter += 1        
-    
+
+    for bt in branchTopoArray:
+        for i in bt:
+            i.strip("\n").strip("\"").strip("\'").strip(" ").replace("\n", "").replace("\"", "")           
+    ## update BranchTopoInfo with the BranchNodeIRIs 
+    with open(filePathofBranchTopoInfo, 'w', newline='') as BranchTopoInfo:
+        mywriter = csv.writer(BranchTopoInfo, delimiter=',')
+        mywriter.writerows(branchTopoArray)
+    print("***The BranchTopoInfo has been updated in " + filePathofBranchTopoInfo) 
     return graph
     
 def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo):    
@@ -351,20 +364,32 @@ def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClu
 def AddCostAttributes(graph, fuelType, genTech, generatorNodeIRI, modelFactorArrays, ontopowsys_namespace, uk_topo): 
     fuelType = str(fuelType.split('#')[1])
     genTech = str(genTech)
-    if fuelType in ukmf.Renewable:
-        fuelTypeIndex = 1     # fuelTypeIndex, 1: Renewable, 2: Nuclear, 3: Bio, 4: Coal, 5: CCGT, 6: OCGT, 7: OtherPeaking
-    elif fuelType in 'Nuclear':
+    if genTech in ukmf.SMR:
+        fuelTypeIndex = 1     
+    elif fuelType in ukmf.Nuclear:
         fuelTypeIndex = 2
     elif fuelType in ukmf.Bio:
         fuelTypeIndex = 3
-    elif fuelType in 'Coal': 
+    elif fuelType in ukmf.Coal: 
         fuelTypeIndex = 4
     elif genTech in ukmf.CCGT: 
         fuelTypeIndex = 5
     elif genTech in ukmf.OCGT:  
         fuelTypeIndex = 6
+    elif fuelType in ukmf.Solar:  
+        fuelTypeIndex = 7
+    elif fuelType in ukmf.Hydro:  
+        fuelTypeIndex = 8
+    elif fuelType in ukmf.PumpHydro:  
+        fuelTypeIndex = 9
+    elif genTech in ukmf.WindOnshore:  
+        fuelTypeIndex = 10    
+    elif genTech in ukmf.WindOffshore:  
+        fuelTypeIndex = 11    
+    elif fuelType in ukmf.Waste:  
+        fuelTypeIndex = 12    
     else:
-        fuelTypeIndex = 7  
+        fuelTypeIndex = 13
     
     EGen_FixedOandMCost_node = ontopowsys_namespace + ukmf.FixMaintenanceCostsKey + str(uuid.uuid4())
     value_EGen_FixedOandMCost_node = ontopowsys_namespace + uk_topo.valueKey + str(uuid.uuid4())
@@ -405,7 +430,6 @@ def AddCostAttributes(graph, fuelType, genTech, generatorNodeIRI, modelFactorArr
     graph.add((URIRef(value_EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelTypeIndex][4].strip('\n')))))
     return graph
 
-# TODO: if number the bus?
 """Check the aggregated bus"""
 def checkaggregatedBus(numOfBus):
     topo_info = TopoInfo.TopologicalInformation(numOfBus)  

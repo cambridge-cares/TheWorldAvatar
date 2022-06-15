@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 07 April 2022        #
+# Last Update Date: 08 June 2022         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK energy consumption graph."""
@@ -200,5 +200,5 @@ def addUKElectricityConsumptionTriples(ElectricitySystemIRI, version, OWLFileSto
 
 if __name__ == '__main__':
     path = "C:\\Users\\wx243\\Desktop\\test\\new_elec_consump\\"
-    addUKElectricityConsumptionTriples("http://www.theworldavatar.com/kb/ontoenergysystem/ElectricPowerSystem_3043aaed-752f-4dcf-9eb8-d6fd5fa5b966", 2017, None, True, 'default')
-    print('terminated')
+    addUKElectricityConsumptionTriples("http://www.theworldavatar.com/kb/ontoenergysystem/ElectricPowerSystem_71cf325f-727d-4618-9fd1-2aec80bb87bf", 2017, None, True, 'default')
+    print('****************************Terminated****************************')
