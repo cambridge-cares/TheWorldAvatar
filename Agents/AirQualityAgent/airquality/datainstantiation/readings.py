@@ -525,7 +525,7 @@ def retrieve_timeseries_information_from_api(ts_ids=[], days_back=7) -> dict:
 
 
 def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[], 
-                                      period='P1D', chunksize=100) -> dict:
+                                      period='P1D', chunksize=25) -> dict:
     """
         Retrieve time series data for instantiated station readings from UK Air API 
         Time series data collection is done in 2 steps:
@@ -573,10 +573,15 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
         body = {"timespan": timespan,
                 "timeseries": chunk
         }
-        r = requests.post(url=url, data=json.dumps(body), headers=headers)
 
-        # Extract time series data
-        ts_data = r.json()
+        try:
+            r = requests.post(url=url, data=json.dumps(body), headers=headers)
+            # Extract time series data
+            ts_data = r.json()
+        except:
+            #logger.error("Error while retrieving time series data from API.")
+            raise APIException("Error while retrieving time series data from API.")
+
         df = pd.DataFrame.from_dict(ts_data, orient='index')
         # Remove rows without entries
         df = df[df['values'].astype(bool)]
@@ -592,8 +597,14 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
                         dt.datetime.utcfromtimestamp(x/1000).strftime(TIME_FORMAT))
             # Add time series data to overall dict
             for ts_id in df.index.unique():
-                all_ts[ts_id] = {'times': df.loc[ts_id,:]['timestamp'].values.tolist(),
-                                 'values': df.loc[ts_id,:]['value'].values.tolist() }
+                times = df.loc[ts_id,:]['timestamp']
+                # Handle cases where only single entries might be returned
+                times = [times] if isinstance(times, str) else times.values.tolist()
+                values = df.loc[ts_id,:]['value']
+                values = [values] if isinstance(values, float) else values.values.tolist()
+                all_ts[ts_id] = {'times': times,
+                                    'values': values }
+
     return all_ts
 
 
