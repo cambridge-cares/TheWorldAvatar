@@ -60,39 +60,37 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         
         return times, dataIRIs, values  
     
-    # Load available observations from API
-    print('Retrieving time series data from API ...')
-    #logger.info('Retrieving time series data from API ...')
-    available_obs, = retrieve_readings_data_per_station(metclient, only_keys=False)
-    print('Time series data successfully retrieved.')
-    #logger.info('Time series data successfully retrieved.')
-    
     # Retrieve information about instantiated time series from KG
-    print('Retrieving time series triples from KG ...')
+    # ['station', 'stationID', 'quantityType', 'dataIRI', 'comment', 'tsIRI', 'unit', 'reading']
+    print('Retrieving instantiated time series triples from KG ...')
     #logger.info('Retrieving time series triples from KG ...')
     instantiated_obs = get_instantiated_observation_timeseries(query_endpoint=query_endpoint,
                                                                update_endpoint=update_endpoint)
-    instantiated_fcs = get_instantiated_forecast_timeseries(query_endpoint=query_endpoint,
-                                                            update_endpoint=update_endpoint)
     print('Time series triples successfully retrieved.')
     #logger.info('Time series triples successfully retrieved.')
+    
+    # chekc if all ts_iris are instantiated
 
-    # Keep only the relevant subset for instantiated_ts_iris
-    if instantiated_ts_iris:
-        instantiated_obs = instantiated_obs[instantiated_obs['tsIRI'].isin(instantiated_ts_iris)]
-        instantiated_fcs = instantiated_fcs[instantiated_fcs['tsIRI'].isin(instantiated_ts_iris)]
-    # Get short version of variable type from full quantity type
-    instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
-    instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])   
 
-    # Initialise update query for creation time
-    query_string = update_forecast_creation_datetime(issue_time)
+    # Load available time series data from API
+    print('Retrieving time series data from API ...')
+    #logger.info('Retrieving time series data from API ...')
+    # 1) Get details about ts, i.e. ID and description (to match ts data to tsIRI)
+    # ['stationID', 'ts_id', 'pollutant', 'eionet', 'unit']
+    mapping = retrieve_readings_information_from_api()
+    mapping.set_index('ts_id')
+    ids = list(mapping.index.unique())
+    # 2) Retrieve ts data for relevat tsIDs
+    ts_data = retrieve_timeseries_data_from_api(ts_ids=ids)
+    print('Time series data successfully retrieved.')
+    #logger.info('Time series data successfully retrieved.')
+
+    # Create DataFrame with all relevant data
 
     # Initialise TimeSeriesClient
     ts_client = TSClient.tsclient_with_default_settings()
 
     added_obs = 0
-    added_fcs = 0
     
     # Loop through all observation timeseries
     print('Adding observation time series data ...')
@@ -122,15 +120,8 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     ts_client.bulkaddTimeSeriesData(ts_list)
     print(f'Time series data for {added_obs} observations successfully added to KG.')
     #logger.info(f'Time series data for {added_obs} observations successfully added to KG.')
-    
-    # Strip trailing comma and close & perform creation date update query
-    query_string = query_string[:-2]
-    query_string += f") ) }}"
-    kg_client = KGClient(query_endpoint, update_endpoint)
-    kg_client.performUpdate(query_string)
-    #logger.info('Creation time triples successfully updated.')
 
-    return added_obs + added_fcs
+    return added_obs
 
 
 def add_all_readings_timeseries(query_endpoint: str = QUERY_ENDPOINT,
@@ -587,7 +578,7 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
         ts_ids = list(df['ts_id'].unique())
 
     # TODO: remove
-    ts_ids = ts_ids[:500]
+    #ts_ids = ts_ids[:500]
     
     # Construct POST request to query readings time series data from API
     url = 'https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries/getData'
@@ -600,11 +591,14 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
     # Loop to avoid API timeout
     chunks = [ts_ids[i:i+chunksize] for i in range(0,len(ts_ids),chunksize)]
     i, j = 1, len(chunks)
-    for chunk in chunks:   
+    for chunk in chunks: 
+        print(f'Retrieving chunk {i:>4}/{j:>4} of time series data from API ...')
+        i += 1
+
+        # Request time series data
         body = {"timespan": timespan,
                 "timeseries": chunk
         }
-        print(f'Retrieving chunk {i:>4}/{j:>4} of time series data from API ...')
         r = requests.post(url=url, data=json.dumps(body), headers=headers)
 
         # Extract time series data
@@ -612,25 +606,32 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
         df = pd.DataFrame.from_dict(ts_data, orient='index')
         # Remove rows without entries
         df = df[df['values'].astype(bool)]
-        # Unpack time series lists of dicts [{timestamp: value}, ...]
-        df = df.explode('values')
-        # Unpack dicts to separate columns
-        df[['timestamp', 'value']] = df['values'].apply(pd.Series)
-        df = df.drop(columns=['values'])
-        df['timestamp'] = df['timestamp'].apply(lambda x: 
-                    dt.datetime.utcfromtimestamp(x/1000).strftime(TIME_FORMAT))
-        # Add time series data to overall dict
-        for ts_id in df.index.unique():
-            all_ts[ts_id] = {'times': df.loc[ts_id,:]['timestamp'].values.tolist(),
-                             'values': df.loc[ts_id,:]['value'].values.tolist() }
-        i += 1
-
+        if df.empty:
+            continue
+        else:                
+            # Unpack time series lists of dicts [{timestamp: value}, ...]
+            df = df.explode('values')
+            # Unpack dicts to separate columns
+            df[['timestamp', 'value']] = df['values'].apply(pd.Series)
+            df = df.drop(columns=['values'])
+            df['timestamp'] = df['timestamp'].apply(lambda x: 
+                        dt.datetime.utcfromtimestamp(x/1000).strftime(TIME_FORMAT))
+            # Add time series data to overall dict
+            for ts_id in df.index.unique():
+                all_ts[ts_id] = {'times': df.loc[ts_id,:]['timestamp'].values.tolist(),
+                                'values': df.loc[ts_id,:]['value'].values.tolist() }
     return all_ts
 
 
 if __name__ == '__main__':
 
-    response = update_all_stations()
-    print(f"Number of instantiated stations: {response[0]}")
-    print(f"Number of instantiated readings: {response[1]}")
-    print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
+    t1 = time.time()
+    new_stations = retrieve_timeseries_data_from_api()
+    t2 = time.time()
+    diff = t2-t1
+    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+
+    # response = update_all_stations()
+    # print(f"Number of instantiated stations: {response[0]}")
+    # print(f"Number of instantiated readings: {response[1]}")
+    # print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")

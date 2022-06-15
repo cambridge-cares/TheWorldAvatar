@@ -167,30 +167,31 @@ def instantiated_observations(station_iris: list = None):
     return query
 
 
-# def instantiated_observation_timeseries(station_iris: list = None):
-#     # Returns query to retrieve (all) instantiated observation time series per station
-#     if station_iris:
-#         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-#         substring = f"""FILTER (?station IN ({iris}) ) """
-#     else:
-#         substring = f"""
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-#     query = f"""
-#         SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI 
-#         WHERE {{
-#             ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-#                      <{EMS_REPORTS}> ?quantity .
-#             {substring} 
-#             ?quantity <{OM_HAS_VALUE}> ?dataIRI ;
-#                       <{RDF_TYPE}> ?quantityType .
-#             ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI ;   
-#                      <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit .
-#             ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
-#         }}
-#         ORDER BY ?tsIRI
-#     """
-#     return query
+def instantiated_observation_timeseries(station_iris: list = None):
+    # Returns query to retrieve (all) instantiated observation time series per station
+    if station_iris:
+        iris = ', '.join(['<'+iri+'>' for iri in station_iris])
+        substring = f"""FILTER (?station IN ({iris}) ) """
+    else:
+        substring = f"""
+            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                     <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" . """
+    query = f"""
+        SELECT ?station ?stationID ?quantityType ?dataIRI ?comment ?tsIRI ?unit
+        WHERE {{
+            ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
+                     <{EMS_REPORTS}> ?quantity .
+            {substring} 
+            ?quantity <{OM_HAS_VALUE}> ?dataIRI ;
+                      <{RDF_TYPE}> ?quantityType ;
+                      <{RDFS_COMMENT}> ?comment .
+            ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI ;   
+                     <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit .
+            ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
+        }}
+        ORDER BY ?tsIRI
+    """
+    return query
 
 
 def split_insert_query(triples: str, max: int):
