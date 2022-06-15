@@ -64,23 +64,39 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     # ['station', 'stationID', 'quantityType', 'dataIRI', 'comment', 'tsIRI', 'unit', 'reading']
     print('Retrieving instantiated time series triples from KG ...')
     #logger.info('Retrieving time series triples from KG ...')
-    instantiated_obs = get_instantiated_observation_timeseries(query_endpoint=query_endpoint,
+    df = get_instantiated_observation_timeseries(query_endpoint=query_endpoint,
                                                                update_endpoint=update_endpoint)
     print('Time series triples successfully retrieved.')
     #logger.info('Time series triples successfully retrieved.')
     
-    # chekc if all ts_iris are instantiated
-
+    # Extract only relevant information
+    instantiated_obs = df[['dataIRI', 'stationID', 'comment', 'tsIRI']].copy()
+    # Helper index as there were some issues with MultiIndex
+    instantiated_obs['helper'] = instantiated_obs['stationID'] + instantiated_obs['comment']
+    instantiated_obs.set_index('helper', inplace=True)
+    # Drop duplicate indices (i.e. multiple)
+    # TODO: Potentially adjust in the future to only instantiate most reliable
+    # reading for each pollutant, but 
+    instantiated_obs = instantiated_obs[~instantiated_obs.index.duplicated(keep='first')]
+    if instantiated_ts_iris:
+        instantiated_obs[instantiated_obs['tsIRI'].isin(instantiated_ts_iris)]
 
     # Load available time series data from API
     print('Retrieving time series data from API ...')
     #logger.info('Retrieving time series data from API ...')
     # 1) Get details about ts, i.e. ID and description (to match ts data to tsIRI)
     # ['stationID', 'ts_id', 'pollutant', 'eionet', 'unit']
-    mapping = retrieve_readings_information_from_api()
-    mapping.set_index('ts_id')
-    ids = list(mapping.index.unique())
+    available_obs = retrieve_readings_information_from_api()
+    available_obs['helper'] = available_obs['stationID'] + available_obs['pollutant']
+    available_obs.set_index('helper', inplace=True)
+    instantiated_obs['ts_id'] = available_obs['ts_id']
+    instantiated_obs.dropna(inplace=True)
+    merged = instantiated_obs.merge(available_obs)
+    merged.drop(['Factor1', 'Factor2'], axis=1)
+
+    ids = list(instantiated_obs['ts_id'].unique())
     # 2) Retrieve ts data for relevat tsIDs
+    # {ts_id: {times: [], values: []}, ...}
     ts_data = retrieve_timeseries_data_from_api(ts_ids=ids)
     print('Time series data successfully retrieved.')
     #logger.info('Time series data successfully retrieved.')
@@ -467,6 +483,11 @@ def retrieve_readings_information_from_api(crs: str = 'EPSG:4326'):
 
     # Return only relevant information 
     ts_info = df[['stationID', 'ts_id', 'pollutant', 'eionet', 'unit']]
+    # Remove duplicates (i.e. multiple time series available for same pollutant
+    # at very same location --> impossible to assess which reading is "correct";
+    # hence delete duplicates and instantiate only one of the readings)
+    ts_info.sort_values(by=['stationID'])
+    ts_info = ts_info[~ts_info.duplicated(subset=['stationID', 'pollutant'])]
 
     return ts_info
 
@@ -578,7 +599,7 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
         ts_ids = list(df['ts_id'].unique())
 
     # TODO: remove
-    #ts_ids = ts_ids[:500]
+    ts_ids = ts_ids[:200]
     
     # Construct POST request to query readings time series data from API
     url = 'https://uk-air.defra.gov.uk/sos-ukair/api/v1/timeseries/getData'
@@ -619,19 +640,15 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
             # Add time series data to overall dict
             for ts_id in df.index.unique():
                 all_ts[ts_id] = {'times': df.loc[ts_id,:]['timestamp'].values.tolist(),
-                                'values': df.loc[ts_id,:]['value'].values.tolist() }
+                                 'values': df.loc[ts_id,:]['value'].values.tolist() }
     return all_ts
 
 
 if __name__ == '__main__':
 
-    t1 = time.time()
-    new_stations = retrieve_timeseries_data_from_api()
-    t2 = time.time()
-    diff = t2-t1
-    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    #add_readings_timeseries()
 
-    # response = update_all_stations()
-    # print(f"Number of instantiated stations: {response[0]}")
-    # print(f"Number of instantiated readings: {response[1]}")
-    # print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
+    response = update_all_stations()
+    print(f"Number of instantiated stations: {response[0]}")
+    print(f"Number of instantiated readings: {response[1]}")
+    print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
