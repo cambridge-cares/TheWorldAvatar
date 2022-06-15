@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -132,9 +133,8 @@ public class UpdateStations {
 	static List<Map<String,?>> processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
 		LOGGER.info("Processing data from API");
 		HttpEntity response = api.getData();
-		// convert response to JSON Object
-		String response_string = EntityUtils.toString(response);
-        JSONObject response_jo = new JSONObject(response_string);
+		JSONTokener tokener = new JSONTokener(response.getContent());
+		JSONObject response_jo = new JSONObject(tokener);
         JSONArray readings = response_jo.getJSONArray("items");
         
         // collect data belonging to the same URL into lists

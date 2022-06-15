@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -86,9 +87,9 @@ public class InitialiseStations {
     	// obtain stations added to blazegraph
         List<Station> stations = sparqlClient.getStationsOriginal();
         
-        // add triples for OntoEMS
-		sparqlClient.addStationTypeAndCoordinates(stations);
-		sparqlClient.replaceMeasures(stations);
+        // add triples for OntoEMS, also update stations objects
+		sparqlClient.addMeasuresConcepts(stations);
+		sparqlClient.addStationTypeAndCoordinates(stations); // must run after the previous function
 		
 		// set to false by default, download it once and save it locally
 		// takes a while to download because there is no API to download everything in 1 go
@@ -163,8 +164,8 @@ public class InitialiseStations {
 		
 		List<String> measures = new ArrayList<>();
 		for (Station station : stations) {
-			for (String measure : station.getMeasures()){
-				measures.add(measure);
+			for (Measure measure : station.getMeasures()){
+				measures.add(measure.getIri());
 			}
 		}
 		List<List<String>> ts_list = new ArrayList<>(measures.size());

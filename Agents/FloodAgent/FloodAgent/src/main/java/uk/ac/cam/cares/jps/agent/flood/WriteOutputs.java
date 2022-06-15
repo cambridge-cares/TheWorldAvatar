@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -84,7 +85,7 @@ public class WriteOutputs {
     	String southwest = System.getenv("SOUTH_WEST");
     	String northeast = System.getenv("NORTH_EAST");
     	
-    	Map<String, Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
+    	List<Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
     	
     	// add time series to station objects, will also remove stations without any data
     	queryTimeSeries(stations, date);
@@ -122,18 +123,17 @@ public class WriteOutputs {
 	 * @param stations
 	 * @param date
 	 */
-	static void queryTimeSeries(Map<String, Station> stations, LocalDate date) {
+	static void queryTimeSeries(List<Station> stations, LocalDate date) {
 		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
 		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
-		List<String> stationsList = new ArrayList<>(stations.keySet());
-				
-		for (String stationIri : stationsList) {
+		
+		List<Station> stations_to_remove = new ArrayList<>();
+		for (Station station : stations) {
 			try {
-				Station station = stations.get(stationIri);
-				List<String> measures = station.getMeasures();
+				List<Measure> measures = station.getMeasures();
 				
-				for (String measure : measures) {
-					TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure), lowerbound, upperbound);
+				for (Measure measure : measures) {
+					TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure.getIri()), lowerbound, upperbound);
 					List<Instant> time = ts.getTimes();
 					
 					// ignore blank time series
@@ -144,12 +144,16 @@ public class WriteOutputs {
 				
 				if (station.getTimeSeriesList().size() == 0) {
 					// do not plot this station if it does not have any data
-					stations.remove(stationIri);
+					stations_to_remove.add(station);
 				}
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
-				LOGGER.error("Failed to query time series for " + stationIri);
+				LOGGER.error("Failed to query time series for " + station.getIri());
 			}
+		}
+
+		for (Station station : stations_to_remove) {
+			stations.remove(station);
 		}
 	}
 	
@@ -241,7 +245,7 @@ public class WriteOutputs {
 	 * location of file - Config.outputdir
 	 * name of file  - stations.geojson
 	 */
-	static void writeStationsToGeojson(Map<String, Station> stations) {
+	static void writeStationsToGeojson(List<Station> stations) {
 		File geojsonfile = new File(Paths.get(Config.outputdir, mainDirectory,"flood-stations.geojson").toString());
 		
 		// create geojson file
@@ -249,8 +253,7 @@ public class WriteOutputs {
 		featureCollection.put("type", "FeatureCollection");
 		JSONArray features = new JSONArray();
 		
-		for (String stationIri : stations.keySet()) {
-			Station station = stations.get(stationIri);
+		for (Station station : stations) {
 			// each station will be a feature within FeatureCollection
 			JSONObject feature = new JSONObject();
 			
@@ -284,13 +287,12 @@ public class WriteOutputs {
 		writeToFile(geojsonfile, featureCollection.toString(4));
 	}
 	
-	static void writeStationsMeta(Map<String, Station> stations) {
+	static void writeStationsMeta(List<Station> stations) {
 		File metafile = new File(Paths.get(Config.outputdir, mainDirectory,"stationsmeta.json").toString());
 		
 		JSONArray metaDataCollection = new JSONArray();
 		
-		for (String stationIri : stations.keySet()) {
-			Station station = stations.get(stationIri);
+		for (Station station : stations) {
 			// meta
 			JSONObject metadata = new JSONObject();
 			
@@ -320,7 +322,7 @@ public class WriteOutputs {
 	 * writes out data for a specific date
 	 * @param date
 	 */
-	static void writeTimeSeriesJson(Map<String, Station> stations, LocalDate date) {
+	static void writeTimeSeriesJson(List<Station> stations, LocalDate date) {
 		// write to file 
 		File file = new File(Paths.get(Config.outputdir, mainDirectory,"flood-" + date + "-timeseries.json").toString());
 		
@@ -330,18 +332,17 @@ public class WriteOutputs {
 		List<Map<String,String>> units = new ArrayList<>();
 		List<Integer> visId = new ArrayList<>();
 		
-		for (String stationIri : stations.keySet()) {
-			Station station = stations.get(stationIri);
+		for (Station station : stations) {
 			TimeSeries<Instant> combined_ts = station.getCombinedTimeSeries(tsClient);
 			ts_list.add(combined_ts);
 			
 			Map<String,String> measure_header_map = new HashMap<>();
 			Map<String,String> measure_unit_map = new HashMap<>();
 			
-			for (String measureIri : combined_ts.getDataIRIs()) {
-				String header = station.getMeasureName(measureIri) + " (" + station.getMeasureSubTypeName(measureIri) + ")";
-				measure_header_map.put(measureIri, header);
-				measure_unit_map.put(measureIri, station.getMeasureUnit(measureIri));
+			for (Measure measure : station.getMeasures()) {
+				String header = measure.getParameterName() + " (" + measure.getQualifier() + ")";
+				measure_header_map.put(measure.getIri(), header);
+				measure_unit_map.put(measure.getIri(), measure.getUnit());
 			}
 			table_header.add(measure_header_map);
 			units.add(measure_unit_map);

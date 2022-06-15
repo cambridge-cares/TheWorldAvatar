@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.time.Duration;
 import java.time.Instant;
 
 import org.apache.http.HttpEntity;
@@ -154,7 +153,7 @@ public class FloodSparql {
 		SelectQuery query = Queries.SELECT();
 		
 		Variable station = query.var();
-		Variable measure = query.var();
+		Variable measureVar = query.var();
 		Variable param = query.var();
 		Variable qual = query.var();
 		Variable unit = query.var();
@@ -162,11 +161,11 @@ public class FloodSparql {
 		Variable lon = query.var();
 		
 		GraphPattern stationPattern = query.var().has(RDF.FIRST, station);
-		GraphPattern stationPropertiesPattern = station.has(measures, measure).andHas(lat_prop,lat).andHas(lon_prop,lon);
-		GraphPattern measurePropertiesPattern = measure.has(parameterName,param).andHas(qualifier,qual).andHas(unitName,unit);
+		GraphPattern stationPropertiesPattern = station.has(measures, measureVar).andHas(lat_prop,lat).andHas(lon_prop,lon);
+		GraphPattern measurePropertiesPattern = measureVar.has(parameterName,param).andHas(qualifier,qual).andHas(unitName,unit);
 		GraphPattern queryPattern = GraphPatterns.and(stationPattern, stationPropertiesPattern, measurePropertiesPattern);
 		
-		query.where(queryPattern).select(station,measure,param,qual,lat,lon,unit).distinct();
+		query.where(queryPattern).select(station,measureVar,param,qual,lat,lon,unit).distinct();
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
@@ -174,7 +173,7 @@ public class FloodSparql {
 		List<Station> stations = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			String stationIri = queryResult.getJSONObject(i).getString(station.getQueryString().substring(1));
-			String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
+			String measureIri = queryResult.getJSONObject(i).getString(measureVar.getQueryString().substring(1));
     		String measureName = queryResult.getJSONObject(i).getString(param.getQueryString().substring(1));
     		String subTypeName = queryResult.getJSONObject(i).getString(qual.getQueryString().substring(1));
 			String unitName = queryResult.getJSONObject(i).getString(unit.getQueryString().substring(1));
@@ -188,9 +187,14 @@ public class FloodSparql {
     			stationObject = new Station(stationIri);
 				stations.add(stationObject);
 			}
-			stationObject.setMeasureName(measureIri, measureName);
-			stationObject.setMeasureSubTypeName(measureIri, subTypeName);
-			stationObject.setMeasureUnit(measureIri, unitName);
+
+			// create measure object and add to station
+			Measure measure = new Measure(measureIri);
+			measure.setParameterName(measureName);
+			measure.setQualifier(subTypeName);
+			measure.setUnit(unitName);
+
+			stationObject.addMeasure(measure);
 			stationObject.setLat(Double.parseDouble(latString));
 			stationObject.setLon(Double.parseDouble(lonString));
 		}
@@ -218,21 +222,13 @@ public class FloodSparql {
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
-
-	/**
-	 * add an additional rdf:type for stations reporting water level
-	 * @param stations
-	 */
-	void addWaterLevelReportingStationType(List<Station> stations) {
-		ModifyQuery modify = Queries.MODIFY();
-	}
 	
 	/**
 	 * replace original triple <station> <measures> <measure> with
 	 * <station> <reports> <quantity>, <quantity> <hasValue> <measure>
 	 * also adds other OntoEMS concepts such as range, trend
 	 */
-    void replaceMeasures(List<Station> stations) {
+    void addMeasuresConcepts(List<Station> stations) {
 		// delete all <station> <measures> <measure> triple
 		ModifyQuery modify = Queries.MODIFY();
 		Variable stationvar = SparqlBuilder.var("station");
@@ -241,10 +237,10 @@ public class FloodSparql {
 
 		// add the new ontoEMS triples
 		for (Station station : stations) {
-			for (String measure : station.getMeasures()) {
+			for (Measure measure : station.getMeasures()) {
 				Iri quantityIri = null;
-				String paramName = station.getMeasureName(measure);
-				String qual = station.getMeasureSubTypeName(measure);
+				String paramName = measure.getParameterName();
+				String qual = measure.getQualifier();
 				// determine class of quantity
 				switch (paramName) {
 					case "Water Level":
@@ -279,17 +275,17 @@ public class FloodSparql {
 						break;
 				}
 				modify.insert(iri(station.getIri()).has(reports, quantityIri));
-				modify.insert(quantityIri.has(hasValue, iri(measure)));
-				modify.insert(iri(measure).isA(Measure));
+				modify.insert(quantityIri.has(hasValue, iri(measure.getIri())));
+				modify.insert(iri(measure.getIri()).isA(Measure));
 
 				// unit
-				if (unitMap.containsKey(station.getMeasureUnit(measure))) {
-					modify.insert(iri(measure).has(hasUnit, unitMap.get(station.getMeasureUnit(measure))));
+				if (unitMap.containsKey(measure.getUnit())) {
+					modify.insert(iri(measure.getIri()).has(hasUnit, unitMap.get(measure.getUnit())));
 				}
 
 				// add dummy triple for range so that sparql update will work
-				modify.insert(iri(measure).has(hasCurrentRange, UnavailableRange));
-				modify.insert(iri(measure).has(hasCurrentTrend, UnavailableTrend));
+				modify.insert(iri(measure.getIri()).has(hasCurrentRange, UnavailableRange));
+				modify.insert(iri(measure.getIri()).has(hasCurrentTrend, UnavailableTrend));
 			}
 		}
 		modify.prefix(p_ems,p_om);
@@ -477,7 +473,7 @@ public class FloodSparql {
 	/**
 	 * returns a map of station iri to station object
 	 */
-	Map<String, Station> getStationsWithCoordinates(String southwest, String northeast) {
+	List<Station> getStationsWithCoordinates(String southwest, String northeast) {
 		Iri river_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/riverName");
 		Iri catchment_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/catchmentName");
 		Iri town_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/town");
@@ -497,7 +493,7 @@ public class FloodSparql {
 		Variable label = query.var();
 		
 		// measure properties
-		Variable measure = query.var();
+		Variable measureVar = query.var();
 		// e.g. table name: Water Level (Tidal Level), param = Water Level,
     	// qual (param subtype) = Tidal Level
     	Variable param = query.var();
@@ -505,7 +501,7 @@ public class FloodSparql {
     	Variable unit = query.var();
 		
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
-				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(PropertyPaths.path(reports,hasValue), measure));
+				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(PropertyPaths.path(reports,hasValue), measureVar));
 		
 		GraphPattern stationProperties = GraphPatterns.and(station.has(iri(RDFS.LABEL), label).optional(),
 				station.has(river_prop, river).optional(),
@@ -513,7 +509,7 @@ public class FloodSparql {
 				station.has(town_prop, town).optional(),
 				station.has(dateOpen_prop, dateOpened).optional());
 		
-		GraphPattern measurePropertiesPattern = measure.has(parameterName,param).andHas(qualifier,qual).andHas(unitName, unit);
+		GraphPattern measurePropertiesPattern = measureVar.has(parameterName,param).andHas(qualifier,qual).andHas(unitName, unit);
 		
 		// restrict query location
 		if (southwest != null && northeast != null) {
@@ -529,14 +525,15 @@ public class FloodSparql {
 			query.where(queryPattern,stationProperties,measurePropertiesPattern).prefix(p_ems,p_om);
 		}
 		
-		query.select(station,lat,lon,ref,river,catchment,town,dateOpened,label,measure,param,qual,unit);
+		query.select(station,lat,lon,ref,river,catchment,town,dateOpened,label,measureVar,param,qual,unit);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		int visid = 0;
-		Map<String, Station> station_map = new HashMap<>(); // iri to station object map
+		Map<String, Station> station_map = new HashMap<>(); // iri to station object map to check for duplicate
+		List<Station> stations = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			String stationIri = queryResult.getJSONObject(i).getString(station.getQueryString().substring(1));
-			String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
+			String measureIri = queryResult.getJSONObject(i).getString(measureVar.getQueryString().substring(1));
     		String measureName = queryResult.getJSONObject(i).getString(param.getQueryString().substring(1));
     		String subTypeName = queryResult.getJSONObject(i).getString(qual.getQueryString().substring(1));
     		String unitName = queryResult.getJSONObject(i).getString(unit.getQueryString().substring(1));
@@ -547,6 +544,7 @@ public class FloodSparql {
     		} else {
     			stationObject = new Station(stationIri);
     			station_map.put(stationIri, stationObject);
+				stations.add(stationObject);
     			
     			// station properties are unique, only need to set once
     			stationObject.setIdentifier(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
@@ -575,12 +573,15 @@ public class FloodSparql {
 			
 			// measure properties
 			// stations may measure more than 1 properties
-			stationObject.setMeasureName(measureIri, measureName);
-    		stationObject.setMeasureSubTypeName(measureIri, subTypeName);
-    		stationObject.setMeasureUnit(measureIri, unitName);
+			Measure measure = new Measure(measureIri);
+			measure.setParameterName(measureName);
+			measure.setQualifier(subTypeName);
+			measure.setUnit(unitName);
+
+			stationObject.addMeasure(measure);
 		}
 				
-		return station_map;
+		return stations;
 	}
     
     boolean checkStationExists(String station) {

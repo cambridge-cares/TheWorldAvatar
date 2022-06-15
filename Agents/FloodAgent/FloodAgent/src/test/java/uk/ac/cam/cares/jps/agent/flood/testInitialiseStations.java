@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.flood;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.io.IOException;
 import java.io.InputStream;
