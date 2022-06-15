@@ -10,7 +10,7 @@ public final class PostGISService extends ContainerService {
         super(stackName, serviceManager, config);
 
         setEnvironmentVariable("POSTGRES_USER", getUsername());
-        setEnvironmentVariable("POSTGRES_PASSWORD", getPassword());
+        setEnvironmentVariable("POSTGRES_PASSWORD_FILE", getPasswordFile());
     }
 
 }
