@@ -1,0 +1,54 @@
+{
+    "type": "ontop",
+    "ServiceSpec": {
+        "Name": "ontop",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ontop/ontop-endpoint:4.2.1",
+                "Env": [
+                    "ONTOP_MAPPING_FILE=/ontop.obda",
+                    "ONTOP_DB_URL=jdbc:postgresql://postgis:5432/postgres",
+                    "ONTOP_DB_DRIVER=org.postgresql.Driver",
+                    "ONTOP_DB_DRIVER_URL=https://jdbc.postgresql.org/download/postgresql-42.3.6.jar",
+                    "ONTOP_DB_USER=postgres",
+                    "ONTOP_DB_PASSWORD_FILE=/run/secrets/postgis_password",
+                    "ONTOP_DEV_MODE=true"
+                ],
+                "Command": [
+                    "tail",
+                    "-f",
+                    "/dev/null"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "postgis_data",
+                        "Target": "/var/lib/postgresql/data"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geotifs",
+                        "Target": "/geotifs"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password",
+                        "File": {
+                            "Name": "postgis_password",
+                            "UID": "0",
+                            "GID": "0",
+                            "Mode": 400
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "sparql": {
+            "url": "http://localhost:8080/sparql",
+            "externalPath": "/ontop/sparql"
+        }
+    }
+}
