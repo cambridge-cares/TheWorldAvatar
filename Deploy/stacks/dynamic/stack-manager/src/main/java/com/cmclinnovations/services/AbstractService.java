@@ -90,30 +90,11 @@ public abstract class AbstractService implements Service {
         return getEndpoints().get(endpointName);
     }
 
-    public final String getEnvironmentVariable(String key) {
-        return config.getEnvironment().get(key);
-    }
-
-    protected final void setEnvironmentVariable(String key, String value) {
-        config.getEnvironment().put(key, value);
-    }
-
-    protected final void setEnvironmentVariableIfAbsent(String key, String value) {
-        config.getEnvironment().putIfAbsent(key, value);
-    }
-
     private final <T> T checkPropertyNonNull(String propertyName, T value) {
         Objects.requireNonNull(value,
                 "The service '" + config.getName() + "' requires the '" + propertyName
                         + "' property to be specified in its config file.");
         return value;
-    }
-
-    protected final void checkEnvironmentVariableNonNull(String key) {
-        String value = this.getEnvironmentVariable(key);
-        Objects.requireNonNull(value,
-                "The service '" + config.getName() + "' requires the environment variable '" + key
-                        + "' to be specified in its config file.");
     }
 
     final <S extends Service> S getService(String otherServiceName) {

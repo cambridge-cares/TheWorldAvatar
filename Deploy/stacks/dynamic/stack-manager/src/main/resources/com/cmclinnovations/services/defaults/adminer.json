@@ -1,8 +1,15 @@
 {
-    "name": "adminer",
-    "image": "adminer",
+    "ServiceSpec": {
+        "Name": "adminer",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "adminer"
+            }
+        }
+    },
     "endpoints": {
         "ui": {
+            "uri": "https://testing/rdb/ui",
             "url": "http://localhost:8080",
             "externalPath": "/adminer/ui"
         }

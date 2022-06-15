@@ -3,43 +3,46 @@ package com.cmclinnovations.services.config;
 import java.io.BufferedReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.ContainerSpec;
+import com.github.dockerjava.api.model.ServiceSpec;
+import com.github.dockerjava.api.model.TaskSpec;
 
 public class ServiceConfig {
 
-    private final String name;
     private final String type;
+
     private final Map<String, Connection> endpoints;
     private final Map<String, Connection> incomingConnections;
     private final String username;
     private final String passwordFile;
 
     // Docker specific settings
-    private final String image;
-    private final Map<String, String> environment;
+    @JsonProperty("ServiceSpec")
+    private ServiceSpec dockerServiceSpec;
 
-    @JsonProperty("HostConfig")
-    private final HostConfig dockerHostConfig;
+    @JsonIgnore
+    private final Map<String, String> environment = new HashMap<>();
 
     public ServiceConfig() {
-        name = null;
         type = "container";
         endpoints = new HashMap<>();
         incomingConnections = new HashMap<>();
         username = null;
         passwordFile = null;
 
-        image = null;
-        environment = new HashMap<>();
-        dockerHostConfig = new HostConfig();
+        dockerServiceSpec = new ServiceSpec();
     }
 
     public String getName() {
-        return name;
+        return dockerServiceSpec.getName();
     }
 
     public Map<String, Connection> getEndpoints() {
@@ -66,29 +69,64 @@ public class ServiceConfig {
             try (BufferedReader infile = Files.newBufferedReader(Paths.get(passwordFile))) {
                 if (null == (password = infile.readLine())) {
                     throw new IllegalArgumentException("The password file '" + passwordFile
-                            + "' specified for the container '" + name + "' is empty.");
+                            + "' specified for the container '" + getName() + "' is empty.");
                 }
             } catch (Exception ex) {
                 throw new IllegalArgumentException("The password file '" + passwordFile
-                        + "' specified for the container '" + name + "' could not be read.", ex);
+                        + "' specified for the container '" + getName() + "' could not be read.", ex);
             }
         }
         return password;
     }
 
     public String getImage() {
-        return image;
+        return getContainerSpec().getImage();
     }
 
-    public Map<String, String> getEnvironment() {
+    private Map<String, String> getEnvironment() {
+        List<String> env = getContainerSpec().getEnv();
+        if (null == env) {
+            env = new ArrayList<>();
+            getContainerSpec().withEnv(env);
+        } else {
+        if (environment.isEmpty()) {
+            environment.putAll(env.stream()
+                    .collect(Collectors.toMap(
+                            entry -> entry.split("=", 2)[0],
+                            entry -> entry.split("=", 2)[1])));
+            }
+        }
         return environment;
     }
 
-    public HostConfig getDockerHostConfig() {
-        return dockerHostConfig;
+    public boolean hasEnvironmentVariable(String key) {
+        return getEnvironment().containsKey(key);
+    }
+
+    public String getEnvironmentVariable(String key) {
+        return getEnvironment().get(key);
+    }
+
+    @SuppressWarnings("java:S2259")
+    public void setEnvironmentVariable(String key, String value) {
+        getEnvironment().put(key, value);
+        getContainerSpec().getEnv().add(key + "=" + value);
+    }
+
+    public ServiceSpec getDockerServiceSpec() {
+        return dockerServiceSpec;
+    }
+
+    public TaskSpec getTaskTemplate() {
+        return getDockerServiceSpec().getTaskTemplate();
+    }
+
+    public ContainerSpec getContainerSpec() {
+        return getTaskTemplate().getContainerSpec();
     }
 
     public String getType() {
         return type;
     }
+
 }

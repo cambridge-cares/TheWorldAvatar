@@ -1,28 +1,46 @@
 {
-    "name": "postgis",
     "type": "postgres",
-    "image": "postgis/postgis:14-3.1-alpine",
-    "environment": {
-        "POSTGRES_HOST_AUTH_METHOD": "scram-sha-256",
-        "POSTGRES_INITDB_ARGS": "--auth-host=scram-sha-256"
-    },
     "username": "postgres",
     "passwordFile": "/run/secrets/postgis_password",
-    "HostConfig": {
-        "Binds": [
-            "/run/secrets/postgis_password:/run/secrets/postgis_password:ro"
-        ],
-        "Mounts": [
-            {
-                "Type": "volume",
-                "Source": "postgis_data",
-                "Target": "/var/lib/postgresql/data"
-            },
-            {
-                "Type": "volume",
-                "Source": "geotifs",
-                "Target": "/geotifs"
+    "ServiceSpec": {
+        "Name": "postgis",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "postgis/postgis:14-3.1-alpine",
+                "Env": [
+                    "POSTGRES_HOST_AUTH_METHOD=scram-sha-256",
+                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "postgis_data",
+                        "Target": "/var/lib/postgresql/data"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geotifs",
+                        "Target": "/geotifs"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password",
+                        "File": {
+                            "Name": "postgis_password",
+                            "UID": "0",
+                            "GID": "0",
+                            "Mode": 400
+                        }
+                    }
+                ]
             }
-        ]
+        }
+    },
+    "endpoints": {
+        "sql": {
+            "url": "http://localhost/jdbc",
+            "externalPath": "/postgis/sparql"
+        }
     }
 }

@@ -121,7 +121,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
                         locationBlock.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, true));
                         locationBlock.findParam("proxy_pass")
                                 .addValue(getProxyPassValue(connection, upstreamName));
-                        upstreams.put(upstreamName, getServerURL(connection, service.getContainerName()));
+                        upstreams.put(upstreamName, getServerURL(connection, service.getName()));
                     }
                     locationConfigOut.addEntry(locationBlock);
                 }
