@@ -33,7 +33,7 @@ Optional variables:
 - SKIP_RIVER (if set to true, this code will be skipped)
 
 The following two variables work together:
-- DOWNLOAD_DATUM (if set to true, code will download stageScale for each station)
+- DOWNLOAD_DATUM (if set to true, code will download stageScale for each station and write an output file to DATUM_FILE)
 - DATUM_FILE (location of file containing DATUM data for each station)
 
 The following two variables work together:

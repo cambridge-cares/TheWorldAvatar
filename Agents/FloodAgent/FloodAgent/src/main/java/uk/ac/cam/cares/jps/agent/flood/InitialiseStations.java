@@ -89,7 +89,7 @@ public class InitialiseStations {
         
         // add triples for OntoEMS, also update stations objects
 		sparqlClient.addMeasuresConcepts(stations);
-		sparqlClient.addStationTypeAndCoordinates(stations); // must run after the previous function
+		sparqlClient.addStationTypeAndCoordinates(stations);
 		
 		// set to false by default, download it once and save it locally
 		// takes a while to download because there is no API to download everything in 1 go

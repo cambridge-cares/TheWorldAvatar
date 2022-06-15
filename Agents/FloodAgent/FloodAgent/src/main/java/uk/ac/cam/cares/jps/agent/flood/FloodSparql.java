@@ -70,6 +70,7 @@ public class FloodSparql {
     
     // classes
 	private static Iri ReportingStation = p_ems.iri("ReportingStation");
+	private static Iri WaterLevelReportingStation = p_ems.iri("WaterLevelReportingStation");
 
 	// subclass of Quantity
 	private static Iri WaterLevel = p_ems.iri("WaterLevel");
@@ -209,7 +210,11 @@ public class FloodSparql {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		for (Station station : stations) {
-			modify.insert(iri(station.getIri()).isA(ReportingStation));
+			if (station.getMeasures().stream().anyMatch(m -> m.getParameterName().contentEquals("Water Level"))) {
+				modify.insert(iri(station.getIri()).isA(WaterLevelReportingStation));
+			} else {
+				modify.insert(iri(station.getIri()).isA(ReportingStation));
+			}
 			modify.insert(iri(station.getIri()).has(dataSource, "Environment Agency Real Time flood-monitoring"));
 
 			// blazegraph custom literal
