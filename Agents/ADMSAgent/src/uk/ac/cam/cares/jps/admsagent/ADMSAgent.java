@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.admsagent;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-
+import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 
 @WebServlet("/ADMSAgent")
@@ -90,16 +92,25 @@ public class ADMSAgent extends JPSAgent {
              */
             JSONObject newRegion = region;
 
-            JSONObject bkgjson = region; // temporary only to test 1/7,right
+            //JSONObject bkgjson = region; // temporary only to test 1/7,right
             // now it is hardcoded in python and
             // don't take any from the bkgjson
 
+            try{
+                createWeatherInput(fullPath,null,stnList);
+                if (requestParams.has(PARAM_KEY_SHIP)) {
+                    writeBkgFile(fullPath);
+                }
+                createEmissionInput(requestParams,newBuildingData,newRegion,targetCRSName,fullPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
+/*
             try {
                 if (requestParams.has(PARAM_KEY_SHIP)) {
                     JSONArray coords = getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
-                    QueryBroker broker = new QueryBroker();
-                    broker.putLocal(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
+
                     String coordinates = new Gson().toJson(coords.toString());
                     createWeatherInput(fullPath, null, stnList);
                     createEmissionInput(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitationdata);
@@ -114,9 +125,8 @@ public class ADMSAgent extends JPSAgent {
             } catch (Exception e) {
                 throw new JPSRuntimeException(e.getMessage(), e);
             }
-
+*/
             executeModel(fullPath);
-
             String target = fullPath + "/test.levels.gst";
             File name = new File(target);
             if (name.length() != 0 && name.exists()) {
@@ -360,7 +370,7 @@ public class ADMSAgent extends JPSAgent {
         return validate;
     }
 
-	public void createWeatherInput(String dataPath, String filename,List<String>stniri) {	
+	public void createWeatherInput(String dataPath, String filename,List<String>stniri) throws IOException {
     	System.out.println("going to create the weather input");
 		//in here file name is not used as it is hard-coded in python
 		logger.info("going to weather creation");
@@ -449,7 +459,6 @@ public class ADMSAgent extends JPSAgent {
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("pressure")) {
 
 		        	}
-	        	
 	        }
 	        if(temperature.length()==0) {
 	        	temperature.put("hasvalue", "25");
@@ -504,13 +513,10 @@ public class ADMSAgent extends JPSAgent {
         return newBuildingData;
     }
 
-    private String getSourceData(JSONObject input, String cityIRI) {
-        String plantIRI = null;
-        if (!(cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore") || cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Hong_Kong"))) {
-            plantIRI = input.getString("plant"); //
-        }
+    /*private String getSourceData(JSONObject input) {
+        String plantIRI=input.getString("plant");
         return plantIRI;
-    }
+    }*/
 
     /**
      * Method to extract latitude and longitude of each entity in a collection of entities.
@@ -540,34 +546,24 @@ public class ADMSAgent extends JPSAgent {
         return coordinates;
     }
 
-    public void writeMetFile(JSONObject weatherInJSON, String fullPath) {
-
-        // fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
+    public void writeMetFile(JSONObject weatherInJSON, String fullPath) throws IOException {
         String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
-
-        ArrayList<String> args = new ArrayList<String>();
-        args.add("python");
-        args.add("admsMetWriter.py");
-        args.add(fullPath);
-        // TODO-AE replacing " by $, maybe better by ' as is done in method writeAPLFile
-        args.add(weatherInJSON.toString().replace("\"", "'"));//replaced dollar with single quotes for simplicity
-
-        CommandHelper.executeCommands(targetFolder, args);
+        String weather=weatherInJSON.toString().replace("\"", "'");
+        String cmd[]= new String[]{"python",targetFolder+"\\admsMetWriter.py",fullPath,weather};
+        String result =PythonHelper.processCommand(cmd);
+        logger.info("Message from the python script= " + result);
+        System.out.println("Message from the python script= " + result);
     }
 
-    public void writeBkgFile(JSONObject bkgInJSON, String fullPath) {
-
+    public void writeBkgFile(String fullPath) throws IOException {
         String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
-        ArrayList<String> args = new ArrayList<String>();
-        args.add("python");
-        args.add("admsBgdWriter.py");
-        args.add(fullPath);
-        args.add(bkgInJSON.toString().replace("\"", "'"));//replaced dollar symbol with single quotes for simplicity
-
-        CommandHelper.executeCommands(targetFolder, args);
+        String [] cmd = new String[]{"python",targetFolder+"\\admsBgdWriter.py",fullPath,};
+        String result =PythonHelper.processCommand(cmd);
+        logger.info("Message from the python script= " + result);
+        System.out.println("Message from the python script= " + result);
     }
 
-
+/*
     public void createEmissionInput(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName) {
         String fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
         //system.out.println("==================== full path ====================");
@@ -597,8 +593,8 @@ public class ADMSAgent extends JPSAgent {
         ////system.out.println(args.toString());
         logger.info(result);
     }
-
-
+*/
+/*
     public void createEmissionInput(String entityType, String buildingInString, String sourceJSONFormatData, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation) {
 
         //fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
@@ -636,6 +632,45 @@ public class ADMSAgent extends JPSAgent {
         System.out.println("ARGUMENTS FOR PYTHON="+args.toString());
         logger.info("APL FOR SHIP WRITTEN= " + result);
         System.out.println("APL FOR SHIP WRITTEN= " + result);
+    }
+*/
+    private String getEntityType(JSONObject obj){
+        String entityType;
+        if(obj.has(PARAM_KEY_SHIP))
+            entityType=PARAM_KEY_SHIP;
+        else
+            entityType=PARAM_KEY_PLANT;
+        return entityType;
+    }
+
+    public void createEmissionInput(JSONObject requestParams, String buildingInString, JSONObject regionInJSON, String targetCRSName, String fullPath) throws IOException {
+            String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
+            String entityType;
+            String [] cmd;
+            entityType=getEntityType(requestParams);
+            logger.info(buildingInString);
+            String region=regionInJSON.toString().replace("\"", "'");
+            logger.info(region);
+
+            if(entityType==PARAM_KEY_SHIP){
+                JSONArray coords = getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
+                String coordinates = new Gson().toJson(coords.toString());
+                logger.info(coordinates);
+                logger.info(fullPath);
+                logger.info(targetCRSName);
+                cmd= new String[]{"python", targetFolder+"\\"+FILENAME_ADMS_PROCESSOR, entityType, buildingInString, region, coordinates, fullPath, targetCRSName, precipitationdata};
+            }
+            else{
+                String plantIRI = requestParams.getString("plant");
+                plantIRI=plantIRI.replace("\"", "'");
+                logger.info(plantIRI);
+                logger.info(fullPath);
+                cmd= new String[]{"python", targetFolder+"\\"+FILENAME_ADMS_PROCESSOR, entityType, buildingInString, region,plantIRI,fullPath,targetCRSName};
+            }
+            String result = PythonHelper.processCommand(cmd);
+
+            logger.info("Message from the python script= " + result);
+            System.out.println("Message from the python script= " + result);
     }
 
     

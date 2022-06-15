@@ -41,9 +41,8 @@ class CliInputStrategy(object):
         self.entity_type = args[1]
         self.bdn_data = json.loads(args[2].replace("'", '"'))
         self.coor_data = str(args[3]).replace("'", '"')
-        #original code
-        #self.entity=str(args[4])
-        self.entity = str(args[4].replace("'",'"'))
+        self.entity=str(args[4])
+        #self.entity = str(args[4].replace("'",'"'))
 
         self.working_dir = str(args[5])
         self.coord_sys = args[6][5:]
@@ -162,6 +161,26 @@ class CliInputStrategy(object):
     def retrieve_input(self):
         pass
 
+# new method added in order to make the mock values work can be removed later on
+    def get_src_data_plant(self):
+        """Gets all sourced data.
+                returns: list of source data objects for the ADMS_SOURCE_DETAILS section of the APL.
+                """
+        sources = []
+
+        # original code commented out
+        # q1, q2, q3 = self.get_src_queries()
+
+        # for src in self.entity:
+        # new_src = self.get_new_src(src, q1, q2, q3)
+
+        # sources.append(new_src)
+        new_src = self.get_new_src_plant(self)
+        sources.append(new_src)
+
+        return sources
+
+# new method added in order to make the mock values work can be removed later on
     def get_src_data(self):
         """Gets all sourced data.
         returns: list of source data objects for the ADMS_SOURCE_DETAILS section of the APL.
@@ -189,6 +208,13 @@ class CliInputStrategy(object):
 #         aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
 #         return self.make_src(aresult, sorteder, pollutantnames)
 
+# new method added in order to make the mock values work can be removed later on
+    def get_new_src_plant(self,src):
+        iri= None
+        aresult, sorteder, pollutantnames = self.get_new_src_data_plant(iri)
+        return self.make_src(aresult, sorteder, pollutantnames)
+
+# new method added in order to make the mock values work can be removed later on
     def get_new_src(self,src):
         iri = "http://localhost:8080/kb/ships/563009850/Chimney-1.owl"
         aresult, sorteder, pollutantnames = self.get_new_src_data(iri)
@@ -205,9 +231,9 @@ class CliInputStrategy(object):
 #     def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
 #         return [], [], []
 
+# new method added in order to make the mock values work can be removed later on
     def get_new_src_data(self):
         return [], [], []
-
 
     def make_src(self, aresult, sorteder, pollutantnames):
         return self.make_common_src(aresult, sorteder, pollutantnames)
@@ -224,7 +250,7 @@ class CliInputStrategy(object):
                       src_density=float(aresult[Constants.KEY_DENSITY].toPython()),
                       src_spec_heat_cap=aresult[Constants.KEY_HEAT_CAP].toPython(),
                       src_num_pollutants=len(pollutantnames),
-                      src_mass_flux=aresult[Constants.KEY_MASS_FLOW].toPython() *1e1) # scaling introduced for ADMS to find the massflux value acceptable
+                      src_mass_flux=aresult[Constants.KEY_MASS_FLOW].toPython() *1e2) # scaling introduced for ADMS to find the massflux value acceptable
         return src
 
     def get_opt(self, pol_names, src_names):
@@ -321,8 +347,20 @@ class PlantCliInputStrategy(CliInputStrategy):
         self.pollutants = [Constants.POL_CO2, Constants.POL_CO, Constants.POL_NO2, Constants.POL_HC, Constants.POL_NOX]
         self.entity = (self.entity,)
 
+#original method being commented
+    # def retrieve_input(self):
+    #     self.raw_src = self.get_src_data()
+    #     raw_opt = self.get_opt(self.pollutants, [s.SrcName for s in self.raw_src])
+    #     self.core_bdn_src()
+    #     met = self.get_weather()
+    #     xran, yran = self.range
+    #     grd = xran[0], yran[0], xran[1], yran[1]
+    #
+    #     return {Constants.KEY_SRC: self.raw_src, Constants.KEY_OPT: raw_opt,
+    #             Constants.KEY_MET: met, Constants.KEY_GRD: grd}
+
     def retrieve_input(self):
-        self.raw_src = self.get_src_data()
+        self.raw_src = self.get_src_data_plant()
         raw_opt = self.get_opt(self.pollutants, [s.SrcName for s in self.raw_src])
         self.core_bdn_src()
         met = self.get_weather()
@@ -332,6 +370,18 @@ class PlantCliInputStrategy(CliInputStrategy):
         return {Constants.KEY_SRC: self.raw_src, Constants.KEY_OPT: raw_opt,
                 Constants.KEY_MET: met, Constants.KEY_GRD: grd}
 
+# new method added in order to make the mock values work can be removed later on
+    def extract_data(self):
+        self.input = super(PlantCliInputStrategy, self).extract_data()
+        self.modify_input_for_plant()
+        return self.input
+
+# new method added in order to make the mock values work can be removed later on
+    def modify_input_for_plant(self):
+        self.input[Constants.KEY_MET] = self.working_dir + Constants.FILENAME_MET
+        self.input[Constants.KEY_BKG] = self.working_dir + Constants.FILENAME_BGD
+
+
     def get_src_queries(self):
         q1 = prepareQuery(
             QueryStrings.SPARQL_HEIGHT_DIAMETER_CONTENT_X_Y_VELOCITY_MASSFLOW_TEMP_HEATCAPA_DENSITY_MOLEWEIGHT)
@@ -340,10 +390,29 @@ class PlantCliInputStrategy(CliInputStrategy):
 
         return q1, q2, q3
 
-    def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
-        aresult, = [row.asdict() for row in qdata]
-        contents = [row[Constants.KEY_CONTENT].toPython() for row in qdata_c]
-        emissionrates = {row[Constants.KEY_ER].toPython(): row[Constants.KEY_V].toPython() for row in qdata_erate}
+#original method being commented out
+    # def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
+    #     aresult, = [row.asdict() for row in qdata]
+    #     contents = [row[Constants.KEY_CONTENT].toPython() for row in qdata_c]
+    #     emissionrates = {row[Constants.KEY_ER].toPython(): row[Constants.KEY_V].toPython() for row in qdata_erate}
+    #     pollutantnames = [self.pol_iri_name(content) for content in contents]
+    #
+    #     sorteder = []
+    #     for content in contents:
+    #         name = content.split('#')[1]
+    #         for ername, v in emissionrates.items():
+    #             if name in ername:
+    #                 sorteder.append(v)
+    #
+    #     aresult[Constants.KEY_EM_RATES] = sorteder
+    #
+    #     return aresult, sorteder, pollutantnames
+
+# new method added in order to make the mock values work can be removed later on
+    def get_new_src_data_plant(self,iri):
+        aresult = {'o': rdflib.term.URIRef('http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001'), 'height': rdflib.term.Literal('83.607', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#decimal')), 'diameter': rdflib.term.Literal('1.0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'x': rdflib.term.Literal('79835.9857', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'y': rdflib.term.Literal('454761.139634', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'velocity': rdflib.term.Literal('0.0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#float')), 'massflow': rdflib.term.Literal('0.00628817794707256', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'temp': rdflib.term.Literal('1160.7868255223202', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'moleweight': rdflib.term.Literal('28.724842218938', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'heatcapa': rdflib.term.Literal('1372.75090450572', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'density': rdflib.term.Literal('1.000509329242', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double'))}
+        contents = ['http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Nitrogen__dioxide', 'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon', 'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__monoxide', 'http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__dioxide', 'http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides']
+        emissionrates = {'http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#ChemSpecies_Nitrogen__dioxide_EmissionRate': 0.0, 'http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#PseudoComponent_Nitrogen__oxides_EmissionRate': 0.0, 'http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#PseudoComponent_Unburned_Hydrocarbon_EmissionRate': 0.0389397139985721, 'http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#ChemSpecies_Carbon__monoxide_EmissionRate': 0.008408378762892679, 'http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#ChemSpecies_Carbon__dioxide_EmissionRate': 1.07886531019865, 'http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#massF_WasteStream-001': 0.00628817794707256, 'http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Particulate-001_EmissionRate': '1.5'}
         pollutantnames = [self.pol_iri_name(content) for content in contents]
 
         sorteder = []
@@ -383,6 +452,7 @@ class ShipCliInputStrategy(CliInputStrategy):
         self.ship_coordinates_list = self.get_ship_coordinates()
         pol = self.get_pol()
         self.raw_src = self.get_src_data()
+
         raw_opt = self.get_opt(self.pollutants, [s.SrcName for s in self.raw_src])
         self.core_bdn_src()
         met = self.get_weather()
@@ -411,6 +481,7 @@ class ShipCliInputStrategy(CliInputStrategy):
 #         new_src.set_name(str(src[Constants.KEY_MMSI]) + '-' + str(uuid.uuid4()))
 #         return new_src
 
+# new method added in order to make the mock values work can be removed later on
     def get_new_src(self,src):
         new_src = super(ShipCliInputStrategy, self).get_new_src(src)
         #provide a hardcoded mmsi value
@@ -443,6 +514,7 @@ class ShipCliInputStrategy(CliInputStrategy):
 #
 #         return aresult, sorteder, pollutantnames
 
+# new method added in order to make the mock values work can be removed later on
     def get_new_src_data(self, iri):
          #hardcoded values
          aresult = {'o': rdflib.term.URIRef('http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Chimney-1'), 'diameter': rdflib.term.Literal('2.0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'temp': rdflib.term.Literal('616.12736479669', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'height': rdflib.term.Literal('20.0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'massflow': rdflib.term.Literal('0.0192143028723584', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'heatcapa': rdflib.term.Literal('1334.86958348868', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'density': rdflib.term.Literal('0.577544330505469', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'moleweight': rdflib.term.Literal('28.638811393753', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double'))}
@@ -567,6 +639,7 @@ class ShipCliInputStrategy(CliInputStrategy):
 
     def get_ship_coordinates(self):
         ship_coordinates_list = []
+
         for ship in self.entity:
 # original code commented out for the time being
 #             x_coordinate_value = float(ship[Constants.KEY_LON])
@@ -574,9 +647,9 @@ class ShipCliInputStrategy(CliInputStrategy):
 #             ship_coordinates_list.append(
 #                 list(transform(self.sourceCRS, self.targetCRS, x_coordinate_value, y_coordinate_value)))
 
-
             y_coordinate_value = float(ship[Constants.KEY_LAT])
             x_coordinate_value = float(ship[Constants.KEY_LON])
+
             ship_coordinates_list.append(list(transform(self.sourceCRS, self.targetCRS, y_coordinate_value, x_coordinate_value)))
 
         return ship_coordinates_list

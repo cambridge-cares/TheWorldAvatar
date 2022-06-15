@@ -17,6 +17,7 @@ class AdmsProcessor(object):
         context = CliInputContext(args)
         self.input = context.get_input()
 
+
     def save_apl(self, args):
         self.get_input(args)
         builder = None
@@ -37,8 +38,9 @@ def main(args):
     try:
         processor = AdmsProcessor()
         processor.save_apl(args)
-    except ValueError:
-        raise
+        print("SUCCESS: APL File is Created")
+    except:
+        print("ERROR: APL File not Written")
     # original code commented out
     #except Exception as e:
         #pythonLogger.postErrorToLogServer(e)

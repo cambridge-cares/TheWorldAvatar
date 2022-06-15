@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.admsagent;
 
-import com.bigdata.service.ndx.pipeline.IndexWriteTask;
+
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.*;
@@ -813,25 +813,25 @@ public class ADMSAgentTest {
         bldName.put("a-a52c-c71f8cd0e5a1");
         building.put("BldName",bldName);
         JSONArray bldType= new JSONArray();
-        bldType.put("0");
+        bldType.put(0);
         building.put("BldType",bldType);
         JSONArray bldX= new JSONArray();
-        bldX.put("30283.28271214908");
+        bldX.put(30283.28271214908);
         building.put("BldX",bldX);
         JSONArray bldY= new JSONArray();
-        bldY.put("816155.3357251927");
+        bldY.put(816155.3357251927);
         building.put("BldY",bldY);
         JSONArray bldHeight= new JSONArray();
-        bldHeight.put("130.79999999999998");
+        bldHeight.put(130.79999999999998);
         building.put("BldHeight",bldHeight);
         JSONArray bldLength= new JSONArray();
-        bldLength.put("16.278820596099706");
+        bldLength.put(16.278820596099706);
         building.put("BldLength",bldLength);
         JSONArray bldWidth= new JSONArray();
-        bldWidth.put("17.392230495361243");
+        bldWidth.put(17.392230495361243);
         building.put("BldWidth",bldWidth);
         JSONArray bldAngle= new JSONArray();
-        bldAngle.put("42.510447078000844");
+        bldAngle.put(42.510447078000844);
         building.put("BldAngle",bldAngle);
         String expected= building.toString();
 
@@ -867,25 +867,25 @@ public class ADMSAgentTest {
         bldName.put("a-a52c-c71f8cd0e5a1");
         building.put("BldName",bldName);
         JSONArray bldType= new JSONArray();
-        bldType.put("0");
+        bldType.put(0);
         building.put("BldType",bldType);
         JSONArray bldX= new JSONArray();
-        bldX.put("30283.28271214908");
+        bldX.put(30283.28271214908);
         building.put("BldX",bldX);
         JSONArray bldY= new JSONArray();
-        bldY.put("816155.3357251927");
+        bldY.put(816155.3357251927);
         building.put("BldY",bldY);
         JSONArray bldHeight= new JSONArray();
-        bldHeight.put("130.79999999999998");
+        bldHeight.put(130.79999999999998);
         building.put("BldHeight",bldHeight);
         JSONArray bldLength= new JSONArray();
-        bldLength.put("16.278820596099706");
+        bldLength.put(16.278820596099706);
         building.put("BldLength",bldLength);
         JSONArray bldWidth= new JSONArray();
-        bldWidth.put("17.392230495361243");
+        bldWidth.put(17.392230495361243);
         building.put("BldWidth",bldWidth);
         JSONArray bldAngle= new JSONArray();
-        bldAngle.put("42.510447078000844");
+        bldAngle.put(42.510447078000844);
         building.put("BldAngle",bldAngle);
         String expected= building.toString();
         expected= expected.replace("\"","\'");
@@ -980,36 +980,6 @@ public class ADMSAgentTest {
     }
 
     @Test
-    public void testGetSourceData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        ADMSAgent admsAgent = new ADMSAgent();
-        Method getSourceData= admsAgent.getClass().getDeclaredMethod("getSourceData", JSONObject.class, String.class);
-        getSourceData.setAccessible(true);
-
-        JSONObject object= new JSONObject();
-        object.put("city","http://dbpedia.org/resource/Berlin");
-        object.put("plant","http://myPlants.org/BerlinPlantIRI");
-        String expected="http://myPlants.org/BerlinPlantIRI";
-        String actual=(String) getSourceData.invoke(admsAgent,object,object.get("city"));
-        Assert.assertEquals(expected,actual);
-
-        object.put("city","http://dbpedia.org/resource/TheHague");
-        object.put("plant","http://myPlants.org/TheHaguePlantIRI");
-        expected="http://myPlants.org/TheHaguePlantIRI";
-        actual=(String) getSourceData.invoke(admsAgent,object,object.get("city"));
-        Assert.assertEquals(expected,actual);
-
-        object.put("city","http://dbpedia.org/resource/Singapore");
-        expected=null;
-        actual=(String) getSourceData.invoke(admsAgent,object,object.get("city"));
-        Assert.assertEquals(expected,actual);
-
-        object.put("city","http://dbpedia.org/resource/Hong_Kong");
-        expected=null;
-        actual=(String) getSourceData.invoke(admsAgent,object,object.get("city"));
-        Assert.assertEquals(expected,actual);
-    }
-
-    @Test
     public void testCreateWeatherInput() throws IOException {
         ADMSAgent admsAgent= new ADMSAgent();
 
@@ -1051,7 +1021,6 @@ public class ADMSAgentTest {
         File metFile= new File(fullPath+"/test.met");
         Assert.assertTrue(metFile.exists());//check if the file is created
         Assert.assertTrue(metFile.length()>0);//check if there is data inside the file
-
     }
 
     @Test
@@ -1109,7 +1078,7 @@ public class ADMSAgentTest {
         region.put("lowercorner",lowerCorner);
         region.put("srsname","testSrsName");
 
-        agent.writeBkgFile(region,fullPath);
+        agent.writeBkgFile(fullPath);
         File bgdFile= new File(fullPath+"/testbackgrnd.bgd");
         Assert.assertTrue(bgdFile.exists());//check if the file is created
         Assert.assertTrue(bgdFile.length()>0);//check if there is data inside the file
@@ -1124,7 +1093,44 @@ public class ADMSAgentTest {
         File tempFolder1 = folder.newFolder( "tempFolder");
         String fullPath= tempFolder1.getPath();
 
-        String entityType="ship";
+        JSONObject requestParams= new JSONObject();
+
+        //create mock region object
+        JSONObject region = new JSONObject();
+        JSONObject upperCorner= new JSONObject();
+        upperCorner.put("upperx",834498.5457081277);
+        upperCorner.put("uppery",817460.3860207011);
+        JSONObject lowerCorner= new JSONObject();
+        lowerCorner.put("lowerx",833044.9253603141);
+        lowerCorner.put("lowery",816015.5674630373);
+        region.put("uppercorner",upperCorner);
+        region.put("lowercorner",lowerCorner);
+        region.put("srsname","EPSG:3857");
+
+        //create mock stationiri array
+        JSONArray stationIRI= new JSONArray();
+        stationIRI.put("testStationIRI1");
+        stationIRI.put("testStationIRI2");
+
+        //create ship object
+        JSONObject ship= new JSONObject();
+        JSONObject collection= new JSONObject();
+        JSONArray items= new JSONArray();
+        JSONObject obj = new JSONObject();
+        obj.put("mmsi","563009850");
+        obj.put("lat","22.28822");
+        obj.put("lon","114.15338");
+        items.put(obj);
+        collection.put("items",items);
+        ship.put("collection",collection);
+
+        requestParams.put("region",region);
+        requestParams.put("city","http://dbpedia.org/resource/Hong_Kong");
+        requestParams.put("agent","testAgent");
+        requestParams.put("stationiri",stationIRI);
+        requestParams.put("ship",ship);
+        requestParams.put("precipitation","50.0");
+        String targetCRSName="EPSG:2326";
 
         //create mock building object
         JSONObject building= new JSONObject();
@@ -1156,38 +1162,33 @@ public class ADMSAgentTest {
         bldAngle.put(42.510447078000844);
         building.put("BldAngle",bldAngle);
 
-        String buildingInString= building.toString();
+        String buildingInString= building.toString().replace("\"","'");
 
-        JSONArray arr= new JSONArray();
-        JSONObject obj = new JSONObject();
-
-        obj.put("mmsi","563009850");
-        obj.put("lat","22.28822");
-        obj.put("lon","114.15338");
-        arr.put(obj);
-
-        String sourceJSONFormatData=arr.toString();
-
-        String targetCRSName="EPSG:2326";
-        String precipitation="50.0";
-
-
-        //create mock region object
-        JSONObject region = new JSONObject();
-        JSONObject upperCorner= new JSONObject();
-        upperCorner.put("upperx",834498.5457081277);
-        upperCorner.put("uppery",817460.3860207011);
-        JSONObject lowerCorner= new JSONObject();
-        lowerCorner.put("lowerx",833044.9253603141);
-        lowerCorner.put("lowery",816015.5674630373);
-        region.put("uppercorner",upperCorner);
-        region.put("lowercorner",lowerCorner);
-        region.put("srsname","testSrsName");
-
-        agent.createEmissionInput(entityType, buildingInString, sourceJSONFormatData, region, targetCRSName, fullPath, precipitation);
+        agent.createEmissionInput(requestParams, buildingInString, region, targetCRSName, fullPath);
         File aplFile= new File(fullPath+"/test.apl");
         Assert.assertTrue(aplFile.exists());//check if the file is created
         Assert.assertTrue(aplFile.length()>0);//check if there is data inside the file
+    }
+
+    @Test
+    public void testGetEntityType() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ADMSAgent agent = new ADMSAgent();
+        Method getEntityType=agent.getClass().getDeclaredMethod("getEntityType", JSONObject.class);
+        getEntityType.setAccessible(true);
+
+        JSONObject obj= new JSONObject();
+        obj.put("ship","value");
+        obj.put("key","value1");
+        String expected="ship";
+
+        String actual=(String)getEntityType.invoke(agent,obj);
+        Assert.assertEquals(expected,actual);
+
+        obj.remove("ship");
+        obj.put("plant","value");
+        expected="plant";
+        actual=(String)getEntityType.invoke(agent,obj);
+        Assert.assertEquals(expected,actual);
     }
 
     @Test
@@ -1256,7 +1257,7 @@ public class ADMSAgentTest {
         region.put("lowercorner",lowerCorner);
         region.put("srsname","testSrsName");
 
-        agent.writeBkgFile(region,fullPath);
+        agent.writeBkgFile(fullPath);
         File bgdFile= new File(fullPath+"/testbackgrnd.bgd");
         Assert.assertTrue(bgdFile.exists());//check if the file is created
         Assert.assertTrue(bgdFile.length()>0);//check if there is data inside the file
@@ -1267,7 +1268,33 @@ public class ADMSAgentTest {
             Check if indeed an apl file was generated
          */
 
-        String entityType="ship";
+        //create mock stationiri array
+        JSONArray stationIRI= new JSONArray();
+        stationIRI.put("testStationIRI1");
+        stationIRI.put("testStationIRI2");
+
+
+        //create ship object
+        JSONObject ship= new JSONObject();
+        JSONObject collection= new JSONObject();
+        JSONArray items= new JSONArray();
+        JSONObject obj = new JSONObject();
+        obj.put("mmsi","563009850");
+        obj.put("lat","22.28822");
+        obj.put("lon","114.15338");
+        items.put(obj);
+        collection.put("items",items);
+        ship.put("collection",collection);
+
+        JSONObject requestParams= new JSONObject();
+        requestParams.put("region",region);
+        requestParams.put("city","http://dbpedia.org/resource/Hong_Kong");
+        requestParams.put("agent","testAgent");
+        requestParams.put("stationiri",stationIRI);
+        requestParams.put("ship",ship);
+        requestParams.put("precipitation","50.0");
+        String targetCRSName="EPSG:2326";
+
 
         //create mock building object
         JSONObject building= new JSONObject();
@@ -1299,22 +1326,19 @@ public class ADMSAgentTest {
         bldAngle.put(42.510447078000844);
         building.put("BldAngle",bldAngle);
 
-        String buildingInString= building.toString();
+        String buildingInString= building.toString().replace("\"","'");
 
         JSONArray arr= new JSONArray();
-        JSONObject obj = new JSONObject();
+        JSONObject obj1 = new JSONObject();
 
-        obj.put("mmsi","563009850");
-        obj.put("lat","22.28822");
-        obj.put("lon","114.15338");
-        arr.put(obj);
+        obj1.put("mmsi","563009850");
+        obj1.put("lat","22.28822");
+        obj1.put("lon","114.15338");
+        arr.put(obj1);
 
         String sourceJSONFormatData=arr.toString();
 
-        String targetCRSName="EPSG:2326";
-        String precipitation="50.0";
-
-        agent.createEmissionInput(entityType, buildingInString, sourceJSONFormatData, region, targetCRSName, fullPath, precipitation);
+        agent.createEmissionInput(requestParams, buildingInString,region, targetCRSName, fullPath);
         File aplFile= new File(fullPath+"/test.apl");
         Assert.assertTrue(aplFile.exists());//check if the file is created
         Assert.assertTrue(aplFile.length()>0);//check if there is data inside the file
@@ -1374,10 +1398,11 @@ public class ADMSAgentTest {
         ship.put("collection",collection);
 
         requestParams.put("region",region);
-        requestParams.put("city","http://dbpedia.org/resource/Singapore");
+        requestParams.put("city","http://dbpedia.org/resource/Hong_Kong");
         requestParams.put("agent","testAgent");
         requestParams.put("stationiri",stationIRI);
         requestParams.put("ship",ship);
+        requestParams.put("precipitation","50.0");
 
         String target = fullPath + "/test.levels.gst";
         List<String> topics = new ArrayList<String>();

@@ -415,7 +415,9 @@ class AdmsAplPlantBuilder(AplBuilder):
 
     def get_bkg(self):
         bkg = AdmsBkg()
-        bkg.BkgFilePath = Constants.FILEPATH_HIL_BGD
+        #original code being commented out for the time being
+        #bkg.BkgFilePath = Constants.FILEPATH_HIL_BGD
+        bkg.BkgFilePath=self.data[Constants.KEY_BKG]
         bkg.BkgFixedLevels = 1
         return bkg
 
