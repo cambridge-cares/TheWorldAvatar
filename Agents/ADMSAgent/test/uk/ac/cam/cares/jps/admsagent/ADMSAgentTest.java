@@ -1085,8 +1085,9 @@ public class ADMSAgentTest {
 
     }
 
+    //case where key:"ship" is present
     @Test
-    public void testCreateEmissionInput() throws IOException {
+    public void testCreateEmissionInput1() throws IOException {
         ADMSAgent agent = new ADMSAgent();
 
         //create temp folder
@@ -1170,6 +1171,81 @@ public class ADMSAgentTest {
         Assert.assertTrue(aplFile.length()>0);//check if there is data inside the file
     }
 
+    //case where key:"plant" is present
+    @Test
+    public void testCreateEmissionInput2() throws IOException {
+        ADMSAgent agent = new ADMSAgent();
+
+        //create temp folder
+        File tempFolder1 = folder.newFolder( "tempFolder");
+        String fullPath= tempFolder1.getPath();
+
+        JSONObject requestParams= new JSONObject();
+
+        //create mock region object
+        JSONObject region = new JSONObject();
+        JSONObject upperCorner= new JSONObject();
+        upperCorner.put("upperx",834498.5457081277);
+        upperCorner.put("uppery",817460.3860207011);
+        JSONObject lowerCorner= new JSONObject();
+        lowerCorner.put("lowerx",833044.9253603141);
+        lowerCorner.put("lowery",816015.5674630373);
+        region.put("uppercorner",upperCorner);
+        region.put("lowercorner",lowerCorner);
+        region.put("srsname","EPSG:3857");
+
+        //create mock stationiri array
+        JSONArray stationIRI= new JSONArray();
+        stationIRI.put("testStationIRI1");
+        stationIRI.put("testStationIRI2");
+
+
+        requestParams.put("region",region);
+        requestParams.put("city","http://dbpedia.org/resource/Hong_Kong");
+        requestParams.put("agent","testAgent");
+        requestParams.put("stationiri",stationIRI);
+        requestParams.put("plant","myPlantIRI");
+        String targetCRSName="EPSG:2326";
+
+        //create mock building object
+        JSONObject building= new JSONObject();
+        JSONArray bldIRI= new JSONArray();
+        bldIRI.put("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingB09332fb1-0b21-4bca-a52c-c71f8cd0e5a1");
+        building.put("BldIRI",bldIRI);
+        JSONArray bldName= new JSONArray();
+        bldName.put("a-a52c-c71f8cd0e5a1");
+        building.put("BldName",bldName);
+        JSONArray bldType= new JSONArray();
+        bldType.put(0);
+        building.put("BldType",bldType);
+        JSONArray bldX= new JSONArray();
+        bldX.put(30283.28271214908);
+        building.put("BldX",bldX);
+        JSONArray bldY= new JSONArray();
+        bldY.put(816155.3357251927);
+        building.put("BldY",bldY);
+        JSONArray bldHeight= new JSONArray();
+        bldHeight.put(130.79999999999998);
+        building.put("BldHeight",bldHeight);
+        JSONArray bldLength= new JSONArray();
+        bldLength.put(16.278820596099706);
+        building.put("BldLength",bldLength);
+        JSONArray bldWidth= new JSONArray();
+        bldWidth.put(17.392230495361243);
+        building.put("BldWidth",bldWidth);
+        JSONArray bldAngle= new JSONArray();
+        bldAngle.put(42.510447078000844);
+        building.put("BldAngle",bldAngle);
+
+        String buildingInString= building.toString().replace("\"","'");
+
+        agent.createEmissionInput(requestParams, buildingInString, region, targetCRSName, fullPath);
+        File aplFile= new File(fullPath+"/test.apl");
+        Assert.assertTrue(aplFile.exists());//check if the file is created
+        Assert.assertTrue(aplFile.length()>0);//check if there is data inside the file
+    }
+
+
     @Test
     public void testGetEntityType() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ADMSAgent agent = new ADMSAgent();
@@ -1191,8 +1267,9 @@ public class ADMSAgentTest {
         Assert.assertEquals(expected,actual);
     }
 
+    //case where key:"ship" is present
     @Test
-    public void testExecuteModel() throws IOException {
+    public void testExecuteModel1() throws IOException {
         ADMSAgent agent = new ADMSAgent();
 
         //create temp folder
@@ -1328,15 +1405,147 @@ public class ADMSAgentTest {
 
         String buildingInString= building.toString().replace("\"","'");
 
-        JSONArray arr= new JSONArray();
-        JSONObject obj1 = new JSONObject();
+        agent.createEmissionInput(requestParams, buildingInString,region, targetCRSName, fullPath);
+        File aplFile= new File(fullPath+"/test.apl");
+        Assert.assertTrue(aplFile.exists());//check if the file is created
+        Assert.assertTrue(aplFile.length()>0);//check if there is data inside the file
 
-        obj1.put("mmsi","563009850");
-        obj1.put("lat","22.28822");
-        obj1.put("lon","114.15338");
-        arr.put(obj1);
+        /*
+            Once all the input files have been generated
+            call the executeModel method and check if a gst file was
+            generated
+         */
+        agent.executeModel(fullPath);
+        File gstFile= new File(fullPath+"/test.levels.gst");
+        Assert.assertTrue(gstFile.exists());//check if the file is created
+        Assert.assertTrue(gstFile.length()>0);//check if there is data inside the file
+    }
 
-        String sourceJSONFormatData=arr.toString();
+    //case where key:"plant" is present
+    @Test
+    public void testExecuteModel2() throws IOException {
+        ADMSAgent agent = new ADMSAgent();
+
+        //create temp folder
+        File tempFolder1 = folder.newFolder( "tempFolder");
+        String fullPath= tempFolder1.getPath();
+        /*
+        Strategy for the testing the method:
+        Firstly, generate all the input files needed to
+        run ADMS. Verify if the files are present in the
+        directory. Finally, run executeModel in the very same
+        directory and see if any output file is generated.
+         */
+
+
+        /*
+            Generate met file in the appropriate directory
+            by calling the writeMetFile method.
+            Check if indeed the met file was generated
+         */
+
+        //create weather data in JSON format
+        JSONObject weatherInJSON= new JSONObject();
+        JSONObject wind = new JSONObject();
+        JSONObject temperature = new JSONObject();
+        JSONObject relativehumidity= new JSONObject();
+        JSONObject cloudcover= new JSONObject();
+        JSONObject precipation = new JSONObject();
+
+        wind.put("hasspeed",12.0);
+        wind.put("hasdirection",200.0);
+        temperature.put("hasvalue",12.0);
+        relativehumidity.put("hasvalue",0.2);
+        cloudcover.put("hascloudcovervalue",1.0);
+        precipation.put("hasintensity",50);
+
+        weatherInJSON.put("haswind",wind);
+        weatherInJSON.put("hasexteriortemperature",temperature);
+        weatherInJSON.put("hashumidity",relativehumidity);
+        weatherInJSON.put("hasprecipation",precipation);
+        weatherInJSON.put("hascloudcover",cloudcover);
+
+        agent.writeMetFile(weatherInJSON,fullPath);
+        File metFile= new File(fullPath+"/test.met");
+        Assert.assertTrue(metFile.exists());//check if the file is created
+        Assert.assertTrue(metFile.length()>0);//check if there is data inside the file
+
+        /*
+            Generate bkg file in the appropriate directory
+            by calling the writeBkgFile method.
+            Check if indeed the bgd file was generated
+         */
+
+        //create mock region object
+        JSONObject region = new JSONObject();
+        JSONObject upperCorner= new JSONObject();
+        upperCorner.put("upperx",834498.5457081277);
+        upperCorner.put("uppery",817460.3860207011);
+        JSONObject lowerCorner= new JSONObject();
+        lowerCorner.put("lowerx",833044.9253603141);
+        lowerCorner.put("lowery",816015.5674630373);
+        region.put("uppercorner",upperCorner);
+        region.put("lowercorner",lowerCorner);
+        region.put("srsname","testSrsName");
+
+        agent.writeBkgFile(fullPath);
+        File bgdFile= new File(fullPath+"/testbackgrnd.bgd");
+        Assert.assertTrue(bgdFile.exists());//check if the file is created
+        Assert.assertTrue(bgdFile.length()>0);//check if there is data inside the file
+
+        /*
+            Generate apl file in the appropriate directory
+            by calling the createEmissionInput method.
+            Check if indeed an apl file was generated
+         */
+
+        //create mock stationiri array
+        JSONArray stationIRI= new JSONArray();
+        stationIRI.put("testStationIRI1");
+        stationIRI.put("testStationIRI2");
+
+        JSONObject requestParams= new JSONObject();
+        requestParams.put("region",region);
+        requestParams.put("city","http://dbpedia.org/resource/Hong_Kong");
+        requestParams.put("agent","testAgent");
+        requestParams.put("stationiri",stationIRI);
+        requestParams.put("plant","myTestPlantIRI");
+        requestParams.put("precipitation","50.0");
+        String targetCRSName="EPSG:2326";
+
+
+        //create mock building object
+        JSONObject building= new JSONObject();
+        JSONArray bldIRI= new JSONArray();
+        bldIRI.put("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingB09332fb1-0b21-4bca-a52c-c71f8cd0e5a1");
+        building.put("BldIRI",bldIRI);
+        JSONArray bldName= new JSONArray();
+        bldName.put("a-a52c-c71f8cd0e5a1");
+        building.put("BldName",bldName);
+        JSONArray bldType= new JSONArray();
+        bldType.put(0);
+        building.put("BldType",bldType);
+        JSONArray bldX= new JSONArray();
+        bldX.put(30283.28271214908);
+        building.put("BldX",bldX);
+        JSONArray bldY= new JSONArray();
+        bldY.put(816155.3357251927);
+        building.put("BldY",bldY);
+        JSONArray bldHeight= new JSONArray();
+        bldHeight.put(130.79999999999998);
+        building.put("BldHeight",bldHeight);
+        JSONArray bldLength= new JSONArray();
+        bldLength.put(16.278820596099706);
+        building.put("BldLength",bldLength);
+        JSONArray bldWidth= new JSONArray();
+        bldWidth.put(17.392230495361243);
+        building.put("BldWidth",bldWidth);
+        JSONArray bldAngle= new JSONArray();
+        bldAngle.put(42.510447078000844);
+        building.put("BldAngle",bldAngle);
+
+        String buildingInString= building.toString().replace("\"","'");
+
 
         agent.createEmissionInput(requestParams, buildingInString,region, targetCRSName, fullPath);
         File aplFile= new File(fullPath+"/test.apl");
@@ -1352,7 +1561,6 @@ public class ADMSAgentTest {
         File gstFile= new File(fullPath+"/test.levels.gst");
         Assert.assertTrue(gstFile.exists());//check if the file is created
         Assert.assertTrue(gstFile.length()>0);//check if there is data inside the file
-
     }
 
     @Test
