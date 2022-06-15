@@ -248,5 +248,5 @@ def check_coordinates(lat: float, lon:float):
 
 if __name__ == '__main__':
 
-    s = instantiate_all_stations()
-    print(s)
+    response = instantiate_all_stations()
+    print(f"Number of instantiated stations: {response[0]}")
