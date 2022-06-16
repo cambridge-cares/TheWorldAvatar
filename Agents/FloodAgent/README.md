@@ -48,7 +48,7 @@ There are two images that can be built, depending on the requirements and where 
 Updating the database and writing a time series JSON file daily
 
 ```
-docker build --target default -t [TAGNAME]
+docker build --target update -t [TAGNAME]
 ```
 
 This docker image runs the `LaunchScheduledUpdaterAndWriter` class.
