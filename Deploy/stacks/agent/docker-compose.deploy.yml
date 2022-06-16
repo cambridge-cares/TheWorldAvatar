@@ -42,8 +42,8 @@ services:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       OUTPUT_DIR: "/~/"
       POSTGRES_DBNAME: "flood"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "ljeQ2JwCnazYfhsP"
+      POSTGRES_USER: "USER"
+      POSTGRES_PASSWORD: "USER"
       POSTGRES_HOST: "kg.cmclinnovations.com"
       POSTGRES_PORT: 45432
       KG_HOST: "kg.cmclinnovations.com"
