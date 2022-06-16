@@ -53,7 +53,7 @@ def create_geojson_output(station_data, color: str = '#C0392B',
 
         Arguments
             station_data - DataFrame with details about UK AIR stations
-                           (['stationID', 'station', 'label', 'latlon', 'elevation'])
+                           (['stationID', 'station', 'label', 'latlon', 'elevation', 'dtvf_id'])
             color - hex color code for station circles
     """
 
