@@ -259,8 +259,10 @@ class InteractionHandler {
                     }
 
                     // Get coords for the center of the polygon
-                    var center = turf.centroid(feature)["geometry"]["coordinates"];
-                    this._popup.setLngLat(center).setHTML(html).addTo(this._map);
+                    if (feature.geometry.coordinates.length > 0) {
+                        var center = turf.centroid(feature)["geometry"]["coordinates"];
+                        this._popup.setLngLat(center).setHTML(html).addTo(this._map);
+                    }
 
                 break;
 
