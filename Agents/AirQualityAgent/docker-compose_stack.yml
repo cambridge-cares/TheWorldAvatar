@@ -13,8 +13,8 @@ services:
       # Link container output directory to local directory to access output files
       - ./output:/app/output
 
-  blazegraph:
-    container_name: "blazegraph"
+  blazegraph_airquality:
+    container_name: "blazegraph_airquality"
     # potentially different image to be used in the future
     image: docker.cmclinnovations.com/blazegraph_for_tests:1.0.0
     restart: unless-stopped
@@ -23,8 +23,8 @@ services:
     volumes:
       - blazegraph_data:/blazegraph
 
-  postgres:
-    container_name: "postgres"
+  postgres_airquality:
+    container_name: "postgres_airquality"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -38,6 +38,6 @@ services:
 
 volumes:
   blazegraph_data:
-    name: "blazegraph_data"
+    name: "blazegraph_airquality_data"
   postgres_data:
-    name: "postgres_data"
+    name: "postgres_airquality_data"

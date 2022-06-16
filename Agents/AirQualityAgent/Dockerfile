@@ -4,7 +4,7 @@
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.7.11-slim-buster as base
+FROM python:3.9-slim-buster as base
 # Meta data
 LABEL authors = "mh807@cam.ac.uk"
 LABEL description = "UK-AIR Sensor Observation Service agent"

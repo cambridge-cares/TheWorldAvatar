@@ -99,6 +99,8 @@ docker-compose -f "docker-compose.yml" up -d --build airquality_agent_debug
 docker-compose -f "docker-compose.yml" up -d --build airquality_agent_production
 ```
 
+**Please note:**  The End of Line Sequence of the `app_entry_point.sh` file might potentially need to be changed to *LF* for the Docker images to build successfully.
+
 While the production image starts the agent immediately after the container has started, the debugging image awaits for the external debugger to connect before starting the agent. Using `VS Code`, this can be achieved by using the `launch.json` settings below:
 
 ```
@@ -123,6 +125,11 @@ A database connection issue has been observed when using the dockerised agent wi
 Both the Blazegraph namespace and the PostgreSQL database need to be (manually) created after spinning up the Docker step, but before sending the first update request to the dockerised agent.
 
 Both PostgreSQL and Blazegraph use volumes to ensure data persistence and the respective data can be found under `\\wsl$\docker-desktop-data\version-pack-data\community\docker` in the local file system (Windows).
+
+```bash
+# Build production image and spin up container stack
+docker-compose -f "docker-compose_stack.yml" up -d --build
+```
 
 
 ## Provided functionality
