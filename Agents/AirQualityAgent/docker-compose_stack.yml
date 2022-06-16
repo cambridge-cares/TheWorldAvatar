@@ -10,21 +10,20 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      # Link container output directory to local directory to access output files
       - ./output:/app/output
 
-  blazegraph_airquality:
-    container_name: "blazegraph_airquality"
+  blazegraph_aq:
+    container_name: "blazegraph_aq"
     # potentially different image to be used in the future
     image: docker.cmclinnovations.com/blazegraph_for_tests:1.0.0
     restart: unless-stopped
     ports:
       - "8889:9999"
     volumes:
-      - blazegraph_data:/blazegraph
+      - blazegraph_aq_data:/blazegraph
 
-  postgres_airquality:
-    container_name: "postgres_airquality"
+  postgres_aq:
+    container_name: "postgres_aq"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -34,10 +33,10 @@ services:
     ports:
       - "7432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_aq_data:/var/lib/postgresql/data
 
 volumes:
-  blazegraph_data:
-    name: "blazegraph_airquality_data"
-  postgres_data:
-    name: "postgres_airquality_data"
+  blazegraph_aq_data:
+    name: "blazegraph_aq_data"
+  postgres_aq_data:
+    name: "postgres_aq_data"
