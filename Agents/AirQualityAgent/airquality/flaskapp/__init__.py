@@ -15,11 +15,11 @@ def create_app(test_config=None):
         # Import parts of application
         import airquality.flaskapp.home.routes as home
         import airquality.flaskapp.inputtasks.routes as inputtasks
-        #import airquality.flaskapp.outputtasks.routes as outputtasks
+        import airquality.flaskapp.outputtasks.routes as outputtasks
 
         # Register Blueprints
         app.register_blueprint(home.home_bp)
         app.register_blueprint(inputtasks.inputtasks_bp)
-        #app.register_blueprint(outputtasks.outputtasks_bp)
+        app.register_blueprint(outputtasks.outputtasks_bp)
 
     return app

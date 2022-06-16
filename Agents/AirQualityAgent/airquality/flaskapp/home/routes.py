@@ -32,7 +32,7 @@ def default():
     msg += "&nbsp&nbsp /api/airqualityagent/update/all"
     msg += "<BR>"
     msg += "<BR>"
-    # msg += "Request to retrieve data about Met Office stations and create respective output files for DTVF (GET request):<BR>"
-    # msg += "(i.e. request expects all individual query parameter to be provided in a single nested JSON object with key 'query'):<BR>"
-    # msg += "&nbsp&nbsp /api/metofficeagent/retrieve/all"
+    msg += "Request to retrieve data about UK-AIR Sensor Observation Service stations and create respective output files for DTVF (GET request):<BR>"
+    msg += "(i.e. request expects all individual query parameter to be provided in a single nested JSON object with key 'query'):<BR>"
+    msg += "&nbsp&nbsp /api/airqualityagent/retrieve/all"
     return msg

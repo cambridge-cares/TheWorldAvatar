@@ -262,6 +262,6 @@ if __name__ == '__main__':
     # create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output',
     #                          circle_center='52.75#0.4', circle_radius='100')
 
-    # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
+    # create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output',
     #                          circle_center='52.75#0.4', circle_radius='100',
     #                          observation_types=['PM10Concentration'])
