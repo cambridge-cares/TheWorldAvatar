@@ -154,6 +154,7 @@ def get_time_series_data(station_iris: list = None,
             raise InvalidInput(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
 
     # Create DataFrame from instantiated observation time series
+    # ['station', 'stationID', 'quantityType', 'dataIRI', 'comment', 'tsIRI', 'unit', 'reading']
     df = get_instantiated_observation_timeseries(station_iris, query_endpoint, update_endpoint)
     # Get relevant subset of available time series data
     if observation_types:
@@ -180,8 +181,8 @@ def get_time_series_data(station_iris: list = None,
             raise TSException(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
         
         # Get time series names and units (as dict with dataIRIs as key)
-        df_sub = df.loc[df['dataIRI'].isin(dataIRIs), ['dataIRI','unit', 'reading']]
-        ts_names.append(dict(zip(df_sub['dataIRI'], df_sub['reading'])))
+        df_sub = df.loc[df['dataIRI'].isin(dataIRIs), ['dataIRI','unit', 'comment']]
+        ts_names.append(dict(zip(df_sub['dataIRI'], df_sub['comment'].str.capitalize())))
         ts_units.append(dict(zip(df_sub['dataIRI'], df_sub['unit'])))
 
     return ts_data, ts_names, ts_units

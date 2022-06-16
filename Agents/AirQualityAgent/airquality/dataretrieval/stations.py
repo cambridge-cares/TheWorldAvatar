@@ -252,13 +252,11 @@ def create_json_output_files(outdir: str, observation_types: list = None,
 
 if __name__ == '__main__':
 
-    s = get_all_stations_with_details()
-
     # Create station and time series output files
-    #create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output')
+    create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output')
 
-    create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
-                             circle_center='52.75#0.4', circle_radius='100')
+    # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
+    #                          circle_center='52.75#0.4', circle_radius='100')
 
     # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
     #                          circle_center='52.75#0.4', circle_radius='100',
