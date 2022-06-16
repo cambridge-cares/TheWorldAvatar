@@ -20,27 +20,26 @@
 // Output directory path depends on whether agent is deployed ...
 //    ... locally: "<path to Agents folder>/AirQualityAgent/output"
 //    ... in Docker container: "/app/output"
-# GET http://localhost:5000/api/airqualityagent/retrieve/all
-# Content-Type: application/json
-
-# { "query": {
-#       "outDir": "C:/TheWorldAvatar-git/Agents/AirQualityAgent/output",
-#       "daysBack": "14"
-#     }
-# }
-
-
-// Retrieve only selected stations and time series data as of 14 days back
-// Please NOTE that circleCenter and circleRadius require geospatially enabled Blazegraph namespace
-
 GET http://localhost:5000/api/airqualityagent/retrieve/all
 Content-Type: application/json
 
 { "query": {
       "outDir": "C:/TheWorldAvatar-git/Agents/AirQualityAgent/output",
-      "daysBack": 7,
-      "observationTypes": ["PM2.5Concentration", "<https://www.theworldavatar.com/kg/ontoems/PM10Concentration>"],
-      "circleCenter": "52.75#0.4",
-      "circleRadius": 100
+      "daysBack": "14"
     }
 }
+
+
+// Retrieve only selected stations and time series data as of 14 days back
+// Please NOTE that circleCenter and circleRadius require geospatially enabled Blazegraph namespace
+# GET http://localhost:5000/api/airqualityagent/retrieve/all
+# Content-Type: application/json
+
+# { "query": {
+#       "outDir": "C:/TheWorldAvatar-git/Agents/AirQualityAgent/output",
+#       "daysBack": 7,
+#       "observationTypes": ["PM2.5Concentration", "<https://www.theworldavatar.com/kg/ontoems/PM10Concentration>"],
+#       "circleCenter": "52.75#0.4",
+#       "circleRadius": 100
+#     }
+# }

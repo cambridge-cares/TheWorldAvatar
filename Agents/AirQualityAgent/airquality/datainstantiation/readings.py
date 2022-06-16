@@ -52,9 +52,6 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     instantiated_obs = df[['dataIRI', 'stationID', 'comment', 'tsIRI']].copy()
     instantiated_obs.set_index(['stationID', 'comment'], inplace=True)
 
-    #TODO: remove
-    instantiated_ts_iris = list(instantiated_obs['tsIRI'].unique())[:100]
-
     if instantiated_ts_iris:
         instantiated_obs = instantiated_obs[instantiated_obs['tsIRI'].isin(instantiated_ts_iris)]
 

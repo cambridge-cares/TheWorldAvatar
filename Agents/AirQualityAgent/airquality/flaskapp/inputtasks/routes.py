@@ -96,8 +96,7 @@ def api_update_all_stations():
         response = update_all_stations()
         print(f"Number of instantiated stations: {response[0]}")
         print(f"Number of instantiated readings: {response[1]}")
-        # TODO: uncommnet
-        #print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
+        print(f"Number of updated time series readings (i.e. dataIRIs): {response[2]}")
         return jsonify({"stations": response[0], "readings": response[1]})#, 
                         #"reading_timeseries": response[2]})
 
