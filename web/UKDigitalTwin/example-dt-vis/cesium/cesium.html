@@ -7,18 +7,20 @@
 
 	<!-- External CSS -->
 	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
 
 	<!-- External JS -->
-	<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-  	<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
-
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
 	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
 	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
 	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+
+    <!-- CesiumJS -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.88/Build/Cesium/Cesium.js"></script>
+    <!-- <script src="./Cesium/Cesium.js"></script> -->
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.88/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
 
 	<!--
 		The following visualisiation framework files are currently stored locally (as
@@ -44,7 +46,11 @@
 
 	<!-- Implementation specific -->
 	<script src='./local_icons.js'></script>
-	<script src='./camera.js'></script>
+
+	<!-- Cesium wrapper -->
+	<script src='./js/cesium_wrapper.js'></script>
+
+</head>
 </head>
 
 <body>
@@ -79,7 +85,7 @@
 		// This will be visible by inspecting the webpage anyway (either by looking at the source code,
 		// or inspecting the network packets). If it needs protection, limit it's usage to certain source
 		// domains via your MapBox account settings.
-		let mapboxAPI = "pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA";
+		let cesiumAPI = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0Njg4N2NiOS1iMDlkLTQ4N2EtYTUwZS04MGZiNmQ3ZDJjM2IiLCJpZCI6NzYzNjYsImlhdCI6MTYzOTQwNTU5NX0.tvb9aJbPW_iGfxwQKPFOhENjnLD_aQm6FaAgXojuOU8"
 
 	</script>
 
@@ -90,6 +96,7 @@
 
 		// We could have wholesale data packages, so register multiple possible root directories
 		let rootDirectories = {
+			"BIM": "./data/set-5",
 			"Mixed": "./data/set-1",
 			"Zoom Limited": "./data/set-2",
 			"Clustered": "./data/set-3",
@@ -98,7 +105,7 @@
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Mixed", function() {
+		manager.readMetadata("BIM", async function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
@@ -127,11 +134,29 @@
 		}
 
 		// Will run once metadata is loaded asynchronously
-		function startUp() {
-			// Create the MapBox map
-			var map = manager.createMap("map");
+		async function startUp() {
+			// Create the Cesium map
+			Cesium.Ion.defaultAccessToken = cesiumAPI;
+			let map = new CesiumWrapper("map");
+			manager.initialiseMap(map);
 			var iconHandler = new IconHandler(map);
 
+			const viewer = map._viewer;
+			const position = Cesium.Cartesian3.fromDegrees(0.10188, 52.21200, 0);
+			const orientation = Cesium.Transforms.headingPitchRollQuaternion(
+				position,
+				new Cesium.HeadingPitchRoll(1.6, 0, 0)
+			)
+			const entity = viewer.entities.add({
+				name: "./data/set-5/Churchill.gltf",
+				position: position,
+				orientation: orientation,
+				model: {
+				uri: "./data/set-5/Churchill.gltf",
+				scale: 100,
+				},
+			});
+			
 			// Provide some default content for the side panel
 			let title = `<h1>Example Visualisation</h1>`;
 			let content = `
