@@ -87,7 +87,7 @@ def get_instantiated_observation_timeseries(stations: list = None,
     df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 
                                'comment', 'tsIRI', 'unit'], data=results)
     # Add column with shorthand of quantity type
-    df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
+    df['reading'] = df['quantityType'].apply(lambda x: x.split('/')[-1])
     
     return df
 
@@ -158,7 +158,8 @@ def get_time_series_data(station_iris: list = None,
     df = get_instantiated_observation_timeseries(station_iris, query_endpoint, update_endpoint)
     # Get relevant subset of available time series data
     if observation_types:
-        df = df[df['reading'].isin(observation_types)]
+        observation_types = [str(i).lower() for i in observation_types]
+        df = df[df['reading'].str.lower().isin(observation_types)]
 
     # Get list of lists of dataIRIs to retrieve
     dataIRIs_list = [list(df.loc[df['tsIRI'] == tsIRI, 'dataIRI']) for tsIRI in df['tsIRI'].unique()]

@@ -139,14 +139,13 @@ def create_json_output_files(outdir: str, observation_types: list = None,
 
         Arguments:
             outdir - absolute path to output directory for (geo)json files
-            observation_types - list of observation types (e.g., AirTemperature)
+            observation_types - list of observation types (e.g., PM10Concentration)
                                 for which to retrieve data (all if None)
             circle_center - center for Blazegraph's geo:search "inCircle" mode
                             in WGS84 coordinates as 'latitude#longitude'
             circle_radius - radius for geo:search in km            
             tmin - oldest time step for which to retrieve data
             tmax - latest time step for which to retrieve data
-            split_obs_fcs - boolean flag
     """
 
     # Validate input
@@ -255,9 +254,14 @@ if __name__ == '__main__':
     # Create station and time series output files
     create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output')
 
-    # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
+    # create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output',
+    #                          observation_types=['PM10Concentration'])
+
+    # Data retrieval with geospatial search require a geospatially-enabled
+    # Blazegraph namespace to work successfully
+    # create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output',
     #                          circle_center='52.75#0.4', circle_radius='100')
 
     # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
     #                          circle_center='52.75#0.4', circle_radius='100',
-    #                          observation_types=['AirTemperature'])
+    #                          observation_types=['PM10Concentration'])
