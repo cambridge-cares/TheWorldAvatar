@@ -19,7 +19,7 @@ from airquality.kgutils.timeseries import TSClient
 from airquality.kgutils.querytemplates import *
 from airquality.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from airquality.errorhandling.exceptions import InvalidInput
-# from airquality.dataretrieval.readings import get_time_series_data
+from airquality.dataretrieval.readings import get_time_series_data
 from airquality.utils.output_formatting import create_geojson_output, create_metadata_output
 
 # Initialise logger
@@ -159,14 +159,12 @@ def create_json_output_files(outdir: str, observation_types: list = None,
                       os.path.join(pathlib.Path(outdir), 'airquality_stations_woTS.geojson')]
         fp_metadata = [os.path.join(pathlib.Path(outdir), 'airquality_stations-meta.json'),
                        os.path.join(pathlib.Path(outdir), 'airquality_stations_woTS-meta.json')]
-        fp_timeseries = [os.path.join(pathlib.Path(outdir), 'airquality_stations-timeseries.json')]
+        fp_timeseries = os.path.join(pathlib.Path(outdir), 'airquality_stations-timeseries.json')
         color = '#C0392B'
         opacity = 0.66
     
     # Initialise output/collection lists
-    stat_details = []
-    ts_data, ts_names, ts_units = [], [], []
-    geojson, metadata, timeseries = [], [], []
+    geojson, metadata = [], []
 
     #
     ###---  Retrieve KG data  ---###
@@ -188,17 +186,17 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     dtvf_ids =dict(zip(station_iris, range(len(station_iris))))
     station_details['dtvf_id'] = station_details['station'].map(dtvf_ids)
    
-    # # 2) Get time series data
-    # print('Retrieving time series data from KG ...')
-    # #logger.info('Retrieving time series data from KG ...')
-    # t1 = time.time()
-    # obs_fcs = get_time_series_data(station_iris, observation_types, True, True,
-    #                                tmin, tmax, query_endpoint, update_endpoint)
-    # ts_data.append(obs_fcs[0]); ts_names.append(obs_fcs[1]); ts_units.append(obs_fcs[2])
-    # t2 = time.time()
-    # diff = t2-t1
-    # print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-    # #logger.info('Time series successfully retrieved.')
+    # 2) Get time series data
+    print('Retrieving time series data from KG ...')
+    #logger.info('Retrieving time series data from KG ...')
+    t1 = time.time()    
+    ts_data, ts_names, ts_units = get_time_series_data(station_iris, observation_types,
+                                                       tmin, tmax, query_endpoint,
+                                                       update_endpoint)
+    t2 = time.time()
+    diff = t2-t1
+    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    #logger.info('Time series successfully retrieved.')
 
     #
     ###---  Create output files  ---###
@@ -206,14 +204,6 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     # Initialise time series client   
     ts_client = TSClient.tsclient_with_default_settings()
     # Create output files for each set of retrieved time series data
-    # # Get output data
-    # ts = ts_data[i]
-    # units = ts_units[i]
-    # names = ts_names[i]    
-
-    # # Convert unintelligible ontology of units of measure symbols for DTVF
-    # for u in units:
-    #     u.update((k, v.replace('&#x00B0;','°')) for k, v in u.items())
 
     print('Creating output files (geojson, metadata, timeseries) ...')
     #logger.info('Creating output files (geojson, metadata, timeseries) ...')
@@ -226,18 +216,18 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     # 2) Create JSON file for ReportingStations metadata
     metadata.append(create_metadata_output(stations))
 
-    # # 3) Create Time series output    
-    # # Get List of corresponding dtvf ids for list of time series
-    # # (to assign time series output to correct station in DTVF)
-    # dataIRIs = [t.getDataIRIs()[0] for t in ts]
-    # id_list = [int(stations.loc[stations['dataIRI'] == i, 'dtvf_id'].values) for i in dataIRIs]
-    # tsjson = ts_client.convertToJSON(ts, id_list, units, names)
-    # # Make JSON file readable in Python
-    # timeseries.append(json.loads(tsjson.toString()))
-    # t2 = time.time()
-    # diff = t2-t1
-    # print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
-    # #logger.info('Output files successfully created.')
+    # 3) Create Time series output    
+    # Get List of corresponding dtvf ids for list of time series
+    # (to assign time series output to correct station in DTVF)
+    dataIRIs = [t.getDataIRIs()[0] for t in ts_data]
+    id_list = [int(stations.loc[stations['dataIRI'] == i, 'dtvf_id'].values) for i in dataIRIs]
+    tsjson = ts_client.convertToJSON(ts_data, id_list, ts_units, ts_names)
+    # Make JSON file readable in Python
+    timeseries = json.loads(tsjson.toString())
+    t2 = time.time()
+    diff = t2-t1
+    print(f'Finished after: {diff//60:5>n} min, {diff%60:4.2f} s \n')
+    #logger.info('Output files successfully created.')
 
     # Create output files for stations without any time series data
     stations = station_details[station_details['dataIRI'].isna()]
@@ -254,10 +244,9 @@ def create_json_output_files(outdir: str, observation_types: list = None,
             json.dump(geojson[i], indent=4, fp=f)
         with open(fp_metadata[i], 'w') as f:
             json.dump(metadata[i], indent=4, fp=f)
-        # if i < len(fp_geojson):
-        #     # No time series data for stations w/o time series
-        #     with open(fp_timeseries[i], 'w') as f:
-        #         json.dump(timeseries[i], indent=4, fp=f)
+    # No time series data for stations w/o time series
+    with open(fp_timeseries, 'w') as f:
+        json.dump(timeseries, indent=4, fp=f)
     print('Finished!\n')
 
 
@@ -265,15 +254,11 @@ if __name__ == '__main__':
 
     s = get_all_stations_with_details()
 
-    # Create 1 joint time series output file
-    # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
-    #                          split_obs_fcs=False)
-
-    # Create 2 separate time series output file
+    # Create station and time series output files
     #create_json_output_files('C:\TheWorldAvatar-git\Agents\AirQualityAgent\output')
 
-    # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
-    #                          circle_center='52.75#0.4', circle_radius='100')
+    create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
+                             circle_center='52.75#0.4', circle_radius='100')
 
     # create_json_output_files('C:\TheWorldAvatar-git\Agents\MetOfficeAgent\output',
     #                          circle_center='52.75#0.4', circle_radius='100',

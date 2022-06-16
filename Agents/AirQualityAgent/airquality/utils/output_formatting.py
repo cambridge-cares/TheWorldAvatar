@@ -53,7 +53,7 @@ def create_geojson_output(station_data, color: str = '#C0392B',
 
         Arguments
             station_data - DataFrame with details about UK AIR stations
-                           (['stationID', 'station', 'comment', 'latlon', 'elevation'])
+                           (['stationID', 'station', 'label', 'latlon', 'elevation'])
             color - hex color code for station circles
     """
 
@@ -77,8 +77,8 @@ def create_geojson_output(station_data, color: str = '#C0392B',
             lat = float(lat)
             lon = float(lon)
             props = geojson_props.copy()
-            props['displayName'] = row['comment'] if row['comment'] and \
-                                   row['comment'] is not nan else 'n/a'
+            props['displayName'] = row['label'] if row['label'] and \
+                                   row['label'] is not nan else 'n/a'
             # Append data to GeoJSON
             # Blazegraph stores coordinates as lat#lon; however GeoJSON requires
             # reversed order, i.e. longitude first
@@ -107,7 +107,7 @@ def create_metadata_output(station_data):
 
         Arguments
             station_data - DataFrame with details about MetOffice stations
-                           (['stationID', 'station', 'comment', 'latlon', 'elevation'])
+                           (['stationID', 'station', 'label', 'latlon', 'elevation'])
     """
 
     # Initialise geojson dict
@@ -120,7 +120,7 @@ def create_metadata_output(station_data):
     for index, row in data.iterrows():
         # Retrieve data from DataFrame
         dtvf_id = int(row['dtvf_id'])
-        name = row['comment']
+        name = row['label']
         if '#' in row['latlon']:
             lat, lon = row['latlon'].split('#')
             lat = float(lat)
