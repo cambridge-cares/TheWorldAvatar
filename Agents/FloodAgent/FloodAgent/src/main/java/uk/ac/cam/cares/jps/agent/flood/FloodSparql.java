@@ -186,6 +186,7 @@ public class FloodSparql {
     			stationObject = station_map.get(stationIri);
     		} else {
     			stationObject = new Station(stationIri);
+				station_map.put(stationIri, stationObject);
 				stations.add(stationObject);
 			}
 
@@ -251,6 +252,9 @@ public class FloodSparql {
 					case "Water Level":
 						quantityIri = iri(station.getIri() + "/WaterLevel");
 						modify.insert(quantityIri.isA(WaterLevel));
+						// add dummy triple for range so that sparql update will work
+						modify.insert(iri(measure.getIri()).has(hasCurrentRange, UnavailableRange));
+						modify.insert(iri(measure.getIri()).has(hasCurrentTrend, UnavailableTrend));
 						break;
 					case "Flow":
 						quantityIri = iri(station.getIri() + "/Flow");
@@ -287,10 +291,6 @@ public class FloodSparql {
 				if (unitMap.containsKey(measure.getUnit())) {
 					modify.insert(iri(measure.getIri()).has(hasUnit, unitMap.get(measure.getUnit())));
 				}
-
-				// add dummy triple for range so that sparql update will work
-				modify.insert(iri(measure.getIri()).has(hasCurrentRange, UnavailableRange));
-				modify.insert(iri(measure.getIri()).has(hasCurrentTrend, UnavailableTrend));
 			}
 		}
 		modify.prefix(p_ems,p_om);
