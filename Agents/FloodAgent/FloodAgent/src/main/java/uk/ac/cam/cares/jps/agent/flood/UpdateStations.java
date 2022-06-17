@@ -92,38 +92,34 @@ public class UpdateStations {
     		UpdateStations.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	}
     	
-    	if (!sparqlClient.checkUpdateDateExists(tsClient,date)) {
-    		LOGGER.info("Updating data for " + date);
-    		
-			List<Map<String,?>> processed_data;
-	    	try {            
-	            // process data into tables before upload
-	            processed_data = processAPIResponse(api);
-	    	} catch (Exception e) {
-	    		LOGGER.error(e.getMessage());
-	    		throw new JPSRuntimeException(e);
-	    	}
+		LOGGER.info("Updating data for " + date);
+		
+		List<Map<String,?>> processed_data;
+		try {            
+			// process data into tables before upload
+			processed_data = processAPIResponse(api);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
 
-	        // upload to postgres
-	        uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
+		// upload to postgres
+		uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
 
-			List<String> measureIRIs = new ArrayList<>(processed_data.get(0).keySet());
-			
-			// checks final value and marks it as normal/high/low
-			List<Measure> stageScaleMeasureList = sparqlClient.addRangeForStageScale(tsClient, measureIRIs);
-			List<Measure> downstageMeasureList = sparqlClient.addRangeForDownstageScale(tsClient, measureIRIs);
+		List<String> measureIRIs = new ArrayList<>(processed_data.get(0).keySet());
+		
+		// checks final value and marks it as normal/high/low
+		List<Measure> stageScaleMeasureList = sparqlClient.addRangeForStageScale(tsClient, measureIRIs);
+		List<Measure> downstageMeasureList = sparqlClient.addRangeForDownstageScale(tsClient, measureIRIs);
 
-			// calculate difference between first and final values, and mark as rising/falling/steady
-			Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
-    		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
-			sparqlClient.addTrends(tsClient, stageScaleMeasureList, lowerbound, upperbound);
-			sparqlClient.addTrends(tsClient, downstageMeasureList, lowerbound, upperbound);
+		// calculate difference between first and final values, and mark as rising/falling/steady
+		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
+		sparqlClient.addTrends(tsClient, stageScaleMeasureList, lowerbound, upperbound);
+		sparqlClient.addTrends(tsClient, downstageMeasureList, lowerbound, upperbound);
 
-	        // update last updated date
-	        addUpdateDate(tsClient,date);
-    	} else {
-    		LOGGER.info("Data for " + date + " exists, ignoring update request");
-    	}
+		// update last updated date
+		addUpdateDate(tsClient,date);
 	}
 	
 	/**
@@ -260,21 +256,12 @@ public class UpdateStations {
         	}
         	
         	try {
-        		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
-    			Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
-    			TimeSeries<Instant> ts_query = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRI), lowerbound, upperbound);
-    			
-    			// ensure that we do not upload duplicate data
-    			if (ts_query.getTimes().size() == 0) {
-    				// create time series object to upload to the client
-                	List<List<?>> values = new ArrayList<>();
-                	values.add(datavalue_map.get(dataIRI));
-                	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
-                	tsClient.addTimeSeriesData(ts);
-                	LOGGER.debug("Uploaded data for " + dataIRI);
-    			} else {
-    				LOGGER.info("Skipping " + dataIRI + ", data for " + date + " exists");
-    			}
+    			// create time series object to upload to the client
+                List<List<?>> values = new ArrayList<>();
+                values.add(datavalue_map.get(dataIRI));
+                TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
+                tsClient.addTimeSeriesData(ts);
+                LOGGER.debug("Uploaded data for " + dataIRI);
         	} catch (Exception e) {
         		num_failures += 1;
         	    LOGGER.error(e.getMessage());
@@ -289,7 +276,7 @@ public class UpdateStations {
 	static void addUpdateDate(TimeSeriesClient<Instant> tsClient, LocalDate date) {
 		List<List<?>> values = new ArrayList<>();
 		values.add(Arrays.asList(date));
-		TimeSeries<Instant> ts = new TimeSeries<Instant>(Arrays.asList(Instant.now()), Arrays.asList(Config.TIME_IRI), values);
+		TimeSeries<Instant> ts = new TimeSeries<Instant>(Arrays.asList(date.atStartOfDay(ZoneOffset.UTC).toInstant()), Arrays.asList(Config.TIME_IRI), values);
 		tsClient.addTimeSeriesData(ts);
 	}
 }
