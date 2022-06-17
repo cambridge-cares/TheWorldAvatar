@@ -451,11 +451,11 @@ public class JobSubmission{
 					jsch.setIdentityRepository(irepo);
 					// If successful then attempt to authenticate using a public key first,
 					// falling back to using the password if no valid key is found
-					session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
+					LOGGER.info("Authenticating using Pageant");
 				} catch (AgentProxyException e) {
 					// Connecting to Pageant has failed so skip trying to authenticate
 					// using a public key and just try with the password
-					session.setConfig("PreferredAuthentications", "password");
+					LOGGER.info("Authenticating using password");
 				}
 
 				session.setConfig("StrictHostKeyChecking", "no");
