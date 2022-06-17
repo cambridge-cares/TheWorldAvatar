@@ -601,13 +601,14 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
             for ts_id in df.index.unique():
                 # Remove entries with missing values, i.e. with code "-99"
                 non_missing = df.loc[ts_id][df.loc[ts_id, 'value'] != -99]
-                times = non_missing.loc[ts_id]['timestamp']
-                # Handle cases where only single entries might be returned
-                times = [times] if isinstance(times, str) else times.values.tolist()
-                values = non_missing.loc[ts_id]['value']
-                values = [values] if isinstance(values, float) else values.values.tolist()
-                all_ts[ts_id] = {'times': times,
-                                 'values': values }
+                if not non_missing.empty:
+                    times = non_missing.loc[ts_id]['timestamp']
+                    # Handle cases where only single entries might be returned
+                    times = [times] if isinstance(times, str) else times.values.tolist()
+                    values = non_missing.loc[ts_id]['value']
+                    values = [values] if isinstance(values, float) else values.values.tolist()
+                    all_ts[ts_id] = {'times': times,
+                                    'values': values }
 
     return all_ts
 
