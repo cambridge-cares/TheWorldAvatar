@@ -333,9 +333,15 @@ public class WriteOutputs {
 		List<Integer> visId = new ArrayList<>();
 		
 		for (Station station : stations) {
-			TimeSeries<Instant> combined_ts = station.getCombinedTimeSeries(tsClient);
-			ts_list.add(combined_ts);
-			
+			// sometimes connection to the RDB is unstable, causing some stations with missing timeseries object
+			try {
+				TimeSeries<Instant> combined_ts = station.getCombinedTimeSeries(tsClient);
+				ts_list.add(combined_ts);
+			} catch (IndexOutOfBoundsException e) {
+				LOGGER.warn(e.getMessage());
+				LOGGER.warn("Probably due to failed connections to the RDB");
+			}
+
 			Map<String,String> measure_header_map = new HashMap<>();
 			Map<String,String> measure_unit_map = new HashMap<>();
 			
