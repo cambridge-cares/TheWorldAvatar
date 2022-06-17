@@ -425,6 +425,7 @@ def retrieve_readings_information_from_api(crs: str = 'EPSG:4326'):
 
     # Query readings metadata from API
     ts_ids = list(df['ts_id'].unique())
+
     # Number of days back to check whether the time series has current data
     # --> only time series with recent data will be considered, as API contains
     # lots of outdated or inactive timeseries (e.g. last reading 10 years back)
@@ -598,20 +599,20 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
                         dt.datetime.utcfromtimestamp(x/1000).strftime(TIME_FORMAT))
             # Add time series data to overall dict
             for ts_id in df.index.unique():
-                times = df.loc[ts_id,:]['timestamp']
+                # Remove entries with missing values, i.e. with code "-99"
+                non_missing = df.loc[ts_id][df.loc[ts_id, 'value'] != -99]
+                times = non_missing.loc[ts_id]['timestamp']
                 # Handle cases where only single entries might be returned
                 times = [times] if isinstance(times, str) else times.values.tolist()
-                values = df.loc[ts_id,:]['value']
+                values = non_missing.loc[ts_id]['value']
                 values = [values] if isinstance(values, float) else values.values.tolist()
                 all_ts[ts_id] = {'times': times,
-                                    'values': values }
+                                 'values': values }
 
     return all_ts
 
 
 if __name__ == '__main__':
-
-    add_all_readings_timeseries()
 
     response = update_all_stations()
     print(f"Number of instantiated stations: {response[0]}")
