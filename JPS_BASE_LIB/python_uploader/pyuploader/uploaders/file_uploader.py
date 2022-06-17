@@ -1,8 +1,7 @@
-from pyuploader.uploaders.uploader import Uploader
-import pyuploader.common.utils as utils
+from pyuploader.uploaders.uploader import Uploader, Upload_Client
 import functools as functools
 import requests
-from typing import Tuple, Optional, Callable
+from typing import Tuple, Optional, Callable, List
 
 FS_URL_ENV_VAR_VALUE = 'KG_FILE_SERVER_SPECS'
 FS_AUTH_ENV_VAR_VALUE = 'KG_FILE_SERVER_SECRETS'
@@ -15,7 +14,7 @@ class File_Server_Uploader(Uploader):
         self,
         uploader_name: str = FS_UPLOADER,
         subdirs: Optional[str] = None,
-        supported_file_ext: str = 'all',
+        supported_file_ext: List[str] = ['all'],
         url: Optional[str] = None,
         auth_file: Optional[str] = None,
         no_auth: bool = False,
@@ -33,11 +32,11 @@ class File_Server_Uploader(Uploader):
             auth_file_env_var=auth_file_env_var if auth_file_env_var is not None else FS_AUTH_ENV_VAR_VALUE)
 
 
-    def _get_upload_client(self, url: str, auth: Tuple[str,str])->Callable[[str], str]:
+    def _get_upload_client(self, url: str, auth: Tuple[str,str]) -> Upload_Client:
         return functools.partial(self.__upload_wrapper, url, auth)
 
     @staticmethod
-    def __upload_wrapper(url: str, auth: Tuple[str,str], file_path: str)->str:
+    def __upload_wrapper(url: str, auth: Tuple[str,str], file_path: str, *kwargs)->str:
         with open(file_path,'rb') as file_obj:
             response = requests.post(url= url,
                                     auth= auth,
@@ -48,7 +47,7 @@ class File_Server_Uploader(Uploader):
 def get_file_server_uploader(
         uploader_name: str = 'file server',
         subdirs: Optional[str] = None,
-        supported_file_ext: str='all',
+        supported_file_ext: List[str] = ['all'],
         url: Optional[str] = None,
         auth_file: Optional[str] = None,
         no_auth: bool = False,
