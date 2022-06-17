@@ -5,6 +5,8 @@
 
         <!-- JS -->
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
         <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
         <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
@@ -17,6 +19,7 @@
         <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
+        <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
         <link href="./dtvf.min.css" rel="stylesheet" />
         <link href="./controls.css" rel="stylesheet" />
     </head>
@@ -84,7 +87,13 @@
                 </div>
 
                 <!-- Container for developer info -->
-                <div id="developerContainer" class="controlBlock"></div>
+                <div id="developerContainer" class="controlBlock" style="display: none;">
+                    <div class="tooltip" id="coordEditor" style="float: right;">
+                        <i class="fas fa-pencil-alt" onclick="manager.editInfoPanel()"></i>
+                        <span class="tooltiptext">Change map position</span>
+                    </div>
+                    <div id="coordsContainer" style="width: 100%; height: 100%;"></div>
+                </div>
             </div>
         </div>
 
@@ -99,20 +108,30 @@
                 <span class="tooltiptext">Maximise/Minimise</span>
             </div>
             <div id="sidePanelInner">
-                <div id="titleContainer"></div>
-                <div id="contentContainer"></div>
-                <div id="legendContainer"></div>
-                <div id="footerContainer">
-                    <div id="returnContainer">
-                        <a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
+                <ul>
+                    <li><a href="#sidePanelGeneral">General</a></li>
+                    <li><a href="#sidePanelLegend">Legend</a></li>
+                    <li><a href="#sidePanelLinks">Links</a></li>
+                </ul>
+                <div id="sidePanelGeneral">
+                    <div id="titleContainer"></div>
+                    <div id="contentContainer"></div>
+                    <div id="legendContainer"></div>
+                    <div id="footerContainer">
+                        <div id="returnContainer">
+                            <a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
+                        </div>
+                        <div id="footerContent"></div>
                     </div>
-                    <div id="footerContent"></div>
                 </div>
+                <div id="sidePanelLegend"></div>
+                <div id="sidePanelLinks"></div>
             </div>
         </div>
 
         <!-- Code entry point -->
         <script>
+            $("#sidePanelInner").tabs();
 
             // Create a new manager instance
             MapHandler.MAP_API = "pk.eyJ1IjoibWhpbGxtYW4iLCJhIjoiY2t1NW5wMDF3MnBzaDJ2cWhyZ2MxbHh4diJ9.TPv5CXdhGvFPkL28tTeXTA";
@@ -167,8 +186,8 @@
                 // Once the underlying style has loaded...
                 MapHandler.MAP.on("style.load", function() {
 
-                    // Load registered images
-                    manager.loadImages().then(() => {
+                    // Load registered images and linked files
+                    manager.loadImagesAndLinks().then(() => {
 
                         // Plot the default visible data
                         manager.plotData();

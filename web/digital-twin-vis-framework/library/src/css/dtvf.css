@@ -131,13 +131,10 @@ h6 {
 }
 
 #sidePanelInner {
-    width: calc(100% - 56px);
-    margin-left: 28px;
-    margin-right: 28px;
-    margin-bottom: 10px;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    height: calc(100% - 20px);
+    height: calc(100% - 27px);
 }
 
 #titleContainer {
@@ -160,6 +157,7 @@ h6 {
 .description {
     padding-bottom: 10px;
     border-bottom: 1px solid lightgray;
+    font-size: 10pt;
 }
 
 #contentContainer {
@@ -190,7 +188,7 @@ h6 {
     text-align: center;
     height: 40px;
     position: absolute;
-    bottom: 0;
+    bottom: 30;
     left: 0;
     right: 0;
 }
@@ -302,13 +300,14 @@ h6 {
     width: 39%;
     height: 100%;
     font-family: Inter, sans-serif !important;
-    font-size: 11pt;
+    font-size: 10pt;
     display: inline-block;
 }
 #time-series-control select {
     width: 59%;
     height: 100%;
     display: inline-block;
+    font-size: 10pt;
 }
 
 #time-series-title {
@@ -430,7 +429,6 @@ h6 {
 #metaTabs {
     margin-top: 20px;
     width: 100%;
-    height: 50px;
 }
 #metaTabs button {
     border: 1px solid #cccccc;
@@ -438,9 +436,10 @@ h6 {
     float: left;
     outline: none;
     cursor: pointer;
-    padding: 14px 16px;
     transition: 0.3s;
     width: 50%;
+    font-size: 10pt;
+    height: 40px;
 }
 #treeButton {
     border-radius: 10px 0px 0px 10px;
@@ -490,11 +489,10 @@ h6 {
     vertical-align: middle;
 }
 
-#developerContainer {
-    background-color: rgba(0, 0, 0, 0.4);
-    border-radius: 8px;
-    padding: 10px;
-    margin-top: 10px;
+.infoContainer {
+    color: #FFFFFF !important;
+    font-family: Inter, sans-serif !important;
+    font-size: 9pt !important;
 }
 
 #linkedFilesContainer {
@@ -905,4 +903,74 @@ label[for="select-feature"] {
 #featureSelectContainer select {
     width: 100%;
     height: 100%;
+}
+
+#sidePanelLegend {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: block;
+    padding: 5px;
+    margin: 0px 20px 40px 20px;
+}
+.ui-tabs-anchor {
+    font-size: 10pt;
+    font-weight: bold;
+}
+#sidePanelInner .ui-widget-header {
+    background: rgb(240, 240, 240);
+    border: none;
+    border-radius: 0px;
+    padding: 5px 5px 0px 5px;
+
+}
+#sidePanelInner .ui-tabs-nav { 
+    position: absolute; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    border: none;
+    padding-top: 0px;
+    height: 30px;
+} 
+.ui-widget-content {
+    border: none !important;
+}
+.ui-widget.ui-widget-content {
+    border: none !important;
+}
+.ui-tabs {
+    padding: 0em !important;
+}
+
+#sidePanelInner .ui-tabs-nav li { 
+    border-top: none; 
+    border-bottom: 1px solid #ccc; 
+    -moz-border-radius: 0px 0px 4px 4px; 
+    -webkit-border-radius: 0px 0px 4px 4px; 
+    border-radius: 0px 0px 4px 4px; 
+    height: 25px;
+} 
+#sidePanelInner .ui-tabs-nav li.ui-tabs-selected, 
+#sidePanelInner .ui-tabs-nav li.ui-state-active { 
+    top: -1px; 
+}
+#sidePanelGeneral {
+    height: calc(100% - 50px);
+}
+#sidePanelLinks {
+    height: calc(100% - 50px);
+    font-size: 10pt;
+   
+}
+#sidePanelLinks a {
+    color: blue;
+}
+#sidePanelLinks li {
+    list-style-type: disc !important;
+    padding-left: 10px;
+}
+
+.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+    font-size: 9pt;
 }

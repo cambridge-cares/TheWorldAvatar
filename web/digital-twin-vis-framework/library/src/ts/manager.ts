@@ -3,6 +3,7 @@
  */
 class Manager {
 
+    private editingCoords: boolean;
     /**
      * 
      */
@@ -79,6 +80,7 @@ class Manager {
         this.controlHandler.rebuildTree(Manager.DATA_STORE);
 
         this.panelHandler.toggleMode();
+        this.showInfoPanel();
     }
 
     /**
@@ -104,7 +106,7 @@ class Manager {
     /**
      * 
      */
-    public loadImages() {
+    public loadImagesAndLinks() {
         let promises = [];
 
         this.endPoints.forEach(endPoint => {
@@ -114,6 +116,9 @@ class Manager {
                     (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile)
                 );
             }
+
+            let linksFile = (endPoint.endsWith("/")) ? (endPoint + "links.json") : (endPoint + "/links.json");
+            promises.push(this.panelHandler.addLinks(linksFile));
         });
         return Promise.all(promises);
     }
@@ -186,9 +191,9 @@ class Manager {
             this.panelHandler.addTimeseries(timeseriesURL);
         }
 
-        // TODO - Enable after further testing
-        // let metaTabs = document.getElementById("metaTabs") as HTMLInputElement;
-        // metaTabs.style.display = (metaTabs.childElementCount < 2) ? "none" : "block";
+        // Simulate click on meta button
+        let metaTreeButton = document.getElementById("treeButton");
+        if(metaTreeButton !== null) metaTreeButton.click();
 
         // Update footer
         document.getElementById("footerContainer").innerHTML = `
@@ -205,8 +210,6 @@ class Manager {
      * @param {String} tabName 
      */
     openMetaTab(tabButtonName, tabName) {
-        console.log(tabButtonName + ", " + tabName);
-        
         // Declare all variables
         var i, tabcontent, tablinks;
       
@@ -229,6 +232,92 @@ class Manager {
 
     public updateTimeseries(setName) {
         this.panelHandler.updateTimeseries(setName);
+    }
+
+    /**
+	 * Shows debugging info, like mouse position.
+	 */
+	public showInfoPanel() {
+		let developerInfo = document.getElementById("developerContainer");
+		developerInfo.style.display = "block !important";
+
+		let self = this;
+		MapHandler.MAP.on("mousemove", function(event) {
+			self.updateInfoPanel(event);
+		});
+	}
+
+	/**
+	 * Update developer info panel.
+	 */
+	private updateInfoPanel(event) {
+        if(this.editingCoords) return;
+
+		let developerInfo = document.getElementById("developerContainer");
+		developerInfo.style.display = "block";
+
+        let lng, lat;
+        if(event === null || event === undefined) {
+            lng = document.getElementById("lngCell").innerHTML;
+		    lat = document.getElementById("latCell").innerHTML;
+        } else {
+            lng = event.lngLat.lng.toFixed(5);
+		    lat = event.lngLat.lat.toFixed(5);
+        }
+		
+
+        let coordsContainer = document.getElementById("coordsContainer");
+		coordsContainer.innerHTML = `
+			<table class="infoContainer" style="width: 100%; table-layout: fixed;">
+				<tr>
+                    <td width="60%">Longitude (at cursor):</td>
+					<td width="40%" id="lngCell">` + lng + `</td>
+				</tr>
+				<tr>
+                    <td width="60%">Latitude (at cursor):</td>
+					<td width="40%" id="latCell">` + lat + `</td>
+				</tr>
+			</table>
+		`;
+	}
+
+    public editInfoPanel() {
+        let lng = document.getElementById("lngCell").innerHTML;
+		let lat = document.getElementById("latCell").innerHTML;
+
+        let coordsContainer = document.getElementById("coordsContainer");
+		coordsContainer.innerHTML = `
+			<table class="infoContainer" style="margin-top: 10px; width: 100%; table-layout: fixed;">
+				<tr>
+					<td width="50%">Map longitude:</td>
+					<td width="50%"><input id="lngCell" type="number" style="width: 100%;" value="` + lng + `"></input></td>
+				</tr>
+				<tr>
+					<td width="50%">Map latitude:</td>
+					<td width="50%"><input id="latCell" type="number" style="width: 100%;" value="` + lat + `"></input></td>
+				</tr>
+                <tr>
+                    <td width="50%"></td>
+					<td width="50%"><button style="width: 100%;" onclick="manager.moveMap()">Apply</button></td>
+				</tr>
+			</table>
+		`;
+        this.editingCoords = true;
+    }
+
+    public moveMap() {
+        let lng = (document.getElementById("lngCell") as HTMLInputElement).value;
+		let lat = (document.getElementById("latCell") as HTMLInputElement).value;
+
+        let target = [lng, lat];
+        console.log(target);
+
+        MapHandler.MAP.jumpTo({
+            center: target
+        });
+
+        this.editingCoords = false;
+        this.updateInfoPanel(null);
     }
 
 }

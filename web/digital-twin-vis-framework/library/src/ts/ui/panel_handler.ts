@@ -69,7 +69,6 @@ class PanelHandler {
 		if(sidePanel.classList.contains("large")) {
 			document.getElementById("controlsParent").style.visibility = "hidden";
 		}
-        console.log("content set!");
 	}
 
     /**
@@ -238,9 +237,6 @@ class PanelHandler {
         let self = this;
         return promise.then(
             function(json) {
-                console.log("Parsing?");
-                console.log(this.timeseriesHandler);
-
                 // Render timeseries
                 document.getElementById("metaTimeContainer").innerHTML = "";
 
@@ -249,7 +245,6 @@ class PanelHandler {
                 self.timeseriesHandler.showData("metaTimeContainer");
 
                 // Auto-select the first option in the dropdown
-                console.log(self.timeseriesHandler);
                 let select = document.getElementById("time-series-select") as HTMLInputElement;
                 select.onchange(null);
             }
@@ -298,5 +293,38 @@ class PanelHandler {
         returnContainer.style.display = "block";
         let footerContent = document.getElementById("footerContent");
         footerContent.style.display = "none";
+    }
+
+    public addLinks(linksFile: string) {
+        console.log(linksFile);
+        let promise = $.getJSON(linksFile, function(json) {
+            return json;
+        }).fail(function(jqXHR, status, error){
+           console.log("ERROR");
+           console.log(status);
+           console.log(error);
+        });
+
+        return promise.then(
+            function(json) {
+                console.log(json);
+                let container = document.getElementById("sidePanelLinks");
+                if(container === null) return;
+
+                if(json["intro"]) {
+                    container.innerHTML += "<p>" + json["intro"] + "</p>"
+                }
+
+                if(json["links"]) {
+                    container.innerHTML += "<ul>";
+
+                    for(let i = 0; i < json["links"].length; i++) {
+                        let entry = json["links"][i];
+                        container.innerHTML += "<li><a href='" + entry["url"] + "' target='_blank'>" + entry["text"] + "</a></li>";
+                    }
+                    container.innerHTML += "</ul>";
+                }
+            }
+        );
     }
 }
