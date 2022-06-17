@@ -135,6 +135,9 @@ public class UpdateStations {
 		HttpEntity response = api.getData();
 
 		// write data to file (easier to debug)
+		if (Config.READINGS_DIR == null) {
+			Config.READINGS_DIR = System.getProperty("user.home");
+		}
 		File readingsFile = Paths.get(Config.READINGS_DIR, "readings.json").toFile();
 		FileOutputStream outputStream = new FileOutputStream(readingsFile);
 		response.writeTo(outputStream);

@@ -39,7 +39,7 @@ public class Config{
 	// time series IRI storing list of dates downloaded
 	public static String TIME_IRI = "http://environment.data.gov.uk/flood-monitoring/id/stations/time";
 	
-	//
+	// used in UpdateStations.java, code will download a day's worth of readings to this location
 	public static String READINGS_DIR = System.getenv("READINGS_DIR");
 
 	private static final Logger LOGGER = LogManager.getLogger(Config.class);
