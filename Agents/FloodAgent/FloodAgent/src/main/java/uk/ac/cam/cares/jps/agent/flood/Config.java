@@ -36,8 +36,12 @@ public class Config{
 	public static boolean INSTANTIATE_CONNECTIONS = Boolean.parseBoolean(System.getenv("INSTANTIATE_CONNECTIONS"));
 	public static String CONNECTIONS_FILE = System.getenv("CONNECTIONS_FILE");
 
+	// time series IRI storing list of dates downloaded
 	public static String TIME_IRI = "http://environment.data.gov.uk/flood-monitoring/id/stations/time";
 	
+	//
+	public static String READINGS_DIR = System.getenv("READINGS_DIR");
+
 	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 	
 	// environment variables read by this script, some are mandatory and some are not

@@ -1,7 +1,11 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -133,7 +137,15 @@ public class UpdateStations {
 	static List<Map<String,?>> processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
 		LOGGER.info("Processing data from API");
 		HttpEntity response = api.getData();
-		JSONTokener tokener = new JSONTokener(response.getContent());
+
+		// write data to file (easier to debug)
+		File readingsFile = Paths.get(Config.READINGS_DIR, "readings.json").toFile();
+		FileOutputStream outputStream = new FileOutputStream(readingsFile);
+		response.writeTo(outputStream);
+
+		// read data from downloaded file
+		FileInputStream inputStream = new FileInputStream(readingsFile);
+		JSONTokener tokener = new JSONTokener(inputStream);
 		JSONObject response_jo = new JSONObject(tokener);
         JSONArray readings = response_jo.getJSONArray("items");
         
