@@ -68,7 +68,7 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
                      <{EMS_HAS_IDENTIFIER}> ?stationID .
-            OPTIONAL {{ ?station <{RDFS_COMMENT}> ?label }}
+            OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
             OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
             OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
             OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
@@ -92,7 +92,7 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
                 ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
                          <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
                          <{EMS_HAS_IDENTIFIER}> ?stationID .
-                OPTIONAL {{ ?station <{RDFS_COMMENT}> ?label }}
+                OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
                 OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
                 OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
                 OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
