@@ -123,7 +123,7 @@ def create_metadata_output(station_data):
         name = row['label']
         metoffice_id = row['stationID']
         if '#' in row['latlon']:
-            lat, lon = row['latlon'].split('/')
+            lat, lon = row['latlon'].split('#')
             lat = float(lat)
             lon = float(lon)
         else:
