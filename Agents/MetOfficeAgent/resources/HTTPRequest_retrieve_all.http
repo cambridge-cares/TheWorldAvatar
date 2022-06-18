@@ -42,7 +42,7 @@ Content-Type: application/json
 # { "query": {
 #       "outDir": "/app/output",
 #       "daysBack": 7,
-#       "observationTypes": ["AirTemperature", "<http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindGust>"],
+#       "observationTypes": ["AirTemperature", "<https://www.theworldavatar.com/kg/ontoems/WindGust>"],
 #       "splitObsFcs": true,
 #       "circleCenter": "52.75#0.4",
 #       "circleRadius": 100

@@ -140,13 +140,13 @@ def _condition_metoffer_data(station_data: dict) -> dict:
     # Data format as required for "add_station_data" query template
     conditioned = {'dataSource': "Met Office DataPoint",
                    'id': None,
-                   'comment': None,
+                   'label': None,
                    'location': None,
                    'elevation': None
     }
     # Extract relevant data
     if 'id' in station_data.keys(): conditioned['id'] = station_data['id']
-    if 'name' in station_data.keys(): conditioned['comment'] = station_data['name']
+    if 'name' in station_data.keys(): conditioned['label'] = station_data['name']
     if 'elevation' in station_data.keys(): conditioned['elevation'] = station_data['elevation']
     if ('latitude' in station_data.keys()) and ('longitude' in station_data.keys()):
         conditioned['location'] = station_data['latitude'] + '#' + station_data['longitude']
