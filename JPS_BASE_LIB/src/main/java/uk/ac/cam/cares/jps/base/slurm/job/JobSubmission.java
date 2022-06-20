@@ -444,6 +444,8 @@ public class JobSubmission{
 				String pwd = slurmJobProperty.getHpcServerLoginUserPassword();
 				session.setPassword(pwd);
 
+				// Note that session.setConfig("PreferredAuthentications", ...) was removed because it will cause issues
+				// when this code is executed in a container for unknown reasons
 				try {
 					// Attempt to connect to a running instance of Pageant
 					Connector con = new PageantConnector();
