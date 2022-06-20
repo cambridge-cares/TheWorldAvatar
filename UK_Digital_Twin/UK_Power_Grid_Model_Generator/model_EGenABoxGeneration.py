@@ -37,11 +37,14 @@ from pyasyncagent.kg_operations.sparql_client import PySparqlClient # the import
 import uuid
 from py4jps.resources import JpsBaseLib
 
+import numpy as np 
+
 """Notation used in URI construction"""
 HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
+TTL = '.ttl'
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
@@ -98,8 +101,8 @@ number_of_localOWLFiles = 1
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
-def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, OrderedBusNodeIRIList, derivationClient, startTime_of_EnergyConsumption, \
-    OPFOrPF:bool, CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
+def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, OrderedBusNodeIRIList, derivationClient, updateEndpointIRI, startTime_of_EnergyConsumption, \
+    OPFOrPF:bool, CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, splitCharacter, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
     ## Query generator attributes and the number of the buses
     EGenInfo = list(query_model.queryEGenInfo(topologyNodeIRI, endpoint_label))
     # location = query_model.queryPowerSystemLocation(endpoint_label, topologyNodeIRI)  
@@ -151,6 +154,9 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
     ## The total number of the local owl files should be  generated and each file includes 500 generator enetities
     totalFileNumber = ceil(len(EGenInfo) / 500)
 
+    ret_genCost_array = []
+    ret_gen_array = []
+
     while number_of_localOWLFiles <= totalFileNumber: 
         ## create a named graph
         ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())
@@ -167,8 +173,15 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
             datatype = XSD.dateTimeStamp)))
         g.add((URIRef(ElectricalGeneratorModelIRI), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(powerSystemModelIRI)))
         g.add((URIRef(ElectricalGeneratorModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalGeneratorModel')))
-        g.add((URIRef(powerSystemModelIRI), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
-
+        
+        if OPFOrPF: 
+            g.add((URIRef(powerSystemModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'OptimalPowerFlowModel')))
+        else:
+            g.add((URIRef(powerSystemModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'PowerFlowModel')))
+        
+        g.add((URIRef(t_box.ontopowsys_PowerSystemModel + 'OptimalPowerFlowModel'), RDFS.subClassOf, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
+        g.add((URIRef(t_box.ontopowsys_PowerSystemModel + 'PowerFlowModel'), RDFS.subClassOf, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
+            
         # for egen in EGenInfo: 
         while counter < (500 * number_of_localOWLFiles) and counter < len(EGenInfo): 
             ## generatorNodeIRI of the topology
@@ -185,23 +198,26 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
                 ## calculate cost objective function coefficients
                 uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder) # declear an instance of the UKEGenModel_CostFunc
                 uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen)
+                
+                ret_genCost_array.append(str(int(uk_egen_costFunc.MODEL)) + splitCharacter + str(float(uk_egen_costFunc.STARTUP)) + splitCharacter + str(float(uk_egen_costFunc.SHUTDOWN)) + splitCharacter + str(int(uk_egen_costFunc.NCOST)) + splitCharacter + str(float(uk_egen_costFunc.a)) + splitCharacter + str(float(uk_egen_costFunc.b)))
+  
                 ## assign value to attributes (linear function)
-                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.CostFuncFormatKey, uk_egen_costFunc.MODEL, None, ontopowsys_PowerSystemModel.CostModel.iri)
+                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.CostFuncFormatKey, int(uk_egen_costFunc.MODEL), None, ontopowsys_PowerSystemModel.CostModel.iri)
                 ModelInputVariableIRIList.append(varNode)
 
-                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.StartupCostKey, uk_egen_costFunc.STARTUP, ontocape_derived_SI_units.USD.iri, ontopowsys_PowerSystemModel.StartCost.iri)
+                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.StartupCostKey, float(uk_egen_costFunc.STARTUP), ontocape_derived_SI_units.USD.iri, ontopowsys_PowerSystemModel.StartCost.iri)
                 ModelInputVariableIRIList.append(varNode)
 
-                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.ShutdownCostKey, uk_egen_costFunc.SHUTDOWN, ontocape_derived_SI_units.USD.iri, ontopowsys_PowerSystemModel.StopCost.iri)
+                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.ShutdownCostKey, float(uk_egen_costFunc.SHUTDOWN), ontocape_derived_SI_units.USD.iri, ontopowsys_PowerSystemModel.StopCost.iri)
                 ModelInputVariableIRIList.append(varNode)
 
-                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.genCostnKey, uk_egen_costFunc.NCOST, None, ontopowsys_PowerSystemModel.genCostn.iri)
+                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.genCostnKey, int(uk_egen_costFunc.NCOST), None, ontopowsys_PowerSystemModel.genCostn.iri)
                 ModelInputVariableIRIList.append(varNode)
 
-                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.genCost_aKey, uk_egen_costFunc.a, t_box.ontocape_derived_SI_units + 'GBP/MWh', t_box.ontopowsys_PowerSystemModel + 'FirstOrderCoefficient')
+                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.genCost_aKey, float(uk_egen_costFunc.a), t_box.ontocape_derived_SI_units + 'GBP/MWh', t_box.ontopowsys_PowerSystemModel + 'FirstOrderCoefficient')
                 ModelInputVariableIRIList.append(varNode)
 
-                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.genCost_bKey, uk_egen_costFunc.b, t_box.ontocape_derived_SI_units + 'GBP/MWh', t_box.ontopowsys_PowerSystemModel + 'ZeroOrderCoefficient')
+                g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.genCost_bKey, float(uk_egen_costFunc.b), t_box.ontocape_derived_SI_units + 'GBP/MWh', t_box.ontopowsys_PowerSystemModel + 'ZeroOrderCoefficient')
                 ModelInputVariableIRIList.append(varNode)
 
                 # g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_costFunc.genCost_cKey, uk_egen_costFunc.c, t_box.ontocape_derived_SI_units + 'GBP/MWh', t_box.ontopowsys_PowerSystemModel + 'SecondOrderCoefficient') # undified unit
@@ -213,9 +229,12 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
                 g.add((URIRef(t_box.ontopowsys_PowerSystemModel + 'PolynomialCostFunctionParameter'), RDFS.subClassOf, URIRef(t_box.ontopowsys_PowerSystemModel + 'genCostcn-2')))
                 
             ###add EGen model parametor###
-            
             uk_egen_model_ = initialiseEGenModelVar(uk_egen_model, egen, OrderedBusNodeIRIList, capa_demand_ratio)
             
+            ret_gen_array.append(str(int(uk_egen_model_.BUS)) + splitCharacter + str(float(uk_egen_model_.PG_INPUT)) + splitCharacter + str(float(uk_egen_model_.QG_INPUT)) + splitCharacter + str(float(uk_egen_model_.QMAX)) + splitCharacter + str(float(uk_egen_model_.QMIN)) + splitCharacter + str(int(uk_egen_model_.VG)) + splitCharacter +\
+                str(int(uk_egen_model_.MBASE)) + splitCharacter + str(int(uk_egen_model_.STATUS)) + splitCharacter + str(float(uk_egen_model_.PMAX)) + splitCharacter + str(float(uk_egen_model_.PMIN)) + splitCharacter + str(int(uk_egen_model_.PC1)) + splitCharacter + str(int(uk_egen_model_.PC2)) + splitCharacter + str(int(uk_egen_model_.QC1MIN)) + splitCharacter +\
+                str(int(uk_egen_model_.QC2MIN)) + splitCharacter + str(int(uk_egen_model_.QC1MAX)) + splitCharacter + str(int(uk_egen_model_.QC2MAX)) + splitCharacter + str(int(uk_egen_model_.RAMP_AGC)) + splitCharacter + str(int(uk_egen_model_.RAMP_10)) + splitCharacter + str(int(uk_egen_model_.RAMP_30)) + splitCharacter + str(int(uk_egen_model_.RAMP_Q)) + splitCharacter + str(int(uk_egen_model_.APF)))
+
             g, varNode = AddModelVariable(g, ElectricalGeneratorModelIRI, namespace, uk_egen_model_.BUSNUMKey, int(uk_egen_model_.BUS), None, ontopowsys_PowerSystemModel.BusNumber.iri)
             ModelInputVariableIRIList.append(varNode)
         
@@ -280,29 +299,42 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
             ModelInputVariableIRIList.append(varNode)
 
             # print(g.serialize(format="pretty-xml").decode("utf-8"))
-
+        
+            ## TODO: disable derivationClient
             ## add derviation 
             derivationClient.createAsyncDerivation(list(ModelInputVariableIRIList), AgentIRI, [generatorNodeIRI], False)
-            # createMarkUpDerivation(list(ModelInputVariableIRIList), AgentIRI, [generatorNodeIRI, egen[5]], derivationClient, False)
             counter += 1
+
+        print(len(ret_gen_array), len(ret_gen_array)) 
 
         ## generate/update OWL files
         if updateLocalOWLFile == True: # and (counter == 500 or number_of_localOWLFiles == totalFileNumber): 
             ## Store/update the generated owl files      
             if filepath[-2:] != '\\': 
-                filepath_ = filepath + '\\' + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + OWL
+                filepath_ = filepath + '\\' + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + TTL
             else:
-                filepath_ = filepath + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + OWL 
+                filepath_ = filepath + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + TTL 
             storeGeneratedOWLs(g, filepath_)
             print(filepath_)
+
+            ## TODO: disable sparql_client
             ## update the graph to endpoint
-            #TODO: change the endpoint
-            endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
-            sparql_client = PySparqlClient(endPointURL, endPointURL)   #(endpoint_iri, endpoint_iri)
-            sparql_client.uploadOntology(filepath_)
+            # sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+            # sparql_client.uploadOntology(filepath_)
             ## increase the number of number_of_localOWLFiles
             number_of_localOWLFiles += 1
+    
+    print("...creating loacl file...")
+    textfile = open("C:\\Users\\wx243\\Documents\\TheWorldAvatar\\UK_Digital_Twin\\testOPFAnalysis\\gen.txt", "w")
+    for r in ret_gen_array:
+        textfile.write(r + "\n")
+    textfile.close()
 
+    textfile = open("C:\\Users\\wx243\\Documents\\TheWorldAvatar\\UK_Digital_Twin\\testOPFAnalysis\\genCost.txt", "w")
+    for r in ret_genCost_array:
+        textfile.write(r + "\n")
+    textfile.close()
+    
     print("################FINISH createModel_EGen#################")
     if isinstance(store, Sleepycat):  
         cg_model_EGen.close()       
@@ -353,7 +385,7 @@ if __name__ == '__main__':
     jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
     jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
 
-    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
     storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
 
     topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
@@ -365,8 +397,8 @@ if __name__ == '__main__':
     ## initialise the derivationClient
     derivationClient = jpsBaseLib_view.DerivationClient(storeClient, derivationInstanceBaseURL)
 
-    OrderedBusNodeIRIList= ['http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_55285d5a-1d0e-4b1f-8713-246d601671e5', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_024c0566-d9f0-497d-955e-f7f4e55d4296', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_6202e767-3077-4910-9cb7-a888e80af788', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_f17335d2-53f6-4044-9d09-c3d9438c0950', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_c4d7dcca-a7f5-4887-a460-31706ab7ec9c', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_d6046ef2-6909-4f20-808f-cd9aa01c8ae5']
+    OrderedBusNodeIRIList= ['http://www.theworldavatar.com/kb/ontopowsys/BusNode_d6046ef2-6909-4f20-808f-cd9aa01c8ae5', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_f17335d2-53f6-4044-9d09-c3d9438c0950', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_c4d7dcca-a7f5-4887-a460-31706ab7ec9c', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_024c0566-d9f0-497d-955e-f7f4e55d4296', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_55285d5a-1d0e-4b1f-8713-246d601671e5', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_6202e767-3077-4910-9cb7-a888e80af788', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0']
 
-    createModel_EGen(10, topologyNodeIRI_10Bus, powerSystemModelIRI, AgentIRI, OrderedBusNodeIRIList, derivationClient, \
-        "2017-01-31", True, 18, 2, 2, None, True, 'default')
+    createModel_EGen(10, topologyNodeIRI_10Bus, powerSystemModelIRI, "2022-06-15T16:24:29.371941+00:00", AgentIRI, OrderedBusNodeIRIList, derivationClient, endPointURL,\
+        "2017-01-31", True, 18, 2, 2, ' ', None, True, 'default')
     print('***********************Terminated***********************')

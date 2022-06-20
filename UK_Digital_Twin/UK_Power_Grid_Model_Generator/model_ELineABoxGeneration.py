@@ -75,8 +75,8 @@ model_ELine_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_g
 
 ### Functions ###
 """Main function: create the named graph Model_EBus and their sub graphs each ELine"""
-def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, OrderedBusNodeIRIList, derivationClient, \
-    initialiserMethod, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"): 
+def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, OrderedBusNodeIRIList, derivationClient, updateEndpointIRI,\
+    initialiserMethod, splitCharacter, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"): 
     ## Query the eline topological information and geometry information, the return is a dictionary 
     ## Query returns the ELineNode, From_Bus, To_Bus, Value_Length_ELine; if the branch is composed by OHL of different voltage levels, the query will also return the number of the OHL
     ELineTopoAndGeometryInfo, branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, endpoint_label)
@@ -139,67 +139,77 @@ def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSyste
             datatype = XSD.dateTimeStamp)))
     g.add((URIRef(ElectricalELineModelIRI), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(powerSystemModelIRI)))
     g.add((URIRef(ElectricalELineModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBranchModel')))
-    g.add((URIRef(powerSystemModelIRI), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
+    # g.add((URIRef(powerSystemModelIRI), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
     
-
+    ret_branch_array = []
     for eline in ELineTopoAndGeometryInfo:         
     # if ELineTopoAndGeometryInfo[0] != None: # test
     #     eline = ELineTopoAndGeometryInfo[0] # test
 
         ELineNodeIRI = eline['ELineNode']
+        ## link the ElectricalELineModelIRI with topology ELineNodeIRI
+        g.add((URIRef(ELineNodeIRI), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(ElectricalELineModelIRI)))
         ## specify the initialisation method for each branch instance of branch model
         ###1. create an instance of the BranchPropertyInitialisation class and get the initialiser method by applying the 'getattr' function 
         initialisation = BPI.BranchPropertyInitialisation()
         initialiser = getattr(initialisation, initialiserMethod)
-        ###2. execute the initialiser with the branch model instance as the function argument  
+        ###2. execute the initialiser with the branch model instance as the function argument 
+        # ## TODO: when initialise the 29-bus model, please check if ELineNodeIRI is the right node to use
         uk_eline_model = initialiser(ELineNodeIRI, uk_eline_model, eline, branchVoltageLevel, OrderedBusNodeIRIList, endpoint_label) 
 
+        ret_branch_array.append(str(int(uk_eline_model.FROMBUS)) + splitCharacter + str(int(uk_eline_model.TOBUS)) + splitCharacter + str(float(uk_eline_model.R)) + splitCharacter + str(float(uk_eline_model.X)) + splitCharacter + \
+            str(float(uk_eline_model.B)) + splitCharacter + str(float(uk_eline_model.RateA)) + splitCharacter + str(float(uk_eline_model.RateB)) + splitCharacter + str(float(uk_eline_model.RateC)) + splitCharacter + str(float(uk_eline_model.RATIO)) + splitCharacter + \
+            str(float(uk_eline_model.ANGLE)) + splitCharacter + str(int(uk_eline_model.STATUS)) + splitCharacter + str(float(uk_eline_model.ANGMIN)) + splitCharacter + str(float(uk_eline_model.ANGMAX)))
+  
         ModelInputVariableIRIList = []
         # AddModelVariable to Eline entity
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.FROMBUSKey, int(uk_eline_model.FROMBUS), None, ontopowsys_PowerSystemModel.BusFrom.iri)
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.FROMBUSKey, int(uk_eline_model.FROMBUS), None, ontopowsys_PowerSystemModel.BusFrom.iri)
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.TOBUSKey, int(uk_eline_model.TOBUS), None, ontopowsys_PowerSystemModel.BusTo.iri)  
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.TOBUSKey, int(uk_eline_model.TOBUS), None, ontopowsys_PowerSystemModel.BusTo.iri)  
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.R_Key, float(uk_eline_model.R), ontocape_derived_SI_units.ohm.iri, ontopowsys_PowerSystemModel.R.iri)     
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.R_Key, float(uk_eline_model.R), ontocape_derived_SI_units.ohm.iri, ontopowsys_PowerSystemModel.R.iri)     
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.X_Key, float(uk_eline_model.X), ontocape_derived_SI_units.ohm.iri, ontopowsys_PowerSystemModel.X.iri) 
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.X_Key, float(uk_eline_model.X), ontocape_derived_SI_units.ohm.iri, ontopowsys_PowerSystemModel.X.iri) 
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.B_Key, float(uk_eline_model.B), (t_box.ontocape_derived_SI_units + 'siemens'), ontopowsys_PowerSystemModel.B.iri)    
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.B_Key, float(uk_eline_model.B), (t_box.ontocape_derived_SI_units + 'siemens'), ontopowsys_PowerSystemModel.B.iri)    
         ModelInputVariableIRIList.append(varNode)
 
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.RateAKey, float(uk_eline_model.RateA), (t_box.ontocape_derived_SI_units + 'MVA'), ontopowsys_PowerSystemModel.RateA.iri)       
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.RateAKey, float(uk_eline_model.RateA), (t_box.ontocape_derived_SI_units + 'MVA'), ontopowsys_PowerSystemModel.RateA.iri)       
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.RateBKey, float(uk_eline_model.RateB), (t_box.ontocape_derived_SI_units + 'MVA'), ontopowsys_PowerSystemModel.RateB.iri)
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.RateBKey, float(uk_eline_model.RateB), (t_box.ontocape_derived_SI_units + 'MVA'), ontopowsys_PowerSystemModel.RateB.iri)
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.RateCKey, float(uk_eline_model.RateB), (t_box.ontocape_derived_SI_units + 'MVA'), ontopowsys_PowerSystemModel.RateC.iri)
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.RateCKey, float(uk_eline_model.RateC), (t_box.ontocape_derived_SI_units + 'MVA'), ontopowsys_PowerSystemModel.RateC.iri)
         ModelInputVariableIRIList.append(varNode)
        
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.RATIOKey, float(uk_eline_model.RATIO), None, ontopowsys_PowerSystemModel.RatioCoefficient.iri)
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.RATIOKey, float(uk_eline_model.RATIO), None, ontopowsys_PowerSystemModel.RatioCoefficient.iri)
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.ANGLEKey, float(uk_eline_model.ANGLE), ontocape_derived_SI_units.degree.iri, ontopowsys_PowerSystemModel.Angle.iri)    
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.ANGLEKey, float(uk_eline_model.ANGLE), ontocape_derived_SI_units.degree.iri, ontopowsys_PowerSystemModel.Angle.iri)    
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.STATUSKey, int(uk_eline_model.STATUS), None, ontopowsys_PowerSystemModel.BranchStatus.iri)    
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.STATUSKey, int(uk_eline_model.STATUS), None, ontopowsys_PowerSystemModel.BranchStatus.iri)    
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.ANGMINKey, float(uk_eline_model.ANGMIN), ontocape_derived_SI_units.degree.iri, ontopowsys_PowerSystemModel.AngleMin.iri)   
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.ANGMINKey, float(uk_eline_model.ANGMIN), ontocape_derived_SI_units.degree.iri, ontopowsys_PowerSystemModel.AngleMin.iri)   
         ModelInputVariableIRIList.append(varNode)
         
-        g, varNode = AddModelVariable(g, ELineNodeIRI, namespace, uk_eline_model.ANGMAXKey, float(uk_eline_model.ANGMAX), ontocape_derived_SI_units.degree.iri, ontopowsys_PowerSystemModel.AngleMax.iri) 
+        g, varNode = AddModelVariable(g, ElectricalELineModelIRI, namespace, uk_eline_model.ANGMAXKey, float(uk_eline_model.ANGMAX), ontocape_derived_SI_units.degree.iri, ontopowsys_PowerSystemModel.AngleMax.iri) 
         ModelInputVariableIRIList.append(varNode)            
         
         # print(g.serialize(format="pretty-xml").decode("utf-8"))
 
         ## add derviation 
-        derivationClient.createAsyncDerivation(list(ModelInputVariableIRIList), AgentIRI, [ELineNodeIRI], False)
-      
+        ## TODO: disable derivationClient
+        #derivationClient.createAsyncDerivation(list(ModelInputVariableIRIList), AgentIRI, [ELineNodeIRI], False)
+
+    
+
     # generate/update OWL files
     if updateLocalOWLFile == True:    
         # Store/update the generated owl files      
@@ -209,10 +219,15 @@ def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSyste
             filepath_ = filepath + 'BranchModel_' + str(numOfBus) + '_Bus_Grid'  + OWL
         storeGeneratedOWLs(g, filepath_)
         print(filepath_)
-    #TODO: change the endpoint
-    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
-    sparql_client = PySparqlClient(endPointURL, endPointURL)   #(endpoint_iri, endpoint_iri)
-    sparql_client.uploadOntology(filepath_)
+    ## TODO: disable sparql_client
+    #sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)   #(endpoint_iri, endpoint_iri)
+    #sparql_client.uploadOntology(filepath_)
+
+    print("...creating loacl file...")
+    textfile = open("C:\\Users\\wx243\\Documents\\TheWorldAvatar\\UK_Digital_Twin\\testOPFAnalysis\\branch.txt", "w")
+    for r in ret_branch_array:
+        textfile.write(r + "\n")
+    textfile.close()
 
     print("################FINISH createModel_ELine#################")
 
@@ -228,7 +243,7 @@ if __name__ == '__main__':
     jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
     jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
 
-    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
     storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
 
     topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
@@ -242,8 +257,8 @@ if __name__ == '__main__':
     ## initialise the derivationClient
     derivationClient = jpsBaseLib_view.DerivationClient(storeClient, derivationInstanceBaseURL)
 
-    OrderedBusNodeIRIList= ['http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_55285d5a-1d0e-4b1f-8713-246d601671e5', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_024c0566-d9f0-497d-955e-f7f4e55d4296', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_6202e767-3077-4910-9cb7-a888e80af788', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_f17335d2-53f6-4044-9d09-c3d9438c0950', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_c4d7dcca-a7f5-4887-a460-31706ab7ec9c', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_d6046ef2-6909-4f20-808f-cd9aa01c8ae5']
-    
-    createModel_ELine(10, topologyNodeIRI_10Bus, powerSystemModelIRI_10bus, AgentIRI, OrderedBusNodeIRIList, derivationClient, "defaultBranchInitialiser", None, True, "default")
+    OrderedBusNodeIRIList= ['http://www.theworldavatar.com/kb/ontopowsys/BusNode_d6046ef2-6909-4f20-808f-cd9aa01c8ae5', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_f17335d2-53f6-4044-9d09-c3d9438c0950', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_c4d7dcca-a7f5-4887-a460-31706ab7ec9c', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_024c0566-d9f0-497d-955e-f7f4e55d4296', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_55285d5a-1d0e-4b1f-8713-246d601671e5', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_6202e767-3077-4910-9cb7-a888e80af788', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0']
+
+    createModel_ELine(10, topologyNodeIRI_10Bus, powerSystemModelIRI_10bus, "2022-06-15T16:24:29.371941+00:00", AgentIRI, OrderedBusNodeIRIList, derivationClient, endPointURL, "defaultBranchInitialiser", ' ', None, True, "default")
     # createModel_ELine(10, topologyNodeIRI_29Bus, powerSystemModelIRI_29bus, AgentIRI, OrderedBusNodeIRIList, derivationClient, "preSpecifiedBranchInitialiser", None, True, "default")
     print('***********************Terminated***********************')

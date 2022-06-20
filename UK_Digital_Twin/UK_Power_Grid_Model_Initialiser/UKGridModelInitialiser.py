@@ -94,15 +94,15 @@ class gridModelInitialiser(object):
     def ModelInputInitialiser(self):
         
         self.OrderedBusNodeIRIList = model_EBusABoxGeneration.createModel_EBus(self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, self.timeStamp, \
-            self.agentIRI, self.slackBusNodeIRI, self.derivationClient, self.startTime_of_EnergyConsumption, self.loadAllocatorName, \
-                self.EBbusInitialisationMethodName, self.powerPlantOWLFileLocalPath, self.updateLocalPowerPlantOWLFileFlag)
+            self.agentIRI, self.slackBusNodeIRI, self.derivationClient, self.endPointURL, self.startTime_of_EnergyConsumption, self.loadAllocatorName, \
+                self.EBbusInitialisationMethodName, " ", self.powerPlantOWLFileLocalPath, self.updateLocalPowerPlantOWLFileFlag)
         
         model_ELineABoxGeneration.createModel_ELine(self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, self.timeStamp, \
-            self.agentIRI, self.OrderedBusNodeIRIList, self.derivationClient, self.ELineInitialisationMethodName, self.powerPlantOWLFileLocalPath, self.updateLocalPowerPlantOWLFileFlag)
+            self.agentIRI, self.OrderedBusNodeIRIList, self.derivationClient, self.endPointURL, self.ELineInitialisationMethodName, " ", self.powerPlantOWLFileLocalPath, self.updateLocalPowerPlantOWLFileFlag)
 
         model_EGenABoxGeneration.createModel_EGen(self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, self.timeStamp, \
-            self.agentIRI, self.OrderedBusNodeIRIList, self.derivationClient, self.startTime_of_EnergyConsumption, self.OPFOrPF, self.CarbonTax,\
-                self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder, self.powerPlantOWLFileLocalPath, self.updateLocalPowerPlantOWLFileFlag)
+            self.agentIRI, self.OrderedBusNodeIRIList, self.derivationClient, self.endPointURL, self.startTime_of_EnergyConsumption, self.OPFOrPF, self.CarbonTax,\
+                self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder, " ", self.powerPlantOWLFileLocalPath, self.updateLocalPowerPlantOWLFileFlag)
          
         return self
     
@@ -127,4 +127,4 @@ if __name__ == '__main__':
     
     res = testModelInitialisier.ModelInputInitialiser()
 
-    print(res)
+    print(res.powerSystemModelIRI)

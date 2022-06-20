@@ -53,6 +53,7 @@ ukpp = UKpp.UKPowerPlant()
 """Create an object of Class UKEnergyConsumption"""
 ukec = UKec.UKEnergyConsumption()
 
+## TODO: check if the endpoint is the right endpoint
 """Blazegraph UK digital tiwn"""
 endpoint_label = endpointList.ukdigitaltwin['lable'] # remote query
 endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri'] # federated query
@@ -79,8 +80,8 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 ### Functions ### 
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
 
-def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, slackBusNodeIRI, derivationClient, startTime_of_EnergyConsumption, \
-    loadAllocatorName, EBusModelVariableInitialisationMethodName, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
+def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, slackBusNodeIRI, derivationClient, updateEndpointIRI, startTime_of_EnergyConsumption, \
+    loadAllocatorName, EBusModelVariableInitialisationMethodName, splitCharacter, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
     ## Query the bus node IRI and GPS of the given topology entity
     res_queryBusTopologicalInformation = list(query_model.queryBusTopologicalInformation(topologyNodeIRI, endpoint_label))
     
@@ -159,12 +160,14 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
     g.add((URIRef(powerSystemModelIRI), URIRef(ontoecape_space_and_time_extended.hasTimestamp.iri), Literal(powerSystemNodetimeStamp, \
     datatype = XSD.dateTimeStamp)))
     g.add((URIRef(ElectricalBusModelIRI), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(powerSystemModelIRI)))
-    g.add((URIRef(ElectricalBusModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBusModel')))
-    g.add((URIRef(powerSystemModelIRI), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
-    
+    #g.add((URIRef(ElectricalBusModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBusModel')))
+
     ##The bus index number used in the model input
     BusNumber = 0
     OrderedBusNodeIRIList = []
+
+    ret_bus_array = []
+
     for ebus in EBus_Load_List:         
     # if EBus_Load_List[0] != None: # test
     #     ebus = EBus_Load_List[0] # test  
@@ -185,6 +188,11 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
         
         ## Add model variables attributes 
         ModelInputVariableIRIList = []
+
+        ret_bus_array.append(str(int(uk_ebus_model.BUS)) + splitCharacter + str(int(uk_ebus_model.TYPE)) + splitCharacter + str(float(uk_ebus_model.PD_INPUT)) + splitCharacter + str(float(uk_ebus_model.GD_INPUT)) + splitCharacter + \
+            str(int(uk_ebus_model.GS)) + splitCharacter + str(int(uk_ebus_model.BS)) + splitCharacter + str(int(uk_ebus_model.AREA)) + splitCharacter + str(int(uk_ebus_model.VM_INPUT)) + splitCharacter + str(int(uk_ebus_model.VA_INPUT)) + splitCharacter + \
+            str(int(uk_ebus_model.BASEKV)) + splitCharacter + str(int(uk_ebus_model.ZONE)) + splitCharacter + str(float(uk_ebus_model.VMAX)) + splitCharacter + str(float(uk_ebus_model.VMIN)))
+  
                 
         g, varNode = AddModelVariable(g, ElectricalBusModelIRI, namespace, uk_ebus_model.BUSNUMKey, int(uk_ebus_model.BUS), None, ontopowsys_PowerSystemModel.BusNumber.iri)
         ModelInputVariableIRIList.append(varNode)
@@ -226,10 +234,11 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
         ModelInputVariableIRIList.append(varNode)
         
         # print(g.serialize(format="pretty-xml").decode("utf-8"))
-         
+        
+        ## TODO: disable derivationClient
         ## add derviation 
         # createMarkUpDerivation(list(ModelInputVariableIRIList), AgentIRI, [BusNodeIRI], derivationClient, False)  
-        derivationClient.createAsyncDerivation(list(ModelInputVariableIRIList), AgentIRI, [BusNodeIRI], False)
+        #derivationClient.createAsyncDerivation(list(ModelInputVariableIRIList), AgentIRI, [BusNodeIRI], False)
 
         OrderedBusNodeIRIList.append(BusNodeIRI)
         BusNumber += 1 
@@ -242,11 +251,18 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
         else:
             filepath_ = filepath + 'BusModel_' + str(numOfBus) + '_Bus_Grid' + OWL
         storeGeneratedOWLs(g, filepath_)
-    
+
+        ## TODO: disable sparql_client
         ## update the graph to endpoint
-        sparql_client = PySparqlClient(endpoint_iri, endpoint_iri)
-        sparql_client.uploadOntology(filepath_)
+        #sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+        #sparql_client.uploadOntology(filepath_)
     
+    print("...creating local file bus.txt...")
+    textfile = open("C:\\Users\\wx243\\Documents\\TheWorldAvatar\\UK_Digital_Twin\\testOPFAnalysis\\bus.txt", "w")
+    for r in ret_bus_array:
+        textfile.write(r + "\n")
+    textfile.close()
+
     if isinstance(store, Sleepycat):  
         cg_model_EBus.close()       
     return OrderedBusNodeIRIList
@@ -277,7 +293,7 @@ if __name__ == '__main__':
     jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
     jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
 
-    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
     storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
 
     topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
@@ -293,7 +309,7 @@ if __name__ == '__main__':
     ## initialise the derivationClient
     derivationClient = jpsBaseLib_view.DerivationClient(storeClient, derivationInstanceBaseURL)
 
-    OrderedBusNodeIRIList = createModel_EBus(10, topologyNodeIRI_10Bus, powerSystemModelIRI, AgentIRI, slackBusNodeIRI, derivationClient, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", None, True, 'default')  
+    OrderedBusNodeIRIList = createModel_EBus(10, topologyNodeIRI_10Bus, powerSystemModelIRI, "2022-06-15T16:24:29.371941+00:00", AgentIRI, slackBusNodeIRI, derivationClient, endPointURL, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", ' ', None, True, 'default')  
     
     print(OrderedBusNodeIRIList)
     print('*****************Terminated*****************')

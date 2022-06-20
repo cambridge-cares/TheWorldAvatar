@@ -25,10 +25,11 @@ def storeGeneratedOWLs(graph, filepath):
         print('file ' + filepath + ' exists')
         with open(filepath, "r+") as f:
          f.truncate()     
-        graph.serialize(destination = filepath, format="application/rdf+xml")
+        # graph.serialize(destination = filepath, format="application/rdf+xml") 
+        graph.serialize(destination = filepath, format="ttl")  
         print('**owl file updated')
     else:
-        graph.serialize(destination = filepath, format="application/rdf+xml")
+        graph.serialize(destination = filepath, format="ttl")
         print('##owl file created: ')
         print(filepath) 
 

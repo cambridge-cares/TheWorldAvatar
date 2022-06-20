@@ -425,11 +425,11 @@ if __name__ == '__main__':
     topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_7ea91c81-9f7f-4d27-9b75-9b897171bbc4" 
 
     # res = queryEGenInfo(topologyNodeIRI, ukdigitaltwinendpointLable)
-    res = queryTotalElecConsumptionofGBOrUK( ukdigitaltwinendpointLable, topologyNodeIRI, "2017-01-31")
-    res = queryPowerSystemLocation(ukdigitaltwinendpointLable, topologyNodeIRI)
+    #res = queryTotalElecConsumptionofGBOrUK( ukdigitaltwinendpointLable, topologyNodeIRI, "2017-01-31")
+    #res = queryPowerSystemLocation(ukdigitaltwinendpointLable, topologyNodeIRI)
 
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
-    # res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
+    res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res, a = queryELineTopologicalInformation(29, 99, 'ukdigitaltwin', None, False)
     # res, a = queryELineTopologicalInformation(10, 14, 'ukdigitaltwin', None, False)
