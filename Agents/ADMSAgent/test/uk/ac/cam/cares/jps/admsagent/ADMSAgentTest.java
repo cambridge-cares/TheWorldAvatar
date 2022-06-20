@@ -157,6 +157,7 @@ public class ADMSAgentTest {
         val= checkLowerCorner.invoke(admsAgent,requestParams).toString();
         Assert.assertEquals("true",val);
     }
+
     @Test
     public void testCheckUpperCorner() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ADMSAgent admsAgent= new ADMSAgent();
@@ -837,7 +838,6 @@ public class ADMSAgentTest {
 
         String actual=(String)retrieveBuildingDataInJSON.invoke(admsAgent,region,city);
         Assert.assertEquals(expected,actual);
-
     }
 
     @Test
@@ -892,7 +892,6 @@ public class ADMSAgentTest {
 
         String actual=(String)getBuildingData.invoke(admsAgent,region,city);
         Assert.assertEquals(expected,actual);
-
     }
 
     @Test
@@ -1082,7 +1081,6 @@ public class ADMSAgentTest {
         File bgdFile= new File(fullPath+"/testbackgrnd.bgd");
         Assert.assertTrue(bgdFile.exists());//check if the file is created
         Assert.assertTrue(bgdFile.length()>0);//check if there is data inside the file
-
     }
 
     //case where key:"ship" is present
@@ -1244,7 +1242,6 @@ public class ADMSAgentTest {
         Assert.assertTrue(aplFile.exists());//check if the file is created
         Assert.assertTrue(aplFile.length()>0);//check if there is data inside the file
     }
-
 
     @Test
     public void testGetEntityType() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {

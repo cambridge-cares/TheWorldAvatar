@@ -161,7 +161,7 @@ class CliInputStrategy(object):
     def retrieve_input(self):
         pass
 
-# new method added in order to make the mock values work can be removed later on
+# new method added in order to make the mock values work for PowerPlants . can be removed later on
     def get_src_data_plant(self):
         """Gets all sourced data.
                 returns: list of source data objects for the ADMS_SOURCE_DETAILS section of the APL.
@@ -172,15 +172,14 @@ class CliInputStrategy(object):
         # q1, q2, q3 = self.get_src_queries()
 
         # for src in self.entity:
-        # new_src = self.get_new_src(src, q1, q2, q3)
-
-        # sources.append(new_src)
+        #   new_src = self.get_new_src(src, q1, q2, q3)
+        #   sources.append(new_src)
         new_src = self.get_new_src_plant(self)
         sources.append(new_src)
 
         return sources
 
-# new method added in order to make the mock values work can be removed later on
+# method altered in order to make the mock values work. Changes can be removed later on
     def get_src_data(self):
         """Gets all sourced data.
         returns: list of source data objects for the ADMS_SOURCE_DETAILS section of the APL.
@@ -189,49 +188,52 @@ class CliInputStrategy(object):
 
         #original code commented out
         #q1, q2, q3 = self.get_src_queries()
-
+        #
         #for src in self.entity:
-            #new_src = self.get_new_src(src, q1, q2, q3)
+        #     new_src = self.get_new_src(src, q1, q2, q3)
+        #     sources.append(new_src)
 
-            #sources.append(new_src)
+        # new code for mocked values
         new_src=self.get_new_src(self)
         sources.append(new_src)
 
         return sources
 
-#original method commented out for the time being
-#     def get_new_src(self, src, q1, q2, q3):
-#         iri = self.get_src_iri(src)
-#         qdata = self.query(q1)
-#         qdata_c = self.query(q2)
-#         qdata_erate = self.query(q3)
-#         aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
-#         return self.make_src(aresult, sorteder, pollutantnames)
+#original method commented out for the time being. Use it for using with Ships and PowerPlants without Mocks
+#    def get_new_src(self, src, q1, q2, q3):
+#        iri = self.get_src_iri(src)
+#        qdata = self.query(q1)
+#        qdata_c = self.query(q2)
+#        qdata_erate = self.query(q3)
+#        aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
+#        return self.make_src(aresult, sorteder, pollutantnames)
 
-# new method added in order to make the mock values work can be removed later on
+# new method added in order to make the mock values for PowerPlants work can be removed later on
     def get_new_src_plant(self,src):
         iri= None
         aresult, sorteder, pollutantnames = self.get_new_src_data_plant(iri)
         return self.make_src(aresult, sorteder, pollutantnames)
 
-# new method added in order to make the mock values work can be removed later on
+# new method added in order to make the mock values work for Ship can be removed later on. Please make sure to
+# comment out the original get_new_src method, when using this method.
     def get_new_src(self,src):
         iri = "http://localhost:8080/kb/ships/563009850/Chimney-1.owl"
         aresult, sorteder, pollutantnames = self.get_new_src_data(iri)
         return self.make_src(aresult, sorteder, pollutantnames)
 
     def get_src_queries(self):
-        return None, None, None
+       return None, None, None
 
     def get_src_iri(self, src):
         if src is not None:
             return self.connect_db(src, Constants.KEY_CONN_PARSE)
 
-# original method commented out for the time being
-#     def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
-#         return [], [], []
+# original method commented out for the time being, utilize when using Ship or PowerPlants without mocks
+#    def get_new_src_data(self, iri, qdata, qdata_c, qdata_erate):
+#        return [], [], []
 
-# new method added in order to make the mock values work can be removed later on
+# new method added in order to make the mock values work with Ship can be removed later on.
+# make sure you comment out the original method when using this method.
     def get_new_src_data(self):
         return [], [], []
 
@@ -359,7 +361,10 @@ class PlantCliInputStrategy(CliInputStrategy):
     #     return {Constants.KEY_SRC: self.raw_src, Constants.KEY_OPT: raw_opt,
     #             Constants.KEY_MET: met, Constants.KEY_GRD: grd}
 
+#new method to work with mocked values for plants
+#comment out the original method when using this method
     def retrieve_input(self):
+        #main difference from the original method
         self.raw_src = self.get_src_data_plant()
         raw_opt = self.get_opt(self.pollutants, [s.SrcName for s in self.raw_src])
         self.core_bdn_src()
@@ -371,6 +376,8 @@ class PlantCliInputStrategy(CliInputStrategy):
                 Constants.KEY_MET: met, Constants.KEY_GRD: grd}
 
 # new method added in order to make the mock values work can be removed later on
+# in particular it contains a modify_input_for_plants method in order to properly
+# set the met and background file.
     def extract_data(self):
         self.input = super(PlantCliInputStrategy, self).extract_data()
         self.modify_input_for_plant()
@@ -515,6 +522,7 @@ class ShipCliInputStrategy(CliInputStrategy):
 #         return aresult, sorteder, pollutantnames
 
 # new method added in order to make the mock values work can be removed later on
+# comment out the original method when using this method
     def get_new_src_data(self, iri):
          #hardcoded values
          aresult = {'o': rdflib.term.URIRef('http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Chimney-1'), 'diameter': rdflib.term.Literal('2.0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'temp': rdflib.term.Literal('616.12736479669', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'height': rdflib.term.Literal('20.0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'massflow': rdflib.term.Literal('0.0192143028723584', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'heatcapa': rdflib.term.Literal('1334.86958348868', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'density': rdflib.term.Literal('0.577544330505469', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double')), 'moleweight': rdflib.term.Literal('28.638811393753', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#double'))}
@@ -555,6 +563,7 @@ class ShipCliInputStrategy(CliInputStrategy):
         pol_names = {}
         i=0
         k=0
+
 # original code commented out for the time being
 #         q1 = prepareQuery(QueryStrings.SPARQL_DIAMETER_DENSITY_MASSFRACTION)
 #         q2 = prepareQuery(QueryStrings.SPARQL_MASSRATE)
@@ -579,15 +588,16 @@ class ShipCliInputStrategy(CliInputStrategy):
         self.em_rates[iri] = {}
         dd_values=[(1.0000000000000002e-06, 1800),(5.9948425031894e-09, 1800),(1.6681005372000602e-08, 1800),(2.15443469003188e-09, 1800),(3.59381366380463e-07, 1800),(1.29154966501488e-07, 1800),(2.782559402207e-06, 1800),(4.64158883361278e-08, 1800)]
         mf_values=[2.78e-05,4.36e-07,1.12e-06,1.72e-07,0.00014,5.53e-05,1.58e-05,1.29e-05]
-        for i in range(len(dd_values)):
-            dd = dd_values[i]
-            mf = mf_values[i]
-            pol_data.append({Constants.KEY_DIAMETER + Constants.KEY_DENSITY: dd,
-                                      Constants.KEY_MASS_FLOW: mf,
-                                      Constants.KEY_SRC: iri})
-            diam_dens.add(dd)
-            self.em_rates[iri][dd] = mf
+        for ii in range(len(dd_values)):
+           dd = dd_values[ii]
+           mf = mf_values[ii]
+           pol_data.append({Constants.KEY_DIAMETER + Constants.KEY_DENSITY: dd,
+                                     Constants.KEY_MASS_FLOW: mf,
+                                     Constants.KEY_SRC: iri})
+           diam_dens.add(dd)
+           self.em_rates[iri][dd] = mf
 
+        #original code
         dd_srt = sorted(diam_dens, key=lambda tup: tup[0], reverse=True)[0:limit]
         for diam, dens in dd_srt:
             name = None
