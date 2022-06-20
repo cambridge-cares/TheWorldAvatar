@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
 
+import com.cmclinnovations.apis.DockerClient;
+import com.cmclinnovations.apis.DockerClient.ComplexCommand;
 import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ServiceSpec;
@@ -19,16 +21,22 @@ public class ContainerService extends AbstractService {
     private final String stackName;
     private String containerId;
 
-    private DockerService dockerService;
+    private DockerClient dockerClient;
 
     public ContainerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(serviceManager, config);
         Objects.requireNonNull(stackName, "A 'stackName' must be provided for all container-based services.");
         this.stackName = stackName;
+        config.getDockerServiceSpec().withName(stackName + "_" + config.getDockerServiceSpec().getName());
+        this.setEnvironmentVariable(DockerClient.STACK_NAME_KEY, stackName);
+    }
+
+    public String getStackName() {
+        return stackName;
     }
 
     final String getContainerName() {
-        return stackName + "_" + getName();
+        return getName();
     }
 
     final String getImage() {
@@ -51,12 +59,11 @@ public class ContainerService extends AbstractService {
         this.containerId = containerId;
     }
 
-    final void setDockerService(DockerService dockerService) {
-        this.dockerService = dockerService;
+    final void setDockerClient(DockerClient dockerClient) {
+        this.dockerClient = dockerClient;
     }
 
-    public final void doPostStartUpConfiguration(DockerService dockerService) {
-        this.dockerService = dockerService;
+    public final void doPostStartUpConfiguration() {
         doPostStartUpConfigurationImpl();
     }
 
@@ -86,31 +93,35 @@ public class ContainerService extends AbstractService {
     }
 
     public final void sendFiles(Map<String, byte[]> files, String remotePath) throws IOException {
-        dockerService.sendFiles(containerId, files, remotePath);
+        dockerClient.sendFiles(containerId, files, remotePath);
     }
 
     public final void executeCommand(String... cmd) {
-        dockerService.executeCommand(containerId, cmd);
+        dockerClient.executeSimpleCommand(containerId, cmd);
     }
 
-    public final void executeCommand(boolean wait, String... cmd) {
-        dockerService.executeCommand(containerId, wait, cmd);
+    public final ComplexCommand createComplexCommand(String... cmd) {
+        return dockerClient.createComplexCommand(containerId, cmd);
     }
 
     protected final void downloadFileAndSendItToContainer(URL url, String folderPath,
             String filename,
             boolean overwrite) {
         Path filePath = Path.of(folderPath, filename);
-        if (overwrite || !dockerService.fileExists(containerId, filePath.toString())) {
+        if (overwrite || !dockerClient.fileExists(containerId, filePath.toString())) {
             try (InputStream downloadStream = url.openStream()) {
                 byte[] bytes = downloadStream.readAllBytes();
                 Map<String, byte[]> files = Map.of(filename, bytes);
-                dockerService.sendFiles(containerId, files, folderPath);
+                dockerClient.sendFiles(containerId, files, folderPath);
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to download file from '" + url + "' and send it to '"
                         + folderPath + "' in the container '" + getName() + "'.", ex);
             }
         }
+    }
+
+    protected final boolean configExists(String configName) {
+        return dockerClient.configExists(configName);
     }
 
 }
