@@ -396,7 +396,7 @@ def test_assign_and_remove_rxn_exp_to_r4_reactor(initialise_triples, new_rxn_exp
 def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_exp):
     sparql_client = initialise_triples
     rxn_exp_queue = sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_iri)
-    assert all(item in prior_rxn_exp for item in [*rxn_exp_queue])
+    assert all(item in [*rxn_exp_queue] for item in prior_rxn_exp)
 
 @pytest.mark.parametrize(
     "rxn_exp_iri,rxn_type,chem_rxn_iri,reactant,product,catalyst,solvent",
