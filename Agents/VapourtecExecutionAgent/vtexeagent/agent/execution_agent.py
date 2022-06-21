@@ -1,34 +1,50 @@
-from dataclasses import asdict
-from pathlib import Path
-from typing import List
 import json
 import time
-import os
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
-from chemistry_and_robots.hardware import vapourtec
-
 from vtexeagent.kg_operations import *
 from vtexeagent.data_model import *
-from vtexeagent.conf import *
 
 
 class VapourtecExecutionAgent(DerivationAgent):
-    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
-        # Create sparql_client
+    def __init__(
+        self,
+        maximum_concurrent_experiment: int = 60,
+        register_agent: bool = True,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.maximum_concurrent_experiment = maximum_concurrent_experiment
+        self.register_agent = register_agent
+
         self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUrl
+            self.kgUrl, self.kgUpdateUrl, self.kgUser, self.kgPassword,
+            self.fs_url, self.fs_user, self.fs_password
         )
 
-        # Check if the input is in correct format, and return OntoRxn.ReactionExperiment/ReactionVariation instance
+    def register(self):
+        if self.register_agent:
+            try:
+                self.sparql_client.generate_ontoagent_instance(
+                    self.agentIRI,
+                    self.agentEndpoint,
+                    [ONTOREACTION_REACTIONEXPERIMENT],
+                    [ONTOHPLC_HPLCREPORT]
+                )
+            except Exception as e:
+                self.logger.error(e, stack_info=True, exc_info=True)
+                raise Exception("Agent <%s> registration failed." % self.agentIRI)
+
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Check if the input is in correct format, and return OntoReaction.ReactionExperiment/ReactionVariation instance
         list_rxn_exp_instance = self.sparql_client.getReactionExperiment(
             derivation_inputs.getIris(ONTOREACTION_REACTIONEXPERIMENT))
         if len(list_rxn_exp_instance) > 1:
             raise Exception(
-                "Only one instance of OntoRxn:ReactionExperiment should be used for generating OntoLab:EquipmentSettings per ExpSetup Derivation, collected: <%s>" % (
+                "Only one instance of OntoReaction:ReactionExperiment should be used for generating OntoLab:EquipmentSettings per ExpSetup Derivation, collected: <%s>" % (
                     ">, <".join([rxnexp.instance_iri for rxnexp in list_rxn_exp_instance]))
             )
 
@@ -39,13 +55,13 @@ class VapourtecExecutionAgent(DerivationAgent):
         # Check until it's the turn for the given reaction experiment
         rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(
             rxn_exp_instance.instance_iri)
-        while len(rxn_exp_queue) > 0:
+        # TODO NOTE here the maximum_concurrent_experiment is configured at agent start, move to KG in the future iterations
+        while len(rxn_exp_queue) > self.maximum_concurrent_experiment - 1:
             time.sleep(60)
             rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(
                 rxn_exp_instance.instance_iri)
 
         # Check until get the digital twin of the most suitable hardware
-        # yes, done TODO do we return the whole instance of vapourtec_rs400 here? which will be used for
         preferred_rs400, preferred_r4_reactor = self.sparql_client.get_preferred_vapourtec_rs400(
             rxn_exp_instance)
         while (preferred_rs400, preferred_r4_reactor) == (None, None):
@@ -53,77 +69,39 @@ class VapourtecExecutionAgent(DerivationAgent):
             preferred_rs400, preferred_r4_reactor = self.sparql_client.get_preferred_vapourtec_rs400(
                 rxn_exp_instance)
 
-        # Call function to create a list of ontolab.EquipmentSettings instances from ontorxn.ReactionExperiment/ReactionVariation and ontovapourtec.VapourtecRS400 and VapourtecR4Reactor instances
-        # yes, done TODO do we pass the instance of vapourtecrs400 and reaction experiment both as arguments?
-        list_equip_settings = self.sparql_client.create_equip_settings_for_rs400_from_rxn_exp(
-            rxn_exp_instance, preferred_rs400, preferred_r4_reactor)
+        # Once selected the suitable digital twin, assign experiment to the reactor
+        self.sparql_client.assign_rxn_exp_to_r4_reactor(
+            rxn_exp_iri=rxn_exp_instance.instance_iri,
+            r4_reactor_iri=preferred_r4_reactor.instance_iri
+        )
 
-        # Upload the create OntoLab:EquipmentSettings triples to KG
-        # yes, done TODO do we need to connect the equipment settings to the lab equipment here?
-        # self.sparql_client.write_equip_settings_to_kg(list_equip_settings) # TODO this function should be changed, do we need to write it to the kg?
-        g = self.sparql_client.collect_triples_for_equip_settings(
-            list_equip_settings)
-        self.logger.info(
-            f"The proposed new equipment settings are recorded in: <{'>, <'.join([es.instance_iri for es in list_equip_settings])}>.")
+        # Locate the digital twin of HPLC connected to the vapourtec_rs400
+        agilent_hplc = self.sparql_client.get_hplc_given_vapourtec_rs400(preferred_rs400.instance_iri)
 
-        # Generate the execution CSV file and send for execution
-        # yes, done? TODO pass an instance of rxn exp and list of equipment settings
-        run_csv_path = vapourtec.create_exp_run_csv(
-            rxn_exp_instance, list_equip_settings)
-        # TODO this file will be uploaded to KG file server - to be downloaded by specific agent deployed together with hardware
-        self.logger.info(f"The generated CSV run file path is {run_csv_path}")
-        # vapourtec.connect_to_fc() # TODO
-        # vapourtec.send_exp_csv_for_exe() # TODO
-        # return []
-        derivation_outputs.addGraph(g)
+        # Now create vapourtec derivation and agilent derivation for the reaction experiment
+        if preferred_rs400.isManagedBy is not None and agilent_hplc.isManagedBy is not None:
+            vapourtec_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
+                preferred_rs400.isManagedBy, [rxn_exp_instance.instance_iri])
+            agilent_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
+                agilent_hplc.isManagedBy, [rxn_exp_instance.instance_iri, vapourtec_derivation_iri])
 
-        # Check until a new HPLC report is generated
-        # hplc_report = self.sparql_client.get_hplc_report_given_ # TODO
-        # self.logger.info(f"The generated new HPLC report (raw data) is hosted at: <{hplc_report.instance_iri}>.")
-        # TODO make the connection between HPLCReport and HPLCJob here?
-        # TODO where do we generate the instance of HPLCJob?
-        # TODO query the HPLC instance so that to make the link between the HPLCReport and HPLCJob hence ReactionExperiment?
-        # <hplc> <hasJob> <hplc_job>
-        # <hplc_job> <characterises> <rxnexp>
-        # <hplc_job> <usesMethod> <hplc_method> # these hplc_method should pre-exist, we only need to attach to it # maybe also can check what HPLCMethod was used for previous rxnexp?
-        # <hplc_job> <hasReport> <hplc_report>
-        # <hplc_report> <generatedFor> <chemical_solution>
-        # <chemical_solution> <fills> <vial> # here we should write the vial location to the KG
-        # <vial> <hasFillLevel> <xxx> # (the rest information about vial should already be known as part of digital twin of autosampler)
-        # TODO do we remove the settings for the hardware from the digital twin? --> so within each operation of execution agent, the settings got generated and deleted
+            # Monitor the status of the agilent_derivation_iri, until it produced outputs
+            new_hplc_report = self.sparql_client.detect_new_hplc_report_from_agilent_derivation(agilent_derivation_iri)
+            while not new_hplc_report:
+                time.sleep(60)
+                new_hplc_report = self.sparql_client.detect_new_hplc_report_from_agilent_derivation(agilent_derivation_iri)
 
-        # return [hplc_report.instance_iri]
+            # Add the HPLCReport instance to the derivation_outputs
+            derivation_outputs.addTriple(new_hplc_report, RDF.type.toPython(), ONTOHPLC_HPLCREPORT)
+            self.logger.info(f"The generated new HPLC report (raw data) for ReactionExperiment <{rxn_exp_instance.instance_iri}> can be identified as: <{new_hplc_report}>.")
 
-    # def collectInputsInformation(self, agent_inputs) -> ReactionExperiment:
-    #     """
-    #         This function checks the agent input against the I/O signiture as declared in the ExpSetup Agent OntoAgent instance and collects information.
-    #     """
-    #     self.logger.info("Checking arguments...")
-    #     exception_string = """Inputs are not provided in correct form. An example is:
-    #                             {
-    #                                 "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoRxn.owl#ReactionExperiment": "https://www.example.com/triplestore/ontorxn/Rxn_1/ReactionExperiment_1",
-    #                             }"""
-    #     # If the input JSON string is missing mandatory keys, raise error with "exception_string"
-    #     if ONTOREACTION_REACTIONEXPERIMENT in agent_inputs:
-    #         try:
-    #             # Get the information from OntoRxn:ReactionExperiment instance
-    #             list_rxn_exp_instance = self.sparql_client.getReactionExperiment(agent_inputs[ONTOREACTION_REACTIONEXPERIMENT])
-    #             if len(list_rxn_exp_instance) > 1:
-    #                 raise Exception(
-    #                     "Only one instance of OntoRxn:ReactionExperiment should be used for generating OntoLab:EquipmentSettings per ExpSetup Derivation, collected: <%s>" % (">, <".join([rxnexp.instance_iri for rxnexp in list_rxn_exp_instance]))
-    #                 )
-    #         except ValueError:
-    #             self.logger.error("Unable to interpret reaction experiment ('%s') as an IRI." % agent_inputs[ONTOREACTION_REACTIONEXPERIMENT])
-    #             raise Exception("Unable to interpret reaction experiment ('%s') as an IRI." % agent_inputs[ONTOREACTION_REACTIONEXPERIMENT])
-    #     else:
-    #         self.logger.error('OntoRxn:ReactionExperiment instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
-    #         raise Exception('OntoRxn:ReactionExperiment instance might be missing. Received inputs: ' + str(agent_inputs) + exception_string)
+        else:
+            # TODO add support in situation where digital twin are not managed by agents
+            raise NotImplementedError("Not yet supported - the preferred digital twin of the hardware <%s> and <%s> are not managed by agent instances." % (
+                preferred_rs400.instance_iri, agilent_hplc.instance_iri))
 
-    #     return list_rxn_exp_instance[0]
 
 # Show an instructional message at the ExecutionAgent servlet root
-
-
 def default():
     """
         Instructional message at the app root.

@@ -1108,10 +1108,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
         query = PREFIX_RDF + \
                 """
-                SELECT ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state ?state_type ?last_update ?autosampler
-                WHERE { <%s> <%s> ?autosampler; <%s> ?rs400_manufacturer; <%s> ?laboratory; <%s> ?rs400_power_supply; <%s> ?state. ?state a ?state_type; <%s> ?last_update. ?autosampler rdf:type <%s>. }
-                """ % (
-                    vapourtec_rs400_iri, SAREF_CONSISTSOF, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, SAREF_HASSTATE, ONTOLAB_STATELASTUPDATEDAT, ONTOVAPOURTEC_AUTOSAMPLER
+                SELECT ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state ?state_type ?last_update ?autosampler ?is_managed_by
+                WHERE { <%s> <%s> ?autosampler; <%s> ?rs400_manufacturer; <%s> ?laboratory; <%s> ?rs400_power_supply; <%s> ?state. ?state a ?state_type; <%s> ?last_update. ?autosampler rdf:type <%s>. 
+                OPTIONAL{<%s> <%s> ?is_managed_by.}
+                }""" % (
+                    vapourtec_rs400_iri, SAREF_CONSISTSOF, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, SAREF_HASSTATE, ONTOLAB_STATELASTUPDATEDAT, ONTOVAPOURTEC_AUTOSAMPLER,
+                    vapourtec_rs400_iri, ONTOLAB_ISMANAGEDBY
                 )
 
         response = self.performQuery(query)
@@ -1135,6 +1137,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             manufacturer=res['rs400_manufacturer'],
             isContainedIn=res['laboratory'],
             hasPowerSupply=res['rs400_power_supply'],
+            isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
             consistsOf=list_vapourtec_reactor_and_pump,
             hasState=VapourtecState(
                 instance_iri=res['state'],
@@ -1148,11 +1151,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_vapourtec_rs400_given_autosampler(self, autosampler: AutoSampler) -> VapourtecRS400:
         query = PREFIX_RDF + \
                 """
-                SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state ?state_type ?last_update
-                WHERE { ?rs400 <%s> <%s>; rdf:type <%s>; <%s> ?rs400_manufacturer; <%s> ?laboratory; <%s> ?rs400_power_supply; <%s> ?state. ?state a ?state_type; <%s> ?last_update. }
-                """ % (
+                SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state ?state_type ?last_update ?is_managed_by
+                WHERE { ?rs400 <%s> <%s>; rdf:type <%s>; <%s> ?rs400_manufacturer; <%s> ?laboratory; <%s> ?rs400_power_supply; <%s> ?state. ?state a ?state_type; <%s> ?last_update. 
+                OPTIONAL{?rs400 <%s> ?is_managed_by.}
+                }""" % (
                     SAREF_CONSISTSOF, autosampler.instance_iri,
-                    ONTOVAPOURTEC_VAPOURTECRS400, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, SAREF_HASSTATE, ONTOLAB_STATELASTUPDATEDAT
+                    ONTOVAPOURTEC_VAPOURTECRS400, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, SAREF_HASSTATE, ONTOLAB_STATELASTUPDATEDAT,
+                    ONTOLAB_ISMANAGEDBY
                 )
 
         response = self.performQuery(query)
@@ -1176,6 +1181,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             manufacturer=res['rs400_manufacturer'],
             isContainedIn=res['laboratory'],
             hasPowerSupply=res['rs400_power_supply'],
+            isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
             consistsOf=list_vapourtec_reactor_and_pump,
             hasState=VapourtecState(
                 instance_iri=res['state'],
@@ -2180,6 +2186,54 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         vapourtec_input_file = VapourtecInputFile(instance_iri=vapourtec_input_file_iri, **response[0])
         return vapourtec_input_file
+
+    # TODO add unit test
+    def get_hplc_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> HPLC:
+        vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
+        query = """SELECT ?hplc ?hplc_manufacturer ?lab ?hplc_power_supply ?is_managed_by ?report_extension
+                WHERE {<%s> ^<%s> ?automated; <%s> ?hplc. ?hplc a <%s>; <%s> ?hplc_manufacturer; <%s> ?lab; <%s> ?hplc_power_supply; <%s> ?report_extension.
+                OPTIONAL{?hplc <%s> ?is_managed_by}}""" % (
+            vapourtec_rs400_iri, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
+            ONTOHPLC_REPORTEXTENSION, ONTOLAB_ISMANAGEDBY
+        )
+        response = self.performQuery(query)
+        if (len(response) > 1):
+            # NOTE here we assume one AgilentHPLC module has only ONE manufacturer, locates in only ONE laboratory, also has only ONE type of power supply
+            # NOTE this might not hold universally, but we will simplify for the moment
+            raise NotImplementedError("Not yet supported - VapourtecRS400 <%s> is associated with multiple HPLC: %s" % (vapourtec_rs400_iri, str(response)))
+        elif (len(response) < 1):
+            raise Exception("No HPLC is identified connected with VapourtecRS400 <%s> when querying: %s" % (vapourtec_rs400_iri, query))
+
+        res = response[0]
+        hplc = HPLC(
+            instance_iri=res['hplc_digital_twin'],
+            manufacturer=res['hplc_manufacturer'],
+            isContainedIn=res['lab'],
+            hasPowerSupply=res['hplc_power_supply'],
+            isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
+            reportExtension=res['report_extension'],
+            # hasJob=, # TODO add support
+            # hasPastReport=, # TODO add support
+        )
+        return hplc
+
+    # TODO add unit test
+    def detect_new_hplc_report_from_agilent_derivation(self, agilent_derivation_iri: str):
+        agilent_derivation_iri = trimIRI(agilent_derivation_iri)
+        query = """SELECT ?hplc_report WHERE {?hplc_job <%s> <%s>. ?hplc_job <%s> ?hplc_report.}""" % (
+            ONTODERIVATION_BELONGSTO, agilent_derivation_iri, ONTOHPLC_HASREPORT
+        )
+        response = self.performQuery(response)
+        if (len(response) > 1):
+            # NOTE here we assume one Agilent Derivation has ONLY ONE HPLCJob and thus ONLY ONE HPLCReport
+            # NOTE this might not hold universally, but we will simplify for the moment
+            raise NotImplementedError("Not yet supported - Agilent Derivation <%s> is associated with multiple HPLCJob/HPLCReport: %s" % (agilent_derivation_iri, str(response)))
+        elif (len(response) < 1):
+            logger.info("No HPLCJob/HPLCReport identified yet for Agilent Derivation <%s>." % (agilent_derivation_iri))
+            return None
+        else:
+            return response[0]['hplc_report']
+
 
     #######################################################
     ## Some utility functions handling the list and dict ##

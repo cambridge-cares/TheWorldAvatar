@@ -1,3 +1,1 @@
-from .agent_properties import (
-    ExeAgentConfig
-)
+from .vapourtec_exe_conf import config_vapourtec_execution

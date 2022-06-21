@@ -1,21 +1,9 @@
 version: '3.8'
 
 services:
-  doe_agent:
-    image: ghcr.io/cambridge-cares/doe_agent:1.0.0-SNAPSHOT
-    container_name: doe_agent
-    environment:
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    ports:
-      - 7000:5000
-    env_file:
-      - ./vtexeagent/tests/env_files/agent.doe.env.test
-    extra_hosts:
-      - host.docker.internal:host-gateway
-
-  vt_exe_agent:
-    image: ghcr.io/cambridge-cares/vt_exe_agent:1.0.0-SNAPSHOT
-    container_name: vt_exe_agent
+  vapourtec_execution_agent:
+    image: ghcr.io/cambridge-cares/vapourtec_execution_agent:1.0.0-SNAPSHOT
+    container_name: vapourtec_execution_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     build:
@@ -23,7 +11,7 @@ services:
       dockerfile: ./Dockerfile
       labels:
         authors: "jb2197@cam.ac.uk"
-        description: "Execute experiment given the suggested conditions."
+        description: "Schedule and request execution of reaction experiment given the suggested conditions."
     ports:
       - 7001:5000
     env_file:
@@ -56,6 +44,6 @@ services:
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: rxnoptgoalagent/tests/dummy_services_secrets/blazegraph_passwd.txt
+    file: vtexeagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
-    file: rxnoptgoalagent/tests/dummy_services_secrets/fileserver_passwd.txt
+    file: vtexeagent/tests/dummy_services_secrets/fileserver_passwd.txt
