@@ -87,7 +87,7 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
                                   circle_radius: str = None):
     """
         Returns DataFrame with all instantiated Met Office station details
-        (['stationID', 'station', 'comment', 'latlon', 'elevation', 
+        (['stationID', 'station', 'label', 'latlon', 'elevation', 
           'obs_station', 'fcs_station', 'dataIRI'])
 
         Arguments:
@@ -115,7 +115,7 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     # Execute query
     results = kg_client.performQuery(query=query_string)
     # Parse results into DataFrame
-    df = pd.DataFrame(columns=['stationID', 'station', 'comment', 'latlon', 
+    df = pd.DataFrame(columns=['stationID', 'station', 'label', 'latlon', 
                                'elevation', 'dataIRI_obs', 'dataIRI_fc'])
     df = df.append(results)
     # Add station classification (one hot encoded)
