@@ -39,38 +39,15 @@ RUN apt-get update \
 RUN pip install pycparser \
   && pip install pythonnet==2.5.0
 
-RUN pip install requests
-
-COPY FCRemote.dll FCRemote.dll
-COPY FCRemoteCSV.dll FCRemoteCSV.dll
-COPY TwoReactors.fcexp TwoReactors.fcexp
-
 # Expose the port on which our server will run
 EXPOSE 5000
 
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-RUN python -m pip install pyderivationagent
-
-# # RUN git clone https://github.com/cambridge-cares/TheWorldAvatar.git --no-checkout TWA && \
-# #     cd TWA && git sparse-checkout init --cone && git sparse-checkout set Agents/utils/python-utils && \
-# #     git checkout main && cd Agents/utils/python-utils && pip install -e .
-# # RUN git clone https://github.com/cambridge-cares/TheWorldAvatar.git --no-checkout TWA
-# # RUN cd TWA
-# # RUN git sparse-checkout init --cone
-# # RUN git sparse-checkout set Agents/utils/python-utils
-# # RUN git checkout main && cd Agents/utils/python-utils && pip install -e .
-
-RUN python -m pip install git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
-RUN python -m pip install git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots
-
-RUN python -m pip install pydantic
-RUN python -m pip install pandas
-
-# # # Install the required Python libraries
-# # COPY requirements.txt .
-# # RUN python -m pip install -r requirements.txt
+# Install the required Python libraries
+COPY requirements.txt .
+RUN python -m pip install -r requirements.txt
 
 # # # Re-install the version of JPS_BASE_LIB that is been developing
 # # # (sinse the newly added code is not in the release version of py4jps)
