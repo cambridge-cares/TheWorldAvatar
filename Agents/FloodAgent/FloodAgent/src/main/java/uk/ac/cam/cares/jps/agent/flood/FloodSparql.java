@@ -38,6 +38,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
@@ -375,6 +376,16 @@ public class FloodSparql {
 			case "Water Level":
 			    quantityIri = iri(station + "/WaterLevel");
 				modify.insert(quantityIri.isA(WaterLevel));
+				// dummy range triple to modified in sparql update
+				modify.insert(iri(measure).has(hasCurrentRange, UnavailableRange));
+				modify.insert(iri(measure).has(hasCurrentTrend, UnavailableTrend));
+
+				// some stations did not have any measures when initialised and do not contain an rdf:type
+				modify.insert(iri(station).isA(WaterLevelReportingStation));
+
+				// the following triple may be added in the initialisation when the station measures
+				// something else but not Water Level
+				modify.delete(iri(station).isA(ReportingStation));
 				break;
 			case "Flow":
 			    quantityIri = iri(station + "/Flow");
@@ -416,9 +427,6 @@ public class FloodSparql {
 		if (unitMap.containsKey(unit)) {
 			modify.insert(iri(measure).has(hasUnit, unitMap.get(unit)));
 		}
-
-		// dummy range triple to modified in sparql update
-		modify.insert(iri(measure).has(hasCurrentRange, UnavailableRange));
 
 		modify.prefix(p_ems,p_om);
 		storeClient.executeUpdate(modify.getQueryString());
@@ -589,14 +597,21 @@ public class FloodSparql {
 		return stations;
 	}
     
+	/**
+	 * the station will be part of an rdf:collection, something like
+	 * ?blankNode rdf:first <station>
+	 * @param station
+	 * @return
+	 */
     boolean checkStationExists(String station) {
     	SelectQuery query = Queries.SELECT();
+    	GraphPattern gp1 = query.var().has(query.var(), iri(station));
     	
-    	GraphPattern queryPattern = iri(station).has(query.var(),query.var());
+    	query.where(gp1).prefix(p_ems);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
-    	query.where(queryPattern);
-    	
-	    if(storeClient.executeQuery(query.getQueryString()).length() > 1) {
+	    if(queryResult.length() > 0) {
 	    	return true;
 	    } else {
 	    	return false;
@@ -688,18 +703,21 @@ public class FloodSparql {
 		Variable upperBoundVar = query.var();
 		Variable lowerBoundVar = query.var();
 		Variable measure = query.var();
+		Variable quantity = query.var();
 
 		Variable oldrange = query.var(); // used in update query only
 
-		GraphPattern gp1 = station.has(PropertyPaths.path(reports,hasValue), measure)
+		GraphPattern gp1 = station.has(reports, quantity)
 		.andHas(PropertyPaths.path(stageScale, typicalRangeLow), lowerBoundVar)
 		.andHas(PropertyPaths.path(stageScale, typicalRangeHigh), upperBoundVar);
+
+		GraphPattern gp2 = quantity.isA(WaterLevel).andHas(hasValue, measure);
 
 		GraphPattern measureGp = measure.has(qualifier, "Stage");
 
 		ValuesPattern vp = new ValuesPattern(measure, measureIRIs.stream().map(s -> iri(s)).collect(Collectors.toList()));
 
-		query.select(measure,station,upperBoundVar,lowerBoundVar).where(gp1,vp,measureGp).prefix(p_om,p_ems);
+		query.select(measure,station,upperBoundVar,lowerBoundVar).where(gp1,vp,measureGp,gp2).prefix(p_om,p_ems);
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		List<String> measureRangesToDelete = new ArrayList<>();
@@ -756,18 +774,20 @@ public class FloodSparql {
 		Variable upperBoundVar = query.var();
 		Variable lowerBoundVar = query.var();
 		Variable measure = query.var();
+		Variable quantity = query.var();
 
 		Variable oldrange = query.var(); // used in update query
 
-		GraphPattern gp1 = station.has(PropertyPaths.path(reports,hasValue), measure)
+		GraphPattern gp1 = station.has(reports, quantity)
 		.andHas(PropertyPaths.path(downstageScale, typicalRangeLow), lowerBoundVar)
 		.andHas(PropertyPaths.path(downstageScale, typicalRangeHigh), upperBoundVar);
 
+		GraphPattern gp2 = quantity.isA(WaterLevel).andHas(hasValue, measure);
 		GraphPattern measureGp = measure.has(qualifier, "Downstream Stage");
 
 		ValuesPattern vp = new ValuesPattern(measure, measureIRIs.stream().map(s -> iri(s)).collect(Collectors.toList()));
 
-		query.select(measure,station,upperBoundVar,lowerBoundVar).where(gp1,vp,measureGp).prefix(p_om,p_ems);
+		query.select(measure,station,upperBoundVar,lowerBoundVar).where(gp1,vp,measureGp,gp2).prefix(p_om,p_ems);
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		List<String> measureRangesToDelete = new ArrayList<>();
@@ -928,6 +948,55 @@ public class FloodSparql {
 
 		modify.delete(measureVar.has(hasCurrentTrend, oldtrend)).where(measureVar.has(hasCurrentTrend, oldtrend), vp);
 		modify.prefix(p_ems);
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
+	/**
+	 * if the original station is a ReportingStation, change it to WaterLevelReportingStation
+	 */
+	void changeStationToWaterLevelReportingStation(String station) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		modify.insert(iri(station).isA(WaterLevelReportingStation)).where(iri(station).isA(ReportingStation)).delete(iri(station).isA(ReportingStation)).prefix(p_ems);
+
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
+	List<String> getAllMeasuresWithTimeseries() {
+		SelectQuery query = Queries.SELECT();
+
+		Variable measure = query.var();
+		Variable timeseries = query.var();
+
+		GraphPattern gp = measure.has(iri("https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries"),timeseries);
+
+		query.select(measure).where(gp);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		List<String> measures = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			measures.add(queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
+		}
+
+		return measures;
+	}
+
+	void deleteMeasures(List<String> measures) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		Variable measure = SparqlBuilder.var("measure");
+		Variable a = SparqlBuilder.var("a");
+		Variable b = SparqlBuilder.var("b");
+		Variable c = SparqlBuilder.var("c");
+		Variable d = SparqlBuilder.var("d");
+
+		TriplePattern tp1 = measure.has(a,b);
+		TriplePattern tp2 = c.has(d, measure);
+
+		ValuesPattern vp = new ValuesPattern(measure, measures.stream().map(s -> iri(s)).collect(Collectors.toList()));
+
+		modify.delete(tp1,tp2).where(tp1,tp2,vp);
+
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 }

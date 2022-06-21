@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
+import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -119,7 +120,10 @@ public class UpdateStations {
 		sparqlClient.addTrends(tsClient, downstageMeasureList, lowerbound, upperbound);
 
 		// update last updated date
-		addUpdateDate(tsClient,date);
+		addUpdateDate(date);
+
+		// clean up
+		deleteEmptyTables();
 	}
 	
 	/**
@@ -234,18 +238,28 @@ public class UpdateStations {
 					String parameterName = items.getString("parameterName");
 					String qualifier = items.getString("parameter");
 					
-					// add this missing information in blazegraph and rdb
-					sparqlClient.addMeasureToStation(station, dataIRI,unit,parameterName,qualifier);
-					
 					// check if station exists, if not, instantiate
 					if (!sparqlClient.checkStationExists(station)) {
 						HttpEntity newstation = new APIConnector(station).getData();
 						JSONObject newstation_jo = new JSONObject(EntityUtils.toString(newstation));
 						if (newstation_jo.getJSONObject("items").has("lat")) {
-							LOGGER.info("Instantiating a new station as it is without OntoEMS");
+							LOGGER.info("Instantiating a new station " + station);
 							sparqlClient.postToRemoteStore(new APIConnector(station+".rdf").getData());
+
+							// add approripate rdf type and blazegraph coordinates
+							Station stationObject = new Station(station);
+							stationObject.setLat(newstation_jo.getJSONObject("items").getDouble("lat"));
+							stationObject.setLon(newstation_jo.getJSONObject("items").getDouble("lon"));
+							Measure measure = new Measure(dataIRI);
+							measure.setParameterName(parameterName);
+							stationObject.addMeasure(measure);
+
+							sparqlClient.addStationTypeAndCoordinates(Arrays.asList(stationObject));
 						}
 					}
+
+					// add this missing information in blazegraph and rdb
+					sparqlClient.addMeasureToStation(station, dataIRI,unit,parameterName,qualifier);
 					
 					tsClient.initTimeSeries(Arrays.asList(dataIRI), Arrays.asList(Double.class), null);
 					
@@ -276,10 +290,24 @@ public class UpdateStations {
         tsClient.disconnectRDB();
 	}
 
-	static void addUpdateDate(TimeSeriesClient<Instant> tsClient, LocalDate date) {
+	static void addUpdateDate(LocalDate date) {
 		List<List<?>> values = new ArrayList<>();
 		values.add(Arrays.asList(date));
 		TimeSeries<Instant> ts = new TimeSeries<Instant>(Arrays.asList(date.atStartOfDay(ZoneOffset.UTC).toInstant()), Arrays.asList(Config.TIME_IRI), values);
 		tsClient.addTimeSeriesData(ts);
+	}
+
+	static void deleteEmptyTables() {
+		List<String> measures = sparqlClient.getAllMeasuresWithTimeseries();
+
+		List<String> emptyMeasures = new ArrayList<>();
+		for (String measure : measures) {
+			if(tsClient.getLatestData(measure).getTimes().size() < 1) {
+				tsClient.deleteIndividualTimeSeries(measure);
+				emptyMeasures.add(measure);
+			}
+		}
+
+		sparqlClient.deleteMeasures(emptyMeasures);
 	}
 }
