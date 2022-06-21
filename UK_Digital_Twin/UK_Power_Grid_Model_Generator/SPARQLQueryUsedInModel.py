@@ -51,8 +51,8 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint_label):
     
     for r in res:
         r['BusLatLon'] = [float(r['BusLatLon'].split('#')[0]), float(r['BusLatLon'].split('#')[1])] 
-    # numOfBus = len(res)
-    return res #, numOfBus
+    
+    return int(len(res)), res 
 
 ####EGen information query####
 

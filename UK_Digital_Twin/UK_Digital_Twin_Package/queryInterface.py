@@ -25,16 +25,22 @@ def performQuery(kb, query, isQuery = True, isUpdate = False):
     # perform an example sparqle query, see the jps-base-lib docs for further details
     KGRouter = jpsBaseLib_view.StoreRouter
     KGClient = KGRouter.getStoreClient(KGRouter.HTTP_KB_PREFIX + str(kb), isQuery, isUpdate)
-    try:
-        response = KGClient.executeQuery((query))
-        return str(response)
-    except:
-        print("***WARNING:KGClient has not been created successfully.****")
+    response = KGClient.executeQuery((query))
+    return str(response)
+
+    # try:
+    #     response = KGClient.executeQuery((query))
+    #     return str(response)
+    # except:
+    #     print("***WARNING:KGClient has not been created successfully.****")
 
 def performUpdate(kb, query, isQuery = True, isUpdate = True):
     # perform an example sparqle query, see the jps-base-lib docs for further details
     KGRouter = jpsBaseLib_view.StoreRouter 
-    KGClient = KGRouter.getStt(str(KGRouter.HTTP_KB_PREFIX) + str(kb), isQuery, isUpdate)
+    KGClient = KGRouter.getStoreClient(str(KGRouter.HTTP_KB_PREFIX) + str(kb), isQuery, isUpdate)
+
+    # KGClient = KGRouter.getStt(str(KGRouter.HTTP_KB_PREFIX) + str(kb), isQuery, isUpdate)
+
     try:
         response = KGClient.executeUpdate((query))
         return str(response)

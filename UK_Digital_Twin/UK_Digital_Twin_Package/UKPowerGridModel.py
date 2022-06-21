@@ -108,7 +108,7 @@ class UKEbusModel:
     
     # {"BUS":"BUS_I", "TYPE": "BUS_TYPE", "PD_INPUT": "PD", "GD_INPUT": "QD", "GS": "GS", "BS": "BS", "AREA": "BUS_AREA", "VM_INPUT": "VM", "VA_INPUT": "VA", "BASEKV": "BASE_KV", "ZONE": "ZONE", "VMAX":"VMAX", "VMIN": "VMIN" }
     
-    def __init__(self, numOfBus:int):
+    def __init__(self, numOfBus:int, BusNodeIRI:str):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\Sleepycat_EBus"
         self.BusModelInitialisation = UKEbusModel.DataPath + str(numOfBus) + '_bus\\BusModelInitialisation.csv'        
@@ -140,7 +140,8 @@ class UKEbusModel:
         self.PDGEN = None
         self.GDGEN = None
         
-        
+        # Bus node IRI
+        self.BusNodeIRI = BusNodeIRI
         
     def __dir__(self):
         return self.INPUT_VARIABLE_KEYS + self.OUTPUT_VARIABLE_KEYS
@@ -207,7 +208,7 @@ class UKElineModel:
     
     OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
-    def __init__(self, numOfBus:int, initialiserMethod = 'defaultBranchInitialiser'):
+    def __init__(self, numOfBus:int, BranchNodeIRI:str, initialiserMethod = 'defaultBranchInitialiser'):
         
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\Sleepycat_EBus"
@@ -248,6 +249,9 @@ class UKElineModel:
         self.TOBUSINJECTION_Q = None
         self.LOSS_P = None
         self.LOSS_Q = None
+
+        # Bus node IRI
+        self.BranchNodeIRI = BranchNodeIRI
     
     def __dir__(self):
         return self.INPUT_VARIABLE_KEYS + self.OUTPUT_VARIABLE_KEYS
@@ -327,7 +331,7 @@ class UKEGenModel:
    
     OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
-    def __init__(self, numOfBus:int):
+    def __init__(self, numOfBus:int, generatorNodeIRI:str):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\Sleepycat_EBus"
         
@@ -359,6 +363,9 @@ class UKEGenModel:
         # Model output
         self.PG_OUTPUT = None
         self.QG_OUTPUT = None
+
+        # Generator Node IRI
+        self.generatorNodeIRI = generatorNodeIRI
         
     def __dir__(self):
         return self.INPUT_VARIABLE_KEYS + self.OUTPUT_VARIABLE_KEYS
