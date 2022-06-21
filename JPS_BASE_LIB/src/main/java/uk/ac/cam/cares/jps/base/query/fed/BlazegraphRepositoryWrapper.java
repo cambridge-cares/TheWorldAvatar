@@ -3,9 +3,11 @@ package uk.ac.cam.cares.jps.base.query.fed;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.jena.ontology.OntModel;
@@ -196,24 +198,40 @@ public class BlazegraphRepositoryWrapper {
 	 */
 	public List<String> queryNamespaces(boolean asEndpointUrl) {
 		String full = queryNamespacesFull();
+		return queryNamespaces(asEndpointUrl, full);
+	}
+		
+	public List<String> queryNamespaces(boolean asEndpointUrl, String rdfgraphWithNamespaces) {
 		OntModel model = JenaHelper.createModel();
-		JenaHelper.readFromString(full, model);
+		JenaHelper.readFromString(rdfgraphWithNamespaces, model);
 		String sparql = "SELECT ?endpoint WHERE { "
 				+ "?dataset a <http://rdfs.org/ns/void#Dataset> . "
 				+ "?dataset <http://rdfs.org/ns/void#sparqlEndpoint> ?endpoint . }";
 		ResultSet result = JenaHelper.query(model, sparql);
 		String json = JenaResultSetFormatter.convertToJSONW3CStandard(result);	
-		List<String> endpoints = new ArrayList<String>();
+		Set<String> endpoints = new HashSet<String>();
 		for (String[] row : JenaResultSetFormatter.convertToListofStringArrays(json, "endpoint")) {
 			String namespace = row[0];
 			if (!asEndpointUrl) {
 				namespace = namespace.replaceFirst("/sparql", "");
 				int i = namespace.lastIndexOf("/");
 				namespace = namespace.substring(i+1);
+			} else {
+				// CityKG does not seem to be configured correctly 
+				// the endpoint URLS contain localhost:9999
+				// we replace this here
+				for (String s : new String[] {"localhost:9999/blazegraph", "localhost:9999/bigdata/LBS"}) {
+					if (namespace.contains(s)) {
+						String old = namespace;
+						namespace = namespace.replace(s, "www.theworldavatar.com:83/citieskg");
+						LOGGER.warn("changed endpoint url from " + old + " to " + namespace);
+					}
+				}
+
 			}
 			endpoints.add(namespace);
 		}
-		return endpoints;
+		return new ArrayList<String>(endpoints);
 	}
 	
 	/**

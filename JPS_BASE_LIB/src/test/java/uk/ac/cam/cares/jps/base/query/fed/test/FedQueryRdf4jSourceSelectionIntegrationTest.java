@@ -23,6 +23,7 @@ public class FedQueryRdf4jSourceSelectionIntegrationTest extends QueryProvider {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FedQueryRdf4jSourceSelectionIntegrationTest.class);
 	private static FederatedQueryInterface engine = null;
+	private static List<String> endpoints = null;
 	
 	@Override
 	public void setUp() throws Exception {
@@ -34,6 +35,7 @@ public class FedQueryRdf4jSourceSelectionIntegrationTest extends QueryProvider {
 			LOGGER.info("Creating engine with endpoint selection");
 			String fedEngineUrl = TripleStoreProvider.getEndpointUrl(TripleStoreProvider.NAMESPACE_RDF4J_EMPTY);			
 			ServiceDescriptionIndexer indexer = getIndexer();
+			endpoints = indexer.getEndpointUrls();
 			Map<String,String> host2host = TripleStoreProvider.getHostConversionMap();
 			engine = FederatedQueryFactory.createWithEndpointSelection(fedEngineUrl, indexer, host2host);
 		}
@@ -44,7 +46,8 @@ public class FedQueryRdf4jSourceSelectionIntegrationTest extends QueryProvider {
 	}
 	
 	private void queryAndAssert(String sparql, String expectedResult) {
-		LOGGER.debug("Federated query for RDF4J with given service endpoints and without data selection");
+		LOGGER.debug("Federated query for RDF4J with endpoint selection");
+		LOGGER.debug("number of endpoints=" + endpoints.size());
 		String actualJson = engine.executeFederatedQuery(sparql);	
 		assertQueryResult(expectedResult, actualJson);
 	}

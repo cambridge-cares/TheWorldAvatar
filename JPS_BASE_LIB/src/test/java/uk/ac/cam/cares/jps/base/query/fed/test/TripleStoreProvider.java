@@ -360,7 +360,7 @@ public class TripleStoreProvider extends TestCase {
 		host2host.put(host, dockerHost);
 		ContainerInfo info = new ContainerInfo(container, serviceUrl);
 		id2container.put(ID_BLAZEGRAPH_1, info);
-		LOGGER.debug("created container for id=" + ID_BLAZEGRAPH_1 + ", serviceUrl=" + serviceUrl, ", dockerHost" + dockerHost);
+		LOGGER.debug("created container for id=" + ID_BLAZEGRAPH_1 + ", serviceUrl=" + serviceUrl + ", dockerHost" + dockerHost);
 		
 		Collection<File> files = new ArrayList<File>();
 		String path = BlazegraphRepositoryWrapper.getPathForBlazegraph(NAMESPACE_BLAZEGRAPH_EMTPY);
@@ -389,7 +389,7 @@ public class TripleStoreProvider extends TestCase {
 		host2host.put(host, dockerHost);
 		ContainerInfo info = new ContainerInfo(container, serviceUrl);
 		id2container.put(ID_BLAZEGRAPH_2, info);
-		LOGGER.debug("created container for id=" + ID_BLAZEGRAPH_2 + ", serviceUrl=" + serviceUrl, ", dockerHost" + dockerHost);
+		LOGGER.debug("created container for id=" + ID_BLAZEGRAPH_2 + ", serviceUrl=" + serviceUrl + ", dockerHost" + dockerHost);
 
 		Collection<File> files = getFiles(dirTestResources + "lab_2.ttl");
 		String path = BlazegraphRepositoryWrapper.getPathForBlazegraph(NAMESPACE_LAB_2);
@@ -405,7 +405,7 @@ public class TripleStoreProvider extends TestCase {
 		host2host.put(host, dockerHost);
 		ContainerInfo info = new ContainerInfo(container, serviceUrl);
 		id2container.put(ID_RDF4J_1, info);
-		LOGGER.debug("created container for id=" + ID_RDF4J_1 + ", serviceUrl=" + serviceUrl, ", dockerHost" + dockerHost);
+		LOGGER.debug("created container for id=" + ID_RDF4J_1 + ", serviceUrl=" + serviceUrl + ", dockerHost" + dockerHost);
 		
 		createEmptyDatasetRdf4j(ID_RDF4J_1, serviceUrl, NAMESPACE_RDF4J_EMPTY);
 	}

@@ -112,9 +112,9 @@ public class DatasetGeneratorTest extends QueryProvider {
 		
 		String dataset = generator.generateVariableValues(4).build();
 		
-		System.out.println("XXX");
-		System.out.println(dataset);
-		System.out.println("YYY");
+		//System.out.println("XXX");
+		//System.out.println(dataset);
+		//System.out.println("YYY");
 		
 		String expected = "\r\n"
 				+ "\r\n"

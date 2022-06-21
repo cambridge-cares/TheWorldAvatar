@@ -28,8 +28,8 @@ public class FedXIntegrationTest extends QueryProvider {
 	}
 		
 	private void queryAndAssert(String sparql, List<String> endpoints, String expectedResult) {
-		LOGGER.debug("FedX with number of endpoints=" + endpoints.size());
 		endpoints = getIndexer().getEndpointUrls();
+		LOGGER.debug("FedX with number of endpoints=" + endpoints.size());
 		FederatedQueryInterface repo = FederatedQueryFactory.createFedX(endpoints);
 		String actualJson = repo.executeFederatedQuery(sparql);
 		assertQueryResult(expectedResult, actualJson);

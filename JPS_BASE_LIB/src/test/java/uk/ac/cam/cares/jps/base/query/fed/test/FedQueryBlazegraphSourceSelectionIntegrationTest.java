@@ -20,7 +20,7 @@ public class FedQueryBlazegraphSourceSelectionIntegrationTest extends QueryProvi
 	public void setUp() throws Exception {
 		super.setUp();
 		TripleStoreProvider.getInstance();
-		setQueryFormatParams(false, true, true);
+		setQueryFormatParams(false, true, false);
 		setServiceUrlParams(null, true);
 	}
 	
@@ -32,6 +32,7 @@ public class FedQueryBlazegraphSourceSelectionIntegrationTest extends QueryProvi
 		LOGGER.debug("Federated query for Blazegraph with endpoint selection");
 		String fedEngineUrl = TripleStoreProvider.getEndpointUrl(TripleStoreProvider.NAMESPACE_BLAZEGRAPH_EMTPY);
 		ServiceDescriptionIndexer indexer = getIndexer();
+		LOGGER.debug("number of endpoints=" + indexer.getEndpointUrls().size());
 		Map<String,String> host2host = TripleStoreProvider.getHostConversionMap();
 		FederatedQueryInterface repo = FederatedQueryFactory.createWithEndpointSelection(fedEngineUrl, indexer, host2host);
 		//FederatedQueryInterface repo = FederatedQueryFactory.createForQueriesWithGivenEndpoints(fedEngineUrl);
