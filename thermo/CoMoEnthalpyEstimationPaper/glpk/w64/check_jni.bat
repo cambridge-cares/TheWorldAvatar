@@ -51,3 +51,4 @@ echo JDK not found.
 echo Please, adjust environment variable JAVA_HOME.
 goto DONE
 :DONE
+

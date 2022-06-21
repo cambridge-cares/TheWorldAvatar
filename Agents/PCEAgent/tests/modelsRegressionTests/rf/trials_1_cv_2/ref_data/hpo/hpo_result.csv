@@ -1,0 +1,2 @@
+,number,value,datetime_start,datetime_complete,duration,params_bootstrap,params_max_depth,params_max_features,params_max_samples,params_min_samples_leaf,params_min_samples_split,params_nBits,params_n_estimators,params_radius,state
+0,0,6.086491457159314,2021-03-26 12:13:03.200071,2021-03-26 12:13:05.642501,0 days 00:00:02.442430,False,22,1.0,20,2,2,128,53,2,COMPLETE

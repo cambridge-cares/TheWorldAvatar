@@ -1,0 +1,69 @@
+{
+"numerical_settings":{
+	"seed": 1
+},
+"dataset":{
+	"src": "./data/product/amazon.pkl",
+	"tgt": "./data/product/googleproducts.pkl"
+},
+"pre_processing":{
+	"add_knowledge": null
+},
+"blocking":{
+	"name": "TokenBasedPairIterator",
+	"model_specific": {
+		"min_token_length": 3,
+		"max_token_occurrences_src": 100,
+		"max_token_occurrences_tgt": 100,
+		"blocking_properties": ["https://schema.org/name", "https://schema.org/manufacturer"],
+		"reset_index": false
+	}
+},
+"mapping": {
+	"mode": "fixed",
+	"similarity_functions": [
+		{"name": "dist_absolute", "cut_off_mode": "fixed", "cut_off_value": 10},
+		{"name": "dist_relative", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_equal", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_nltk_edit", "cut_off_mode": "fixed", "cut_off_value": 3},
+		{"name": "dist_nltk_edit", "cut_off_mode": "fixed", "cut_off_value": 10},
+		{"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1, "maxidf": 30},
+		{"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1, "maxidf": 100},
+		{"name": "dist_cosine_binary", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_cosine_embedding", "cut_off_mode": "fixed", "cut_off_value": 1}
+	],
+	"triples": [
+		{"prop1": "offers/price", "prop2": "offers/price", "sim": 1, "pos": 0},
+		{"prop1": "https://schema.org/name", "prop2": "https://schema.org/name", "sim": 3, "pos": 1},
+		{"prop1": "https://schema.org/name", "prop2": "https://schema.org/name", "sim": 4, "pos": 2},
+		{"prop1": "https://schema.org/name", "prop2": "https://schema.org/name", "sim": 5, "pos": 3},
+		{"prop1": "https://schema.org/name", "prop2": "https://schema.org/name", "sim": 6, "pos": 4},
+		{"prop1": "https://schema.org/name", "prop2": "https://schema.org/name", "sim": 7, "pos": 5},
+		{"prop1": "https://schema.org/name", "prop2": "https://schema.org/name", "sim": 8, "pos": 6},
+		{"prop1": "https://schema.org/manufacturer", "prop2": "https://schema.org/manufacturer", "sim": 3, "pos": 7},
+		{"prop1": "https://schema.org/manufacturer", "prop2": "https://schema.org/manufacturer", "sim": 4, "pos": 8},
+		{"prop1": "https://schema.org/manufacturer", "prop2": "https://schema.org/manufacturer", "sim": 5, "pos": 9},
+		{"prop1": "https://schema.org/manufacturer", "prop2": "https://schema.org/manufacturer", "sim": 6, "pos": 10},
+		{"prop1": "https://schema.org/manufacturer", "prop2": "https://schema.org/manufacturer", "sim": 7, "pos": 11},
+		{"prop1": "https://schema.org/manufacturer", "prop2": "https://schema.org/manufacturer", "sim": 8, "pos": 12},
+		{"prop1": "https://schema.org/description", "prop2": "https://schema.org/description", "sim": 3, "pos": 13},
+		{"prop1": "https://schema.org/description", "prop2": "https://schema.org/description", "sim": 4, "pos": 14},
+		{"prop1": "https://schema.org/description", "prop2": "https://schema.org/description", "sim": 5, "pos": 15},
+		{"prop1": "https://schema.org/description", "prop2": "https://schema.org/description", "sim": 6, "pos": 16},
+		{"prop1": "https://schema.org/description", "prop2": "https://schema.org/description", "sim": 7, "pos": 17},
+		{"prop1": "https://schema.org/description", "prop2": "https://schema.org/description", "sim": 8, "pos": 18}
+	],
+	"similarity_file": "./sim_vectors_ag/sim_vectors_ag_1_auto_100.csv"
+},
+"matching":{
+	"name": "instancematching.InstanceMatcherWithAutoCalibration",
+	"model_specific": {
+		"symmetric": true,
+		"delta": 0.025
+	}
+},
+"post_processing":{
+	"dump": "./scores",
+	"evaluation_file": "./data/product/matches_product.csv"
+}
+}

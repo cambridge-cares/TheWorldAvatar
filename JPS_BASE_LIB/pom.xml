@@ -10,7 +10,9 @@
     
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.4.0-dev-gasgrid-input-agent-SNAPSHOT</version>
+
+
+    <version>1.11.1</version>
 
     <!-- Project Properties -->
     <properties>
@@ -22,7 +24,7 @@
     <parent>
         <groupId>uk.ac.cam.cares.jps</groupId>
         <artifactId>jps-parent-pom</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     
     <!-- Repository locations to deploy to -->
@@ -61,7 +63,7 @@
                             <!-- Adds the copied dependencies to the classpath so the .jar can find them at runtime. -->
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>./lib/</classpathPrefix>
-                            <classpathLayoutType>repository</classpathLayoutType>
+                            <classpathLayoutType>simple</classpathLayoutType>
                             <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>
@@ -86,7 +88,7 @@
                         </goals>
                         <configuration>
                             <includeScope>runtime</includeScope>
-                            <useRepositoryLayout>true</useRepositoryLayout>
+                            <useRepositoryLayout>false</useRepositoryLayout>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                         </configuration>
                     </execution>
@@ -286,14 +288,6 @@
             <version>2.1.5</version>
             <scope>compile</scope>
         </dependency>
-       
-        <!-- ??? -->
-        <dependency>
-            <groupId>com.github.owlcs</groupId>
-            <artifactId>ontapi</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        
         <!-- ??? -->
         <dependency>
             <groupId>commons-codec</groupId>
@@ -308,22 +302,63 @@
             <version>0.10.9.1</version>
         </dependency>
         
-        <!-- ??? -->
+        <!-- Following RDF4J dependencies are added for enabling the federated query
+		feature supported by FedX-->
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-repository-http</artifactId>
+		    <version>3.0.4</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-sparql -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-repository-sparql</artifactId>
+		    <version>3.0.4</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-model -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-model</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-query -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-query</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-util -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-util</artifactId>
+		    <version>3.1.0</version>
+		</dependency>        
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-runtime</artifactId>
+		    <version>3.1.0</version>
+		    <type>pom</type>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-api -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-repository-api</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+		
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-tools-federation</artifactId>
             <version>3.1.0</version>
         </dependency>
-		<dependency>
-			<groupId>com.blazegraph</groupId>
-			<artifactId>bigdata-core</artifactId>
-			<version>2.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.blazegraph</groupId>
-			<artifactId>bigdata-blueprints</artifactId>
-			<version>2.0.0</version>
-		</dependency>        
 		<!-- used in the DerivationClient to detect circular dependencies -->
 		<dependency>
     		<groupId>org.jgrapht</groupId>
@@ -349,7 +384,8 @@
 			<artifactId>junit</artifactId>
 			<version>4.13.2</version>
 		</dependency>
-        <!-- ??? -->
+
+        <!-- Used to mock the behaviour of functions for testing purposes -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -363,6 +399,14 @@
             <scope>test</scope>
         </dependency>
         
+		 <!-- For mocking APIs --> 
+        <dependency>
+		    <groupId>com.github.tomakehurst</groupId>
+		    <artifactId>wiremock-jre8-standalone</artifactId>
+		    <version>2.33.2</version>
+		    <scope>test</scope>
+		</dependency>
+
         <!-- Used to mock environment variables in testing -->
         <dependency>
             <groupId>com.github.stefanbirkner</groupId>
@@ -371,29 +415,70 @@
             <scope>test</scope>
         </dependency>
             
+        <!-- Used for integration testing to spin up temporary Docker containers with required applications (e.g. postgres, Blazegraph) -->    
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>1.15.3</version>
+            <version>1.16.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.15.3</version>
+            <version>1.16.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>1.15.3</version>
+            <version>1.16.2</version>
             <scope>test</scope>
         </dependency>        
-        <dependency>
+		<dependency>
 			 <groupId>com.fasterxml.jackson.core</groupId>
 			 <artifactId>jackson-annotations</artifactId>
-			 <version>2.10.5</version>
-		</dependency>        
+			 <version>2.13.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.32</version>
+			<scope>compile</scope>
+		</dependency>
+        
+        <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-distribution</artifactId>
+			<version>5.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.hp.hpl.jena</groupId>
+			<artifactId>jena</artifactId>
+			<version>2.6.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
+		<dependency>
+		    <groupId>commons-validator</groupId>
+		    <artifactId>commons-validator</artifactId>
+		    <version>1.7</version>
+		</dependency>
+        <!-- used in remote store client to upload rdf file -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
     </dependencies>
 
 </project>

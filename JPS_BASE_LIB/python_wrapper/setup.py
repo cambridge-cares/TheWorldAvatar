@@ -1,9 +1,8 @@
 from setuptools import setup, find_packages
-import os.path
 
 setup(
     name='py4jps',
-    version='1.0.4',
+    version='1.0.21',
     author='Daniel Nurkowski',
     author_email='danieln@cmclinnovations.com',
     license='MIT',

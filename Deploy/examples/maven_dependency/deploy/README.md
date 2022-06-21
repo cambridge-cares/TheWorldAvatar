@@ -27,8 +27,7 @@ and
     </snapshots>
 </repository>
 ```
-
-Note that your github personal access token needs to be encrypted - see [these instructions](https://maven.apache.org/guides/mini/guide-encryption.html) for details.
+Note that, to deploy to the World Avatar Maven repository, you'll need to generate a github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).  You'll then need to encrypt that token; see [these instructions](https://maven.apache.org/guides/mini/guide-encryption.html) for details.
 
 ## Installing and deploying the artifact
 

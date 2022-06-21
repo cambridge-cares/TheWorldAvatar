@@ -1,5 +1,5 @@
 import openbabel.pybel as pybel
-
+import chemutils.ioutils.ioutils as ioutils
 
 def obGetMolBonds(xyzString):
     mol = pybel.readstring("xyz",xyzString)
@@ -33,9 +33,10 @@ def obGetMolMolWt(xyzString):
     return mol.OBMol.GetMolWt()
 
 def obToInertialFrame(xyzString):
+    xyzString= ioutils.removeBlankTrailingLines(xyzString)
     mol = pybel.readstring("xyz",xyzString)
     xyzString = xyzString.split('\n')[2:]
-    xyzAtoms = [xyzLine.split(' ')[0] for xyzLine in xyzString]
+    xyzAtoms = [xyzLine.split()[0] for xyzLine in xyzString]
     mol.OBMol.ToInertialFrame()
     xyzInertialFrame = [str(len(xyzAtoms)), '']
     for i in range(1,mol.OBMol.NumAtoms()+1):
