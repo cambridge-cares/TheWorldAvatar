@@ -621,7 +621,12 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     #saref:accomplishes # TODO
     #saref:isAccomplishedBy # TODO
     #saref:hasFunction # TODO
-    saref:hasState ontovapourtec:Idle;
+    saref:hasState :state_VapourtecRS400_Dummy;
+.
+
+:state_VapourtecRS400_Dummy
+    a ontovapourtec:Idle;
+    ontolab:stateLastUpdatedAt 0;
 .
 
 :VapRS400_Price
@@ -1320,6 +1325,153 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     a om:Measure;
     om:hasUnit om:millilitre;
     om:hasNumericalValue "3"^^xsd:int;
+.
+
+# Create a few sites that holds empty vial
+:Site_56
+    a ontovapourtec:AutoSamplerSite;
+    ontovapourtec:locationID "56"^^xsd:string;
+    ontovapourtec:holds :Vial_56;
+.
+
+:Vial_56
+    a ontovapourtec:Vial;
+    ontovapourtec:isHeldIn :Site_56;
+    ontovapourtec:hasMaxLevel :Vial_56_level_max;
+    #ontovapourtec:hasWarningLevel :Vial_56_level_warning; # TODO delete this
+    ontovapourtec:hasFillLevel :Vial_56_level_fill;
+.
+
+:Vial_56_level_max
+    a om:Volume;
+    om:hasValue :Vial_56_level_max_value;
+.
+
+:Vial_56_level_max_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "10"^^xsd:int;
+.
+
+# TODO delete this
+#:Vial_56_level_warning
+#    a om:Volume;
+#    om:hasValue :Vial_56_level_warning_value;
+#.
+
+#:Vial_56_level_warning_value
+#    a om:Measure;
+#    om:hasUnit om:millilitre;
+#    om:hasNumericalValue "8"^^xsd:int;
+#.
+
+:Vial_56_level_fill
+    a om:Volume;
+    om:hasValue :Vial_56_level_fill_value;
+.
+
+:Vial_56_level_fill_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "0"^^xsd:int;
+.
+
+# Create a few sites that holds empty vial
+:Site_153
+    a ontovapourtec:AutoSamplerSite;
+    ontovapourtec:locationID "153"^^xsd:string;
+    ontovapourtec:holds :Vial_153;
+.
+
+:Vial_153
+    a ontovapourtec:Vial;
+    ontovapourtec:isHeldIn :Site_153;
+    ontovapourtec:hasMaxLevel :Vial_153_level_max;
+    #ontovapourtec:hasWarningLevel :Vial_153_level_warning; # TODO delete this
+    ontovapourtec:hasFillLevel :Vial_153_level_fill;
+.
+
+:Vial_153_level_max
+    a om:Volume;
+    om:hasValue :Vial_153_level_max_value;
+.
+
+:Vial_153_level_max_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "10"^^xsd:int;
+.
+
+# TODO delete this
+#:Vial_153_level_warning
+#    a om:Volume;
+#    om:hasValue :Vial_153_level_warning_value;
+#.
+
+#:Vial_153_level_warning_value
+#    a om:Measure;
+#    om:hasUnit om:millilitre;
+#    om:hasNumericalValue "8"^^xsd:int;
+#.
+
+:Vial_153_level_fill
+    a om:Volume;
+    om:hasValue :Vial_153_level_fill_value;
+.
+
+:Vial_153_level_fill_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "0"^^xsd:int;
+.
+
+# Create a few sites that holds empty vial
+:Site_216
+    a ontovapourtec:AutoSamplerSite;
+    ontovapourtec:locationID "216"^^xsd:string;
+    ontovapourtec:holds :Vial_216;
+.
+
+:Vial_216
+    a ontovapourtec:Vial;
+    ontovapourtec:isHeldIn :Site_216;
+    ontovapourtec:hasMaxLevel :Vial_216_level_max;
+    #ontovapourtec:hasWarningLevel :Vial_216_level_warning; # TODO delete this
+    ontovapourtec:hasFillLevel :Vial_216_level_fill;
+.
+
+:Vial_216_level_max
+    a om:Volume;
+    om:hasValue :Vial_216_level_max_value;
+.
+
+:Vial_216_level_max_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "10"^^xsd:int;
+.
+
+# TODO delete this
+#:Vial_216_level_warning
+#    a om:Volume;
+#    om:hasValue :Vial_216_level_warning_value;
+#.
+
+#:Vial_216_level_warning_value
+#    a om:Measure;
+#    om:hasUnit om:millilitre;
+#    om:hasNumericalValue "8"^^xsd:int;
+#.
+
+:Vial_216_level_fill
+    a om:Volume;
+    om:hasValue :Vial_216_level_fill_value;
+.
+
+:Vial_216_level_fill_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "0"^^xsd:int;
 .
 
 ##################################

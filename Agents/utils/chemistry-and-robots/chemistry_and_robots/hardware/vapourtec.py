@@ -25,7 +25,13 @@ FC_START_VIAL_OVERRIDE = "Start Vial Override"
 FC_MANUAL_COLLECT = "Manual Collect"
 FC_MANUAL_DIVERT = "Manual Divert"
 
-def create_exp_run_csv(rxnexp: ReactionExperiment, list_equip_settings: List[EquipmentSettings]) -> str:
+# Mapping int value returned by FlowCommander.GetState(fc) to the actual state
+# TODO expand to host all possible state
+MAPPING_VAPOURTEC_STATE = {
+    0: ONTOVAPOURTEC_IDLE,
+}
+
+def create_exp_run_csv(folder_path: str, rxnexp: ReactionExperiment, list_equip_settings: List[EquipmentSettings]) -> str:
     """
         This function creates the experiment run file to be digested by Vapourtec FlowCommander.
 
@@ -34,9 +40,9 @@ def create_exp_run_csv(rxnexp: ReactionExperiment, list_equip_settings: List[Equ
     """
 
     # TODO complete the collection settings part
-    fc_header = np.array(([[FC_WHOLE_PEAK], ["FALSE"]]))
-    fc_header = np.hstack((fc_header, np.array(([[FC_AUTO_COLLECTION], ["FALSE"]]))))
-    # fc_header = np.hstack((fc_header, np.array(([[FC_START_VIAL_OVERRIDE], []]))))
+    fc_header = np.array(([[FC_WHOLE_PEAK], ["TRUE"]]))
+    fc_header = np.hstack((fc_header, np.array(([[FC_AUTO_COLLECTION], ["TRUE"]]))))
+    # fc_header = np.hstack((fc_header, np.array(([[FC_START_VIAL_OVERRIDE], []])))) # set up with AutoSampler settings?
     # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_COLLECT], []]))))
     # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_DIVERT], []]))))
 
@@ -54,15 +60,10 @@ def create_exp_run_csv(rxnexp: ReactionExperiment, list_equip_settings: List[Equ
         else:
             raise Exception("EquipmentSettings is not supported for Vapourtec module: %s" % str(equip_settings))
 
-    run_csv_path = "fcexprun_%s.csv" % uuid.uuid4()
+    run_csv_path = os.path.join(folder_path, "fcexprun_%s.csv" % uuid.uuid4())
     pd.DataFrame(fc_header).to_csv(run_csv_path, header=None, index=None)
 
-    # Remove file after upload to KG file server?
-    # os.remove(run_csv)
     return run_csv_path
-
-def connect_to_fc():
-    pass
 
 def send_exp_csv_for_exe():
     # FCRemoteCSV.CSVParser.AddReactions('fcexp.csv', app.fc)

@@ -59,7 +59,7 @@ class EquipmentSettings(BaseOntology):
 
         return values
 
-    def create_instance_for_kg(self, g: Graph) -> Graph:
+    def create_instance_for_kg(self, g: Graph, configure_digital_twin: bool) -> Graph:
         # check if information is complete
         if self.specifies == None:
             raise Exception("LabEquipment is not specified when writing triples about <%s> to the KG." % self.instance_iri)
@@ -73,10 +73,12 @@ class EquipmentSettings(BaseOntology):
         # <reactionExperiment> <OntoReaction:hasEquipmentSettings> <reactorSetting>
         g.add((URIRef(self.wasGeneratedFor), URIRef(ONTOREACTION_HASEQUIPMENTSETTINGS), URIRef(self.instance_iri)))
 
-        # <equip_settings> <OntoLab:specifies> <lab_equipment>
-        g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_SPECIFIES), URIRef(self.specifies.instance_iri)))
-        # <lab_equipment> <OntoLab:isSpecifiedBy> <equip_settings>
-        g.add((URIRef(self.specifies.instance_iri), URIRef(ONTOLAB_ISSPECIFIEDBY), URIRef(self.instance_iri)))
+        # NOTE the links between <equip_settings> and <lab_equipment> are optional depends on if one want to configure the digital twin
+        if configure_digital_twin:
+            # <equip_settings> <OntoLab:specifies> <lab_equipment>
+            g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_SPECIFIES), URIRef(self.specifies.instance_iri)))
+            # <lab_equipment> <OntoLab:isSpecifiedBy> <equip_settings>
+            g.add((URIRef(self.specifies.instance_iri), URIRef(ONTOLAB_ISSPECIFIEDBY), URIRef(self.instance_iri)))
 
         return g
 
@@ -89,6 +91,9 @@ class Laboratory(BaseOntology):
 class Saref_Device(BaseOntology):
     clz: str = SAREF_DEVICE
 
+class Saref_State(BaseOntology):
+    clz: str = SAREF_STATE
+
 class LabEquipment(Saref_Device):
     clz: str = ONTOLAB_LABEQUIPMENT
     manufacturer: str # it should be pointing to an instance of https://dbpedia.org/ontology/Organisation, but we simplified here
@@ -99,6 +104,7 @@ class LabEquipment(Saref_Device):
     # willBeSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO remove this if never be used
     # wasSpecifiedBy: Optional[List[EquipmentSettings]] = None # TODO remove this is never be used
     # TODO add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
+    isManagedBy: Optional[str] # NOTE here str is provided, this should refer to the iri of agent service
 
 class PreparationMethod(BaseOntology):
     clz: str = ONTOLAB_PREPARATIONMETHOD
@@ -111,7 +117,7 @@ class OntoCAPE_MaterialAmount(BaseOntology):
 
 class ChemicalSolution(OntoCAPE_MaterialAmount):
     clz: str = ONTOLAB_CHEMICALSOLUTION
-    refersToMaterial: OntoCAPE_Material
+    refersToMaterial: Optional[OntoCAPE_Material] # NOTE OntoCAPE_Material is made optional to accommodate the situation where ChemicalSolution is generated but not characterised yet, i.e. unknow concentration
     # NOTE "files" should point to the actual instance of ontovapourtec.Vial, but here we simplify it with only pointing to the iri
     # NOTE this is due to practical reason as we need to import ontovapourtec.Vial here, but it will cause circular import issue
     # NOTE str will be used for simplicity until a good way to resolve circular import can be find

@@ -348,11 +348,11 @@ def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, list
     assert preferred_rs400.instance_iri == vapourtec_rs400
 
     # Change the status to Null
-    sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_NULL)
+    sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_NULL, 0)
     # Now perform the same checking
     new_rs400, new_r4_reactor = sparql_client.get_preferred_vapourtec_rs400(response[0])
     # Change back the status to Idle
-    sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_IDLE)
+    sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_IDLE, 0)
     # Now perform the same checking, the returned values should be None, None
     assert None == new_rs400
     assert None == new_r4_reactor

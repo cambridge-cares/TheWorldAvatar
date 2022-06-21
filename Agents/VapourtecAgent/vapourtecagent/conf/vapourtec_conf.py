@@ -7,6 +7,8 @@ class VapourtecConfig(AgentConfig):
     VAPOURTEC_DIGITAL_TWIN: str
     VAPOURTEC_STATE_PERIODIC_TIMESCALE: int
     VAPOURTEC_IP_ADDRESS: str
+    FCEXP_FILE_CONTAINER_FOLDER: str
+    REGISTER_AGENT: bool
 
 
 def config_vapourtec(env_file: str = None) -> VapourtecConfig:

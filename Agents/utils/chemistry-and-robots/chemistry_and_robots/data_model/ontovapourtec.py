@@ -30,7 +30,7 @@ class ReactorSettings(EquipmentSettings):
     clz: str = ONTOVAPOURTEC_REACTORSETTING
     specifies: VapourtecR4Reactor
 
-    def create_instance_for_kg(self, g: Graph) -> Graph:
+    def create_instance_for_kg(self, g: Graph, configure_digital_twin: bool) -> Graph:
         # <reactorSetting> <OntoVapourtec:hasReactorTemperatureSetting> <reactorTempSetting>
         g.add((
             URIRef(self.instance_iri),
@@ -47,7 +47,7 @@ class ReactorSettings(EquipmentSettings):
         ))
         g = self.hasResidenceTimeSetting.create_instance_for_kg(g)
 
-        return super().create_instance_for_kg(g)
+        return super().create_instance_for_kg(g, configure_digital_twin)
 
 class PumpSettings(EquipmentSettings):
     hasFlowRateSetting: Optional[FlowRateSetting] = None
@@ -58,7 +58,7 @@ class PumpSettings(EquipmentSettings):
     clz: str = ONTOVAPOURTEC_PUMPSETTINGS
     specifies: VapourtecR2Pump
 
-    def create_instance_for_kg(self, g: Graph) -> Graph:
+    def create_instance_for_kg(self, g: Graph, configure_digital_twin: bool) -> Graph:
         # TODO should we distinguish between hasFlowRateSetting, hasSampleLoopVolumeSetting, hasStoichiometryRatioSetting used in different occasions?
         # <pumpSetting> <OntoVapourtec:hasFlowRateSetting> <stoichisetting>
         if self.hasFlowRateSetting is not None:
@@ -78,11 +78,11 @@ class PumpSettings(EquipmentSettings):
         # <pumpSetting> <OntoVapourtec:pumpsLiquidFrom> <autosampler_site>
         g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_PUMPSLIQUIDFROM), URIRef(self.pumpsLiquidFrom.instance_iri)))
 
-        return super().create_instance_for_kg(g)
+        return super().create_instance_for_kg(g, configure_digital_twin)
 
 class Vial(BaseOntology):
     clz: str = ONTOVAPOURTEC_VIAL
-    isFilledWith: ChemicalSolution
+    isFilledWith: Optional[ChemicalSolution] = None # NOTE ChemicalSolution is made optional to accommodate situation where vial is empty
     hasFillLevel: OM_Volume
     # hasWarningLevel: OM_Volume # NOTE hasWarningLevel is temporarily commented out before a decision is made whether keep it
     # TODO bring hasWarningLevel back, this is needed when the fill level is below certain amount to remind the reseachers to add liquid
@@ -124,9 +124,20 @@ class VapourtecR2Pump(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECR2PUMP
     locationID: str
 
+class VapourtecState(Saref_State):
+    clz: str = ONTOVAPOURTEC_NULL # NOTE the default is set as Null
+    stateLastUpdatedAt: float
+
 class VapourtecRS400(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECRS400
-    hasState: str = ONTOVAPOURTEC_NULL
+    hasState: VapourtecState
+
+class VapourtecInputFile(BaseOntology):
+    clz: str = ONTOVAPOURTEC_VAPOURTECINPUTFILE
+    lastLocalModifiedAt: float
+    lastUploadedAt: float
+    localFilePath: str
+    remoteFilePath: str
 
 #########################################
 ## Put all update_forward_refs() below ##
