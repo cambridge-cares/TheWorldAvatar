@@ -404,9 +404,12 @@ public class FloodSparql {
 			case "Water Level":
 			    quantityIri = iri(station + "/WaterLevel");
 				modify.insert(quantityIri.isA(WaterLevel));
-				// dummy range triple to modified in sparql update
-				modify.insert(iri(measure).has(hasCurrentRange, UnavailableRange));
-				modify.insert(iri(measure).has(hasCurrentTrend, UnavailableTrend));
+
+				if ((qual.contentEquals("Stage") && stationHasStage(station)) || (qual.contentEquals("Dwonstream Stage") && stationHasDownstage(station))) {
+					// dummy range triple to modified in sparql update
+					modify.insert(iri(measure).has(hasCurrentRange, UnavailableRange));
+					modify.insert(iri(measure).has(hasCurrentTrend, UnavailableTrend));
+				}
 
 				// some stations did not have any measures when initialised and do not contain an rdf:type
 				modify.insert(iri(station).isA(WaterLevelReportingStation));
@@ -459,7 +462,33 @@ public class FloodSparql {
 		modify.prefix(p_ems,p_om);
 		storeClient.executeUpdate(modify.getQueryString());
 	}
-	
+
+	boolean stationHasStage(String station) {
+		SelectQuery query = Queries.SELECT();
+		GraphPattern queryPattern = iri(station).has(stageScale, query.var());
+		query.where(queryPattern);
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		if (queryResult.length() > 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	boolean stationHasDownstage(String station) {
+		SelectQuery query = Queries.SELECT();
+		GraphPattern queryPattern = iri(station).has(downstageScale, query.var());
+		query.where(queryPattern);
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		if (queryResult.length() > 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	/** 
 	 * performs a very simple check on whether stations are already initialised
 	 * with time series
