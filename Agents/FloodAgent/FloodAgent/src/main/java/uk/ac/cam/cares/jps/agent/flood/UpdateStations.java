@@ -236,7 +236,7 @@ public class UpdateStations {
 					String station = items.getString("station");
 					String unit = items.getString("unitName");
 					String parameterName = items.getString("parameterName");
-					String qualifier = items.getString("parameter");
+					String qualifier = items.getString("qualifier");
 					
 					// check if station exists, if not, instantiate
 					if (!sparqlClient.checkStationExists(station)) {

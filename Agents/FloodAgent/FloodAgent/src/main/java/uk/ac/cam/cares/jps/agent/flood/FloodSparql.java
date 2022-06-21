@@ -405,7 +405,7 @@ public class FloodSparql {
 			    quantityIri = iri(station + "/WaterLevel");
 				modify.insert(quantityIri.isA(WaterLevel));
 
-				if ((qual.contentEquals("Stage") && stationHasStage(station)) || (qual.contentEquals("Dwonstream Stage") && stationHasDownstage(station))) {
+				if ((qual.contentEquals("Stage") && stationHasStage(station)) || (qual.contentEquals("Downstream Stage") && stationHasDownstage(station))) {
 					// dummy range triple to modified in sparql update
 					modify.insert(iri(measure).has(hasCurrentRange, UnavailableRange));
 					modify.insert(iri(measure).has(hasCurrentTrend, UnavailableTrend));
@@ -470,9 +470,9 @@ public class FloodSparql {
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
 		if (queryResult.length() > 0) {
-			return false;
-		} else {
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -483,9 +483,9 @@ public class FloodSparql {
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
 		if (queryResult.length() > 0) {
-			return false;
-		} else {
 			return true;
+		} else {
+			return false;
 		}
 	}
 
