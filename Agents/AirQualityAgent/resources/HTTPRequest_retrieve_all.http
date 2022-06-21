@@ -24,7 +24,7 @@ GET http://localhost:5000/api/airqualityagent/retrieve/all
 Content-Type: application/json
 
 { "query": {
-      "outDir": "C:/TheWorldAvatar-git/Agents/AirQualityAgent/output",
+      "outDir": "/app/output",
       "daysBack": "14"
     }
 }
