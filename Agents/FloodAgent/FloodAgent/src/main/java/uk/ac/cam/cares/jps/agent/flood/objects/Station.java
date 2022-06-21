@@ -33,6 +33,11 @@ public class Station {
     private List<TimeSeries<Instant>> ts_list;
 	private List<Measure> measures;
 
+	private Double stageUpper = null;
+	private Double stageLower = null;
+	private Double downstageUpper = null;
+	private Double downstageLower = null;
+
     // icons to use
     static Map<String, String> icons = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L;
@@ -257,4 +262,36 @@ public class Station {
     			+ "Some stations measure rainfall, wind and temperature.";	
     	return description;
     }
+
+	public void setStageUpper(double stageUpper) {
+		this.stageUpper = stageUpper;
+	}
+
+	public void setStageLower(double stageLower) {
+		this.stageLower = stageLower;
+	}
+
+	public Double getStageUpper() {
+		return this.stageUpper;
+	}
+
+	public Double getStageLower() {
+		return this.stageLower;
+	}
+
+	public void setDownstageUpper(double downstageUpper) {
+		this.downstageUpper = downstageUpper;
+	}
+
+	public void setDownstageLower(double downstageLower) {
+		this.downstageLower = downstageLower;
+	}
+
+	public Double getDownstageUpper() {
+		return this.downstageUpper;
+	}
+
+	public Double getDownstageLower() {
+		return this.downstageLower;
+	}
 }

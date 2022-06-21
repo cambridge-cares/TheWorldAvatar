@@ -161,13 +161,21 @@ public class FloodSparql {
 		Variable unit = query.var();
 		Variable lat = query.var();
 		Variable lon = query.var();
+		Variable stageLowerBoundVar = query.var();
+		Variable stageUpperBoundVar = query.var();
+		Variable downstageLowerBoundVar = query.var();
+		Variable downstageUpperBoundVar = query.var();
 		
 		GraphPattern stationPattern = query.var().has(RDF.FIRST, station);
 		GraphPattern stationPropertiesPattern = station.has(measures, measureVar).andHas(lat_prop,lat).andHas(lon_prop,lon);
 		GraphPattern measurePropertiesPattern = measureVar.has(parameterName,param).andHas(qualifier,qual).andHas(unitName,unit);
-		GraphPattern queryPattern = GraphPatterns.and(stationPattern, stationPropertiesPattern, measurePropertiesPattern);
-		
-		query.where(queryPattern).select(station,measureVar,param,qual,lat,lon,unit).distinct();
+		GraphPattern stageScalePattern = station.has(PropertyPaths.path(stageScale, typicalRangeLow), stageLowerBoundVar)
+			.andHas(PropertyPaths.path(stageScale, typicalRangeHigh), stageUpperBoundVar).optional();
+		GraphPattern downStageScalePattern = station.has(PropertyPaths.path(downstageScale, typicalRangeLow), downstageLowerBoundVar)
+		.andHas(PropertyPaths.path(stageScale, typicalRangeHigh), downstageUpperBoundVar).optional();
+		GraphPattern queryPattern = GraphPatterns.and(stationPattern, stationPropertiesPattern, measurePropertiesPattern,stageScalePattern,downStageScalePattern);
+
+		query.where(queryPattern).select(station,measureVar,param,qual,lat,lon,unit,stageLowerBoundVar,stageUpperBoundVar,downstageLowerBoundVar,downstageUpperBoundVar).distinct();
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
@@ -200,6 +208,21 @@ public class FloodSparql {
 			stationObject.addMeasure(measure);
 			stationObject.setLat(Double.parseDouble(latString));
 			stationObject.setLon(Double.parseDouble(lonString));
+
+			// optional stagescales. should be attached to measures instead, but not as straightforward as this
+			// due to nature of query results
+			if (queryResult.getJSONObject(i).has(stageLowerBoundVar.getQueryString().substring(1))) {
+				stationObject.setStageLower(queryResult.getJSONObject(i).getDouble(stageLowerBoundVar.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(stageUpperBoundVar.getQueryString().substring(1))) {
+				stationObject.setStageUpper(queryResult.getJSONObject(i).getDouble(stageUpperBoundVar.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(downstageUpperBoundVar.getQueryString().substring(1))) {
+				stationObject.setDownstageUpper(queryResult.getJSONObject(i).getDouble(downstageUpperBoundVar.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(downstageLowerBoundVar.getQueryString().substring(1))) {
+				stationObject.setDownstageLower(queryResult.getJSONObject(i).getDouble(downstageLowerBoundVar.getQueryString().substring(1)));
+			}
 		}
 	    return stations;
 	}
@@ -253,9 +276,14 @@ public class FloodSparql {
 					case "Water Level":
 						quantityIri = iri(station.getIri() + "/WaterLevel");
 						modify.insert(quantityIri.isA(WaterLevel));
-						// add dummy triple for range so that sparql update will work
-						modify.insert(iri(measure.getIri()).has(hasCurrentRange, UnavailableRange));
-						modify.insert(iri(measure.getIri()).has(hasCurrentTrend, UnavailableTrend));
+						
+						// only add trends/ranges for stations that have stage info
+						if ((qual.contentEquals("Downstream Stage") && station.getDownstageLower() != null && station.getDownstageUpper() != null) || 
+							(qual.contentEquals("Stage") && station.getStageLower() != null && station.getStageUpper() != null)) {
+							// add dummy triple for range so that sparql update will work
+							modify.insert(iri(measure.getIri()).has(hasCurrentRange, UnavailableRange));
+							modify.insert(iri(measure.getIri()).has(hasCurrentTrend, UnavailableTrend));
+						}
 						break;
 					case "Flow":
 						quantityIri = iri(station.getIri() + "/Flow");
