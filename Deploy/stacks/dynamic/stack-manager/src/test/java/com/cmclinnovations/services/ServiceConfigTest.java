@@ -32,22 +32,4 @@ public class ServiceConfigTest {
         Assert.assertEquals("service1", serviceConfig.getName());
     }
 
-    @Test
-    public void testGetPassword() throws IOException {
-        Assert.assertEquals("Password123", serviceConfig.getPassword());
-    }
-
-    @Test
-    public void testGetPasswordFile() {
-        Assert.assertEquals(
-                "src/test/resources/com/cmclinnovations/services/testPasswordFile",
-                serviceConfig.getPasswordFile());
-    }
-
-    @Test
-    public void testGetUsername() {
-        Assert.assertEquals("user", serviceConfig.getUsername());
-
-    }
-
 }

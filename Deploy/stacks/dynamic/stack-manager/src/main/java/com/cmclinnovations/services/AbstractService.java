@@ -70,18 +70,6 @@ public abstract class AbstractService implements Service {
         return checkPropertyNonNull("name", config.getName());
     }
 
-    public final String getUsername() {
-        return checkPropertyNonNull("username", config.getUsername());
-    }
-
-    public final String getPasswordFile() {
-        return checkPropertyNonNull("passwordFile", config.getPasswordFile());
-    }
-
-    public final String getPassword() {
-        return config.getPassword();
-    }
-
     public final Map<String, Connection> getEndpoints() {
         return config.getEndpoints();
     }

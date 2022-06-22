@@ -20,9 +20,6 @@ public class ServiceConfig {
     private final String type;
 
     private final Map<String, Connection> endpoints;
-    private final Map<String, Connection> incomingConnections;
-    private final String username;
-    private final String passwordFile;
 
     // Docker specific settings
     @JsonProperty("ServiceSpec")
@@ -34,9 +31,6 @@ public class ServiceConfig {
     public ServiceConfig() {
         type = "container";
         endpoints = new HashMap<>();
-        incomingConnections = new HashMap<>();
-        username = null;
-        passwordFile = null;
 
         dockerServiceSpec = new ServiceSpec();
     }
@@ -49,36 +43,6 @@ public class ServiceConfig {
         return endpoints;
     }
 
-    public Map<String, Connection> getIncomingConnections() {
-        return incomingConnections;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPasswordFile() {
-        return passwordFile;
-    }
-
-    public String getPassword() {
-        final String password;
-        if (null == passwordFile) {
-            password = "";
-        } else {
-            try (BufferedReader infile = Files.newBufferedReader(Paths.get(passwordFile))) {
-                if (null == (password = infile.readLine())) {
-                    throw new IllegalArgumentException("The password file '" + passwordFile
-                            + "' specified for the container '" + getName() + "' is empty.");
-                }
-            } catch (Exception ex) {
-                throw new IllegalArgumentException("The password file '" + passwordFile
-                        + "' specified for the container '" + getName() + "' could not be read.", ex);
-            }
-        }
-        return password;
-    }
-
     public String getImage() {
         return getContainerSpec().getImage();
     }
@@ -89,11 +53,11 @@ public class ServiceConfig {
             env = new ArrayList<>();
             getContainerSpec().withEnv(env);
         } else {
-        if (environment.isEmpty()) {
-            environment.putAll(env.stream()
-                    .collect(Collectors.toMap(
-                            entry -> entry.split("=", 2)[0],
-                            entry -> entry.split("=", 2)[1])));
+            if (environment.isEmpty()) {
+                environment.putAll(env.stream()
+                        .collect(Collectors.toMap(
+                                entry -> entry.split("=", 2)[0],
+                                entry -> entry.split("=", 2)[1])));
             }
         }
         return environment;
