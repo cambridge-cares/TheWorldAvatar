@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.cmclinnovations.apis.DockerClient;
+import com.cmclinnovations.apis.StackClient;
 import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.dockerjava.api.command.ConnectToNetworkCmd;
 import com.github.dockerjava.api.command.CreateNetworkCmd;
@@ -23,7 +24,6 @@ import com.github.dockerjava.api.command.InitializeSwarmCmd;
 import com.github.dockerjava.api.command.InspectNetworkCmd;
 import com.github.dockerjava.api.command.ListContainersCmd;
 import com.github.dockerjava.api.command.ListNetworksCmd;
-import com.github.dockerjava.api.command.ListSecretsCmd;
 import com.github.dockerjava.api.command.ListServicesCmd;
 import com.github.dockerjava.api.command.ListTasksCmd;
 import com.github.dockerjava.api.command.PullImageCmd;
@@ -33,6 +33,8 @@ import com.github.dockerjava.api.command.StartContainerCmd;
 import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerSpec;
+import com.github.dockerjava.api.model.ContainerSpecConfig;
+import com.github.dockerjava.api.model.ContainerSpecFile;
 import com.github.dockerjava.api.model.ContainerSpecSecret;
 import com.github.dockerjava.api.model.LocalNodeState;
 import com.github.dockerjava.api.model.Network;
@@ -294,10 +296,6 @@ public final class DockerService extends AbstractService {
     }
 
     private ServiceSpec configureServiceSpec(ContainerService service) {
-        List<Secret> secrets;
-        try (ListSecretsCmd listSecretsCmd = dockerClient.getInternalClient().listSecretsCmd()) {
-            secrets = listSecretsCmd.exec();
-        }
 
         ServiceSpec serviceSpec = service.getServiceSpec()
                 .withName(service.getContainerName());
@@ -305,13 +303,106 @@ public final class DockerService extends AbstractService {
                 .withRestartPolicy(new ServiceRestartPolicy().withCondition(ServiceRestartCondition.NONE));
         ContainerSpec containerSpec = service.getContainerSpec()
                 .withHostname(service.getName());
-        List<ContainerSpecSecret> containerSecrets = containerSpec.getSecrets();
-        if (null != containerSecrets) {
-            containerSecrets.forEach(secretRef -> secrets.stream()
-                    .filter(secret -> secret.getSpec().getName().equals(secretRef.getSecretName()))
-                    .forEach(secret -> secretRef.withSecretId(secret.getId())));
-        }
+
+        interpolateConfigs(containerSpec);
+
+        interpolateSecrets(containerSpec);
+
         return serviceSpec;
+    }
+
+    private void interpolateConfigs(ContainerSpec containerSpec) {
+        List<ContainerSpecConfig> containerSpecConfigs = containerSpec.getConfigs();
+        if (null != containerSpecConfigs && !containerSpecConfigs.isEmpty()) {
+            List<Config> configs = dockerClient.getConfigs();
+            for (ContainerSpecConfig containerSpecConfig : containerSpecConfigs) {
+                interpolateConfigFileSpec(containerSpecConfig);
+                interpolateConfigId(configs, containerSpecConfig);
+                // The stack name needs to be prepended to the name after the file spec is
+                // interpolated so that the file name is not modified.
+                containerSpecConfig.withConfigName(StackClient.prependStackName(containerSpecConfig.getConfigName()));
+            }
+        }
+    }
+
+    private void interpolateConfigFileSpec(ContainerSpecConfig containerSpecConfig) {
+        ContainerSpecFile configFileSpec = containerSpecConfig.getFile();
+        if (null == configFileSpec) {
+            configFileSpec = new ContainerSpecFile();
+            containerSpecConfig.withFile(configFileSpec);
+        }
+        if (null == configFileSpec.getName()) {
+            configFileSpec.withName(containerSpecConfig.getConfigName());
+        }
+        if (null == configFileSpec.getGid()) {
+            configFileSpec.withGid("0");
+        }
+        if (null == configFileSpec.getUid()) {
+            configFileSpec.withUid("0");
+        }
+        if (null == configFileSpec.getMode()) {
+            configFileSpec.withMode(0444l);
+        }
+    }
+
+    private void interpolateConfigId(List<Config> configs, ContainerSpecConfig containerSpecConfig) {
+        if (null == containerSpecConfig.getConfigID()) {
+            Optional<String> configID = dockerClient.getConfig(configs, containerSpecConfig.getConfigName())
+                    .map(Config::getId);
+            if (configID.isPresent()) {
+                containerSpecConfig.withConfigID(configID.get());
+            } else {
+                throw new RuntimeException("Failed to find Config with name '"
+                        + containerSpecConfig.getConfigName() + ".");
+            }
+        }
+    }
+
+    private void interpolateSecrets(ContainerSpec containerSpec) {
+        List<ContainerSpecSecret> containerSpecSecrets = containerSpec.getSecrets();
+        if (null != containerSpecSecrets && !containerSpecSecrets.isEmpty()) {
+            List<Secret> secrets = dockerClient.getSecrets();
+            for (ContainerSpecSecret containerSpecSecret : containerSpecSecrets) {
+                interpolateSecretFileSpec(containerSpecSecret);
+                interpolateSecretId(secrets, containerSpecSecret);
+                // The stack name needs to be prepended to the name after the file spec is
+                // interpolated so that the file name is not modified.
+                containerSpecSecret.withSecretName(StackClient.prependStackName(containerSpecSecret.getSecretName()));
+            }
+        }
+    }
+
+    private void interpolateSecretFileSpec(ContainerSpecSecret containerSpecSecret) {
+        ContainerSpecFile secretFileSpec = containerSpecSecret.getFile();
+        if (null == secretFileSpec) {
+            secretFileSpec = new ContainerSpecFile();
+            containerSpecSecret.withFile(secretFileSpec);
+        }
+        if (null == secretFileSpec.getName()) {
+            secretFileSpec.withName(containerSpecSecret.getSecretName());
+        }
+        if (null == secretFileSpec.getGid()) {
+            secretFileSpec.withGid("0");
+        }
+        if (null == secretFileSpec.getUid()) {
+            secretFileSpec.withUid("0");
+        }
+        if (null == secretFileSpec.getMode()) {
+            secretFileSpec.withMode(0444l);
+        }
+    }
+
+    private void interpolateSecretId(List<Secret> secrets, ContainerSpecSecret containerSpecSecret) {
+        if (null == containerSpecSecret.getSecretId()) {
+            Optional<String> secretID = dockerClient.getSecret(secrets, containerSpecSecret.getSecretName())
+                    .map(Secret::getId);
+            if (secretID.isPresent()) {
+                containerSpecSecret.withSecretId(secretID.get());
+            } else {
+                throw new RuntimeException("Failed to find Secret with name '"
+                        + containerSpecSecret.getSecretName() + "''.");
+            }
+        }
     }
 
     private void pullImage(ContainerService service) {
