@@ -278,7 +278,7 @@ public class DockerClient extends BaseClient {
         return getContainer(containerName).map(Container::getId).orElseThrow();
     }
 
-    public Map<String, List<String>> convertToConfigFilterMap(String configName, Map<String, String> labelMap) {
+    private Map<String, List<String>> convertToConfigFilterMap(String configName, Map<String, String> labelMap) {
         Map<String, List<String>> result = labelMap.entrySet().stream().collect(Collectors.toMap(
                 entry -> "label",
                 entry -> List.of(entry.getKey() + "=" + entry.getValue())));
