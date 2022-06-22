@@ -442,6 +442,7 @@ public class JobSubmission{
 				System.out.println("Initialising a session.");
 				session = jsch.getSession(slurmJobProperty.getHpcServerLoginUserName(), getHpcAddress(), 22);
 				String pwd = slurmJobProperty.getHpcServerLoginUserPassword();
+				session.setPassword(pwd);
 
 				// Note that session.setConfig("PreferredAuthentications", ...) was removed because it will cause issues
 				// when this code is executed in a container for unknown reasons
@@ -452,7 +453,6 @@ public class JobSubmission{
 					jsch.setIdentityRepository(irepo);
 				} catch (AgentProxyException e) {
 					LOGGER.info("Failed to detect Pageant, will authenticate using password");
-					session.setPassword(pwd);
 				}
 
 				session.setConfig("StrictHostKeyChecking", "no");
