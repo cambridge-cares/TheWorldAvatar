@@ -46,7 +46,7 @@ import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 
-public class DockerClient {
+public class DockerClient extends BaseClient {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(DockerClient.class);
 
@@ -340,6 +340,16 @@ public class DockerClient {
             // Either the Config has been removed externally
             // or it is currently in use and can't be removed.
         }
+    }
+
+    @Override
+    public <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+        writeEndpointConfig(endpointConfig, this);
+    }
+
+    @Override
+    public <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
+        return readEndpointConfig(endpointName, endpointConfigClass, this);
     }
 
     public boolean secretExists(String secretName) {

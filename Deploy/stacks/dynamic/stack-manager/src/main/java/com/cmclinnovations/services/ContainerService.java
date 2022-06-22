@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
 
+import com.cmclinnovations.apis.AbstractEndpointConfig;
 import com.cmclinnovations.apis.DockerClient;
 import com.cmclinnovations.apis.StackClient;
 import com.cmclinnovations.apis.DockerClient.ComplexCommand;
@@ -115,8 +116,12 @@ public class ContainerService extends AbstractService {
         }
     }
 
-    protected final boolean configExists(String configName) {
-        return dockerClient.configExists(configName);
+    public <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+        dockerClient.writeEndpointConfig(endpointConfig);
+    }
+
+    public <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
+        return dockerClient.readEndpointConfig(endpointName, endpointConfigClass);
     }
 
 }
