@@ -132,7 +132,7 @@ public final class OntopService extends ContainerService {
     }
 
     @Override
-    public void doPostStartUpConfigurationImpl() {
+    public void doPostStartUpConfiguration() {
         transformOBDA();
     }
 

@@ -114,22 +114,22 @@ public final class DockerService extends AbstractService {
                             Optional<Config> currentConfig = dockerClient.getConfig(existingStackConfigs, configName);
                             if (currentConfig.isEmpty()) {
                                 try (Stream<String> lines = Files.lines(file)) {
-                    String data = lines.collect(Collectors.joining("\n"));
+                                    String data = lines.collect(Collectors.joining("\n"));
                                     dockerClient.addConfig(configName, data);
-                        }
-                    } else {
+                                }
+                            } else {
                                 existingStackConfigs.remove(currentConfig.get());
+                            }
                         }
-                    }
                         return FileVisitResult.CONTINUE;
-                } catch (IOException ex) {
+                    } catch (IOException ex) {
                         throw new IOException("Failed to load config file '" + file + "'.", ex);
+                    }
                 }
-            }
             });
             for (Config oldConfig : existingStackConfigs) {
                 dockerClient.removeConfig(oldConfig);
-        }
+            }
         } catch (IOException ex) {
             throw new RuntimeException("Failed to load configs.", ex);
         }
@@ -141,7 +141,7 @@ public final class DockerService extends AbstractService {
         for (File secretFile : Path.of("/run/secrets").toFile()
                 .listFiles(file -> file.isFile() && !file.getName().startsWith(".git"))) {
             try (Stream<String> lines = Files.lines(secretFile.toPath())) {
-                                String data = lines.collect(Collectors.joining("\n"));
+                String data = lines.collect(Collectors.joining("\n"));
                 String secretName = secretFile.getName();
 
                 Optional<Secret> currentSecret = dockerClient.getSecret(existingStackSecrets, secretName);
@@ -149,12 +149,12 @@ public final class DockerService extends AbstractService {
                     dockerClient.addSecret(secretName, data);
                 } else {
                     existingStackSecrets.remove(currentSecret.get());
-                            }
-                    } catch (IOException ex) {
+                }
+            } catch (IOException ex) {
                 throw new RuntimeException("Failed to load secret file '" + secretFile.getAbsolutePath() + "'.",
                         ex);
-                    }
-                }
+            }
+        }
 
         for (Secret oldSecret : existingStackSecrets) {
             dockerClient.removeSecret(oldSecret);
@@ -191,6 +191,16 @@ public final class DockerService extends AbstractService {
                     .withShowAll(true).exec()
                     .stream().findAny();
         }
+    }
+
+    public void doPreStartUpConfiguration(ContainerService service) {
+        service.setDockerClient(dockerClient);
+        service.doPreStartUpConfiguration();
+    }
+
+    public void doPostStartUpConfiguration(ContainerService service) {
+        service.setDockerClient(dockerClient);
+        service.doPostStartUpConfiguration();
     }
 
     public void startContainer(ContainerService service) {
@@ -246,7 +256,6 @@ public final class DockerService extends AbstractService {
         }
 
         service.setContainerId(containerId);
-        service.setDockerClient(dockerClient);
     }
 
     private Optional<Container> startSwarmService(ContainerService service) {

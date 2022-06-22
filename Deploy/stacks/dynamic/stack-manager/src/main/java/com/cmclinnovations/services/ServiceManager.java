@@ -86,7 +86,9 @@ public final class ServiceManager {
 
             DockerService dockerService = this.<DockerService>getService("docker");
             if (null != dockerService) {
+                dockerService.doPreStartUpConfiguration(newContainerService);
                 dockerService.startContainer(newContainerService);
+                dockerService.doPostStartUpConfiguration(newContainerService);
             }
 
             ReverseProxyService reverseProxyService = this.<ReverseProxyService>getService("nginx");

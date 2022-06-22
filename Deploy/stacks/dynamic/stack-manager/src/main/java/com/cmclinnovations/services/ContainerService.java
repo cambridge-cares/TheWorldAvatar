@@ -59,11 +59,11 @@ public class ContainerService extends AbstractService {
         this.dockerClient = dockerClient;
     }
 
-    public final void doPostStartUpConfiguration() {
-        doPostStartUpConfigurationImpl();
+    public void doPreStartUpConfiguration() {
+        // Do nothing by default, override if container needs pre-startup configuration
     }
 
-    protected void doPostStartUpConfigurationImpl() {
+    public void doPostStartUpConfiguration() {
         // Do nothing by default, override if container needs post-startup configuration
     }
 
