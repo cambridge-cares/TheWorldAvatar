@@ -3,6 +3,7 @@ package com.cmclinnovations;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.cmclinnovations.apis.StackClient;
 import com.cmclinnovations.services.ServiceManager;
 
 /**
@@ -11,8 +12,13 @@ import com.cmclinnovations.services.ServiceManager;
  */
 public class App {
     public static void main(String[] args) throws MalformedURLException {
-        String stackName = "stack1";
+
+        String stackName = StackClient.getStackName();
         URL hostURL = new URL("http://localhost");
+
+        // This is not ideal but required for when trying to read dynamically generated
+        // configs
+        StackClient.setInStack(false);
 
         ServiceManager manager = new ServiceManager();
         Stack stack = new Stack(stackName, hostURL, manager);
