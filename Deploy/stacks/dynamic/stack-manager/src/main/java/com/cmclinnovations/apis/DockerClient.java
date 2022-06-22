@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -116,6 +117,8 @@ public class DockerClient {
 
         private String hereDocument = null;
 
+        private final Map<String, String> envVars = new HashMap<>();
+
         public ComplexCommand(String containerId, String... cmd) {
             execCreateCmd = internalClient.execCreateCmd(containerId);
             this.cmd = cmd;
@@ -146,6 +149,16 @@ public class DockerClient {
             return this;
         }
 
+        public ComplexCommand withEnvVar(String key, String value) {
+            envVars.put(key, value);
+            return this;
+        }
+
+        public ComplexCommand withEnvVars(Map<String, String> envVars) {
+            this.envVars.putAll(envVars);
+            return this;
+        }
+
         public String exec() {
             boolean attachStdin = null != inputStream;
             boolean attachStdout = null != outputStream;
@@ -162,6 +175,9 @@ public class DockerClient {
             }
 
             String execId = execCreateCmd.withCmd(cmd)
+                    .withEnv(envVars.entrySet().stream()
+                            .map(entry -> entry.getKey() + '=' + entry.getValue())
+                            .collect(Collectors.toList()))
                     .withAttachStdin(attachStdin)
                     .withAttachStdout(attachStdout)
                     .withAttachStderr(attachStderr)
