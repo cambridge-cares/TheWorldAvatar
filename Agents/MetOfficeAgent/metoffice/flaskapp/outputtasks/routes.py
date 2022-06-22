@@ -59,7 +59,7 @@ def api_retrieve_all_stations():
             obstypes = list(query['observationTypes'])
             obstypes = [str(i) for i in obstypes]
             # Remove potential EMS namespace if IRI is provided
-            inputs['observation_types'] = [i.split('#')[-1].split('>')[0] for i in obstypes]
+            inputs['observation_types'] = [i.split('/')[-1].split('>')[0] for i in obstypes]
         except:
             #logger.error('Parameter "observationTypes" not provided in expected format (list of strings).')
             raise InvalidInput('Parameter "observationTypes" not provided in expected format (list of strings).')
