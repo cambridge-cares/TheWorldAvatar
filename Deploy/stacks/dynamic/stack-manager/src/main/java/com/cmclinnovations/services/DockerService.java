@@ -3,9 +3,9 @@ package com.cmclinnovations.services;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Optional;
@@ -13,17 +13,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.cmclinnovations.apis.DockerClient;
-import com.cmclinnovations.apis.StackClient;
 import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.dockerjava.api.command.ConnectToNetworkCmd;
 import com.github.dockerjava.api.command.CreateNetworkCmd;
-import com.github.dockerjava.api.command.CreateSecretCmd;
 import com.github.dockerjava.api.command.CreateServiceCmd;
 import com.github.dockerjava.api.command.CreateServiceResponse;
 import com.github.dockerjava.api.command.InfoCmd;
 import com.github.dockerjava.api.command.InitializeSwarmCmd;
 import com.github.dockerjava.api.command.InspectNetworkCmd;
-import com.github.dockerjava.api.command.ListConfigsCmd;
 import com.github.dockerjava.api.command.ListContainersCmd;
 import com.github.dockerjava.api.command.ListNetworksCmd;
 import com.github.dockerjava.api.command.ListSecretsCmd;
@@ -31,8 +28,6 @@ import com.github.dockerjava.api.command.ListServicesCmd;
 import com.github.dockerjava.api.command.ListTasksCmd;
 import com.github.dockerjava.api.command.PullImageCmd;
 import com.github.dockerjava.api.command.PullImageResultCallback;
-import com.github.dockerjava.api.command.RemoveConfigCmd;
-import com.github.dockerjava.api.command.RemoveSecretCmd;
 import com.github.dockerjava.api.command.RemoveServiceCmd;
 import com.github.dockerjava.api.command.StartContainerCmd;
 import com.github.dockerjava.api.model.Config;
@@ -42,7 +37,6 @@ import com.github.dockerjava.api.model.ContainerSpecSecret;
 import com.github.dockerjava.api.model.LocalNodeState;
 import com.github.dockerjava.api.model.Network;
 import com.github.dockerjava.api.model.Secret;
-import com.github.dockerjava.api.model.SecretSpec;
 import com.github.dockerjava.api.model.Service;
 import com.github.dockerjava.api.model.ServiceRestartCondition;
 import com.github.dockerjava.api.model.ServiceRestartPolicy;
@@ -69,8 +63,6 @@ public final class DockerService extends AbstractService {
         startDockerSwarm();
 
         addStackSecrets();
-
-        clearStackConfigs();
 
         addStackConfigs();
 
@@ -106,96 +98,64 @@ public final class DockerService extends AbstractService {
         }
     }
 
-    private void addStackSecrets() {
-        try (ListSecretsCmd listSecretsCmd = dockerClient.getInternalClient().listSecretsCmd()) {
-            List<Secret> existingStackSecrets = listSecretsCmd
-                    .withLabelFilter(StackClient.getStackNameLabelMap()).exec();
-
-            for (File secretFile : Path.of("/run/secrets").toFile()
-                    .listFiles(file -> file.isFile() && !file.getName().startsWith(".git"))) {
-                try (Stream<String> lines = Files.lines(secretFile.toPath())) {
-                    String data = lines.collect(Collectors.joining("\n"));
-                    SecretSpec secretSpec = new SecretSpec()
-                            .withName(secretFile.getName())
-                            .withData(data)
-                            .withLabels(StackClient.getStackNameLabelMap());
-                    Optional<Secret> currentSecret = existingStackSecrets.stream().filter(
-                            existingSecret -> existingSecret.getSpec().getName().equals(secretFile.getName()))
-                            .findFirst();
-                    if (currentSecret.isEmpty()) {
-                        try (CreateSecretCmd createSecretCmd = dockerClient.getInternalClient()
-                                .createSecretCmd(secretSpec)) {
-                            createSecretCmd.exec();
-                        }
-                    } else {
-                        existingStackSecrets.remove(currentSecret.get());
-                    }
-
-                    for (Secret oldSecret : existingStackSecrets) {
-                        try (RemoveSecretCmd removeSecretCmd = dockerClient.getInternalClient()
-                                .removeSecretCmd(oldSecret.getId())) {
-                            removeSecretCmd.exec();
-                        }
-                    }
-                } catch (IOException ex) {
-                    throw new RuntimeException("Failed to load secret file '" + secretFile.getAbsolutePath() + "'.",
-                            ex);
-                }
-            }
-        }
-    }
-
-    private void clearStackConfigs() {
-        try (ListConfigsCmd listConfigsCmd = dockerClient.getInternalClient().listConfigsCmd()) {
-            List<Config> stackConfigs = listConfigsCmd
-                    .withFilters(dockerClient.convertToConfigFilterMap(null, StackClient.getStackNameLabelMap()))
-                    .exec();
-            for (Config config : stackConfigs) {
-                try (RemoveConfigCmd removeConfigCmd = dockerClient.getInternalClient()
-                        .removeConfigCmd(config.getId())) {
-                    removeConfigCmd.exec();
-                }
-            }
-        }
-    }
-
     private void addStackConfigs() {
+        List<Config> existingStackConfigs = dockerClient.getConfigs();
+
         try {
-            Files.walkFileTree(Path.of("/inputs/config"), new FileVisitor<Path>() {
+            Files.walkFileTree(Path.of("/inputs/config"), new SimpleFileVisitor<Path>() {
 
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     try {
                         if (Files.isReadable(file) && !file.getFileName().toString().startsWith(".git")) {
-                            try (Stream<String> lines = Files.lines(file)) {
-                                String data = lines.collect(Collectors.joining("\n"));
-                                dockerClient.addConfig(file.getFileName().toString(), data);
-                            }
+                            String configName = file.getFileName().toString();
+                            Optional<Config> currentConfig = dockerClient.getConfig(existingStackConfigs, configName);
+                            if (currentConfig.isEmpty()) {
+                                try (Stream<String> lines = Files.lines(file)) {
+                    String data = lines.collect(Collectors.joining("\n"));
+                                    dockerClient.addConfig(configName, data);
                         }
+                    } else {
+                                existingStackConfigs.remove(currentConfig.get());
+                        }
+                    }
                         return FileVisitResult.CONTINUE;
+                } catch (IOException ex) {
+                        throw new IOException("Failed to load config file '" + file + "'.", ex);
+                }
+            }
+            });
+            for (Config oldConfig : existingStackConfigs) {
+                dockerClient.removeConfig(oldConfig);
+        }
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to load configs.", ex);
+        }
+    }
+
+    public void addStackSecrets() {
+        List<Secret> existingStackSecrets = dockerClient.getSecrets();
+
+        for (File secretFile : Path.of("/run/secrets").toFile()
+                .listFiles(file -> file.isFile() && !file.getName().startsWith(".git"))) {
+            try (Stream<String> lines = Files.lines(secretFile.toPath())) {
+                                String data = lines.collect(Collectors.joining("\n"));
+                String secretName = secretFile.getName();
+
+                Optional<Secret> currentSecret = dockerClient.getSecret(existingStackSecrets, secretName);
+                if (currentSecret.isEmpty()) {
+                    dockerClient.addSecret(secretName, data);
+                } else {
+                    existingStackSecrets.remove(currentSecret.get());
+                            }
                     } catch (IOException ex) {
-                        throw new RuntimeException("Failed to load config file '" + file + "'.", ex);
+                throw new RuntimeException("Failed to load secret file '" + secretFile.getAbsolutePath() + "'.",
+                        ex);
                     }
                 }
 
-                @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
-
-            });
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to load configs.", ex);
+        for (Secret oldSecret : existingStackSecrets) {
+            dockerClient.removeSecret(oldSecret);
         }
     }
 
