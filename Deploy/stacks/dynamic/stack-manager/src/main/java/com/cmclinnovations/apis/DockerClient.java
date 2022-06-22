@@ -23,13 +23,20 @@ import org.slf4j.LoggerFactory;
 
 import com.github.dockerjava.api.command.CopyArchiveToContainerCmd;
 import com.github.dockerjava.api.command.CreateConfigCmd;
+import com.github.dockerjava.api.command.CreateSecretCmd;
 import com.github.dockerjava.api.command.ExecCreateCmd;
 import com.github.dockerjava.api.command.ExecStartCmd;
 import com.github.dockerjava.api.command.InspectExecCmd;
 import com.github.dockerjava.api.command.InspectExecResponse;
 import com.github.dockerjava.api.command.ListConfigsCmd;
 import com.github.dockerjava.api.command.ListContainersCmd;
+import com.github.dockerjava.api.command.ListSecretsCmd;
+import com.github.dockerjava.api.command.RemoveConfigCmd;
+import com.github.dockerjava.api.command.RemoveSecretCmd;
+import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
+import com.github.dockerjava.api.model.Secret;
+import com.github.dockerjava.api.model.SecretSpec;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DefaultDockerClientConfig.Builder;
 import com.github.dockerjava.core.DockerClientBuilder;
@@ -271,32 +278,116 @@ public class DockerClient {
         return getContainer(containerName).map(Container::getId).orElseThrow();
     }
 
-    public Map<String, List<String>> convertToConfigFilterMap(String name, Map<String, String> labelMap) {
+    public Map<String, List<String>> convertToConfigFilterMap(String configName, Map<String, String> labelMap) {
         Map<String, List<String>> result = labelMap.entrySet().stream().collect(Collectors.toMap(
                 entry -> "label",
                 entry -> List.of(entry.getKey() + "=" + entry.getValue())));
-        if (null != name) {
-            result.put("name", List.of(name));
+        if (null != configName) {
+            result.put("name", List.of(configName));
         }
         return result;
     }
 
-    public boolean configExists(String name) {
+    public boolean configExists(String configName) {
+        return getConfig(configName).isPresent();
+    }
+
+    public Optional<Config> getConfig(String configName) {
         try (ListConfigsCmd listConfigsCmd = internalClient.listConfigsCmd()) {
-            return !listConfigsCmd
-                    .withFilters(convertToConfigFilterMap(name, StackClient.getStackNameLabelMap()))
-                    .exec()
-                    .isEmpty();
+            return listConfigsCmd
+                    .withFilters(convertToConfigFilterMap(StackClient.prependStackName(configName),
+                            StackClient.getStackNameLabelMap()))
+                    .exec().stream().findFirst();
         }
     }
 
-    public void addConfig(String name, String data) {
+    public Optional<Config> getConfig(List<Config> configs, String configName) {
+        String fullConfigName = StackClient.prependStackName(configName);
+        return configs.stream().filter(
+                existingConfig -> existingConfig.getSpec().getName()
+                        .equals(fullConfigName))
+                .findFirst();
+
+    }
+
+    public List<Config> getConfigs() {
+        try (ListConfigsCmd listConfigsCmd = internalClient.listConfigsCmd()) {
+            return listConfigsCmd
+                    .withFilters(convertToConfigFilterMap(null, StackClient.getStackNameLabelMap()))
+                    .exec().stream().collect(Collectors.toList());
+        }
+    }
+
+    public void addConfig(String configName, String data) {
+        addConfig(configName, data.getBytes());
+    }
+
+    public void addConfig(String configName, byte[] data) {
         try (CreateConfigCmd createConfigCmd = internalClient.createConfigCmd()) {
             createConfigCmd
-                    .withName(StackClient.prependStackName(name))
-                    .withData(data.getBytes())
+                    .withName(StackClient.prependStackName(configName))
+                    .withData(data)
                     .withLabels(StackClient.getStackNameLabelMap())
                     .exec();
+        }
+    }
+
+    public void removeConfig(Config config) {
+        try (RemoveConfigCmd removeConfigCmd = getInternalClient()
+                .removeConfigCmd(config.getId())) {
+            removeConfigCmd.exec();
+        } catch (Exception ex) {
+            // Either the Config has been removed externally
+            // or it is currently in use and can't be removed.
+        }
+    }
+
+    public boolean secretExists(String secretName) {
+        return getSecret(StackClient.prependStackName(secretName)).isPresent();
+    }
+
+    public Optional<Secret> getSecret(String secretName) {
+        try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
+            return listSecretsCmd
+                    .withNameFilter(List.of(StackClient.prependStackName(secretName)))
+                    .withLabelFilter(StackClient.getStackNameLabelMap())
+                    .exec().stream().findFirst();
+        }
+    }
+
+    public final Optional<Secret> getSecret(List<Secret> secrets, String secretName) {
+        String fullSecretName = StackClient.prependStackName(secretName);
+        return secrets.stream()
+                .filter(secret -> secret.getSpec().getName().equals(fullSecretName))
+                .findFirst();
+    }
+
+    public List<Secret> getSecrets() {
+        try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
+            return listSecretsCmd
+                    .withLabelFilter(StackClient.getStackNameLabelMap())
+                    .exec().stream().collect(Collectors.toList());
+        }
+    }
+
+    public void addSecret(String secretName, String data) {
+        SecretSpec secretSpec = new SecretSpec()
+                .withName(StackClient.prependStackName(secretName))
+                .withData(data)
+                .withLabels(StackClient.getStackNameLabelMap());
+        try (CreateSecretCmd createSecretCmd = getInternalClient()
+                .createSecretCmd(secretSpec)) {
+            createSecretCmd.exec();
+        }
+    }
+
+    public void removeSecret(Secret secret) {
+        try (RemoveSecretCmd removeSecretCmd = getInternalClient()
+                .removeSecretCmd(secret.getId())) {
+            removeSecretCmd.exec();
+        } catch (Exception ex) {
+            // Either the Secret has been removed externally
+            // or it is currently in use and can't be removed.
         }
     }
 
