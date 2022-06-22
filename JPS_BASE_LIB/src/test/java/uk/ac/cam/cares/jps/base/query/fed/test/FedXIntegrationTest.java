@@ -51,15 +51,15 @@ public class FedXIntegrationTest extends QueryProvider {
 		queryAndAssert(getSparqlDistributedLab_3_inverted_service_order());
 	}
 	
-	public void testRemoteSparqlOntoSpeciesOntoCompChemSmall() {
+	public void testSparqlOntoSpeciesOntoCompChemSmall() {
 		queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
 	}
 	
-	public void testRemoteSparqlOntoSpeciesOntoCompChemMedium() {
+	public void testSparqlOntoSpeciesOntoCompChemMedium() {
 		queryAndAssert(getSparqlOntoSpeciesOntoCompChemMedium());
 	}
 	
-	public void testRemoteSparqlOntoSpeciesOntoCompChemLarge() {
+	public void testSparqlOntoSpeciesOntoCompChemLarge() {
 		queryAndAssert(getSparqlOntoSpeciesOntoCompChemLarge());
 	}
 	

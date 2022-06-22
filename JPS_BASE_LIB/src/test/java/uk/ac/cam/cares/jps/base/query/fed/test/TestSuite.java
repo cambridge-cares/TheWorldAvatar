@@ -12,7 +12,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	DatasetGeneratorTest.class,
 	BlazegraphRepositoryWrapperIntegrationTest.class, 
 	FedXIntegrationTest.class,
-	//FedQueryBlazegraphSourceSelectionIntegrationTest.class,
+	FedQueryBlazegraphSourceSelectionIntegrationTest.class,
 	FedQueryBlazegraphGivenEndpointsIntegrationTest.class,
 	FedQueryRdf4jGivenEndpointsIntegrationTest.class,
 	FedQueryRdf4jSourceSelectionIntegrationTest.class

@@ -161,6 +161,15 @@ public abstract class QueryProvider extends TestCase {
 			newquery.serviceList = serviceList;
 			newquery.result = result;
 			
+			
+			if (true) {
+				// add DISTINCT to remove duplicated results rows (in case of Blazegraph)
+				if (!newquery.sparql.contains("DISTINCT")) {
+					newquery.sparql = newquery.sparql.replace("SELECT", "SELECT DISTINCT");
+				}
+			}
+			
+			
 			return newquery;
 		}
 	}
@@ -506,7 +515,7 @@ public abstract class QueryProvider extends TestCase {
 		query.sparql = "PREFIX ontospecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>\r\n"
 				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>\r\n"
 				+ "PREFIX gc: <http://purl.org/gc/>\r\n"
-				+ "SELECT DISTINCT ?species ?compchemspecies ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue ?scfEnergyValue ?zeroEnergyValue\r\n"
+				+ "SELECT ?species ?compchemspecies ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue ?scfEnergyValue ?zeroEnergyValue\r\n"
 				+ "WHERE {\r\n"
 				+ "%s"
 				+ "    ?species ontospecies:casRegistryID ?crid .\r\n"

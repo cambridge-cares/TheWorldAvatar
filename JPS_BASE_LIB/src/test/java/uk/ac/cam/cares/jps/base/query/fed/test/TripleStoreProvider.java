@@ -410,7 +410,7 @@ public class TripleStoreProvider extends TestCase {
 		createEmptyDatasetRdf4j(ID_RDF4J_1, serviceUrl, NAMESPACE_RDF4J_EMPTY);
 	}
 
-	private void createDatasetBlazegraph(String containerId, String namespace, String endpointPath, Collection<File> files) {
+	public void createDatasetBlazegraph(String containerId, String namespace, String endpointPath, Collection<File> files) {
 		// create namespace
 		String serviceUrl = getServiceUrl(containerId);
 		BlazegraphRepositoryWrapper wrapper = new BlazegraphRepositoryWrapper(serviceUrl);
@@ -423,7 +423,9 @@ public class TripleStoreProvider extends TestCase {
 		
 		// upload data
 		String url = getEndpointUrl(serviceUrl, namespace);
-		uploadFiles(url, files);
+		if (files != null) {
+			uploadFiles(url, files);
+		}
 		LOGGER.debug("created endpoint with url=" + url);
 	}
 	

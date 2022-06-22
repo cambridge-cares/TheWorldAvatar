@@ -101,15 +101,15 @@ public class FedQueryRdf4jSourceSelectionIntegrationTest extends QueryProvider {
 		queryAndAssert(getSparqlDistributedLab_3_inverted_service_order());
 	}	
 	
-	public void testRemoteSparqlOntoSpeciesOntoCompChemSmall() {
+	public void testSparqlOntoSpeciesOntoCompChemSmall() {
 		queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
 	}
 	
-	public void testRemoteSparqlOntoSpeciesOntoCompChemMedium() {
+	public void testSparqlOntoSpeciesOntoCompChemMedium() {
 		queryAndAssert(getSparqlOntoSpeciesOntoCompChemMedium());
 	}
 	
-	public void xxxtestRemoteSparqlOntoSpeciesOntoCompChemLarge() {
+	public void xxxtestSparqlOntoSpeciesOntoCompChemLarge() {
 		queryAndAssert(getSparqlOntoSpeciesOntoCompChemLarge());
 	}
 	
