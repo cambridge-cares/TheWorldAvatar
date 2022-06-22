@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.cmclinnovations.FileUtils;
+import com.cmclinnovations.apis.StackClient;
 import com.cmclinnovations.exceptions.InvalidTemplateException;
 import com.cmclinnovations.services.config.Connection;
 import com.cmclinnovations.services.config.ServiceConfig;
@@ -107,7 +108,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
         if (null != externalPath) {
             try (InputStream inStream = new BufferedInputStream(
                     NginxService.class.getResourceAsStream(LOCATIONS_CONF_TEMPLATE))) {
-                String upstreamName = service.getName() + "_" + endpoint.getKey();
+                String upstreamName = StackClient.prependStackName(endpoint.getKey());
                 NginxConfigParser parser = new NginxConfigParser(inStream);
                 NgxConfig configTemplate = parser.parse();
                 configTemplate.getEntries();

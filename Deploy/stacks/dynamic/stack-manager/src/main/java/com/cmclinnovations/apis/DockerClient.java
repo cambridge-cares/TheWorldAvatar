@@ -43,21 +43,13 @@ public class DockerClient {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(DockerClient.class);
 
-    private final String stackName;
     private final com.github.dockerjava.api.DockerClient internalClient;
-
-    public static final String STACK_NAME_KEY = "STACK_NAME";
-    public final Map<String, String> stackNameLabelMap;
 
     public DockerClient() {
         this(URI.create("tcp://host.docker.internal:2375"));
     }
 
     public DockerClient(URI endpoint) {
-        this(endpoint, System.getenv(DockerClient.STACK_NAME_KEY));
-    }
-
-    public DockerClient(URI endpoint, String stackName) {
         Builder dockerConfigBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder();
 
         if (null != endpoint) {
@@ -77,22 +69,10 @@ public class DockerClient {
                 .build();
 
         internalClient = DockerClientBuilder.getInstance(dockerConfig).withDockerHttpClient(httpClient).build();
-
-        this.stackName = stackName;
-
-        stackNameLabelMap = Map.of(DockerClient.STACK_NAME_KEY, stackName);
     }
 
     public com.github.dockerjava.api.DockerClient getInternalClient() {
         return internalClient;
-    }
-
-    public String getStackName() {
-        return stackName;
-    }
-
-    public Map<String, String> getStackNameLabelMap() {
-        return stackNameLabelMap;
     }
 
     public String executeSimpleCommand(String containerId, String... cmd) {
@@ -304,7 +284,7 @@ public class DockerClient {
     public boolean configExists(String name) {
         try (ListConfigsCmd listConfigsCmd = internalClient.listConfigsCmd()) {
             return !listConfigsCmd
-                    .withFilters(convertToConfigFilterMap(name, getStackNameLabelMap()))
+                    .withFilters(convertToConfigFilterMap(name, StackClient.getStackNameLabelMap()))
                     .exec()
                     .isEmpty();
         }
@@ -313,9 +293,9 @@ public class DockerClient {
     public void addConfig(String name, String data) {
         try (CreateConfigCmd createConfigCmd = internalClient.createConfigCmd()) {
             createConfigCmd
-                    .withName(name)
+                    .withName(StackClient.prependStackName(name))
                     .withData(data.getBytes())
-                    .withLabels(stackNameLabelMap)
+                    .withLabels(StackClient.getStackNameLabelMap())
                     .exec();
         }
     }

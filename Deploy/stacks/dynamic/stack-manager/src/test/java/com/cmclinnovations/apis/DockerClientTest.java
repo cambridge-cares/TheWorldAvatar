@@ -27,7 +27,7 @@ public class DockerClientTest {
 
     @BeforeClass
     public static void setup() {
-        dockerAPI = new DockerClient(null, "TestStack");
+        dockerAPI = new DockerClient();
 
         String image = "busybox:latest";
 

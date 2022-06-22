@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.cmclinnovations.apis.DockerClient;
+import com.cmclinnovations.apis.StackClient;
 import com.cmclinnovations.apis.DockerClient.ComplexCommand;
 import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
@@ -18,7 +19,6 @@ public class ContainerService extends AbstractService {
 
     public static final String TYPE = "container";
 
-    private final String stackName;
     private String containerId;
 
     private DockerClient dockerClient;
@@ -26,13 +26,8 @@ public class ContainerService extends AbstractService {
     public ContainerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(serviceManager, config);
         Objects.requireNonNull(stackName, "A 'stackName' must be provided for all container-based services.");
-        this.stackName = stackName;
-        config.getDockerServiceSpec().withName(stackName + "_" + config.getDockerServiceSpec().getName());
-        this.setEnvironmentVariable(DockerClient.STACK_NAME_KEY, stackName);
-    }
-
-    public String getStackName() {
-        return stackName;
+        config.getDockerServiceSpec().withName(StackClient.prependStackName(config.getDockerServiceSpec().getName()));
+        setEnvironmentVariable(StackClient.STACK_NAME_KEY, stackName);
     }
 
     final String getContainerName() {

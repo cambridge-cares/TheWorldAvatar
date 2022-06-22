@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.cmclinnovations.apis.DockerClient;
+import com.cmclinnovations.apis.StackClient;
 import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.dockerjava.api.command.ConnectToNetworkCmd;
 import com.github.dockerjava.api.command.CreateNetworkCmd;
@@ -63,7 +64,7 @@ public final class DockerService extends AbstractService {
     public DockerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(serviceManager, config);
 
-        dockerClient = new DockerClient(getEndpoint("dockerHost").getUri(), stackName);
+        dockerClient = new DockerClient(getEndpoint("dockerHost").getUri());
 
         startDockerSwarm();
 
@@ -108,7 +109,7 @@ public final class DockerService extends AbstractService {
     private void addStackSecrets() {
         try (ListSecretsCmd listSecretsCmd = dockerClient.getInternalClient().listSecretsCmd()) {
             List<Secret> existingStackSecrets = listSecretsCmd
-                    .withLabelFilter(dockerClient.getStackNameLabelMap()).exec();
+                    .withLabelFilter(StackClient.getStackNameLabelMap()).exec();
 
             for (File secretFile : Path.of("/run/secrets").toFile()
                     .listFiles(file -> file.isFile() && !file.getName().startsWith(".git"))) {
@@ -117,7 +118,7 @@ public final class DockerService extends AbstractService {
                     SecretSpec secretSpec = new SecretSpec()
                             .withName(secretFile.getName())
                             .withData(data)
-                            .withLabels(dockerClient.getStackNameLabelMap());
+                            .withLabels(StackClient.getStackNameLabelMap());
                     Optional<Secret> currentSecret = existingStackSecrets.stream().filter(
                             existingSecret -> existingSecret.getSpec().getName().equals(secretFile.getName()))
                             .findFirst();
@@ -147,7 +148,7 @@ public final class DockerService extends AbstractService {
     private void clearStackConfigs() {
         try (ListConfigsCmd listConfigsCmd = dockerClient.getInternalClient().listConfigsCmd()) {
             List<Config> stackConfigs = listConfigsCmd
-                    .withFilters(dockerClient.convertToConfigFilterMap(null, dockerClient.getStackNameLabelMap()))
+                    .withFilters(dockerClient.convertToConfigFilterMap(null, StackClient.getStackNameLabelMap()))
                     .exec();
             for (Config config : stackConfigs) {
                 try (RemoveConfigCmd removeConfigCmd = dockerClient.getInternalClient()
