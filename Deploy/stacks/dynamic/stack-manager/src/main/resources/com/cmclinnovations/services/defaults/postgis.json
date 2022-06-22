@@ -1,7 +1,5 @@
 {
     "type": "postgres",
-    "username": "postgres",
-    "passwordFile": "/run/secrets/postgis_password",
     "ServiceSpec": {
         "Name": "postgis",
         "TaskTemplate": {
@@ -25,13 +23,7 @@
                 ],
                 "Secrets": [
                     {
-                        "SecretName": "postgis_password",
-                        "File": {
-                            "Name": "postgis_password",
-                            "UID": "0",
-                            "GID": "0",
-                            "Mode": 400
-                        }
+                        "SecretName": "postgis_password"
                     }
                 ]
             }
