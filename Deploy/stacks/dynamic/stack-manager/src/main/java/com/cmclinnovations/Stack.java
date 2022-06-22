@@ -29,6 +29,8 @@ public class Stack {
 
         manager.initialiseService(name, "ontop");
 
+        manager.initialiseService(name, "gdal");
+
     }
 
 }
