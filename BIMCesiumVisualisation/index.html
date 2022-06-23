@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Include the CesiumJS JavaScript and CSS files -->
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <style>
+    .panel {
+        display: block;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: #303336;
+        color:white;
+        padding-top: 2px;
+        padding-right: 8px;
+        padding-bottom: 2px;
+        padding-left: 8px;
+    }
+    </style>
+</head>
+
+<body>
+  <div id="cesiumContainer"></div>
+  <div class="panel">
+    <label for="toggleFeature"> Show/Hide roof and ceiling</label>
+    <input type="checkbox" id="toggleFeature" onclick="hideFeature()">
+  </div>
+  <script>
+  // Your access token can be found at: https://cesium.com/ion/tokens.
+    // Replace `your_access_token` with your Cesium ion access token.
+    Cesium.Ion.defaultAccessToken = 'your_access_token';
+
+    const viewer = new Cesium.Viewer("cesiumContainer");
+
+    // Create the tileset, and set its model matrix for geolocation
+    function createTileset(cesiumtileset) {
+      var tile_fpath="./ifcto3Dtilesnext/data/";
+      coordinates= Cesium.Cartesian3.fromDegrees(103.77398, 1.30411, 0);
+
+      return viewer.scene.primitives.add(
+        new Cesium.Cesium3DTileset({
+          url: tile_fpath.concat(cesiumtileset),
+          modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(coordinates),
+          debugShowBoundingVolume: false,
+        })
+        )
+    }
+    
+    const tileset_building = createTileset("tileset_building.json");
+    const tileset_asset = createTileset("tileset_assets.json");
+    const tileset_ceiling = createTileset("tileset_ceiling.json");
+
+    // A click event to show or hide the ceiling
+    function hideFeature() {
+      var checkBox = document.getElementById("toggleFeature");
+      if (checkBox.checked == true){
+        tileset_ceiling.show = false;
+      } else {
+        tileset_ceiling.show = true;
+      }
+    }
+
+    // Creating a metadata overlay element when mouse moves over an asset
+    const metadataOverlay = document.createElement("div");
+    viewer.container.appendChild(metadataOverlay);
+    metadataOverlay.className = "backdrop";
+    metadataOverlay.style.display = "none";
+    metadataOverlay.style.position = "absolute";
+    metadataOverlay.style.bottom = "0";
+    metadataOverlay.style.left = "0";
+    metadataOverlay.style["pointer-events"] = "none";
+    metadataOverlay.style.padding = "4px";
+    metadataOverlay.style.backgroundColor = "#303030";
+    metadataOverlay.style.whiteSpace = "pre-line";
+    metadataOverlay.style.fontSize = "16px";
+    metadataOverlay.style.color = "white";
+    metadataOverlay.style.borderRadius = "4px";
+    
+    // Create an HTML string that contains information about the given metadata
+    function createMetadataHtml(metadata) {
+      const propertyKeys = metadata.getPropertyIds();
+      if (!Cesium.defined(propertyKeys)) {
+        return `(No properties for ${title})<br>`;
+      }
+      let html= "";
+      for (let i = 0; i < propertyKeys.length; i++) {
+        const propertyKey = propertyKeys[i];
+        const propertyValue = metadata.getProperty(propertyKey);
+        html += `&nbsp;&nbsp;${propertyKey} : ${propertyValue}<br>`;
+      }
+      return html;
+    }
+    
+    // Creating actions for mouse over
+    const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+    handler.setInputAction(function (movement) {
+      let overlayText = "";
+      const feature = viewer.scene.pick(movement.endPosition);
+      //const tilesetMetadata = feature?.content?.tileset?.metadata;
+      const contentMetadata = feature?.content?.metadata;
+
+      // If there is metadata for the asset, display the metadata overlay element
+      if (Cesium.defined(contentMetadata)) {
+        metadataOverlay.style.display = "block";
+        metadataOverlay.style.bottom = `${viewer.canvas.clientHeight - movement.endPosition.y}px`;
+        metadataOverlay.style.left = `${movement.endPosition.x}px`;
+        
+        //Text input for metadata overlay element
+        //overlayText+= createMetadataHtml(tilesetMetadata);
+        overlayText+= createMetadataHtml(contentMetadata);
+        metadataOverlay.innerHTML = overlayText;
+        
+      } else if (!Cesium.defined(contentMetadata)) {
+        metadataOverlay.style.display = "none";
+      }
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+ 
+    // Zoom to the tileset, with a small offset so that it is fully visible
+    const offset = new Cesium.HeadingPitchRange(
+      Cesium.Math.toRadians(-45.0),
+      Cesium.Math.toRadians(-45.0),
+      80.0
+    );
+    viewer.zoomTo(tileset_building, offset);
+  </script>
+</body>
+</html>
