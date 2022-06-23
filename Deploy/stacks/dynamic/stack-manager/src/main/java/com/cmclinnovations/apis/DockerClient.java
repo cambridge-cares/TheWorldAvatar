@@ -213,6 +213,12 @@ public class DockerClient extends BaseClient {
         executeSimpleCommand(containerId, "mkdir", "-p", directoryPath);
     }
 
+    public String makeTempDir(String containerId) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        createComplexCommand(containerId, "mktemp", "-d").withOutputStream(outputStream).exec();
+        return outputStream.toString().replaceAll("\\r?\\n?", "");
+    }
+
     public void deleteFile(String containerId, String filePath) {
         executeSimpleCommand(containerId, "rm", filePath);
     }
