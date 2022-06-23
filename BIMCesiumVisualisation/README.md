@@ -149,6 +149,7 @@ There are five modules available in the sub-directory.
 - `ifc2tileset.py` contain the functions to generate the tileset and write them to json
     - If you are unable to see the assets, **Modify the bounding box coordinates** according to your use case
 
+As Git does not allow empty directories, .gitignore files have been added to the subdirectories  of `<root>\ifcto3Dtilesnext\data\`. This is important to set up the file structure for the code to run. 
 
 ## Cesium Visualisation
 In developing more Cesium features, please edit the index.html once you have tested the following:
