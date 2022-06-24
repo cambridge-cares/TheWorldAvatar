@@ -32,7 +32,7 @@ The following shows a single JSON object for historical time-series data for mul
 ```
 {"tag_00000000000000A000009726_status":[{"value":"Out","ts":1655966558492},{"value":"In","ts":1655964909815},{"value":"Out","ts":1655718804322}],
  "tag_00000000000000A000009727_status":[{"value":"In","ts":1655718784802},{"value":"Out","ts":1655718780343},{"value":"In","ts":1655718777121}]}
-
+```
 ## Usage 
 This part of the README describes the usage of the input agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. 
 Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client which maintains both instances in a 
