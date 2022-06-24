@@ -90,8 +90,8 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         instantiated_obs = instantiated_obs[instantiated_obs['tsIRI'].isin(instantiated_ts_iris)]
         instantiated_fcs = instantiated_fcs[instantiated_fcs['tsIRI'].isin(instantiated_ts_iris)]
     # Get short version of variable type from full quantity type
-    instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
-    instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])   
+    instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('/')[-1])
+    instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('/')[-1])   
 
     # Initialise update query for creation time
     query_string = update_forecast_creation_datetime(issue_time)
@@ -224,8 +224,8 @@ def instantiate_station_readings(instantiated_sites_list: list,
     #logger.info('Observation/forecast triples successfully retrieved.')
 
     # Get short version of variable type from full quantity type
-    instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('#')[-1])
-    instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('#')[-1])                                                        
+    instantiated_obs['reading'] = instantiated_obs['quantityType'].apply(lambda x: x.split('/')[-1])
+    instantiated_fcs['reading'] = instantiated_fcs['quantityType'].apply(lambda x: x.split('/')[-1])                                                        
 
     # Load available observations and forecasts from API
     print('Retrieving available observations/forecasts from API ...')

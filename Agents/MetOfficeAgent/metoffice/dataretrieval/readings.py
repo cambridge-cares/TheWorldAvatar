@@ -36,7 +36,7 @@ def get_instantiated_observations(stations: list = None,
         Returns DataFrame with columns: ['station', 'stationID', 'quantityType', 'dataIRI', 'reading']
             station: station IRI
             stationID: unique Met Office ID for that station
-            quantityType: IRI of OntoEMS quantity, e.g. http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature
+            quantityType: IRI of OntoEMS quantity, e.g. https://www.theworldavatar.com/kg/ontoems/AirTemperature
             dataIRI: IRI of quantity instance to which time series is attached
             reading: shorthand of OntoEMS quantity, e.g. AirTemperature
     """
@@ -49,7 +49,7 @@ def get_instantiated_observations(stations: list = None,
     df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI'])
     df = df.append(results)
     # Add column with shorthand of quantity type
-    df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
+    df['reading'] = df['quantityType'].apply(lambda x: x.split('/')[-1])
     
     return df
 
@@ -68,7 +68,7 @@ def get_instantiated_forecasts(stations: list = None,
         Returns DataFrame with columns: ['station', 'stationID', 'quantityType', 'dataIRI', 'reading']
             station: station IRI
             stationID: unique Met Office ID for that station
-            quantityType: IRI of OntoEMS quantity, e.g. http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature
+            quantityType: IRI of OntoEMS quantity, e.g. https://www.theworldavatar.com/kg/ontoems/AirTemperature
             dataIRI: IRI of quantity instance to which time series is attached
             reading: shorthand of OntoEMS quantity, e.g. AirTemperature
     """
@@ -81,7 +81,7 @@ def get_instantiated_forecasts(stations: list = None,
     df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI'])
     df = df.append(results)
     # Add column with shorthand of quantity type
-    df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
+    df['reading'] = df['quantityType'].apply(lambda x: x.split('/')[-1])
     
     return df
 
@@ -100,7 +100,7 @@ def get_instantiated_observation_timeseries(stations: list = None,
         Returns DataFrame with columns: ['station', 'stationID', 'quantityType', 'dataIRI', 'unit', 'tsIRI', 'reading']
             station: station IRI
             stationID: unique Met Office ID for that station
-            quantityType: IRI of OntoEMS quantity, e.g. http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature
+            quantityType: IRI of OntoEMS quantity, e.g. https://www.theworldavatar.com/kg/ontoems/AirTemperature
             dataIRI: IRI of quantity instance to which time series is attached
             unit - unit for time series, e.g. hPa
             tsIRI: IRI of time series instance
@@ -115,7 +115,7 @@ def get_instantiated_observation_timeseries(stations: list = None,
     df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
     # Add column with shorthand of quantity type
-    df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
+    df['reading'] = df['quantityType'].apply(lambda x: x.split('/')[-1])
     
     return df
 
@@ -134,7 +134,7 @@ def get_instantiated_forecast_timeseries(stations: list = None,
         Returns DataFrame with columns: ['station', 'stationID', 'quantityType', 'dataIRI', 'unit', 'tsIRI', 'reading']
             station: station IRI
             stationID: unique Met Office ID for that station
-            quantityType: IRI of OntoEMS quantity, e.g. http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature
+            quantityType: IRI of OntoEMS quantity, e.g. https://www.theworldavatar.com/kg/ontoems/AirTemperature
             dataIRI: IRI of quantity instance to which time series is attached
             unit - unit for time series, e.g. hPa
             tsIRI: IRI of time series instance
@@ -149,7 +149,7 @@ def get_instantiated_forecast_timeseries(stations: list = None,
     df = pd.DataFrame(columns=['station', 'stationID', 'quantityType', 'dataIRI', 'tsIRI'])
     df = df.append(results)
     # Add column with shorthand of quantity type
-    df['reading'] = df['quantityType'].apply(lambda x: x.split('#')[-1])
+    df['reading'] = df['quantityType'].apply(lambda x: x.split('/')[-1])
     
     return df
 
