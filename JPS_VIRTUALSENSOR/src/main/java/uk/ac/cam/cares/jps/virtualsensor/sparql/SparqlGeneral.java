@@ -24,7 +24,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
  */
 
 public class SparqlGeneral {
-	private static String endpoint = "http://localhost:8080/blazegraph/namespace/virtualsensor/sparql";
+	private static String endpoint = System.getenv("KG_ENDPOINT");
 	
 	private static Iri numericalValue = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	private static Iri hasValue = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
