@@ -65,33 +65,11 @@
 						<targetPath>workingdir</targetPath>
 					</resource>
 					<resource>
-						<directory>python</directory>
-						<targetPath>python</targetPath>
-					</resource>
-					<resource>
                         <directory>${basedir}/WEB-INF</directory>
                         <targetPath>WEB-INF</targetPath>
                     </resource>
 				</webResources>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<phase>install</phase>
-						<id>creating pyvenv</id>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<executable>.\pyvenv.cmd</executable>
-							<workingDirectory>python_venv</workingDirectory>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -108,7 +86,7 @@
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.9.2-removeblazegraph-SNAPSHOT</version>
+			<version>1.11.2</version>
 		</dependency>
 
 		<!-- Testing, versions pulled from parent -->
