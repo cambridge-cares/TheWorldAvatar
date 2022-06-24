@@ -52,7 +52,7 @@ For running the agent, four property files are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
 - One [property file for the RFID API](#api-properties) defining the variable, limit, path URL and keys.
-- One [property file for the agent launcher] defining the order in which timeseries data is updated for each key.
+- One [property file for the agent launcher](#launcher-properties) defining the order in which timeseries data is updated for each key.
 
 #### Agent properties
 The agent property file only needs to contain a single line:
@@ -86,7 +86,7 @@ More information can be found in the example property file `api.properties` in t
 #### launcher properties
 The launcher properties contains the keys that decide the order in which timeseries data is updated for each key.
 It should contain the following keys:
-- `keys` the keys that represents the RFID tag numbers. Its format should be similar to this: tag_<tag ID>_status
+- `keys` the keys that represents the RFID tag numbers. Its format should be similar to this: tag_tag ID number_status. 
 More information can be found in the example property file `launcher.properties` in the `config` folder.
 
 #### Mapping files

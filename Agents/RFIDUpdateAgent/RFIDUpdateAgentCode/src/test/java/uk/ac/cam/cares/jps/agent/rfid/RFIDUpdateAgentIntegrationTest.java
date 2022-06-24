@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
- * This test class is to test the ThingsBoard input agent with a running KG and postgres database.
+ * This test class is to test the RFID Update Agent with a running KG and postgres database.
  */
 
 @Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
@@ -53,7 +53,7 @@ public class RFIDUpdateAgentIntegrationTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    // ThingsBoard Input Agent
+    // RFID Update Agent
     private RFIDUpdateAgent agent;
     // Time series client for connection with KG and database
     private TimeSeriesClient<OffsetDateTime> tsClient;
@@ -290,7 +290,7 @@ public class RFIDUpdateAgentIntegrationTest {
     public void testUpdateTimeSeriesWithPruning() {
     	String key = "tag_12345_status";
         insertTimeSeries();
-        // Add data for gas readings up to last reading
+        // Add data for readings up to last reading
         List<OffsetDateTime> times = new ArrayList<>();
         for(int i = 0; i < timestamps.length ; i++) {
             if (i < (timestamps.length-1)) {
@@ -302,7 +302,7 @@ public class RFIDUpdateAgentIntegrationTest {
         tsClient.addTimeSeriesData(ts);
         // Update data through agent
         agent.updateData(allReadings, key);
-        // Check that database was updated and existing gas data is untouched
+        // Check that database was updated and existing data is untouched
         ts = tsClient.getTimeSeries(IRIs);
         Assert.assertEquals(allReadings.getJSONArray(keys[0]).length(),ts.getTimes().size());
         // Check that data content is correct
@@ -320,6 +320,6 @@ public class RFIDUpdateAgentIntegrationTest {
         // Insert particle time-series
         List<Class<?>> classes = Collections.nCopies(IRIs.size(), String.class);
         tsClient.initTimeSeries(IRIs, classes, "timeUnit");
-        // Insert gas time-series
+        // Insert time-series
     }
 }
