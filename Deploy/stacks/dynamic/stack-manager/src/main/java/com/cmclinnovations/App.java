@@ -22,6 +22,10 @@ public class App {
 
         ServiceManager manager = new ServiceManager();
         Stack stack = new Stack(stackName, hostURL, manager);
+
+        // TODO Move this code into tests.
+        TempTestCalls.doStuff();
+
         stack.hashCode();
     }
 }

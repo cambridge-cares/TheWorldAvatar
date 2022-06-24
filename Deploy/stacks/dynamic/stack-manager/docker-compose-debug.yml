@@ -8,3 +8,9 @@ services:
       - "STACK_NAME=TEST_STACK"
     ports:
       - "5005:5005"
+    networks:
+      - stack
+
+networks:
+  stack:
+    name: TEST_STACK
