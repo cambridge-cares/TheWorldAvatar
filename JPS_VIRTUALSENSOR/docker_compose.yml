@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  virtual-sensor:
+    container_name: virtual-sensor
+    image: virtual-sensor:1.0.0
+    environment:
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=*:8000,server=y,suspend=n"
+      KG_ENDPOINT: "http://blazegraph:8080/blazegraph/namespace/virtualsensor/sparql"
+    build:
+      context: ./
+    ports:
+      - 8081:8080
+      - 8001:8000
+      
+  blazegraph:
+    container_name: "blazegraph"
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    restart: unless-stopped
+    # Add a secret to set the password for BASIC authentication
+    secrets: # username is bg_user
+      - blazegraph_password
+    ports:
+      - "8889:8080"
+    volumes:
+      - blazegraph_data:/data
+
+  file-server:
+    container_name: file-server
+    image: file-server
+    environment:
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=*:8000,server=y,suspend=n"
+    build:
+      args:
+        mvn_profile: dev-profile
+      context: ../Deploy/stacks/db/fileserver
+    ports:
+      - "58090:8080"
+      - "58000:8000"
+    volumes:
+      - file_server:/app/fs_root
+      - external_maven_repo:/root/.m2
+
+  python-service:
+    container_name: python-service
+    image: python-service
+    build:
+      context: ./python_service
+      target: debug
+    ports:
+      - 5000:5000
+      - 5678:5678
+
+volumes:
+  external_maven_repo:
+  file_server:  
+  blazegraph_data:
