@@ -49,8 +49,6 @@ import java.nio.file.Files;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
@@ -993,7 +991,7 @@ public class EpisodeAgent extends JPSAgent{
 				byte[] dispMatrixBytes = Files.readAllBytes(Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA));
 				String dispMatrix = new String(dispMatrixBytes);
 				
-				URIBuilder url = new URIBuilder("http://localhost:5000/getGeoJSON");
+				URIBuilder url = new URIBuilder("http://python-service:5000/getGeoJSON");
 				url.addParameter("dispMatrix", dispMatrix);
 				url.addParameter("crsName", crsName);
 				
@@ -1031,17 +1029,6 @@ public class EpisodeAgent extends JPSAgent{
 	
 				// update triple-store
 				DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart.getEpochSecond());
-	
-				// update all air quality stations associated with this sim
-				String[] station_iri = DispSimSparql.GetAirQualityStations(sim_iri);
-				
-				if (station_iri != null) {
-					for (int i=0; i < station_iri.length; i++) {
-						JSONObject request = new JSONObject();
-						request.put(SensorSparql.keyAirStationIRI, station_iri[i]);
-						AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/SensorUpdaterAgent", request.toString());
-					}
-				}
 				
 				System.out.println("metadata annotation finished");
 			// } else {
