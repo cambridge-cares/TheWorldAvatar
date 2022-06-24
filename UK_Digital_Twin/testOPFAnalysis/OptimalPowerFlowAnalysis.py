@@ -70,9 +70,9 @@ class OptimalPowerFlowAnalysis:
         ## create the timeStamp, e.x. 2022-06-15T16:24:29.371941+00:00
         self.timeStamp = datetime.now(pytz.utc).isoformat()
         ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
-        self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, queryEndpointLabel)
-        self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, queryEndpointLabel)
-        self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, queryEndpointLabel)
+        self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, queryEndpointLabel) ## ?BusNodeIRI ?BusLatLon
+        self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, queryEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275 
+        self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, queryEndpointLabel) ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel
         
         ## 2. passing arguments
         ## specify the topology node
@@ -136,9 +136,7 @@ class OptimalPowerFlowAnalysis:
         self.BranchObjectList: list = []
         self.GeneratorObjectList: list = []
 
-#TODO: add the method to specify the retrofitting generator objects
-
-    def retrofitGeneratorInstanceCreator(self):
+    def retrofitGeneratorInstanceFinder(self):
         if len(self.retrofitGenerator) == 0 and len(self.retrofitGeneratorType) == 0:  
             print("***As there is not specific generator assigned to be retrofitted by SMR, all generators located in GB will be treated as the potential sites.***")
             retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_AllPowerPlant(self.topologyNodeIRI, self.queryEndpointLabel) ## PowerGenerator, Bus, Capacity
@@ -150,11 +148,8 @@ class OptimalPowerFlowAnalysis:
             for iri in self.retrofitGenerationTechType:
                 parse(iri, rule='IRI')
             retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(self.retrofitGenerationTechType, self.topologyNodeIRI, self.queryEndpointLabel)
-        
         self.retrofitList = retrofitList  
         return 
-
-
 
     """This method is called to initialize the model entities objects: model input"""
     def ModelObjectInputInitialiser(self): 
@@ -218,6 +213,18 @@ class OptimalPowerFlowAnalysis:
             ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio)
             self.GeneratorObjectList.append(objectName)
         
+        #TODO: initialise the to-be retrofitted generator objects, need to record the original gen node IRI
+
+        for egen in self.retrofitList:
+            objectName = UK_PG.UKEGenModel.EGenKey + str(self.branchNodeList.index(egen)) ## bus model python object name
+            # uk_egen_model = UK_PG.UKEGenModel(int(self.numOfBus), str(egen[0]))
+            uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+            uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
+            ###add EGen model parametor###
+            ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio)
+            self.GeneratorObjectList.append(objectName)
+
+
         self.ObjectSet = ObjectSet
 
         return     
