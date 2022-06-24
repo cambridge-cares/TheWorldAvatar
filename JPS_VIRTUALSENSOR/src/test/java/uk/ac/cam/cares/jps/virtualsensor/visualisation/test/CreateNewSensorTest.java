@@ -9,8 +9,8 @@ public class CreateNewSensorTest{
 	@Test
     public void testCreateNewSensor() {
     	JSONObject request = new JSONObject();
-    	request.put("lat", 1.267135);
-    	request.put("lng", 103.864237);
-    	AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/CreateNewSensor", request.toString());
+    	request.put("lat", 50.35513899998897);
+    	request.put("lng", -4.144144999999668);
+    	AgentCaller.executeGetWithURLAndJSON("http://localhost:8081/JPS_VIRTUALSENSOR/CreateNewSensor", request.toString());
     }
 }
