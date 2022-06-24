@@ -1,3 +1,4 @@
+0. In the Docker Desktop General Settings you need to enable the "Expose daemon on tcp://localhost:2375 without TLS" option.
 1. Open this folder in VSCode.
 2. Create a file called "postgis_password" with a password in it in the "inputs/secrets/" directory.
 3. Add a breakpoint at the start of the "com.cmclinnovations.TempTestCalls::doStuff" method.
