@@ -20,6 +20,7 @@ COPY ./requirements.txt /app/.
 RUN python -m pip install -r requirements.txt
 
 COPY ./episode /app/episode/
+COPY ./speedLoadMap /app/speedLoadMap
 COPY ./app_entry_point.sh /app/.
 COPY ./app.py /app/.
 
