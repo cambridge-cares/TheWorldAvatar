@@ -1,10 +1,13 @@
-package com.cmclinnovations.apis;
+package com.cmclinnovations.clients.gdal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+
+import com.cmclinnovations.clients.docker.ContainerClient;
+import com.cmclinnovations.clients.postgis.PostGISEndpointConfig;
 
 public class GDALClient extends ContainerClient {
 

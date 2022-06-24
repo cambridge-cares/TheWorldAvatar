@@ -1,4 +1,4 @@
-package com.cmclinnovations.apis;
+package com.cmclinnovations.clients.docker;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

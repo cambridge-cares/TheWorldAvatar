@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.cmclinnovations.FileUtils;
-import com.cmclinnovations.apis.StackClient;
+import com.cmclinnovations.clients.core.StackClient;
+import com.cmclinnovations.clients.utils.FileUtils;
 import com.cmclinnovations.exceptions.InvalidTemplateException;
 import com.cmclinnovations.services.config.Connection;
 import com.cmclinnovations.services.config.ServiceConfig;

@@ -1,4 +1,4 @@
-package com.cmclinnovations.apis.ontop;
+package com.cmclinnovations.clients.ontop;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cmclinnovations.FileUtils;
+import com.cmclinnovations.clients.utils.FileUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 

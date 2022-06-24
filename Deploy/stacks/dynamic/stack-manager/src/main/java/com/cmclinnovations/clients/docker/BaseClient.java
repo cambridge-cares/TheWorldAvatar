@@ -1,8 +1,10 @@
-package com.cmclinnovations.apis;
+package com.cmclinnovations.clients.docker;
 
 import java.io.File;
 import java.io.IOException;
 
+import com.cmclinnovations.clients.core.AbstractEndpointConfig;
+import com.cmclinnovations.clients.core.StackClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

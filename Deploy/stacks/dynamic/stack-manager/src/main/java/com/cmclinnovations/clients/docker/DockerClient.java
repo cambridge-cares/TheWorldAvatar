@@ -1,4 +1,4 @@
-package com.cmclinnovations.apis;
+package com.cmclinnovations.clients.docker;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +24,8 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cmclinnovations.clients.core.AbstractEndpointConfig;
+import com.cmclinnovations.clients.core.StackClient;
 import com.github.dockerjava.api.command.CopyArchiveToContainerCmd;
 import com.github.dockerjava.api.command.CreateConfigCmd;
 import com.github.dockerjava.api.command.CreateSecretCmd;

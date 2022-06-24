@@ -1,4 +1,4 @@
-package com.cmclinnovations.apis.ontop;
+package com.cmclinnovations.clients.ontop;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
-import com.cmclinnovations.apis.ContainerClient;
+import com.cmclinnovations.clients.docker.ContainerClient;
 
 public class OntopClient extends ContainerClient {
 

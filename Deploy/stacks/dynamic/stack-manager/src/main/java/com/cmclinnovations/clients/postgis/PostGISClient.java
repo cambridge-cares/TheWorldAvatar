@@ -1,9 +1,11 @@
-package com.cmclinnovations.apis;
+package com.cmclinnovations.clients.postgis;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import com.cmclinnovations.clients.docker.ContainerClient;
 
 public class PostGISClient extends ContainerClient {
 

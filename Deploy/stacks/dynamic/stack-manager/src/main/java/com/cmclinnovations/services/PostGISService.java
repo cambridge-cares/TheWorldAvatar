@@ -1,6 +1,6 @@
 package com.cmclinnovations.services;
 
-import com.cmclinnovations.apis.PostGISEndpointConfig;
+import com.cmclinnovations.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.services.config.ServiceConfig;
 
 public final class PostGISService extends ContainerService {

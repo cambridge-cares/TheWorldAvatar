@@ -7,10 +7,10 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
 
-import com.cmclinnovations.apis.AbstractEndpointConfig;
-import com.cmclinnovations.apis.DockerClient;
-import com.cmclinnovations.apis.StackClient;
-import com.cmclinnovations.apis.DockerClient.ComplexCommand;
+import com.cmclinnovations.clients.core.AbstractEndpointConfig;
+import com.cmclinnovations.clients.core.StackClient;
+import com.cmclinnovations.clients.docker.DockerClient;
+import com.cmclinnovations.clients.docker.DockerClient.ComplexCommand;
 import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ServiceSpec;

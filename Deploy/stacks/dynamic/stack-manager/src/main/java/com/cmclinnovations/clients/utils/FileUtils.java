@@ -1,4 +1,4 @@
-package com.cmclinnovations;
+package com.cmclinnovations.clients.utils;
 
 import java.io.IOException;
 import java.net.URI;

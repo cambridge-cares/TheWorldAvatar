@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.cmclinnovations.FileUtils;
+import com.cmclinnovations.clients.utils.FileUtils;
 import com.cmclinnovations.services.config.ServiceConfig;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

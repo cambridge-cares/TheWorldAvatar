@@ -1,7 +1,8 @@
-package com.cmclinnovations.apis;
+package com.cmclinnovations.clients.postgis;
 
 import java.util.Objects;
 
+import com.cmclinnovations.clients.core.PasswordEndpointConfig;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

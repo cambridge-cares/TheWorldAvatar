@@ -1,4 +1,6 @@
-package com.cmclinnovations.apis;
+package com.cmclinnovations.clients.docker;
+
+import com.cmclinnovations.clients.core.AbstractEndpointConfig;
 
 public abstract class ContainerClient extends BaseClient {
 

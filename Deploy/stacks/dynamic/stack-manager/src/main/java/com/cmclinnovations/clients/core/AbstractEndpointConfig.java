@@ -1,4 +1,4 @@
-package com.cmclinnovations.apis;
+package com.cmclinnovations.clients.core;
 
 public abstract class AbstractEndpointConfig {
 

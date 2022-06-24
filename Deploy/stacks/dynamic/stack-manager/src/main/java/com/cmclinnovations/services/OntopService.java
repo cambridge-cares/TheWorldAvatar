@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-import com.cmclinnovations.apis.PostGISEndpointConfig;
-import com.cmclinnovations.apis.ontop.OntopClient;
+import com.cmclinnovations.clients.ontop.OntopClient;
+import com.cmclinnovations.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ContainerSpecConfig;

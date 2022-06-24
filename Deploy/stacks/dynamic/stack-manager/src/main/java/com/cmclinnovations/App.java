@@ -3,7 +3,7 @@ package com.cmclinnovations;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.cmclinnovations.apis.StackClient;
+import com.cmclinnovations.clients.core.StackClient;
 import com.cmclinnovations.services.ServiceManager;
 
 /**

@@ -12,8 +12,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.cmclinnovations.apis.DockerClient;
-import com.cmclinnovations.apis.StackClient;
+import com.cmclinnovations.clients.core.StackClient;
+import com.cmclinnovations.clients.docker.DockerClient;
 import com.cmclinnovations.services.config.ServiceConfig;
 import com.github.dockerjava.api.command.ConnectToNetworkCmd;
 import com.github.dockerjava.api.command.CreateNetworkCmd;

@@ -1,4 +1,4 @@
-package com.cmclinnovations.apis;
+package com.cmclinnovations.clients.core;
 
 import java.io.BufferedReader;
 import java.nio.file.Files;

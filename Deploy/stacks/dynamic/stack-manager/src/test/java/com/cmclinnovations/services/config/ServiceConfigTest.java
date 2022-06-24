@@ -1,4 +1,4 @@
-package com.cmclinnovations.services;
+package com.cmclinnovations.services.config;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,12 +6,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import com.cmclinnovations.services.config.ServiceConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ServiceConfigTest {
 
