@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.slf4j.Logger;
@@ -273,6 +274,21 @@ public class DockerClient extends BaseClient {
                     .withRemotePath(remotePath).exec();
 
         }
+    }
+
+    public Map<String, byte[]> retrieveFiles(String containerId, String remotePath) throws IOException {
+        Map<String, byte[]> files = new HashMap<>();
+        try (InputStream is = internalClient.copyArchiveFromContainerCmd(containerId, remotePath).exec();
+                TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(is)) {
+            TarArchiveEntry tarArchiveEntry;
+
+            while (null != (tarArchiveEntry = tarArchiveInputStream.getNextTarEntry())) {
+                if (!tarArchiveEntry.isDirectory()) {
+                    files.put(tarArchiveEntry.getName(), tarArchiveInputStream.readAllBytes());
+                }
+            }
+        }
+        return files;
     }
 
     public Optional<Container> getContainer(String containerName) {
