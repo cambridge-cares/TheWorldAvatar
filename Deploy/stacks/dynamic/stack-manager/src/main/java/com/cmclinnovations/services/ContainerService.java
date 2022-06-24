@@ -88,8 +88,8 @@ public class ContainerService extends AbstractService {
                         + "' to be specified in its config file.");
     }
 
-    public final void sendFiles(Map<String, byte[]> files, String remotePath) throws IOException {
-        dockerClient.sendFiles(containerId, files, remotePath);
+    public final void sendFiles(Map<String, byte[]> files, String remoteDirPath) throws IOException {
+        dockerClient.sendFiles(containerId, files, remoteDirPath);
     }
 
     public final void executeCommand(String... cmd) {

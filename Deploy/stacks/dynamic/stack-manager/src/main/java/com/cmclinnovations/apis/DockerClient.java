@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -243,9 +244,9 @@ public class DockerClient extends BaseClient {
         executeSimpleCommand(containerId, "rm", "-r", directoryPath);
     }
 
-    public void sendFiles(String containerId, Map<String, byte[]> files, String remotePath) throws IOException {
+    public void sendFiles(String containerId, Map<String, byte[]> files, String remoteDirPath) throws IOException {
 
-        makeDir(containerId, remotePath);
+        makeDir(containerId, remoteDirPath);
 
         byte[] byteArray;
 
@@ -271,24 +272,39 @@ public class DockerClient extends BaseClient {
                 CopyArchiveToContainerCmd copyArchiveToContainerCmd = internalClient
                         .copyArchiveToContainerCmd(containerId)) {
             copyArchiveToContainerCmd.withTarInputStream(is)
-                    .withRemotePath(remotePath).exec();
+                    .withRemotePath(remoteDirPath).exec();
 
         }
     }
 
-    public Map<String, byte[]> retrieveFiles(String containerId, String remotePath) throws IOException {
+    public Map<String, byte[]> retrieveFiles(String containerId, String remoteDirPath) throws IOException {
         Map<String, byte[]> files = new HashMap<>();
-        try (InputStream is = internalClient.copyArchiveFromContainerCmd(containerId, remotePath).exec();
+        try (InputStream is = internalClient.copyArchiveFromContainerCmd(containerId, remoteDirPath).exec();
                 TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(is)) {
-            TarArchiveEntry tarArchiveEntry;
 
+            TarArchiveEntry tarArchiveEntry;
             while (null != (tarArchiveEntry = tarArchiveInputStream.getNextTarEntry())) {
                 if (!tarArchiveEntry.isDirectory()) {
-                    files.put(tarArchiveEntry.getName(), tarArchiveInputStream.readAllBytes());
+                    files.put(Path.of(remoteDirPath, tarArchiveEntry.getName()).toString(),
+                            tarArchiveInputStream.readAllBytes());
                 }
             }
         }
         return files;
+    }
+
+    public byte[] retrieveFile(String containerId, String remoteFilePath) throws IOException {
+        try (InputStream is = internalClient.copyArchiveFromContainerCmd(containerId, remoteFilePath).exec();
+                TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(is)) {
+
+            TarArchiveEntry tarArchiveEntry;
+            while (null != (tarArchiveEntry = tarArchiveInputStream.getNextTarEntry())) {
+                if (!tarArchiveEntry.isDirectory()) {
+                    return tarArchiveInputStream.readAllBytes();
+                }
+            }
+        }
+        return new byte[0];
     }
 
     public Optional<Container> getContainer(String containerName) {
