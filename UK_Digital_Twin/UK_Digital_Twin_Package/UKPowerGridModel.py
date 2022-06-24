@@ -12,7 +12,7 @@ from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from pypower import idx_bus
 from pypower import idx_brch
-from pypower import idx_gen 
+from pypower import idx_gen, idx_cost
 import collections
 from pathlib import Path
 
@@ -42,6 +42,7 @@ class UKEbusModel:
     
     """EBus Node keys"""
     ModelEBusKey = "ElectricalBusModel_"
+    EBusKey = "EGen-"
     
     """Model variable keys"""
     BUSNUMKey = "BusNumber_"
@@ -261,6 +262,8 @@ class UKEGenModel:
     
     """EGen Node keys"""
     EGenKey = "EGen-"
+    EGenRetrofitKey = "EGenRetrofit-"
+
     ModelEGenKey = "ElectricalGeneratorModel_"
     
     """Model variable keys"""
@@ -382,13 +385,25 @@ class UKEGenModel_CostFunc(UKEGenModel):
     genCost_bKey = "ZeroOrderCoefficient_" 
     genCost_aKey = "FirstOrderCoefficient_"
     # genCost_cKey = "SecondOrderCoefficient_"
+
+    """Mapping the index key from PyPower"""
+    INPUT_VARIABLE = collections.OrderedDict()
+    INPUT_VARIABLE["MODEL"] =  idx_cost.MODEL 
+    INPUT_VARIABLE["STARTUP"] =  idx_cost.STARTUP
+    INPUT_VARIABLE["STARTUP"] =  idx_cost.SHUTDOWN 
+    INPUT_VARIABLE["NCOST"] =  idx_cost.NCOST
+    INPUT_VARIABLE["COST"] =  idx_cost.COST  
     
+    INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
+
     """Initialise the cost function"""
-    def __init__(self, CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
-            self.MODEL = piecewiseOrPolynomial # 1: piecewise linear;  2: polynomial
+    def __init__(self, numOfBus:int, generatorNodeIRI:str, CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
+            super().__init__(numOfBus, generatorNodeIRI) ## enforce to inherite the initialiser from the father class
+            self.MODEL = piecewiseOrPolynomial # 1: piecewise linear; 2: polynomial
             self.STARTUP = 0
             self.SHUTDOWN = 0
             self.NCOST = pointsOfPiecewiseOrcostFuncOrder
+            self.COST = []
             self.CarbonTax = CarbonTax
 
 

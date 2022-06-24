@@ -86,6 +86,7 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
     res_queryBusTopologicalInformation = list(query_model.queryBusTopologicalInformation(topologyNodeIRI, endpoint_label))
     
     ## Initialise the model and topology python instance
+    ## TODO: the UKEbusModel initialisation function has changed 
     uk_ebus_model = UK_PG.UKEbusModel(numOfBus)
     # uk_topo = UK_Topo.UKPowerGridTopology(numOfBus) 
     

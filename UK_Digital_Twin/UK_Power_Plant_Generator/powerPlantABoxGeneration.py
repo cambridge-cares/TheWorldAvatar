@@ -50,7 +50,7 @@ defaultPath_Sleepycat = ukpp.SleepycatStoragePath
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
-ontoecape_technical_system      = owlready2.get_ontology(t_box.ontoecape_technical_system).load()
+ontocape_technical_system      = owlready2.get_ontology(t_box.ontoecape_technical_system).load()
 ontoeip_powerplant              = owlready2.get_ontology(t_box.ontoeip_powerplant).load()
 ontopowsys_PowSysRealization    = owlready2.get_ontology(t_box.ontopowsys_PowSysRealization).load()
 ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
@@ -180,7 +180,7 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
             
             ## Add rdf.type and label to power plant
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoeip_powerplant.PowerPlant.iri)))
-            graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoecape_technical_system.TechnicalSystem.iri)))
+            graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontocape_technical_system.TechnicalSystem.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontopowsys_PowSysRealization + planttype)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoenergysystem.Asset.iri))) # The power plant is specifically declared as an asset  
             graph.add((URIRef(pp_root_node), RDFS.label, Literal(str(plantname)))) 
@@ -215,9 +215,9 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
                 graph.add((URIRef(GBAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(LACode['Great_Britain'])))
             
             ## Add Realization Aspect (PowerGenerator)
-            graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRealizationAspect.iri), URIRef(RealizationAspectIRI)))
+            graph.add((URIRef(pp_root_node), URIRef(ontocape_technical_system.hasRealizationAspect.iri), URIRef(RealizationAspectIRI)))
             graph.add((URIRef(RealizationAspectIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
-            graph.add((URIRef(RealizationAspectIRI), URIRef(ontoecape_technical_system.realizes.iri), URIRef(EnergyGenerationIRI)))
+            graph.add((URIRef(RealizationAspectIRI), URIRef(ontocape_technical_system.realizes.iri), URIRef(EnergyGenerationIRI)))
             
             graph.add((URIRef(EnergyGenerationIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGeneration.iri)))                
             graph.add((URIRef(EnergyGenerationIRI), URIRef(ontoeip_powerplant.usesGenerationTechnology.iri), URIRef(GenerationTechnologyIRI)))
@@ -231,12 +231,12 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
             graph.add((URIRef(PrimaryFuelTypeIRI), RDFS.label, Literal(str(primaryfuellabel))))
             
             ## Add Functional Aspect  
-            graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasFunctionalAspect.iri), URIRef(EnergyGenerationIRI)))
+            graph.add((URIRef(pp_root_node), URIRef(ontocape_technical_system.hasFunctionalAspect.iri), URIRef(EnergyGenerationIRI)))
             
             ## Add Requirements Aspect
-            graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRequirementsAspect.iri), URIRef(RequirementsAspectIRI)))
+            graph.add((URIRef(pp_root_node), URIRef(ontocape_technical_system.hasRequirementsAspect.iri), URIRef(RequirementsAspectIRI)))
             graph.add((URIRef(RequirementsAspectIRI), RDF.type, URIRef(t_box.ontoeip_system_requirement + 'DesignCapacity'))) # T-box undefined
-            graph.add((URIRef(RequirementsAspectIRI), URIRef(ontoecape_technical_system.isAchievedThrough.iri), URIRef(EnergyGenerationIRI)))
+            graph.add((URIRef(RequirementsAspectIRI), URIRef(ontocape_technical_system.isAchievedThrough.iri), URIRef(EnergyGenerationIRI)))
             ## Add values to attributes
             graph.add((URIRef(RequirementsAspectIRI), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(valueOfRequirementsAspectIRI)))
             graph.add((URIRef(valueOfRequirementsAspectIRI), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))

@@ -10,9 +10,10 @@ from logging import raiseExceptions
 import sys, os, numpy, uuid
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE) 
-import queryModelInput 
+import queryOPFInput 
 from datetime import datetime
 import pytz
+from rfc3987 import parse
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package.jpsSingletons import jpsBaseLibGW
@@ -23,7 +24,7 @@ import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.costFunctionParameterInitialiser import costFuncPara
 from UK_Power_Grid_Model_Generator import model_EBusABoxGeneration, model_EGenABoxGeneration, model_ELineABoxGeneration
 import UK_Power_Grid_Model_Generator.initialiseEBusModelVariable as InitialiseEbus
-from pypower.api import ppoption, runpf, isload
+from pypower.api import ppoption, runopf, isload
 import UK_Digital_Twin_Package.PYPOWER.pypower.runpf as pf
 from numpy import r_, c_, ix_, zeros, pi, ones, exp, union1d, array, linalg, where, logical_or, arange, \
                     ones, sort, exp, pi, diff, min, \
@@ -57,7 +58,7 @@ class OptimalPowerFlowAnalysis:
 
         CarbonTax:float, piecewiseOrPolynomial:int, pointsOfPiecewiseOrcostFuncOrder:int, baseMVA: float, \
 
-        retrofitGenerator: list, \
+        retrofitGenerator: list, retrofitGenerationTechType: list, \
 
         queryEndpointLabel:str, \
         endPointURL:str, endPointUser:str = None, endPointPassWord:str = None, \
@@ -129,6 +130,7 @@ class OptimalPowerFlowAnalysis:
         
         ## 6. Identify the retrofitting generators
         self.retrofitGenerator = retrofitGenerator # GeneratorIRI, location, capacity
+        self.retrofitGenerationTechType = retrofitGenerationTechType
         
         self.BusObjectList: list = []
         self.BranchObjectList: list = []
@@ -136,8 +138,26 @@ class OptimalPowerFlowAnalysis:
 
 #TODO: add the method to specify the retrofitting generator objects
 
+    def retrofitGeneratorInstanceCreator(self):
+        if len(self.retrofitGenerator) == 0 and len(self.retrofitGeneratorType) == 0:  
+            print("***As there is not specific generator assigned to be retrofitted by SMR, all generators located in GB will be treated as the potential sites.***")
+            retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_AllPowerPlant(self.topologyNodeIRI, self.queryEndpointLabel) ## PowerGenerator, Bus, Capacity
+        elif not len(self.retrofitGenerator) == 0:
+            for iri in self.retrofitGenerator:
+                parse(iri, rule='IRI')
+            retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedGenerator(self.retrofitGenerator, self.queryEndpointLabel) 
+        elif not len(self.retrofitGenerationTechType) == 0:
+            for iri in self.retrofitGenerationTechType:
+                parse(iri, rule='IRI')
+            retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(self.retrofitGenerationTechType, self.topologyNodeIRI, self.queryEndpointLabel)
+        
+        self.retrofitList = retrofitList  
+        return 
+
+
+
     """This method is called to initialize the model entities objects: model input"""
-    def ModelObjectInitialiser(self): 
+    def ModelObjectInputInitialiser(self): 
         ##-- create model bus, branch and generator objects dynamically --##
         ObjectSet = locals()        
         ### Initialisation of the Bus Model Entities ###
@@ -188,423 +208,225 @@ class OptimalPowerFlowAnalysis:
             self.BranchObjectList.append(objectName)
             
         ### Initialisation of the Generator Model Entities ###
-
         capa_demand_ratio = model_EGenABoxGeneration.demandAndCapacityRatioCalculator(self.generatorNodeList, self.topologyNodeIRI, self.startTime_of_EnergyConsumption)
         for egen in self.generatorNodeList:
             objectName = UK_PG.UKEGenModel.EGenKey + str(self.branchNodeList.index(egen)) ## bus model python object name
-            uk_egen_model = UK_PG.UKEGenModel(int(self.numOfBus), str(egen[0]))
-            uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
-            uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen)
+            # uk_egen_model = UK_PG.UKEGenModel(int(self.numOfBus), str(egen[0]))
+            uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+            uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
             ###add EGen model parametor###
-            ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio)
-
-            ## TODO: merger uk_egen_model and uk_egen_costFunc
-
-            ###1. create an instance of the BranchPropertyInitialisation class and get the initialiser method by applying the 'getattr' function 
-            initialisation = BPI.BranchPropertyInitialisation()
-            initialiser = getattr(initialisation, self.ELineInitialisationMethodName)
-            ###2. execute the initialiser with the branch model instance as the function argument 
-            # ## TODO: when initialise the 29-bus model, please check if ELineNodeIRI is the right node to use
-            ObjectSet[objectName] = initialiser(eline['ELineNode'], uk_eline_model, eline, self.branchVoltageLevel, self.OrderedBusNodeIRIList, self.queryEndpointLabel) 
-            self.BranchObjectList.append(objectName)
-
-
-
-
-        i_generator = 0
-        GeneratorInput = queryModelInput.queryGeneratorModelInput_new(10, 14, 'ukdigitaltwin_test1')         
-        for geninput in GeneratorInput:              
-            ObjectSet[UK_PG.UKEGenModel.EGenKey + str(i_generator)] = UK_PG.UKEGenModel()
-            self.GeneratorObjectList.append(UK_PG.UKEGenModel.EGenKey + str(i_generator))
-            for varKey in geninput.keys():
-                setattr(ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(i_generator)), varKey, geninput[varKey])
-            i_generator += 1   
-                
-        self.NumberOfGenerator = len(GeneratorInput)
+            ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio)
+            self.GeneratorObjectList.append(objectName)
         
         self.ObjectSet = ObjectSet
 
         return     
-
-
-    def ModelObjectCreator(self, buslist: list, branchList: list): 
-         """
-         The ModelObjectCreator is used to created the model objects (bus, branch and generator) which should be call in the first palce when proforming PF/OPF analysis
-         The funtion will query from the KG of with the model enetity IRI, BusModelTopNodeIRI, BranchModelTopNodeIRI, and GeneratorModelTopNodeIRI
-         
-         Parameters
-         ----------
-         buslist : TYPE
-             DESCRIPTION.
-         branchList : TYPE
-             DESCRIPTION.
-
-         Returns
-         -------
-         None.
-
-         """
-         
-         ##-- create model bus, branch and generator objects dynamically --##
-         ObjectSet = locals()
-# TODO: do not change the starting indiex number from 1 to 0         
-         ## query bus input and create the bus objects 
-     #    BusInput = queryModelInput.queryBusModelInput(self.BusModelTopNodeIRI)        
-         BusInput = busList
-         BusNumKeyWord = UK_PG.UKEbusModel.INPUT_VARIABLE_KEYS[0]  
-         for businput in BusInput:              
-             ObjectSet[UK_PG.UKEbusModel.EBusKey + str(businput[BusNumKeyWord])] = UK_PG.UKEbusModel()
-             for varKey in businput.keys():
-                 setattr(ObjectSet.get(UK_PG.UKEbusModel.EBusKey + str(businput[BusNumKeyWord])), varKey, businput[varKey])
-                 if UK_PG.UKEbusModel.INPUT_VARIABLE_KEYS.index(varKey) == BUS_TYPE:                      
-                     if int(businput[varKey]) == REF:                        
-                         self.SlackBusName.append(UK_PG.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))                         
-                     elif int(businput[varKey]) == PV:                        
-                         self.PVBusName.append(UK_PG.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))                        
-                     elif int(businput[varKey]) == PQ:                            
-                         self.PQBusName.append(UK_PG.UKEbusModel.EBusKey + str(businput[BusNumKeyWord]))                         
-         
-         self.NumberOfBus = len(BusInput)
-         self.BusObjectList = self.SlackBusName + self.PVBusName + self.PQBusName
-         
-         ## query branch input
-     #    BranchInput = queryModelInput.queryBranchModelInput(self.BranchModelTopNodeIRI)
-         i_branch = 0
-         BranchInput = branchList 
-         for branchinput in BranchInput:  
-             ObjectSet[UK_PG.UKElineModel.ELineKey + str(i_branch)] = UK_PG.UKElineModel()
-             self.BranchObjectList.append(UK_PG.UKElineModel.ELineKey + str(i_branch))
-             for varKey in branchinput.keys():
-                 setattr(ObjectSet.get(UK_PG.UKElineModel.ELineKey + str(i_branch)), varKey, branchinput[varKey])
-             i_branch += 1                   
-         
-         self.NumberOfBranch = len(BranchInput)     
-            
-          # query generator input
-     #    GeneratorInput = queryModelInput.queryGeneratorModelInput(self.GeneratorModelTopNodeIRI)
-         i_generator = 0
-         GeneratorInput = queryModelInput.queryGeneratorModelInput_new(10, 14, 'ukdigitaltwin_test1')         
-         for geninput in GeneratorInput:              
-               ObjectSet[UK_PG.UKEGenModel.EGenKey + str(i_generator)] = UK_PG.UKEGenModel()
-               self.GeneratorObjectList.append(UK_PG.UKEGenModel.EGenKey + str(i_generator))
-               for varKey in geninput.keys():
-                   setattr(ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(i_generator)), varKey, geninput[varKey])
-               i_generator += 1   
-                    
-         self.NumberOfGenerator = len(GeneratorInput)
-         
-         self.ObjectSet = ObjectSet
     
-         return     
         
     def ModelInputFormatter(self):
-         """
-         The ModelInputFormatter is used to created the pypower PF model input from the model objects which are created from the F{ModelObjectCreator}.
-         This function will be called abfer F{ModelObjectCreator}.
-         
-         Raises
-         ------
-         Exception
-             If the attribute ObjectSet does not exist.
-
-         Returns
-         -------
-         None.
-             
-         """
-
-         if not hasattr(self, 'ObjectSet'):  
-             raise Exception("The model object has not been properly created, please run the function ModelObjectCreator at first.")
-         
-         ##-- Format the PF analysis input, ppc --##
-         ppc: dict = {"version": '2'}
-         
-         ## system MVA base
-         ppc["baseMVA"] = float(self.baseMVA)
-         
-         ## bus data
-         # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin  
-         ppc["bus"] = numpy.zeros((self.NumberOfBus, len(UK_PG.UKEbusModel.INPUT_VARIABLE_KEYS)), dtype = float)
-         index_bus  = 0
-         while index_bus < self.NumberOfBus:
-             for key in UK_PG.UKEbusModel.INPUT_VARIABLE_KEYS:
-                 index = int(UK_PG.UKEbusModel.INPUT_VARIABLE[key])
-                 ppc["bus"][index_bus][index] = getattr(self.ObjectSet.get(UK_PG.UKEbusModel.EBusKey + str(index_bus + 1)), key)
-             index_bus += 1
-             
-         ## branch data
-         # fbus, tbus, r, x, b, rateA, rateB, rateC, ratio, angle, status, angmin, angmax     
-         ppc["branch"] = numpy.zeros((self.NumberOfBranch, len(UK_PG.UKElineModel.INPUT_VARIABLE_KEYS)), dtype = float)
-         index_br  = 0
-         while index_br < self.NumberOfBranch:
-             for key in UK_PG.UKElineModel.INPUT_VARIABLE_KEYS:
-                 index = int(UK_PG.UKElineModel.INPUT_VARIABLE[key])
-                 ppc["branch"][index_br][index] = getattr(self.ObjectSet.get(UK_PG.UKElineModel.ELineKey + str(index_br)), key)
-             index_br += 1
-         
-         ## generator data
-         # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
-         # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
-         ppc["gen"] = numpy.zeros((self.NumberOfGenerator, len(UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS)), dtype = float)
-         index_gen  = 0
-         while index_gen < self.NumberOfGenerator:
-              for key in UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS:
-                  index = int(UK_PG.UKEGenModel.INPUT_VARIABLE[key])
-                  ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(index_gen)), key)
-              index_gen += 1
-         
-         self.ppc = ppc
- 
-         return 
-            
-    def PowerFlowAnalysisSimulation(self, ppc: list = None):
-         """
-         Perform the power flow analysis.
-
-         Parameters
-         ----------
-         ppc : List
-             ppc is the list of the input the power flow model. The default is None.
-
-         Raises
-         ------
-         Exception
-             DESCRIPTION.
-
-         Returns
-         -------
-         None.
-
-         """
-         
-         if not hasattr(self, 'ppc'): 
-             if ppc is None or not isinstance(ppc, list):
-                 raise Exception("The model input has not been reformatted, please run the function ModelInputFormatter at first.")
-             else:
-                 self.ppc = ppc
-    
-         ##-- starts pf analysis --## 
-         # set up numerical method: Newton's Method
-         self.ppopt = ppoption(OUT_ALL = 1, VERBOSE = 2, PF_ALG = 1, PF_MAX_IT = 30, PF_TOL = 1e-8) 
-         self.results, _, _ = pf.runpf(self.ppc, self.ppopt) #TODO: use the original pypower
-         
-         self.ConvergeFlag = self.results["success"]
-         if self.ConvergeFlag == 1:
-             print('-----The model is converged.-----')
-         elif self.ConvergeFlag == 0:
-             print('!!!!!!The model is diverged.!!!!!')
-         ##-- Invake the calculation monitor --##    
-             self.PowerFlowAnalysisMonitor() 
-         else:
-             raise Exception("The PF/OPF analysis has not been processed properly.")
-            
-         return
-     
-    def ModelOutputFormatter(self):
-         """
-         Reformat the result and add attributes into the objects.
-
-         Returns
-         -------
-         None.
-
-         """
-                
-         ## the bus, gen, branch and loss result
-         bus = self.results["bus"]
-         branch = self.results["branch"]
-         gen = self.results["gen"]
-         
-         if self.ppopt['PF_DC']:
-            loss = zeros(self.NumberOfBranch)
-         else:
-            ## create map of external bus numbers to bus indices
-            i2e = bus[:, BUS_I].astype(int)
-            e2i = zeros(max(i2e) + 1, int)
-            e2i[i2e] = arange(bus.shape[0])
-            tap = ones(self.NumberOfBranch)       ## default tap ratio = 1 for lines
-            xfmr = find(branch[:, TAP])           ## indices of transformers
-            tap[xfmr] = branch[xfmr, TAP]         ## include transformer tap ratios
-            tap = tap * exp(-1j * pi / 180 * branch[:, SHIFT]) ## add phase shifters
-            V = bus[:, VM] * exp(-1j * pi / 180 * bus[:, VA])
-            loss = self.baseMVA * abs(V[e2i[ branch[:, F_BUS].astype(int) ]] / tap -
-                                 V[e2i[ branch[:, T_BUS].astype(int) ]])**2 / \
-                        (branch[:, BR_R] - 1j * branch[:, BR_X])
-         out = find(branch[:, BR_STATUS] == 0)    ## out-of-service branches
-         nout = len(out)
-         loss[out] = zeros(nout)
-            
-         ##--Bus--##  
-         ##  VM_OUTPUT, VM_OUTPUT, P_GEN, G_GEN, PD_OUTPUT, GD_OUTPUT        
-         ## post processsing of the bus results   
-         busPostResult = numpy.zeros((self.NumberOfBus, len(UK_PG.UKEbusModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
-         
-         for i in range(self.NumberOfBus):
-             busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["VM_OUTPUT"]] = bus[i][VM]
-             busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["VA_OUTPUT"]] = bus[i][VA]
-             
-             g  = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) & ~isload(gen))
-             ld = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) & isload(gen))
-             
-             if any(g + 1):
-                busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["P_GEN"]] = sum(gen[g, PG])
-                busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["G_GEN"]] = sum(gen[g, QG])
-                       
-             if logical_or(bus[i, PD], bus[i, QD]) | any(ld + 1):
-                if any(ld + 1):
-                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["PD_OUTPUT"]] = bus[i, PD] - sum(gen[ld, PG])
-                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["GD_OUTPUT"]] = bus[i, QD] - sum(gen[ld, QG])    
-                else:
-                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["PD_OUTPUT"]] = bus[i][PD]
-                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["GD_OUTPUT"]] = bus[i][QD]
-             
-         ## update the object attributes with the model results
-         index_bus  = 0
-         while index_bus < self.NumberOfBus:
-             for key in UK_PG.UKEbusModel.OUTPUT_VARIABLE_KEYS:
-                 index = int(UK_PG.UKEbusModel.OUTPUT_VARIABLE[key])
-                 setattr(self.ObjectSet.get(UK_PG.UKEbusModel.EBusKey + str(index_bus + 1)), key, busPostResult[index_bus][index])        
-             index_bus += 1   
-         
-         ##--Branch--##    
-         ## FROMBUSINJECTION_P, FROMBUSINJECTION_Q, TOBUSINJECTION_P, TOBUSINJECTION_Q, LOSS_P, LOSS_Q
-         ## post processsing of the branch results   
-         branchPostResult = numpy.zeros((self.NumberOfBranch, len(UK_PG.UKElineModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
-         
-         for i in range(self.NumberOfBranch):
-             branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["FROMBUSINJECTION_P"]] = branch[i][PF]
-             branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["FROMBUSINJECTION_Q"]] = branch[i][QF]
-             branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["TOBUSINJECTION_P"]] = branch[i][PT]
-             branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["TOBUSINJECTION_Q"]] = branch[i][QT]
-             branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["LOSS_P"]] = loss[i].real
-             branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["LOSS_Q"]] =  loss[i].imag
-              
-         ## update the object attributes with the model results
-         index_br  = 0
-         while index_br < self.NumberOfBranch:
-             for key in UK_PG.UKElineModel.OUTPUT_VARIABLE_KEYS:
-                 index = int(UK_PG.UKElineModel.OUTPUT_VARIABLE[key])
-                 setattr(self.ObjectSet.get(UK_PG.UKElineModel.ELineKey + str(index_br)), key, branchPostResult[index_br][index])        
-             index_br += 1   
-         
-         ##--Generator--##    
-         ## PG_OUTPUT, QG_OUTPUT
-         ## post processsing of the generator results   
-         generatorPostResult = numpy.zeros((self.NumberOfGenerator, len(UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
-         
-         for i in range(self.NumberOfGenerator):
-             if (gen[i, GEN_STATUS] > 0) & logical_or(gen[i, PG], gen[i, QG]):
-                generatorPostResult[i][UK_PG.UKEGenModel.OUTPUT_VARIABLE["PG_OUTPUT"]] = gen[i][PG]
-                generatorPostResult[i][UK_PG.UKEGenModel.OUTPUT_VARIABLE["QG_OUTPUT"]] = gen[i][QG]
-
-         ## update the object attributes with the model results
-         index_gen  = 0
-         while index_gen < self.NumberOfGenerator:
-             for key in UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS:
-                 index = int(UK_PG.UKEGenModel.OUTPUT_VARIABLE[key])
-                 setattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(index_gen)), key, generatorPostResult[index_gen][index])        
-             index_gen += 1   
-         return 
-         
-    def PowerFlowAnalysisMonitor(self):  
         """
-        Monitor the Jacobian matrix of the first iteration and based on the SVD results selects the bus which is going to switched to PV for the next round of calculation.
+        The ModelInputFormatter is used to created the pypower OPF model input from the model objects which are created from the F{ModelObjectInputInitialiser}.
+        This function will be called abfer F{ModelObjectInputInitialiser}.
+        
+        Raises
+        ------
+        Exception
+            If the attribute ObjectSet does not exist.
+
+        Returns
+        -------
+        None.
+            
+        """
+
+        if not hasattr(self, 'ObjectSet'):  
+            raise Exception("The model object has not been properly created, please run the function ModelObjectInputInitialiser at first.")
+        
+        ##-- Format the PF analysis input, ppc --##
+        ppc: dict = {"version": '2'}
+        
+        ## system MVA base
+        ppc["baseMVA"] = float(self.baseMVA)
+        
+        ## bus data
+        # bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin  
+        ppc["bus"] = numpy.zeros((self.numOfBus, len(UK_PG.UKEbusModel.INPUT_VARIABLE_KEYS)), dtype = float)
+        index_bus  = 0
+        while index_bus < self.numOfBus:
+            for key in UK_PG.UKEbusModel.INPUT_VARIABLE_KEYS:
+                index = int(UK_PG.UKEbusModel.INPUT_VARIABLE[key])
+                ppc["bus"][index_bus][index] = getattr(self.ObjectSet.get(UK_PG.UKEbusModel.EBusKey + str(index_bus)), key)
+            index_bus += 1
+            
+        ## branch data
+        # fbus, tbus, r, x, b, rateA, rateB, rateC, ratio, angle, status, angmin, angmax     
+        ppc["branch"] = numpy.zeros((len(self.BranchObjectList), len(UK_PG.UKElineModel.INPUT_VARIABLE_KEYS)), dtype = float)
+        index_br  = 0
+        while index_br < len(self.BranchObjectList):
+            for key in UK_PG.UKElineModel.INPUT_VARIABLE_KEYS:
+                index = int(UK_PG.UKElineModel.INPUT_VARIABLE[key])
+                ppc["branch"][index_br][index] = getattr(self.ObjectSet.get(UK_PG.UKElineModel.ELineKey + str(index_br)), key)
+            index_br += 1
+        
+        ## generator data
+        # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
+        # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
+        ppc["gen"] = numpy.zeros((len(self.GeneratorObjectList), len(UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS)), dtype = float)
+        index_gen  = 0
+        while index_gen < len(self.GeneratorObjectList):
+            for key in UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS:
+                index = int(UK_PG.UKEGenModel.INPUT_VARIABLE[key])
+                ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(index_gen)), key)
+            index_gen += 1
+
+        ## generator COST data
+        # MODEL, STARTUP, SHUTDOWN, NCOST, COST[a, b]
+        columnNum = len(UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS) + self.pointsOfPiecewiseOrcostFuncOrder -1
+        ppc["gencost"] = numpy.zeros((len(self.GeneratorObjectList), columnNum), dtype = float)
+        index_gen  = 0
+        while index_gen < len(self.GeneratorObjectList):
+            for key in UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS:
+                index = int(UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE[key])
+                if key == "COST":
+                    for para in getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(index_gen)), key):
+                        ppc["gencost"][index_gen][index] = para
+                        index += 1
+                else:
+                    ppc["gencost"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(index_gen)), key)
+            index_gen += 1
+        
+        self.ppc = ppc
+        return 
+            
+    def OptimalPowerFlowAnalysisSimulation(self, ppc: list = None):
+        """
+        Perform the optimal power flow analysis.
+
+        Parameters
+        ----------
+        ppc : List
+            ppc is the list of the input for optimal power flow model. The default is None.
 
         Returns
         -------
         None.
 
         """
-        ## read data
-        ppc = loadcase(self.ppc)
-    
-        ## add zero columns to branch for flows if needed
-        if ppc["branch"].shape[1] < QT:
-            ppc["branch"] = c_[ppc["branch"],
-                               zeros((ppc["branch"].shape[0],
-                                      QT - ppc["branch"].shape[1] + 1))]
-    
-        ## convert to internal indexing
-        ppc = ext2int(ppc)
-        baseMVA, bus, gen, branch = \
-            ppc["baseMVA"], ppc["bus"], ppc["gen"], ppc["branch"]
-    
-        ## get bus index lists of each type of bus
-        ref, pv, pq = bustypes(bus, gen)
-    
-        ## generator info
-        on = find(gen[:, GEN_STATUS] > 0)      ## which generators are on?
-        gbus = gen[on, GEN_BUS].astype(int)    ## what buses are they at?
-     
-        ## initial state
-        V0  = bus[:, VM] * exp(1j * pi/180 * bus[:, VA])
-        vcb = ones(V0.shape)    # create mask of voltage-controlled buses
-        vcb[pq] = 0     # exclude PQ buses
-        k = find(vcb[gbus])     # in-service gens at v-c buses
-        V0[gbus[k]] = gen[on[k], VG] / abs(V0[gbus[k]]) * V0[gbus[k]]
-
-        ## build admittance matrices
-        Ybus, _, _ = makeYbus(baseMVA, bus, branch)
          
-        ## set up indexing for updating V
-        pvpq = r_[pv, pq]
-        dS_dVm, dS_dVa = dSbus_dV(Ybus, V0)
-
-        J11 = dS_dVa[array([pvpq]).T, pvpq].real
-        J12 = dS_dVm[array([pvpq]).T, pq].real
-        J21 = dS_dVa[array([pq]).T, pvpq].imag
-        J22 = dS_dVm[array([pq]).T, pq].imag
-        ## Jacobian Matrix
-        J = vstack([
-                hstack([J11, J12]),
-                hstack([J21, J22])
-            ], format="csr")
-        
-        ## SVD operation of the Jacobian matrix
-        U, s, _V = linalg.svd(J.toarray(), full_matrices=True)        
-        normalised_V = abs(_V[-1]/(linalg.norm(_V[-1])))  
-        
-        ## Initialise the ACCEPT flag to identify whether the selected bus is the proper one 
-        ACCEPT = False
-        
-        ## Find the Bus that needs to be switched type
-        while not ACCEPT and len(self.PVBusName) < (self.NumberOfBus - len(self.SlackBusName)):         
-            indexOfMaxV_firstIteration = where(normalised_V == max(normalised_V))[0][0] 
-            normalised_V = delete(normalised_V, indexOfMaxV_firstIteration)
-            indexOfMaxV_firstIteration += 1 
-            numberOfPEq = self.NumberOfBus - len(self.SlackBusName)
-            
-            if indexOfMaxV_firstIteration <= numberOfPEq: # number of the P equations
-                busToBeSwitched = indexOfMaxV_firstIteration
-                for sb in self.SlackBusName:
-                    if busToBeSwitched >= int(getattr(self.ObjectSet.get(sb),"BUS")):
-                        busToBeSwitched += 1               
+        if not hasattr(self, 'ppc'): 
+            if ppc is None or not isinstance(ppc, list):
+                raise Exception("The model input has not been reformatted, please run the function ModelInputFormatter at first.")
             else:
-                busToBeSwitched = indexOfMaxV_firstIteration - numberOfPEq
-                for sb in self.SlackBusName:
-                    if busToBeSwitched >= int(getattr(self.ObjectSet.get(sb),"BUS")):
-                        busToBeSwitched += 1
-                   
-                for pvb in self.PVBusName:
-                    if busToBeSwitched >= int(getattr(self.ObjectSet.get(pvb),"BUS")):
-                        busToBeSwitched += 1
-            
-            ACCEPT = True 
-            
-            for pvb in self.PVBusName:
-                 if busToBeSwitched == int(getattr(self.ObjectSet.get(pvb),"BUS")):
-                     ACCEPT = False 
-                     break
-            
-            if ACCEPT:
-                self.busToBeSwitched = busToBeSwitched
-                print('The bus that should be changed the type is:', self.busToBeSwitched)   
-        
-        if not ACCEPT: # if still not accepted, it means that there is no more bus that can be switched from the PQ to PV and the model has failed
-            self.Terminate = True
-            print("*******************There is no more bus that is allowed to be switched to PV bus. The model is FAILED.*******************")
-        return 
+                self.ppc = ppc
     
+        ##-- starts opf analysis --## 
+        # set up numerical method: Newton's Method
+        self.ppopt = ppoption(OUT_ALL = 1) 
+        self.results = runopf(self.ppc, self.ppopt)
+        self.totalCost = self.results["cost"]
+
+        print("***Total cost (£/hr): ", self.totalCost)
+        
+        self.ConvergeFlag = self.results["success"]
+        if self.ConvergeFlag:
+            print('-----The OPF model is converged.-----')
+        else:
+            print('!!!!!!The OPF model is diverged.!!!!!')
+        return
+     
+    def ModelOutputFormatter(self):
+        """
+        Reformat the result and add attributes into the objects.
+
+        Returns
+        -------
+        None.
+
+        """
+        if not self.ConvergeFlag:  
+            raise Exception("!!!!!!The OPF has not converged.!!!!!!")
+        
+        ## the bus, gen, branch and loss result
+        bus = self.results["bus"]
+        branch = self.results["branch"]
+        gen = self.results["gen"]
+        
+        
+        ##--Bus--##  
+        ##  VM_OUTPUT, VM_OUTPUT, P_GEN, G_GEN, PD_OUTPUT, GD_OUTPUT        
+        ## post processsing of the bus results   
+        busPostResult = numpy.zeros((self.numOfBus, len(UK_PG.UKEbusModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
+        
+        for i in range(self.numOfBus):
+            busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["VM_OUTPUT"]] = bus[i][VM]
+            busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["VA_OUTPUT"]] = bus[i][VA]
+            
+            g  = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) & ~isload(gen))
+            ld = find((gen[:, GEN_STATUS] > 0) & (gen[:, GEN_BUS] == bus[i, BUS_I]) & isload(gen))
+            
+            if any(g + 1):
+                busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["P_GEN"]] = sum(gen[g, PG])
+                busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["G_GEN"]] = sum(gen[g, QG])
+                    
+            if logical_or(bus[i, PD], bus[i, QD]) | any(ld + 1):
+                if any(ld + 1):
+                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["PD_OUTPUT"]] = bus[i, PD] - sum(gen[ld, PG])
+                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["GD_OUTPUT"]] = bus[i, QD] - sum(gen[ld, QG])    
+                else:
+                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["PD_OUTPUT"]] = bus[i][PD]
+                    busPostResult[i][UK_PG.UKEbusModel.OUTPUT_VARIABLE["GD_OUTPUT"]] = bus[i][QD]
+            
+        ## update the object attributes with the model results
+        index_bus  = 0
+        while index_bus < self.numOfBus:
+            for key in UK_PG.UKEbusModel.OUTPUT_VARIABLE_KEYS:
+                index = int(UK_PG.UKEbusModel.OUTPUT_VARIABLE[key])
+                setattr(self.ObjectSet.get(UK_PG.UKEbusModel.EBusKey + str(index_bus)), key, busPostResult[index_bus][index])        
+            index_bus += 1   
+        
+        ##--Branch--##    
+        ## FROMBUSINJECTION_P, FROMBUSINJECTION_Q, TOBUSINJECTION_P, TOBUSINJECTION_Q, LOSS_P, LOSS_Q
+        ## post processsing of the branch results   
+        branchPostResult = numpy.zeros((len(self.BranchObjectList), len(UK_PG.UKElineModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
+        
+        for i in range(len(self.BranchObjectList)):
+            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["FROMBUSINJECTION_P"]] = branch[i][PF]
+            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["FROMBUSINJECTION_Q"]] = branch[i][QF]
+            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["TOBUSINJECTION_P"]] = branch[i][PT]
+            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["TOBUSINJECTION_Q"]] = branch[i][QT]
+            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["LOSS_P"]] = abs(abs(branch[i][PF]) - abs(branch[i][PT]))  
+            branchPostResult[i][UK_PG.UKElineModel.OUTPUT_VARIABLE["LOSS_Q"]] = abs(abs(branch[i][QF]) - abs(branch[i][QT]))  
+            
+        ## update the object attributes with the model results
+        index_br  = 0
+        while index_br < len(self.BranchObjectList):
+            for key in UK_PG.UKElineModel.OUTPUT_VARIABLE_KEYS:
+                index = int(UK_PG.UKElineModel.OUTPUT_VARIABLE[key])
+                setattr(self.ObjectSet.get(UK_PG.UKElineModel.ELineKey + str(index_br)), key, branchPostResult[index_br][index])        
+            index_br += 1   
+        
+        ##--Generator--##    
+        ## PG_OUTPUT, QG_OUTPUT
+        ## post processsing of the generator results   
+        generatorPostResult = numpy.zeros((len(self.GeneratorObjectList), len(UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS)), dtype = float) 
+        for i in range(len(self.GeneratorObjectList)):
+            if (gen[i, GEN_STATUS] > 0) & logical_or(gen[i, PG], gen[i, QG]):
+                generatorPostResult[i][UK_PG.UKEGenModel.OUTPUT_VARIABLE["PG_OUTPUT"]] = gen[i][PG]
+                generatorPostResult[i][UK_PG.UKEGenModel.OUTPUT_VARIABLE["QG_OUTPUT"]] = gen[i][QG]
+
+        ## update the object attributes with the model results
+        index_gen  = 0
+        while index_gen < len(self.GeneratorObjectList):
+            for key in UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS:
+                index = int(UK_PG.UKEGenModel.OUTPUT_VARIABLE[key])
+                setattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(index_gen)), key, generatorPostResult[index_gen][index])        
+            index_gen += 1   
+        return 
+         
+    
+    
+
+
     def ModelResultUpdater(self):
          
          

@@ -82,6 +82,8 @@ def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSyste
     ELineTopoAndGeometryInfo, branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, endpoint_label)
     if len(ELineTopoAndGeometryInfo) == 0:
         raise Exception('ELineTopoAndGeometryInfo is empty, please check the return from queryELineTopologicalInformation.')
+
+    ## TODO: the UKElineModel initialisation function has changed 
     uk_eline_model = UK_PG.UKElineModel(numOfBus, initialiserMethod)
     # uk_topo = UK_Topo.UKPowerGridTopology(numOfBus)
 

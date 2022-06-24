@@ -106,6 +106,7 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
     ## Query generator attributes and the number of the buses
     EGenInfo = list(query_model.queryEGenInfo(topologyNodeIRI, endpoint_label))
     # location = query_model.queryPowerSystemLocation(endpoint_label, topologyNodeIRI)  
+    ## TODO: the UKEGenModel initialisation function has changed 
     uk_egen_model = UK_PG.UKEGenModel(numOfBus)
 
     ## Set up the default storage path
@@ -196,6 +197,7 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
             ###add cost function parameters###
             if OPFOrPF is True: # when OPFOrPF is true, the model is OPF analysis
                 ## calculate cost objective function coefficients
+                ## TODO: the UKEGenModel initialisation function has changed 
                 uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder) # declear an instance of the UKEGenModel_CostFunc
                 uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen)
                 
@@ -341,8 +343,8 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
     return
 
 def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_ratio):
-    if not isinstance (EGen_Model, UK_PG.UKEGenModel):
-        raise Exception('The first argument should be an instence of UKEGenModel')
+    if not isinstance (EGen_Model, UK_PG.UKEGenModel) or not isinstance (EGen_Model, UK_PG.UKEGenModel_CostFunc):
+        raise Exception('The first argument should be an instence of UKEGenModel or UKEGenModel_CostFunc')
     EGen_Model.BUS = int(OrderedBusNodeIRIList.index(egen[5])) # the connected bus number of the current generator should be in line with the index of the bus list
     capa = egen[6]
     EGen_Model.PG_INPUT = capa * demand_capa_ratio    
