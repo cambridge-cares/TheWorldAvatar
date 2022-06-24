@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.admsagent;
 
 
+import org.junit.Ignore;
+import uk.ac.cam.cares.jps.admsagent.ADMSAgent;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.*;
@@ -10,12 +12,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.admsagent.ADMSAgent;
 
-import javax.management.Query;
 import javax.ws.rs.BadRequestException;
 import java.io.File;
 import java.io.IOException;
@@ -1038,12 +1038,12 @@ public class ADMSAgentTest {
         JSONObject cloudcover= new JSONObject();
         JSONObject precipation = new JSONObject();
 
-        wind.put("hasspeed",12.0);
-        wind.put("hasdirection",200.0);
-        temperature.put("hasvalue",12.0);
-        relativehumidity.put("hasvalue",0.2);
-        cloudcover.put("hascloudcovervalue",1.0);
-        precipation.put("hasintensity",50);
+        wind.put("hasspeed","12.0");
+        wind.put("hasdirection","200.0");
+        temperature.put("hasvalue","12.0");
+        relativehumidity.put("hasvalue","0.2");
+        cloudcover.put("hascloudcovervalue","1.0");
+        precipation.put("hasintensity","50");
 
         weatherInJSON.put("haswind",wind);
         weatherInJSON.put("hasexteriortemperature",temperature);
@@ -1507,7 +1507,6 @@ public class ADMSAgentTest {
         requestParams.put("agent","testAgent");
         requestParams.put("stationiri",stationIRI);
         requestParams.put("plant","myTestPlantIRI");
-        requestParams.put("precipitation","50.0");
         String targetCRSName="EPSG:2326";
 
 
@@ -1568,8 +1567,6 @@ public class ADMSAgentTest {
         File tempFolder1 = folder.newFolder( "tempFolder");
         String dataPath= tempFolder1.getPath();
 
-        File tempFolder2 = folder.newFolder( "tempFolder/JPS_ADMS");
-        String fullPath=tempFolder2.getPath().replace("\\JPS_ADMS","/JPS_ADMS");
 
         JSONObject requestParams= new JSONObject();
 
@@ -1604,21 +1601,26 @@ public class ADMSAgentTest {
 
         requestParams.put("region",region);
         requestParams.put("city","http://dbpedia.org/resource/Hong_Kong");
-        requestParams.put("agent","testAgent");
+        requestParams.put("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
         requestParams.put("stationiri",stationIRI);
         requestParams.put("ship",ship);
-        requestParams.put("precipitation","50.0");
 
-        String target = fullPath + "/test.levels.gst";
+        String target = dataPath + "/test.levels.gst";
         List<String> topics = new ArrayList<String>();
         topics.add(requestParams.getString("city"));
         String agent= requestParams.getString("agent");
+        String pyPathMet=AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs\\admsMetWriter.py",admsAgent);
+        String pyPathBkG=AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs\\admsBgdWriter.py",admsAgent);
+        String pyPathProcessor=AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs\\adms_processor.py",admsAgent);
         JSONObject expected= new JSONObject();
-        expected.put("folder",fullPath);
+        expected.put("folder",dataPath);
 
-        try(MockedStatic<QueryBroker> qb = Mockito.mockStatic(QueryBroker.class)){
+        try(MockedStatic<AgentLocator> agL = Mockito.mockStatic(AgentLocator.class)){
            try(MockedStatic<MetaDataAnnotator> mda = Mockito.mockStatic(MetaDataAnnotator.class)){
-                qb.when(()->QueryBroker.getLocalDataPath()).thenReturn(dataPath);
+                agL.when(()->AgentLocator.getPathToJpsWorkingDir()).thenReturn(dataPath);
+                agL.when(()->AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs\\admsMetWriter.py",admsAgent)).thenReturn(pyPathMet);
+                agL.when(()->AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs\\admsBgdWriter.py",admsAgent)).thenReturn(pyPathBkG);
+                agL.when(()->AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs\\adms_processor.py",admsAgent)).thenReturn(pyPathProcessor);
                 mda.when(()-> MetaDataAnnotator.annotate(target, null, agent, true, topics)).thenAnswer((Answer<Void>) invocation -> null);
                 JSONObject actual=(JSONObject) admsAgent.processRequestParameters(requestParams);
                 Assert.assertEquals(expected.toString(),actual.toString());
