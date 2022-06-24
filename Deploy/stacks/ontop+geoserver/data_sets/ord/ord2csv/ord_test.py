@@ -36,7 +36,6 @@ pb = 'ord_dataset-fc83743b978f4deea7d6856deacbfe53.pb.gz'
 # Load Dataset message
 data = message_helpers.load_message(pb, dataset_pb2.Dataset)
 
-message_helpers.write_message(data, 'test.json')
 
 
 # Function for processing reaction identifier
@@ -52,17 +51,28 @@ def process_reaction_identifier(identifer):
 
 
 # Compound identifier retriever
-def get_compound_identifiers(compound):
-    identifiers = [None] * 2 * 17
-    for identifier in compound.identifiers:
-        identifiers[identifier.type*2:identifier.type*2+2] = [identifier.details, identifier.value]
-    return identifiers  
-
-def get_compound_identifiers(component):
-    identifiers = [None] * 2 * 17
-    for identifier in component.identifiers:
-        identifiers[identifier.type*2:identifier.type*2+2] = [identifier.details, identifier.value]
+def get_compound_identifiers(identifier, compound_identifier):
+    identifiers = [None] * 3
+    identifiers = [compound_identifier[identifier.type], identifier.details, identifier.value]
     return identifiers
+
+compound_identifier = {0  : 'UNSEPECIFIED',
+                       1  : 'CUSTOM',
+                       2  : 'SMILES',
+                       3  : 'INCHI',
+                       4  : 'MOLBLOCK',
+                       5  : 'IUPAC_NAME',
+                       6  : 'NAME',
+                       7  : 'CAS_NUMBER',
+                       8  : 'PUBCHEM_CID',
+                       9  : 'CHEMSPIDER_ID',
+                       10 : 'CXSMILES',
+                       11 : 'INCHI_KEY',
+                       12 : 'XYZ',
+                       13 : 'UNIPORT_ID',
+                       14 : 'PDB_ID',
+                       15 : 'AMINO_ACID_SEQUENCE',
+                       16 : 'HELM'}
 
 mass_unit = {0 : 'UNSPECIFIED',
              1 : 'KILOGRAM',
@@ -94,31 +104,35 @@ reaction_role = {0 : 'UNSPECIFIED',
                  6 : 'INTERNAL_STANDARD',
                  7 : 'AUTHENTIC_STANDARD',
                  8 : 'PRODUCT'}
+compound_preparation = {0 : 'UNSPECIFIED',
+                       1 : 'CUSTOM',
+                       2 : 'NONE',
+                       3 : 'REPURIFIED',
+                       4 : 'SPARGED',
+                       5 : 'DRIED',
+                       6 : 'SYNTHESIZED'}
+
 
 
 def get_compound_amount(component, mass_unit, moles_unit, volume_units, unmeasured_amount):
-    amount = [None] * (3*3 + 2 +1)
-    amount[0] = component.amount.mass.value
-    amount[1] = component.amount.mass.precision
-    amount[2] = mass_unit[component.amount.mass.units]
-    amount[3] = component.amount.moles.value
-    amount[4] = component.amount.moles.precision
-    amount[5] = moles_unit[component.amount.moles.units]
-    amount[6] = component.amount.volume.value
-    amount[7] = component.amount.volume.precision
-    amount[8] = volume_unit[component.amount.volume.units]
-    amount[9] = unmeasured_amount[component.amount.unmeasured.type]
-    amount[10] = component.amount.unmeasured.details
-    amount[11] = component.amount.volume_includes_solutes
- 
+    amount = [None] * 7
+    if component.amount.mass.value != 0.0:
+        amount[0:5] = ['mass',component.amount.mass.value,component.amount.mass.precision,mass_unit[component.amount.mass.units], component.amount.volume_includes_solutes]
+        return amount
+    elif component.amount.moles.value != 0.0:
+        amount[0:5] = ['moles', component.amount.moles.value, component.amount.moles.precision, moles_unit[component.amount.moles.units],component.amount.volume_includes_solutes]
+        return amount
+    elif component.amount.volume.value != 0.0:
+        amount[0:5] = ['volume', component.amount.volume.value, component.amount.volume.precision, volume_unit[component.amount.volume.units],component.amount.volume_includes_solutes]
+    else:     
+        amount[4:7] = ['unmeasured', component.amount.volume_includes_solutes, unmeasured_amount[component.amount.unmeasured.type], component.amount.unmeasured.details] 
 
     return amount
 
-def get_prepration(component):
-    preps = [None] * 2 * 7
-    for preparation in component.preparations:
-        preps[preparation.type*2:preparation.type*2+2] = [preparation.details, preparation.reaction_id]
-    return preps
+def get_compound_preparation(preparation,compound_preparation):
+    preparations = [None] * 3
+    preparations = [compound_preparation[preparation.type], preparation.details, preparation.reaction_id]
+    return preparations
 
 def get_feature_analyses_keys(component):
     keys = [None] * 2
@@ -158,37 +172,11 @@ header = ['reaction_id','input_description',
 
 writer_g.writerow(header)
 writer_h = csv.writer(h)
-header = ['reaction_id', 'input_description', 
-          'identifier_unspecified_detail', 'identifer_unspecified_value',
-          'identifier_custom_detail', 'identifer_custom_value',
-          'identifier_smiles_detail', 'identifer_smiles_value',
-          'identifier_inchi_detail', 'identifer_inchi_value',
-          'identifier_molblock_detail', 'identifer_molblock_value',
-          'identifier_iupac_name_detail', 'identifer_iupac_name_value',
-          'identifier_name_detail', 'identifer_name_value',
-          'identifier_cas_number_detail', 'identifer_cas_number_value',
-          'identifier_pubchem_cid_detail', 'identifer_pub_cid_value',
-          'identifier_chemspider_id_detail', 'identifer_chemspider_id_value',
-          'identifier_cxsmiles_detail', 'identifer_cxsmiles_value',
-          'identifier_inchi_key_detail', 'identifer_inchi_key_value',
-          'identifier_xyz_detail', 'identifer_xyz_value',
-          'identifier_uniport_id_detail', 'identifer_uniport_id_value',
-          'identifier_pdb_id_detail', 'identifer_pdb_id_value',
-          'identifier_amino_acid_sequence_detail', 'identifer_amino_acid_sequence_value',
-          'identifier_helm_detail', 'identifer_helm_value',
-          'amount_mass', 'amount_mass_precision', 'amount_mass_units', 
-          'amount_moles', 'amount_moles_precision', 'amount_moles_units',
-          'amount_volume', 'amount_volume_precision', 'amount_volume_units',
-          'amount_unspecified', 'amount_unspecified_details', 
-          'amount_volume_includes_solutes',
+header = ['reaction_id', 'input_description', 'component_count',
+          'identifier_type', 'identifier_details', 'identifer_value',
+          'amount_kind', 'amount_value', 'amount_precision', 'amount_units', 'amount_volume_includes_solutes', 'amount_unmeasured_type', 'amount_unmeasured_details', 
           'reaction_role','is_limiting',
-          'prepreation_unspecified_details', 'prepreation_unspecified_reaction_id',
-          'prepreation_custom_details', 'prepreation_custom_reaction_id',
-          'prepreation_none_details', 'prepreation_none_reaction_id',
-          'prepreation_repurified_details', 'prepreation_repurified_reaction_id',
-          'prepreation_sparged_details', 'prepreation_sparged_reaction_id',
-          'prepreation_dried_details', 'prepreation_dried_reaction_id',
-          'prepreation_synthesized_details', 'prepreation_synthesized_reaction_id',
+          'preparation_type', 'preparation_details', 'preparation_reaction_id',
           'source_vendor', 'source_id', 'source_lot',
           'feature','analyses']
 writer_h.writerow(header)
@@ -246,19 +234,28 @@ for reaction in data.reactions:
         writer_g.writerow(component+crude_components + addition_order + addition_time + addition_speed + flow_rate + addition_device + addition_temperature)        
     
     
-        comp_count = 1
+        component_count = 1
 
         for component in reaction.inputs[input].components :
-
-           id = get_compound_identifiers(component)
-           amnt = get_compound_amount(component, mass_unit, moles_unit, volume_unit, unmeasured_amount) 
-           prep = get_prepration(component)   
-           source = [component.source.vendor, component.source.id, component.source.lot]  
-           feature_analyses = get_feature_analyses_keys(component)
-            
-           writer_h.writerow([reaction.reaction_id, input] + id + amnt + [reaction_role[component.reaction_role], component.is_limiting]\
-                 + prep + source + feature_analyses)
-           comp_count += 1
+            for identifier in component.identifiers :
+                if (component.preparations):
+                    for preparation in component.preparations:
+                        id = get_compound_identifiers(identifier, compound_identifier)
+                        amnt = get_compound_amount(component, mass_unit, moles_unit, volume_unit, unmeasured_amount)
+                        prep = get_compound_preparation(preparation, compound_preparation)
+                        source = [component.source.vendor, component.source.id, component.source.lot]
+                        feature_analyses = get_feature_analyses_keys(component)
+                        writer_h.writerow([reaction.reaction_id, input] + [component_count] + id + amnt + [reaction_role[component.reaction_role], component.is_limiting]\
+                         + prep + source + feature_analyses)
+                else:
+                    id = get_compound_identifiers(identifier, compound_identifier)
+                    amnt = get_compound_amount(component, mass_unit, moles_unit, volume_unit, unmeasured_amount)
+                    prep = get_compound_preparation(preparation, compound_preparation)
+                    source = [component.source.vendor, component.source.id, component.source.lot]
+                    feature_analyses = get_feature_analyses_keys(component)
+                    writer_h.writerow([reaction.reaction_id, input] + [component_count] + id + amnt + [reaction_role[component.reaction_role], component.is_limiting]\
+                     + prep + source + feature_analyses)
+            component_count += 1                    
 
 e.close()
 f.close()
