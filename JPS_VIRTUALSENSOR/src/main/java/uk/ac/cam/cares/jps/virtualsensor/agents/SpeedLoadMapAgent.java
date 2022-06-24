@@ -1,26 +1,29 @@
 package uk.ac.cam.cares.jps.virtualsensor.agents;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 @WebServlet("/SpeedLoadMapAgent")
 public class SpeedLoadMapAgent extends JPSAgent {
-	private static final Path slmDir = Paths.get("python", "ADMS-speed-load-map");
-	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
-	
 	/**
 	 * Takes in one ship IRI as input, queries the ship properties (type and speed for now).
 	 * These parameters are then passed to the speed load map agent to generate emissions.
@@ -33,7 +36,7 @@ public class SpeedLoadMapAgent extends JPSAgent {
 	 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
 	 * 1 boat mass flux=0.0192143028723584 kg/s 
 	 */
-	
+	private Logger logger = LogManager.getLogger(SpeedLoadMapAgent.class);
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject response = new JSONObject();
@@ -57,7 +60,7 @@ public class SpeedLoadMapAgent extends JPSAgent {
 			in.put("speed", speedob);
 			in.put("torque", torob);
 	
-		    response = crankUpRealShipModel(type, getSurogateValues(in.toString().replace("\"", "'")));
+		    response = crankUpRealShipModel(type, getSurogateValues(valuecalc, 250));
 		}
 
 		return response;
@@ -76,21 +79,26 @@ public class SpeedLoadMapAgent extends JPSAgent {
     	return valid;
     }
 	
-	private String getSurogateValues(String inputs) {
-		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
-		Path slmWorkingDir =  Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), slmDir.toString());
-		ArrayList<String> args = new ArrayList<String>();
+	private JSONObject getSurogateValues(double speed_rpm, double torque_nm) {
+		JSONObject result;
+		try {
+			URIBuilder url = new URIBuilder("http://python-service:5000/getEmissions");
+			url.addParameter("speed", String.valueOf(speed_rpm));
+			url.addParameter("torque", String.valueOf(torque_nm));
 
-		args.add(SensorVenv.pyexe.toString());
-		args.add(slmScript);
-		args.add(inputs);
+			HttpGet httpGet = new HttpGet(url.build());
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			CloseableHttpResponse pyresponse = httpclient.execute(httpGet);
+			result = new JSONObject(new JSONTokener(pyresponse.getEntity().getContent()));
+		} catch (URISyntaxException | IOException e) {
+			logger.error(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
 
-		return CommandHelper.executeCommands(slmWorkingDir.toString(), args);
+		return result;
 	}
 	
-	private JSONObject crankUpRealShipModel(String type, String newjsonfile) {
-		JSONObject json = new JSONObject(newjsonfile);
-		
+	private JSONObject crankUpRealShipModel(String type, JSONObject json) {
 		// these scaling factors are purely to make the results fall within the reasonable range
 		for(int gas=0;gas<json.getJSONArray("pollutants").length();gas++) {
 			JSONObject pollutantmass=json.getJSONArray("pollutants").getJSONObject(gas);
@@ -162,6 +170,4 @@ public class SpeedLoadMapAgent extends JPSAgent {
 		}
 		return json;
 	}
-	
-	
 }
