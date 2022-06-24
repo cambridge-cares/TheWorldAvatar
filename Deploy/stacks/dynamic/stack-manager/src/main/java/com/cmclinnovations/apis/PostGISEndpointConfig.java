@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class PostGISEndpointConfig extends AbstractEndpointConfig {
+public class PostGISEndpointConfig extends PasswordEndpointConfig {
 
     private final String hostName;
     private final String port;

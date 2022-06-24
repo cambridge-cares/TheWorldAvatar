@@ -17,27 +17,4 @@ public abstract class AbstractEndpointConfig {
     public String getName() {
         return name;
     }
-
-    public abstract String getPasswordFile();
-
-    @JsonIgnore
-    public String getPassword() {
-        final String passwordFile = getPasswordFile();
-        final String password;
-        if (null == passwordFile) {
-            password = "";
-        } else {
-            try (BufferedReader infile = Files.newBufferedReader(Paths.get(passwordFile))) {
-                if (null == (password = infile.readLine())) {
-                    throw new IllegalArgumentException("The password file '" + passwordFile
-                            + "' specified for the container '" + getName() + "' is empty.");
-                }
-            } catch (Exception ex) {
-                throw new IllegalArgumentException("The password file '" + passwordFile
-                        + "' specified for the container '" + getName() + "' could not be read.", ex);
-            }
-        }
-        return password;
-    }
-
 }
