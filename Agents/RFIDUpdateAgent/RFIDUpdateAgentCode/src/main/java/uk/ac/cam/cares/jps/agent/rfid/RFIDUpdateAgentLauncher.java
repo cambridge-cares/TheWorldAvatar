@@ -68,12 +68,9 @@ public class RFIDUpdateAgentLauncher extends JPSAgent {
             String apiProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
             String launcherProperties = System.getenv(requestParams.getString(KEY_LAUNCHERPROPERTIES));
             String[] args = new String[] {agentProperties,clientProperties,apiProperties, launcherProperties};
-            try {
+            
 				jsonMessage = initializeAgent(args);
-			} catch (JPSRuntimeException e) {
-				// TODO Auto-generated catch block
-				throw new JPSRuntimeException ("One of the files cannot be found!");
-			}
+			
             jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
             requestParams = jsonMessage;
             }
