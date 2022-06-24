@@ -124,6 +124,9 @@ public class UpdateStations {
 
 		// clean up
 		deleteEmptyTables();
+
+		// if we don't disconnect, the next scheduled run will usually fail due to timeout, without reconnecting
+		tsClient.disconnectRDB();
 	}
 	
 	/**
