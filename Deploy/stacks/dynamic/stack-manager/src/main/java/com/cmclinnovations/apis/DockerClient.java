@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
@@ -26,6 +27,7 @@ import com.github.dockerjava.api.command.CreateConfigCmd;
 import com.github.dockerjava.api.command.CreateSecretCmd;
 import com.github.dockerjava.api.command.ExecCreateCmd;
 import com.github.dockerjava.api.command.ExecStartCmd;
+import com.github.dockerjava.api.command.InspectContainerCmd;
 import com.github.dockerjava.api.command.InspectExecCmd;
 import com.github.dockerjava.api.command.InspectExecResponse;
 import com.github.dockerjava.api.command.ListConfigsCmd;
@@ -202,6 +204,15 @@ public class DockerClient extends BaseClient {
             InspectExecResponse inspectExecResponce = inspectExecCmd.exec();
             Long exitCode = inspectExecResponce.getExitCodeLong();
             return (null != exitCode) ? exitCode : 1;
+        }
+    }
+
+    public Optional<String> getEnvironmentVariable(String containerId, String key) {
+        try (InspectContainerCmd inspectContainerCmd = internalClient.inspectContainerCmd(containerId)) {
+            return Stream.of(inspectContainerCmd.exec().getConfig().getEnv()).map(entry -> entry.split("=", 2))
+                    .filter(entry -> key.equals(entry[0]))
+                    .map(entry -> entry[1])
+                    .findFirst();
         }
     }
 
