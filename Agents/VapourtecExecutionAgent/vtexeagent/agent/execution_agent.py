@@ -12,7 +12,7 @@ from vtexeagent.data_model import *
 class VapourtecExecutionAgent(DerivationAgent):
     def __init__(
         self,
-        maximum_concurrent_experiment: int = 60,
+        maximum_concurrent_experiment: int = 1,
         register_agent: bool = True,
         **kwargs
     ):
@@ -62,11 +62,12 @@ class VapourtecExecutionAgent(DerivationAgent):
                 rxn_exp_instance.instance_iri)
 
         # Check until get the digital twin of the most suitable hardware
-        preferred_rs400, preferred_r4_reactor = self.sparql_client.get_preferred_vapourtec_rs400(
+        # This function also locates the digital twin of HPLC connected to the vapourtec_rs400
+        preferred_rs400, preferred_r4_reactor, agilent_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
             rxn_exp_instance)
-        while (preferred_rs400, preferred_r4_reactor) == (None, None):
+        while (preferred_rs400, preferred_r4_reactor, agilent_hplc) == (None, None, None):
             time.sleep(60)
-            preferred_rs400, preferred_r4_reactor = self.sparql_client.get_preferred_vapourtec_rs400(
+            preferred_rs400, preferred_r4_reactor, agilent_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
                 rxn_exp_instance)
 
         # Once selected the suitable digital twin, assign experiment to the reactor
@@ -75,30 +76,21 @@ class VapourtecExecutionAgent(DerivationAgent):
             r4_reactor_iri=preferred_r4_reactor.instance_iri
         )
 
-        # Locate the digital twin of HPLC connected to the vapourtec_rs400
-        agilent_hplc = self.sparql_client.get_hplc_given_vapourtec_rs400(preferred_rs400.instance_iri)
-
         # Now create vapourtec derivation and agilent derivation for the reaction experiment
-        if preferred_rs400.isManagedBy is not None and agilent_hplc.isManagedBy is not None:
-            vapourtec_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
-                preferred_rs400.isManagedBy, [rxn_exp_instance.instance_iri])
-            agilent_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
-                agilent_hplc.isManagedBy, [rxn_exp_instance.instance_iri, vapourtec_derivation_iri])
+        vapourtec_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
+            preferred_rs400.isManagedBy, [rxn_exp_instance.instance_iri])
+        agilent_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
+            agilent_hplc.isManagedBy, [rxn_exp_instance.instance_iri, vapourtec_derivation_iri])
 
-            # Monitor the status of the agilent_derivation_iri, until it produced outputs
+        # Monitor the status of the agilent_derivation_iri, until it produced outputs
+        new_hplc_report = self.sparql_client.detect_new_hplc_report_from_agilent_derivation(agilent_derivation_iri)
+        while not new_hplc_report:
+            time.sleep(60)
             new_hplc_report = self.sparql_client.detect_new_hplc_report_from_agilent_derivation(agilent_derivation_iri)
-            while not new_hplc_report:
-                time.sleep(60)
-                new_hplc_report = self.sparql_client.detect_new_hplc_report_from_agilent_derivation(agilent_derivation_iri)
 
-            # Add the HPLCReport instance to the derivation_outputs
-            derivation_outputs.addTriple(new_hplc_report, RDF.type.toPython(), ONTOHPLC_HPLCREPORT)
-            self.logger.info(f"The generated new HPLC report (raw data) for ReactionExperiment <{rxn_exp_instance.instance_iri}> can be identified as: <{new_hplc_report}>.")
-
-        else:
-            # TODO add support in situation where digital twin are not managed by agents
-            raise NotImplementedError("Not yet supported - the preferred digital twin of the hardware <%s> and <%s> are not managed by agent instances." % (
-                preferred_rs400.instance_iri, agilent_hplc.instance_iri))
+        # Add the HPLCReport instance to the derivation_outputs
+        derivation_outputs.createNewEntity(new_hplc_report, ONTOHPLC_HPLCREPORT)
+        self.logger.info(f"The generated new HPLC report (raw data) for ReactionExperiment <{rxn_exp_instance.instance_iri}> can be identified as: <{new_hplc_report}>.")
 
 
 # Show an instructional message at the ExecutionAgent servlet root

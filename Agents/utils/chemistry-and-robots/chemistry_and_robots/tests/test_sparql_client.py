@@ -1,3 +1,4 @@
+import uuid
 from chemistry_and_robots.tests.conftest import TargetIRIs
 import chemistry_and_robots.tests.conftest as conftest
 import logging
@@ -331,31 +332,50 @@ def test_get_vapourtec_rs400_given_autosampler(initialise_triples):
     assert  response.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
 
 @pytest.mark.parametrize(
-    "new_rxn_exp_iri,list_r4_reactor_iri,vapourtec_rs400",
+    "new_rxn_exp_iri,list_r4_reactor_iri,vapourtec_rs400,agilent_hplc",
     [
-        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value),
-        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value),
-        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
     ],
 )
-def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, list_r4_reactor_iri, vapourtec_rs400):
+def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, list_r4_reactor_iri, vapourtec_rs400, agilent_hplc):
     sparql_client = initialise_triples
     response = sparql_client.getReactionExperiment(new_rxn_exp_iri)
     assert len(response) == 1
     assert response[0].instance_iri == new_rxn_exp_iri
-    preferred_rs400, preferred_r4_reactor = sparql_client.get_preferred_vapourtec_rs400(response[0])
+    preferred_rs400, preferred_r4_reactor, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
+    # Should return None as none of the digital twin is managed by agent
+    assert None == preferred_rs400
+    assert None == preferred_r4_reactor
+    assert None == associated_agilent_hplc
+
+    # Add agent to manage the digital twin
+    temp_agent_1 = "http://"+str(uuid.uuid4())
+    temp_agent_2 = "http://"+str(uuid.uuid4())
+    sparql_client.register_agent_with_hardware(temp_agent_1, vapourtec_rs400)
+    sparql_client.register_agent_with_hardware(temp_agent_2, agilent_hplc)
+    # Query again, should return digital twin now
+    preferred_rs400, preferred_r4_reactor, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
     assert preferred_r4_reactor.instance_iri in list_r4_reactor_iri
     assert preferred_rs400.instance_iri == vapourtec_rs400
+    assert associated_agilent_hplc.instance_iri == agilent_hplc
 
     # Change the status to Null
     sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_NULL, 0)
     # Now perform the same checking
-    new_rs400, new_r4_reactor = sparql_client.get_preferred_vapourtec_rs400(response[0])
+    new_rs400, new_r4_reactor, new_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
     # Change back the status to Idle
     sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_IDLE, 0)
     # Now perform the same checking, the returned values should be None, None
     assert None == new_rs400
     assert None == new_r4_reactor
+    assert None == new_hplc
+
+    # Remove temp_agent that manages the digital twin
+    sparql_client.performUpdate("""DELETE WHERE {<%s> <%s> ?temp_agent_1. <%s> <%s> ?temp_agent_2.}""" % (
+        vapourtec_rs400, onto.ONTOLAB_ISMANAGEDBY, agilent_hplc, onto.ONTOLAB_ISMANAGEDBY
+    ))
 
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,r4_reactor_iri",

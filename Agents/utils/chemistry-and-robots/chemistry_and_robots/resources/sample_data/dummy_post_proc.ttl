@@ -64,7 +64,7 @@
 .
 
 :HPLC_1
-    a ontohplc:HPLC;
+    a ontohplc:HighPerformanceLiquidChromatography;
     ontohplc:localReportDirectory "/home/jb2197/CHEM32/**/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether its windows or linux machine
     ontohplc:reportExtension <http://dbpedia.org/resource/Microsoft_Excel>;
 .
@@ -130,7 +130,7 @@
 .
 
 :HPLC_2
-    a ontohplc:HPLC;
+    a ontohplc:HighPerformanceLiquidChromatography;
     ontohplc:localReportDirectory "/home/jb2197/CHEM32/**/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether its windows or linux machine
     ontohplc:reportExtension <http://dbpedia.org/resource/Text_file>;
 .

@@ -76,7 +76,10 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 ## HPLC - Dummy ##
 ##################
 :HPLC_Dummy # TODO
-    a ontohplc:HPLC;
+    a ontohplc:HighPerformanceLiquidChromatography;
+    dbo:manufacturer :HPLC_Manufacturer;
+    ontolab:isContainedIn :Laboratory_Dummy;
+    ontolab:hasPowerSupply :HPLC_Dummy_PowerSupply;
     ontohplc:localReportDirectory "/home/jb2197/CHEM32/**/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether its windows or linux machine
     ontohplc:reportExtension <http://dbpedia.org/resource/Microsoft_Excel>;
     ontohplc:hasJob :HPLCJob_Dummy;

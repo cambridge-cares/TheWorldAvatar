@@ -15,9 +15,9 @@ services:
     ports:
       - 7001:5000
     env_file:
-      - ./vtexeagent/tests/env_files/agent.vtexe.env.test
+      - ./vtexeagent/tests/env_files/agent.vapourtec.execution.env.test
     extra_hosts:
-      - host.docker.internal:host-gateway
+      - localhost:host-gateway
 
   # Blazegraph
   blazegraph:
@@ -31,19 +31,19 @@ services:
     secrets:
       - blazegraph_password
 
-  # File server
-  fileserver:
-    image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
-    container_name: "fileserver_test"
-    ports:
-      - 48086:8080
-    # Add secret to set BASIC authentication password
-    secrets:
-      - file_server_password
+  # # File server
+  # fileserver:
+  #   image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
+  #   container_name: "fileserver_test"
+  #   ports:
+  #     - 48086:8080
+  #   # Add secret to set BASIC authentication password
+  #   secrets:
+  #     - file_server_password
 
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
     file: vtexeagent/tests/dummy_services_secrets/blazegraph_passwd.txt
-  file_server_password:
-    file: vtexeagent/tests/dummy_services_secrets/fileserver_passwd.txt
+  # file_server_password:
+  #   file: vtexeagent/tests/dummy_services_secrets/fileserver_passwd.txt

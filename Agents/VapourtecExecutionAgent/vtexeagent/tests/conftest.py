@@ -1,5 +1,3 @@
-from testcontainers.core.container import DockerContainer
-from pathlib import Path
 from flask import Flask
 import logging
 import pytest
@@ -9,9 +7,11 @@ import uuid
 import os
 
 from pyderivationagent.conf import config_derivation_agent
-from vtexeagent.agent import VapourtecExecutionAgent
+from vtexeagent.conf import config_vapourtec_execution
 
 from vtexeagent.kg_operations import ChemistryAndRobotsSparqlClient
+from vtexeagent.data_model import *
+from vtexeagent.agent import VapourtecExecutionAgent
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
@@ -25,24 +25,23 @@ ENV_FILES_DIR = os.path.join(THIS_DIR,'env_files')
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
-DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
+DOWNLOADED_DIR = os.path.join(THIS_DIR,'_downloaded_files_for_test')
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
+# FS_SERVICE = "fileserver"
+# FS_ROUTE = "FileServer/"
 
-# Configuration env files
-# NOTE the triple store URL provided in the agent.*.env files are the URL to access blazegraph container via host.docker.internal
-DOEAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.doe.env.test')
-VTEXEAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vtexe.env.test')
-POSTPROCAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.postproc.env.test')
+VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.execution.env.test')
 
-DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOEAGENT_ENV).DERIVATION_INSTANCE_BASE_URL
-DOEAGENT_SERVICE_IRI = config_derivation_agent(DOEAGENT_ENV).ONTOAGENT_SERVICE_IRI
-VTEXEAGENT_SERVICE_IRI = config_derivation_agent(VTEXEAGENT_ENV).ONTOAGENT_SERVICE_IRI
-POSTPROCAGENT_SERVICE_IRI = config_derivation_agent(POSTPROCAGENT_ENV).ONTOAGENT_SERVICE_IRI
-
-DERIVATION_INPUTS = ['https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1']
-DOE_IRI = DERIVATION_INPUTS[0]
+DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
+VAPOURTECRS400_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecRS400_Dummy'
+VAPOURTECR4REACTOR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Dummy'
+VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Another_Dummy'
+EXP_1_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/'
+NEW_RXN_EXP_1_IRI = EXP_1_BASE_IRI + 'ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70'
+NEW_RXN_EXP_2_IRI = EXP_1_BASE_IRI + 'ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8'
+NEW_RXN_EXP_3_IRI = EXP_1_BASE_IRI + 'ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf'
 
 
 # ----------------------------------------------------------------------------------
@@ -111,113 +110,73 @@ def generate_random_download_path():
         return os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+filename_extension)
     return _generate_random_download_path
 
-# ----------------------------------------------------------------------------------
-# Module-scoped test fixtures
-# ----------------------------------------------------------------------------------
-
-# NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
-@pytest.fixture(scope="module")
-def initialise_clients(get_service_url, get_service_auth):
+@pytest.fixture(scope="session")
+def initialise_client(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
     sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
 
+    # # Retrieve endpoint and auth for file server
+    # fs_url = get_service_url(FS_SERVICE, url_route=FS_ROUTE)
+    # fs_user, fs_pwd = get_service_auth(FS_SERVICE)
+
     # Create SparqlClient for testing
-    sparql_client = ChemistryAndRobotsSparqlClient(
-        sparql_endpoint, sparql_endpoint,
-        kg_user=sparql_user, kg_password=sparql_pwd
+    sparql_client = ChemistryAndRobotsSparqlClient(sparql_endpoint, sparql_endpoint,
+        kg_user=sparql_user, kg_password=sparql_pwd,
+        # fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd
     )
 
-    # Create DerivationClient for creating derivation instances
-    derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-        sparql_client.kg_client,
-        DERIVATION_INSTANCE_BASE_URL
-    )
+    # Create folder for downloaded files
+    if not os.path.exists(DOWNLOADED_DIR):
+        os.mkdir(DOWNLOADED_DIR)
 
-    yield sparql_client, derivation_client
+    # Clear triple store before any usage
+    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+
+    yield sparql_client
 
     # Clear logger at the end of the test
     clear_loggers()
 
 
-# @pytest.fixture(scope="module")
-# def initialise_triple_store():
-#     # NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-#     # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-#     blazegraph = DockerContainer(
-#         'docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
-#     # the port is set as 9999 to match with the value set in the docker image
-#     blazegraph.with_exposed_ports(9999)
-#     yield blazegraph
-
-
-# @pytest.fixture(scope="module")
-# def initialise_agent(initialise_triple_store):
-#     with initialise_triple_store as container:
-#         # Wait some arbitrary time until container is reachable
-#         time.sleep(3)
-
-#         # Retrieve SPARQL endpoint
-#         endpoint = get_endpoint(container)
-
-#         # Create SparqlClient for testing
-#         sparql_client = ChemistryAndRobotsSparqlClient(endpoint, endpoint)
-
-#         # Create DerivationClient for creating derivation instances
-#         derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-#             sparql_client.kg_client,
-#             DERIVATION_INSTANCE_BASE_URL
-#         )
-
-#         # Initialise Async Agent with temporary docker container endpoint
-#         doe_agent = create_doe_agent(DOEAGENT_ENV, endpoint)
-
-#         yield sparql_client, derivation_client, doe_agent
-
-#         # Tear down scheduler of doe agent
-#         doe_agent.scheduler.shutdown()
-
-#         # Clear logger at the end of the test
-#         clear_loggers()
-
-
 # ----------------------------------------------------------------------------------
-# Agents create functions
+# Module-scoped test fixtures
 # ----------------------------------------------------------------------------------
 
-def create_vtexe_agent(env_file: str = None, sparql_endpoint: str = None):
-    if env_file is None:
-        agent_config = config_derivation_agent()
-    else:
-        agent_config = config_derivation_agent(env_file)
-    return VapourtecExecutionAgent(
-        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
-        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-        kg_url=agent_config.SPARQL_QUERY_ENDPOINT if sparql_endpoint is None else sparql_endpoint,
-        kg_update_url=agent_config.SPARQL_UPDATE_ENDPOINT if sparql_endpoint is None else sparql_endpoint,
-        kg_user=agent_config.KG_USERNAME,
-        kg_password=agent_config.KG_PASSWORD,
-        fs_url=agent_config.FILE_SERVER_ENDPOINT,
-        fs_user=agent_config.FILE_SERVER_USERNAME,
-        fs_password=agent_config.FILE_SERVER_PASSWORD,
-        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL
-    )
+@pytest.fixture(scope="module")
+def create_vapourtec_execution_agent():
+    def _create_vapourtec_execution_agent(
+        maximum_concurrent_experiment:int=None,
+        register_agent:bool=False,
+        random_agent_iri:bool=False,
+        derivation_periodic_timescale:int=None,
+    ):
+        derivation_agent_config = config_derivation_agent(VAPOURTEC_AGENT_ENV)
+        vapourtec_execution_config = config_vapourtec_execution(VAPOURTEC_AGENT_ENV)
+        vapourtec_execution_agent = VapourtecExecutionAgent(
+            maximum_concurrent_experiment=vapourtec_execution_config.MAXIMUM_CONCURRENT_EXPERIMENT if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
+            register_agent=vapourtec_execution_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
+            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=derivation_agent_config.KG_USERNAME,
+            kg_password=derivation_agent_config.KG_PASSWORD,
+            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
+            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            app=Flask(__name__),
+        )
+        vapourtec_execution_agent.register()
+        return vapourtec_execution_agent
+    return _create_vapourtec_execution_agent
 
 
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
-
-def get_endpoint(docker_container):
-    # Retrieve SPARQL endpoint for temporary testcontainer
-    # endpoint acts as both Query and Update endpoint
-    endpoint = 'http://' + docker_container.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
-               + docker_container.get_exposed_port(9999)
-    # 'kb' is default namespace in Blazegraph
-    endpoint += '/blazegraph/namespace/kb/sparql'
-    return endpoint
-
 
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
 def clear_loggers():

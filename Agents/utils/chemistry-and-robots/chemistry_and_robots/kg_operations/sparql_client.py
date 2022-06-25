@@ -1043,7 +1043,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             logger.error(var[0])
             return var[0]
 
-    def get_preferred_vapourtec_rs400(self, rxnexp: ReactionExperiment) -> Tuple[VapourtecRS400, VapourtecR4Reactor]:
+    def get_preferred_vapourtec_rs400(self, rxnexp: ReactionExperiment) -> Tuple[VapourtecRS400, VapourtecR4Reactor, HPLC]:
         """ This function queries the digital twin of the most suitable VapourtecRS400 for the given reaction experiment."""
         # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals that has the same thermodynamicBehaviour as the InputChemical of a reaction experiment
         list_autosampler = self.get_all_autosampler_with_fill()
@@ -1077,9 +1077,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                             # TODO future work should support recording of estimated time for the VapourtecR4Reactor to be available (just in case None of the reactor is available)
                             # TODO maybe calculate based on residence time and other information {'labequip_1': 1, 'labequip_2': 2}
                             if vapourtec_rs400.hasState.clz == ONTOVAPOURTEC_IDLE:
-                                return vapourtec_rs400, reactor
+                                # TODO here we may provide functions for other analytical equipment
+                                agilent_hplc = self.get_hplc_given_vapourtec_rs400(vapourtec_rs400.instance_iri)
+                                if vapourtec_rs400.isManagedBy is not None and agilent_hplc.isManagedBy is not None:
+                                    # TODO here we can add functions to inform the owner of hardware to spin up agent for execution
+                                    return vapourtec_rs400, reactor, agilent_hplc
 
-        return None, None
+        return None, None, None
 
     def update_vapourtec_rs400_state(self, vapourtec_rs400_iri: str, target_state: str, timestamp: float):
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
@@ -2191,7 +2195,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_hplc_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> HPLC:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
         query = """SELECT ?hplc ?hplc_manufacturer ?lab ?hplc_power_supply ?is_managed_by ?report_extension
-                WHERE {<%s> ^<%s> ?automated; <%s> ?hplc. ?hplc a <%s>; <%s> ?hplc_manufacturer; <%s> ?lab; <%s> ?hplc_power_supply; <%s> ?report_extension.
+                WHERE {<%s> ^<%s>/<%s> ?hplc. ?hplc a <%s>; <%s> ?hplc_manufacturer; <%s> ?lab; <%s> ?hplc_power_supply; <%s> ?report_extension.
                 OPTIONAL{?hplc <%s> ?is_managed_by}}""" % (
             vapourtec_rs400_iri, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
             ONTOHPLC_REPORTEXTENSION, ONTOLAB_ISMANAGEDBY
@@ -2206,7 +2210,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         res = response[0]
         hplc = HPLC(
-            instance_iri=res['hplc_digital_twin'],
+            instance_iri=res['hplc'],
             manufacturer=res['hplc_manufacturer'],
             isContainedIn=res['lab'],
             hasPowerSupply=res['hplc_power_supply'],
@@ -2223,7 +2227,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         query = """SELECT ?hplc_report WHERE {?hplc_job <%s> <%s>. ?hplc_job <%s> ?hplc_report.}""" % (
             ONTODERIVATION_BELONGSTO, agilent_derivation_iri, ONTOHPLC_HASREPORT
         )
-        response = self.performQuery(response)
+        response = self.performQuery(query)
         if (len(response) > 1):
             # NOTE here we assume one Agilent Derivation has ONLY ONE HPLCJob and thus ONLY ONE HPLCReport
             # NOTE this might not hold universally, but we will simplify for the moment
