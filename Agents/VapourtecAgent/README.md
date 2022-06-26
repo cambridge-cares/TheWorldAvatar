@@ -3,6 +3,10 @@ The folder contains the source, resource, and Docker setup files for the Vapourt
 
 # Note for deployment
 **NOTE THAT DEVELOPER WHO DEPLOYS THE AGENT _MUST_ MAKE SURE THE FlowCommander INSTANCE INSTALLED ON THE HOST MACHINE IS STARTED BEFORE THE DEPLOYMENT OF THIS AGENT.**
+```cmd
+cd D:\Vapourtec\FCEXP
+docker run -v "D:\Vapourtec\FCEXP:/app/vapourtec" --env-file agent.vapourtec.env --add-host=localhost:host-gateway --name vapourtec_agent ghcr.io/cambridge-cares/vapourtec_agent:1.0.0-SNAPSHOT
+```
 
 # Authors #
 

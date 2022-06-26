@@ -8,6 +8,9 @@ class VapourtecConfig(AgentConfig):
     VAPOURTEC_STATE_PERIODIC_TIMESCALE: int
     VAPOURTEC_IP_ADDRESS: str
     FCEXP_FILE_CONTAINER_FOLDER: str
+    FCEXP_FILE_HOST_FOLDER: str
+    FCEXP_TEMPLATE_FILENAME: str
+    DRY_RUN: bool
     REGISTER_AGENT: bool
 
 

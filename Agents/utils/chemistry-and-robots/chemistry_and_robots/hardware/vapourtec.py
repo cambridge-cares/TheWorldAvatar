@@ -65,11 +65,6 @@ def create_exp_run_csv(folder_path: str, rxnexp: ReactionExperiment, list_equip_
 
     return run_csv_path
 
-def send_exp_csv_for_exe():
-    # FCRemoteCSV.CSVParser.AddReactions('fcexp.csv', app.fc)
-    # Run(app.fc)
-    pass
-
 def get_reagent_conc_of_chem_solution(rxnexp: ReactionExperiment, chem_solution: ChemicalSolution):
     list_reactant = [reac.hasUniqueSpecies for reac in rxnexp.isOccurenceOf.hasReactant]
     list_catalyst = [cata.hasUniqueSpecies for cata in rxnexp.isOccurenceOf.hasCatalyst]

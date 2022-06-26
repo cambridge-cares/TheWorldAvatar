@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   vapourtecagent:
-    image: vapourtecagent:1.0.0
-    container_name: vapourtecagent
+    image: ghcr.io/cambridge-cares/vapourtec_agent:1.0.0-SNAPSHOT
+    container_name: vapourtec_agent
     build:
       context: .
       dockerfile: ./Dockerfile

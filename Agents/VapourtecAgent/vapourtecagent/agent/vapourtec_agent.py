@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import time
 import os
 
 from pyderivationagent import DerivationAgent
@@ -26,6 +27,9 @@ class VapourtecAgent(DerivationAgent):
         vapourtec_state_periodic_timescale: int = 60,
         vapourtec_ip_address: str = "127.0.0.1",
         fcexp_file_container_folder: str = "/app/fcexp/",
+        fcexp_file_host_folder: str = "D:\Vapourtec\FCEXP",
+        fcexp_template_filename: str = "ReactionTemplate.fcexp",
+        dry_run: bool = True,
         register_agent: bool = True,
         **kwargs
     ):
@@ -34,6 +38,9 @@ class VapourtecAgent(DerivationAgent):
         self.vapourtec_state_periodic_timescale = vapourtec_state_periodic_timescale
         self.vapourtec_ip_address = vapourtec_ip_address
         self.fcexp_file_container_folder = fcexp_file_container_folder
+        self.fcexp_file_host_folder = fcexp_file_host_folder
+        self.fcexp_template_filename = fcexp_template_filename
+        self.dry_run = dry_run
         self.register_agent = register_agent
 
         self.sparql_client = ChemistryAndRobotsSparqlClient(
@@ -42,6 +49,7 @@ class VapourtecAgent(DerivationAgent):
         )
 
         self.fc_exe_connected = False
+        self.vapourtec_state = ONTOVAPOURTEC_NULL
 
     def connect_flowcommander_exe(self):
         # Connect to FlowCommander instance opened at the given IP address
@@ -79,6 +87,11 @@ class VapourtecAgent(DerivationAgent):
         rxn_exp_instance = list_rxn_exp_instance[0]
         self.logger.debug("Collected inputs from the knowledge graph: ")
         self.logger.debug(json.dumps(rxn_exp_instance.dict()))
+
+        if not self.dry_run:
+            # Make sure the hardware is idle
+            while not self.vapourtec_is_idle():
+                time.sleep(30)
 
         # Get local variables of vapourtec_rs400, vapourtec_r4_reactor, and autosampler for reaction
         vapourtec_rs400 = self.sparql_client.get_vapourtec_rs400(self.vapourtec_digital_twin)
@@ -127,20 +140,8 @@ class VapourtecAgent(DerivationAgent):
         vapourtec_input_file_graph.add((URIRef(rxn_exp_instance.instance_iri), URIRef(ONTOVAPOURTEC_HASVAPOURTECINPUTFILE), URIRef(vapourtec_input_file_iri)))
         derivation_outputs.addGraph(vapourtec_input_file_graph)
 
-        # TODO [before deployment, double check] send the experiment for execution (consider how to distinguish between actual execution and dry-run)
-        # NOTE in the dry-run mode, just skip this part, or just load the file into the software and check for errors if any
-        # vapourtec.send_exp_csv_for_exe()
-
-        # Update autosampler liquid amount immediately after send the experiment for execution
-        # Construct a dict of {"autosampler_site_iri": sampler_loop_volume * 1.2}
-        # NOTE here "*1.2" is to reflect the default setting in vapourtec which takes 20% more liquid compared to the sample loop volume settings
-        # TODO [before deployment, double check] double check how was the sample loop volume calculated
-        # TODO [before deployment, double check] the implementation here actually only updates the autosampler site pumped by reference_pump
-        dct_site_loop_volume = {s.pumpsLiquidFrom.instance_iri:s.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue*1.2 for s in [
-            setting for setting in list_equip_settings if setting.clz == ONTOVAPOURTEC_PUMPSETTINGS and setting.hasSampleLoopVolumeSetting]}
-        self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_site_loop_volume, True)
-
-        # TODO [before deployment, double check] send warnings if the liquid level of any vials is lower than the warning level
+        # Send the experiment csv for execution, also update the autosampler liquid level
+        self.send_fcexp_csv_for_execution(local_file_path, list_equip_settings)
 
         # Create chemical solution instance for the reaction outlet stream
         # <chemical_solution> <fills> <vial>. <vial> <isFilledWith> <chemical_solution>. here we should write the vial location to the KG
@@ -155,6 +156,35 @@ class VapourtecAgent(DerivationAgent):
         # Remove the link between equipment settings and the digital twin of hardware
         # --> so within execution operation of each reaction experiment, the hardware got configured and released
         self.sparql_client.release_vapourtec_rs400_settings(vapourtec_rs400.instance_iri)
+
+    def send_fcexp_csv_for_execution(self, run_csv_file_container_path: str, list_equip_settings: List[EquipmentSettings]):
+        # TODO [before deployment, double check] should we load experiment file to check if the files are generated correctly for dry_run?
+        # TODO [before deployment, double check] consider if we need to distinguish between actual execution and dry-run on per-reaction-basis
+        if not self.dry_run:
+            print("#######################")
+            # TODO [before deployment, double check] should we load experiment everytime before we add and run new experiment?
+            template_fcexp_filepath = os.path.join(self.fcexp_file_host_folder, self.fcexp_template_filename)
+            FlowCommander.LoadExperiment(self.fc, template_fcexp_filepath) # e.g. "D:\Vapourtec\ReactionCont.fcexp"
+            self.logger.info("FlowCommander instance loaded experiment file: %s" % (template_fcexp_filepath))
+
+            # Add reaction in CSV file to FlowCommander
+            CSVParser.AddReactions(run_csv_file_container_path, self.fc)
+            self.logger.info("Experiment recorded in the CSV file (%s) is added." % (run_csv_file_container_path))
+
+            # Run real reaction experiment
+            FlowCommander.Run(self.fc)
+            print("#######################")
+
+            # Update autosampler liquid amount immediately after send the experiment for execution
+            # Construct a dict of {"autosampler_site_iri": sampler_loop_volume * 1.2}
+            # NOTE here "*1.2" is to reflect the default setting in vapourtec which takes 20% more liquid compared to the sample loop volume settings
+            # TODO [before deployment, double check] double check how was the sample loop volume calculated
+            # TODO [before deployment, double check] the implementation here actually only updates the autosampler site pumped by reference_pump
+            dct_site_loop_volume = {s.pumpsLiquidFrom.instance_iri:s.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue*1.2 for s in [
+                setting for setting in list_equip_settings if setting.clz == ONTOVAPOURTEC_PUMPSETTINGS and setting.hasSampleLoopVolumeSetting]}
+            self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_site_loop_volume, True)
+
+            # TODO [before deployment, double check] send warnings if the liquid level of any vials is lower than the warning level
 
     def monitor_vapourtec_rs400_state(self):
         print("=======================")
@@ -177,12 +207,15 @@ class VapourtecAgent(DerivationAgent):
     def update_flowcommander_state(self):
         try:
             timestamp, fcstate = datetime.now().timestamp(), FlowCommander.GetState(self.fc)
-            state = vapourtec.MAPPING_VAPOURTEC_STATE[fcstate]
-            self.sparql_client.update_vapourtec_rs400_state(self.vapourtec_digital_twin, state, timestamp)
+            self.vapourtec_state = vapourtec.MAPPING_VAPOURTEC_STATE[fcstate]
+            self.sparql_client.update_vapourtec_rs400_state(self.vapourtec_digital_twin, self.vapourtec_state, timestamp)
             self.logger.info("FlowCommander instance at IP address (%s) has state <%s> at timestamp %s, updated records in knowledge graph." %(
-                self.vapourtec_ip_address, str(fcstate), str(timestamp)))
+                self.vapourtec_ip_address, self.vapourtec_state, str(timestamp)))
         except Exception as e:
             self.logger.error(e, stack_info=True, exc_info=True)
+
+    def vapourtec_is_idle(self) -> bool:
+        return True if self.vapourtec_state == ONTOVAPOURTEC_IDLE else False
 
     def start_monitoring_vapourtec_rs400_state(self):
         """
