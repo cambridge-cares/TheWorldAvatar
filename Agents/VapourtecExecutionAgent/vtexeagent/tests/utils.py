@@ -43,7 +43,7 @@ def get_agilent_derivation(rxn_exp_iri: str, sparql_client):
         cf.ONTODERIVATION_ISDERIVEDFROM, rxn_exp_iri, cf.ONTODERIVATION_ISDERIVEDUSING, cf.ONTOLAB_ISMANAGEDBY, cf.ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY
     )
     response = sparql_client.performQuery(query)
-    return response[0]['agilent_derivation'] if response is not None else None
+    return response[0]['agilent_derivation'] if len(response) > 0 else None
 
 def get_derivation_outputs(derivation_iri: str, sparql_client):
     query = """SELECT ?derivation_outputs WHERE {?derivation_outputs <%s> <%s>.}""" % (cf.ONTODERIVATION_BELONGSTO, derivation_iri)
