@@ -3,6 +3,7 @@ package com.cmclinnovations.services;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public final class ServiceManager {
         try {
             URL url = ServiceManager.class.getResource("defaults");
             loadConfigs(url);
-        } catch (IOException ex) {
+        } catch (IOException | URISyntaxException ex) {
             throw new RuntimeException("Failed to load default service configs.", ex);
         }
     }
@@ -46,11 +47,11 @@ public final class ServiceManager {
         loadConfig(path.toUri());
     }
 
-    public void loadConfigs(Path configDir) throws IOException {
+    public void loadConfigs(Path configDir) throws IOException, URISyntaxException {
         loadConfigs(configDir.toUri().toURL());
     }
 
-    public void loadConfigs(URL dirURL) throws IOException {
+    public void loadConfigs(URL dirURL) throws IOException, URISyntaxException {
         for (URI uri : FileUtils.listFiles(dirURL, ".json")) {
             loadConfig(uri);
         }

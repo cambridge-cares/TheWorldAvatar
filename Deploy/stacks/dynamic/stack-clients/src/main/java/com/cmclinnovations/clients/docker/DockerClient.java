@@ -5,7 +5,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,12 +58,39 @@ import com.github.dockerjava.transport.DockerHttpClient;
 
 public class DockerClient extends BaseClient {
 
+    private static final String DOCKER_INTERNAL_HOST = "host.docker.internal";
+    private static final String DEFAULT_DOCKER_PORT = "2375";
+
     protected static final Logger LOGGER = LoggerFactory.getLogger(DockerClient.class);
 
     private final com.github.dockerjava.api.DockerClient internalClient;
 
+    private static Optional<Boolean> isInsideContainer = Optional.empty();
+
+    private static final URI getDockerURI() {
+        if (isInsideContainer.isEmpty()) {
+            try {
+                URL url = new URL("http://" + DOCKER_INTERNAL_HOST + ":" + DEFAULT_DOCKER_PORT + "/_ping");
+
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("GET");
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    isInsideContainer = Optional.of(true);
+                } else {
+                    isInsideContainer = Optional.of(false);
+                }
+            } catch (MalformedURLException | ProtocolException ex) {
+                throw new RuntimeException("Something has gon very wrong.", ex);
+            } catch (IOException ex) {
+                // Failiure to connect means outside container
+                isInsideContainer = Optional.of(false);
+            }
+        }
+        return isInsideContainer.get() ? URI.create("tcp://" + DOCKER_INTERNAL_HOST + ":" + DEFAULT_DOCKER_PORT) : null;
+    }
+
     public DockerClient() {
-        this(URI.create("tcp://host.docker.internal:2375"));
+        this(getDockerURI());
     }
 
     public DockerClient(URI endpoint) {

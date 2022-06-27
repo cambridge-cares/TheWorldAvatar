@@ -2,6 +2,7 @@ package com.cmclinnovations.clients.utils;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,17 +58,17 @@ public final class FileUtils {
         return path.getFileName().toString().endsWith(extension);
     }
 
-    public static Collection<URI> listFiles(URL dirURL, String fileExtension) throws IOException {
+    public static Collection<URI> listFiles(URL dirURL, String fileExtension) throws IOException, URISyntaxException {
         return listFiles(dirURL).stream().filter(uri -> uri.toString().endsWith(fileExtension))
                 .collect(Collectors.toList());
     }
 
-    public static Collection<URI> listFiles(URL dirURL) throws IOException {
+    public static Collection<URI> listFiles(URL dirURL) throws IOException, URISyntaxException {
         if (dirURL != null) {
             switch (dirURL.getProtocol()) {
                 case "file":
                     // A file path: easy enough
-                    return listFileFromPath(Paths.get(dirURL.getPath()));
+                    return listFileFromPath(Path.of(dirURL.toURI()));
                 case "jar":
                     // A JAR path
                     return listFilesFromJar(dirURL);

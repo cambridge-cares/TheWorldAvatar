@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,12 +30,8 @@ public abstract class AbstractService implements Service {
                     addTypeClass(clazz);
                 }
             }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (IOException | ClassNotFoundException | URISyntaxException ex) {
+            throw new RuntimeException("Failed to register a Service type.", ex);
         }
     }
 

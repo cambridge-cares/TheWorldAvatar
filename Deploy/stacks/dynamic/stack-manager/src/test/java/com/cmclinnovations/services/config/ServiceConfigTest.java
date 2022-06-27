@@ -1,10 +1,8 @@
 package com.cmclinnovations.services.config;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,9 +18,9 @@ public class ServiceConfigTest {
     @BeforeClass
     public static void readFromFile() throws IOException, URISyntaxException {
         objectMapper = new ObjectMapper();
-        try (BufferedReader reader = Files
-                .newBufferedReader(Paths.get(ServiceConfigTest.class.getResource("testService.json").toURI()))) {
-            serviceConfig = objectMapper.readValue(reader, ServiceConfig.class);
+
+        try (InputStream resourceAsStream = ServiceConfigTest.class.getResourceAsStream("testService.json")) {
+            serviceConfig = objectMapper.readValue(resourceAsStream, ServiceConfig.class);
         }
     }
 

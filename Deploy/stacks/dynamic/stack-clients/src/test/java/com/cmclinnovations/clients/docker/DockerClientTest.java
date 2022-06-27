@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.cmclinnovations.clients.core.StackClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.PullImageCmd;
 import com.github.dockerjava.api.command.PullImageResultCallback;
@@ -27,6 +28,7 @@ public class DockerClientTest {
 
     @BeforeClass
     public static void setup() {
+        StackClient.setInStack(false);
         dockerAPI = new DockerClient();
 
         String image = "busybox:latest";

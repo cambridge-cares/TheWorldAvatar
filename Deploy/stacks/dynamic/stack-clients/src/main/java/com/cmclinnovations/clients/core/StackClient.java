@@ -13,7 +13,8 @@ public final class StackClient {
     private static boolean inStack = true;
 
     static {
-        stackName = System.getenv(StackClient.STACK_NAME_KEY);
+        String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
+        stackName = (null != envVarStackName) ? envVarStackName : "Test_Stack";
 
         stackNameLabelMap = Map.of(StackClient.STACK_NAME_KEY, stackName);
     }

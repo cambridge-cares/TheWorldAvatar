@@ -1,7 +1,7 @@
 package com.cmclinnovations.services;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.net.URISyntaxException;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -11,14 +11,14 @@ public class ServiceManagerTest {
     private static ServiceManager manager;
 
     @BeforeClass
-    public static void constructFromFiles() throws IOException {
+    public static void constructFromFiles() throws IOException, URISyntaxException {
+
         manager = new ServiceManager();
-        manager.loadConfigs(Path.of("src", "test", "resources", "com", "cmclinnovations", "services"));
     }
 
     @Test
     public void testGetServiceConfig() {
-        Assert.assertNotNull(manager.getServiceConfig("testService"));
-        Assert.assertNotNull(manager.getServiceConfig("testService2"));
+        Assert.assertNotNull(manager.getServiceConfig("postgis"));
+        Assert.assertNotNull(manager.getServiceConfig("blazegraph"));
     }
 }

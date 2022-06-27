@@ -1,5 +1,0 @@
-{
-    "name": "service1",
-    "username": "user",
-    "passwordFile": "src/test/resources/com/cmclinnovations/services/testPasswordFile"
-}
