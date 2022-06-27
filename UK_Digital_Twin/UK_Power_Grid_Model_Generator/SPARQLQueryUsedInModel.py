@@ -69,7 +69,8 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
     PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
     PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?LatLon
     WHERE
     {
     <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
@@ -97,6 +98,10 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
     
     ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel/rdf:type ?PrimaryFuel .
+
+    ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
+    ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
+
     }
     """% (topologyNodeIRI, topologyNodeIRI)
     
@@ -116,7 +121,8 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     res = json.loads(performQuery(endPoint_label, queryStr))
     qres = [[ str(r['PowerGenerator']), float((r['FixedMO'].split('\"^^')[0]).replace('\"','')), float((r['VarMO'].split('\"^^')[0]).replace('\"','')), \
                 float((r['FuelCost'].split('\"^^')[0]).replace('\"','')), float((r['CO2EmissionFactor'].split('\"^^')[0]).replace('\"','')), str(r['Bus']), \
-                float((r['Capacity'].split('\"^^')[0]).replace('\"','')), (str(r['PrimaryFuel']).split('#'))[1]] for r in res]
+                float((r['Capacity'].split('\"^^')[0]).replace('\"','')), (str(r['PrimaryFuel']).split('#'))[1], \
+                [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])]]  for r in res]
     print('...finishes queryEGenInfo...')
     # print('...starts querying counterBusNumber...')
     # numOfBus = json.loads(performQuery(endPoint_label, counterBusNumber))
@@ -125,7 +131,6 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     
 # query the total electricity consumption of a UK official region 
 def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime_of_EnergyConsumption):
-    # label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
     queryStr_BusAndLatlon = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>

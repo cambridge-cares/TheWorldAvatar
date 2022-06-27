@@ -42,7 +42,7 @@ class UKEbusModel:
     
     """EBus Node keys"""
     ModelEBusKey = "ElectricalBusModel_"
-    EBusKey = "EGen-"
+    EBusKey = "EBus-"
     
     """Model variable keys"""
     BUSNUMKey = "BusNumber_"
@@ -390,7 +390,7 @@ class UKEGenModel_CostFunc(UKEGenModel):
     INPUT_VARIABLE = collections.OrderedDict()
     INPUT_VARIABLE["MODEL"] =  idx_cost.MODEL 
     INPUT_VARIABLE["STARTUP"] =  idx_cost.STARTUP
-    INPUT_VARIABLE["STARTUP"] =  idx_cost.SHUTDOWN 
+    INPUT_VARIABLE["SHUTDOWN"] =  idx_cost.SHUTDOWN 
     INPUT_VARIABLE["NCOST"] =  idx_cost.NCOST
     INPUT_VARIABLE["COST"] =  idx_cost.COST  
     

@@ -22,7 +22,8 @@ def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_la
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
     PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
     PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity ?LatLon
     WHERE
     {
     <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
@@ -39,6 +40,9 @@ def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_la
     ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
     ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
     ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
+
+    ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
+    ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
        
     }
     """% (topologyNodeIRI, topologyNodeIRI)
@@ -63,7 +67,8 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
         PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
         PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
         PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-        SELECT DISTINCT ?Bus ?Capacity
+        PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+        SELECT DISTINCT ?Bus ?Capacity ?LatLon
         WHERE
         {
         <%s> meta_model_topology:hasOutput ?Bus .
@@ -75,6 +80,9 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
         ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
         ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
         
+        ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
+        ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
+        
         }
         """% (gen, gen, gen)
 
@@ -83,7 +91,8 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
         print('...finishes queryGeneratorToBeRetrofitted_SelectedGenerator...')
         arranged_res = {"PowerGenerator" : gen,
                         "Bus": res["Bus"],
-                        "Capacity": res["Capacity"]}
+                        "Capacity": res["Capacity"],
+                        "LatLon": [float(res['LatLon'].split('#')[0]), float(res['LatLon'].split('#')[1])]}
         results.append(arranged_res)
     return results 
 
@@ -102,7 +111,8 @@ def queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(retrofitGener
         PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
         PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
         PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-        SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity
+        PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+        SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity ?LatLon
         WHERE
         {
         <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
@@ -111,21 +121,29 @@ def queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(retrofitGener
         ?PowerGenerator meta_model_topology:hasOutput ?Bus .
         ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .  
         ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator . 
-        ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnologyIRI .
+        ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?FuelType .
         
-        ?GenerationTechnologyIRI rdf:type <%s> . 
+        ?FuelType rdf:type <%s> .
+
+        ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnologyIRI .
+
+        FILTER NOT EXISTS { ?GenerationTechnologyIRI rdf:type <http://www.theworldavatar.com/kb/ontoeip/WindOffshore> .}   
         
         ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator .
         ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
         ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
         ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
+
+        ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
+        ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
         }
         """% (topologyNodeIRI, topologyNodeIRI, techType)
 
         print('...starts queryGeneratorToBeRetrofitted_SelectedPowerPlant...')
         res = json.loads(performQuery(endPoint_label, queryStr))
-        print('...finishes queryGeneratorToBeRetrofitted_SelectedPowerPlant...')
+        print('...finishes queryGeneratorToBeRetrofitted_SelectedPowerPlant...')    
         for r in res:
+            r['LatLon'] = [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])]
             results.append(r)
     return results 
 
