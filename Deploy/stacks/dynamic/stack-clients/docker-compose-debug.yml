@@ -1,0 +1,16 @@
+services:
+  stack-client:
+    extends:
+      file: docker-compose.yml
+      service: stack-client
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+      - "STACK_NAME=TEST_STACK"
+    ports:
+      - "5005:5005"
+    networks:
+      - stack
+
+networks:
+  stack:
+    name: TEST_STACK

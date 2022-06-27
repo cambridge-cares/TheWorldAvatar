@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.cmclinnovations</groupId>
-  <artifactId>stack-manager</artifactId>
+  <artifactId>stack-clients</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>Stack Manager</name>
+  <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>
 
   <properties>
@@ -16,12 +16,59 @@
     <maven.compiler.target>11</maven.compiler.target>
   </properties>
 
+  <!-- Repository locations to deploy to -->
+  <distributionManagement>
+    <repository>
+      <id>repo</id>
+      <name>TheWorldAvatar Maven Repository</name>
+      <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
+    </repository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>GeoSolutions</id>
+      <url>https://maven.geo-solutions.it/</url>
+    </repository>
+  </repositories>
+
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
+    <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java</artifactId>
+      <version>3.2.13</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java-transport-httpclient5 -->
+    <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java-transport-httpclient5</artifactId>
+      <version>3.2.13</version>
+    </dependency>
 
     <dependency>
-      <groupId>com.cmclinnovations</groupId>
-      <artifactId>stack-clients</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <groupId>it.geosolutions</groupId>
+      <artifactId>geoserver-manager</artifactId>
+      <version>1.7.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.odiszapc</groupId>
+      <artifactId>nginxparser</artifactId>
+      <version>0.9.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>it.unibz.inf.ontop</groupId>
+      <artifactId>ontop-system-sql-owlapi</artifactId>
+      <version>4.2.1</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.4.0</version>
     </dependency>
 
     <dependency>
