@@ -126,6 +126,8 @@ public class ADMSAgent extends JPSAgent {
 */
             executeModel(fullPath);
             String target = fullPath + "/test.levels.gst";
+            //character replacement is needed for the Sparql update to be considered syntactically correct
+            target=target.replace("\\","/");
             File name = new File(target);
             if (name.length() != 0 && name.exists()) {
                 //String agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
