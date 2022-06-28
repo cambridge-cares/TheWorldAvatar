@@ -14,7 +14,7 @@ def ifc2ttl(input_ttl, namespace):
      namespace - a namespace for the blazegraph database
     """
     # Convert all ifc files within this directory to TTL
-    subprocess.run(["java", "-jar", "resources/IFCtoRDF/IFCtoRDF-0.4-shaded.jar", "--dir", 'data/ifc/'])
+    subprocess.run(["java", "-jar", "resources/IFCtoRDF-0.4-shaded.jar", "--dir", 'data/ifc/'])
     print("Conversion to TTL format completed...")
 
     # Conduct a bulk data load to the local blazegraph server 

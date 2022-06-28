@@ -15,8 +15,6 @@ A brief description of its workflow can be found below:
 # Instructions
 ## Pre-Requisite
 ### 1. Create a Python virtual environment and install required packages (in Windows):
-> Note that a virtual environment has already been created with the required packages within the repository: `<bimvenv>`
-
 1) Open `cmd` terminal and navigate into the `ifcto3Dtilesnext` folder within the project's root repository folder (referred to as `<root>` in the following) ie `<root>\ifcto3Dtilesnext`
 
 2) Create virtual environment `<venv_name>` using venv (`python` command might need to be replaced with `py` depending on whether Python is specified in system's `PATH` variables):
@@ -35,32 +33,36 @@ A brief description of its workflow can be found below:
     python -m pip install -r ../requirements.txt
     ```
 
-5) Add the following dependencies' folder manually into the `<venv_name>\Lib\site-packages` directory    
-    **IfcOpenShell**
-    - Download and extract IfcOpenShell zip version from http://ifcopenshell.org/python
-    - Place the **ifcopenshell** subfolder (instead of the parent folder) into the site-package directory
-    - If there is other missing modules/packages, install them as per generic installation
-    - Required to load and parse IFC files
+5) Download resources in cmd from `<root>\ifcto3Dtilesnext` (Change the `<venv>` on line 58 to `<venv_name>`):
+     ```
+    python downloadresource.py
+    ```
+    > Tested only for Windows operating system
 
-    **IfcPatch**
-    - Git clone the repository with the IfcPatch package on https://github.com/IfcOpenShell/IfcOpenShell/tree/v0.6.0/src/ifcpatch
-    - Place the **ifcpatch** subfolder (instead of the parent folder) into the site-package directory
-    - Required to split IFC into individual asset IFC files
+6) Check that the resources are placed in the right directory
+    - `<venv_name>\Lib\site-packages`    
+        1. **IfcOpenShell**
+            - Required to load and parse IFC files
+        2. **IfcPatch**
+            - Required to split IFC into individual asset IFC files
+        - Download instructions:
+            - Download required version from https://github.com/IfcOpenShell/IfcOpenShell/releases
+            - Extract and place the `ifcpatch` and `ifcopenshell` from `blenderbim/libs/site/packages/`
+            - Delete the remaining extracted content
     
-### 2. Please download the following resources into the `<root>\ifcto3Dtilesnext\resources` folder
-1) IfcConvert.exe
-    - Required to convert IFC to DAE format
-    - If not, download the IfcConvert.exe from: http://ifcopenshell.org/ifcconvert
-2) COLLADA2GLTF folder
-    - Required to convert DAE to glTF format
-    - If not, download and unzip the zip folder for your OS under the release section from: https://github.com/KhronosGroup/COLLADA2GLTF
-3) IFCtoRDF folder
-    - Required to convert IFC to TTL format
-    - If not, download the latest release of the shaded executable JAR archive from https://github.com/pipauwel/IFCtoRDF/releases
-4) Blazegraph.jar
-    - No configuration is required as this workflow will automate the upload and query requirements
-    - If not, download the latest release `BUT NOT Release Candidate` of blazegraph.jar from the Release section on https://github.com/blazegraph/database
-> WIP: Automatic download of these resources through a script
+    - `<root>\ifcto3Dtilesnext\resources`
+        1. IfcConvert.exe
+            - Required to convert IFC to DAE format
+            - If not, download the IfcConvert.exe from: http://ifcopenshell.org/ifcconvert
+        2. COLLADA2GLTF folder
+            - Required to convert DAE to glTF format
+            - If not, download and unzip the zip folder for your OS under the release section from: https://github.com/KhronosGroup/COLLADA2GLTF
+        3. IFCtoRDF-0.4-shaded.jar
+            - Required to convert IFC to TTL format
+            - If not, download the latest release of the shaded executable JAR archive from https://github.com/pipauwel/IFCtoRDF/releases
+        4. Blazegraph.jar
+            - No configuration is required as this workflow will automate the upload and query requirements
+            - If not, download the latest release `BUT NOT Release Candidate` of blazegraph.jar from the Release section on https://github.com/blazegraph/database
 
 ## Usage
 1. Place the IFC file in `<root>\ifcto3Dtilesnext\data\ifc`
