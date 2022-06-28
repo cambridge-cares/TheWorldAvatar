@@ -77,7 +77,7 @@ class OptimalPowerFlowAnalysis:
         ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
         self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, queryEndpointLabel) ## ?BusNodeIRI ?BusLatLon
         self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, queryEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275 
-        self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, queryEndpointLabel) ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel
+        self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, queryEndpointLabel) ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?Latlon
         
         ## 2. passing arguments
         ## specify the topology node
@@ -159,9 +159,12 @@ class OptimalPowerFlowAnalysis:
                 parse(iri, rule='IRI')
             retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(self.retrofitGenerationFuelType, self.topologyNodeIRI, self.queryEndpointLabel)
         self.retrofitList = retrofitList ## list of dictionaries 
-        self.toBeRetrofitGenIRIList = []
+        self.retrofitExistingGenPairList = []
+        self.toBeRetrofittedGeneratorNodeList = []
         for regen in retrofitList:
-            self.toBeRetrofitGenIRIList.append(regen["PowerGenerator"])
+            retrofit_existing_GenPair = [regen["PowerGenerator"], None, None, None, None] ## generator IRI, existing gen object name, retrofitting gen object name, lat-lon
+            self.retrofitExistingGenPairList.append(retrofit_existing_GenPair)
+            self.toBeRetrofittedGeneratorNodeList.append(str(regen["PowerGenerator"]))
         return 
 
     """This method is called to initialize the model entities objects: model input"""
@@ -214,11 +217,17 @@ class OptimalPowerFlowAnalysis:
             # ## TODO: when initialise the 29-bus model, please check if ELineNodeIRI is the right node to use
             ObjectSet[objectName] = initialiser(eline['ELineNode'], uk_eline_model, eline, self.branchVoltageLevel, self.OrderedBusNodeIRIList, self.queryEndpointLabel) 
             self.BranchObjectList.append(objectName)
-            
+
         ### Initialisation of the Generator Model Entities ###
         capa_demand_ratio = model_EGenABoxGeneration.demandAndCapacityRatioCalculator(self.generatorNodeList, self.topologyNodeIRI, self.startTime_of_EnergyConsumption)
         for egen in self.generatorNodeList:
             objectName = UK_PG.UKEGenModel.EGenKey + str(self.generatorNodeList.index(egen)) ## egen model python object name
+            if str(egen[0]) in self.toBeRetrofittedGeneratorNodeList:
+                indexOfList = self.toBeRetrofittedGeneratorNodeList.index(str(egen[0]))
+                self.retrofitExistingGenPairList[indexOfList][1] = objectName
+                self.retrofitExistingGenPairList[indexOfList][2] = UK_PG.UKEGenModel.EGenRetrofitKey + str(indexOfList)
+                self.retrofitExistingGenPairList[indexOfList][3] = egen[8] # latlon
+                self.retrofitExistingGenPairList[indexOfList][4] = egen[7] # fuel
             uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
             uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
             ###add EGen model parametor###
@@ -476,17 +485,31 @@ class OptimalPowerFlowAnalysis:
             index_regen += 1
             index_gen += 1  
         return 
+
+    def RetrofittingResultProcesser(self):
+        retrofitResults = [] 
+        for retrofitExistingGenPair in self.retrofitExistingGenPairList:
+            existingGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[1]), "PG_OUTPUT"), 2) ## existing generator
+            retrofittedGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[2]), "PG_OUTPUT"), 2) ## SMR
+            if retrofittedGenOutput >= existingGenOutput and existingGenOutput < 1: ## SMR retrofitts the existing generator 
+                existRetroPairResult = [retrofitExistingGenPair[0], retrofitExistingGenPair[1], retrofitExistingGenPair[2]]
+            if existingGenOutput > 1 and retrofittedGenOutput > 1:
+                existRetroPairResult = [retrofitExistingGenPair[0], None, retrofitExistingGenPair[2]]
+            retrofitResults.append(existRetroPairResult) 
+        for r in retrofitResults:
+
          
+         
+        return 
     
-    
-
-
     def ModelResultUpdater(self):
          
          
          
          
         return 
+    
+
          
          
 
@@ -500,14 +523,15 @@ if __name__ == '__main__':
     loadAllocatorName = "regionalDemandLoad"
     EBusModelVariableInitialisationMethodName= "defaultInitialisation"
     ELineInitialisationMethodName = "defaultBranchInitialiser"
-    CarbonTax = 18
+    CarbonTax = 58
     piecewiseOrPolynomial = 2
     pointsOfPiecewiseOrcostFuncOrder = 2
     baseMVA = 100
     retrofitGenerator = []
     retrofitGenerationTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", \
     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil", \
-    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear"] 
+    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear",
+    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"] 
     newGeneratorType = "SMR"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
 
@@ -524,29 +548,74 @@ if __name__ == '__main__':
     testOPF1.ModelOutputFormatter()
     testOPF1.ModelOutputFormatter()
 
-    # print(testOPF1.ppc["bus"])
-    # print(testOPF1.ppc["branch"])
-    # print(testOPF1.ppc["gen"])
-    # print(testOPF1.ppc["gencost"])
-    # print(testOPF1.BranchObjectList)
-    # print(testOPF1.GeneratorObjectList)
-    # print(testOPF1.GeneratorToBeRetrofittedObjectList)
 
-
-    print("*****This are EBus results*****")
-    for attr in testOPF1.ObjectSet.get('EBus-7').__dir__():
-        print(attr, getattr(testOPF1.ObjectSet.get('EBus-7'), attr))
-    for attr in testOPF1.ObjectSet.get('EBus-8').__dir__():
-        print(attr, getattr(testOPF1.ObjectSet.get('EBus-8'), attr))
-
-    print("*****This are ELine results*****")
-    for attr in testOPF1.ObjectSet.get('ELine-0').__dir__():
-        print(attr, getattr(testOPF1.ObjectSet.get('ELine-0'), attr)) 
+    def powerPlantgeoJSONCreator(retrofitResults, class_label): 
+        geojson_file = """
+        {
+            "type": "FeatureCollection",
+            "features": ["""
+        # iterating over features (rows in results array)
+        for i in range(len(retrofitResults)):
+            # creating point feature 
+            feature = """{
+                "type": "Feature",
+                "properties": {
+                "fuel": "%s",
+                "existingGenOutput": "%s",
+                "SMRGenOutput": "%s",
+                "marker-color": "%s"
+                },
+                "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    %s,
+                    %s
+                ]
+                }
+            },"""%(retrofitResults[i][4], retrofitResults[i][1], retrofitResults[i][2], retrofitResults[i][5], retrofitResults[i][3][1], retrofitResults[i][3][0])
+            # adding new line 
+            geojson_file += '\n'+feature
         
-    print("*****This are EGen results*****")
-    for attr in testOPF1.ObjectSet.get('EGen-1134').__dir__():
-        print(attr, getattr(testOPF1.ObjectSet.get('EGen-1134'), attr)) 
+        # removing last comma as is last line
+        geojson_file = geojson_file[:-1]
+        # finishing file end 
+        end_geojson = """
+            ]
+        }
+        """
+        geojson_file += end_geojson
+        # saving as geoJSON
+        geojson_written = open(class_label+'.geojson','w')
+        geojson_written.write(geojson_file)
+        geojson_written.close() 
+        return
 
-    print("*****This are EGen toberetrofitted results*****")
-    for attr in testOPF1.ObjectSet.get('EGenRetrofit-11').__dir__():
-        print(attr, getattr(testOPF1.ObjectSet.get('EGenRetrofit-11'), attr)) 
+    # print("*****This are EBus results*****")
+    # for attr in testOPF1.ObjectSet.get('EBus-7').__dir__():
+    #     print(attr, getattr(testOPF1.ObjectSet.get('EBus-7'), attr))
+    # for attr in testOPF1.ObjectSet.get('EBus-8').__dir__():
+    #     print(attr, getattr(testOPF1.ObjectSet.get('EBus-8'), attr))
+
+    # print("*****This are ELine results*****")
+    # for attr in testOPF1.ObjectSet.get('ELine-0').__dir__():
+    #     print(attr, getattr(testOPF1.ObjectSet.get('ELine-0'), attr)) 
+        
+    # print("*****This are EGen results*****")
+    # for attr in testOPF1.ObjectSet.get('EGen-1134').__dir__():
+    #     print(attr, getattr(testOPF1.ObjectSet.get('EGen-1134'), attr)) 
+
+    # print("*****This are EGen toberetrofitted results*****")
+    # for attr in testOPF1.ObjectSet.get('EGenRetrofit-11').__dir__():
+    #     print(attr, getattr(testOPF1.ObjectSet.get('EGenRetrofit-11'), attr)) 
+
+    retrofitResults = [] 
+    for retrofitExistingGenPair in testOPF1.retrofitExistingGenPairList:
+        existRetroPairResult = [retrofitExistingGenPair[0], None, None, retrofitExistingGenPair[3], retrofitExistingGenPair[4], "#1B2631"]
+        existRetroPairResult[1] = round(getattr(testOPF1.ObjectSet.get(retrofitExistingGenPair[1]), "PG_OUTPUT"), 2)
+        existRetroPairResult[2] = round(getattr(testOPF1.ObjectSet.get(retrofitExistingGenPair[2]), "PG_OUTPUT"), 2)
+        if existRetroPairResult[2] >= existRetroPairResult[1]: 
+            existRetroPairResult[5] = "#ed2400"
+        if existRetroPairResult[1] < 1 and existRetroPairResult[2] < 1:
+            existRetroPairResult[5] =  "#99A3A4"
+        retrofitResults.append(existRetroPairResult)
+    powerPlantgeoJSONCreator(retrofitResults, 'test31SMR_retrofitResultsincludingNG_'+ str(CarbonTax))
