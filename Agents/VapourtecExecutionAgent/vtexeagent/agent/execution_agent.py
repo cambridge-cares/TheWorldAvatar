@@ -55,11 +55,13 @@ class VapourtecExecutionAgent(DerivationAgent):
         # Check until it's the turn for the given reaction experiment
         rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(
             rxn_exp_instance.instance_iri)
+        self.logger.info("ReactionExperiment <%s> has prior experiment in queue: %s" % (rxn_exp_instance.instance_iri, str(rxn_exp_queue)))
         # TODO NOTE here the maximum_concurrent_experiment is configured at agent start, move to KG in the future iterations
         while len(rxn_exp_queue) > self.maximum_concurrent_experiment - 1:
             time.sleep(60)
             rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(
                 rxn_exp_instance.instance_iri)
+            self.logger.info("ReactionExperiment <%s> has prior experiment in queue: %s" % (rxn_exp_instance.instance_iri, str(rxn_exp_queue)))
 
         # Check until get the digital twin of the most suitable hardware
         # This function also locates the digital twin of HPLC connected to the vapourtec_rs400

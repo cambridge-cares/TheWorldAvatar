@@ -3,6 +3,7 @@ git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digi
 pyderivationagent
 pandas
 pydantic
+xlwt
 testcontainers
 pytest
 pytest-docker-compose

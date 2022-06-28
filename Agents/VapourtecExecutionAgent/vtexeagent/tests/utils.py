@@ -1,4 +1,4 @@
-from rdflib import Graph
+from rdflib import RDF, Graph
 import pkgutil
 import os
 
@@ -45,7 +45,55 @@ def get_agilent_derivation(rxn_exp_iri: str, sparql_client):
     response = sparql_client.performQuery(query)
     return response[0]['agilent_derivation'] if len(response) > 0 else None
 
+def get_vapourtec_derivation(rxn_exp_iri: str, sparql_client):
+    query = """SELECT ?vapourtec_derivation WHERE {?vapourtec_derivation <%s> <%s>; <%s> ?vapourtec_agent. ?vapourtec_agent ^<%s>/a <%s>.}""" % (
+        cf.ONTODERIVATION_ISDERIVEDFROM, rxn_exp_iri, cf.ONTODERIVATION_ISDERIVEDUSING, cf.ONTOLAB_ISMANAGEDBY, cf.ONTOVAPOURTEC_VAPOURTECRS400
+    )
+    response = sparql_client.performQuery(query)
+    return response[0]['vapourtec_derivation'] if len(response) > 0 else None
+
 def get_derivation_outputs(derivation_iri: str, sparql_client):
     query = """SELECT ?derivation_outputs WHERE {?derivation_outputs <%s> <%s>.}""" % (cf.ONTODERIVATION_BELONGSTO, derivation_iri)
     response = sparql_client.performQuery(query)
     return [r['derivation_outputs'] for r in response]
+
+def if_agilent_derivation_is_in_progress(derivation_iri: str, sparql_client):
+    query = """SELECT ?status_type WHERE {<%s> <%s>/a ?status_type.}""" % (derivation_iri, cf.ONTODERIVATION_HASSTATUS)
+    response = sparql_client.performQuery(query)
+    status_type = response[0]['status_type'] if len(response) > 0 else None
+    if status_type == cf.ONTODERIVATION_INPROGRESS:
+        return True
+    return False
+
+def get_vapourtec_input_file_iri(derivation_iri: str, sparql_client):
+    query = """SELECT ?vapourtec_input_file WHERE {?vapourtec_input_file <%s> <%s>; a <%s>.}""" % (
+        cf.ONTODERIVATION_BELONGSTO, derivation_iri, cf.ONTOVAPOURTEC_VAPOURTECINPUTFILE
+    )
+    return sparql_client.performQuery(query)[0]['vapourtec_input_file']
+
+
+def get_chemical_solution_iri(derivation_iri: str, sparql_client):
+    query = """SELECT ?chemical_solution WHERE {?chemical_solution <%s> <%s>; a <%s>.}""" % (
+        cf.ONTODERIVATION_BELONGSTO, derivation_iri, cf.ONTOLAB_CHEMICALSOLUTION
+    )
+    return sparql_client.performQuery(query)[0]['chemical_solution']
+
+def get_hplc_job(
+    hplc_digital_twin,
+    rxn_exp_iri,
+    chemical_solution_iri,
+    sparql_client
+):
+    query = """SELECT ?hplc_job WHERE {?hplc_job ^<%s> <%s>; <%s> <%s>; <%s> <%s>; <%s>/<%s> <%s>.}""" % (
+        cf.ONTOHPLC_HASJOB, hplc_digital_twin,
+        RDF.type.toPython(), cf.ONTOHPLC_HPLCJOB,
+        cf.ONTOHPLC_CHARACTERISES, rxn_exp_iri,
+        cf.ONTOHPLC_HASREPORT, cf.ONTOHPLC_GENERATEDFOR, chemical_solution_iri
+    )
+    response = sparql_client.performQuery(query)
+    return [response[i]['hplc_job'] for i in range(len(response))]
+
+def get_hplc_report_of_hplc_job(hplc_job_iri: str, sparql_client):
+    query = """SELECT ?hplc_report WHERE {<%s> <%s> ?hplc_report.}""" % (hplc_job_iri, cf.ONTOHPLC_HASREPORT)
+    response = sparql_client.performQuery(query)
+    return [response[i]['hplc_report'] for i in range(len(response))]
