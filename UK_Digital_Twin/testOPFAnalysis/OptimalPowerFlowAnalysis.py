@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 June 2022         #
+# Last Update Date: 29 June 2022         #
 ##########################################
 
 """
@@ -23,6 +23,8 @@ import SPARQLQueryUsedInModelInitialiser as queryModelInitialiser
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.costFunctionParameterInitialiser import costFuncPara
 from UK_Power_Grid_Model_Generator import model_EBusABoxGeneration, model_EGenABoxGeneration, model_ELineABoxGeneration
+from BusModelKGInstanceCreator import BusModelKGInstanceCreator
+from BranchModelKGInstanceCreator import BranchModelKGInstanceCreator
 import UK_Power_Grid_Model_Generator.initialiseEBusModelVariable as InitialiseEbus
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
@@ -63,11 +65,11 @@ class OptimalPowerFlowAnalysis:
 
         CarbonTax:float, piecewiseOrPolynomial:int, pointsOfPiecewiseOrcostFuncOrder:int, baseMVA: float, \
 
-        retrofitGenerator: list, retrofitGenerationTechType: list, newGeneratorType:str, \
+        withRetrofit:bool, retrofitGenerator: list, retrofitGenerationTechType: list, newGeneratorType:str, \
 
         queryEndpointLabel:str, \
         endPointURL:str, endPointUser:str = None, endPointPassWord:str = None, \
-        powerPlantOWLFileLocalPath = None, updateLocalPowerPlantOWLFileFlag:bool = True):
+        OWLFileStoragePath = None, updateLocalPowerPlantOWLFileFlag:bool = True):
        
         ## 1. newly created
         ## create the power system model node IRI
@@ -118,7 +120,7 @@ class OptimalPowerFlowAnalysis:
         self.endPointUser = endPointUser
         self.endPointPassWord = endPointPassWord
         ## specify the local storage path (to be deleted)
-        self.powerPlantOWLFileLocalPath = powerPlantOWLFileLocalPath
+        self.OWLFileStoragePath = OWLFileStoragePath
         self.updateLocalPowerPlantOWLFileFlag = updateLocalPowerPlantOWLFileFlag       
         
         ## 5. JVM module view and use it to import the required java classes
@@ -134,6 +136,10 @@ class OptimalPowerFlowAnalysis:
         self.derivationClient = self.jpsBaseLib_view.DerivationClient(self.storeClient, derivationInstanceBaseURL)  
         
         ## 6. Identify the retrofitting generators
+        if type(withRetrofit) is not bool:
+            raiseExceptions("withRetrofit has to be a bool number")
+        else:
+            self.withRetrofit = withRetrofit 
         self.retrofitGenerator = retrofitGenerator # GeneratorIRI, location, capacity
         self.retrofitGenerationFuelType = retrofitGenerationTechType
 
@@ -147,28 +153,32 @@ class OptimalPowerFlowAnalysis:
         self.GeneratorToBeRetrofittedObjectList: list = []
 
     def retrofitGeneratorInstanceFinder(self):
-        if len(self.retrofitGenerator) == 0 and len(self.retrofitGenerationFuelType) == 0:  
-            print("***As there is not specific generator assigned to be retrofitted by SMR, all generators located in GB will be treated as the potential sites.***")
-            retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_AllPowerPlant(self.topologyNodeIRI, self.queryEndpointLabel) ## PowerGenerator, Bus, Capacity
-        elif not len(self.retrofitGenerator) == 0:
-            for iri in self.retrofitGenerator:
-                parse(iri, rule='IRI')
-            retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedGenerator(self.retrofitGenerator, self.queryEndpointLabel) 
-        elif not len(self.retrofitGenerationFuelType) == 0:
-            for iri in self.retrofitGenerationFuelType:
-                parse(iri, rule='IRI')
-            retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(self.retrofitGenerationFuelType, self.topologyNodeIRI, self.queryEndpointLabel)
-        self.retrofitList = retrofitList ## list of dictionaries 
-        self.retrofitExistingGenPairList = []
-        self.toBeRetrofittedGeneratorNodeList = []
-        for regen in retrofitList:
-            retrofit_existing_GenPair = [regen["PowerGenerator"], None, None, None, None] ## generator IRI, existing gen object name, retrofitting gen object name, lat-lon
-            self.retrofitExistingGenPairList.append(retrofit_existing_GenPair)
-            self.toBeRetrofittedGeneratorNodeList.append(str(regen["PowerGenerator"]))
+        if self.withRetrofit is True: 
+            if len(self.retrofitGenerator) == 0 and len(self.retrofitGenerationFuelType) == 0:  
+                print("***As there is not specific generator assigned to be retrofitted by SMR, all generators located in GB will be treated as the potential sites.***")
+                retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_AllPowerPlant(self.topologyNodeIRI, self.queryEndpointLabel) ## PowerGenerator, Bus, Capacity
+            elif not len(self.retrofitGenerator) == 0:
+                for iri in self.retrofitGenerator:
+                    parse(iri, rule='IRI')
+                retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedGenerator(self.retrofitGenerator, self.queryEndpointLabel) 
+            elif not len(self.retrofitGenerationFuelType) == 0:
+                for iri in self.retrofitGenerationFuelType:
+                    parse(iri, rule='IRI')
+                retrofitList = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(self.retrofitGenerationFuelType, self.topologyNodeIRI, self.queryEndpointLabel)
+            self.retrofitList = retrofitList ## list of dictionaries 
+            self.retrofitExistingGenPairList = []  #####TODO: temperary list used for visulisation
+            self.toBeRetrofittedGeneratorNodeList = []
+            for regen in retrofitList:
+                retrofit_existing_GenPair = [regen["PowerGenerator"], None, None, None, None] ## generator IRI, existing gen object name, retrofitting gen object name, lat-lon
+                self.retrofitExistingGenPairList.append(retrofit_existing_GenPair)
+                self.toBeRetrofittedGeneratorNodeList.append(str(regen["PowerGenerator"]))
+        else:
+            self.retrofitExistingGenPairList = [] 
+            self.toBeRetrofittedGeneratorNodeList = []
         return 
 
     """This method is called to initialize the model entities objects: model input"""
-    def ModelObjectInputInitialiser(self): 
+    def ModelPythonObjectInputInitialiser(self): 
         ##-- create model bus, branch and generator objects dynamically --##
         ObjectSet = locals()        
         ### Initialisation of the Bus Model Entities ###
@@ -235,29 +245,31 @@ class OptimalPowerFlowAnalysis:
             self.GeneratorObjectList.append(objectName)
 
         ### Initialisation of the SMR Generator Model Entities ###
-        for i in range(len(modelFactorArrays)):
-            if str(self.newGeneratorType) in modelFactorArrays[i]:
-                factorArray = modelFactorArrays[i]
-                break
-        if not 'factorArray' in locals():
-            raiseExceptions("The given generator type which used to retrofit the existing genenrators cannot be found in the factor list, please check the generator type.")
+        if self.withRetrofit is True:
+            for i in range(len(modelFactorArrays)):
+                if str(self.newGeneratorType) in modelFactorArrays[i]:
+                    factorArray = modelFactorArrays[i]
+                    break
+            if not 'factorArray' in locals():
+                raiseExceptions("The given generator type which used to retrofit the existing genenrators cannot be found in the factor list, please check the generator type.")
 
-        for egen_re in self.retrofitList:
-            objectName = UK_PG.UKEGenModel.EGenRetrofitKey + str(self.retrofitList.index(egen_re)) ## egen_toBeRetrofitted model python object name 
-            uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen_re["PowerGenerator"]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
-            egen_re = [egen_re["PowerGenerator"], float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], 470] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity
-            uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
-            ###add EGen model parametor###
-            ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, capa_demand_ratio)
-            self.GeneratorToBeRetrofittedObjectList.append(objectName)
-
+            for egen_re in self.retrofitList:
+                objectName = UK_PG.UKEGenModel.EGenRetrofitKey + str(self.retrofitList.index(egen_re)) ## egen_toBeRetrofitted model python object name 
+                uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen_re["PowerGenerator"]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+                egen_re = [egen_re["PowerGenerator"], float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], 470] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity
+                uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
+                ###add EGen model parametor###
+                ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, capa_demand_ratio)
+                self.GeneratorToBeRetrofittedObjectList.append(objectName)
+        else: 
+            self.GeneratorToBeRetrofittedObjectList = []
         self.ObjectSet = ObjectSet
         return     
     
         
-    def ModelInputFormatter(self):
+    def OPFModelInputFormatter(self):
         """
-        The ModelInputFormatter is used to created the pypower OPF model input from the model objects which are created from the F{ModelObjectInputInitialiser}.
+        The OPFModelInputFormatter is used to created the pypower OPF model input from the model objects which are created from the F{ModelObjectInputInitialiser}.
         This function will be called abfer F{ModelObjectInputInitialiser}.
         
         Raises
@@ -314,7 +326,7 @@ class OptimalPowerFlowAnalysis:
             index_gen += 1
 
         index_regen = 0
-        while index_gen < self.numOfExistAndRetrofittedGenerators:
+        while index_gen < self.numOfExistAndRetrofittedGenerators and self.withRetrofit is True:
             for key in UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS:
                 index = int(UK_PG.UKEGenModel.INPUT_VARIABLE[key])
                 ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + str(index_regen)), key)
@@ -338,7 +350,7 @@ class OptimalPowerFlowAnalysis:
             index_gen += 1
 
         index_regen = 0
-        while index_gen < self.numOfExistAndRetrofittedGenerators:
+        while index_gen < self.numOfExistAndRetrofittedGenerators and self.withRetrofit is True:
             for key in UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS:
                 index = int(UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE[key])
                 if key == "COST":
@@ -478,7 +490,7 @@ class OptimalPowerFlowAnalysis:
             index_gen += 1   
         
         index_regen = 0
-        while index_gen < self.numOfExistAndRetrofittedGenerators:
+        while index_gen < self.numOfExistAndRetrofittedGenerators and self.withRetrofit is True:
             for key in UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS:
                 index = int(UK_PG.UKEGenModel.OUTPUT_VARIABLE[key])
                 setattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + str(index_regen)), key, generatorPostResult[index_gen][index])        
@@ -487,24 +499,43 @@ class OptimalPowerFlowAnalysis:
         return 
 
     def RetrofittingResultProcesser(self):
-        retrofitResults = [] 
-        for retrofitExistingGenPair in self.retrofitExistingGenPairList:
-            existingGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[1]), "PG_OUTPUT"), 2) ## existing generator
-            retrofittedGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[2]), "PG_OUTPUT"), 2) ## SMR
-            if retrofittedGenOutput >= existingGenOutput and existingGenOutput < 1: ## SMR retrofitts the existing generator 
-                existRetroPairResult = [retrofitExistingGenPair[0], retrofitExistingGenPair[1], retrofitExistingGenPair[2]]
-            if existingGenOutput > 1 and retrofittedGenOutput > 1:
-                existRetroPairResult = [retrofitExistingGenPair[0], None, retrofitExistingGenPair[2]]
-            retrofitResults.append(existRetroPairResult) 
-        for r in retrofitResults:
-
-         
-         
+        """
+        Replace the existing generator with the new retrofitted generator
+        """
+        if self.withRetrofit is True:
+            retrofitResults = [] 
+            self.generatorRetrofitted = []
+            self.generatorIntergratedWithSMR = []
+            for retrofitExistingGenPair in self.retrofitExistingGenPairList:
+                existingGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[1]), "PG_OUTPUT"), 2) ## existing generator
+                retrofittedGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[2]), "PG_OUTPUT"), 2) ## SMR
+                if retrofittedGenOutput >= existingGenOutput and existingGenOutput < 1: ## SMR retrofitts the existing generator 
+                    existRetroPairResult = [retrofitExistingGenPair[1], retrofitExistingGenPair[2]]
+                    self.generatorRetrofitted.append(retrofitExistingGenPair[0])
+                if existingGenOutput > 1 and retrofittedGenOutput > 1:
+                    existRetroPairResult = [None, retrofitExistingGenPair[2]]
+                    self.generatorIntergratedWithSMR.append(retrofitExistingGenPair[0])
+                retrofitResults.append(existRetroPairResult) 
+            for r in retrofitResults:
+                if r[0] is not None:
+                    self.GeneratorObjectList.remove(r[0])
+                self.GeneratorObjectList.append(r[1]) 
         return 
     
-    def ModelResultUpdater(self):
-         
-         
+    def ModelPythonObjectOntologiser(self):
+        """
+        create KG representation for all model objects
+        
+        """
+        ## create the power system model node IRI
+        self.powerSystemModelIRI = UK_PG.ontopowsys_namespace + UK_PG.powerSystemModelKey + str(uuid.uuid4())
+        ## create the timeStamp, e.x. 2022-06-15T16:24:29.371941+00:00
+        self.timeStamp = datetime.now(pytz.utc).isoformat()
+
+        BusModelKGInstanceCreator(self.ObjectSet, self.BusObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
+            self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath)
+        BranchModelKGInstanceCreator(self.ObjectSet, self.BranchObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
+            self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath) 
          
          
         return 
@@ -515,7 +546,7 @@ class OptimalPowerFlowAnalysis:
 
 if __name__ == '__main__':        
     topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
-    powerSystemModelIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerSystemModel_22fe8504-f3bb-403c-9363-34b258d59712"
+    # powerSystemModelIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerSystemModel_22fe8504-f3bb-403c-9363-34b258d59712"
     AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
     slackBusNodeIRI = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591"   
     queryEndpointLabel = "ukdigitaltwin_test2"
@@ -527,6 +558,7 @@ if __name__ == '__main__':
     piecewiseOrPolynomial = 2
     pointsOfPiecewiseOrcostFuncOrder = 2
     baseMVA = 100
+    withRetrofit = True
     retrofitGenerator = []
     retrofitGenerationTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", \
     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil", \
@@ -538,16 +570,14 @@ if __name__ == '__main__':
 
     testOPF1 = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, AgentIRI, "2017-01-31", slackBusNodeIRI, \
         loadAllocatorName, EBusModelVariableInitialisationMethodName, ELineInitialisationMethodName, \
-        CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, \
+        CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, \
         retrofitGenerator, retrofitGenerationTechType, newGeneratorType, queryEndpointLabel, updateEndPointURL)
     
     testOPF1.retrofitGeneratorInstanceFinder()
-    testOPF1.ModelObjectInputInitialiser()
-    testOPF1.ModelInputFormatter()
+    testOPF1.ModelPythonObjectInputInitialiser()
+    testOPF1.OPFModelInputFormatter()
     testOPF1.OptimalPowerFlowAnalysisSimulation()
-    testOPF1.ModelOutputFormatter()
-    testOPF1.ModelOutputFormatter()
-
+    # print(testOPF1.ObjectSet['EBus-8'].BUS)
 
     def powerPlantgeoJSONCreator(retrofitResults, class_label): 
         geojson_file = """

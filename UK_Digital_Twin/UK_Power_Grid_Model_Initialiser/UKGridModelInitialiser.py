@@ -55,9 +55,7 @@ class gridModelInitialiser(object):
         if type(OPFOrPF) is not bool:
             raiseExceptions("OPFOrPF has to be a bool number")
         else:
-            self.OPFOrPF = OPFOrPF 
-        ## specify whether the OPF or PF analysis, true for OPF analysis while false for PF analysis
-        self.OPFOrPF = OPFOrPF 
+            self.OPFOrPF = OPFOrPF  
         ## specify the CarbonTax
         self.CarbonTax = float(CarbonTax)
         ## specify the OPF objective function type, 1 for piecewise, 2 for polynomial

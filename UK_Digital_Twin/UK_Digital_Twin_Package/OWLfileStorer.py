@@ -1,12 +1,13 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 26 August 2021       #
+# Last Update Date: 29 June 2022         #
 ##########################################
 
 """This module defines the functions to store the generated owl files"""
 import os
 from tkinter import Tk
 from tkinter.filedialog import askdirectory
+from logging import raiseExceptions
 
 """Read data files"""
 def readFile(filepath):
@@ -49,5 +50,4 @@ def specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFi
     elif OWLFileStoragePath != None and os.path.exists(OWLFileStoragePath):
         return OWLFileStoragePath
     elif updateLocalOWLFile == True:
-        print("Please provide a valid path for storing the OWL files.")
-        return None
+        raiseExceptions("Please provide a valid path for storing the OWL files.")

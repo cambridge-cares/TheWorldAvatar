@@ -64,8 +64,8 @@ class UKEbusModel:
     GD_OUTPUTKey = "GdBus_"
     VM_OUTPUTKey = "Vm_"
     VA_OUTPUTKey = "Va_"
-    PG_OUTPUTKey = "Generation_Pg_"
-    GG_OUTPUTKey = "Generation_Gg_"
+    PG_OUTPUTKey = "PdGen_"
+    GG_OUTPUTKey = "GdGen_"
     
     
     """Data file header"""
@@ -138,8 +138,8 @@ class UKEbusModel:
         self.GD_OUTPUT = None
         self.VM_OUTPUT = None
         self.VA_OUTPUT = None  
-        self.PDGEN = None
-        self.GDGEN = None
+        self.P_GEN = None
+        self.G_GEN = None
         
         # Bus node IRI
         self.BusNodeIRI = BusNodeIRI
@@ -158,7 +158,7 @@ class UKElineModel:
     ELineKey = "ELine-"
     ModelELineKey = "ElectricalLine_"
     
-    """Model variable keys"""
+    """Model input variable keys"""
     FROMBUSKey = "BusFrom_"
     TOBUSKey = "BusTo_"
     R_Key = "R_"
@@ -172,6 +172,14 @@ class UKElineModel:
     STATUSKey = "BranchStatus_"
     ANGMINKey = "AngleMin_"
     ANGMAXKey = "AngleMax_"
+
+    """Model output keys"""
+    FROMBUSINJECTION_P_Key = "PdBus_"
+    FROMBUSINJECTION_Q_Key = "GdBus_"
+    TOBUSINJECTION_P_Key = "Vm_"
+    TOBUSINJECTION_Q_Key = "Va_"
+    LOSS_P_Key = "PLoss_"
+    LOSS_Q_Key = "QLoss_"
     
     """Data file header"""
     # headerBranchModel = ["Bus1", "Bus2", "R", "X", "B", "RateA", "RateB", "RateC", "ratio", "angle", "status", "angmin", "angmax\n"]
@@ -405,5 +413,3 @@ class UKEGenModel_CostFunc(UKEGenModel):
             self.NCOST = pointsOfPiecewiseOrcostFuncOrder
             self.COST = []
             self.CarbonTax = CarbonTax
-
-

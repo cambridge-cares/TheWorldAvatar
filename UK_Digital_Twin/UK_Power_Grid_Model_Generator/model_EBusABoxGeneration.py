@@ -255,8 +255,8 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
 
         ## TODO: disable sparql_client
         ## update the graph to endpoint
-        #sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
-        #sparql_client.uploadOntology(filepath_)
+        sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+        sparql_client.uploadOntology(filepath_)
     
     print("...creating local file bus.txt...")
     textfile = open("C:\\Users\\wx243\\Documents\\TheWorldAvatar\\UK_Digital_Twin\\testOPFAnalysis\\bus.txt", "w")
