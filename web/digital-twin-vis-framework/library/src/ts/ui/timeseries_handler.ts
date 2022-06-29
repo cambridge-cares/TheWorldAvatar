@@ -1,5 +1,7 @@
 /**
  * Handles reading and plotting standard Time Series data.
+ * 
+ * TODO: Could use some refactoring (low priority).
  */
 class TimeseriesHandler {
 

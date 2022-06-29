@@ -7,11 +7,18 @@
  */
 class ControlHandler {
 
-    // Handles the group/layer tree
-	private treeHandler;
+    /**
+     * True if currently editing map coords.
+     */
+    public editingCoords: boolean = false;
 
     /**
-     * 
+     * Handles the group/layer tree.
+     */
+	private treeHandler: TreeHandler;
+
+    /**
+     * Constructor
      */
     constructor() {
         window.terrain = "light";
@@ -19,7 +26,7 @@ class ControlHandler {
     }
 
     /**
-     * 
+     * Setup functionality to collapse control blocks.
      */
     private setupCollapses() {
         let container = document.getElementById("controlContainer");
@@ -53,47 +60,84 @@ class ControlHandler {
 	}
 
 	/**
+	 * Rebuild the tree control.
+	 */
+	rebuildTree(dataStore: DataStore) {
+        this.treeHandler.rebuild(dataStore);
+	}
+
+    /**
 	 * Shows debugging info, like mouse position.
 	 */
-	showDeveloperControls() {
+	public showInfoPanel() {
 		let developerInfo = document.getElementById("developerContainer");
-		developerInfo.style.display = "none !important";
+		developerInfo.style.display = "block !important";
 
 		let self = this;
 		MapHandler.MAP.on("mousemove", function(event) {
-			self.updateDeveloperControls(event);
+			self.updateInfoPanel(event);
 		});
 	}
 
 	/**
 	 * Update developer info panel.
 	 */
-	private updateDeveloperControls(event) {
+	public updateInfoPanel(event) {
+        if(this.editingCoords) return;
+
 		let developerInfo = document.getElementById("developerContainer");
 		developerInfo.style.display = "block";
 
-		let lng = event.lngLat.lng.toFixed(5);
-		let lat = event.lngLat.lat.toFixed(5);
-		developerInfo.innerHTML = `
-			<table width="100%">
+        let lng, lat;
+        if(event === null || event === undefined) {
+            lng = document.getElementById("lngCell").innerHTML;
+		    lat = document.getElementById("latCell").innerHTML;
+        } else if(event.lngLat !== null) {
+            lng = event.lngLat.lng.toFixed(5);
+		    lat = event.lngLat.lat.toFixed(5);
+        }
+
+        let coordsContainer = document.getElementById("coordsContainer");
+		coordsContainer.innerHTML = `
+			<table class="infoContainer" style="width: 100%; table-layout: fixed;">
 				<tr>
-					<td width="35%">Longitude:</td>
-					<td width="65%">` + lng + `</td>
+                    <td width="60%">Longitude (at cursor):</td>
+					<td width="40%" id="lngCell">` + lng + `</td>
 				</tr>
 				<tr>
-					<td width="35%">Latitude:</td>
-					<td width="65%">` + lat + `</td>
+                    <td width="60%">Latitude (at cursor):</td>
+					<td width="40%" id="latCell">` + lat + `</td>
 				</tr>
 			</table>
 		`;
 	}
 
-	/**
-	 * Rebuild the tree control.
-	 */
-	rebuildTree(dataStore: DataStore) {
-        this.treeHandler.rebuild(dataStore);
-	}
+    /**
+     * Provides controls to change the map coordinates.
+     */
+    public editInfoPanel() {
+        let lng = document.getElementById("lngCell").innerHTML;
+		let lat = document.getElementById("latCell").innerHTML;
+
+        let coordsContainer = document.getElementById("coordsContainer");
+		coordsContainer.innerHTML = `
+			<table class="infoContainer" style="pafdding-top: 5px; width: 100%; table-layout: fixed;">
+				<tr>
+					<td width="50%">Map longitude:</td>
+					<td width="50%"><input id="lngCell" type="number" style="width: 100%;" value="` + lng + `"></input></td>
+				</tr>
+				<tr>
+					<td width="50%">Map latitude:</td>
+					<td width="50%"><input id="latCell" type="number" style="width: 100%;" value="` + lat + `"></input></td>
+				</tr>
+                <tr>
+                    <td width="50%"></td>
+					<td width="50%"><button style="width: 100%;" onclick="manager.moveMap()">Apply</button></td>
+				</tr>
+			</table>
+		`;
+        this.editingCoords = true;
+    }
 
 }
 // End of class.

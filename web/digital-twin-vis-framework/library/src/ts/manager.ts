@@ -1,11 +1,15 @@
 /**
+ * Sore manager class for DVTF visualisations.
  * 
+ * An instance of this class should have been created and setup for global access
+ * under the "manager" variable name.
+ * 
+ * TODO: Move out the feature finder functionality to a better (or new) class.
  */
 class Manager {
 
-    private editingCoords: boolean;
     /**
-     * 
+     * Enum for map provider. 
      */
     public static PROVIDER: MapProvider;
 
@@ -25,11 +29,24 @@ class Manager {
     private controlHandler: ControlHandler;
 
     /**
-     * 
+     * Handles the side panel.
      */
     private panelHandler: PanelHandler;
 
+    /**
+     * Cache of base URLs for all stack endpoints.
+     */
     private endPoints: string[];
+
+    /**
+     * Is the feature search bar currently up?
+     */
+    private searchUp: boolean = false;
+
+    /**
+     * Currently in full screen mode?
+     */
+    private inFullscreen: boolean = false;
 
     /**
      * Initialise a new Manager instance.
@@ -45,17 +62,12 @@ class Manager {
                 this.mapHandler = new MapHandler_MapBox(this);
             break;
 
+            // TODO: CesiumJS
+
             default:
                 throw new Error("Unknown map provider specified!");
             break;
         }
-    }
-
-    /**
-     * 
-     */
-    public getPanelHandler() {
-        return this.panelHandler;
     }
 
     /**
@@ -80,7 +92,56 @@ class Manager {
         this.controlHandler.rebuildTree(Manager.DATA_STORE);
 
         this.panelHandler.toggleMode();
-        this.showInfoPanel();
+        this.controlHandler.showInfoPanel();
+
+        // Override CTRL+F shortcut for feature searching (BETA)
+        let self = this;
+        document.addEventListener("keydown", function(e){
+            if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+                if(self.searchUp) {
+                    self.hideSearch();
+                } else {
+                    self.showFeatureFinder();
+                }
+                e.preventDefault();
+            }
+
+            if(e.altKey && e.key === "Enter") {
+
+
+                let layers = MapHandler.MAP.getStyle().layers;
+                console.log(layers);
+               // self.toggleFullscreen();
+            }
+        });
+    }
+
+    private toggleFullscreen() {
+        if(this.inFullscreen) {
+            // Disable full screen
+            document.getElementById("controlsContainer").style.display = "block";
+            document.getElementById("sidePanel").style.display = "block";
+
+            let sidePanel =  document.getElementById("sidePanel");
+
+            if(sidePanel.classList.contains("large")) {
+                document.getElementById("map").style.width = "100%";
+            } else if(sidePanel.classList.contains("collapsed")) {
+                document.getElementById("map").style.width = "calc(100% - 28px)";
+            } else {
+                document.getElementById("map").style.width = "calc(100% - 500px)";
+            }
+
+            this.inFullscreen = false;
+        } else {
+            // Enable full scrren
+            document.getElementById("controlsContainer").style.display = "none";
+            document.getElementById("sidePanel").style.display = "none";
+            document.getElementById("map").style.width = "100%";
+            this.inFullscreen = true;
+        }
+
+        MapHandler.MAP.resize();
     }
 
     /**
@@ -109,20 +170,39 @@ class Manager {
     public loadImagesAndLinks() {
         let promises = [];
 
-        this.endPoints.forEach(endPoint => {
+        for(let i = 0; i < this.endPoints.length; i++) {
+            let endPoint = this.endPoints[i];
+
             if(Manager.PROVIDER === MapProvider.MAPBOX) {
                 let iconFile = (endPoint.endsWith("/")) ? (endPoint + "icons.json") : (endPoint + "/icons.json");
-                promises.push(
-                    (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile)
-                );
+                let iconPromise = (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile);
+                promises.push(iconPromise);
             }
 
             let linksFile = (endPoint.endsWith("/")) ? (endPoint + "links.json") : (endPoint + "/links.json");
             promises.push(this.panelHandler.addLinks(linksFile));
+        }
+
+        let promise = Promise.all(promises).catch(function(err) {
+            console.warn("Loading icons and/or links has failed, these will be skipped."); 
         });
-        return Promise.all(promises);
+        return promise;
     }
 
+    /**
+     * Get the side panel handler instance.
+     */
+    public getPanelHandler() {
+        return this.panelHandler;
+    }
+
+    /**
+     * Get the control handler instance.
+    */
+    public getControlHandler() {
+        return this.controlHandler;
+    }
+    
     /**
      * Returns the depth-first, leaf data group to be used as the 
      * default source of plotted data.
@@ -145,7 +225,8 @@ class Manager {
     }
 
     /**
-     * 
+     * Fires when the drop down list of overlapping features has its
+     * selection changed.
      */
     public async featureSelectChange(select: HTMLInputElement) {
         if(window.selectFeatures !== null && window.selectFeatures !== undefined) {
@@ -159,6 +240,9 @@ class Manager {
         window.selectFeatures = {};
     }
 
+    /**
+     * Fires when an individual feature is selected.
+     */
     public showFeature(feature: Object) {
         // Title
         let name = feature["properties"]["name"];
@@ -166,6 +250,8 @@ class Manager {
             name = "Feature " + feature["id"];
         }
         this.panelHandler.setTitle("<h3>" + name + "</h2");
+        document.getElementById("titleContainer").classList.add("clickable");
+
 
         // Description
         let desc = feature["properties"]["description"];
@@ -187,20 +273,31 @@ class Manager {
         // Timeseries
         let timeseriesURL = feature["properties"]["timeseriesURL"];
         if(timeseriesURL !== null && timeseriesURL !== undefined) {
-            console.log("timeseriesURL: " + timeseriesURL);
             this.panelHandler.addTimeseries(timeseriesURL);
         }
 
-        // Simulate click on meta button
         let metaTreeButton = document.getElementById("treeButton");
-        if(metaTreeButton !== null) metaTreeButton.click();
+        let timeseriesButton = document.getElementById("timeButton");
 
-        // Update footer
-        document.getElementById("footerContainer").innerHTML = `
-            <div id="returnContainer">
-                <a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
-            </div>
-        `;
+        if(desc === undefined && metaTreeButton === null && timeseriesButton === null) {
+            // Add label that there's no data
+            this.panelHandler.setContent(
+                "<div class='description'>No data is available for this location.</div>"
+            );
+        } else {
+            // Simulate click on meta button
+            if(metaTreeButton !== null) metaTreeButton.click();
+        }
+
+        // Simulate click on general tab
+        // @ts-ignore
+        $("#sidePanelInner").tabs("option", "active", 0);
+
+        // Show return button
+        document.getElementById("returnContainer").style.display = "table";
+        
+        // Store selected feature
+        window.currentFeature = feature;
     }
 
     /**
@@ -230,94 +327,186 @@ class Manager {
         document.getElementById(tabButtonName).className += " active";
     }
 
+    /**
+     * Update the time series charts following a change in 
+     * the selected series.
+     */
     public updateTimeseries(setName) {
         this.panelHandler.updateTimeseries(setName);
     }
 
     /**
-	 * Shows debugging info, like mouse position.
-	 */
-	public showInfoPanel() {
-		let developerInfo = document.getElementById("developerContainer");
-		developerInfo.style.display = "block !important";
+     * Ease the map to pan and zoom to the currently selected feature.
+     */
+    public moveMapToFeature() {
+        let titleContainer = document.getElementById("titleContainer");
+        if(titleContainer.classList.contains("clickable")) {
 
-		let self = this;
-		MapHandler.MAP.on("mousemove", function(event) {
-			self.updateInfoPanel(event);
-		});
-	}
-
-	/**
-	 * Update developer info panel.
-	 */
-	private updateInfoPanel(event) {
-        if(this.editingCoords) return;
-
-		let developerInfo = document.getElementById("developerContainer");
-		developerInfo.style.display = "block";
-
-        let lng, lat;
-        if(event === null || event === undefined) {
-            lng = document.getElementById("lngCell").innerHTML;
-		    lat = document.getElementById("latCell").innerHTML;
-        } else {
-            lng = event.lngLat.lng.toFixed(5);
-		    lat = event.lngLat.lat.toFixed(5);
-        }
-		
-
-        let coordsContainer = document.getElementById("coordsContainer");
-		coordsContainer.innerHTML = `
-			<table class="infoContainer" style="width: 100%; table-layout: fixed;">
-				<tr>
-                    <td width="60%">Longitude (at cursor):</td>
-					<td width="40%" id="lngCell">` + lng + `</td>
-				</tr>
-				<tr>
-                    <td width="60%">Latitude (at cursor):</td>
-					<td width="40%" id="latCell">` + lat + `</td>
-				</tr>
-			</table>
-		`;
-	}
-
-    public editInfoPanel() {
-        let lng = document.getElementById("lngCell").innerHTML;
-		let lat = document.getElementById("latCell").innerHTML;
-
-        let coordsContainer = document.getElementById("coordsContainer");
-		coordsContainer.innerHTML = `
-			<table class="infoContainer" style="margin-top: 10px; width: 100%; table-layout: fixed;">
-				<tr>
-					<td width="50%">Map longitude:</td>
-					<td width="50%"><input id="lngCell" type="number" style="width: 100%;" value="` + lng + `"></input></td>
-				</tr>
-				<tr>
-					<td width="50%">Map latitude:</td>
-					<td width="50%"><input id="latCell" type="number" style="width: 100%;" value="` + lat + `"></input></td>
-				</tr>
-                <tr>
-                    <td width="50%"></td>
-					<td width="50%"><button style="width: 100%;" onclick="manager.moveMap()">Apply</button></td>
-				</tr>
-			</table>
-		`;
-        this.editingCoords = true;
+            let target = getCenter(window.currentFeature);
+            MapHandler.MAP.easeTo({
+                center: target,
+                zoom: 16,
+                duration: 3000,
+                essential: true
+            });
+        };
     }
 
+    /**
+     * Move the map to the coords specified in the info panel.
+     */
     public moveMap() {
         let lng = (document.getElementById("lngCell") as HTMLInputElement).value;
 		let lat = (document.getElementById("latCell") as HTMLInputElement).value;
 
         let target = [lng, lat];
-        console.log(target);
-
         MapHandler.MAP.jumpTo({
             center: target
         });
 
-        this.editingCoords = false;
-        this.updateInfoPanel(null);
+        this.controlHandler.editingCoords = false;
+        this.controlHandler.updateInfoPanel(null);
     }
 
+    /**
+     * Show the feature finder panel (BETA).
+     */
+    public showFeatureFinder() {
+        let finderContainer = document.getElementById("finderContainer");
+        let sidePanel = document.getElementById("sidePanel");
+
+        // No feature if side panel in large mode
+        if(sidePanel.classList.contains("large")) return;
+
+        // Adjust for current width state
+        if(sidePanel.classList.contains("expanded")) {
+            finderContainer.classList.remove("collapsed");
+            finderContainer.classList.add("expanded");
+        } else {
+            finderContainer.classList.remove("expanded");
+            finderContainer.classList.add("collapsed");
+        }
+
+        finderContainer.style.display = "block";
+        this.searchUp = true;
+
+        document.getElementById("findInput").focus();
+    }
+
+    /**
+     * Hide the feature finder panel (BETA).
+     */
+    public hideSearch() {
+        let finderContainer = document.getElementById("finderContainer");
+        finderContainer.style.display = "none";
+        this.searchUp = false;
+    }
+
+    /**
+     * Clear the current feature finder seach (BETA).
+     */
+    public cancelSearch() {
+        // Reset to previous filters
+        let rootGroups = Manager.DATA_STORE.dataGroups;
+        rootGroups.forEach(rootGroup => {
+
+            let layers = rootGroup.flattenDown();
+            layers.forEach(layer => {
+
+                // Get the source
+                let source = layer.source;
+
+                // Check and (if needed) re-enable clustering
+                let style = MapHandler.MAP.getStyle();
+                if(source.definition["cluster"]) {
+                    if(!style.sources[source.id].cluster) {
+                        style.sources[source.id].cluster = true;
+                        MapHandler.MAP.setStyle(style);
+                    }
+                }
+
+                // Reset layer to old filter
+                let oldFilter = layer.definition["filter"];
+                if(oldFilter !== null && oldFilter !== undefined) {
+                    MapHandler.MAP.setFilter(layer.id, oldFilter);
+                } else {
+                    MapHandler.MAP.setFilter(layer.id, null);
+                }
+            });
+        });
+
+        // Hide search bar
+        let finderContainer = document.getElementById("finderContainer");
+        finderContainer.style.display = "none";
+        this.searchUp = false;
+    }
+
+    /**
+     * Update the layer filters for the feature finder after an
+     * update to the search term (BETA).
+     */
+    public updateSearch(textField: HTMLInputElement) {
+        let searchTerm = textField.value.toLowerCase();
+
+        let rootGroups = Manager.DATA_STORE.dataGroups;
+        rootGroups.forEach(rootGroup => {
+
+            let layers = rootGroup.flattenDown();
+            layers.forEach(layer => {
+
+                // Get the source
+                let source = layer.source;
+
+                // Build filter
+                let searchFilter = [
+                    "all",
+                    ["has", "name"],
+                    ["in", searchTerm, ["downcase", ["get", "name"]]]
+                ];
+
+                // Combine with existing feature
+                let newFilter = searchFilter;
+                let oldFilter = layer.definition["filter"];
+
+                if(oldFilter !== null && oldFilter !== undefined) {
+                    // Clustering does not work well with this search feature, so this is how it's handled
+                    // During the time the search is active:
+                    //      - Layers that only show clustered locations are disabled using a restrictive filter
+                    //      - Layers that omit clustered locations temporarily show everything
+                    //      - Sources that have clustering enabled will have it disabled
+                    //      - Other layers have their existing filters combined with the search filter
+
+                    if(this.filterMatch(oldFilter, ["has", "point_count"]) || this.filterMatch(oldFilter, ["has", "point_count_abbreviated"])) {
+                        // This is a layer of clustered locations, temporarily disable it
+                        newFilter = ["has", "nonsense-string"];
+
+                        // Disable clustering on the source
+                        let style = MapHandler.MAP.getStyle();
+                        style.sources[source.id].cluster = false;
+                        MapHandler.MAP.setStyle(style);
+
+                    } else if(this.filterMatch(oldFilter, ["!", ["has", "point_count"]]) || this.filterMatch(oldFilter, ["!", ["has", "point_count_abbreviated"]])) {
+                        // This is a layer that omits clustered locations, temporarily show all points by not combining
+                        newFilter = searchFilter;
+
+                    } else {
+                        // Add filters together
+                        newFilter = ["all", oldFilter, newFilter];
+                    }
+                }
+
+                // Apply filter
+                if(newFilter !== null) MapHandler.MAP.setFilter(layer.id, newFilter);
+            });
+        });
+    }
+
+    /**
+     * Do input filters match?
+     */
+    private filterMatch(filterOne, filterTwo) {
+        let one = JSON.stringify(filterOne);
+        let two = JSON.stringify(filterTwo);
+        return one === two;
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * Utilities for meta data.
+ * Utilities for definition data.
  */
 class DataUtils {
 
@@ -70,21 +70,7 @@ class DataUtils {
     }
 
     /**
-     * 
-     */
-    public static getMapOptions(dataGroup: DataGroup): Object {
-        // // Get the root group
-        // let rootGroup = DataUtils.getRootGroup(dataGroup);
-
-        // // If it has map options, apply them
-        // if(rootGroup !== null && rootGroup.groupMeta !== null && rootGroup.groupMeta["mapOptions"]) {
-        //     return rootGroup.groupMeta["mapOptions"];
-        // }
-        return null;
-    }
-
-    /**
-     * 
+     * Returns the layer from the store with the input id.
      */
     public static getLayer(dataStore: DataStore, treeID: string): DataLayer {
         let parts = [];
@@ -105,7 +91,7 @@ class DataUtils {
     }
 
     /**
-     * 
+     * Finds the data group.
      */
     private static findGroup(currentGroup: DataGroup, parts: number[], depth: number) {
         if(currentGroup.subGroups.length > 0 && depth < parts.length) {
@@ -117,7 +103,7 @@ class DataUtils {
     }
 
     /**
-     * 
+     * Gets all layer IDs from the store
      */
     public static getAllLayerIDs(dataStore: DataStore) {
         let layerIDs = [];
@@ -128,7 +114,7 @@ class DataUtils {
     }
 
     /**
-     * 
+     * Recursively get all layer IDs.
      */
     private static getLayerIDs(layerIDs: string[], dataGroup: DataGroup) {
         dataGroup.dataLayers.forEach(layer => {

@@ -3,21 +3,44 @@
  */
 class DataGroup {
 
+    /**
+     * Parent group
+     */
     public parentGroup: DataGroup;
 
+    /**
+     * Sources
+     */
     public dataSources: Array<DataSource> = [];
 
+    /**
+     * Layers
+     */
     public dataLayers: Array<DataLayer> = [];
 
+    /** 
+     * Sub groups
+     */
     public subGroups: Array<DataGroup> = [];
 
+    /**
+     * Name
+     */
     public name: string;
 
+    /**
+     * Optional map settings.
+     */
     public mapOptions: Object;
 
-    // Unique, dynamically generated, ID
+    /**
+     * Unique, dynamically generated, ID
+     */
     public id: string;
 
+    /**
+     * Constructor
+     */
     constructor() {
         // Empty
     }
@@ -53,15 +76,11 @@ class DataGroup {
      * @param layersJSON JSON array of layer nodes.
      */
     public parseDataLayers(layersJSON) {
-        if(this.dataSources.length === 0) {
-            throw new Error("Data sources must be parsed before parsing data layers.");
-        }
-
         for(var i = 0; i < layersJSON.length; i++) {
             let node = layersJSON[i];
-            node["source"] = this.id + "." + node["source"];
 
-            let source = this.getSourceWithID(node["source"]);
+            let source = this.findSource(node["source"]);
+            node["source"] = source.id;
 
             let layer = null;
             switch(Manager.PROVIDER) {
@@ -80,29 +99,25 @@ class DataGroup {
         }
     }
 
-    /**
-     * Returns the DataSource instance with the input name if present. Note that this
-     * only searches for sources directly within this group (i.e. no subgroups).
-     * 
-     * @param name name of target data source.
-     * 
-     * @return matching DataSource, null if not present.
-     */
-    public getSourceWithID(id: string): DataSource {
+    private findSource(rawID: string): DataSource {
         let array = [];
-        this.recurseFindSource(array, this, id);
+        this.recurseFindSource(array, this, rawID);
         return (array.length === 1) ? array[0] : null;
     }
 
     /**
+     * Recurse
      */
     private recurseFindSource(array, currentGroup, target) {
-        let source =  this.dataSources.find(source => source.id === target);
+        let source = currentGroup.dataSources.find(source => {
+            let parts = source.id.split(".");
+            return parts[parts.length - 1] === target;
+        });
 
         if(source === null || source === undefined) {
-            currentGroup.subGroups.forEach(subGroup => {
-                this.recurseFindSource(array, subGroup, target);
-            });
+            if(currentGroup.parentGroup !== null && currentGroup.parentGroup !== undefined) {
+                this.recurseFindSource(array, currentGroup.parentGroup, target);
+            }
         } else {
             array.push(source);
         }
@@ -123,6 +138,7 @@ class DataGroup {
     }
 
     /**
+     * Recurse
      */
     private recurseFindLayer(array, currentGroup, target) {
         let layer = currentGroup.dataLayers.find(layer => layer.id === target);

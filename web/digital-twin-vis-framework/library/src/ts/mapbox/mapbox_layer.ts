@@ -11,7 +11,7 @@ class MapBoxLayer extends DataLayer {
     }
 
     /**
-     * 
+     * Returns true if layer is currently visible.
      */
     public isVisible(): boolean {
         let onMap = MapHandler.MAP.getLayer(this.id) !== undefined;

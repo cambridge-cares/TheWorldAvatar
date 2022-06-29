@@ -62,10 +62,7 @@ class DataStore {
         let self = this;
 
         return $.getJSON(visFile, function(json) {
-            console.info("Parsing visualisation file...");
             self.recurseLoadDataGroups(json, null, self.dataGroups.length);
-            console.info("...file parsed and objects created.");
-            
         }).fail((error) => {
             throw error;
         });    
@@ -117,7 +114,7 @@ class DataStore {
     }
 
     /**
-     * 
+     * Returns the layer with the input ID from anywhere in the store.
      */
     public getLayerWithID(id: string): DataLayer {
         for(var i = 0; i < this.dataGroups.length; i++) {

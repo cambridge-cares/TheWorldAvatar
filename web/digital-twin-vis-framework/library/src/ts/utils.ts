@@ -18,7 +18,7 @@ function getCenter(feature: Object) {
 }
 
 /**
- * 
+ * Load HTML content from an external file.
  */
 async function loadHTML(htmlFile: string) {
     return await fetch(htmlFile).then(response => {

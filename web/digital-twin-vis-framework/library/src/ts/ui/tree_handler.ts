@@ -4,7 +4,7 @@
 class TreeHandler {
     
     /**
-     * 
+     * Triggers when any selection states in the tree change.
      */
     private registerEvents(dataStore: DataStore) {
 
@@ -42,7 +42,7 @@ class TreeHandler {
     }
 
     /**
-     * 
+     * Rebuilds the tree based on the input DataStore instance.
      */
     public rebuild(dataStore: DataStore) {
         // // Reset the element
@@ -79,6 +79,9 @@ class TreeHandler {
     }
 
 
+    /**
+     * Recursively build HTML elements.
+     */
     private buildRecurse(htmlBuilder: string[], currentGroup: DataGroup, depth: number, preCheck: string[]) {
         // Entry for group itself
         let groupHTML = "<li data-id='" + (depth - 1) + "'>";
@@ -102,20 +105,38 @@ class TreeHandler {
             sortedLayers[layer.name].push(layer);
         });
 
-        console.log(sortedLayers);
-
         for(const [key, value] of Object.entries(sortedLayers)) {
 
             // Build dataID
             let layers = value as Array<DataLayer>;
             let dataID = "";
+
+            // Are ALL layers here marked as un-treeable?
+            let allHidden = true;
+
             layers.forEach(layer => {
+                if(!layer.definition.hasOwnProperty("treeable") || layer.definition["treeable"] === true) {
+                    allHidden = false;
+                }
+
                 dataID += layer.id + "|";
             });
+        
+            // Clean up
             if(dataID.endsWith("|")) dataID = dataID.slice(0, -1);
 
             // Build HTML
-            let layerHTML = "<li class='end-node'>";
+            let layerHTML = "<li class='end-node'";
+
+            // If all layers are marked as un-treeable, add it to the tree but make it invisible. This is required as
+            // we use the structure of the tree later to determine checked and unchecked layers.
+            if(allHidden) {
+                layerHTML += "style='display:none;'>";
+            } else {
+                layerHTML += ">"
+            }
+
+            // Continue building HTML
             layerHTML += "<label>"
             layerHTML += "<input class='hummingbird-end-node' id='" + dataID + "' data-id='" + dataID + "' type='checkbox'/><span>";
             layerHTML += key;
@@ -144,9 +165,4 @@ class TreeHandler {
         }
         htmlBuilder.push("</li>");
     }
-
-
-
-
- 
 }

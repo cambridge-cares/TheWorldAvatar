@@ -76,7 +76,7 @@ class MapBoxUtils {
     }
 
     /**
-     * 
+     * Build a popup for cluster features.
      */
     private static showClusterPopup(event: Object, feature: Object) {
         let name = "Multiple locations";
@@ -93,7 +93,7 @@ class MapBoxUtils {
     }   
 
     /**
-     * 
+     * Recurse all features within a cluster feature.
      */
     public static async recurseFeatures(leafs: Array<Object>, features) {
         for(let i = 0; i < features.length; i++) {
@@ -117,7 +117,7 @@ class MapBoxUtils {
     }
 
     /**
-     * 
+     * Get the features from within a cluster.
      */
     public static async getClusterLeaves(cluster, sourceID, limit, offset) {
         let source = MapHandler.MAP.getSource(sourceID);
@@ -134,7 +134,7 @@ class MapBoxUtils {
     };
 
     /**
-     * 
+     * True if the input feature is a cluster.
      */
     public static isCluster(feature: Object) {
         return (feature["properties"].hasOwnProperty("cluster") && feature["properties"]["cluster"]);
@@ -160,7 +160,7 @@ class MapBoxUtils {
     }
 
     /**
-     * 
+     * True if any layers are currently visible
      */
     public static anyLayersVisible(layerIDs: Array<String>) {
         for(let i = 0; i < layerIDs.length; i++) {
@@ -261,7 +261,7 @@ class MapBoxUtils {
 		}
 	}
 
-    	/**
+    /**
 	 * Updates the tiltshift effect based on the current zoom and pitch.
 	 */
 	public static updateTiltShift() {
@@ -291,7 +291,7 @@ class MapBoxUtils {
 		}
 	}
 
-      /**
+    /**
      * Adds 3D terrain provided by MapBox. 
      * WARNING: This may not be compatible with 3D building data unless the
      * building's base height has been set correctly.
@@ -339,7 +339,7 @@ class MapBoxUtils {
 		});
 	}
 
-    	/**
+    /**
 	 * Show or hide a single (MapBox) layer on the map.
 	 * 
 	 * @param {String} layerID MapBox layer name.
@@ -349,8 +349,6 @@ class MapBoxUtils {
 		if(MapHandler.MAP.getLayer(layerID) === undefined) return;
         if(layerID.endsWith("_cluster")) return;
 
-        console.log("Toggling layer " + layerID + " to " + visible);
-        
         MapHandler.MAP.setLayoutProperty(
             layerID,
             "visibility",
@@ -368,7 +366,6 @@ class MapBoxUtils {
 
         // Is there a corresponding _cluster layer?
         if(MapHandler.MAP.getLayer(layerID + "_cluster") != null) {
-            console.log("GOT CLUSTER LAYER");
             MapHandler.MAP.setLayoutProperty(
                 layerID + "_cluster",
                 "visibility",
@@ -395,5 +392,19 @@ class MapBoxUtils {
         }
 	}
 
+    public static deduplicate(features: Object[]) {
+        let result = [];
+
+        features.forEach(feature => {
+            let id = feature["id"];
+
+            let match = result.find(entry => entry["id"] === id);
+            if(match === null || match === undefined) {
+                result.push(feature);
+            }
+        });
+
+        return result;
+    }
 
 }

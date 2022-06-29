@@ -1,5 +1,9 @@
 /**
 * CSS settings for generic framework components.
+*
+* TODO: This stylesheet needs a major clean-up, there's styles for a
+* bunch of obsolete ids and classes in here. Unfortunatly I can't find
+* a tool that can do it for me, looks like it'll beed to be done manually.
 */
 
 html,
@@ -28,6 +32,7 @@ h6 {
     height: 100%;
     float: left;
     z-index: 0;
+    background-color: #cad2d3;
 }
 
 .mapboxgl-popup-content {
@@ -149,20 +154,23 @@ h6 {
     display: table-cell;
     vertical-align: middle;
 }
-#titleContainer img:hover {
-    opacity: 50%;
+#titleContainer.clickable:hover {
+    opacity: 80%;
     cursor: pointer;
 }
 
 .description {
+    padding-right: 5px;
     padding-bottom: 10px;
     border-bottom: 1px solid lightgray;
     font-size: 10pt;
+    max-height: 250px;
+    overflow-y: auto;
 }
 
 #contentContainer {
     width: 100%;
-    height: calc(100% - 65px);
+    height: calc(100% - 80px);
     margin-bottom: 70px;
     flex: 1 1 auto;
     display: flex;
@@ -194,11 +202,21 @@ h6 {
 }
 
 #returnContainer {
-    text-align: left;
-    width: 100%;
-    height: 100%;
-    margin-bottom: 25px;
-    display: none;
+    width: 25%;
+    height: 35px;
+    position: absolute;
+    bottom: 0;
+    right: 10;
+    text-align: right;
+    display: table;
+}
+#innerReturnContainer {
+    display: table-cell;
+    vertical-align: middle;
+}
+#returnContainer a {
+    color: grey !important;
+    text-decoration: none !important;
 }
 
 #footerContent {
@@ -931,7 +949,7 @@ label[for="select-feature"] {
     bottom: 0; 
     border: none;
     padding-top: 0px;
-    height: 30px;
+    height: 35px;
 } 
 .ui-widget-content {
     border: none !important;
@@ -973,4 +991,152 @@ label[for="select-feature"] {
 
 .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
     font-size: 9pt;
+}
+
+
+#controlContainer {
+    width: 250px;
+    height: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 20px;
+    z-index: 1;
+
+    color: white;
+    font-family: "Inter", sans-serif !important;
+    font-size: 10pt;
+}
+
+#controlContainer p {
+    margin: 0 0 5px 0;
+    font-weight: bold;
+    font-size: 12pt;
+}
+#controlContainer a {
+    color: white;
+    text-decoration: none;
+    padding-left: 10px;
+}
+#controlContainer a:hover {
+    color: lightskyblue;
+    text-decoration: underline;
+}
+#controlContainer label:hover {
+    color: lightskyblue;
+    text-decoration: underline;
+}
+
+.controlBlock {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 10px;
+    line-height: 14pt;
+}
+.controlBlock:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.controlBlock.collapsed {
+    height: 20px;
+}
+
+.collapsed > .controlContents {
+    display: none;
+}
+
+.controlTitle p {
+    cursor: pointer;
+}
+
+#layerContainer {
+    max-height: 550px;
+}
+
+#layerTree {
+    padding-left: 0px;
+}
+#layerTree ul {
+    padding-left: 15px;
+}
+#layerTree ul, li {
+    list-style-type: none;
+}
+
+
+#layerTreeContainer {
+    min-height: 30vh;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+@media only screen and (max-height: 900px) {
+    #layerTreeContainer {
+        max-height: 25vh;
+        overflow-y: auto;
+    }
+}
+.hummingbird-treeview label {
+    background-color: transparent !important;
+    color: white !important;
+    font-family: "Inter", sans-serif !important;
+    font-size: 9pt !important;
+
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.hummingbird-base {
+    padding-inline-start: 0px !important;
+}
+
+.hummingbird-treeview ul {
+    margin: 0 !important;
+    padding-inline-start: 15px;
+}
+.end-node {
+    padding-inline-start: 15px;
+}
+
+.fa-chevron-down {
+    font-size: 10pt !important;
+    line-height: inherit !important;
+    vertical-align: middle;
+    padding-right: 4px;
+    padding-bottom: 4px;
+}
+.fa-chevron-up {
+    font-size: 10pt !important;
+    line-height: inherit !important;
+    vertical-align: middle;
+    padding-right: 4px;
+    padding-bottom: 4px;
+}
+
+.hummingbird-treeview, .hummingbird-treeview * {
+    line-height: 18px !important;
+}
+.hummingbird-treeview input[type=checkbox] {
+    margin-right: 4px !important;
+    vertical-align: middle;
+    width: 14px !important;
+    height: 14px !important;
+}
+.hummingbird-treeview  span {
+    vertical-align: middle;
+    font-size: 9pt !important;
+}
+
+#finderContainer {
+    position: absolute;
+    bottom: 30;
+    left: 20;
+    height: 40px;
+}
+#finderContainer.expanded {
+    width: calc(100% - 560px);
+}
+#finderContainer.collapsed {
+    width: calc(100% - 90px);
 }

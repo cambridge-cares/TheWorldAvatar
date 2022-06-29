@@ -4,7 +4,7 @@ module.exports = function (grunt) {
         concat: {
             dist: {
                 src: [
-                    "./output/**/*.js"
+                    "./output/ts/**/*.js"
                 ],
                 dest: "./output/dtvf.temp.js"
             }
@@ -26,17 +26,16 @@ module.exports = function (grunt) {
             },
             target: {
                 files: {
-                    "./output/dtvf.min.css": ["./src/css/dtvf.css"],
-                    "./output/controls.css": ["./src/css/controls.css"]
+                    "./output/dtvf.min.css": ["./src/css/dtvf.css"]
                 }
             }
         },
-        copy: {
+        clean: {
             main: {
-                expand: true,
-                flatten: true,
-                src: "./src/html/*",
-                dest: "./output/html/"
+                src: [
+                    "./output/dtvf.temp.js",
+                    "./output/ts/**"
+                ]
             }
         }
     });
@@ -46,7 +45,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-cssmin");
     grunt.loadNpmTasks("grunt-contrib-copy");
+    grunt.loadNpmTasks("grunt-contrib-clean");
 
     // Register Tasks
-    grunt.registerTask("package", ["concat", "uglify", "cssmin", "copy"]);
+    grunt.registerTask("package", ["concat", "uglify", "cssmin", "clean"]);
 }

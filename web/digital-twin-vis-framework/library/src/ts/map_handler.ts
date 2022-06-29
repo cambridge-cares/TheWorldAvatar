@@ -20,17 +20,17 @@ abstract class MapHandler {
     public static ALLOW_CLICKS: boolean = true;
 
     /**
-     * 
+     * Default map options
      */
     public static MAP_OPTIONS;
 
     /**
-     * 
+     * Main manager instance.
      */
     protected manager;
 
     /**
-     * 
+     * Constructor
      */
     constructor(manager: Manager) {
         this.manager = manager;

@@ -3,39 +3,22 @@
  */
 class PanelHandler {
 
-    //
+    /**
+     * Default state of general tab
+     */
     _defaultHTML: string;
 
-    //
-    _previousLegendVisibility: string;
-
+    /**
+     * Handles plotting time series data.
+     */
     timeseriesHandler: TimeseriesHandler;
 
+    /**
+     * Constructor
+     */
     constructor() {
         this.timeseriesHandler = new TimeseriesHandler();
     }
-
-    /**
-     * 
-     */
-	public showLinkedFiles(linkedFiles) {
-		if(linkedFiles == null || linkedFiles.length == 0) return;
-
-        let contentContainer = document.getElementById("linkedFilesContainer");
-		let newHTML = "";
-
-		for(var i = 0; i < linkedFiles.length; i++) {
-			let text = linkedFiles[i]["text"];
-			let url = linkedFiles[i]["url"];
-
-			// Add link to HTML
-			newHTML += "<a href='" + url + "' target='_blank'>"
-			newHTML += text;
-			newHTML += "</a><br/>"
-		}
-
-		contentContainer.innerHTML = newHTML;
-	}
 
     /**
 	 * Toggles the visibility of the legend element.
@@ -86,7 +69,7 @@ class PanelHandler {
 	 */
     public setLegend(legendHTML) {
 		document.getElementById("sidePanel").style.visibility = "visible";
-		document.getElementById("legendContainer").innerHTML = legendHTML;
+		document.getElementById("sidePanelLegend").innerHTML = legendHTML;
 	}
 
     /**
@@ -95,23 +78,15 @@ class PanelHandler {
 	 * @param {String} footerHTML HTML to add. 
 	 */
 	public setFooter(footerHTML) {
-		var newHTML = `
-			<div id="returnContainer">
-				<a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
-			</div>
-			<div id="footerContent">
-				` + footerHTML + `
-			</div>
-		`;
 		document.getElementById("sidePanel").style.visibility = "visible";
-		document.getElementById("footerContainer").innerHTML = newHTML;
+		document.getElementById("footerContainer").innerHTML = footerHTML;
 	}
 
     /**
 	 * Store the current state of the side panel as it's default
 	 */
 	public storeDefault() {
-		this._defaultHTML = document.getElementById("sidePanelInner").innerHTML;
+		this._defaultHTML = document.getElementById("sidePanelGeneral").innerHTML;
 	}
 
 	/**
@@ -119,8 +94,14 @@ class PanelHandler {
 	 */
 	public returnToDefault() {
 		if(this._defaultHTML != null) {
-			document.getElementById("sidePanelInner").innerHTML = this._defaultHTML;
+			document.getElementById("sidePanelGeneral").innerHTML = this._defaultHTML;
 		}
+        document.getElementById("returnContainer").style.display = "none";
+        window.currentFeature = null;
+
+        // Simulate click on general tab
+        // @ts-ignore
+        $("#sidePanelInner").tabs("option", "active", 0);
 	}
 
     /**
@@ -130,7 +111,6 @@ class PanelHandler {
 		var sidePanel = document.getElementById("sidePanel");
 		var leftButton = document.getElementById("slideButton");
 		var rightButton = document.getElementById("expandButton");
-		var legend = document.getElementById("legendContainer");
 
 		if(sidePanel.classList.contains("small")) {
 			// Make large
@@ -142,10 +122,6 @@ class PanelHandler {
 
 			leftButton.style.visibility = "hidden";
 
-			// Hide the legend
-			this._previousLegendVisibility = legend.style.visibility;
-			legend.style.visibility = "hidden";
-			
 			// Stop keyboard events
 			MapHandler.MAP["keyboard"].disable();
 			MapHandler.MAP.resize();
@@ -159,9 +135,6 @@ class PanelHandler {
 			document.getElementById("controlsContainer").style.visibility = "visible";
 
 			leftButton.style.visibility = "visible";
-
-			// Show the legend (if it was visible beforehand)
-			legend.style.visibility = this._previousLegendVisibility;
 
 			// Allow keyboard events
 			MapHandler.MAP["keyboard"].enable();
@@ -177,6 +150,7 @@ class PanelHandler {
 		var sidePanelInner = document.getElementById("sidePanelInner");
 		var leftButton = document.getElementById("slideButton");
         var rightButton = document.getElementById("expandButton");
+        var finderContainer = document.getElementById("finderContainer");
 
 		if(sidePanel.classList.contains("small")) {
 
@@ -186,10 +160,11 @@ class PanelHandler {
                 leftButton.classList.replace("fa-chevron-left", "fa-chevron-right");
 
 				document.getElementById("map").style.width = "calc(100% - 500px)";
-				document.getElementById("legendContainer").style.visibility = "visible";
 
 				rightButton.style.visibility = "visible";
 				sidePanelInner.style.visibility = "visible";
+
+                finderContainer.classList.replace("collapsed", "expanded");
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
@@ -197,10 +172,11 @@ class PanelHandler {
                 leftButton.classList.replace("fa-chevron-right", "fa-chevron-left");
 
 				document.getElementById("map").style.width = "calc(100% - 28px)";
-				document.getElementById("legendContainer").style.visibility = "hidden";
 
 				rightButton.style.visibility = "hidden";
 				sidePanelInner.style.visibility = "hidden";
+
+                finderContainer.classList.replace("expanded", "collapsed");
 			}
 		} 
 
@@ -289,42 +265,44 @@ class PanelHandler {
             }
         }
 
-        let returnContainer = document.getElementById("returnContainer");
-        returnContainer.style.display = "block";
-        let footerContent = document.getElementById("footerContent");
-        footerContent.style.display = "none";
+        let footerContent = document.getElementById("footerContainer");
+        if(footerContent !== null) footerContent.style.display = "none";
     }
 
     public addLinks(linksFile: string) {
-        console.log(linksFile);
-        let promise = $.getJSON(linksFile, function(json) {
+        return $.getJSON(linksFile, function(json) {
             return json;
-        }).fail(function(jqXHR, status, error){
-           console.log("ERROR");
-           console.log(status);
-           console.log(error);
-        });
-
-        return promise.then(
-            function(json) {
-                console.log(json);
-                let container = document.getElementById("sidePanelLinks");
-                if(container === null) return;
-
-                if(json["intro"]) {
-                    container.innerHTML += "<p>" + json["intro"] + "</p>"
-                }
-
-                if(json["links"]) {
-                    container.innerHTML += "<ul>";
-
-                    for(let i = 0; i < json["links"].length; i++) {
-                        let entry = json["links"][i];
-                        container.innerHTML += "<li><a href='" + entry["url"] + "' target='_blank'>" + entry["text"] + "</a></li>";
-                    }
-                    container.innerHTML += "</ul>";
-                }
+        })
+        .fail(() => {
+            console.warn("Could not read links.json, skipping.");
+            let linksTab = document.querySelector("li[aria-controls=\"sidePanelLinks\"]") as HTMLElement;
+            if(linksTab !== null) linksTab.style.display = "none";
+        })
+        .done((json) => {
+            if(json === null || !json["links"]) {
+                let linksTab = document.querySelector("li[aria-controls=\"sidePanelLinks\"]") as HTMLElement;
+                if(linksTab !== null) linksTab.style.display = "none";
+                return;
             }
-        );
+
+            let container = document.getElementById("sidePanelLinks");
+            if(container === null) return;
+
+            container.innerHTML += "<br/><br/>";
+            
+            if(json["intro"]) {
+                container.innerHTML += "<p>" + json["intro"] + "</p>"
+            }
+
+            if(json["links"]) {
+                container.innerHTML += "<ul>";
+
+                for(let i = 0; i < json["links"].length; i++) {
+                    let entry = json["links"][i];
+                    container.innerHTML += "<li><a href='" + entry["url"] + "' target='_blank'>" + entry["text"] + "</a></li>";
+                }
+                container.innerHTML += "</ul>";
+            }
+        });
     }
 }

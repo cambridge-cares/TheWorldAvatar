@@ -12,7 +12,7 @@
         "preserveConstEnums": true,
         "sourceMap": false,
         "suppressImplicitAnyIndexErrors": true,
-        "outDir": "./output"
+        "outDir": "./output/ts"
     },
     "include": [
         "src/**/*"

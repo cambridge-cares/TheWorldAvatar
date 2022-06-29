@@ -10,7 +10,7 @@ class MapHandler_MapBox extends MapHandler {
     public static POPUP;
 
     /**
-     * 
+     * Constructor.
      */
     constructor(manager: Manager) {
         super(manager);
@@ -84,12 +84,22 @@ class MapHandler_MapBox extends MapHandler {
             return MapBoxUtils.isCMCLLayer(feature);
         });
 
+        // Filter out duplicates (MapBox can return these if a feature is split across a tile boundary)
+        features = MapBoxUtils.deduplicate(features);
+
         if(features.length > 1) {
             // Click on overlapping, individual features/clusters
             this.clickMultiple(features);
 
         } else if (features.length === 1) {
             let feature = features[0];
+
+            let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
+            let clickable = layer.definition["clickable"];
+            if(clickable !== null && clickable === false) {
+                // No mouse interaction
+                return;
+            }
 
             if(MapBoxUtils.isCluster(feature)) {
                 // Clicked on a clustered feature, handle as if multiple
@@ -119,15 +129,22 @@ class MapHandler_MapBox extends MapHandler {
         let sortedLeafs = {};
 
         // Group the features by layer
-        leafs.forEach(leaf => {
+        for(let i = 0; i < leafs.length; i++) {
+            let leaf = leafs[i];
             let layerID = leaf["layer"]["id"];
             let layer = Manager.DATA_STORE.getLayerWithID(layerID);
+
+            let clickable = layer.definition["clickable"];
+            if(clickable !== null && clickable === false) {
+                // No mouse interaction
+                continue;
+            }
 
             if(sortedLeafs[layer.name] === null || sortedLeafs[layer.name] === undefined) {
                 sortedLeafs[layer.name] = [];
             }
             sortedLeafs[layer.name].push(leaf);
-        });
+        }
 
         // Build drop down
         let html = `
@@ -197,10 +214,17 @@ class MapHandler_MapBox extends MapHandler {
 
         } else if(features.length > 0) {
             // Mouse over single feature
-            MapHandler.MAP.getCanvas().style.cursor = 'pointer';
-
             let feature = features[0];
             let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
+
+            let clickable = layer.definition["clickable"];
+            if(clickable !== null && clickable === false) {
+                // No mouse interaction
+                return;
+            }
+
+            // Change cursor
+            MapHandler.MAP.getCanvas().style.cursor = 'pointer';
 
             if(layer != null && layer instanceof MapBoxLayer) {
                 if(feature !== null) MapBoxUtils.showPopup(event, feature);
@@ -213,7 +237,6 @@ class MapHandler_MapBox extends MapHandler {
      */
     public plotData(dataStore: DataStore) {
         dataStore.dataGroups.forEach(rootGroup => {
-            console.log("Plotting root group?");
             let allLayers = rootGroup.flattenDown();
             
             allLayers.forEach(layer => {
@@ -299,6 +322,14 @@ class MapHandler_MapBox extends MapHandler {
                 options["metadata"]["clickable"] = true
             }
 
+            // Remove 'treeable' if specified
+            if(options["treeable"]) {
+                options["metadata"]["treeable"] = options["treeable"]
+                delete options["treeable"]
+            } else {
+                options["metadata"]["treeable"] = true
+            }
+
             // Update to unique ID
             options["id"] = layer.id;
 
@@ -312,29 +343,27 @@ class MapHandler_MapBox extends MapHandler {
     }
 
     /**
-     * 
+     * Adds icons to the map
      */
-    public async addIcons(iconFile: string) {
-        console.info("Registering images with MapBox...");
-        let self = this;
-
-        let promise = $.getJSON(iconFile, function(json) {
+    public addIcons(iconFile: string) {
+        return $.getJSON(iconFile, function(json) {
             return json;
-        });
+        })
+        .fail(() => {
+            console.warn("Could not read icons.json, skipping.");
+        })
+        .done((json) => {
+            if(json === null || json === undefined) return;
 
-        return promise.then(
-            function(json) {
-                let promises = [];
-                let iconHandler = new IconHandler();
-
-                for (var key of Object.keys(json)) {
-                    promises.push(iconHandler.loadIcon(key, json[key]));
-                }
-
-                return Promise.all(promises).then(() => {
-                    console.info("All images have been registered.");
-                });
+            let promises = [];
+            let iconHandler = new IconHandler();
+            for (var key of Object.keys(json)) {
+                promises.push(iconHandler.loadIcon(key, json[key]));
             }
-        );
+
+            return Promise.all(promises).then(() => {
+                console.info("All images have been registered.");
+            });
+        });
     }
 }
