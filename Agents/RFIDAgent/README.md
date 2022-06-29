@@ -54,7 +54,7 @@ This can be either in form of a Docker container or natively running on a machin
 to explain the set-up of a Postgres database.
 
 ### Property files
-For running the agent, one property files are required:
+For running the agent, one property file is required:
 - One [property file for the postgreSQL client](#client-properties) defining how to access the database.
 
 #### client properties
@@ -89,11 +89,16 @@ The agent is reachable at "rfid-agent/" on localhost port 1016.
 
 
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1016/rfid-update-agent/ with data in the correct XML format. The request is usually send automatically
-via the UHF Service Application but it can be send manually as well.
-An example request is shown below.
+To run the agent, either a POST request is sent to http://localhost:1016/rfid-agent/ with data in the correct XML format or a GET request can be sent to http://localhost:1016/rfid-agent/ in the correct format. The POST request 
+is usually send automatically via the UHF Service Application but it can be send manually as well.
+An example POST request is shown below.
 ```
-POST http://localhost:1017/rfid-update-agent/retrieve
+POST http://localhost:1016/rfid-agent/
 Content-Type: application/xml
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"> <s:Body> <GetRFIDData xmlns="http://tempuri.org/"><value1>00000000000000A000009727,0,-85</value1></GetRFIDData></s:Body></s:Envelope>
+```
+
+An example GET request is shown below.
+```
+GET http://localhost:1016/rfid-agent/values=status/limit=20/keys=00000000000000A000009727,00000000000000A000009726
 ```
