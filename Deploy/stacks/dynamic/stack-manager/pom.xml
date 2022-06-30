@@ -56,7 +56,7 @@
               <addClasspath>true</addClasspath>
               <classpathPrefix>.</classpathPrefix>
               <classpathLayoutType>repository</classpathLayoutType>
-              <mainClass>com.cmclinnovations.App</mainClass>
+              <mainClass>com.cmclinnovations.stack.App</mainClass>
               <useUniqueVersions>false</useUniqueVersions>
             </manifest>
           </archive>

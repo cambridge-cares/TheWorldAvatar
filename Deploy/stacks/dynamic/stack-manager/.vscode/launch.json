@@ -8,7 +8,7 @@
             "type": "java",
             "name": "Launch App",
             "request": "launch",
-            "mainClass": "com.cmclinnovations.App",
+            "mainClass": "com.cmclinnovations.stack.App",
         },
         {
             "type": "java",
