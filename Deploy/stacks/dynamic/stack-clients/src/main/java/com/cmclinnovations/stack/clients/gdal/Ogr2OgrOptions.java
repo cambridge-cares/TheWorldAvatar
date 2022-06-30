@@ -11,10 +11,10 @@ public class Ogr2OgrOptions {
     private String sridIn = null;
     private String sridOut = null;
 
-    private final List<String> datasetCreationOptions = new ArrayList<>();
-    private final List<String> layerCreationOptions = new ArrayList<>();
-    private final List<String> inputDatasetOpenOptions = new ArrayList<>();
-    private final List<String> outputDatasetOpenOptions = new ArrayList<>();
+    private final Map<String, String> datasetCreationOptions = new HashMap<>();
+    private final Map<String, String> layerCreationOptions = new HashMap<>();
+    private final Map<String, String> inputDatasetOpenOptions = new HashMap<>();
+    private final Map<String, String> outputDatasetOpenOptions = new HashMap<>();
 
     private final Map<String, String> envVars = new HashMap<>();
 
@@ -29,22 +29,22 @@ public class Ogr2OgrOptions {
     }
 
     public Ogr2OgrOptions addDatasetCreationOption(String name, String value) {
-        datasetCreationOptions.add(name + '=' + value);
+        datasetCreationOptions.put(name, value);
         return this;
     }
 
     public Ogr2OgrOptions addLayerCreationOption(String name, String value) {
-        layerCreationOptions.add(name + '=' + value);
+        layerCreationOptions.put(name, value);
         return this;
     }
 
     public Ogr2OgrOptions addInputDatasetOpenOption(String name, String value) {
-        inputDatasetOpenOptions.add(name + '=' + value);
+        inputDatasetOpenOptions.put(name, value);
         return this;
     }
 
     public Ogr2OgrOptions addOutputDatasetOpenOption(String name, String value) {
-        outputDatasetOpenOptions.add(name + '=' + value);
+        outputDatasetOpenOptions.put(name, value);
         return this;
     }
 
@@ -75,16 +75,16 @@ public class Ogr2OgrOptions {
             }
         }
 
-        datasetCreationOptions.forEach(value -> addKeyValuePair(allArgs, "-dsco", value));
-        layerCreationOptions.forEach(value -> addKeyValuePair(allArgs, "-lco", value));
-        inputDatasetOpenOptions.forEach(value -> addKeyValuePair(allArgs, "-oo", value));
-        outputDatasetOpenOptions.forEach(value -> addKeyValuePair(allArgs, "-doo", value));
+        datasetCreationOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-dsco", name, value));
+        layerCreationOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-lco", name, value));
+        inputDatasetOpenOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-oo", name, value));
+        outputDatasetOpenOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-doo", name, value));
 
         return allArgs.toArray(args);
     }
 
-    private void addKeyValuePair(List<String> allArgs, String key, String value) {
-        allArgs.add(key);
-        allArgs.add(value);
+    private void addKeyValuePair(List<String> allArgs, String option, String name, String value) {
+        allArgs.add(option);
+        allArgs.add(name + "=" + value);
     }
 }
