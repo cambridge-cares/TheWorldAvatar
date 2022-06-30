@@ -12,16 +12,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
-import com.github.dockerjava.api.command.ConnectToNetworkCmd;
+import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.command.CreateNetworkCmd;
 import com.github.dockerjava.api.command.CreateServiceCmd;
 import com.github.dockerjava.api.command.CreateServiceResponse;
 import com.github.dockerjava.api.command.InfoCmd;
 import com.github.dockerjava.api.command.InitializeSwarmCmd;
-import com.github.dockerjava.api.command.InspectNetworkCmd;
 import com.github.dockerjava.api.command.ListContainersCmd;
 import com.github.dockerjava.api.command.ListNetworksCmd;
 import com.github.dockerjava.api.command.ListServicesCmd;
@@ -38,6 +36,7 @@ import com.github.dockerjava.api.model.ContainerSpecFile;
 import com.github.dockerjava.api.model.ContainerSpecSecret;
 import com.github.dockerjava.api.model.LocalNodeState;
 import com.github.dockerjava.api.model.Network;
+import com.github.dockerjava.api.model.NetworkAttachmentConfig;
 import com.github.dockerjava.api.model.Secret;
 import com.github.dockerjava.api.model.Service;
 import com.github.dockerjava.api.model.ServiceRestartCondition;
@@ -246,15 +245,6 @@ public final class DockerService extends AbstractService {
                         + ") that is currently unsupported in the DockerService::startContainer method.");
         }
 
-        // Add container to the stack's network, if not already added
-        try (InspectNetworkCmd inspectNetworkCmd = dockerClient.getInternalClient().inspectNetworkCmd()) {
-            if (null == inspectNetworkCmd.withNetworkId(network.getId()).exec().getContainers().get(containerId)) {
-                try (ConnectToNetworkCmd connectToNetworkCmd = dockerClient.getInternalClient().connectToNetworkCmd()) {
-                    connectToNetworkCmd.withContainerId(containerId).withNetworkId(network.getId()).exec();
-                }
-            }
-        }
-
         service.setContainerId(containerId);
     }
 
@@ -308,7 +298,8 @@ public final class DockerService extends AbstractService {
         ServiceSpec serviceSpec = service.getServiceSpec()
                 .withName(service.getContainerName());
         service.getTaskTemplate()
-                .withRestartPolicy(new ServiceRestartPolicy().withCondition(ServiceRestartCondition.NONE));
+                .withRestartPolicy(new ServiceRestartPolicy().withCondition(ServiceRestartCondition.NONE))
+                .withNetworks(List.of(new NetworkAttachmentConfig().withTarget(network.getId())));
         ContainerSpec containerSpec = service.getContainerSpec()
                 .withHostname(service.getName());
 
