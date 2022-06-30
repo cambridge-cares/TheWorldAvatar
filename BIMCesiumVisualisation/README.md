@@ -70,7 +70,7 @@ A brief description of its workflow can be found below:
 
 ## Usage
 1. Place the IFC file in `<root>\ifcto3Dtilesnext\data\ifc`
-2. Navigate to the `config.properties` file (`<root>\ifcto3Dtilesnext\resources`) and modify the input ifc file name
+2. Navigate to the `config.properties` file (`<root>\ifcto3Dtilesnext\properties`) and modify the input ifc file name
     - If required, you may rename the namespace and kg server
         - For repeated usage, please delete the previous triples in namespace if they are unnecessary or delete the `blazegraph.jnl` file for convenience
     - If accessing a different PostgreSQL database, please change endpoint in `tsclient.properties` 

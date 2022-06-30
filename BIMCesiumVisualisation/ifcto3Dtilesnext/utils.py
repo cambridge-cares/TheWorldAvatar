@@ -6,8 +6,8 @@ from pathlib import Path
 from configobj import ConfigObj
 
 # Define location of properties file (with Triple Store and RDB settings)
-PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "config.properties"))
-TSCLIENT_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "tsclient.properties"))
+PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "properties", "config.properties"))
+TSCLIENT_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "properties", "tsclient.properties"))
 
 def read_properties_file(filepath):
     """

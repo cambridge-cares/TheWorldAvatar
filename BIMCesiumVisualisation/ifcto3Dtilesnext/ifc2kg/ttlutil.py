@@ -19,7 +19,7 @@ def ifc2ttl(input_ttl, namespace):
 
     # Conduct a bulk data load to the local blazegraph server 
     # Does not require server to be running but blazegraph.jar must exist
-    subprocess.run(['java', '-Xmx6g', '-cp', 'resources\\blazegraph.jar' , 'com.bigdata.rdf.store.DataLoader', '-namespace',namespace, 'resources\\fastload.properties', input_ttl])
+    subprocess.run(['java', '-Xmx6g', '-cp', 'resources\\blazegraph.jar' , 'com.bigdata.rdf.store.DataLoader', '-namespace',namespace, 'resources\\blazegraphload.properties', input_ttl])
     print("TTL file uploaded to Blazegraph server...")
 
 def querykg(endpoint, query):
