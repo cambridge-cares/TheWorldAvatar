@@ -6,9 +6,9 @@ This directory processes an IFC file for visualisation in Cesium through the kno
 A brief description of its workflow can be found below:
 1. The IFC file is converted into a TTL file and stored in a knowledge graph
 2. The geometries in the IFC file are split into their individual assets and then, converted into the glTF format and stored as local data files
-3. TTL triples linking the asset to their local glTF file path is inserted into the related namespace in the knowledge graph 
+3. TTL triples linking the asset to their local glTF file path and equivalent instances in other ontologies are inserted into the related namespace in the knowledge graph 
 4. The semantic information and local glTF file path is queried from the knowledge graph endpoint to generate a 3D tileset in JSON format
-5. The 3D Tiles tileset is visualised in in Cesium
+5. The 3D Tiles tileset is visualised in Cesium
 
 ---  
 
@@ -63,17 +63,24 @@ A brief description of its workflow can be found below:
         4. Blazegraph.jar
             - No configuration is required as this workflow will automate the upload and query requirements
             - If not, download the latest release `BUT NOT Release Candidate` of blazegraph.jar from the Release section on https://github.com/blazegraph/database
+7) If any of the Ifc assets have additional semantic or dynamic data sources eg postgreSQL for timeseries, please add in a custom parameter/value "HasAdditionalDataSource: Yes" in BIM for that asset following the [custom parameters](#tips-for-bim-processing) section
+    - The current workflow will extract the relevant data from the required sources
+    - Note that this approach/code will need to be refactored once there is more data sources
+    - If the timeseries query code has errors with `JPSBaseLib` not found, please follow the instructions [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper) to install the `JPSBaseLib` resource in `py4jps` package
 
 ## Usage
 1. Place the IFC file in `<root>\ifcto3Dtilesnext\data\ifc`
-2. Navigate to the **config.properties** file (`<root>\ifcto3Dtilesnext\resources`) and modify the input ifc file name
-    - If required, you may rename the namespace and kg server 
+2. Navigate to the `config.properties` file (`<root>\ifcto3Dtilesnext\resources`) and modify the input ifc file name
+    - If required, you may rename the namespace and kg server
+        - For repeated usage, please delete the previous triples in namespace if they are unnecessary or delete the `blazegraph.jnl` file for convenience
+    - If accessing a different PostgreSQL database, please change endpoint in `tsclient.properties` 
 3. Open `cmd` terminal and navigate into the `<root>\ifcto3Dtilesnext`
 4. Please run the following commands in the `cmd` terminal (from within the `<root>\ifcto3Dtilesnext` directory and with **activated** virtual environment <venv_name>)
+    - Connection to the PostgreSQL server is not always available and is being worked on. Please uncomment the `timeseriesquery()` in line 34 if your data require time series.
     ```
     python main.py
     ```
-5. For visualisation, register for a Cesium account to get your own access token and replace it in the index.html file
+5. For visualisation, register for a Cesium account to get your own access token and replace it in the `index.html` file
 6. Navigate the `cmd` terminal to the project's folder with index.html and start a local server
     - Simplest method is to run the HTTP server on cmd terminal
         ```
@@ -81,7 +88,6 @@ A brief description of its workflow can be found below:
         ```
 7. View the results on any browser, preferably Google Chrome
     - If using python HTTP server, the address is at `localhost:8000`
-
 
 ## Tips for BIM processing
 >Geo-referencing
@@ -112,7 +118,7 @@ A brief description of its workflow can be found below:
     - Add each `Furniture` asset as an individual & independent instance into Revit, that is not grouped or linked with other assets
 - `Furniture` are exported as IfcFurnishingElement while `Generic Models` are exported as IfcBuildingElementProxy 
 
->Creating custom property sets and parameters
+>#### Creating custom property sets and parameters
 - If there is a need to use custom parameters, follow the steps below
     1. Select the object and go to **Edit Family** under `Modify` tab
     2. `Create` tab -> Properties -> Family Types
@@ -122,6 +128,7 @@ A brief description of its workflow can be found below:
             - `Instance` ensures that each individual instance of the family has their own value
         - Placed it under Others for your convenience
     5. Once done, input values into the new custom parameter in the **Family Types** window
+    6. For assets with additional data sources (not in IFC), add "HasAdditionalDataSource" parameter with "Yes" value to ease conversion workflow
 - For the parameters (custom or native) that you are interested to export into an IFC file, follow the steps below
     1. In the export to IFC settings under `Property Sets` tab, checked the user defined property sets
     2. It will browse to a default mapping table, which will guide you on creating one. If unavailable, here is a brief structure/format  
@@ -136,20 +143,25 @@ A brief description of its workflow can be found below:
         Phase Text Phase_erstellt  
         Painted Boolean(Yes/No)
         ```
+
 ---
 
 # Development
 ## IFC to 3D Tiles Next Conversion
-There are five modules available in the sub-directory.
+There are six modules available in the sub-directory.
 - `main.py` imports the developed function to execute the conversion process
 - `utils.py` contain miscellaneous functions and global variables
 - `ifc2gltf.py` contain the functions that splits the ifc file into their individual assets and converts them into glTF format
     - Add additional IFC feature classes here if we encounter them
-- `ifc2kg.py` contain the functions to convert ifc to ttl, insert and query triples from the knowledge graph
-    - Edit the queries here to extract the relevant information
-    - Edit the geometry file path once we have a clearer idea on the visualisation folder structure
+- `ifc2kg` directory contain the modules for interacting with the knowledge graph
+    - `ttlutil.py` contains the general functions to convert ifc to ttl, query triples, and stores their result in a dataframe
+    - `insertquery.py` contains the functions to generate and insert the required triples into the blazegraph
+        - Edit the geometry file path once we have a clearer idea on the visualisation folder structure
+    - `timeseriesquery.py` contain the function to query for timeseries data
+    - `jpsSingletons.py` imports required Java packages from `The World Avatar` repository for Python 
 - `ifc2tileset.py` contain the functions to generate the tileset and write them to json
     - If you are unable to see the assets, **Modify the bounding box coordinates** according to your use case
+- `downloadresource.py` downloads the required external resources for Windows
 
 As Git does not allow empty directories, .gitignore files have been added to the subdirectories  of `<root>\ifcto3Dtilesnext\data\`. This is important to set up the file structure for the code to run. 
 

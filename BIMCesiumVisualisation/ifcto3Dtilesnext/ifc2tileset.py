@@ -172,12 +172,12 @@ def asset2tileset(dataframe):
                                 'properties': {"Asset Name": df_unique['name'][row]}
                         }
                 })
-        
+        dataframe=dataframe[~dataframe.paramtitle.str.contains("HasAdditionalDataSource")]
         #If there are properties added in the IFC file
         if 'paramtitle' in dataframe.columns:
                 # Add the properties to their assets
                 for row in dataframe.index:
-                        # If there are property values, run the following code
+                        # If parameters exist
                         if dataframe['paramtitle'][row]!="":
                                 # Find the index containing the right asset as the structure is all the same {'uri':'xxx', 'metadata':'xxx'}
                                 list_ind=utils.dictfind(assetlist,'uri',dataframe['geomfile'][row])

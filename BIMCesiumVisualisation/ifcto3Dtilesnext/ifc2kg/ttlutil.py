@@ -3,7 +3,7 @@ import subprocess
 import pandas as pd
 
 # Third party imports
-from SPARQLWrapper import SPARQLWrapper, POST, GET, JSON
+from SPARQLWrapper import SPARQLWrapper, GET, JSON
 
 def ifc2ttl(input_ttl, namespace):
     """
@@ -22,7 +22,7 @@ def ifc2ttl(input_ttl, namespace):
     subprocess.run(['java', '-Xmx6g', '-cp', 'resources\\blazegraph.jar' , 'com.bigdata.rdf.store.DataLoader', '-namespace',namespace, 'resources\\fastload.properties', input_ttl])
     print("TTL file uploaded to Blazegraph server...")
 
-def SPARQL2df(endpoint, query):
+def querykg(endpoint, query):
     """
     Returns a dataframe that stores the SPARQL SELECT query results from the Blazegraph endpoint
 
@@ -38,73 +38,23 @@ def SPARQL2df(endpoint, query):
 
     # Convert the query into a dataframe for easier manipulation
     try:
-            ret = sparql.queryAndConvert()
-            dataframe= pd.DataFrame(ret['results']['bindings']).fillna(0) # Fill missing values as 0 for our usecase
+        ret = sparql.queryAndConvert()
+        # Fill missing values as 0 for our usecase
+        dataframe= pd.DataFrame(ret['results']['bindings']).fillna(0) 
     except Exception as e:
-            print(e)
-    
+        print(e)
+
     # Extract the value from the nested dictionary returned and leave missing values as empty string
     for index in range(len(dataframe.columns)):
-            dataframe.iloc[:, index]= dataframe.iloc[:, index].apply(lambda x: "" if x==0 else x['value'])
+        dataframe.iloc[:, index]= dataframe.iloc[:, index].apply(lambda x: "" if x==0 else x['value'])
     
     return dataframe
 
-def insertgltf_triple(endpoint, hashtable):
-    """
-    Adds the glTF file path as a triple into the Blazegraph namespace containing the IFC file
-
-     Arguments:
-        endpoint - blazegraph server endpoint
-        hashtable - a hashtable to match assets to their IFC ID
-    """
-    # Query the instances and uid to facilitate assignment later
-    inst_query = """
-            PREFIX ifc:  <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>
-            PREFIX express:  <https://w3id.org/express#>
-            PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-            SELECT DISTINCT ?inst ?uid
-            WHERE {
-                # Get all furnishing elements
-                ?inst rdf:type  ifc:IfcFurnishingElement ;
-                    ifc:globalId_IfcRoot ?uidinst. 
-                    
-                # Get their ids to link the properties to their asset
-                ?uidinst rdf:type ifc:IfcGloballyUniqueId ;
-                    express:hasString ?uid. 
-            }
-            """
-    dataframe= SPARQL2df(endpoint, inst_query)
-
-    # Adding the predicate and geometry file source to the dataframe
-    dataframe['predicate']=""
-    dataframe['reference']=""
-    for row in dataframe.index:
-        #A good generic predicate for all file sources is https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#source
-        dataframe['predicate'][row]="http://purl.org/dc/terms/source"
-        # Extract file name from the hashtable matching the uid
-        dataframe['reference'][row]="./gltf/"+hashtable.get(dataframe['uid'][row]) +".gltf"
-
-    # Constructing the query for inserting data
-    insertquery="INSERT DATA {"
-    for row in dataframe.index:
-        insertquery=insertquery+"\n <"+dataframe['inst'][row]+"> <"+dataframe['predicate'][row]+"> '"+dataframe['reference'][row]+"""'. """
-    
-    insertquery=insertquery+"}"
-    
-    # Insert the triples using POST method
-    sparql = SPARQLWrapper(endpoint)
-    sparql.setQuery(insertquery)
-    sparql.setMethod(POST)
-    results = sparql.query()
-    print("Triples for geometry file sources have been added...")
-    #For testing: print(results.response.read())
-
-
-def querykg(endpoint):
+def ifcquery(endpoint):
     """
     Queries the information on metadata stored in the original BIM file and geometry file path to generate a tileset
     """
-    bgquery = """
+    query = """
             PREFIX ifc:  <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>
             PREFIX inst:  <http://linkedbuildingdata.net/ifc/resources20220519_162748/>
             PREFIX list:  <https://w3id.org/list#>
@@ -163,5 +113,7 @@ def querykg(endpoint):
 
             } ORDER BY ?uid
             """
-    dataframe = SPARQL2df(endpoint, bgquery)
+    dataframe = querykg(endpoint, query)
     return dataframe
+
+
