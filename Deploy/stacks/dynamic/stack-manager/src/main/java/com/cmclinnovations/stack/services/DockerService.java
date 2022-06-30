@@ -266,7 +266,7 @@ public final class DockerService extends AbstractService {
             CreateServiceResponse createServiceResponse = createServiceCmd.exec();
 
             TaskStatus taskStatus = new TaskStatus();
-            TaskState taskState = TaskState.FAILED;
+            TaskState taskState = null;
             do {
                 try (ListTasksCmd listTasksCmd = dockerClient.getInternalClient().listTasksCmd()) {
                     Optional<Task> task = listTasksCmd.withServiceFilter(service.getContainerName())
@@ -276,13 +276,12 @@ public final class DockerService extends AbstractService {
                         taskState = taskStatus.getState();
                     }
                 }
-            } while (TaskState.RUNNING.compareTo(taskState) > 0);
+            } while (null == taskState || TaskState.RUNNING.compareTo(taskState) > 0);
 
+            if (!TaskState.RUNNING.equals(taskState)) {
             String errMessage = taskStatus.getErr();
             if (null != errMessage) {
-                try (RemoveServiceCmd removeServiceCmd = dockerClient.getInternalClient()
-                        .removeServiceCmd(createServiceResponse.getId())) {
-                    removeServiceCmd.exec();
+                    errMessage = taskStatus.getMessage();
                 }
                 throw new RuntimeException("Failed to start service '" + service.getContainerName()
                         + "'. Error message is:\n" + errMessage);
