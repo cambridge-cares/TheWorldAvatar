@@ -259,10 +259,35 @@ public class DockerClient extends BaseClient {
         executeSimpleCommand(containerId, "mkdir", "-p", directoryPath);
     }
 
-    public String makeTempDir(String containerId) {
+    public final class TempDir implements AutoCloseable {
+
+        private final String containerId;
+        private final String path;
+
+        public TempDir(String containerId, String path) {
+            this.containerId = containerId;
+            this.path = path;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        @Override
+        public String toString() {
+            return path;
+        }
+
+        @Override
+        public void close() throws RuntimeException {
+            deleteDirectory(containerId, path);
+        }
+    }
+
+    public TempDir makeTempDir(String containerId) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         createComplexCommand(containerId, "mktemp", "-d").withOutputStream(outputStream).exec();
-        return outputStream.toString().replaceAll("\\r?\\n?", "");
+        return new TempDir(containerId, outputStream.toString().replaceAll("\\r?\\n?", ""));
     }
 
     public void deleteFile(String containerId, String filePath) {

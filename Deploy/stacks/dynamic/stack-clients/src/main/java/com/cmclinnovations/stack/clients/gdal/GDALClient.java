@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.docker.DockerClient.TempDir;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 public class GDALClient extends ContainerClient {
@@ -26,30 +27,14 @@ public class GDALClient extends ContainerClient {
     public void uploadVectorStringToPostGIS(String database, String layername, String fileContents,
             Ogr2OgrOptions options) {
         String containerId = getDockerClient().getContainerId("gdal");
-        String tmpDir = getDockerClient().makeTempDir(containerId);
-        boolean exceptionThrown = false;
-        try {
-            getDockerClient().sendFiles(containerId, Map.of(layername, fileContents.getBytes()), tmpDir);
+
+        try (TempDir tmpDir = getDockerClient().makeTempDir(containerId)) {
+            getDockerClient().sendFiles(containerId, Map.of(layername, fileContents.getBytes()), tmpDir.getPath());
 
             uploadVectorToPostGIS(database, layername, tmpDir + "/" + layername, null, options);
         } catch (IOException ex) {
-            exceptionThrown = true;
             throw new RuntimeException(
                     "Failed to send file content for '" + layername + "' to database '" + database + "'.", ex);
-        } catch (Throwable ex) {
-            exceptionThrown = true;
-            throw ex;
-        } finally {
-            try {
-                getDockerClient().deleteDirectory(containerId, tmpDir);
-            } catch (Exception ex2) {
-                if (exceptionThrown) {
-                    // Don't worry about this exception as any previously thrown exception is more
-                    // important.
-                } else {
-                    throw ex2;
-                }
-            }
         }
     }
 
