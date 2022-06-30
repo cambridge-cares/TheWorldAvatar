@@ -33,7 +33,7 @@ WORKDIR /root/code
 COPY pom.xml ./
 COPY src ./src/
 
-RUN mvn package
+RUN mvn install
 
 #==================================================================================================
 
