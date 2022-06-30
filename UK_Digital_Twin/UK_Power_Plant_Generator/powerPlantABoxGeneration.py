@@ -22,7 +22,6 @@ from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion as LACode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
-from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion as LACode
 import uuid
 
 """Notation used in URI construction"""
@@ -154,7 +153,7 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
             pp_root_node = root_uri + str(uuid.uuid4()) # plantname ## the top node of the named graph
             ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())       
             ## attribute IRIs
-            RealizationAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
+            GeneratorIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
             EnergyGenerationIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + ukpp.PowerGenerationKey + str(uuid.uuid4()) 
             GenerationTechnologyClassIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + gentech 
             GenerationTechnologyIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + gentech + UNDERSCORE + str(uuid.uuid4())
@@ -215,9 +214,9 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
                 graph.add((URIRef(GBAdministrativeDivisionIRI), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(LACode['Great_Britain'])))
             
             ## Add Realization Aspect (PowerGenerator)
-            graph.add((URIRef(pp_root_node), URIRef(ontocape_technical_system.hasRealizationAspect.iri), URIRef(RealizationAspectIRI)))
-            graph.add((URIRef(RealizationAspectIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
-            graph.add((URIRef(RealizationAspectIRI), URIRef(ontocape_technical_system.realizes.iri), URIRef(EnergyGenerationIRI)))
+            graph.add((URIRef(pp_root_node), URIRef(ontocape_technical_system.hasRealizationAspect.iri), URIRef(GeneratorIRI)))
+            graph.add((URIRef(GeneratorIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
+            graph.add((URIRef(GeneratorIRI), URIRef(ontocape_technical_system.realizes.iri), URIRef(EnergyGenerationIRI)))
             
             graph.add((URIRef(EnergyGenerationIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGeneration.iri)))                
             graph.add((URIRef(EnergyGenerationIRI), URIRef(ontoeip_powerplant.usesGenerationTechnology.iri), URIRef(GenerationTechnologyIRI)))
@@ -252,13 +251,6 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
             graph.add((URIRef(pp_root_node), URIRef(ontoeip_upper_level_system_v1.isOwnedBy.iri), URIRef(OwnerIRI)))
             graph.add((URIRef(OwnerIRI), RDF.type, URIRef(ontoeip_upper_level_system_v1.Organization.iri)))
             graph.add((URIRef(OwnerIRI), URIRef(ontoeip_upper_level_system_v1.hasName.iri), Literal(owner)))
-    
-            ## Apply the OntoEnergySystem for representing the asset with LA code and its lat-lon
-            # graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(t_box.dbr + region)))
-            # graph.add((URIRef(t_box.dbr + region), RDF.type, URIRef(ontoenergysystem.AdministrativeDivision.iri)))
-            # graph.add((URIRef(t_box.dbr + region), URIRef(ontoenergysystem.hasLocalAuthorityCode.iri), Literal(str(LACode[region]))))
-            # graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasWGS84LatitudeLongitude.iri), \
-            #            Literal(latlon, datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
             
             graph.add((URIRef(pp_root_node), URIRef(ontoenergysystem.hasRelevantPlace.iri), URIRef(powerPlantRelevantPlaceIRI)))
             graph.add((URIRef(powerPlantRelevantPlaceIRI), OWL_NS['sameAs'], URIRef(t_box.dbr + region)))

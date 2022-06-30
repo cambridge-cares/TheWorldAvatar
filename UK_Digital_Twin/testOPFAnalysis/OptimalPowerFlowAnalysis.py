@@ -25,7 +25,10 @@ from UK_Power_Grid_Model_Generator.costFunctionParameterInitialiser import costF
 from UK_Power_Grid_Model_Generator import model_EBusABoxGeneration, model_EGenABoxGeneration, model_ELineABoxGeneration
 from BusModelKGInstanceCreator import BusModelKGInstanceCreator
 from BranchModelKGInstanceCreator import BranchModelKGInstanceCreator
+from GeneratorModelKGInstanceCreator import GeneratorModelKGInstanceCreator
 import UK_Power_Grid_Model_Generator.initialiseEBusModelVariable as InitialiseEbus
+from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
+from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from pypower.api import ppoption, runopf, isload
@@ -46,10 +49,14 @@ from pypower.idx_brch import PF, PT, QF, QT, F_BUS, TAP, SHIFT, T_BUS, BR_R, BR_
 from pypower.idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 
 ## create configuration objects
+SLASH = '/'
 dt = UKDT.UKDigitalTwin()
 ukmf = ModelFactor.ModelFactor()
+
+t_box = T_BOX.UKDigitalTwinTBox()
+ukpp = UKpp.UKPowerPlant()
 ## set up the derivationInstanceBaseURL
-derivationInstanceBaseURL = dt.baseURL + '/' + dt.topNode + '/'
+derivationInstanceBaseURL = dt.baseURL + SLASH + dt.topNode + SLASH
 ## read cost factors file
 modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
 
@@ -81,6 +88,7 @@ class OptimalPowerFlowAnalysis:
         self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, queryEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275 
         self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, queryEndpointLabel) ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?Latlon
         
+        self.OPFIndicator = True
         ## 2. passing arguments
         ## specify the topology node
         self.topologyNodeIRI = topologyNodeIRI
@@ -234,11 +242,11 @@ class OptimalPowerFlowAnalysis:
             objectName = UK_PG.UKEGenModel.EGenKey + str(self.generatorNodeList.index(egen)) ## egen model python object name
             if str(egen[0]) in self.toBeRetrofittedGeneratorNodeList:
                 indexOfList = self.toBeRetrofittedGeneratorNodeList.index(str(egen[0]))
-                self.retrofitExistingGenPairList[indexOfList][1] = objectName
-                self.retrofitExistingGenPairList[indexOfList][2] = UK_PG.UKEGenModel.EGenRetrofitKey + str(indexOfList)
+                self.retrofitExistingGenPairList[indexOfList][1] = objectName # existing gen
+                self.retrofitExistingGenPairList[indexOfList][2] = UK_PG.UKEGenModel.EGenRetrofitKey + str(indexOfList) # retrofitted SMR
                 self.retrofitExistingGenPairList[indexOfList][3] = egen[8] # latlon
                 self.retrofitExistingGenPairList[indexOfList][4] = egen[7] # fuel
-            uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+            uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), None, self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
             uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
             ###add EGen model parametor###
             ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio)
@@ -255,7 +263,8 @@ class OptimalPowerFlowAnalysis:
 
             for egen_re in self.retrofitList:
                 objectName = UK_PG.UKEGenModel.EGenRetrofitKey + str(self.retrofitList.index(egen_re)) ## egen_toBeRetrofitted model python object name 
-                uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen_re["PowerGenerator"]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+                newGeneratorNodeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
+                uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, str(egen_re["PowerGenerator"]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
                 egen_re = [egen_re["PowerGenerator"], float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], 470] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity
                 uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
                 ###add EGen model parametor###
@@ -504,22 +513,24 @@ class OptimalPowerFlowAnalysis:
         """
         if self.withRetrofit is True:
             retrofitResults = [] 
-            self.generatorRetrofitted = []
-            self.generatorIntergratedWithSMR = []
+            self.generatorRetrofitted = [] ## the existing generator replaced by the new generator, e.g. SMR
+            self.generatorIntergratedWithSMR = [] ## the existing generator is intergated with the new generator, e.g. SMR
+            self.NewlyAddedGenenrators = [] ## the new generators 
             for retrofitExistingGenPair in self.retrofitExistingGenPairList:
                 existingGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[1]), "PG_OUTPUT"), 2) ## existing generator
                 retrofittedGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[2]), "PG_OUTPUT"), 2) ## SMR
                 if retrofittedGenOutput >= existingGenOutput and existingGenOutput < 1: ## SMR retrofitts the existing generator 
                     existRetroPairResult = [retrofitExistingGenPair[1], retrofitExistingGenPair[2]]
                     self.generatorRetrofitted.append(retrofitExistingGenPair[0])
-                if existingGenOutput > 1 and retrofittedGenOutput > 1:
+                if existingGenOutput > 1 and retrofittedGenOutput > 1: ## SMR intergrates with the existing generator 
                     existRetroPairResult = [None, retrofitExistingGenPair[2]]
                     self.generatorIntergratedWithSMR.append(retrofitExistingGenPair[0])
                 retrofitResults.append(existRetroPairResult) 
             for r in retrofitResults:
                 if r[0] is not None:
                     self.GeneratorObjectList.remove(r[0])
-                self.GeneratorObjectList.append(r[1]) 
+                self.GeneratorObjectList.append(r[1]) ## all generator objects after retrofitting including existing generator objects and SMRs
+                self.NewlyAddedGenenrators.append(r[1]) ## only newly added generator objects
         return 
     
     def ModelPythonObjectOntologiser(self):
@@ -535,9 +546,10 @@ class OptimalPowerFlowAnalysis:
         BusModelKGInstanceCreator(self.ObjectSet, self.BusObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
             self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath)
         BranchModelKGInstanceCreator(self.ObjectSet, self.BranchObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
-            self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath) 
-         
-         
+            self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath)
+        GeneratorModelKGInstanceCreator(self.ObjectSet, self.GeneratorObjectList, self.NewlyAddedGenenrators, self.OPFIndicator, self.newGeneratorType, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
+        self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath)  
+        
         return 
     
 

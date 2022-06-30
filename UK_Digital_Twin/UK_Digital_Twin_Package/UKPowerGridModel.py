@@ -298,8 +298,8 @@ class UKEGenModel:
     RAMP_QKey = "Rampq_"
     APFKey = "APF_"
     
-    PG_OUTPUTKey = "StateVariable_PGen_"
-    QG_OUTPUTKey = "StateVariable_QGen_"
+    PG_OUTPUTKey = "Pg_"
+    QG_OUTPUTKey = "Qg_"
 
 
     """The INPUT_VARIABLE and OUTPUT_VARIABLE index key for PF analysis """   
@@ -332,7 +332,6 @@ class UKEGenModel:
     INPUT_VARIABLE["RAMP_Q"] =  idx_gen.RAMP_Q
     INPUT_VARIABLE["APF"] =  idx_gen.APF
     
-    
     INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
     
     startingIndexOfOutput = len(INPUT_VARIABLE)
@@ -342,7 +341,7 @@ class UKEGenModel:
    
     OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
-    def __init__(self, numOfBus:int, generatorNodeIRI:str):
+    def __init__(self, numOfBus:int, generatorNodeIRI:str, toBeRetrofittedGeneratorNodeIRI:str = None):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\Sleepycat_EBus"
         
@@ -376,7 +375,8 @@ class UKEGenModel:
         self.QG_OUTPUT = None
 
         # Generator Node IRI
-        self.generatorNodeIRI = generatorNodeIRI
+        self.generatorNodeIRI = generatorNodeIRI ## IRI represents the existing generator or the newly created IRI represents the SMR 
+        self.toBeRetrofittedGeneratorNodeIRI = toBeRetrofittedGeneratorNodeIRI ## the old generator that will be replaced with the new generator
         
     def __dir__(self):
         return self.INPUT_VARIABLE_KEYS + self.OUTPUT_VARIABLE_KEYS
@@ -405,7 +405,7 @@ class UKEGenModel_CostFunc(UKEGenModel):
     INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
 
     """Initialise the cost function"""
-    def __init__(self, numOfBus:int, generatorNodeIRI:str, CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
+    def __init__(self, numOfBus:int, generatorNodeIRI:str, toBeRetrofittedGeneratorNodeIRI:str = None, CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
             super().__init__(numOfBus, generatorNodeIRI) ## enforce to inherite the initialiser from the father class
             self.MODEL = piecewiseOrPolynomial # 1: piecewise linear; 2: polynomial
             self.STARTUP = 0

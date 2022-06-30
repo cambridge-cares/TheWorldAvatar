@@ -69,7 +69,7 @@ userSpecified = False
 
 def BusModelKGInstanceCreator(ObjectSet, BusObjectNameList, numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, \
     AgentIRI, derivationClient, updateEndpointIRI, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
-
+    ## Set up the default storage path
     store = LocalGraphStore(storeType)
     defaultStoredPath = UK_PG.UKEbusModel.StoreGeneratedOWLs
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
