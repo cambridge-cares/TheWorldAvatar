@@ -1,11 +1,14 @@
+version: '3.8'
 services:
   stack-manager:
-    extends:
-      file: docker-compose.yml
-      service: stack-manager
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
-      - "STACK_NAME=TEST_STACK"
+      - "STACK_NAME=${STACK_NAME}"
     ports:
       - "5005:5005"
     networks:
@@ -13,4 +16,6 @@ services:
 
 networks:
   stack:
-    name: TEST_STACK
+    name: ${STACK_NAME}
+    driver: overlay
+    attachable: true

@@ -16,14 +16,17 @@
             "request": "attach",
             "hostName": "localhost",
             "port": "5005",
-            "preLaunchTask": "compose-up-dev"
+            "preLaunchTask": "compose-deploy-dev",
+            "projectName": "stack-manager",
+            "postDebugTask": "remove-service"
         },
         {
             "type": "java",
             "name": "Attach Docker",
             "request": "attach",
             "hostName": "localhost",
-            "port": "5005"
+            "port": "5005",
+            "projectName": "stack-manager"
         }
     ]
 }

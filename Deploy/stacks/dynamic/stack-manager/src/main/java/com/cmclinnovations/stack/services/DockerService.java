@@ -167,7 +167,11 @@ public final class DockerService extends AbstractService {
         }
         if (potentialNetwork.isEmpty()) {
             try (CreateNetworkCmd createNetworkCmd = dockerClient.getInternalClient().createNetworkCmd()) {
-                createNetworkCmd.withName(name).withAttachable(true).withCheckDuplicate(true).exec();
+                createNetworkCmd.withName(name)
+                        .withAttachable(true)
+                        .withCheckDuplicate(true)
+                        .withLabels(StackClient.getStackNameLabelMap())
+                        .exec();
                 try (ListNetworksCmd listNetworksCmd = dockerClient.getInternalClient().listNetworksCmd()) {
                     potentialNetwork = listNetworksCmd.withNameFilter(name).exec().stream().findAny();
                 }
@@ -269,8 +273,8 @@ public final class DockerService extends AbstractService {
             } while (null == taskState || TaskState.RUNNING.compareTo(taskState) > 0);
 
             if (!TaskState.RUNNING.equals(taskState)) {
-            String errMessage = taskStatus.getErr();
-            if (null != errMessage) {
+                String errMessage = taskStatus.getErr();
+                if (null != errMessage) {
                     errMessage = taskStatus.getMessage();
                 }
                 throw new RuntimeException("Failed to start service '" + service.getContainerName()
@@ -296,11 +300,13 @@ public final class DockerService extends AbstractService {
     private ServiceSpec configureServiceSpec(ContainerService service) {
 
         ServiceSpec serviceSpec = service.getServiceSpec()
-                .withName(service.getContainerName());
+                .withName(service.getContainerName())
+                .withLabels(StackClient.getStackNameLabelMap());
         service.getTaskTemplate()
                 .withRestartPolicy(new ServiceRestartPolicy().withCondition(ServiceRestartCondition.NONE))
                 .withNetworks(List.of(new NetworkAttachmentConfig().withTarget(network.getId())));
         ContainerSpec containerSpec = service.getContainerSpec()
+                .withLabels(StackClient.getStackNameLabelMap())
                 .withHostname(service.getName());
 
         interpolateConfigs(containerSpec);

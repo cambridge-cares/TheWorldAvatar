@@ -5,10 +5,11 @@ import java.util.Map;
 public final class StackClient {
 
     public static final String STACK_NAME_KEY = "STACK_NAME";
+    public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
 
     private static final String stackName;
 
-    public static final Map<String, String> stackNameLabelMap;
+    private static final Map<String, String> stackNameLabelMap;
 
     private static boolean inStack = true;
 
@@ -16,7 +17,7 @@ public final class StackClient {
         String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
         stackName = (null != envVarStackName) ? envVarStackName : "Test_Stack";
 
-        stackNameLabelMap = Map.of(StackClient.STACK_NAME_KEY, stackName);
+        stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName);
     }
 
     private StackClient() {

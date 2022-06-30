@@ -1,16 +1,28 @@
+version: '3.8'
 services:
   stack-client:
-    extends:
-      file: docker-compose.yml
-      service: stack-client
+    configs:
+      - source: postgis
+        target: /postgis
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
-      - "STACK_NAME=TEST_STACK"
+      - "STACK_NAME=${STACK_NAME}"
     ports:
-      - "5005:5005"
+      - "5006:5005"
     networks:
       - stack
 
+configs:
+  postgis:
+    name: ${STACK_NAME}_postgis
+    external: true
 networks:
   stack:
-    name: TEST_STACK
+    name: ${STACK_NAME}
+    driver: overlay
+    external: true

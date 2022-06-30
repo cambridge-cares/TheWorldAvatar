@@ -1,6 +1,7 @@
+version: '3.8'
 services:
   stack-client:
-    image: docker.cmclinnovations.com/stack-client:latest
+    image: docker.cmclinnovations.com/stack-client:1.0-SNAPSHOT
     build: .
     container_name: stack-client
     volumes:
@@ -10,3 +11,14 @@ services:
       # Ensure all secret files are mapped to the /run/secrets/ directory
       # and are read only inside the container (add ":ro" on the end)
       - ./inputs/secrets:/run/secrets:ro
+
+  stack-client-lib:
+    image: docker.cmclinnovations.com/stack-client-lib:1.0-SNAPSHOT
+    build:
+      context: .
+      target: builder
+    deploy:
+      mode: replicated
+      replicas: 0
+      restart_policy:
+        condition: none

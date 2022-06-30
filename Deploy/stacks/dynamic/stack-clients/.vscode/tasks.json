@@ -5,11 +5,65 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "compose-up-dev",
-            "command": "docker-compose -f docker-compose-debug.yml up -d --build",
+            "label": "compose-build",
+            "command": "docker compose build",
             "presentation": {
                 "reveal": "always"
             }
+        },
+        {
+            "type": "shell",
+            "label": "compose-push",
+            "command": "docker compose push",
+            "presentation": {
+                "reveal": "always"
+            },
+            "dependsOn": [
+                "compose-build"
+            ],
+        },
+        {
+            "type": "shell",
+            "label": "compose-deploy-dev-internal",
+            "command": "docker stack deploy --compose-file=docker-compose.yml --compose-file=docker-compose-debug.yml --with-registry-auth ${input:stackName}",
+            "options": {
+                "env": {
+                    "STACK_NAME": "${input:stackName}"
+                }
+            },
+            "dependsOn": [
+                "compose-push"
+            ],
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "compose-deploy-dev",
+            "command": "sleep 1",
+            "dependsOn": [
+                "compose-deploy-dev-internal"
+            ],
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "remove-service",
+            "command": "docker service rm ${input:stackName}_stack-client ${input:stackName}_stack-client-lib",
+            "presentation": {
+                "reveal": "always"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "stackName",
+            "type": "promptString",
+            "description": "Name your stack.",
+            "default": "TEST_STACK"
         }
     ]
 }
