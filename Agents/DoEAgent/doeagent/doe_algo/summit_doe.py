@@ -110,13 +110,27 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
             logger.debug(new_exp_ds)
             logger.debug("-------------------------------------------------------------------------------------")
 
+            # Prepare numerical value for the OM_Measure
+            # NOTE TODO here we took a short-cut wrt decimal places, in the future, this should be connected to KG
+            _raw_numerical_value_ = first_rxn_exp_con.hasValue.hasNumericalValue if len(var_loc) < 1 else new_exp_ds[var_loc[0]][i] # an example: df['ContinuousVariable_1'][0]
+            if first_rxn_exp_con.clz == ONTOREACTION_REACTIONTEMPERATURE:
+                _demical_numerical_val = round(_raw_numerical_value_)
+            elif first_rxn_exp_con.clz == ONTOREACTION_RESIDENCETIME:
+                _demical_numerical_val = round(_raw_numerical_value_, 2)
+            elif first_rxn_exp_con.clz == ONTOREACTION_STOICHIOMETRYRATIO:
+                _demical_numerical_val = round(_raw_numerical_value_, 2)
+            elif first_rxn_exp_con.clz == ONTOREACTION_REACTIONSCALE:
+                _demical_numerical_val = round(_raw_numerical_value_, 2)
+            else:
+                _demical_numerical_val = round(_raw_numerical_value_, 2)
+
             # Create instance for OM_Measure
             om_measure = OM_Measure(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(first_rxn_exp_con.hasValue.instance_iri),
                 hasUnit=first_rxn_exp_con.hasValue.hasUnit,
                 # TODO for the moment, a new om:Measure instance is always created
-                hasNumericalValue=first_rxn_exp_con.hasValue.hasNumericalValue if len(var_loc) < 1 else new_exp_ds[var_loc[0]][i] # an example: df['ContinuousVariable_1'][0]
+                hasNumericalValue=_demical_numerical_val
             )
 
             # Create instance for ReactionCondition
