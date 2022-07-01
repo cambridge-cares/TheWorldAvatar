@@ -14,8 +14,8 @@ public class OntopClient extends ContainerClient {
     public static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
 
     public void updateOBDA(Path newMappingFilePath) {
-        String containerId = getDockerClient().getContainerId("ontop");
-        Path ontopMappingFilePath = getDockerClient().getEnvironmentVariable(containerId, ONTOP_MAPPING_FILE)
+        String containerId = getContainerId("ontop");
+        Path ontopMappingFilePath = getEnvironmentVariable(containerId, ONTOP_MAPPING_FILE)
                 .map(Path::of)
                 .orElseThrow(() -> new RuntimeException("Environment variable '" + ONTOP_MAPPING_FILE
                         + " not set through Docker for '" + "ontop" + "' container."));
@@ -23,7 +23,7 @@ public class OntopClient extends ContainerClient {
         try {
             SQLPPMappingImplementation mapping = new SQLPPMappingImplementation();
 
-            if (getDockerClient().fileExists(containerId, ontopMappingFilePath.toString())) {
+            if (fileExists(containerId, ontopMappingFilePath.toString())) {
 
                 if (null == newMappingFilePath) {
                     // A mapping file already exists and no new one has been passed to be added.
@@ -32,7 +32,7 @@ public class OntopClient extends ContainerClient {
                 try (TempFile localTempOntopMappingFilePath = SQLPPMappingImplementation
                         .createTempOBDAFile(ontopMappingFilePath);
                         OutputStream outputStream = Files.newOutputStream(localTempOntopMappingFilePath.getPath())) {
-                    outputStream.write(getDockerClient().retrieveFile(containerId, ontopMappingFilePath.toString()));
+                    outputStream.write(retrieveFile(containerId, ontopMappingFilePath.toString()));
                     mapping.addMappings(localTempOntopMappingFilePath.getPath());
                 }
             }
@@ -44,7 +44,7 @@ public class OntopClient extends ContainerClient {
                     .createTempOBDAFile(ontopMappingFilePath)) {
                 mapping.serialize(localTempOntopMappingFilePath.getPath());
 
-                getDockerClient().sendFiles(containerId, localTempOntopMappingFilePath.getPath().getParent().toString(),
+                sendFiles(containerId, localTempOntopMappingFilePath.getPath().getParent().toString(),
                         List.of(localTempOntopMappingFilePath.getPath().getFileName().toString()),
                         ontopMappingFilePath.getParent().toString());
             }

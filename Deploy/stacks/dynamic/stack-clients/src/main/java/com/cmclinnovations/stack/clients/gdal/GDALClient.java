@@ -26,10 +26,10 @@ public class GDALClient extends ContainerClient {
 
     public void uploadVectorStringToPostGIS(String database, String layername, String fileContents,
             Ogr2OgrOptions options) {
-        String containerId = getDockerClient().getContainerId("gdal");
+        String containerId = getContainerId("gdal");
 
-        try (TempDir tmpDir = getDockerClient().makeTempDir(containerId)) {
-            getDockerClient().sendFilesContent(containerId, Map.of(layername, fileContents.getBytes()),
+        try (TempDir tmpDir = makeTempDir(containerId)) {
+            sendFilesContent(containerId, Map.of(layername, fileContents.getBytes()),
                     tmpDir.getPath());
 
             uploadVectorToPostGIS(database, layername, tmpDir + "/" + layername, null, options);
@@ -53,12 +53,12 @@ public class GDALClient extends ContainerClient {
     private void uploadVectorToPostGIS(String database, String layername, String filePath, String fileContents,
             Ogr2OgrOptions options) {
 
-        String containerId = getDockerClient().getContainerId("gdal");
+        String containerId = getContainerId("gdal");
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
-        getDockerClient().createComplexCommand(containerId, options.appendToArgs("ogr2ogr", "-overwrite",
+        createComplexCommand(containerId, options.appendToArgs("ogr2ogr", "-overwrite",
                 "-f", "PostgreSQL",
                 computePGSQLSourceString(database),
                 filePath,
