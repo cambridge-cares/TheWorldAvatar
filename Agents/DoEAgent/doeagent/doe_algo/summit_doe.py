@@ -107,8 +107,6 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
             logger.debug("-------------------------------------------------------------------------------------")
             logger.debug("New suggested experiment summit DataSet:")
             logger.debug(new_exp_ds)
-            if len(var_loc) > 0:
-                logger.debug(new_exp_ds[var_loc[0]][i])
             logger.debug("-------------------------------------------------------------------------------------")
 
             # Create instance for OM_Measure

@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   doe_agent:
-    image: doe_agent:1.0.0
-    container_name: doe_agent
+    image: doe_agent:1.0.0-SNAPSHOT
+    container_name: doe_agent-SNAPSHOT
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     build:
@@ -11,6 +11,8 @@ services:
       dockerfile: ./Dockerfile.test
     ports:
       - 7000:5000
+    extra_hosts:
+      - localhost:host-gateway
     env_file:
       - ./doeagent/tests/agent.doe.env.test
 

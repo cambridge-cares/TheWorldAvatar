@@ -5,18 +5,21 @@ import doeagent.tests.utils as utils
 import logging
 logger = logging.getLogger('test_example_doe')
 
-def test_example_doe(generate_random_download_path, initialise_agent):
-    sparql_client, derivation_client, doe_agent = initialise_agent
+def test_example_doe(generate_random_download_path, initialise_clients, create_doe_agent):
+    sparql_client, derivation_client = initialise_clients
 
     # Verify that knowledge base is empty
     res = sparql_client.getAmountOfTriples()
     assert res == 0
 
-    # Start the scheduler to monitor derivations
-    doe_agent.start_monitoring_derivations()
-
     # Initialise all triples in the knowledge graph
     utils.initialise_triples(generate_random_download_path, sparql_client, derivation_client)
+
+    # Create agent instance, register agent in KG
+    doe_agent = create_doe_agent(register_agent=True, random_agent_iri=True)
+
+    # Start the scheduler to monitor derivations
+    doe_agent.start_monitoring_derivations()
 
     # Assert that there's currently no new experiment associated with the DoE instance
     assert sparql_client.getNewExperimentFromDoE(utils.cf.DOE_IRI) is None
@@ -35,3 +38,6 @@ def test_example_doe(generate_random_download_path, initialise_agent):
     new_exp_iri = sparql_client.getNewExperimentFromDoE(utils.cf.DOE_IRI)
     assert new_exp_iri is not None
     logger.info(f"New experiment suggested successfully, suggested experiment instance: {new_exp_iri}")
+
+    # Shutdown the scheduler to clean up
+    doe_agent.scheduler.shutdown()

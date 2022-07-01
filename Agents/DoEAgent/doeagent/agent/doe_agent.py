@@ -11,12 +11,34 @@ from doeagent.doe_algo import *
 
 
 class DoEAgent(DerivationAgent):
-    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
-        # Create sparql_client
+    # TODO consider making __init__ of DerivationAgent to accept **kwargs
+    def __init__(self,
+        register_agent: bool=True,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.register_agent = register_agent
+
+        # Initialise the sparql_client
         self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword
+            self.kgUrl, self.kgUrl, kg_user=self.kgUser, kg_password=self.kgPassword
         )
 
+    def register(self):
+        # TODO think about standardised way of specify if to register?
+        if self.register_agent:
+            try:
+                self.sparql_client.generate_ontoagent_instance(
+                    self.agentIRI,
+                    self.agentEndpoint,
+                    [ONTODOE_DESIGNOFEXPERIMENT],
+                    [ONTOREACTION_REACTIONEXPERIMENT]
+                )
+            except Exception as e:
+                self.logger.error(e, stack_info=True, exc_info=True)
+                raise Exception("Agent <%s> registration failed." % self.agentIRI)
+
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance
         try:
             doe_instance = self.sparql_client.get_doe_instance(derivation_inputs.getIris(ONTODOE_DESIGNOFEXPERIMENT)[0])
