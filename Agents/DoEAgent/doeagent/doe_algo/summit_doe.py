@@ -82,7 +82,8 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
     # NOTE below design works for multiple (>1) experiments
     # NOTE however, for the time being, the DoE Agent will be used to generate 1 experiment to fit the derivation framework
     # NOTE i.e. len(new_exp_ds) == 1
-    for i in range(len(new_exp_ds)):
+    # NOTE here we iterate through index (instead of range(len(new_exp_ds))) to make it robust against the situation where index doesn't start from 0
+    for i in new_exp_ds.index:
         # Prepare a list of ReactionCondition
         list_con = []
         # Iterate over ReactionCondition in parent ReactionExperiment to populate the new suggested ReactionCondition in ReactionVariation
