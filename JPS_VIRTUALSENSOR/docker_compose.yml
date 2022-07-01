@@ -48,10 +48,9 @@ services:
     image: python-service
     build:
       context: ./python_service
-      target: debug
+      target: production
     ports:
       - 5000:5000
-      - 5678:5678
 
 volumes:
   external_maven_repo:
