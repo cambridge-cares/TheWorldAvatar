@@ -10,9 +10,12 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -302,36 +305,104 @@ public class DockerClient extends BaseClient {
         executeSimpleCommand(containerId, "rm", "-r", directoryPath);
     }
 
-    public void sendFiles(String containerId, Map<String, byte[]> files, String remoteDirPath) throws IOException {
-
+    private void sendFileEntries(String containerId, String remoteDirPath, Iterable<Entry<String, byte[]>> fileEntries)
+            throws IOException {
         makeDir(containerId, remoteDirPath);
 
         byte[] byteArray;
 
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                GzipCompressorOutputStream gzo = new GzipCompressorOutputStream(bos);
-                TarArchiveOutputStream tar = new TarArchiveOutputStream(gzo)) {
-            for (Entry<String, byte[]> file : files.entrySet()) {
-                String filePath = file.getKey().replace('\\', '/');
-                byte[] fileContent = file.getValue();
-                TarArchiveEntry entry = new TarArchiveEntry(filePath);
-                entry.setSize(fileContent.length);
-                entry.setMode(0755);
-                tar.putArchiveEntry(entry);
-                tar.write(fileContent);
-                tar.closeArchiveEntry();
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            try (GzipCompressorOutputStream gzo = new GzipCompressorOutputStream(bos);
+                    TarArchiveOutputStream tar = new TarArchiveOutputStream(gzo)) {
+                for (Entry<String, byte[]> fileEntry : fileEntries) {
+                    addFileContentToTar(tar, fileEntry.getKey(), fileEntry.getValue());
+                }
             }
-            tar.finish();
-            gzo.finish();
             byteArray = bos.toByteArray();
         }
 
+        sendTarFileContent(containerId, remoteDirPath, byteArray);
+    }
+
+    private void addFileContentToTar(TarArchiveOutputStream tar, String filePath, byte[] fileContent)
+            throws IOException {
+        // Tar files record paths as strings and should use the Linux path separator '/'
+        filePath = filePath.replace('\\', '/');
+        TarArchiveEntry entry = new TarArchiveEntry(filePath);
+        entry.setSize(fileContent.length);
+        entry.setMode(0755);
+        tar.putArchiveEntry(entry);
+        tar.write(fileContent);
+        tar.closeArchiveEntry();
+    }
+
+    private void sendTarFileContent(String containerId, String remoteDirPath, byte[] byteArray) throws IOException {
         try (InputStream is = new ByteArrayInputStream(byteArray);
                 CopyArchiveToContainerCmd copyArchiveToContainerCmd = internalClient
                         .copyArchiveToContainerCmd(containerId)) {
             copyArchiveToContainerCmd.withTarInputStream(is)
                     .withRemotePath(remoteDirPath).exec();
 
+        }
+    }
+
+    private final class FileIterater implements Iterable<Entry<String, byte[]>>, AutoCloseable {
+        Path dirPath;
+        private final Stream<Path> stream;
+
+        public FileIterater(String baseDir) throws IOException {
+            dirPath = Path.of(baseDir);
+            stream = Files.walk(Path.of(baseDir));
+        }
+
+        public FileIterater(String baseDir, Collection<String> relativeFilePaths) {
+            dirPath = Path.of(baseDir);
+            stream = relativeFilePaths.stream().map(dirPath::resolve);
+        }
+
+        @Override
+        public Iterator<Map.Entry<String, byte[]>> iterator() {
+
+            return stream.filter(Files::isRegularFile)
+                    .map(path -> {
+                        try {
+                            return Map.entry(dirPath.relativize(path).toString(), Files.readAllBytes(path));
+                        } catch (IOException ex) {
+                            throw new RuntimeException("Failed to read file '" + path + "'", ex);
+                        }
+                    }).iterator();
+        }
+
+        @Override
+        public void close() throws Exception {
+            stream.close();
+        }
+    }
+
+    public void sendFilesContent(String containerId, Map<String, byte[]> files, String remoteDirPath) {
+        try {
+            sendFileEntries(containerId, remoteDirPath, files.entrySet());
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to send the content of the following files to '" + remoteDirPath + "':\n"
+                    + files.keySet().stream().collect(Collectors.joining("'\n'", "'", "'")), ex);
+        }
+    }
+
+    public void sendFiles(String containerId, String localDirPath, List<String> filePaths, String remoteDirPath) {
+        try (FileIterater fileIterator = new FileIterater(localDirPath, filePaths)) {
+            sendFileEntries(containerId, remoteDirPath, fileIterator);
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to send the following files to '" + remoteDirPath + "':\n"
+                    + filePaths.stream().collect(Collectors.joining("'\n'", "'", "'")), ex);
+        }
+    }
+
+    public void sendFolder(String containerId, String localDirPath, String remoteDirPath) {
+        try (FileIterater fileIterator = new FileIterater(localDirPath)) {
+            sendFileEntries(containerId, remoteDirPath, fileIterator);
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to send files from folder '" + localDirPath
+                    + "' to '" + remoteDirPath + "'.", ex);
         }
     }
 

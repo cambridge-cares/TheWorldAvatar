@@ -88,8 +88,8 @@ public class ContainerService extends AbstractService {
                         + "' to be specified in its config file.");
     }
 
-    public final void sendFiles(Map<String, byte[]> files, String remoteDirPath) throws IOException {
-        dockerClient.sendFiles(containerId, files, remoteDirPath);
+    public final void sendFiles(Map<String, byte[]> files, String remoteDirPath) {
+        dockerClient.sendFilesContent(containerId, files, remoteDirPath);
     }
 
     public final void executeCommand(String... cmd) {
@@ -108,7 +108,7 @@ public class ContainerService extends AbstractService {
             try (InputStream downloadStream = url.openStream()) {
                 byte[] bytes = downloadStream.readAllBytes();
                 Map<String, byte[]> files = Map.of(filename, bytes);
-                dockerClient.sendFiles(containerId, files, folderPath);
+                dockerClient.sendFilesContent(containerId, files, folderPath);
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to download file from '" + url + "' and send it to '"
                         + folderPath + "' in the container '" + getName() + "'.", ex);

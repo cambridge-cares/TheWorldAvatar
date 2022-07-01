@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
@@ -42,14 +43,11 @@ public class OntopClient extends ContainerClient {
             localTempOntopMappingFilePath = SQLPPMappingImplementation.createTempOBDAFile(ontopMappingFilePath);
             mapping.serialize(localTempOntopMappingFilePath);
 
-            try {
-                Map<String, byte[]> files = Map.of(ontopMappingFilePath.getFileName().toString(),
-                        Files.readAllBytes(localTempOntopMappingFilePath));
-                getDockerClient().sendFiles(containerId, files, ontopMappingFilePath.getParent().toString());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            getDockerClient().sendFiles(containerId,
+                    localTempOntopMappingFilePath.getParent().toString(),
+                    List.of(localTempOntopMappingFilePath.getFileName().toString()),
+                    ontopMappingFilePath.getParent().toString());
+
         } catch (IOException ex) {
             exceptionThrown = true;
             throw new RuntimeException(

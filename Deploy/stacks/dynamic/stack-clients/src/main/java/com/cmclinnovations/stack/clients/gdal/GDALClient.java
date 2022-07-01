@@ -29,12 +29,10 @@ public class GDALClient extends ContainerClient {
         String containerId = getDockerClient().getContainerId("gdal");
 
         try (TempDir tmpDir = getDockerClient().makeTempDir(containerId)) {
-            getDockerClient().sendFiles(containerId, Map.of(layername, fileContents.getBytes()), tmpDir.getPath());
+            getDockerClient().sendFilesContent(containerId, Map.of(layername, fileContents.getBytes()),
+                    tmpDir.getPath());
 
             uploadVectorToPostGIS(database, layername, tmpDir + "/" + layername, null, options);
-        } catch (IOException ex) {
-            throw new RuntimeException(
-                    "Failed to send file content for '" + layername + "' to database '" + database + "'.", ex);
         }
     }
 
