@@ -9,6 +9,10 @@ from doeagent.kg_operations import *
 from doeagent.data_model import *
 from doeagent.doe_algo import *
 
+# Disable excessive debug logging from numba module
+import logging
+logging.getLogger("numba").setLevel(logging.WARNING)
+
 
 class DoEAgent(DerivationAgent):
     # TODO consider making __init__ of DerivationAgent to accept **kwargs
