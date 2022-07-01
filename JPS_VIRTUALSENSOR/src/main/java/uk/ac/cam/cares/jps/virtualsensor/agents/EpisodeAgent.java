@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Path;
@@ -19,8 +20,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -37,12 +40,17 @@ import org.apache.logging.log4j.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.google.common.net.HttpHeaders;
 
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -64,7 +72,6 @@ import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentProperty;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 import uk.ac.cam.cares.jps.virtualsensor.visualisation.VisualisationWriter;
 
 @WebServlet(urlPatterns = {"/EpisodeAgent"}, loadOnStartup=1)
@@ -109,7 +116,8 @@ public class EpisodeAgent extends JPSAgent{
         JSONObject responseParams=new JSONObject();
 
         if (validateInput(requestParams)) {
-        	String dataPath = QueryBroker.getLocalDataPath();
+        	// String dataPath = QueryBroker.getLocalDataPath();
+			String dataPath = Paths.get(System.getProperty("user.home"), "episode_inputs", UUID.randomUUID().toString()).toString();
         	String inputPath = Paths.get(dataPath,"input").toString();
         	String outputPath = Paths.get(dataPath,"output").toString();
         	String sim_iri = requestParams.getString(DispSimSparql.SimKey);
@@ -152,22 +160,14 @@ public class EpisodeAgent extends JPSAgent{
                 createControlWeatherORCityChemFile(inputPath, "citychem_restart.txt",mainStation,subStation,sc);
                 createControlEmissionFile(ship_iri.length,inputPath,"cctapm_meta.inp",sc);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             createReceptorFile(inputPath,"receptor_input.txt",sc);
             createWeatherInput(inputPath,"mcwind_input.txt",mainStation,subStation);
-            
-            //zip all the input file created
-            File inputfile=null;
-            try {
-                inputfile=getZipFile(inputPath);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
 
             try {
+				// zip input file to be sent to csd3
+				File inputfile = getZipFile(inputPath);
                 JSONObject jsonforslurm = new JSONObject();
                 boolean value=true;
 //              if (restart==true) {//all the time must be true??
@@ -193,10 +193,9 @@ public class EpisodeAgent extends JPSAgent{
 				}
 				jsonforslurm.put("ships", ships_array);
 
-                setUpJob(jsonforslurm.toString(),dataPath);
+                setUpJob(jsonforslurm.toString(),dataPath, inputfile);
             } catch (IOException | SlurmJobException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
 
             responseParams.put("folder",Paths.get(outputPath,FILE_NAME_3D_MAIN_CONC_DATA).toString()); //or withtBCZ?
@@ -783,37 +782,37 @@ public class EpisodeAgent extends JPSAgent{
 		return zipFile;
 	}
     
-    public String setUpJob(String jsonString,String dataPath) throws IOException,  SlurmJobException{
-    	String message = setUpJobOnAgentMachine(jsonString,dataPath);
+    public String setUpJob(String jsonString,String dataPath, File inputfile) throws IOException,  SlurmJobException{
+    	String message = setUpJobOnAgentMachine(jsonString,dataPath, inputfile);
 		JSONObject obj = new JSONObject();
 		obj.put("message", message);
     	return obj.toString();
     }
     
-    private String setUpJobOnAgentMachine(String jsonInput, String datapath) throws IOException, SlurmJobException {
+    private String setUpJobOnAgentMachine(String jsonInput, String datapath, File inputfile) throws IOException, SlurmJobException {
 		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = getNewJobFolderName(jobSubmission.slurmJobProperty.getHpcAddress(), timeStamp);
+		// String jobFolderName = getNewJobFolderName(jobSubmission.slurmJobProperty.getHpcAddress(), timeStamp);
 		return jobSubmission.setUpJob(jsonInput,
 				new File(decodeURL(
 						getClass().getClassLoader().getResource(jobSubmission.slurmJobProperty.getSlurmScriptFileName()).getPath())),
-				getInputFile(datapath, jobFolderName),
+				inputfile,
 				new File(decodeURL(
 						getClass().getClassLoader().getResource(jobSubmission.slurmJobProperty.getExecutableFile()).getPath())),
 				timeStamp);
 	}
     
-    public String getNewJobFolderName(String hpcAddress, long timeStamp){
-		return hpcAddress.concat("_").concat("" + timeStamp);
-	}
+    // public String getNewJobFolderName(String hpcAddress, long timeStamp){
+	// 	return hpcAddress.concat("_").concat("" + timeStamp);
+	// }
     
-    private File getInputFile(String datapath, String jobFolderName) throws IOException{
-		//start to prepare all input files and put under folder input
-		String inputFilePath=Paths.get(datapath,"input.zip").toString();
+    // private File getInputFile(String datapath, String jobFolderName) throws IOException{
+	// 	//start to prepare all input files and put under folder input
+	// 	String inputFilePath=Paths.get(datapath,"input.zip").toString();
 		
-		//zip all the input file expected (input.zip)
-    	return new File(inputFilePath);
-	}
+	// 	//zip all the input file expected (input.zip)
+    // 	return new File(inputFilePath);
+	// }
     
     /**
 	 * Takes a path that may contain one or more UTF-8 characters and decodes<br>
@@ -936,7 +935,7 @@ public class EpisodeAgent extends JPSAgent{
 							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
 							continue;							
 						}
-						if(annotateOutputs(jobFolder, zipFilePath)) {
+						if(annotateOutputs(jobFolder)) {
 							logger.info("EpisodeAgent: Annotation has been completed.");
 							PostProcessing.updateJobOutputStatus(jobFolder);
 						} else {
@@ -955,85 +954,43 @@ public class EpisodeAgent extends JPSAgent{
 		}
 	}
 	
-	private boolean annotateOutputs(File jobFolder, String zipFilePath) throws SlurmJobException {
+	private boolean annotateOutputs(File jobFolder) throws SlurmJobException {
 		try {
 			System.out.println("Annotating output has started");
 
+			// these info are written into a file called input.json when a job was submitted
 			JSONObject jobInfo = new JSONObject(Files.readAllLines(Paths.get(jobFolder.getAbsolutePath(), "input.json")).get(0));
-			String jobPath = jobInfo.getString(jobPathKey);
-			
-			String visfolder = Paths.get(jobPath,"vis").toString();
-			String outputPath = Paths.get(jobPath, "output").toString(); // scenario folder written during job submission
 			String sim_iri = jobInfo.getString(DispSimSparql.SimKey);
-			
-			// if (!DispSimSparql.CheckOutputPathExist(sim_iri, outputPath)) { 
-				// avoid duplicate annotation, sometimes the slurm api submits the same job twice
-				Instant simStart = Instant.parse(jobInfo.getString(simStartKey)); // time stamp
-				
-				String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
-				
-				File file = new File(destDir.concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
-				String destinationUrl = Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA).toString();
-	
-				File file2 = new File(Paths.get(destDir, FILE_NAME_ICM_HOUR).toString());
-				String destinationUrl2 = Paths.get(outputPath, FILE_NAME_ICM_HOUR).toString();
-	
-				File file3 = new File(Paths.get(destDir, FILE_NAME_PLUME_SEGMENT).toString());
-				String destinationUrl3 = Paths.get(outputPath, FILE_NAME_PLUME_SEGMENT).toString();
-	
-				// copy to scenario folder
-				new QueryBroker().putLocal(destinationUrl, file); 
-				new QueryBroker().putLocal(destinationUrl2, file2);
-				new QueryBroker().putLocal(destinationUrl3, file3);
-				
-				// python script reads in conc file and produces a geojson file next to it
-				String crsName = DispSimSparql.GetSimCRS(sim_iri);
-				byte[] dispMatrixBytes = Files.readAllBytes(Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA));
-				String dispMatrix = new String(dispMatrixBytes);
-				
-				URIBuilder url = new URIBuilder("http://python-service:5000/getGeoJSON");
-				url.addParameter("dispMatrix", dispMatrix);
-				url.addParameter("crsName", crsName);
-				
-				HttpGet httpGet = new HttpGet(url.build());
-				CloseableHttpClient httpclient = HttpClients.createDefault();
-				CloseableHttpResponse pyresponse = httpclient.execute(httpGet);
-				JSONObject pyresponse_json = new JSONObject(EntityUtils.toString(pyresponse.getEntity()));
+			Instant simStart = Instant.parse(jobInfo.getString(simStartKey)); // time stamp
 
-				List<String> pollutants = new ArrayList<>();
-				Iterator<String> pol_iter = pyresponse_json.keySet().iterator();
-				while(pol_iter.hasNext()) {
-					String pol = pol_iter.next();
-					// refer to python_service/episode for information on the keys used
-					// dz = array of z cells
-					if (!pol.contentEquals("dz")) {
-						pollutants.add(pol);
-					}
-				}
-				Scope sim_scope = DispSimSparql.GetScope(sim_iri);
-				
-				// make a copy of the scope centre
-				Point centre = new Point(sim_scope.getScopeCentre());
-				centre.transform("EPSG:4326");
+			String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
+			File concfile = new File(destDir.concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
 
-				logger.info("Creating visualisation files");
-				VisualisationWriter.makeDirectories(visfolder, pollutants, simStart);
-				VisualisationWriter.writeMainMetaFile(visfolder, pollutants, centre);
-				VisualisationWriter.writeTree(visfolder);
-				VisualisationWriter.writeTimestepMetaFile(visfolder, pollutants, simStart);
-				VisualisationWriter.writeIndividualMetaFile(visfolder, pollutants, simStart);
-				VisualisationWriter.writeGeoJSONContours(visfolder, pollutants, simStart, pyresponse_json);
-				VisualisationWriter.writeShipGeoJSON(visfolder, pollutants, simStart, jobInfo.getJSONArray("ships"));
+			boolean writeVisFiles = false;
+			if (writeVisFiles) {
+				writeVisFilesDeprecated(sim_iri, jobInfo, simStart);
+			}
 
-				System.out.println("metadata annotation started");
-	
+			// upload to file server via HTTP POST
+			MultipartEntityBuilder multipartBuilder = MultipartEntityBuilder.create();
+			multipartBuilder.addPart("concentrations", new FileBody(concfile));
+
+			HttpPost post = new HttpPost("http://file-server:8080/FileServer/"+ UUID.randomUUID().toString() + "/");
+			post.setEntity(multipartBuilder.build());
+			String auth = "fs_user" + ":" + "fs_pass"; // default credentials for the file server container
+			String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes());
+			post.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			CloseableHttpResponse response = httpclient.execute(post);
+			if(response.getStatusLine().getStatusCode() == 200) {
+				String fileURL = response.getFirstHeader("concentrations").getValue();
 				// update triple-store
-				DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart.getEpochSecond());
-				
-				System.out.println("metadata annotation finished");
-			// } else {
-			// 	System.out.println("Duplicate detected, skipping annotation");
-			// }
+				DispSimSparql.AddOutputPath(sim_iri, fileURL, simStart.getEpochSecond());
+			} else {
+				logger.error(response.getStatusLine().getReasonPhrase());
+			}
+			
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			logger.error("EpisodeAgent: Output Annotating Task could not finish");
@@ -1044,5 +1001,48 @@ public class EpisodeAgent extends JPSAgent{
 		return true;
 	}
     
-	
+	void writeVisFilesDeprecated(String sim_iri, JSONObject jobInfo, Instant simStart) throws IOException, URISyntaxException {
+		String jobPath = jobInfo.getString(jobPathKey);
+		String visfolder = Paths.get(jobPath,"vis").toString();
+		String outputPath = Paths.get(jobPath, "output").toString(); // scenario folder written during job submission
+		
+		// python script reads in conc file and produces a geojson file next to it
+		String crsName = DispSimSparql.GetSimCRS(sim_iri);
+		byte[] dispMatrixBytes = Files.readAllBytes(Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA));
+		String dispMatrix = new String(dispMatrixBytes);
+		
+		URIBuilder url = new URIBuilder("http://python-service:5000/getGeoJSON");
+		url.addParameter("dispMatrix", dispMatrix);
+		url.addParameter("crsName", crsName);
+		
+		HttpGet httpGet = new HttpGet(url.build());
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpResponse pyresponse = httpclient.execute(httpGet);
+		JSONObject pyresponse_json = new JSONObject(EntityUtils.toString(pyresponse.getEntity()));
+
+		List<String> pollutants = new ArrayList<>();
+		Iterator<String> pol_iter = pyresponse_json.keySet().iterator();
+		while(pol_iter.hasNext()) {
+			String pol = pol_iter.next();
+			// refer to python_service/episode for information on the keys used
+			// dz = array of z cells
+			if (!pol.contentEquals("dz")) {
+				pollutants.add(pol);
+			}
+		}
+		Scope sim_scope = DispSimSparql.GetScope(sim_iri);
+		
+		// make a copy of the scope centre
+		Point centre = new Point(sim_scope.getScopeCentre());
+		centre.transform("EPSG:4326");
+
+		logger.info("Creating visualisation files");
+		VisualisationWriter.makeDirectories(visfolder, pollutants, simStart);
+		VisualisationWriter.writeMainMetaFile(visfolder, pollutants, centre);
+		VisualisationWriter.writeTree(visfolder);
+		VisualisationWriter.writeTimestepMetaFile(visfolder, pollutants, simStart);
+		VisualisationWriter.writeIndividualMetaFile(visfolder, pollutants, simStart);
+		VisualisationWriter.writeGeoJSONContours(visfolder, pollutants, simStart, pyresponse_json);
+		VisualisationWriter.writeShipGeoJSON(visfolder, pollutants, simStart, jobInfo.getJSONArray("ships"));
+	}
 }

@@ -424,7 +424,7 @@ public class DispSimSparql {
 		Iri sim_iri = iri(sim_iri_string);
 		
 		// ensure data path is a valid uri
-		Iri outputPath = iri(new File(outputPath_string).toURI().toString());
+		Iri outputPath = iri(outputPath_string);
 
 		// get number of existing outputs to write IRI for timestamp
 		int numOutput = GetNumOutput(sim_iri_string);
