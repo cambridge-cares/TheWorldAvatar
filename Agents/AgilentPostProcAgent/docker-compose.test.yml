@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   agilentpostprocagent:
-    image: agilent_postproc_agent:1.0.0
+    image: agilent_postproc_agent:1.0.0-SNAPSHOT
     container_name: agilent_postproc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
@@ -16,7 +16,10 @@ services:
     # https://forums.docker.com/t/docker-errors-invalidargument-host-network-mode-is-incompatible-with-port-bindings/103492/11
     # this change is done together with the ones in agent.postproc.env.test
     # where the triple store and file server URLs were defined
-    network_mode: host
+    # network_mode: host
+    # Use extra_hosts instead
+    extra_hosts:
+      - localhost:host-gateway
     env_file:
       - ./agilentpostprocagent/tests/agent.postproc.env.test
 

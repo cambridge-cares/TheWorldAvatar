@@ -19,7 +19,7 @@ EXPOSE 5000
 
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
-RUN echo ABCD
+RUN echo ABCDEggg
 # Install the required Python libraries
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt

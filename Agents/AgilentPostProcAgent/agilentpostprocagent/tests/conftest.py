@@ -11,6 +11,7 @@ import os
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 from pyderivationagent.conf import config_derivation_agent
+from agilentpostprocagent.conf import config_agilent_postproc
 
 from agilentpostprocagent.kg_operations import ChemistryAndRobotsSparqlClient
 from agilentpostprocagent.agent import *
@@ -141,8 +142,11 @@ def initialise_triples(get_service_url, get_service_auth):
     if not os.path.exists(DOWNLOADED_DIR):
         os.mkdir(DOWNLOADED_DIR)
 
+    # Clear triple store before any usage
+    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+
     # Upload the example triples for testing
-    for f in ['ontoagent/Service__PostProc.ttl', 'sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl',
+    for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl',
         'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
@@ -150,10 +154,7 @@ def initialise_triples(get_service_url, get_service_auth):
         g.serialize(filePath, format='ttl')
         sparql_client.uploadOntology(filePath)
 
-    # Initialise PostProcAgent
-    post_proc_agent = create_postproc_agent(POSTPROCAGENT_ENV, sparql_endpoint)
-
-    yield sparql_client, post_proc_agent
+    yield sparql_client
 
     # Clear logger at the end of the test
     clear_loggers()
@@ -176,26 +177,38 @@ def retrieve_hplc_report():
         return local_file_path, timestamp_last_modified
     return _retrieve_hplc_report
 
-def create_postproc_agent(env_file: str = None, sparql_endpoint: str = None):
-    if env_file is None:
-        agent_config = config_derivation_agent()
-    else:
-        agent_config = config_derivation_agent(env_file)
-    return AgilentPostProcAgent(
-        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
-        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-        kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
-        kg_user=agent_config.KG_USERNAME,
-        kg_password=agent_config.KG_PASSWORD,
-        fs_url=agent_config.FILE_SERVER_ENDPOINT,
-        fs_user=agent_config.FILE_SERVER_USERNAME,
-        fs_password=agent_config.FILE_SERVER_PASSWORD,
-        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        app=Flask(__name__),
-        flask_config=FlaskConfigTest(), # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
-        logger_name='dev'
-    )
+
+# ----------------------------------------------------------------------------------
+# Module-scoped test fixtures
+# ----------------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def create_postproc_agent():
+    def _create_postproc_agent(
+        register_agent:bool=False
+    ):
+        derivation_agent_config = config_derivation_agent(POSTPROCAGENT_ENV)
+        agilent_postproc_config = config_agilent_postproc(POSTPROCAGENT_ENV)
+        agilent_postproc_agent = AgilentPostProcAgent(
+            register_agent=agilent_postproc_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI,
+            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
+            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=derivation_agent_config.KG_USERNAME,
+            kg_password=derivation_agent_config.KG_PASSWORD,
+            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
+            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            app=Flask(__name__),
+            flask_config=FlaskConfigTest(), # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
+            logger_name='dev'
+        )
+        agilent_postproc_agent.register()
+        return agilent_postproc_agent
+    return _create_postproc_agent
 
 def generate_random_download_path(filename_extension):
     return os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+filename_extension)

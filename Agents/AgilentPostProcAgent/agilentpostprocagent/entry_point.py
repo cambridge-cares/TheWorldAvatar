@@ -1,4 +1,6 @@
 from pyderivationagent.conf import config_derivation_agent
+from agilentpostprocagent.conf import config_agilent_postproc
+
 from agilentpostprocagent.agent import AgilentPostProcAgent
 from agilentpostprocagent.agent import default
 
@@ -9,8 +11,10 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
     agent_config = config_derivation_agent()
+    agilent_postproc_config = config_agilent_postproc()
 
     agent = AgilentPostProcAgent(
+        register_agent=agilent_postproc_config.REGISTER_AGENT,
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
@@ -27,5 +31,6 @@ def create_app():
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
+    agent.register()
     agent.start_monitoring_derivations()
     return agent.app

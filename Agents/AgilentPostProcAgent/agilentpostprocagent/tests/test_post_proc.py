@@ -16,8 +16,12 @@ pytest_plugins = ["docker_compose"]
         (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2),
     ],
 )
-def test_post_proc_agent(initialise_triples, retrieve_hplc_report, rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_solution_iri):
-    sparql_client, post_proc_agent = initialise_triples
+def test_post_proc_agent(
+    initialise_triples, retrieve_hplc_report, create_postproc_agent,
+    rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_solution_iri
+):
+    sparql_client = initialise_triples
+    post_proc_agent = create_postproc_agent(register_agent=True)
 
     # Verify that knowledge base is NOT empty
     res = sparql_client.getAmountOfTriples()
