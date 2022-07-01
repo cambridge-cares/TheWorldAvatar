@@ -11,6 +11,6 @@ public class DMSCoordinationAgentTest {
 	public void testAgentCall() {
 		JSONObject jo = new JSONObject();
 		jo.put(DispSimSparql.SimKey, "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1");
-		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/DMSCoordinationAgent",jo.toString());
+		AgentCaller.executeGetWithURLAndJSON("http://localhost:8081/JPS_VIRTUALSENSOR/DMSCoordinationAgent", jo.toString());
 	}
 }

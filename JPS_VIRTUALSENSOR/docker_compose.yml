@@ -8,7 +8,7 @@ services:
       JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=*:8000,server=y,suspend=n"
       KG_ENDPOINT: "http://blazegraph:8080/blazegraph/namespace/virtualsensor/sparql"
     build:
-      context: ./
+      context: ./Episode
     ports:
       - 8081:8080
       - 8001:8000
