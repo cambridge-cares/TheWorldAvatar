@@ -6,7 +6,7 @@ select * {
 
 
 //connect to postgresql f//connect to postgresql for read the timeseries data
-const bgep = 'http://http://10.25.188.4:9999/blazegraph/namespace/bmstest/sparql';
+const bgep = 'http://10.25.188.4:9999/blazegraph/namespace/bmstest/sparql';
 const pg = require('pg');
 
 function queryBgUnit(qstrBg, cb) {
