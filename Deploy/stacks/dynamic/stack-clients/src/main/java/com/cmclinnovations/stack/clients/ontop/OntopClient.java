@@ -5,9 +5,9 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.utils.TempFile;
 
 public class OntopClient extends ContainerClient {
 
@@ -19,55 +19,38 @@ public class OntopClient extends ContainerClient {
                 .map(Path::of)
                 .orElseThrow(() -> new RuntimeException("Environment variable '" + ONTOP_MAPPING_FILE
                         + " not set through Docker for '" + "ontop" + "' container."));
-        Path localTempOntopMappingFilePath = null;
-        boolean exceptionThrown = false;
+
         try {
             SQLPPMappingImplementation mapping = new SQLPPMappingImplementation();
 
-            localTempOntopMappingFilePath = SQLPPMappingImplementation.createTempOBDAFile(ontopMappingFilePath);
-
             if (getDockerClient().fileExists(containerId, ontopMappingFilePath.toString())) {
+
                 if (null == newMappingFilePath) {
                     // A mapping file already exists and no new one has been passed to be added.
                     return;
                 }
-                try (OutputStream outputStream = Files.newOutputStream(localTempOntopMappingFilePath)) {
+                try (TempFile localTempOntopMappingFilePath = SQLPPMappingImplementation
+                        .createTempOBDAFile(ontopMappingFilePath);
+                        OutputStream outputStream = Files.newOutputStream(localTempOntopMappingFilePath.getPath())) {
                     outputStream.write(getDockerClient().retrieveFile(containerId, ontopMappingFilePath.toString()));
-                    mapping.addMappings(localTempOntopMappingFilePath);
+                    mapping.addMappings(localTempOntopMappingFilePath.getPath());
                 }
             }
 
             if (null != newMappingFilePath) {
                 mapping.addMappings(newMappingFilePath);
             }
-            localTempOntopMappingFilePath = SQLPPMappingImplementation.createTempOBDAFile(ontopMappingFilePath);
-            mapping.serialize(localTempOntopMappingFilePath);
+            try (TempFile localTempOntopMappingFilePath = SQLPPMappingImplementation
+                    .createTempOBDAFile(ontopMappingFilePath)) {
+                mapping.serialize(localTempOntopMappingFilePath.getPath());
 
-            getDockerClient().sendFiles(containerId,
-                    localTempOntopMappingFilePath.getParent().toString(),
-                    List.of(localTempOntopMappingFilePath.getFileName().toString()),
-                    ontopMappingFilePath.getParent().toString());
-
+                getDockerClient().sendFiles(containerId, localTempOntopMappingFilePath.getPath().getParent().toString(),
+                        List.of(localTempOntopMappingFilePath.getPath().getFileName().toString()),
+                        ontopMappingFilePath.getParent().toString());
+            }
         } catch (IOException ex) {
-            exceptionThrown = true;
             throw new RuntimeException(
                     "Failed to write out combined Ontop mapping file '" + ontopMappingFilePath + "'.", ex);
-        } catch (Throwable ex) {
-            exceptionThrown = true;
-            throw ex;
-        } finally {
-            if (null != localTempOntopMappingFilePath && Files.exists(localTempOntopMappingFilePath)) {
-                try {
-                    Files.delete(localTempOntopMappingFilePath);
-                } catch (Exception ex2) {
-                    if (exceptionThrown) {
-                        // Don't worry about this exception as any previously thrown exception is more
-                        // important.
-                    } else {
-                        throw new RuntimeException(ex2);
-                    }
-                }
-            }
         }
     }
 }

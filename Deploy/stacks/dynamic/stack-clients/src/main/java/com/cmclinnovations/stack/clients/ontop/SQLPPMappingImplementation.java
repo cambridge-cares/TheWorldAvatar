@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cmclinnovations.stack.clients.utils.FileUtils;
+import com.cmclinnovations.stack.clients.utils.TempFile;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -30,44 +31,41 @@ final class SQLPPMappingImplementation implements SQLPPMapping {
     private final List<SQLPPTriplesMap> triplesMap = new ArrayList<>();
 
     public void addMappings(Path ontopMappingFilePath) {
-        try {
-            Path tempFilePath = reformatMappingFile(ontopMappingFilePath);
+        try (TempFile tempFilePath = reformatMappingFile(ontopMappingFilePath)) {
 
-            PreProcessedMapping<SQLPPTriplesMap> extraMapings = generateConfiguration(tempFilePath)
+            PreProcessedMapping<SQLPPTriplesMap> extraMapings = generateConfiguration(tempFilePath.getPath())
                     .loadProvidedPPMapping();
 
             prefixMap.putAll(extraMapings.getPrefixManager().getPrefixMap());
             triplesMap.addAll(extraMapings.getTripleMaps());
         } catch (MappingException ex) {
-            // TODO Auto-generated catch block
-            ex.printStackTrace();
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            throw new RuntimeException(ex);
+        } catch (IOException ex2) {
+            throw new RuntimeException(ex2);
         }
     }
 
-    private static Path reformatMappingFile(Path ontopMappingFilePath) throws IOException {
-        Path tempFilePath = createTempOBDAFile(ontopMappingFilePath);
+    private static TempFile reformatMappingFile(Path ontopMappingFilePath) throws IOException {
+        TempFile tempFilePath = createTempOBDAFile(ontopMappingFilePath);
         try (BufferedReader bufferedReader = Files.newBufferedReader(ontopMappingFilePath);
-                BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFilePath)) {
+                BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFilePath.getPath())) {
             bufferedReader.lines()
                     .map(line -> line.replaceFirst("^ *#.*$", ""))
                     .map(line -> line.replaceFirst("(, *|; *|\\. *)", "\1\n"))
                     .forEachOrdered(string -> {
                         try {
                             bufferedWriter.write(string, 0, string.length());
-                        } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
                         }
                     });
         }
         return tempFilePath;
     }
 
-    public static Path createTempOBDAFile(Path ontopMappingFilePath) throws IOException {
-        return File.createTempFile(FileUtils.getFileNameWithoutExtension(ontopMappingFilePath), ".obda").toPath();
+    public static TempFile createTempOBDAFile(Path ontopMappingFilePath) throws IOException {
+        return new TempFile(
+                File.createTempFile(FileUtils.getFileNameWithoutExtension(ontopMappingFilePath), ".obda").toPath());
     }
 
     private static OntopSQLOWLAPIConfiguration generateConfiguration(Path ontopMappingFilePath) {
