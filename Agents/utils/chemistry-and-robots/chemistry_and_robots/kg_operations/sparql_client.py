@@ -2084,6 +2084,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Delete generated Turtle file
         os.remove(filePath)
 
+    # TODO add unit test
+    def collect_triples_for_chromatogram_point(self, chrom_pts: List[ChromatogramPoint], hplc_report_iri: str, g: Graph) -> Graph:
+        for pt in chrom_pts:
+            g = pt.create_instance_for_kg(g)
+            g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_RECORDS), URIRef(pt.instance_iri)))
+        return g
+
     def collect_triples_for_output_chemical_of_chem_sol(self, chemical_solution: ChemicalSolution, rxn_exp_iri: str, g: Graph):
         # NOTE we do NOT call create_instance_for_kg for chemical_solution here
         # NOTE as the triples about the chemical_solution itself (and vial) should already be in the KG

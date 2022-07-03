@@ -96,10 +96,14 @@ class OntoCAPE_StateOfAggregation(BaseOntology):
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # <state_of_aggregation> <rdf:type> <OntoCAPE:StateOfAggregation>
-        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
+        # Only add if not predefined instances by OntoCAPE
+        if self.instance_iri not in ONTOCAPE_PREDEFINED_PHASE:
+            g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
         return g
 
+OntoCAPE_solid = OntoCAPE_StateOfAggregation(instance_iri=ONTOCAPE_SOLID)
 OntoCAPE_liquid = OntoCAPE_StateOfAggregation(instance_iri=ONTOCAPE_LIQUID)
+OntoCAPE_gaseous = OntoCAPE_StateOfAggregation(instance_iri=ONTOCAPE_GASEOUS)
 
 class OntoCAPE_SinglePhase(BaseOntology):
     clz: str = ONTOCAPE_SINGLEPHASE
@@ -265,6 +269,7 @@ class PerformanceIndicator(BaseOntology):
     objPropWithExp: List[str]
     hasValue: Optional[OM_Measure]
     positionalID: Optional[int] = None
+    yieldLimitingSpecies: Optional[str] = None
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # IRI-ise the IRI of PerformanceIndicator instance to be used by rdflib package
@@ -288,7 +293,11 @@ class PerformanceIndicator(BaseOntology):
 
         # Only add positionalID if it exists
         if self.positionalID is not None:
-            g.add((perf_iri, URIRef(ONTODOE_POSITIONALID), Literal(self.positionalID)))        
+            g.add((perf_iri, URIRef(ONTODOE_POSITIONALID), Literal(self.positionalID)))
+
+        # Only add yieldLimitingSpecies if it exists
+        if self.yieldLimitingSpecies is not None:
+            g.add((perf_iri, URIRef(ONTOREACTION_YIELDLIMITINGSPECIES), URIRef(self.yieldLimitingSpecies)))
 
         return g
 
