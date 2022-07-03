@@ -811,6 +811,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             perf_indicator = PerformanceIndicator(
                 instance_iri=pi,
                 clz=_clz,
+                rxn_exp_iri=rxnexp_iri,
                 objPropWithExp=_subo,
                 hasValue=OM_Measure(instance_iri=_measure[0],hasUnit=_unit[0],hasNumericalValue=_val[0]) if len(_measure) == 1 else None,
                 positionalID=_id[0] if len(_id) == 1 else None

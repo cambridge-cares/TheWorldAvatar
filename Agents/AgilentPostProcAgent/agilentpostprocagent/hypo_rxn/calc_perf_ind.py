@@ -141,10 +141,15 @@ def locate_placeholder_performance_indicator(rxn_exp_instance: ReactionExperimen
 
 def create_performance_indicator_instance(placeholder_instance: PerformanceIndicator, numerical_value, unit: str) -> PerformanceIndicator:
     """This method creates the instance of PerformanceIndicator given the placeholder instance and the computed value to be used for OM_Measure."""
+    _objPropWithExp = placeholder_instance.objPropWithExp
+    if ONTOREACTION_HASPERFORMANCEINDICATOR not in placeholder_instance.objPropWithExp:
+        _objPropWithExp.append(ONTOREACTION_HASPERFORMANCEINDICATOR)
+
     performance_indicator_instance = PerformanceIndicator(
         instance_iri=placeholder_instance.instance_iri,
         clz=placeholder_instance.clz,
-        objPropWithExp=placeholder_instance.objPropWithExp,
+        rxn_exp_iri=placeholder_instance.rxn_exp_iri,
+        objPropWithExp=_objPropWithExp,
         hasValue=OM_Measure(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=getNameSpace(placeholder_instance.instance_iri),

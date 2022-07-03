@@ -261,6 +261,7 @@ class ReactionCondition(BaseOntology):
 #     indicateUsageOf: str # indicateUsageOf: InputChemical
 
 class PerformanceIndicator(BaseOntology):
+    rxn_exp_iri: str
     objPropWithExp: List[str]
     hasValue: Optional[OM_Measure]
     positionalID: Optional[int] = None
@@ -271,7 +272,11 @@ class PerformanceIndicator(BaseOntology):
 
         # <performanceIndicatorIRI> <rdf:type> <clz> .
         g.add((perf_iri, RDF.type, URIRef(self.clz)))
-        
+
+        # <rxn_exp_iri> <objPropWithExp> <performanceIndicatorIRI> .
+        for obj in self.objPropWithExp:
+            g.add((URIRef(self.rxn_exp_iri), URIRef(obj), perf_iri))
+
         # Only add OM triples if it exists
         if self.hasValue is not None:
             # Add below triples following units of measure practices:
