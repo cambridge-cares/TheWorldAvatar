@@ -49,7 +49,7 @@ def calculate_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, p
     yield_limiting_conc = utils.unit_conversion_return_value_dq(yield_limiting_species.run_conc, utils.UNIFIED_CONCENTRATION_UNIT)
     prod_run_conc = utils.unit_conversion_return_value_dq(target_product_species.run_conc, utils.UNIFIED_CONCENTRATION_UNIT)
 
-    _yield = prod_run_conc / yield_limiting_conc
+    _yield = round(prod_run_conc / yield_limiting_conc, 4) # Round the decimal place
 
     pi_yield = create_performance_indicator_instance(placeholder_perf_ind, _yield, OM_ONE)
 
@@ -65,7 +65,7 @@ def calculate_conversion(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStre
     yield_limiting_conc = utils.unit_conversion_return_value_dq(yield_limiting_species.run_conc, utils.UNIFIED_CONCENTRATION_UNIT)
     unreacted_conc = utils.unit_conversion_return_value_dq(_species_in_end_stream.run_conc, utils.UNIFIED_CONCENTRATION_UNIT)
 
-    _conversion = 1 - unreacted_conc / yield_limiting_conc
+    _conversion = round(1 - unreacted_conc / yield_limiting_conc, 4) # Round the decimal place
 
     pi_conversion = create_performance_indicator_instance(placeholder_perf_ind, _conversion, OM_ONE)
 
@@ -79,7 +79,7 @@ def calculate_space_time_yield(hypo_reactor: HypoReactor, hypo_end_stream: HypoE
     residence_time = utils.unit_conversion_return_value_dq(hypo_reactor.residence_time, utils.UNIFIED_TIME_UNIT)
     reactor_volume = utils.unit_conversion_return_value_dq(hypo_reactor.reactor_volume, utils.UNIFIED_VOLUME_UNIT)
 
-    _sty = prod_run_mass / residence_time / reactor_volume
+    _sty = round(prod_run_mass / residence_time / reactor_volume, 2) # Round the decimal place
 
     pi_sty = create_performance_indicator_instance(placeholder_perf_ind, _sty, utils.UNIFIED_SPACETIMEYIELD_UNIT)
 
@@ -92,7 +92,7 @@ def calculate_eco_score(hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStrea
     time_temperature_eco_score = TIME_TEMPERATURE_ECO_SCORE_FACTOR * residence_time * (
         (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) * (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) / abs(reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS))
     total_run_eco_score = retrieve_total_run_eco_score(hypo_reactor)
-    _eco_score = ECO_SCORE_BASE_VALUE - time_temperature_eco_score - total_run_eco_score
+    _eco_score = round(ECO_SCORE_BASE_VALUE - time_temperature_eco_score - total_run_eco_score, 2) # Round the decimal place
 
     pi_eco_score = create_performance_indicator_instance(placeholder_perf_ind, _eco_score, utils.UNIFIED_ECOSCORE_UNIT)
 
@@ -108,7 +108,7 @@ def calculate_enviromental_factor(hypo_reactor: HypoReactor, hypo_end_stream: Hy
     total_reac_n_solvent_run_mass = sum([utils.unit_conversion_return_value_dq(s._run_mass, utils.UNIFIED_MASS_UNIT) for s in reactant_and_solvent])
     prod_run_mass = utils.unit_conversion_return_value_dq(target_product_species._run_mass, utils.UNIFIED_MASS_UNIT)
 
-    _e_factor = prod_run_mass / (total_reac_n_solvent_run_mass - prod_run_mass)
+    _e_factor = round(prod_run_mass / (total_reac_n_solvent_run_mass - prod_run_mass), 2) # Round the decimal place
 
     pi_e_factor = create_performance_indicator_instance(placeholder_perf_ind, _e_factor, utils.UNIFIED_ENVIRONMENTFACTOR_UNIT)
 
@@ -121,7 +121,7 @@ def calculate_run_material_cost(hypo_reactor: HypoReactor, hypo_end_stream: Hypo
     reactant_and_solvent = all_reactant + all_solvent
     # NOTE here the unit of the _run_volume and def_cost should already be standardised at creation of each HypoStreamSpecies instance
     # NOTE therefore the unit conversion is omitted
-    _run_material_cost = sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_and_solvent])
+    _run_material_cost = round(sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_and_solvent]), 2) # Round the decimal place
 
     pi_run_material_cost = create_performance_indicator_instance(placeholder_perf_ind, _run_material_cost, utils.UNIFIED_RUN_MATERIAL_COST_UNIT)
 
