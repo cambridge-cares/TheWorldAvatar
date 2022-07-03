@@ -68,12 +68,10 @@ class AgilentPostProcAgent(DerivationAgent):
             )[0] # [0] is used here to simplify the implementation as we know there will be only one performance indicator for such clz type
             lst_performance_indicator.append(pi)
 
-        # Collect the generated OutputChemical triples and PerformanceIndicator triples to a rdflib.Graph instance
-        g = self.sparql_client.collect_triples_for_performance_indicators(lst_performance_indicator)
-        g = self.sparql_client.collect_triples_for_output_chemical_of_chem_sol(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri, g)
+        # Collect the generated OutputChemical triples and PerformanceIndicator triples to derivation_outputs
+        derivation_outputs.addGraph(self.sparql_client.collect_triples_for_performance_indicators(lst_performance_indicator, Graph()))
+        derivation_outputs.addGraph(self.sparql_client.collect_triples_for_output_chemical_of_chem_sol(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri, Graph()))
 
-        # Write all the generated triples to derivation_outputs
-        derivation_outputs.addGraph(g)
 
 def default():
     """

@@ -2063,7 +2063,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             return response[0]['remote_path']
 
-    def collect_triples_for_performance_indicators(self, lst_performance_indicator: List[PerformanceIndicator], g: Graph = Graph()) -> Graph:
+    def collect_triples_for_performance_indicators(self, lst_performance_indicator: List[PerformanceIndicator], g: Graph) -> Graph:
         for pi in lst_performance_indicator:
             g = pi.create_instance_for_kg(g)
         return g
@@ -2079,7 +2079,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Delete generated Turtle file
         os.remove(filePath)
 
-    def collect_triples_for_output_chemical_of_chem_sol(self, chemical_solution: ChemicalSolution, rxn_exp_iri: str, g: Graph = Graph()):
+    def collect_triples_for_output_chemical_of_chem_sol(self, chemical_solution: ChemicalSolution, rxn_exp_iri: str, g: Graph):
         # NOTE we do NOT call create_instance_for_kg for chemical_solution here
         # NOTE as the triples about the chemical_solution itself (and vial) should already be in the KG
         # <chemical_solution> <refersToMaterial> <output_chemical>
