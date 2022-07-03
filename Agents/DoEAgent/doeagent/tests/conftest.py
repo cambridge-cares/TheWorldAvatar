@@ -13,6 +13,7 @@ from pyderivationagent.conf import config_derivation_agent
 from doeagent.kg_operations import ChemistryAndRobotsSparqlClient
 from doeagent.agent import DoEAgent
 from doeagent.conf import config_doe
+from doeagent.data_model import *
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
@@ -36,7 +37,6 @@ KG_ROUTE = "blazegraph/namespace/kb/sparql"
 DOEAGENT_ENV = os.path.join(THIS_DIR,'agent.doe.env.test')
 
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOEAGENT_ENV).DERIVATION_INSTANCE_BASE_URL
-# DOEAGENT_SERVICE_IRI = config_derivation_agent(DOEAGENT_ENV).ONTOAGENT_SERVICE_IRI
 
 DOE_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1'
 DERIVATION_INPUTS = [DOE_IRI]
@@ -108,12 +108,7 @@ def generate_random_download_path():
         return os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+filename_extension)
     return _generate_random_download_path
 
-# ----------------------------------------------------------------------------------
-# Module-scoped test fixtures
-# ----------------------------------------------------------------------------------
-
-# NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def initialise_clients(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
@@ -139,6 +134,10 @@ def initialise_clients(get_service_url, get_service_auth):
     # Clear logger at the end of the test
     clear_loggers()
 
+
+# ----------------------------------------------------------------------------------
+# Module-scoped test fixtures
+# ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
 def create_doe_agent():

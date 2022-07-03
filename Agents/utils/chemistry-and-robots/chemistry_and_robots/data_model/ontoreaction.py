@@ -336,6 +336,15 @@ class ReactionExperiment(BaseOntology):
                 )
         return values
 
+    def get_reaction_condition(self, clz: str, positional_id: int) -> ReactionCondition:
+        if self.hasReactionCondition is None: return None
+        lst_rxn_cond = [rc for rc in self.hasReactionCondition if rc.clz == clz and rc.positionalID == positional_id]
+        if len(lst_rxn_cond) > 1:
+            raise Exception("ReactionCondition with rdf:type <%s> and positionalID <%s> is not uniquely identified: %s" % (
+                clz, str(positional_id), str(lst_rxn_cond)
+            ))
+        return lst_rxn_cond[0]
+
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # check if information is complete
         if self.hasReactionCondition is None:
@@ -398,9 +407,9 @@ class ReactionVariation(ReactionExperiment):
             raise Exception(
                 "At least one instance of ReactionCondition should be provided before creating ReactionVariation instance for KG."
             )
-        if self.hasPerformanceIndicator is None:
+        if self.hasInputChemical is None:
             raise Exception(
-                "At least one instance of PerformanceIndicator should be provided before creating ReactionVariation instance for KG."
+                "At least one instance of InputChemical should be provided before creating ReactionVariation instance for KG."
             )
 
         # IRI-ise the ReactionExperiment instance to be used by rdflib package
@@ -428,20 +437,23 @@ class ReactionVariation(ReactionExperiment):
             # Add all other triples of the ReactionCondition instance
             g = con.create_instance_for_kg(g)
         
-        for perf in self.hasPerformanceIndicator:
-            # Attach the PerformanceIndicator instance to the OntoReaction:ReactionVariation instance
-            # As we are stating the <reactionVariationIRI> <OntoReaction:isVariationOf> <reactionExperimentIRI>
-            # we are using the list of the same object properties between the <reactionExperimentIRI> and the instance of PerformanceIndicator
-            for rela in perf.objPropWithExp:
-                g.add((rxnvar_iri, URIRef(rela), URIRef(perf.instance_iri)))
+        # NOTE PerformanceIndicator should NOT be presented in the new suggested ReactionVariation before its execution
+        # NOTE Thus here we omit the creation of such triples in the KG
+        # for perf in self.hasPerformanceIndicator:
+        #     # Attach the PerformanceIndicator instance to the OntoReaction:ReactionVariation instance
+        #     # As we are stating the <reactionVariationIRI> <OntoReaction:isVariationOf> <reactionExperimentIRI>
+        #     # we are using the list of the same object properties between the <reactionExperimentIRI> and the instance of PerformanceIndicator
+        #     for rela in perf.objPropWithExp:
+        #         g.add((rxnvar_iri, URIRef(rela), URIRef(perf.instance_iri)))
             
-            # Following unit of measure practices, add <performanceIndicatorIRI> <om:hasPhenomenon> <reactionVariationIRI> .
-            g.add((URIRef(perf.instance_iri), URIRef(OM_HASPHENOMENON), rxnvar_iri))
+        #     # Following unit of measure practices, add <performanceIndicatorIRI> <om:hasPhenomenon> <reactionVariationIRI> .
+        #     g.add((URIRef(perf.instance_iri), URIRef(OM_HASPHENOMENON), rxnvar_iri))
 
-            # Add all other triples of the PerformanceIndicator instance
-            g = perf.create_instance_for_kg(g)
+        #     # Add all other triples of the PerformanceIndicator instance
+        #     g = perf.create_instance_for_kg(g)
         
-        # TODO add support for creating InputChemical and OutputChemical
+        # InputChemical and OutputChemical should NOT be collected as part of the triples when collecting for derivation outputs
+        # But their links with ReactionVariation should be established here, i.e. <hasInputChemical>
         for input_chemical in self.hasInputChemical:
             g.add((rxnvar_iri, URIRef(ONTOREACTION_HASINPUTCHEMICAL), URIRef(input_chemical.instance_iri)))
 

@@ -117,17 +117,20 @@ def test_getExpReactionCondition(initialise_triples, rxnexp_iri, rxnexp_conditio
 def test_getExpPerformanceIndicator(initialise_triples, rxnexp_iri, rxnexp_pref_indicator_iri, rxn_type):
     sparql_client = initialise_triples
     perf_ind_list = sparql_client.getExpPerformanceIndicator(rxnexp_iri)
-    assert len(rxnexp_pref_indicator_iri) == len(perf_ind_list)
-    for ind in perf_ind_list:
-        assert all([isinstance(ind, onto.PerformanceIndicator), ind.clz is not None, isinstance(ind.objPropWithExp, list), ind.instance_iri in rxnexp_pref_indicator_iri])
-    if rxn_type == onto.ONTOREACTION_REACTIONEXPERIMENT:
+    if rxnexp_pref_indicator_iri is not None:
+        assert len(rxnexp_pref_indicator_iri) == len(perf_ind_list)
         for ind in perf_ind_list:
-            assert all([ind.hasValue.hasUnit is not None, ind.hasValue.hasNumericalValue is not None])
-    elif rxn_type == onto.ONTOREACTION_REACTIONVARIATION:
-        for ind in perf_ind_list:
-            assert all([ind.hasValue is None])
+            assert all([isinstance(ind, onto.PerformanceIndicator), ind.clz is not None, isinstance(ind.objPropWithExp, list), ind.instance_iri in rxnexp_pref_indicator_iri])
+        if rxn_type == onto.ONTOREACTION_REACTIONEXPERIMENT:
+            for ind in perf_ind_list:
+                assert all([ind.hasValue.hasUnit is not None, ind.hasValue.hasNumericalValue is not None])
+        elif rxn_type == onto.ONTOREACTION_REACTIONVARIATION:
+            for ind in perf_ind_list:
+                assert all([ind.hasValue is None])
+        else:
+            assert False
     else:
-        assert False
+        assert perf_ind_list is None
 
 @pytest.mark.parametrize(
     "rxnexp_iri,expected_rxn_type",

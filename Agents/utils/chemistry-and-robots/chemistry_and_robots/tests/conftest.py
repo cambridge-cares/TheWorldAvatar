@@ -203,24 +203,9 @@ class TargetIRIs(Enum):
         EXP_1_BASE_IRI+'StoichiometryRatio_3712c062-8b67-4a82-82d9-166ff34909ba',
         EXP_1_BASE_IRI+'StoichiometryRatio_9968472e-74b9-4925-b5cc-63220f4be1a9',
         EXP_1_BASE_IRI+'StoichiometryRatio_fb5fecbb-3de2-4d98-b96c-38a3d033ca2d']
-    NEW_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST = [EXP_1_BASE_IRI+'Conversion_967deb19-b7bc-4b5b-a236-13df15a0d2ea',
-        EXP_1_BASE_IRI+'EcoScore_ed7d5c04-3388-4b34-9795-0685e2ece916',
-        EXP_1_BASE_IRI+'EnvironmentalFactor_a03c52ca-9404-4b71-9ef3-ba19e78c23a0',
-        EXP_1_BASE_IRI+'SpaceTimeYield_0d5b724a-d31a-4200-af31-ae574d14be50',
-        EXP_1_BASE_IRI+'RunMaterialCost_9e97205c-7b59-497c-b5bc-187c212e53c4',
-        EXP_1_BASE_IRI+'Yield_7d236fe9-89ce-4fc1-b12e-e427b73b9bba']
-    NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST = [EXP_1_BASE_IRI+'Conversion_6d64895f-3600-444b-972a-c5e8a0683f05',
-        EXP_1_BASE_IRI+'EcoScore_967aca85-cfbc-40d5-8443-9a5d7d38dd81',
-        EXP_1_BASE_IRI+'EnvironmentalFactor_8d611396-9126-4415-97b0-5f7f869fab38',
-        EXP_1_BASE_IRI+'SpaceTimeYield_501ee5ab-8d6e-402f-86d7-3082bcff606e',
-        EXP_1_BASE_IRI+'RunMaterialCost_f075631a-5721-4224-b786-7ce00761f743',
-        EXP_1_BASE_IRI+'Yield_38c71d2a-4497-4d6e-bb5e-e219b268a834']
-    NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST = [EXP_1_BASE_IRI+'Conversion_aaa4ac45-4cc8-4f03-b63e-7f416c2008ae',
-        EXP_1_BASE_IRI+'EcoScore_c6b4f897-ea3e-4aa7-b46d-89dbdd1288f5',
-        EXP_1_BASE_IRI+'EnvironmentalFactor_73c41c3c-3b59-4ea8-85ea-6d7e3ae76f12',
-        EXP_1_BASE_IRI+'SpaceTimeYield_4021bb12-fd78-4c97-a065-2ad6693f71a8',
-        EXP_1_BASE_IRI+'RunMaterialCost_967051c0-422e-48cd-baae-afa74f8f0557',
-        EXP_1_BASE_IRI+'Yield_d1a24199-40af-4ade-ab39-99e324f12ceb']
+    NEW_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST = None
+    NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST = None
+    NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST = None
 
     CHEMICAL_REACTION_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/'
     CHEMICAL_REACTION_IRI = CHEMICAL_REACTION_BASE_IRI + 'ChemRxn_1'

@@ -112,7 +112,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasDomain=self.getDoEDomain(r['domain']),
             hasSystemResponse=self.getSystemResponses([list(res.values())[0] for res in response_2]),
             utilisesHistoricalData=self.getDoEHistoricalData(r['hist_data']),
-            proposesNewExperiment=None
+            proposesNewExperiment=self.getNewExperimentFromDoE(doe_iri)
         ) # TODO initialisation of ReactionExperiment is omitted here
         return doe_instance
 
@@ -792,33 +792,37 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Perform SPARQL query
         response = self.performQuery(query)
 
-        # Populate the list of PerformanceIndicator based on query results
-        list_perf = []
-        unique_performance_indicator = self.get_unique_values_in_list_of_dict(response, 'perf')
-        dct_unique_pi = {pi:self.get_sublist_in_list_of_dict_matching_key_value(response, 'perf', pi) for pi in unique_performance_indicator}
-        for pi in unique_performance_indicator:
-            _info = dct_unique_pi[pi]
-            __clz = list(set([d['clz'] for d in _info]))
-            if len(__clz) == 1:
-                _clz = __clz[0]
-            else:
-                raise Exception("The rdf:type of PerformanceIndicator <%s> is not uniquely identified: %s" % (pi, __clz))
-            _subo = list(set([d['subo'] for d in _info]))
-            _id = list(set([d['id'] for d in _info if 'id' in d]))
-            _measure = list(set([d['measure'] for d in _info if 'measure' in d]))
-            _unit = list(set([d['unit'] for d in _info if 'unit' in d]))
-            _val = list(set([d['val'] for d in _info if 'val' in d]))
-            perf_indicator = PerformanceIndicator(
-                instance_iri=pi,
-                clz=_clz,
-                rxn_exp_iri=rxnexp_iri,
-                objPropWithExp=_subo,
-                hasValue=OM_Measure(instance_iri=_measure[0],hasUnit=_unit[0],hasNumericalValue=_val[0]) if len(_measure) == 1 else None,
-                positionalID=_id[0] if len(_id) == 1 else None
-            )
-            list_perf.append(perf_indicator)
+        if len(response) == 0:
+            logger.info("ReactionExperiment/ReactionVariation <%s> has no PerformanceIndicator computed yet" % (rxnexp_iri))
+            return None
+        else:
+            # Populate the list of PerformanceIndicator based on query results
+            list_perf = []
+            unique_performance_indicator = self.get_unique_values_in_list_of_dict(response, 'perf')
+            dct_unique_pi = {pi:self.get_sublist_in_list_of_dict_matching_key_value(response, 'perf', pi) for pi in unique_performance_indicator}
+            for pi in unique_performance_indicator:
+                _info = dct_unique_pi[pi]
+                __clz = list(set([d['clz'] for d in _info]))
+                if len(__clz) == 1:
+                    _clz = __clz[0]
+                else:
+                    raise Exception("The rdf:type of PerformanceIndicator <%s> is not uniquely identified: %s" % (pi, __clz))
+                _subo = list(set([d['subo'] for d in _info]))
+                _id = list(set([d['id'] for d in _info if 'id' in d]))
+                _measure = list(set([d['measure'] for d in _info if 'measure' in d]))
+                _unit = list(set([d['unit'] for d in _info if 'unit' in d]))
+                _val = list(set([d['val'] for d in _info if 'val' in d]))
+                perf_indicator = PerformanceIndicator(
+                    instance_iri=pi,
+                    clz=_clz,
+                    rxn_exp_iri=rxnexp_iri,
+                    objPropWithExp=_subo,
+                    hasValue=OM_Measure(instance_iri=_measure[0],hasUnit=_unit[0],hasNumericalValue=_val[0]) if len(_measure) == 1 else None,
+                    positionalID=_id[0] if len(_id) == 1 else None
+                )
+                list_perf.append(perf_indicator)
 
-        return list_perf
+            return list_perf
 
     def getDoEStrategy(self, strategy_iri: str) -> Strategy:
         """
@@ -884,7 +888,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         tsemo_instance = TSEMO(instance_iri=tsemo_iri,**response[0])
         return tsemo_instance
 
-    def getNewExperimentFromDoE(self, doe_iri: str) -> str:
+    def getNewExperimentFromDoE(self, doe_iri: str) -> ReactionExperiment:
         doe_iri = trimIRI(doe_iri)
 
         query = """SELECT ?newexp \
@@ -899,7 +903,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 )
             )
         elif (len(response) == 1):
-            return response[0]['newexp']
+            return self.getReactionExperiment(response[0]['newexp'])[0]
         return None
 
     def create_equip_settings_for_rs400_from_rxn_exp(self, rxnexp: ReactionExperiment, rs400: VapourtecRS400, preferred_r4_reactor: VapourtecR4Reactor) -> List[EquipmentSettings]:
