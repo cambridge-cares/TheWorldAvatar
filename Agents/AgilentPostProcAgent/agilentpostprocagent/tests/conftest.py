@@ -123,7 +123,7 @@ def get_service_auth():
     return _get_service_auth
 
 @pytest.fixture(scope="session")
-def initialise_triples(get_service_url, get_service_auth):
+def initialise_client(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
     sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
@@ -144,15 +144,6 @@ def initialise_triples(get_service_url, get_service_auth):
 
     # Clear triple store before any usage
     sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
-
-    # Upload the example triples for testing
-    for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl',
-        'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
-        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
-        g = Graph().parse(data=data)
-        filePath = generate_random_download_path('ttl')
-        g.serialize(filePath, format='ttl')
-        sparql_client.uploadOntology(filePath)
 
     yield sparql_client
 

@@ -1,5 +1,7 @@
 import agilentpostprocagent.tests.conftest as conftest
+from rdflib import Graph
 import logging
+import pkgutil
 import pytest
 import time
 
@@ -17,10 +19,11 @@ pytest_plugins = ["docker_compose"]
     ],
 )
 def test_post_proc_agent(
-    initialise_triples, retrieve_hplc_report, create_postproc_agent,
+    initialise_client, retrieve_hplc_report, create_postproc_agent,
     rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_solution_iri
 ):
-    sparql_client = initialise_triples
+    sparql_client = initialise_client
+    initialise_triples(sparql_client)
     post_proc_agent = create_postproc_agent(register_agent=True)
 
     # Verify that knowledge base is NOT empty
@@ -91,3 +94,16 @@ def test_post_proc_agent(
         assert all([conc in reload_conc_lst for conc in reload_phase_comp_conc_lst])
 
     logger.info("All checks passed.")
+
+
+def initialise_triples(sparql_client):
+    # Clear triple store before any usage
+    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+    print(sparql_client.getAmountOfTriples())
+
+    # Upload the example triples for testing
+    for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl',
+        'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
+        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
+        g = Graph().parse(data=data)
+        sparql_client.uploadGraph(g)
