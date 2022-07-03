@@ -176,13 +176,14 @@ def retrieve_hplc_report():
 @pytest.fixture(scope="module")
 def create_postproc_agent():
     def _create_postproc_agent(
-        register_agent:bool=False
+        register_agent:bool=False,
+        random_agent_iri:bool=False,
     ):
         derivation_agent_config = config_derivation_agent(POSTPROCAGENT_ENV)
         agilent_postproc_config = config_agilent_postproc(POSTPROCAGENT_ENV)
         agilent_postproc_agent = AgilentPostProcAgent(
             register_agent=agilent_postproc_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI,
+            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
             kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,

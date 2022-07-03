@@ -12,19 +12,23 @@ logger = logging.getLogger("test_post_proc")
 pytest_plugins = ["docker_compose"]
 
 @pytest.mark.parametrize(
-    "rxn_exp_iri,report_path_in_pkg,hplc_digital_twin,chemical_solution_iri",
+    "rxn_exp_iri,report_path_in_pkg,hplc_digital_twin,chemical_solution_iri,local_agent_test",
     [
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, False),
     ],
 )
 def test_post_proc_agent(
     initialise_client, retrieve_hplc_report, create_postproc_agent,
-    rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_solution_iri
+    rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_solution_iri, local_agent_test
 ):
     sparql_client = initialise_client
     initialise_triples(sparql_client)
-    post_proc_agent = create_postproc_agent(register_agent=True)
+    post_proc_agent = create_postproc_agent(register_agent=True, random_agent_iri=local_agent_test)
+    if local_agent_test:
+        post_proc_agent.start_monitoring_derivations()
 
     # Verify that knowledge base is NOT empty
     res = sparql_client.getAmountOfTriples()
@@ -94,6 +98,10 @@ def test_post_proc_agent(
         assert all([conc in reload_conc_lst for conc in reload_phase_comp_conc_lst])
 
     logger.info("All checks passed.")
+
+    # Shutdown the scheduler to clean up before the next test
+    if local_agent_test:
+        post_proc_agent.scheduler.shutdown()
 
 
 def initialise_triples(sparql_client):
