@@ -70,19 +70,39 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 				requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY));
 			LOGGER.info("Received derivation request parameters: " + requestParams);
 
-			// initialise DerivationOutputs, also set up information
+			// retrieve necessary information
 			String derivationIRI = requestParams.getString(DerivationClient.DERIVATION_KEY);
 			String derivationType = requestParams.getString(DerivationClient.DERIVATION_TYPE_KEY);
+			Boolean syncNewInfoFlag = requestParams.getBoolean(DerivationClient.SYNC_NEW_INFO_FLAG);
+
+			// initialise DerivationOutputs, also set up information
 			DerivationOutputs outputs = new DerivationOutputs();
 			outputs.setThisDerivation(derivationIRI);
 			outputs.setRetrievedInputsAt(Instant.now().getEpochSecond());
-			outputs.setOldEntitiesMap(requestParams.getJSONObject(DerivationClient.BELONGSTO_KEY));
-			outputs.setOldEntitiesDownstreamDerivationMap(
-					requestParams.getJSONObject(DerivationClient.DOWNSTREAMDERIVATION_KEY));
+			if (!syncNewInfoFlag) {
+				outputs.setOldEntitiesMap(requestParams.getJSONObject(DerivationClient.BELONGSTO_KEY));
+				outputs.setOldEntitiesDownstreamDerivationMap(
+						requestParams.getJSONObject(DerivationClient.DOWNSTREAMDERIVATION_KEY));
+			}
 
 			// apply agent logic to convert inputs to outputs
 			processRequestParameters(inputs, outputs);
 
+			// return response if this sync derivation is generated for new info
+			if (syncNewInfoFlag) {
+				String agentServiceIRI = requestParams.getString(DerivationClient.AGENT_IRI_KEY);
+				this.devClient.writeSyncDerivationNewInfo(outputs.getOutputTriples(),
+						outputs.getNewDerivedIRI(), agentServiceIRI, inputs.getAllIris(),
+						derivationType, outputs.getRetrievedInputsAt());
+				res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY,
+						outputs.getRetrievedInputsAt());
+				res.put(DerivationClient.AGENT_OUTPUT_KEY,
+						outputs.getNewEntitiesJsonMap());
+				return res;
+			}
+
+			// only enters below if the computation was not for new information (new
+			// instances)
 			Derivation derivation = new Derivation(derivationIRI, derivationType);
 			if (!derivation.isDerivationAsyn() && !derivation.isDerivationWithTimeSeries()) {
 				// construct and fire SPARQL update given DerivationOutputs objects, if normal
@@ -148,17 +168,26 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 				LOGGER.error(msg);
 				throw new JPSRuntimeException(msg);
 			}
-			if (!requestParams.has(DerivationClient.BELONGSTO_KEY)) {
-				String msg = this.getClass().toString()
-						+ " agent received a request that doesn't have information about old outputs...";
-				LOGGER.error(msg);
-				throw new JPSRuntimeException(msg);
-			}
-			if (!requestParams.has(DerivationClient.DOWNSTREAMDERIVATION_KEY)) {
-				String msg = this.getClass().toString()
-						+ " agent received a request that doesn't have information about downstream derivation...";
-				LOGGER.error(msg);
-				throw new JPSRuntimeException(msg);
+			if (requestParams.getBoolean(DerivationClient.SYNC_NEW_INFO_FLAG)) {
+				if (!requestParams.has(DerivationClient.AGENT_IRI_KEY)) {
+					String msg = this.getClass().toString()
+							+ " agent received a request for sync new information that doesn't have information about agent IRI...";
+					LOGGER.error(msg);
+					throw new JPSRuntimeException(msg);
+				}
+			} else {
+				if (!requestParams.has(DerivationClient.BELONGSTO_KEY)) {
+					String msg = this.getClass().toString()
+							+ " agent received a request that doesn't have information about old outputs...";
+					LOGGER.error(msg);
+					throw new JPSRuntimeException(msg);
+				}
+				if (!requestParams.has(DerivationClient.DOWNSTREAMDERIVATION_KEY)) {
+					String msg = this.getClass().toString()
+							+ " agent received a request that doesn't have information about downstream derivation...";
+					LOGGER.error(msg);
+					throw new JPSRuntimeException(msg);
+				}
 			}
 		}
 		return true;

@@ -289,7 +289,7 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
+		String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -350,7 +350,7 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
+		String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -381,6 +381,81 @@ public class DerivationSparql {
 		storeClient.setQuery(modify.prefix(p_time, p_derived, p_agent).getQueryString());
 		storeClient.executeUpdate();
 		return derivedQuantity;
+	}
+
+	String createDerivationIRI() {
+		// create a unique IRI for this new derived quantity
+		String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
+		return derivedQuantity;
+	}
+
+	// TODO add unit test
+	String getAgentUrlGivenAgentIRI(String agentIRI) {
+		SelectQuery query = Queries.SELECT();
+
+		String queryKey = "url";
+		Variable url = SparqlBuilder.var(queryKey);
+
+		Iri agentIri = iri(agentIRI);
+
+		GraphPattern queryPattern = agentIri.has(PropertyPaths.path(hasOperation, hasHttpUrl), url);
+
+		query.select(url).where(queryPattern).prefix(p_agent);
+
+		storeClient.setQuery(query.getQueryString());
+
+		String queryResult = storeClient.executeQuery().getJSONObject(0).getString(queryKey);
+
+		return queryResult;
+	}
+
+	// TODO add unit test
+	void writeSyncDerivationNewInfo(List<TriplePattern> outputTriples, List<String> entities,
+			String agentIRI, List<String> inputsIRI, String derivationType, Long retrievedInputsAt) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		// create a unique IRI for this new derived quantity
+		String derivationIRI = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
+		// add <derivation> <rdf:type> <derivationType>
+		modify.insert(iri(derivationIRI).isA(iri(derivationType)));
+
+		// insert all generated output triples (new information)
+		outputTriples.forEach(t -> modify.insert(t));
+
+		// add <entity> <belongsTo> <derivation> for each newIRI
+		for (String entity : entities) {
+			// ensure that given entity is not part of another derived quantity
+			if (!hasBelongsTo(entity)) {
+				modify.insert(iri(entity).has(belongsTo, iri(derivationIRI)));
+			} else {
+				String errmsg = "<" + entity + "> is already part of another derivation";
+				LOGGER.fatal(errmsg);
+				throw new JPSRuntimeException(errmsg);
+			}
+		}
+
+		// add <derivation> <isDerivedFrom> <input> for all inputs
+		inputsIRI.forEach(input -> {
+			modify.insert(iri(derivationIRI).has(isDerivedFrom, iri(input)));
+		});
+
+		// add <derivation> <isDerivedUsing> <agentIRI>
+		modify.insert(iri(derivationIRI).has(isDerivedUsing, iri(agentIRI)));
+
+		// add timestamp instance for the created derivation, unix time following the
+		// w3c standard
+		String time_instant = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
+		String time_unix = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
+		Iri time_instant_iri = iri(time_instant);
+		Iri time_unix_iri = iri(time_unix);
+		modify.insert(iri(derivationIRI).has(hasTime, time_instant_iri));
+		modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
+		modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, retrievedInputsAt).andHas(hasTRS,
+				iri("http://dbpedia.org/resource/Unix_time")));
+
+		// execute SPARQL update
+		storeClient.setQuery(modify.prefix(p_time, p_derived, p_agent).getQueryString());
+		storeClient.executeUpdate();
 	}
 
 	/**
@@ -417,7 +492,7 @@ public class DerivationSparql {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
+		String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -1005,6 +1080,60 @@ public class DerivationSparql {
 		SelectQuery query = Queries.SELECT().distinct();
 
 		query.prefix(p_derived, p_agent).where(agentTypePattern, derivationInputPattern, mappingPattern).select(input,
+				type);
+		storeClient.setQuery(query.getQueryString());
+		JSONArray queryResult = storeClient.executeQuery();
+
+		// construct the JSONObject for agent input
+		JSONObject agentInputs = new JSONObject();
+		for (int i = 0; i < queryResult.length(); i++) {
+			if (agentInputs.has(queryResult.getJSONObject(i).getString(typeKey))) {
+				if (agentInputs.get(queryResult.getJSONObject(i).getString(typeKey)) instanceof JSONArray) {
+					agentInputs.getJSONArray(queryResult.getJSONObject(i).getString(typeKey))
+							.put(queryResult.getJSONObject(i).getString(inputKey));
+				} else {
+					agentInputs.put(queryResult.getJSONObject(i).getString(typeKey),
+							new JSONArray().put(agentInputs.get(queryResult.getJSONObject(i).getString(typeKey))));
+					agentInputs.getJSONArray(queryResult.getJSONObject(i).getString(typeKey))
+							.put(queryResult.getJSONObject(i).getString(inputKey));
+				}
+			} else {
+				agentInputs.put(queryResult.getJSONObject(i).getString(typeKey),
+						new JSONArray().put(queryResult.getJSONObject(i).getString(inputKey)));
+			}
+		}
+
+		return agentInputs;
+	}
+
+	/**
+	 * This method maps the given list of inputs against the I/O signature declared
+	 * in the OntoAgent instance of the given agent IRI.
+	 * The inputs are finally structured as a JSONObject to be feed into the agent
+	 * for execution.
+	 * 
+	 * @param kbClient
+	 * @param derivedQuantity
+	 * @param agentIRI
+	 * @return
+	 */ // TODO add unit test
+	JSONObject mapInstancesToAgentInputs(List<String> inputs, String agentIRI) {
+		String typeKey = "type";
+		String inputKey = "input";
+
+		Variable type = SparqlBuilder.var(typeKey);
+		Variable input = SparqlBuilder.var(inputKey);
+
+		// make use of SPARQL Property Paths
+		GraphPattern agentTypePattern = iri(agentIRI)
+				.has(PropertyPaths.path(hasOperation, hasInput, hasMandatoryPart, hasType), type);
+		GraphPattern inputValuesPattern = new ValuesPattern(input,
+				inputs.stream().map(i -> iri(i)).collect(Collectors.toList()));
+		GraphPattern mappingPattern = input.has(PropertyPaths.path(PropertyPaths.zeroOrMore(RdfPredicate.a),
+				PropertyPaths.zeroOrMore(iri(RDFS.SUBCLASSOF.toString()))), type);
+		SelectQuery query = Queries.SELECT().distinct();
+
+		query.prefix(p_derived, p_agent).where(agentTypePattern, inputValuesPattern, mappingPattern).select(input,
 				type);
 		storeClient.setQuery(query.getQueryString());
 		JSONArray queryResult = storeClient.executeQuery();
