@@ -272,6 +272,7 @@ public class ESPHomeAgent extends JPSAgent{
 		} catch (JPSRuntimeException e) {
 			throw new JPSRuntimeException(ESPHOME_ERROR_MSG, e);
 		}
+    	tsClient.disconnectRDB();
 		return result;
     }
 
