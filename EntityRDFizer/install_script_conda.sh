@@ -79,7 +79,7 @@ function recreate_conda_env {
     # This will recreate conda environment
     conda config --set channel_priority strict
     conda remove -n $VENV_NAME --all
-    
+
 	# create the base env
     conda env create -f $SPATH/base.yml -n $VENV_NAME
 
@@ -170,3 +170,4 @@ echo
 echo
 prompt_for_input
 exit
+

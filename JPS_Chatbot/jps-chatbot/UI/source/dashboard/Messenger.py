@@ -23,7 +23,10 @@ class Messenger:
         if len(failed_questions) == 0:
             content = 'All testing questions passed the test'
         else:
-            content = 'The following questions failed the test <br/>' +  json.dumps(failed_questions)
+            try:
+                content = 'The following questions failed the test <br/>' +  json.dumps(failed_questions)
+            except:
+                content = 'The following questions failed the thest <br/>' + str(failed_questions)
         self.yag.send(to=self.main_developer, subject="Marie fininshed the self-test", contents= content)
 
 

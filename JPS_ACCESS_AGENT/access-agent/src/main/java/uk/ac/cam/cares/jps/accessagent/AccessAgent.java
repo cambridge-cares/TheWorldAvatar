@@ -70,14 +70,13 @@ public class AccessAgent extends JPSAgent{
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		System.out.println("JSON PARAMS" + requestParams.toString());
 		if (!validateInput(requestParams)) {
 			throw new JSONException("AccessAgent: Input parameters not found.\n");
 		}
 		
 		JSONObject JSONresult = new JSONObject();
 		String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
-		System.out.println("METHOD: "+ method);
+	
 		switch (method) {
 			case HttpGet.METHOD_NAME:	
 				JSONresult = get(requestParams);
@@ -179,16 +178,19 @@ public class AccessAgent extends JPSAgent{
 		String result = null;
 		
 		try {
-			
-			logInputParams(requestParams, sparqlquery+sparqlupdate, false);
 
 			if (sparqlupdate!=null) {
+				//update
+				logInputParams(requestParams, sparqlupdate, false);
 				StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
-				LOGGER.info("Store client instantiated for query endpoint: "+kbClient.getUpdateEndpoint());
+				LOGGER.info("Store client instantiated for update endpoint: "+kbClient.getUpdateEndpoint());
 				LOGGER.info("Performing SPARQL update.");
 				kbClient.executeUpdate(sparqlupdate);
+				//TODO change this
+				JSONresult.put("result","Update completed!");
 			}else if(sparqlquery!=null){
 				//query
+				logInputParams(requestParams, sparqlquery, false);
 				StoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
 				LOGGER.info("Store client instantiated for query endpoint: "+kbClient.getQueryEndpoint());
 				LOGGER.info("Performing SPARQL query.");
@@ -215,6 +217,7 @@ public class AccessAgent extends JPSAgent{
 	 */
 	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {
 		try {
+			LOGGER.info("Setting Store Router Endpoint: "+STOREROUTER_ENDPOINT);
 			StoreRouter.setRouterEndpoint(STOREROUTER_ENDPOINT);
 			StoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, isQuery, isUpdate);
 			if (storeClient == null) {
