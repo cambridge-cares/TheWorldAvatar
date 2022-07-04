@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.agent.flood.objects;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Measure {
     private String iri;
     private double typicalRangeHigh;
@@ -7,6 +10,22 @@ public class Measure {
     private String parameterName;
     private String unit;
     private String qualifier;
+    private String trend;
+    private String range;
+
+    private static Map<String,String> rangeDisplayTextMap = new HashMap<>() {{
+        put("https://www.theworldavatar.com/kg/ontoems/LowRange","Low");
+        put("https://www.theworldavatar.com/kg/ontoems/HighRange","High");
+        put("https://www.theworldavatar.com/kg/ontoems/NormalRange","Normal");
+        put("https://www.theworldavatar.com/kg/ontoems/UnavailableRange","Unavailable");
+    }};
+
+    private static Map<String,String> trendDisplayTextMap = new HashMap<>() {{
+        put("https://www.theworldavatar.com/kg/ontoems/Steady","Steady");
+        put("https://www.theworldavatar.com/kg/ontoems/Rising","Rising");
+        put("https://www.theworldavatar.com/kg/ontoems/Falling","Falling");
+        put("https://www.theworldavatar.com/kg/ontoems/UnavailableTrend","Unavailable");
+    }};
 
     public Measure(String iri) {
         this.iri = iri;
@@ -54,5 +73,21 @@ public class Measure {
 
     public String getQualifier() {
         return this.qualifier;
+    }
+
+    public void setTrend(String trend) {
+        this.trend = trend;
+    }
+
+    public String getTrend() {
+        return trendDisplayTextMap.get(this.trend);
+    }
+
+    public void setRange(String range) {
+        this.range = range;
+    }
+
+    public String getRange() {
+        return rangeDisplayTextMap.get(this.range);
     }
 }

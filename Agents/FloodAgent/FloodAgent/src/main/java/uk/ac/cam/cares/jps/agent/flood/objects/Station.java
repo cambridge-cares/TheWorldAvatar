@@ -78,7 +78,7 @@ public class Station {
 
 	// return measures in this station
     public List<Measure> getMeasures() {
-    	return this.measures; // measureUnitMap and MeasureSubTypeMap should give the same result
+    	return this.measures; 
     }
     
     public void setLabel(String label) {

@@ -569,6 +569,8 @@ public class FloodSparql {
     	Variable param = query.var();
     	Variable qual = query.var();
     	Variable unit = query.var();
+		Variable trend = query.var();
+		Variable range = query.var();
 		
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
 				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(PropertyPaths.path(reports,hasValue), measureVar));
@@ -579,7 +581,8 @@ public class FloodSparql {
 				station.has(town_prop, town).optional(),
 				station.has(dateOpen_prop, dateOpened).optional());
 		
-		GraphPattern measurePropertiesPattern = measureVar.has(parameterName,param).andHas(qualifier,qual).andHas(unitName, unit);
+		GraphPattern measurePropertiesPattern = GraphPatterns.and(measureVar.has(parameterName,param).andHas(qualifier,qual).andHas(unitName, unit),
+				(measureVar.has(hasCurrentRange, range).andHas(hasCurrentTrend, trend).optional()));
 		
 		// restrict query location
 		if (southwest != null && northeast != null) {
@@ -594,8 +597,6 @@ public class FloodSparql {
 		} else {
 			query.where(queryPattern,stationProperties,measurePropertiesPattern).prefix(p_ems,p_om);
 		}
-		
-		query.select(station,lat,lon,ref,river,catchment,town,dateOpened,label,measureVar,param,qual,unit);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		int visid = 0;
@@ -647,6 +648,12 @@ public class FloodSparql {
 			measure.setParameterName(measureName);
 			measure.setQualifier(subTypeName);
 			measure.setUnit(unitName);
+			if (queryResult.getJSONObject(i).has(trend.getQueryString().substring(1))) {
+				measure.setTrend(queryResult.getJSONObject(i).getString(trend.getQueryString().substring(1)));
+			}
+			if (queryResult.getJSONObject(i).has(range.getQueryString().substring(1))) {
+				measure.setRange(queryResult.getJSONObject(i).getString(range.getQueryString().substring(1)));
+			}
 
 			stationObject.addMeasure(measure);
 		}
