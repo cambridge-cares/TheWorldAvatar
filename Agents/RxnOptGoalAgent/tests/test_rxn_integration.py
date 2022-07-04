@@ -1,0 +1,72 @@
+import pytest
+import time
+
+import tests.utils as utils
+
+import logging
+logger = logging.getLogger('test_rxn_integration')
+
+@pytest.mark.parametrize(
+    "fcexp_file_container_folder,local_agent_test",
+    [
+        (utils.cf.FCEXP_FILE_DIR, True),
+        # (None, False),
+    ],
+)
+def test_rxn_integration(
+    generate_random_download_path, initialise_clients, retrieve_hplc_report,
+    create_doe_agent, create_vapourtec_execution_agent, create_agilent_postproc_agent, create_vapourtec_agent, create_agilent_agent,
+    fcexp_file_container_folder, local_agent_test
+):
+    sparql_client, derivation_client = initialise_clients
+
+    # Verify that knowledge base is empty
+    res = sparql_client.getAmountOfTriples()
+    assert res == 0
+
+    # Initialise all triples in the knowledge graph
+    utils.initialise_triples(generate_random_download_path, sparql_client, derivation_client)
+
+    # Assert that there's currently no new experiment associated with the DoE instance
+    assert sparql_client.getNewExperimentFromDoE(utils.cf.DOE_IRI) is None
+
+    # Create agent instances, this also register the agents to the KG
+    # NOTE that this should be done by agent themselves at real deployment
+    doe_agent = create_doe_agent(register_agent=True, random_agent_iri=local_agent_test)
+    vapourtec_execution_agent = create_vapourtec_execution_agent(register_agent=True, random_agent_iri=local_agent_test)
+    agilent_postproc_agent = create_agilent_postproc_agent(register_agent=True, random_agent_iri=local_agent_test)
+    vapourtec_agent = create_vapourtec_agent(register_agent=True, random_agent_iri=local_agent_test, fcexp_file_container_folder=fcexp_file_container_folder)
+    agilent_agent = create_agilent_agent(register_agent=True, random_agent_iri=local_agent_test)
+
+    # Start the scheduler to monitor derivations if it's local agent test
+    if local_agent_test:
+        doe_agent.start_monitoring_derivations()
+        vapourtec_execution_agent.start_monitoring_derivations()
+        agilent_postproc_agent.start_monitoring_derivations()
+        vapourtec_agent.start_monitoring_derivations()
+        agilent_agent.start_monitoring_derivations()
+
+    # Create derivation instance for new information, the timestamp of this derivation is 0
+    doe_derivation_iri = derivation_client.createAsyncDerivationForNewInfo(doe_agent.agentIRI, utils.cf.DERIVATION_INPUTS)
+    logger.info(f"Initialised successfully, created asynchronous doe derivation instance: {doe_derivation_iri}")
+    exe_derivation_iri = derivation_client.createAsyncDerivationForNewInfo(vapourtec_execution_agent.agentIRI, [doe_derivation_iri])
+    logger.info(f"Initialised successfully, created asynchronous exe derivation instance: {exe_derivation_iri}")
+    postproc_derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agilent_postproc_agent.agentIRI, [exe_derivation_iri])
+    logger.info(f"Initialised successfully, created asynchronous postproc derivation instance: {postproc_derivation_iri}")
+
+    time.sleep(60)
+    # Generate random file and upload it to KG fileserver
+    agilent_agent.get_dict_of_hplc_files() # perform the init check first
+    # Generate HPLC report for test in docker-integration folder
+    local_file_path, timestamp_last_modified = retrieve_hplc_report(agilent_agent.hplc_report_file_extension)
+    agilent_agent.monitor_local_report_folder() # now the generated report can be uploaded
+
+    time.sleep(3600)
+
+    # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)
+    if local_agent_test:
+        doe_agent.scheduler.shutdown()
+        vapourtec_execution_agent.scheduler.shutdown()
+        agilent_postproc_agent.scheduler.shutdown()
+        vapourtec_agent.scheduler.shutdown()
+        agilent_agent.scheduler.shutdown()
