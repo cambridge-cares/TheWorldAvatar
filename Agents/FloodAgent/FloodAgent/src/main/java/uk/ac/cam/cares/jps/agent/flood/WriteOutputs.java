@@ -335,6 +335,42 @@ public class WriteOutputs {
 					properties_order.put(key);
 				}
 			}
+			if (station.getStageLower() != null && station.getStageUpper() != null) {
+				JSONObject stageScale = new JSONObject();
+
+				JSONObject highValue = new JSONObject();
+				highValue.put("value", station.getStageUpper());
+				highValue.put("unit", station.getMeasures().get(0).getUnit());
+				stageScale.put("Typical high", highValue);
+
+				JSONObject lowValue = new JSONObject();
+				lowValue.put("value", station.getStageLower());
+				lowValue.put("unit", station.getMeasures().get(0).getUnit());
+				stageScale.put("Typical low", lowValue); 
+
+				stageScale.put(display_order, new JSONArray().put("Typical high").put("Typical low"));
+				stationProperties.put("Stage scale", stageScale);
+				properties_order.put("Stage scale");
+			}
+
+			if (station.getDownstageLower() != null && station.getDownstageUpper() != null) {
+				JSONObject downstageScale = new JSONObject();
+
+				JSONObject highValue = new JSONObject();
+				highValue.put("value", station.getDownstageUpper());
+				highValue.put("unit", station.getMeasures().get(0).getUnit());
+				downstageScale.put("Typical high", highValue);
+
+				JSONObject lowValue = new JSONObject();
+				lowValue.put("value", station.getDownstageLower());
+				lowValue.put("unit", station.getMeasures().get(0).getUnit());
+				downstageScale.put("Typical low", lowValue);
+
+				downstageScale.put(display_order, new JSONArray().put("Typical high").put("Typical low"));
+				stationProperties.put("Downstage scale", downstageScale);
+				properties_order.put("Downstage scale");
+			}
+
 			if (station.getDownstream() != null) {
 				Station downstreamStation = station.getDownstream();
 				stationProperties.put("Downstream station", downstreamStation.getLabel() + " (" + downstreamStation.getIdentifier() + ")");
