@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +36,8 @@ import com.github.dockerjava.api.model.ContainerSpecConfig;
 import com.github.dockerjava.api.model.ContainerSpecFile;
 import com.github.dockerjava.api.model.ContainerSpecSecret;
 import com.github.dockerjava.api.model.LocalNodeState;
+import com.github.dockerjava.api.model.Mount;
+import com.github.dockerjava.api.model.MountType;
 import com.github.dockerjava.api.model.Network;
 import com.github.dockerjava.api.model.NetworkAttachmentConfig;
 import com.github.dockerjava.api.model.Secret;
@@ -47,6 +50,7 @@ import com.github.dockerjava.api.model.SwarmSpec;
 import com.github.dockerjava.api.model.Task;
 import com.github.dockerjava.api.model.TaskState;
 import com.github.dockerjava.api.model.TaskStatus;
+import com.github.dockerjava.api.model.VolumeOptions;
 
 public final class DockerService extends AbstractService {
 
@@ -309,11 +313,38 @@ public final class DockerService extends AbstractService {
                 .withLabels(StackClient.getStackNameLabelMap())
                 .withHostname(service.getName());
 
+        interpolateVolumes(containerSpec);
+
         interpolateConfigs(containerSpec);
 
         interpolateSecrets(containerSpec);
 
         return serviceSpec;
+    }
+
+    private void interpolateVolumes(ContainerSpec containerSpec) {
+        List<Mount> mounts = containerSpec.getMounts();
+        if (null != mounts) {
+            for (Mount mount : mounts) {
+                if (MountType.VOLUME == mount.getType()) {
+
+                    mount.withSource(StackClient.prependStackName(mount.getSource()));
+
+                    VolumeOptions volumeOptions = mount.getVolumeOptions();
+                    if (null == volumeOptions) {
+                        volumeOptions = new VolumeOptions().withLabels(StackClient.getStackNameLabelMap());
+                        mount.withVolumeOptions(volumeOptions);
+                    } else {
+                        Map<String, String> labels = volumeOptions.getLabels();
+                        if (null == labels) {
+                            volumeOptions.withLabels(StackClient.getStackNameLabelMap());
+                        } else {
+                            labels.putAll(StackClient.getStackNameLabelMap());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void interpolateConfigs(ContainerSpec containerSpec) {
