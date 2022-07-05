@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Connection;
 import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -37,6 +38,8 @@ public class WriteOutputs {
     
     // output files
     private static String mainDirectory = "main";
+
+	private static String display_order = "display_order";
     
     // err msg
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
@@ -85,10 +88,14 @@ public class WriteOutputs {
     	String southwest = System.getenv("SOUTH_WEST");
     	String northeast = System.getenv("NORTH_EAST");
     	
-    	List<Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
+    	Map<String, Station> stations_map = sparqlClient.getStationsWithCoordinates(southwest, northeast);
+		List<Station> stations = new ArrayList<>(stations_map.values());
     	
     	// add time series to station objects, will also remove stations without any data
     	queryTimeSeries(stations, date);
+
+		// queries for station hasDownstreamStation station
+		List<Connection> connections = sparqlClient.getConnections(stations_map);
     	
     	// remove old outputs if exist
     	removeOldOutput();
@@ -313,6 +320,7 @@ public class WriteOutputs {
 			JSONObject metadata = new JSONObject();
 			
 			metadata.put("id", station.getVisId());
+			metadata.put(display_order, Arrays.asList("Station properties","Measures"));
 			
 			// station properties
 			JSONObject stationProperties = new JSONObject();
@@ -327,22 +335,41 @@ public class WriteOutputs {
 					properties_order.put(key);
 				}
 			}
-			stationProperties.put("display_order", properties_order);
+			if (station.getDownstream() != null) {
+				Station downstreamStation = station.getDownstream();
+				stationProperties.put("Downstream station", downstreamStation.getLabel() + " (" + downstreamStation.getIdentifier() + ")");
+				properties_order.put("Downstream station");
+			}
+			if (station.getUpstream() != null) {
+				Station upstreamStation = station.getUpstream();
+				stationProperties.put("Upstream station", upstreamStation.getLabel() + " (" + upstreamStation.getIdentifier() + ")");
+				properties_order.put("Upstream station");
+			}
+			stationProperties.put(display_order, properties_order);
 			metadata.put("Station properties", stationProperties);
 
 			// measures
 			JSONObject measures_json = new JSONObject();
 			int i = 1;
 			for (Measure measure : station.getMeasures()) {
+				JSONArray measure_order = new JSONArray();
+
 				JSONObject measure_json = new JSONObject();
 				measure_json.put("Parameter name", measure.getParameterName());
 				measure_json.put("Qualifier", measure.getQualifier());
+
+				measure_order.put("Parameter name").put("Qualifier");
 				if (measure.getTrend() != null) {
 					measure_json.put("Trend", measure.getTrend());
+					measure_order.put("Trend");
 				}
 				if (measure.getRange() != null) {
 					measure_json.put("Range", measure.getRange());
+					measure_order.put("Range");
 				}
+				// this will force the display order on the vis framework
+				measure_json.put(display_order, measure_order);
+
 				measures_json.put("Measure " + String.valueOf(i), measure_json);
 				i++;
 			}

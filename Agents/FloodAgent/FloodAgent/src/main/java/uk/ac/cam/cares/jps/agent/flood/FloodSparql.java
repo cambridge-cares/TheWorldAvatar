@@ -48,6 +48,7 @@ import org.json.JSONObject;
 import com.opencsv.CSVReader;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
+import uk.ac.cam.cares.jps.agent.flood.objects.Connection;
 import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ServicePattern;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ValuesPattern;
@@ -543,7 +544,7 @@ public class FloodSparql {
 	/**
 	 * returns a map of station iri to station object
 	 */
-	List<Station> getStationsWithCoordinates(String southwest, String northeast) {
+	Map<String,Station> getStationsWithCoordinates(String southwest, String northeast) {
 		Iri river_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/riverName");
 		Iri catchment_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/catchmentName");
 		Iri town_prop = iri("http://environment.data.gov.uk/flood-monitoring/def/core/town");
@@ -602,6 +603,8 @@ public class FloodSparql {
 		int visid = 0;
 		Map<String, Station> station_map = new HashMap<>(); // iri to station object map to check for duplicate
 		List<Station> stations = new ArrayList<>();
+		List<String> stations_to_query_for_stagescale = new ArrayList<>();
+		List<String> stations_to_query_for_downstagescale = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			String stationIri = queryResult.getJSONObject(i).getString(station.getQueryString().substring(1));
 			String measureIri = queryResult.getJSONObject(i).getString(measureVar.getQueryString().substring(1));
@@ -655,12 +658,78 @@ public class FloodSparql {
 				measure.setRange(queryResult.getJSONObject(i).getString(range.getQueryString().substring(1)));
 			}
 
+			if (subTypeName.contentEquals("Stage")) {
+				stations_to_query_for_stagescale.add(stationIri);
+			}
+			if (subTypeName.contentEquals("Downstream Stage")) {
+				stations_to_query_for_downstagescale.add(stationIri);
+			}
+
 			stationObject.addMeasure(measure);
 		}
+
+		addStageScaleToStations(stations_to_query_for_stagescale, station_map);
+		addDownstageScaleToStations(stations_to_query_for_downstagescale, station_map);
 				
-		return stations;
+		return station_map;
 	}
     
+	/**
+	 * stations list - stations we want to query
+	 * station_map - contain all the stations, key = IRI
+	 */
+	void addStageScaleToStations(List<String> stations, Map<String,Station> station_map) {
+		SelectQuery query = Queries.SELECT();
+
+		Variable station = query.var();
+		Variable stageScaleVar = query.var();
+		Variable upperBound = query.var();
+		Variable lowerBound = query.var();;
+		
+		ValuesPattern vp = new ValuesPattern(station, stations.stream().map(s -> iri(s)).collect(Collectors.toList()));
+
+		GraphPattern queryPattern = GraphPatterns.and(station.has(stageScale, stageScaleVar),
+			stageScaleVar.has(typicalRangeHigh, upperBound),
+			stageScaleVar.has(typicalRangeLow, lowerBound));
+
+		query.select(upperBound,lowerBound,station).where(queryPattern,vp);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		for (int i = 0; i < queryResult.length(); i++) {
+			Station stationObject = station_map.get(queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
+			stationObject.setStageLower(queryResult.getJSONObject(i).getDouble(lowerBound.getQueryString().substring(1)));
+			stationObject.setStageUpper(queryResult.getJSONObject(i).getDouble(upperBound.getQueryString().substring(1)));
+		}
+	}
+
+	/**
+	 * stations list - stations we want to query
+	 * station_map - contain all the stations, key = IRI
+	 */
+	void addDownstageScaleToStations(List<String> stations, Map<String,Station> station_map) {
+		SelectQuery query = Queries.SELECT();
+
+		Variable station = query.var();
+		Variable stageScaleVar = query.var();
+		Variable upperBound = query.var();
+		Variable lowerBound = query.var();;
+		
+		ValuesPattern vp = new ValuesPattern(station, stations.stream().map(s -> iri(s)).collect(Collectors.toList()));
+
+		GraphPattern queryPattern = GraphPatterns.and(station.has(downstageScale, stageScaleVar),
+			stageScaleVar.has(typicalRangeHigh, upperBound),
+			stageScaleVar.has(typicalRangeLow, lowerBound));
+
+		query.select(upperBound,lowerBound,station).where(queryPattern,vp);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		for (int i = 0; i < queryResult.length(); i++) {
+			Station stationObject = station_map.get(queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
+			stationObject.setDownstageLower(queryResult.getJSONObject(i).getDouble(lowerBound.getQueryString().substring(1)));
+			stationObject.setDownstageUpper(queryResult.getJSONObject(i).getDouble(upperBound.getQueryString().substring(1)));
+		}
+	}
+
 	/**
 	 * the station will be part of an rdf:collection, something like
 	 * ?blankNode rdf:first <station>
@@ -1062,5 +1131,29 @@ public class FloodSparql {
 		modify.delete(tp1,tp2).where(tp1,tp2,vp);
 
 		storeClient.executeUpdate(modify.getQueryString());
+	}
+
+    List<Connection> getConnections(Map<String, Station> stations_map) {
+		SelectQuery query = Queries.SELECT();
+		Variable upstream = query.var();
+		Variable downstream = query.var();
+
+		query.where(upstream.has(hasDownstreamStation, downstream)).prefix(p_ems);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		List<Connection> connections = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			String upstream_iri = queryResult.getJSONObject(i).getString(upstream.getQueryString().substring(1));
+			String downstream_iri = queryResult.getJSONObject(i).getString(downstream.getQueryString().substring(1));
+
+			if (stations_map.containsKey(upstream_iri) && stations_map.containsKey(downstream_iri)) {
+				Station upstream_station = stations_map.get(upstream_iri);
+				Station downstream_station = stations_map.get(downstream_iri);
+
+				connections.add(new Connection(upstream_station, downstream_station));
+			}
+		}
+
+		return connections;
 	}
 }
