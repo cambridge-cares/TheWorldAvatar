@@ -70,22 +70,15 @@ def ifcquery(endpoint):
                     # Get all furnishing elements
                     ?furnishing rdf:type  ifc:IfcFurnishingElement ;
                             ifc:globalId_IfcRoot ?uidinst;
+                            ifc:name_IfcRoot  ?labelname;
                             dcmi:source ?geomfile.
 
                     # Get their ids to link the properties to their asset
                     ?uidinst rdf:type ifc:IfcGloballyUniqueId ; 
                             express:hasString  ?uid .  
                     
-                    # Get their names from the related Property Set "Pset_QuantityTakeOff"
-                    ?reldefinebyproperty ifc:relatedObjects_IfcRelDefines ?furnishing;
-                            ifc:relatingPropertyDefinition_IfcRelDefinesByProperties ?pset.
-                    ?pset ifc:hasProperties_IfcPropertySet ?property;
-                            ifc:name_IfcRoot ?label_qty .
-                    ?label_qty express:hasString "Pset_QuantityTakeOff" ; 
-                            rdf:type ifc:IfcLabel.       
-                    ?property a ifc:IfcPropertySingleValue; 
-                            ifc:nominalValue_IfcPropertySingleValue ?identifier.
-                    ?identifier a ifc:IfcIdentifier ; 
+                    # Get the furniture name
+                    ?labelname rdf:type ifc:IfcLabel ; 
                             express:hasString ?name.
 
                     # Get their properties if it exist in Pset_Asset

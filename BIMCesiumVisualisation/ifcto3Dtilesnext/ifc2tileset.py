@@ -141,12 +141,12 @@ def gen_tileset_assets(dataframe):
             }
         })
     
-    # Remove rows that contains "HasAdditionalDataSource"
-    # This parameter is used for querying and should not be visualised
-    dataframe=dataframe[~dataframe.paramtitle.str.contains("HasAdditionalDataSource")]
-
     # If there are properties in the IFC file
     if 'paramtitle' in dataframe.columns:
+        # Remove rows that contains "HasAdditionalDataSource"
+        # This parameter is used for querying and should not be visualised
+        dataframe=dataframe[~dataframe.paramtitle.str.contains("HasAdditionalDataSource")]
+        
         # Add the properties to their assets
         for row in dataframe.index:
             # If parameters exist for that asset
