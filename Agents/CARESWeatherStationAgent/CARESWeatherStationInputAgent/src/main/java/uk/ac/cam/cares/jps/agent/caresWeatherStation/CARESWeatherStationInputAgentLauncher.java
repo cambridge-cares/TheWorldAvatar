@@ -135,8 +135,9 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         jsonMessage.accumulate("Result", "Input agent object initialized.");
 
         // Create and set the time series client
+        TimeSeriesClient<OffsetDateTime> tsClient;
         try {
-            TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
+            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
             agent.setTsClient(tsClient);
         } catch (IOException | JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
@@ -189,6 +190,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         // If all are empty no new readings are available
         else if(weatherDataReadings.isEmpty()) {
             LOGGER.info("No new readings are available.");
+            tsClient.disconnectRDB();
             jsonMessage.accumulate("Result", "No new readings are available.");
         }
         return jsonMessage;
