@@ -1405,49 +1405,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 raise NotImplementedError("Handling HPLC local report with (%s) as filename extension is NOT supported yet." % (response[0]['report_extension']))
             return response[0]['report_dir'], file_extension
 
-    # TODO delete this method
-    def upload_raw_hplc_report_to_fs_y_collect_triples(self, local_file_path, timestamp_last_modified, hplc_digital_twin) -> Tuple[str, Graph]:
-        try:
-            remote_file_path, timestamp_upload = self.uploadFile(local_file_path)
-            logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> at %f with remote file path at: %s " % (
-                    local_file_path, self.fs_url, timestamp_upload, remote_file_path))
-        except Exception as e:
-            logger.error(e, exc_info=True)
-            # TODO need to think a way to inform the post proc agent about the failure of uploading the file
-            raise Exception("HPLC raw report (%s) upload failed with exception %s" % (local_file_path, str(e.args)))
-
-        hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
-        hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
-        logger.info("The initialised HPLCReport IRI is: <%s>; the initialised HPLCJob IRI is: <%s>" % (hplc_report_iri, hplc_job_iri))
-
-        rxn_exp_iri = self.identify_rxn_exp_when_uploading_hplc_report(hplc_digital_twin, remote_file_path)
-        logger.info("The identified ReactionExperiment for HPLCReport <%s> (remote path: %s) is: <%s>" % (hplc_report_iri, remote_file_path, rxn_exp_iri))
-
-        # TODO
-        hplc_method_iri = self.identify_hplc_method_when_uploading_hplc_report()
-        logger.info("The HPLCReport <%s> (remote path: %s) was generated using HPLCMethod <%s>" % (hplc_report_iri, remote_file_path, hplc_method_iri))
-
-        # update = PREFIX_XSD + """INSERT DATA {<%s> <%s> <%s>.
-        #     <%s> a <%s>; <%s> <%s>; <%s> <%s>; <%s> <%s>.
-        #     <%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
-        #     hplc_digital_twin, ONTOHPLC_HASJOB, hplc_job_iri,
-        #     hplc_job_iri, ONTOHPLC_HPLCJOB, ONTOHPLC_CHARACTERISES, rxn_exp_iri, ONTOHPLC_USESMETHOD, hplc_method_iri, ONTOHPLC_HASREPORT, hplc_report_iri,
-        #     hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_REMOTEFILEPATH, remote_file_path, ONTOHPLC_LOCALFILEPATH, local_file_path,
-        #     ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
-
-        g = Graph()
-        g.add((URIRef(hplc_digital_twin), URIRef(ONTOHPLC_HASJOB), URIRef(hplc_job_iri)))
-        g.add((URIRef(hplc_job_iri), RDF.type, URIRef(ONTOHPLC_HPLCJOB)))
-        g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_CHARACTERISES), URIRef(rxn_exp_iri)))
-        g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_USESMETHOD), URIRef(hplc_method_iri)))
-        g.add((URIRef(hplc_job_iri), URIRef(ONTOHPLC_HASREPORT), URIRef(hplc_report_iri)))
-        g.add((URIRef(hplc_report_iri), RDF.type, URIRef(ONTOHPLC_HPLCREPORT)))
-        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_REMOTEFILEPATH), Literal(remote_file_path)))
-        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LOCALFILEPATH), Literal(local_file_path)))
-        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LASTLOCALMODIFIEDAT), Literal(timestamp_last_modified)))
-        g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_LASTUPLOADEDAT), Literal(timestamp_upload)))
-        return hplc_report_iri, g
-
     # TODO create unit test case
     def detect_new_hplc_report(self, hplc_digital_twin, start_timestamp, end_timestamp):
         query = """SELECT ?hplc_report WHERE { <%s> <%s> ?hplc_report. ?hplc_report <%s> ?timestamp.
@@ -1465,14 +1422,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def collect_triples_for_hplc_job(
         self,
         rxn_exp_iri, chemical_solution_iri,
-        hplc_digital_twin, hplc_report_iri,
-        g: Graph=Graph()
+        hplc_digital_twin, hplc_report_iri, hplc_method_iri,
+        g: Graph
     ):
         hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
         logger.info("The initialised HPLCJob IRI is: <%s>" % (hplc_job_iri))
 
         # TODO
-        hplc_method_iri = self.identify_hplc_method_when_uploading_hplc_report()
+        hplc_method_iri = trimIRI(hplc_method_iri)
         logger.info("The HPLCReport <%s> was generated using HPLCMethod <%s>" % (hplc_report_iri, hplc_method_iri))
 
         g.add((URIRef(hplc_digital_twin), URIRef(ONTOHPLC_HASJOB), URIRef(hplc_job_iri)))
@@ -1515,39 +1472,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
         self.performUpdate(update)
 
-    # TODO delete below
-    def upload_raw_hplc_report_to_fs_kg(self, local_file_path, timestamp_last_modified, hplc_digital_twin) -> str:
-        try:
-            remote_file_path, timestamp_upload = self.uploadFile(local_file_path)
-            logger.info("HPLC raw report (%s) was uploaded to fileserver <%s> at %f with remote file path at: %s " % (
-                    local_file_path, self.fs_url, timestamp_upload, remote_file_path))
-        except Exception as e:
-            logger.error(e)
-            # TODO need to think a way to inform the post proc agent about the failure of uploading the file
-            raise Exception("HPLC raw report (%s) upload failed with code %d" % (local_file_path))
-
-        hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
-        hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
-        logger.info("The initialised HPLCReport IRI is: <%s>; the initialised HPLCJob IRI is: <%s>" % (hplc_report_iri, hplc_job_iri))
-
-        rxn_exp_iri = self.identify_rxn_exp_when_uploading_hplc_report(hplc_digital_twin, remote_file_path)
-        logger.info("The identified ReactionExperiment for HPLCReport <%s> (remote path: %s) is: <%s>" % (hplc_report_iri, remote_file_path, rxn_exp_iri))
-
-        # TODO
-        hplc_method_iri = self.identify_hplc_method_when_uploading_hplc_report()
-        logger.info("The HPLCReport <%s> (remote path: %s) was generated using HPLCMethod <%s>" % (hplc_report_iri, remote_file_path, hplc_method_iri))
-
-        update = PREFIX_XSD + """INSERT DATA {<%s> <%s> <%s>.
-            <%s> a <%s>; <%s> <%s>; <%s> <%s>; <%s> <%s>.
-            <%s> a <%s>; <%s> <%s>; <%s> "%s"^^xsd:string; <%s> %f; <%s> %f.}""" % (
-            hplc_digital_twin, ONTOHPLC_HASJOB, hplc_job_iri,
-            hplc_job_iri, ONTOHPLC_HPLCJOB, ONTOHPLC_CHARACTERISES, rxn_exp_iri, ONTOHPLC_USESMETHOD, hplc_method_iri, ONTOHPLC_HASREPORT, hplc_report_iri,
-            hplc_report_iri, ONTOHPLC_HPLCREPORT, ONTOHPLC_REMOTEFILEPATH, remote_file_path, ONTOHPLC_LOCALFILEPATH, local_file_path,
-            ONTOHPLC_LASTLOCALMODIFIEDAT, timestamp_last_modified, ONTOHPLC_LASTUPLOADEDAT, timestamp_upload)
-        self.performUpdate(update)
-
-        return hplc_report_iri
-
     def identify_rxn_exp_when_uploading_hplc_report(self, hplc_digital_twin: str, hplc_remote_file_path: str) -> str:
         hplc_digital_twin = trimIRI(hplc_digital_twin)
         query = """SELECT DISTINCT ?rxn_exp WHERE {<%s> ^<%s>/<%s>+/<%s>/<%s> ?rxn_exp.}""" % (
@@ -1562,10 +1486,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 hplc_digital_twin, hplc_remote_file_path))
         else:
             return rxn_exp[0]
-
-    # TODO implement queries to find the correct HPLCMethod
-    def identify_hplc_method_when_uploading_hplc_report(self):
-        return "http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy"
 
     def get_raw_hplc_report_remote_path_and_extension(self, hplc_report_iri: str) -> Tuple[str, str]:
         hplc_report_iri = trimIRI(hplc_report_iri)
@@ -1612,7 +1532,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             raise NotImplementedError("Multiple instances of InternalStandard (%s) are identified for HPLCMethod <%s>, this is NOT support yet." % (
                 str(response), hplc_method_iri))
         elif len(response) < 1:
-            raise Exception("InternalStandard NOT found for HPLCMethod <%s>" % hplc_method_iri)
+            raise Exception("InternalStandard NOT found for HPLCMethod <%s> when querying: %s" % (hplc_method_iri, query))
         else:
             r = response[0]
 
@@ -1712,7 +1632,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     # TODO replace this with the proper representation of the species density - at given temperature, what's the density of the given species
     def get_species_density(self, species_iri: str) -> Tuple[float, str]:
-        PLACEHOLDER_HASDENSITY = 'http://www.placeholder.com/for_density/hasDensity'
+        PLACEHOLDER_HASDENSITY = 'http://www.placeholder.com/for_species/hasDensity'
         species_iri = trimIRI(species_iri)
         query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?density. ?density <%s> ?unit; <%s> ?value. }""" % (
             species_iri, PLACEHOLDER_HASDENSITY, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
@@ -1726,7 +1646,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     # TODO replace this with the proper representation of the material cost - with the given vendor, what's the cost of the given chemical
     def get_species_material_cost(self, species_iri: str) -> Tuple[float, str]:
-        PLACEHOLDER_HASMATERIALCOST = 'http://www.placeholder.com/for_density/hasMaterialCost'
+        PLACEHOLDER_HASMATERIALCOST = 'http://www.placeholder.com/for_species/hasMaterialCost'
         species_iri = trimIRI(species_iri)
         query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?cost. ?cost <%s> ?unit; <%s> ?value. }""" % (
             species_iri, PLACEHOLDER_HASMATERIALCOST, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
@@ -1740,7 +1660,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     # TODO replace this with the proper representation of the eco score - not sure if this is an "intrinsic" property of a given chemical
     def get_species_eco_score(self, species_iri: str) -> Tuple[float, str]:
-        PLACEHOLDER_HASECOSCORE = 'http://www.placeholder.com/for_density/hasEcoScore'
+        PLACEHOLDER_HASECOSCORE = 'http://www.placeholder.com/for_species/hasEcoScore'
         species_iri = trimIRI(species_iri)
         query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?ecoscore. ?ecoscore <%s> ?unit; <%s> ?value. }""" % (
             species_iri, PLACEHOLDER_HASECOSCORE, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)

@@ -7,6 +7,7 @@ class AgilentConfig(AgentConfig):
     HPLC_DIGITAL_TWIN: str
     HPLC_REPORT_PERIODIC_TIMESCALE: int
     HPLC_REPORT_CONTAINER_DIR: str
+    CURRENT_HPLC_METHOD: str
     HPLC_REPORT_FILE_EXTENSION: str
     REGISTER_AGENT: bool
 

@@ -24,6 +24,7 @@ def create_app():
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
+    agent.register()
     agent.start_monitoring_derivations()
 
     return agent.app
