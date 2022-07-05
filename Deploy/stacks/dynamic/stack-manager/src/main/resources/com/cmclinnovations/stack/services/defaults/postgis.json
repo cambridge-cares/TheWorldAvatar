@@ -17,8 +17,8 @@
                     },
                     {
                         "Type": "volume",
-                        "Source": "geotifs",
-                        "Target": "/geotifs"
+                        "Source": "geotiffs",
+                        "Target": "/geotiffs"
                     }
                 ],
                 "Secrets": [

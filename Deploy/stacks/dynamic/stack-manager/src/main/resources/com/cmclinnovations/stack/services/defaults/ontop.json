@@ -15,18 +15,6 @@
                     "-f",
                     "/dev/null"
                 ],
-                "Mounts": [
-                    {
-                        "Type": "volume",
-                        "Source": "postgis_data",
-                        "Target": "/var/lib/postgresql/data"
-                    },
-                    {
-                        "Type": "volume",
-                        "Source": "geotifs",
-                        "Target": "/geotifs"
-                    }
-                ],
                 "Configs": [
                     {
                         "ConfigName": "postgis"

@@ -9,6 +9,13 @@
                     "-f",
                     "/dev/null"
                 ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "geotiffs",
+                        "Target": "/geotiffs"
+                    }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "postgis"
