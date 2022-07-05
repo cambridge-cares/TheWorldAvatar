@@ -1,3 +1,4 @@
+from pathlib import Path
 from rdflib import Graph
 import pkgutil
 import os
@@ -12,7 +13,7 @@ import tests.conftest as cf
 # Utility functions
 # ----------------------------------------------------------------------------------
 
-def initialise_triples(generate_random_download_path, sparql_client, derivation_client):
+def initialise_triples(sparql_client, derivation_client):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
@@ -20,16 +21,10 @@ def initialise_triples(generate_random_download_path, sparql_client, derivation_
     if not os.path.exists(cf.DOWNLOADED_DIR):
         os.mkdir(cf.DOWNLOADED_DIR)
 
-	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
-    for f in [
-		'sample_data/doe.ttl', 'sample_data/dummy_lab.ttl', 'sample_data/dummy_post_proc.ttl', 'sample_data/duplicate_ontorxn.ttl', 'sample_data/rxn_data.ttl',
-	]:
-        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
-        g = Graph().parse(data=data)
-        filePath = generate_random_download_path("ttl")
-        g.serialize(filePath, format='ttl')
-        sparql_client.uploadOntology(filePath)
-        # the serialised files will be deleted at the end of testing session
+    # Upload the example triples for testing
+    pathlist = Path(cf.TEST_TRIPLES_DIR).glob('*.ttl')
+    for path in pathlist:
+        sparql_client.uploadOntology(str(path))
 
     # Add timestamp to pure inputs
     for input in cf.DERIVATION_INPUTS:

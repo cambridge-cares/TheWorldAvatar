@@ -36,6 +36,7 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 ENV_FILES_DIR = os.path.join(THIS_DIR,'env_files')
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
+TEST_TRIPLES_DIR = os.path.join(THIS_DIR,'test_triples')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'_downloaded_files_for_test')
 # HPLC_REPORT_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
@@ -65,7 +66,7 @@ AGILENT_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.agilent.env.test')
 
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOE_AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
 
-DOE_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1'
+DOE_IRI = 'http://example.com/blazegraph/namespace/testlab/doe/DoE_1'
 DERIVATION_INPUTS = [DOE_IRI]
 
 

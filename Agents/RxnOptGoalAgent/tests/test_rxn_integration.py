@@ -14,7 +14,7 @@ logger = logging.getLogger('test_rxn_integration')
     ],
 )
 def test_rxn_integration(
-    generate_random_download_path, initialise_clients, retrieve_hplc_report,
+    initialise_clients, retrieve_hplc_report,
     create_doe_agent, create_vapourtec_execution_agent, create_agilent_postproc_agent, create_vapourtec_agent, create_agilent_agent,
     fcexp_file_container_folder, local_agent_test
 ):
@@ -25,7 +25,7 @@ def test_rxn_integration(
     assert res == 0
 
     # Initialise all triples in the knowledge graph
-    utils.initialise_triples(generate_random_download_path, sparql_client, derivation_client)
+    utils.initialise_triples(sparql_client, derivation_client)
 
     # Assert that there's currently no new experiment associated with the DoE instance
     assert sparql_client.getNewExperimentFromDoE(utils.cf.DOE_IRI) is None
