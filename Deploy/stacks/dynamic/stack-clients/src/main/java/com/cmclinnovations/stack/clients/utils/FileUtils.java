@@ -32,7 +32,7 @@ public final class FileUtils {
         return filepath.getFileName().toString().replaceAll("[^\\w.]", "_");
     }
 
-    private static String removeExtension(String filename) {
+    public static String removeExtension(String filename) {
         int index = filename.lastIndexOf(".");
         if (index > 0) {
             return filename.substring(0, index);
@@ -41,6 +41,10 @@ public final class FileUtils {
             // just return the whole filename
             return filename;
         }
+    }
+
+    public static String replaceExtension(String filename, String newExtension) {
+        return removeExtension(filename) + newExtension;
     }
 
     public static String getFileNameWithoutExtension(Path path) {
