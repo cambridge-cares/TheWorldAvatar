@@ -33,6 +33,9 @@ public class Station {
     private List<TimeSeries<Instant>> ts_list;
 	private List<Measure> measures;
 
+	private Station downstream;
+	private Station upstream;
+
 	private Double stageUpper = null;
 	private Double stageLower = null;
 	private Double downstageUpper = null;
@@ -293,5 +296,21 @@ public class Station {
 
 	public Double getDownstageLower() {
 		return this.downstageLower;
+	}
+
+	public void setDownstream(Station downstream) {
+		this.downstream = downstream;
+	}
+
+	public Station getDownstream() {
+		return this.downstream;
+	}
+
+	public void setUpstream(Station upstream) {
+		this.upstream = upstream;
+	}
+
+	public Station getUpstream() {
+		return this.upstream;
 	}
 }
