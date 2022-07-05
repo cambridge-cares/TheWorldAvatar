@@ -17,6 +17,7 @@ class AgilentAgent(DerivationAgent):
         hplc_digital_twin: str,
         hplc_report_periodic_timescale: str,
         hplc_report_container_dir: str,
+        current_hplc_method: str,
         hplc_report_file_extension: str,
         register_agent: bool=True,
         **kwargs
@@ -25,6 +26,7 @@ class AgilentAgent(DerivationAgent):
         self.hplc_digital_twin = hplc_digital_twin
         self.hplc_report_periodic_timescale = hplc_report_periodic_timescale
         self.hplc_report_container_dir = hplc_report_container_dir if hplc_report_container_dir.endswith("/") else hplc_report_container_dir + "/"
+        self.current_hplc_method = current_hplc_method
         self.hplc_report_file_extension = hplc_report_file_extension
         self.register_agent = register_agent
 
@@ -73,7 +75,8 @@ class AgilentAgent(DerivationAgent):
         g = Graph()
         g = self.sparql_client.collect_triples_for_hplc_job(
             rxn_exp_iri, chemical_solution_iri,
-            self.hplc_digital_twin, hplc_report_detected, g
+            self.hplc_digital_twin, hplc_report_detected, self.current_hplc_method,
+            g
         )
 
         derivation_outputs.addGraph(g)

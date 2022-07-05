@@ -16,6 +16,7 @@ def create_app():
         hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN,
         hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE,
         hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR,
+        current_hplc_method=hplc_config.CURRENT_HPLC_METHOD,
         hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION,
         register_agent=hplc_config.REGISTER_AGENT,
         agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI,

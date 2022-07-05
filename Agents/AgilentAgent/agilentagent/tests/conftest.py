@@ -215,6 +215,7 @@ def create_agilent_agent():
             hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
             hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
+            current_hplc_method=hplc_config.CURRENT_HPLC_METHOD,
             hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
             register_agent=hplc_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
