@@ -13,8 +13,8 @@ import org.apache.jena.graph.NodeFactory;
 
 public class HeatEmissionQuery extends JSONObject{
 	
-	//String inputBounds_sample = "{\"job\":{\"lower_bounds\":\"8464.256074442204#23588.08319044689#0\",\"upper_bounds\":\"17619.669922658715#30520.376177137474#105\"}}\r\n";
-    /**
+	//String inputBounds_sample = "{\"job\":{\"lower_bounds\":\"8464.256074442204#23588.08319044689#0\",\"upper_bounds\":\"17619.669922658715#30520.376177137474#105\"}}\r\n";	
+	/**
      * This part is the main method that takes input form HeatEmissionAgent and pass them in the
      * beow mentioned queries. The query in "jibusinessunits" returns the lists of chemical 
      * plants, plant items, IRIs, CO2 emission, fuel CEI and thermal efficiency; the query in 
@@ -25,25 +25,9 @@ public class HeatEmissionQuery extends JSONObject{
      */
 	
     public static JSONObject performCrossDomainQ(JSONObject jsonObject) throws SQLException {
-    	
-    	// Set up the boundary of specified region 
-    	String upper_limits = JsonPath.read(jsonObject.toString(), "$.job.upper_bounds");
-        String lower_limits = JsonPath.read(jsonObject.toString(), "$.job.lower_bounds");
-        String[] upper_split = upper_limits.split("#");
-        String[] lower_split = lower_limits.split("#");
-        Double lower_x =  Double.parseDouble(lower_split[0]);
-        Double lower_y =  Double.parseDouble(lower_split[1]);
-        Double upper_x =  Double.parseDouble(upper_split[0]);
-        Double upper_y =  Double.parseDouble(upper_split[1]);
-        
         JSONArray heatresult = new JSONArray();
         JSONObject heatresult1 = new JSONObject();
-        
-        // Query all the chemical plants, plant items and respective IRI as well as CO2 emissions
-        String IRIandCO2 = AccessAgentCaller.query("jibusinessunits", IRIandCO2Query());
-        JSONObject IRIandCO2json = new JSONObject(IRIandCO2);
-        String IRIandCO2ResultString = IRIandCO2json.getString("result");
-        JSONArray IRIandCO2QueryResult = new JSONArray(IRIandCO2ResultString);
+        JSONArray IRIandCO2QueryResult = IRIandCO2Query();
         
         for (int i = 0; i < IRIandCO2QueryResult.length(); i++) {
         	String IRI = IRIandCO2QueryResult.getJSONObject(i).getString("IRI");
@@ -52,43 +36,47 @@ public class HeatEmissionQuery extends JSONObject{
         	String ChemPlant = IRIandCO2QueryResult.getJSONObject(i).getString("chemical_plant");
         	String ChemPlantName = "<"+ChemPlant+">";
         	
-        	// Query the fuel CEI and thermal efficiency for chemical plants 
-            String plantInfo = AccessAgentCaller.query("jibusinessunits", FuelCEIEfficiency(ChemPlantName));
-            JSONObject plantInfojson = new JSONObject(plantInfo);
-            String plantInfoResultString = plantInfojson.getString("result");
-            JSONArray plantInfoQueryResult = new JSONArray(plantInfoResultString);
+        	JSONArray plantInfoQueryResult = FuelCEIEfficiency(ChemPlantName);
             String CEI = plantInfoQueryResult.getJSONObject(0).getString("CEI");
             String Efficiency = plantInfoQueryResult.getJSONObject(0).getString("efficiency");
         	
-        	// For each plant item, calculate its coordinate
-            String coordiresult = AccessAgentCaller.query("jriEPSG24500", CoordinateQuery(IRI));
-            JSONObject coordiresultjson = new JSONObject(coordiresult);
-            String coordiSpatialResultString = coordiresultjson.getString("result");
-            JSONArray coordiSpatialQueryResult = new JSONArray(coordiSpatialResultString);
+            JSONArray coordiSpatialQueryResult = CoordinateQuery(IRI);  
             String heatcoordi = HeatEmissionCoordinate(coordiSpatialQueryResult);
             String[] heatcoordi_split = heatcoordi.split("#");
             Double x_coordinate =  Double.parseDouble(heatcoordi_split[0]);
             Double y_coordinate =  Double.parseDouble(heatcoordi_split[1]);
             
             // Calculate the heat emission amount in the unit of MW within the indicated region boundary 
-            if (lower_x < x_coordinate && upper_x > x_coordinate && lower_y < y_coordinate && upper_y > y_coordinate) {
+            double[] region_boundary = Boundary(jsonObject);
+            if (region_boundary[0] < x_coordinate && region_boundary[2] > x_coordinate && region_boundary[1] < y_coordinate && region_boundary[3] > y_coordinate) {
                 double heatamount = Double.parseDouble(CO2)/Double.parseDouble(CEI)*1e12/365/24/3600/1e6*Double.parseDouble(Efficiency); 
                 JSONObject row = new JSONObject();
                 row.put("Coordinate", heatcoordi);
                 row.put("Heat Emission", heatamount);
                 heatresult.put(row);
-                //System.out.println(heatamount);	
                 sparqlUpdate(Plant_item,Double.toString(heatamount));
             }
         }
-    	
-        heatresult1.put("result", heatresult);
-        //System.out.println(heatresult1); 	
+        heatresult1.put("result", heatresult); 	
         return heatresult1;
     }
     
-    // PlantItem IRI and CO2 query
-    private static String IRIandCO2Query () {
+    // Set up the region boundary
+    private static double[] Boundary(JSONObject inputBounds) {
+        String upper_limits = JsonPath.read(inputBounds.toString(), "$.job.upper_bounds");
+        String lower_limits = JsonPath.read(inputBounds.toString(), "$.job.lower_bounds");
+        String[] upper_split = upper_limits.split("#");
+        String[] lower_split = lower_limits.split("#");
+        double[] result = new double[4];
+        result[0] =  Double.parseDouble(lower_split[0]);
+        result[1] =  Double.parseDouble(lower_split[1]);
+        result[2] =  Double.parseDouble(upper_split[0]);
+        result[3] =  Double.parseDouble(upper_split[1]);
+        return result;
+    }
+    
+    // Query all the chemical plants, plant items and respective IRI as well as CO2 emissions
+    private static JSONArray IRIandCO2Query () {
     	StringBuffer IRIandCO2Query = new StringBuffer("PREFIX ns2: <https://www.theworldavatar.com/kg/ontobuiltenv/>\n");
     	IRIandCO2Query.append("PREFIX geo: <http://www.opengis.net/ont/geosparql#>\n");
     	IRIandCO2Query.append("PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
@@ -102,11 +90,15 @@ public class HeatEmissionQuery extends JSONObject{
     	IRIandCO2Query.append("?x om:hasUnit ?a .");
     	IRIandCO2Query.append("?a om:symbol ?unit .");
     	IRIandCO2Query.append("FILTER regex(str(?plant_item), \"Plant_item\")}");
-    	return IRIandCO2Query.toString();
+        String IRIandCO2 = AccessAgentCaller.query("jibusinessunits", IRIandCO2Query.toString());
+        JSONObject IRIandCO2json = new JSONObject(IRIandCO2);
+        String IRIandCO2ResultString = IRIandCO2json.getString("result");
+        JSONArray IRIandCO2QueryResult = new JSONArray(IRIandCO2ResultString);
+    	return IRIandCO2QueryResult;
     }
     
     // Chemical plant fuel, CEI and thermal efficiency query
-    private static String FuelCEIEfficiency (String ChemialPlant) {
+    private static JSONArray FuelCEIEfficiency (String ChemialPlant) {
     	StringBuffer FuelCEIEffiQuery = new StringBuffer("PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
     	FuelCEIEffiQuery.append("PREFIX ocp: <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#>\n");
     	FuelCEIEffiQuery.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
@@ -117,16 +109,25 @@ public class HeatEmissionQuery extends JSONObject{
     	FuelCEIEffiQuery.append("?cei om:hasNumericalValue ?CEI .");
     	FuelCEIEffiQuery.append("?cei om:hasUnit ?a .");
     	FuelCEIEffiQuery.append("?a om:symbol ?unit .}");
-    	return FuelCEIEffiQuery.toString();
+    	String plantInfo = AccessAgentCaller.query("jibusinessunits", FuelCEIEffiQuery.toString());
+        JSONObject plantInfojson = new JSONObject(plantInfo);
+        String plantInfoResultString = plantInfojson.getString("result");
+        JSONArray plantInfoQueryResult = new JSONArray(plantInfoResultString); 
+    	return plantInfoQueryResult;
     }
     
     // Geometric coordination query
-    private static String CoordinateQuery (String CityFurnitureIRI) {
+    private static JSONArray CoordinateQuery (String CityFurnitureIRI) {
+    	//StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#> SELECT ?s ?o WHERE {GRAPH <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry/>{?s ocgml:GeometryType ?o.?s ocgml:cityObjectId <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/cityfurniture/UUID_31385923-9cf7-4e4e-b134-165117b4e3e2/>.}}");
     	StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
     	coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");	
     	coordinateQuery.append("GRAPH <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry/> {?geometricIRI ocgml:GeometryType ?polygonData.\n");
     	coordinateQuery.append("?geometricIRI ocgml:cityObjectId <").append(CityFurnitureIRI).append(">.}}");
-    	return coordinateQuery.toString();
+    	String coordiresult = AccessAgentCaller.query("jriEPSG24500", coordinateQuery.toString());
+        JSONObject coordiresultjson = new JSONObject(coordiresult);
+        String coordiSpatialResultString = coordiresultjson.getString("result");
+        JSONArray coordiSpatialQueryResult = new JSONArray(coordiSpatialResultString);
+    	return coordiSpatialQueryResult;
     }
   
     // Calculate heat emission in xyz coordinate 
@@ -140,12 +141,9 @@ public class HeatEmissionQuery extends JSONObject{
             String coordiData = coordiS.getString("polygonData");
             ArrayList<String> z_values = new ArrayList<>();
             String[] split =coordiData.split("#");
-        
-            double sum_x = 0;
-            double sum_y = 0;
-            double sum_z = 0;
-            double min_z = 0;
-            
+            double sum_x = 0; double sum_y = 0;
+            double sum_z = 0; double min_z = 0;
+          
             for(Integer j=1; j<=split.length; j++) {
                 if(j%3==0){
                     z_values.add(split[j-1]);                
@@ -155,17 +153,14 @@ public class HeatEmissionQuery extends JSONObject{
                     min_z = Math.min(min_z,Double.parseDouble(split[j-1]));
                 }
             }
-           
             if (min_z == sum_z/(split.length/3) && !z_values.isEmpty()) {
             	buildingX = String.valueOf(sum_x/(split.length/3));
             	buildingY = String.valueOf(sum_y/(split.length/3));
             	} 
-      
             if (!z_values.isEmpty() && Double.parseDouble(buildingZ) < Double.parseDouble(Collections.max(z_values))) {
             	buildingZ = Collections.max(z_values);
             }
         }
-          
         StringBuffer coordinate = new StringBuffer();
     	coordinate.append(buildingX).append("#").append(buildingY).append("#").append(buildingZ);	
     	return coordinate.toString();
