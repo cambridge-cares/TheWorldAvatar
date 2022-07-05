@@ -77,6 +77,7 @@ A brief description of its workflow can be found below:
 3. Open `cmd` terminal and navigate into the `<root>\ifcto3Dtilesnext`
 4. Please run the following commands in the `cmd` terminal (from within the `<root>\ifcto3Dtilesnext` directory and with **activated** virtual environment <venv_name>)
     - Connection to the PostgreSQL server is not always available and is being worked on. Please uncomment the `timeseriesquery()` in line 34 if your data require time series.
+    - If you have a local `blazegraph.jnl` file with existing data that you want to keep, ensure that it is not in the same directory as it will be removed
     ```
     python main.py
     ```

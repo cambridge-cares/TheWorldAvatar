@@ -61,6 +61,10 @@ def cleandir():
                     os.remove(filepath)
             except OSError:
                 print("Error while deleting file")
+    
+    # Delete any existing blazegraph databases
+    if os.path.exists("blazegraph.jnl"):
+        os.remove("blazegraph.jnl") 
 
 def dictfind(lst, key, value):
     """
