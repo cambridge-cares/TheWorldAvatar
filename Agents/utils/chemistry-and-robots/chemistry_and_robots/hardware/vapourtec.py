@@ -67,7 +67,10 @@ def create_exp_run_csv(folder_path: str, rxnexp: ReactionExperiment, list_equip_
 
 def get_reagent_conc_of_chem_solution(rxnexp: ReactionExperiment, chem_solution: ChemicalSolution):
     list_reactant = [reac.hasUniqueSpecies for reac in rxnexp.isOccurenceOf.hasReactant]
-    list_catalyst = [cata.hasUniqueSpecies for cata in rxnexp.isOccurenceOf.hasCatalyst]
+    if rxnexp.isOccurenceOf.hasCatalyst is not None:
+        list_catalyst = [cata.hasUniqueSpecies for cata in rxnexp.isOccurenceOf.hasCatalyst]
+    else:
+        list_catalyst = []
     # TODO retrieve the units as well here - we need a generalised way of handling the units
     list_component = [component.representsOccurenceOf for component in chem_solution.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem]
     dict_conc = {component.representsOccurenceOf:component.hasProperty.hasValue.numericalValue for component in chem_solution.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}

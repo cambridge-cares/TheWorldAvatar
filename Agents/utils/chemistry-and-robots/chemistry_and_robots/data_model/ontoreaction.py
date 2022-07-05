@@ -191,6 +191,15 @@ class OntoCAPE_ChemicalReaction(BaseOntology):
     hasCatalyst: Optional[List[OntoKin_Species]]
     hasSolvent: Optional[List[OntoKin_Species]]
 
+    def get_list_of_occurring_species(self) -> List[OntoKin_Species]:
+        lst_of_species = []
+        lst_of_species += self.hasReactant
+        lst_of_species += self.hasProduct
+        if self.hasCatalyst is not None:
+            lst_of_species += self.hasCatalyst
+        lst_of_species += self.hasSolvent
+        return lst_of_species
+
 class ReactionCondition(BaseOntology):
     objPropWithExp: List[str]
     hasValue: OM_Measure

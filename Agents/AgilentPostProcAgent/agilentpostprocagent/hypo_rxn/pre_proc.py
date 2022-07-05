@@ -81,7 +81,7 @@ def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_ex
     stoi_ratio_dct = {con.indicatesMultiplicityOf:con.hasValue for con in rxn_exp_instance.hasReactionCondition if con.indicatesMultiplicityOf is not None}
 
     # Construct a dict of species role in the reaction
-    lst_species = rxn_exp_instance.isOccurenceOf.hasReactant + rxn_exp_instance.isOccurenceOf.hasSolvent + rxn_exp_instance.isOccurenceOf.hasCatalyst + rxn_exp_instance.isOccurenceOf.hasProduct
+    lst_species = rxn_exp_instance.isOccurenceOf.get_list_of_occurring_species()
     species_role_dct = {us.hasUniqueSpecies:us.clz for us in lst_species}
     # Also add the internal standard to the dct
     if internal_standard_instance.representsOccurenceOf not in species_role_dct:
