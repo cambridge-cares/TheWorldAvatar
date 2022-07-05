@@ -6,7 +6,8 @@
         {
             "type": "shell",
             "label": "compose-build",
-            "command": "docker compose build",
+            "command": "docker compose -f docker-compose-build.yml build",
+            "group": "build",
             "presentation": {
                 "reveal": "always"
             }
@@ -14,13 +15,17 @@
         {
             "type": "shell",
             "label": "compose-push",
-            "command": "docker compose push",
+            "command": "docker compose -f docker-compose-build.yml push",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "presentation": {
                 "reveal": "always"
             },
             "dependsOn": [
                 "compose-build"
-            ],
+            ]
         },
         {
             "type": "shell",
@@ -52,7 +57,7 @@
         {
             "type": "shell",
             "label": "remove-service",
-            "command": "docker service rm ${input:stackName}_stack-client ${input:stackName}_stack-client-lib",
+            "command": "docker service rm ${input:stackName}_stack-client",
             "presentation": {
                 "reveal": "always"
             }

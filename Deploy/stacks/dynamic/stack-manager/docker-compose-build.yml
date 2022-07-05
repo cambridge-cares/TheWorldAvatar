@@ -1,0 +1,5 @@
+version: '3.8'
+services:
+  stack-manager:
+    image: docker.cmclinnovations.com/stack-manager:1.0-SNAPSHOT
+    build: .
