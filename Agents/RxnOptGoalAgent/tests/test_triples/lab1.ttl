@@ -848,6 +848,17 @@
 #    om:hasNumericalValue "8"^^xsd:int;
 #.
 
+:Vial_3_level_fill
+    a om:Volume;
+    om:hasValue :Vial_3_level_fill_value;
+.
+
+:Vial_3_level_fill_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "0"^^xsd:int;
+.
+
 :Site_4
     a OntoVapourtec:AutoSamplerSite;
     OntoVapourtec:locationID "4"^^xsd:string;
@@ -884,6 +895,17 @@
 #    om:hasUnit om:millilitre;
 #    om:hasNumericalValue "8"^^xsd:int;
 #.
+
+:Vial_4_level_fill
+    a om:Volume;
+    om:hasValue :Vial_4_level_fill_value;
+.
+
+:Vial_4_level_fill_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "0"^^xsd:int;
+.
 
 # Create a few sites that holds empty vial
 :Site_5
@@ -922,6 +944,17 @@
 #    om:hasUnit om:millilitre;
 #    om:hasNumericalValue "8"^^xsd:int;
 #.
+
+:Vial_5_level_fill
+    a om:Volume;
+    om:hasValue :Vial_5_level_fill_value;
+.
+
+:Vial_5_level_fill_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "0"^^xsd:int;
+.
 
 :Site_6
     a OntoVapourtec:AutoSamplerSite;

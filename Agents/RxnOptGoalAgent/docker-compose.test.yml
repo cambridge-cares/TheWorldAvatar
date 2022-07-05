@@ -1,17 +1,17 @@
 version: "3.8"
 
 services:
-  doe_agent:
-    image: ghcr.io/cambridge-cares/doe_agent:1.0.0-SNAPSHOT
-    container_name: doe_agent
-    environment:
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    ports:
-      - 7000:5000
-    env_file:
-      - ./tests/env_files/agent.doe.env.test
-    extra_hosts:
-      - localhost:host-gateway
+  # doe_agent:
+  #   image: ghcr.io/cambridge-cares/doe_agent:1.0.0-SNAPSHOT
+  #   container_name: doe_agent
+  #   environment:
+  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+  #   ports:
+  #     - 7000:5000
+  #   env_file:
+  #     - ./tests/env_files/agent.doe.env.test
+  #   extra_hosts:
+  #     - localhost:host-gateway
 
   # vapourtec_execution_agent:
   #   image: ghcr.io/cambridge-cares/vapourtec_execution_agent:1.0.0-SNAPSHOT

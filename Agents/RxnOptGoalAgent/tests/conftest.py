@@ -39,13 +39,13 @@ SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_
 TEST_TRIPLES_DIR = os.path.join(THIS_DIR,'test_triples')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'_downloaded_files_for_test')
-# HPLC_REPORT_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
+HPLC_REPORT_LOCAL_TEST_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
 FCEXP_FILE_DIR = os.path.join(THIS_DIR,'_generated_vapourtec_input_file_for_test')
 DOCKER_INTEGRATION_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test')
 
-# Raw HPLC report sample data in chemistry_and_robots package
-HPLC_REPORT_XLS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls.xls'
-HPLC_REPORT_TXT_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt.txt'
+# Raw HPLC report sample data in the test_triples folder
+HPLC_REPORT_XLS_PATH_IN_FOLDER = os.path.join(TEST_TRIPLES_DIR,'raw_hplc_report_xls.xls')
+HPLC_REPORT_TXT_PATH_IN_FOLDER = os.path.join(TEST_TRIPLES_DIR,'raw_hplc_report_txt.txt')
 
 
 KG_SERVICE = "blazegraph"
@@ -84,8 +84,8 @@ def pytest_sessionstart(session):
         shutil.rmtree(DOWNLOADED_DIR)
     if os.path.exists(FCEXP_FILE_DIR):
         shutil.rmtree(FCEXP_FILE_DIR)
-    # if os.path.exists(HPLC_REPORT_DIR):
-    #     shutil.rmtree(HPLC_REPORT_DIR)
+    if os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
+        shutil.rmtree(HPLC_REPORT_LOCAL_TEST_DIR)
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
@@ -97,8 +97,8 @@ def pytest_sessionfinish(session):
         shutil.rmtree(DOWNLOADED_DIR)
     if os.path.exists(FCEXP_FILE_DIR):
         shutil.rmtree(FCEXP_FILE_DIR)
-    # if os.path.exists(HPLC_REPORT_DIR):
-    #     shutil.rmtree(HPLC_REPORT_DIR)
+    if os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
+        shutil.rmtree(HPLC_REPORT_LOCAL_TEST_DIR)
 
 
 # ----------------------------------------------------------------------------------
@@ -159,19 +159,20 @@ def generate_random_download_path():
 
 @pytest.fixture(scope="session")
 def retrieve_hplc_report():
-    def _retrieve_hplc_report(report_extension):
+    def _retrieve_hplc_report(report_extension, target_folder):
         if report_extension.endswith('xls'):
-            report_path_in_pkg = HPLC_REPORT_XLS_PATH_IN_PKG
-            local_file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.xls')
+            report_path_in_folder = HPLC_REPORT_XLS_PATH_IN_FOLDER
+            local_file_path = os.path.join(target_folder,f'{str(uuid.uuid4())}.xls')
         elif report_extension.endswith('txt'):
-            report_path_in_pkg = HPLC_REPORT_TXT_PATH_IN_PKG
-            local_file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.txt')
+            report_path_in_folder = HPLC_REPORT_TXT_PATH_IN_FOLDER
+            local_file_path = os.path.join(target_folder,f'{str(uuid.uuid4())}.txt')
         else:
             raise NotImplementedError("Handling HPLC raw report (%s) in the chemistry_and_robots package is NOT yet supported due to its file extension." % 
                 report_extension)
-        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+report_path_in_pkg)
-        with open(local_file_path, 'wb') as file_obj:
-            file_obj.write(data)
+
+        with open(local_file_path, 'w') as outfile, open(report_path_in_folder, 'r', encoding='utf-8') as infile:
+            for line in infile:
+                outfile.write(line)
         timestamp_last_modified = os.path.getmtime(local_file_path)
 
         return local_file_path, timestamp_last_modified
@@ -194,9 +195,9 @@ def initialise_clients(get_service_url, get_service_auth):
         fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd
     )
 
-    # # Create folder for test hplc reports
-    # if not os.path.exists(HPLC_REPORT_DIR):
-    #     os.mkdir(HPLC_REPORT_DIR)
+    # Create folder for test hplc reports
+    if not os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
+        os.mkdir(HPLC_REPORT_LOCAL_TEST_DIR)
 
     # Create folder for downloaded files
     if not os.path.exists(DOWNLOADED_DIR):
@@ -360,6 +361,7 @@ def create_agilent_agent():
             hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
             hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
+            current_hplc_method=hplc_config.CURRENT_HPLC_METHOD,
             hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
             register_agent=hplc_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
@@ -386,7 +388,7 @@ def create_agilent_agent():
 #     if docker_integration:
 #         file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.xls')
 #     else:
-#         file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.xls')
+#         file_path = os.path.join(HPLC_REPORT_LOCAL_TEST_DIR,f'{str(uuid.uuid4())}.xls')
 #     if not os.path.exists(file_path):
 #         wb = xlwt.Workbook()
 #         ws = wb.add_sheet("Test Sheet")
@@ -400,7 +402,7 @@ def create_agilent_agent():
 #     if docker_integration:
 #         file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.txt')
 #     else:
-#         file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.txt')
+#         file_path = os.path.join(HPLC_REPORT_LOCAL_TEST_DIR,f'{str(uuid.uuid4())}.txt')
 #     if not os.path.exists(file_path):
 #         with open(file_path, "w") as file:
 #             file.truncate(10 ** 3)

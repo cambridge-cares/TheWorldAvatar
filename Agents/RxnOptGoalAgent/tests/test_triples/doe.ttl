@@ -69,7 +69,7 @@ OntoDoE:TSEMO
     rdf:type OntoDoE:ContinuousVariable;
     OntoDoE:refersTo OntoRxn:StoichiometryRatio;
     OntoDoE:positionalID "2"^^xsd:integer;
-    OntoDoE:upperLimit "10"^^xsd:double;
+    OntoDoE:upperLimit "3"^^xsd:double;
     OntoDoE:lowerLimit "1"^^xsd:double;
 .
 

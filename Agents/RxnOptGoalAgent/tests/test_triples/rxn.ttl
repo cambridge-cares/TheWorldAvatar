@@ -202,6 +202,12 @@ OntoRxn:hasConversion rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
 OntoRxn:hasSpaceTimeYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
 OntoRxn:hasRunMaterialCost rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
 
+############################################################################
+## Subclass relationship between ReactionExperiment and ReactionVariation ##
+############################################################################
+OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
+
+
 ##############################################################################
 ## Placeholder Density data -- TODO to find a proper way of representing it ##
 ##############################################################################
@@ -431,7 +437,7 @@ placeholder:E_S_S_931_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "4
 :RxnScale_1_Measure_1
     rdf:type om:Measure;
     om:hasUnit om:millilitre;
-    om:hasNumericalValue "5"^^xsd:double;
+    om:hasNumericalValue "1.5"^^xsd:double;
 .
 
 ## PerformanceIndicator
