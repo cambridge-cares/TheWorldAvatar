@@ -33,12 +33,8 @@ try:
     # Query for time series, comment the code if you know there is no related time series
     #df=ifc2kg.timeseriesquery(utils.ENDPOINT,df)
     
-    # Adding tileset for specific asset types
-    tileset_assets= ts.asset2tileset(df)
-
-    #Writing out the tilesets to JSON format
-    ts.genbuilding_ceiling_tileset()
-    ts.jsonwriter(tileset_assets,"tileset_assets")
+    # Generate the required tilesets from query results
+    ts.gen_tilesets(df)
 
 except Exception as e:
     print(e)
