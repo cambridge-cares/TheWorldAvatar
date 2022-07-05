@@ -204,6 +204,7 @@ public class AQMeshInputAgent {
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                 }
             }
+            tsClient.disconnectRDB();
         }
         // Is a problem as time series objects must be the same every time to ensure proper insert into the database
         else {
