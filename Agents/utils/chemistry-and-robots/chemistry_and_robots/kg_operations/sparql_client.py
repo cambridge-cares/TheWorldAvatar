@@ -1510,7 +1510,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         g = Graph()
         g.add((URIRef(hardware_digital_twin), URIRef(ONTOLAB_ISMANAGEDBY), URIRef(agent_iri)))
         # NOTE SPARQL update with sub-query to ensure same triple don't get written to KG (although this should not cause any issues)
-        update = """INSERT { %s } WHERE { MINUS { %s } }""" % (
+        update = """INSERT { %s } WHERE { FILTER NOT EXISTS { %s } }""" % (
             g.serialize(format='nt'), g.serialize(format='nt')
         )
         self.performUpdate(update)
@@ -2330,7 +2330,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         # NOTE SPARQL update with sub-query to ensure one agent service don't get duplicated entries in KG
         # NOTE TODO this implies that ONE AGENT SERVICE ONLY HAS ONE ONTOAGENT:OPERATION
-        update = PREFIX_RDF + """INSERT { %s } WHERE { MINUS {<%s> rdf:type <%s>.} }""" % (
+        update = PREFIX_RDF + """INSERT { %s } WHERE { FILTER NOT EXISTS {<%s> rdf:type <%s>.} }""" % (
             g.serialize(format='nt'), service_iri, ONTOAGENT_SERVICE
         )
         self.performUpdate(update)
