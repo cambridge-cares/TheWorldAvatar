@@ -129,16 +129,31 @@ public class WriteOutputs {
 		
 		List<Station> stations_to_remove = new ArrayList<>();
 		for (Station station : stations) {
+			boolean includeMeasure = false;
 			try {
-				List<Measure> measures = station.getMeasures();
+				List<Measure> measures = new ArrayList<>(station.getMeasures());
 				
 				for (Measure measure : measures) {
-					TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure.getIri()), lowerbound, upperbound);
-					List<Instant> time = ts.getTimes();
+					// this is to exclude measures with qualifiers that we don't understand
+					if (measure.getParameterName().contentEquals("Water Level")) {
+						if (measure.getQualifier().contentEquals("Stage") || measure.getQualifier().contentEquals("Downstream Stage")
+					    || measure.getQualifier().contentEquals("Groundwater") || measure.getQualifier().contentEquals("Tidal Level")) {
+							includeMeasure = true;
+						}
+					} else {
+						includeMeasure = true;
+					}
 					
-					// ignore blank time series
-					if(time.size() > 0) {
-						station.addTimeseries(ts);
+					if (includeMeasure) {
+						TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure.getIri()), lowerbound, upperbound);
+						List<Instant> time = ts.getTimes();
+						
+						// ignore blank time series
+						if(time.size() > 0) {
+							station.addTimeseries(ts);
+						}
+					} else {
+						station.getMeasures().remove(measure);
 					}
 				}				
 				
@@ -147,6 +162,7 @@ public class WriteOutputs {
 					stations_to_remove.add(station);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				LOGGER.error(e.getMessage());
 				LOGGER.error("Failed to query time series for " + station.getIri());
 			}
@@ -298,10 +314,11 @@ public class WriteOutputs {
 			
 			metadata.put("id", station.getVisId());
 			
+			// station properties
+			JSONObject stationProperties = new JSONObject();
 			for (String property : station.getDisplayProperties().keySet()) {
-				metadata.put(property, station.getDisplayProperties().get(property));
+				stationProperties.put(property, station.getDisplayProperties().get(property));
 			}
-			
 			// force order on the side panel
 			JSONArray properties_order = new JSONArray();
 			List<String> preferred_order = Arrays.asList("Name", "River", "Catchment", "Town", "Date opened", "Identifier", "Latitude", "Longitude");
@@ -310,7 +327,27 @@ public class WriteOutputs {
 					properties_order.put(key);
 				}
 			}
-			metadata.put("display_order", properties_order);
+			stationProperties.put("display_order", properties_order);
+			metadata.put("Station properties", stationProperties);
+
+			// measures
+			JSONObject measures_json = new JSONObject();
+			int i = 1;
+			for (Measure measure : station.getMeasures()) {
+				JSONObject measure_json = new JSONObject();
+				measure_json.put("Parameter name", measure.getParameterName());
+				measure_json.put("Qualifier", measure.getQualifier());
+				if (measure.getTrend() != null) {
+					measure_json.put("Trend", measure.getTrend());
+				}
+				if (measure.getRange() != null) {
+					measure_json.put("Range", measure.getRange());
+				}
+				measures_json.put("Measure " + String.valueOf(i), measure_json);
+				i++;
+			}
+			metadata.put("Measures", measures_json);
+			
 			metaDataCollection.put(metadata);
 		}
 		
