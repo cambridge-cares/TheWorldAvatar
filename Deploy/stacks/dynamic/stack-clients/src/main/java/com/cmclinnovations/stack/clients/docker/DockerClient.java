@@ -193,7 +193,7 @@ public class DockerClient extends BaseClient {
 
             if (null != hereDocument) {
                 if (attachStdin) {
-                    throw new IllegalArgumentException("Can't specify both 'inputStream' and 'inputStream'.");
+                    throw new IllegalArgumentException("Can't specify both 'inputStream' and 'hereDocument'.");
                 }
                 cmd = List.of("sh", "-c",
                         Arrays.stream(cmd).collect(Collectors.joining("' '", "'", "'"))
