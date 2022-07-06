@@ -31,6 +31,19 @@ MAPPING_VAPOURTEC_STATE = {
     0: ONTOVAPOURTEC_IDLE,
 }
 
+# Mapping decimal place constraint with settings title
+# TODO here we took the short cut, in future this information should be stored in KG
+MAPPING_DECIMAL_PLACE_CONSTRAINT = {
+    FC_REACTOR_TEMPERATURE: 0,
+    FC_RESIDENCE_TIME: 2,
+    FC_STOICHIOMETRIC_RATIO: 2,
+    FC_VOLUMETRIC_RATIO: 2,
+    FC_REAGENT_CONC: 3,
+    FC_REAGENT_USE: 2,
+    FC_MANUAL_COLLECT: 2,
+    FC_MANUAL_DIVERT: 2,
+}
+
 def create_exp_run_csv(folder_path: str, rxnexp: ReactionExperiment, list_equip_settings: List[EquipmentSettings]) -> str:
     """
         This function creates the experiment run file to be digested by Vapourtec FlowCommander.
@@ -48,20 +61,28 @@ def create_exp_run_csv(folder_path: str, rxnexp: ReactionExperiment, list_equip_
 
     for equip_settings in list_equip_settings:
         if isinstance(equip_settings, ReactorSettings):
-            fc_header = np.hstack((fc_header, np.array(([[FC_REACTOR_TEMPERATURE + equip_settings.specifies.locationID], [equip_settings.hasReactorTemperatureSetting.hasQuantity.hasValue.hasNumericalValue]]))))
-            fc_header = np.hstack((fc_header, np.array(([[FC_RESIDENCE_TIME], [equip_settings.hasResidenceTimeSetting.hasQuantity.hasValue.hasNumericalValue]]))))
+            fc_header = np.hstack((fc_header, np.array(([[FC_REACTOR_TEMPERATURE + equip_settings.specifies.locationID],
+                        [round_setting_value(FC_REACTOR_TEMPERATURE, equip_settings.hasReactorTemperatureSetting.hasQuantity.hasValue.hasNumericalValue)]]))))
+            fc_header = np.hstack((fc_header, np.array(([[FC_RESIDENCE_TIME],
+                        [round_setting_value(FC_RESIDENCE_TIME, equip_settings.hasResidenceTimeSetting.hasQuantity.hasValue.hasNumericalValue)]]))))
         elif isinstance(equip_settings, PumpSettings):
-            fc_header = np.hstack((fc_header, np.array(([[FC_STOICHIOMETRIC_RATIO + equip_settings.specifies.locationID], [equip_settings.hasStoichiometryRatioSetting.hasQuantity.hasValue.hasNumericalValue]]))))
-            fc_header = np.hstack((fc_header, np.array(([[FC_AUTOSAMPLER_SITE + equip_settings.specifies.locationID], [int(equip_settings.pumpsLiquidFrom.locationID)]]))))
-            fc_header = np.hstack((fc_header, np.array(([[FC_REAGENT_CONC + equip_settings.specifies.locationID], [get_reagent_conc_of_chem_solution(rxnexp, equip_settings.pumpsLiquidFrom.holds.isFilledWith)]]))))
+            fc_header = np.hstack((fc_header, np.array(([[FC_STOICHIOMETRIC_RATIO + equip_settings.specifies.locationID],
+                        [round_setting_value(FC_STOICHIOMETRIC_RATIO, equip_settings.hasStoichiometryRatioSetting.hasQuantity.hasValue.hasNumericalValue)]]))))
+            fc_header = np.hstack((fc_header, np.array(([[FC_AUTOSAMPLER_SITE + equip_settings.specifies.locationID],
+                        [int(equip_settings.pumpsLiquidFrom.locationID)]]))))
+            fc_header = np.hstack((fc_header, np.array(([[FC_REAGENT_CONC + equip_settings.specifies.locationID],
+                        [round_setting_value(FC_REAGENT_CONC, get_reagent_conc_of_chem_solution(rxnexp, equip_settings.pumpsLiquidFrom.holds.isFilledWith))]]))))
             if equip_settings.hasSampleLoopVolumeSetting is not None:
                 # TODO need to check about the units
-                fc_header = np.hstack((fc_header, np.array(([[FC_REAGENT_USE], [int(equip_settings.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue)]]))))
+                fc_header = np.hstack((fc_header, np.array(([[FC_REAGENT_USE],
+                            [round_setting_value(FC_REAGENT_USE, equip_settings.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue)]]))))
         else:
             raise Exception("EquipmentSettings is not supported for Vapourtec module: %s" % str(equip_settings))
 
+    # Output the settings to a csv file, and return the file path
+    # NOTE the file line ending is Windows-style to let the FlowCommander to read the file
     run_csv_path = os.path.join(folder_path, "fcexprun_%s.csv" % uuid.uuid4())
-    pd.DataFrame(fc_header).to_csv(run_csv_path, header=None, index=None)
+    pd.DataFrame(fc_header).to_csv(run_csv_path, header=None, index=None, line_terminator='\r\n', encoding='utf-8')
 
     return run_csv_path
 
@@ -84,3 +105,7 @@ def get_reagent_conc_of_chem_solution(rxnexp: ReactionExperiment, chem_solution:
         reagent = reagent[0]
 
     return dict_conc.get(reagent)
+
+def round_setting_value(header: str, value: float):
+    decimal_place = MAPPING_DECIMAL_PLACE_CONSTRAINT[header]
+    return int(value) if decimal_place == 0 else round(value, decimal_place)
