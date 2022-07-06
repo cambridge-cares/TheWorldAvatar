@@ -61,8 +61,9 @@ public class AQMeshInputAgentLauncher {
         LOGGER.info("Input agent object initialized.");
 
         // Create and set the time series client
+        TimeSeriesClient<OffsetDateTime> tsClient;
         try {
-            TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
+            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
             agent.setTsClient(tsClient);
         } catch (IOException | JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
@@ -113,6 +114,7 @@ public class AQMeshInputAgentLauncher {
         // If both are empty no new readings are available
         else if(particleReadings.isEmpty() && gasReadings.isEmpty()) {
             LOGGER.info("No new readings are available.");
+            tsClient.disconnectRDB();
         }
         // One reading is empty and the other is not. This is likely due to asynchronous access to the readings, which
         // sets the pointers for each reading separately (should not happen when only using the agent unless there is an API error).
