@@ -79,6 +79,10 @@ def init_asset_tiles():
                 "Asset Name":{
                     "description" : "Name of the asset",
                     "type" : "STRING"
+                    },
+                "UID":{
+                    "description" : "Unique identifier generated in IFC",
+                    "type" : "STRING"
                     }
                 }
             }
@@ -137,7 +141,7 @@ def gen_tileset_assets(dataframe):
             # Add the asset name to establish a metadata skeleton
             'metadata': {
                     'class': "AssetMetaData",
-                    'properties': {"Asset Name": df_unique['name'][row]}
+                    'properties': {"Asset Name": df_unique['name'][row].split(":")[1], "UID":df_unique['uid'][row]}
             }
         })
     
