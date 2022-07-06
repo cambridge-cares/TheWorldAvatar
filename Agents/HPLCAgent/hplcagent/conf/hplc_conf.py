@@ -3,7 +3,7 @@ from dotenv import dotenv_values
 import os
 
 
-class AgilentConfig(AgentConfig):
+class HPLCConfig(AgentConfig):
     HPLC_DIGITAL_TWIN: str
     HPLC_REPORT_PERIODIC_TIMESCALE: int
     HPLC_REPORT_CONTAINER_DIR: str
@@ -12,9 +12,9 @@ class AgilentConfig(AgentConfig):
     REGISTER_AGENT: bool
 
 
-def config_agilent(env_file: str = None) -> AgilentConfig:
+def config_hplc(env_file: str = None) -> HPLCConfig:
     """Return configurations from either environment variables or env_file."""
     if env_file is not None:
-        return AgilentConfig(dotenv_values(env_file))
+        return HPLCConfig(dotenv_values(env_file))
     else:
-        return AgilentConfig(os.environ)
+        return HPLCConfig(os.environ)

@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='agilentagent',
+    name='hplcagent',
     version='0.0.1',
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
     python_requires='>=3.7',
-    description="agilentagent is capable of monitoring the local report folder of Agilent HPLC and uploading the new reports to knowledge graph as part of The World Avatar project.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/AgilentAgent",
+    description="hplcagent is capable of monitoring the local report folder of the configured HPLC and uploading the new reports to knowledge graph as part of The World Avatar project.",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/HPLCAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=('tests')),

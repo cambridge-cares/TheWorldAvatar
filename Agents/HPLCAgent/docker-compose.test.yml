@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  agilentagent:
-    image: ghcr.io/cambridge-cares/agilent_agent:1.0.0-SNAPSHOT
-    container_name: agilent_agent
+  hplc_agent:
+    image: ghcr.io/cambridge-cares/hplc_agent:1.0.0-SNAPSHOT
+    container_name: hplc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     build:
@@ -11,14 +11,14 @@ services:
       dockerfile: ./Dockerfile
       labels:
         authors: "jb2197@cam.ac.uk"
-        description: "Monitor the local report folder of Agilent HPLC and upload the new reports to knowledge graph."
+        description: "Monitor the local report folder of the configured HPLC and upload the new reports to knowledge graph."
     extra_hosts:
       - localhost:host-gateway
     env_file:
-      - ./agilentagent/tests/agent.agilent.env.test
+      - ./hplcagent/tests/agent.hplc.env.test
     volumes:
       - type: bind
-        source: ./agilentagent/tests/_for_docker_integration_test
+        source: ./hplcagent/tests/_for_docker_integration_test
         target: /app/CHEM32
 
   # Blazegraph
@@ -46,6 +46,6 @@ services:
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: ./agilentagent/tests/dummy_services_secrets/blazegraph_passwd.txt
+    file: ./hplcagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
-    file: ./agilentagent/tests/dummy_services_secrets/fileserver_passwd.txt
+    file: ./hplcagent/tests/dummy_services_secrets/fileserver_passwd.txt

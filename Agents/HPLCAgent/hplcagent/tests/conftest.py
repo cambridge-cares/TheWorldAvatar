@@ -13,10 +13,10 @@ import os
 
 from pyderivationagent.conf import config_derivation_agent
 
-from agilentagent.kg_operations import ChemistryAndRobotsSparqlClient
-from agilentagent.data_model import *
-from agilentagent.agent import AgilentAgent
-from agilentagent.conf import config_agilent
+from hplcagent.kg_operations import ChemistryAndRobotsSparqlClient
+from hplcagent.data_model import *
+from hplcagent.agent import HPLCAgent
+from hplcagent.conf import config_hplc
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
@@ -39,7 +39,7 @@ KG_ROUTE = "blazegraph/namespace/kb/sparql"
 FS_SERVICE = "fileserver"
 FS_ROUTE = "FileServer/"
 
-AGILENT_AGENT_ENV = os.path.join(THIS_DIR,'agent.agilent.env.test')
+HPLC_AGENT_ENV = os.path.join(THIS_DIR,'agent.hplc.env.test')
 
 
 def pytest_sessionstart(session):
@@ -186,8 +186,8 @@ def initialise_hplc_digital_twin_triples(generate_random_hplc_digital_twin):
 
 
 @pytest.fixture(scope="module")
-def initialise_agilent_derivation_input_triples():
-    def _initialise_agilent_derivation_input_triples(sparql_client):
+def initialise_hplc_derivation_input_triples():
+    def _initialise_hplc_derivation_input_triples(sparql_client):
         chemical_solution_iri = 'http://www.example.com/placeholder/ChemicalSolution_' + str(uuid.uuid4())
         rxn_exp_iri = 'http://www.example.com/placeholder/ReactionExperiment_' + str(uuid.uuid4())
         g = Graph()
@@ -195,12 +195,12 @@ def initialise_agilent_derivation_input_triples():
         g.add((URIRef(rxn_exp_iri), RDF.type, URIRef(ONTOREACTION_REACTIONEXPERIMENT)))
         sparql_client.uploadGraph(g)
         return rxn_exp_iri, chemical_solution_iri
-    return _initialise_agilent_derivation_input_triples
+    return _initialise_hplc_derivation_input_triples
 
 
 @pytest.fixture(scope="module")
-def create_agilent_agent():
-    def _create_agilent_agent(
+def create_hplc_agent():
+    def _create_hplc_agent(
         hplc_digital_twin:str=None,
         hplc_report_periodic_timescale:int=None,
         hplc_report_container_dir:str=None,
@@ -209,9 +209,9 @@ def create_agilent_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        derivation_agent_config = config_derivation_agent(AGILENT_AGENT_ENV)
-        hplc_config = config_agilent(AGILENT_AGENT_ENV)
-        agilent_agent = AgilentAgent(
+        derivation_agent_config = config_derivation_agent(HPLC_AGENT_ENV)
+        hplc_config = config_hplc(HPLC_AGENT_ENV)
+        hplc_agent = HPLCAgent(
             hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
             hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
@@ -231,9 +231,9 @@ def create_agilent_agent():
             agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        agilent_agent.register()
-        return agilent_agent
-    return _create_agilent_agent
+        hplc_agent.register()
+        return hplc_agent
+    return _create_hplc_agent
 
 
 # ----------------------------------------------------------------------------------

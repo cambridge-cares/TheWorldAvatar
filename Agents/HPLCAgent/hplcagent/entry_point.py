@@ -1,7 +1,7 @@
 from pyderivationagent.conf import config_derivation_agent
-from agilentagent.agent import AgilentAgent
-from agilentagent.agent import default
-from agilentagent.conf import config_agilent
+from hplcagent.agent import HPLCAgent
+from hplcagent.agent import default
+from hplcagent.conf import config_hplc
 
 import logging
 
@@ -10,9 +10,9 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
     derivation_agent_config = config_derivation_agent()
-    hplc_config = config_agilent()
+    hplc_config = config_hplc()
 
-    agent = AgilentAgent(
+    agent = HPLCAgent(
         hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN,
         hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE,
         hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR,

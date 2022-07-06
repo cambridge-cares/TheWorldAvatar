@@ -4,7 +4,7 @@ from pyderivationagent.kg_operations import TIME_HASTIME
 from pyderivationagent.kg_operations import TIME_INTIMEPOSITION
 from pyderivationagent.kg_operations import TIME_NUMERICPOSITION
 
-import agilentagent.tests.conftest as cf
+import hplcagent.tests.conftest as cf
 
 # ----------------------------------------------------------------------------------
 # Utility functions

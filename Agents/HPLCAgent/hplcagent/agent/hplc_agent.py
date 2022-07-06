@@ -7,11 +7,11 @@ from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
-from agilentagent.kg_operations import *
-from agilentagent.data_model import *
-from agilentagent.conf import *
+from hplcagent.kg_operations import *
+from hplcagent.data_model import *
+from hplcagent.conf import *
 
-class AgilentAgent(DerivationAgent):
+class HPLCAgent(DerivationAgent):
     # TODO consider making __init__ of DerivationAgent to accept **kwargs
     def __init__(self,
         hplc_digital_twin: str,
@@ -176,6 +176,6 @@ def default():
         Instructional message at the app root.
     """
     msg  = "This is an asynchronous agent that capable of monitoring the HPLC local report folder and upload any new generated reports to the KG file server.<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/HPLCInputAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/HPLCInputAgent#readme, before merging back to develop branch
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/HPLCAgent#readme<BR>"
+    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/HPLCAgent#readme, before merging back to main branch
     return msg
