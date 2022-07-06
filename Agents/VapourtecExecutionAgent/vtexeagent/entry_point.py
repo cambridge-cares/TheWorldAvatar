@@ -1,4 +1,5 @@
 from pyderivationagent.conf import config_derivation_agent
+from vtexeagent.conf import config_vapourtec_execution
 from vtexeagent.agent import *
 
 import logging
@@ -9,8 +10,11 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
     agent_config = config_derivation_agent()
+    exe_config = config_vapourtec_execution()
 
     agent = VapourtecExecutionAgent(
+        maximum_concurrent_experiment=exe_config.MAXIMUM_CONCURRENT_EXPERIMENT,
+        register_agent=exe_config.REGISTER_AGENT,
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
