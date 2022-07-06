@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  agilentpostprocagent:
-    image: ghcr.io/cambridge-cares/agilent_postproc_agent:1.0.0-SNAPSHOT
-    container_name: agilent_postproc_agent
+  hplc_postpro_agent:
+    image: ghcr.io/cambridge-cares/hplc_postpro_agent:1.0.0-SNAPSHOT
+    container_name: hplc_postpro_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     build:
@@ -21,7 +21,7 @@ services:
     extra_hosts:
       - localhost:host-gateway
     env_file:
-      - ./agilentpostprocagent/tests/agent.postproc.env.test
+      - ./hplcpostproagent/tests/agent.hplc.postpro.env.test
 
   # Blazegraph
   blazegraph:
@@ -48,6 +48,6 @@ services:
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: agilentpostprocagent/tests/dummy_services_secrets/blazegraph_passwd.txt
+    file: hplcpostproagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
-    file: agilentpostprocagent/tests/dummy_services_secrets/fileserver_passwd.txt
+    file: hplcpostproagent/tests/dummy_services_secrets/fileserver_passwd.txt

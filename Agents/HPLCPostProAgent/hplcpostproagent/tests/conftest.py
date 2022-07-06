@@ -11,10 +11,10 @@ import os
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 from pyderivationagent.conf import config_derivation_agent
-from agilentpostprocagent.conf import config_agilent_postproc
+from hplcpostproagent.conf import config_hplc_postpro
 
-from agilentpostprocagent.kg_operations import ChemistryAndRobotsSparqlClient
-from agilentpostprocagent.agent import *
+from hplcpostproagent.kg_operations import ChemistryAndRobotsSparqlClient
+from hplcpostproagent.agent import *
 from flask import Flask
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -57,7 +57,7 @@ PLACEHOLDER_PERFORMANCE_INDICATOR_LIST_2 = [
 
 # Configuration env files
 # NOTE the triple store URL provided in the agent.*.env files are the URL to access blazegraph container WITHIN the docker stack
-POSTPROCAGENT_ENV = os.path.join(THIS_DIR,'agent.postproc.env.test')
+HPLC_POSTPRO_AGENT_ENV = os.path.join(THIS_DIR,'agent.hplc.postpro.env.test')
 
 
 class FlaskConfigTest(FlaskConfig):
@@ -174,15 +174,15 @@ def retrieve_hplc_report():
 # ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def create_postproc_agent():
-    def _create_postproc_agent(
+def create_hplc_postpro_agent():
+    def _create_hplc_postpro_agent(
         register_agent:bool=False,
         random_agent_iri:bool=False,
     ):
-        derivation_agent_config = config_derivation_agent(POSTPROCAGENT_ENV)
-        agilent_postproc_config = config_agilent_postproc(POSTPROCAGENT_ENV)
-        agilent_postproc_agent = AgilentPostProcAgent(
-            register_agent=agilent_postproc_config.REGISTER_AGENT if not register_agent else register_agent,
+        derivation_agent_config = config_derivation_agent(HPLC_POSTPRO_AGENT_ENV)
+        hplc_postpro_config = config_hplc_postpro(HPLC_POSTPRO_AGENT_ENV)
+        hplc_postpro_agent = HPLCPostProAgent(
+            register_agent=hplc_postpro_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
@@ -198,9 +198,9 @@ def create_postproc_agent():
             flask_config=FlaskConfigTest(), # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
             logger_name='dev'
         )
-        agilent_postproc_agent.register()
-        return agilent_postproc_agent
-    return _create_postproc_agent
+        hplc_postpro_agent.register()
+        return hplc_postpro_agent
+    return _create_hplc_postpro_agent
 
 def generate_random_download_path(filename_extension):
     return os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+filename_extension)

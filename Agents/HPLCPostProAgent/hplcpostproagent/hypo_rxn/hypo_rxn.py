@@ -1,5 +1,5 @@
-from agilentpostprocagent.data_model import *
-import agilentpostprocagent.utils as utils
+from hplcpostproagent.data_model import *
+import hplcpostproagent.utils as utils
 import pydantic
 
 class HypoStreamSpecies(pydantic.BaseModel):

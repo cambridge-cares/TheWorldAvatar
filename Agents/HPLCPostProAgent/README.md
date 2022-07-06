@@ -1,4 +1,4 @@
-# Agilent Post Processing (AgilentPostProc) Agent
+# HPLC Post Processing (HPLCPostPro) Agent
 The folder contains the source, resource, and Docker setup files for the DoE Agent, following the suggestions on a template provide as `TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent/README.md`.
 
 ## Purpose
@@ -26,7 +26,7 @@ Requirements:
     RUN jpsrm install JpsBaseLib ./jpstemp/
     ```
     At the moment, above lines are commented out in the Dockerfile. One may bring them back if a specific version of `jps-base-lib` is required and provided.
-* Example of configurations for the agent are provided in `TheWorldAvatar/Agents/AgilentPostProcAgent/agent.postproc.env.example` file. The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` for triple store, and `FILESERVER_URL` for the file server. The credentials for knowledge graph endpoints, i.e. triple store and file server, should be provided in the same file using `KG_USERNAME`, `KG_PASSWORD`, `FILE_SERVER_USERNAME`, `FILE_SERVER_PASSWORD`. To avoid commit these information to git at deployment, developer may make a copy of this example file as `agent.postproc.env`. As `*.env` entry already exist in `.gitignore`, this new created file will be omitted. Any credentials encoded are safe. The OntoAgent:Service IRI of the agent is specified using `ONTOAGENT_SERVICE_IRI`. The periodically time interval to monitor asynchronous derivation is specified by `DERIVATION_PERIODIC_TIMESCALE`. One may also provide `DERIVATION_INSTANCE_BASE_URL` to be used by DerivationClient when creating derivations related instances. `ONTOAGENT_OPERATION_HTTP_URL` can be used to specify the URL of the agent that listens the request for updating synchronous derivations, however, given the nature of the post processing Agent, this is NOT RECOMMENDED. Developers needs to ensure that this file is correctly updated before building the Docker Image.
+* Example of configurations for the agent are provided in `TheWorldAvatar/Agents/HPLCPostProAgent/agent.postproc.env.example` file. The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` for triple store, and `FILESERVER_URL` for the file server. The credentials for knowledge graph endpoints, i.e. triple store and file server, should be provided in the same file using `KG_USERNAME`, `KG_PASSWORD`, `FILE_SERVER_USERNAME`, `FILE_SERVER_PASSWORD`. To avoid commit these information to git at deployment, developer may make a copy of this example file as `agent.postproc.env`. As `*.env` entry already exist in `.gitignore`, this new created file will be omitted. Any credentials encoded are safe. The OntoAgent:Service IRI of the agent is specified using `ONTOAGENT_SERVICE_IRI`. The periodically time interval to monitor asynchronous derivation is specified by `DERIVATION_PERIODIC_TIMESCALE`. One may also provide `DERIVATION_INSTANCE_BASE_URL` to be used by DerivationClient when creating derivations related instances. `ONTOAGENT_OPERATION_HTTP_URL` can be used to specify the URL of the agent that listens the request for updating synchronous derivations, however, given the nature of the post processing Agent, this is NOT RECOMMENDED. Developers needs to ensure that this file is correctly updated before building the Docker Image.
 
 Once the requirements have been addressed, the Image can be build via docker container, one example of which is:
 
@@ -41,18 +41,18 @@ For proper deployment, one may need to make a copy of `docker-compose.test.yml` 
 
 ## How to use it
 ### HTTP servlet
-As the agent adopts `pyderivationagent`, the agent serving HTTP requests to handle synchronous derivations in an automated fashion, nonetheless, as the intention of PostProc Agent is asynchronous operation, it is (strongly) discouraged to invoke it via HTTP request by ONESELF, in the situation that synchronous derivation been created for AgilentPostProc agent, all operations will be handled by the derivation framework ON ITS OWN. An HTTP servlet provided in this agent is its instructional page `http://localhost:7000/` (the address depends on where you deploy the container), i.e. you will see a message when accessing the above address if the agent is deployed successfully:
+As the agent adopts `pyderivationagent`, the agent serving HTTP requests to handle synchronous derivations in an automated fashion, nonetheless, as the intention of PostProc Agent is asynchronous operation, it is (strongly) discouraged to invoke it via HTTP request by ONESELF, in the situation that synchronous derivation been created for HPLCPostPro agent, all operations will be handled by the derivation framework ON ITS OWN. An HTTP servlet provided in this agent is its instructional page `http://localhost:7000/` (the address depends on where you deploy the container), i.e. you will see a message when accessing the above address if the agent is deployed successfully:
 ```
 This is an asynchronous agent that capable of post-processing experiment raw data generated from lab equipment.
-For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/AgilentPostProcAgent#readme
+For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/HPLCPostProAgent#readme
 ```
 
 ### Asynchronous derivation operation
-As intended, AgilentPostProc Agent works with the derivation framework in asychronous mode. Once the AgilentPostProc Agent is deployed, it periodically (every 120 seconds, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI` in `TheWorldAvatar/Agents/AgilentPostProcAgent/agent.postproc.env.example`) and acts based on the status associated with that derivation.
+As intended, HPLCPostPro Agent works with the derivation framework in asychronous mode. Once the HPLCPostPro Agent is deployed, it periodically (every 120 seconds, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI` in `TheWorldAvatar/Agents/HPLCPostProAgent/agent.postproc.env.example`) and acts based on the status associated with that derivation.
 
-A set of dockerised integration tests `TheWorldAvatar/Agents/AgilentPostProcAgent/agilentpostprocagent/tests` is provided as examples to demonstrate the operations. It operates on the triple store specified in the `TheWorldAvatar/Agents/AgilentPostProcAgent/agilentpostprocagent/tests/agent.postproc.env.test` when the docker stack is spun up. Therefore, it can be used to test if the AgilentPostProc Agent deployed is functional as expected. **NOTE: spinning up the containers in this image requires access to the docker.cmclinnovations.com registry from the machine the test is run on. For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry**
+A set of dockerised integration tests `TheWorldAvatar/Agents/HPLCPostProAgent/hplcpostproagent/tests` is provided as examples to demonstrate the operations. It operates on the triple store specified in the `TheWorldAvatar/Agents/HPLCPostProAgent/hplcpostproagent/tests/agent.postproc.env.test` when the docker stack is spun up. Therefore, it can be used to test if the HPLCPostPro Agent deployed is functional as expected. **NOTE: spinning up the containers in this image requires access to the docker.cmclinnovations.com registry from the machine the test is run on. For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry**
 
-Also note that below two lines in `TheWorldAvatar/Agents/AgilentPostProcAgent/docker-compose.test.yml` were commented out:
+Also note that below two lines in `TheWorldAvatar/Agents/HPLCPostProAgent/docker-compose.test.yml` were commented out:
 ```yml
 ports:
  - 7000:5000
@@ -78,7 +78,7 @@ and upload below sample HPLC raw report to the file server specified (the script
 
 If the upload to file server is successfully, a series of information will be output to console and an IRI will be generated as the generated OntoHPLC:HPLCReport instance, for example `<http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc>` in below log messages:
 ```
-2022-05-25 12:53:14,297 (STDOUT) HPLC raw report (/home/jb2197/wsl_code/TheWorldAvatar/Agents/AgilentPostProcAgent/agilentpostprocagent/tests/downloaded_files_for_test/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls) was uploaded to fileserver <http://localhost:48086/FileServer/> at 1653479594.189448 with remote file path at: http://localhost:48086/FileServer/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls 
+2022-05-25 12:53:14,297 (STDOUT) HPLC raw report (/home/jb2197/wsl_code/TheWorldAvatar/Agents/HPLCPostProAgent/hplcpostproagent/tests/downloaded_files_for_test/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls) was uploaded to fileserver <http://localhost:48086/FileServer/> at 1653479594.189448 with remote file path at: http://localhost:48086/FileServer/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls 
 2022-05-25 12:53:14,298 (STDOUT) The initialised HPLCReport IRI is: <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc>; the initialised HPLCJob IRI is: <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCJob_06b8692c-fc9a-49b6-87e9-8f3c31306179>
 2022-05-25 12:53:14,400 (STDOUT) The identified ReactionExperiment for HPLCReport <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc> (remote path: http://localhost:48086/FileServer/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls) is: <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70>
 2022-05-25 12:53:14,400 (STDOUT) The HPLCReport <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc> (remote path: http://localhost:48086/FileServer/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls) was generated using HPLCMethod <http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy>
@@ -121,7 +121,7 @@ The dockerised integration test can be invoked via below commands:
 
 `(Linux)`
 ```sh
-cd /your_absolute_path_to/TheWorldAvatar/Agents/AgilentPostProcAgent
+cd /your_absolute_path_to/TheWorldAvatar/Agents/HPLCPostProAgent
 pytest -s --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
 ```
 
@@ -131,7 +131,7 @@ All the logging information will be printed in console and you will be notified 
 2022-05-25 12:53:14,785 (STDOUT) Initialised successfully, created derivation instance: <http://www.asyncagent.com/triplestore/repository/derivedAsyn_4bcc05b7-ad07-4de5-b3b1-2543bc45659a>
 ```
 
-As the derivation is initialised as `Requested` with a timestamp of 0 and the inputs are marked with a timestamp of current time, the derivation is outdated and will be started automatically. The update will be taken care of by AgilentPostProc Agent and the IRI of the suggested instance of `OntoRxn:PerformanceIndicator` will be generated and uploaded into the knowledge graph. The script will also check the timestamp of the created derivation to determine if the update is finished (i.e. a non-zero timestamp), during that process, you may see output messages like:
+As the derivation is initialised as `Requested` with a timestamp of 0 and the inputs are marked with a timestamp of current time, the derivation is outdated and will be started automatically. The update will be taken care of by HPLCPostPro Agent and the IRI of the suggested instance of `OntoRxn:PerformanceIndicator` will be generated and uploaded into the knowledge graph. The script will also check the timestamp of the created derivation to determine if the update is finished (i.e. a non-zero timestamp), during that process, you may see output messages like:
 
 ```
 2022-05-25 12:53:17,845 (STDOUT) The current timestamp for the derivation <http://www.asyncagent.com/triplestore/repository/derivedAsyn_4bcc05b7-ad07-4de5-b3b1-2543bc45659a> is 0
@@ -177,7 +177,7 @@ Once the update is done, the script pulls the data back and conducts a few check
 2022-05-25 12:53:24,650 (STDOUT) All checks passed.
 ```
 
-If you would like to contribute to new features for the AgilentPostProc Agent, you may use the same integration test to make sure the new features added do NOT break the original function.
+If you would like to contribute to new features for the HPLCPostPro Agent, you may use the same integration test to make sure the new features added do NOT break the original function.
 
 # Authors #
 

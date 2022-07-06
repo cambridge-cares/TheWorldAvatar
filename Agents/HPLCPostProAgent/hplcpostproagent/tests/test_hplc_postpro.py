@@ -1,13 +1,14 @@
-import agilentpostprocagent.tests.conftest as conftest
+import hplcpostproagent.tests.conftest as conftest
 from rdflib import Graph
 import logging
 import pkgutil
 import pytest
 import time
+import os
 
 
 logging.getLogger("py4j").setLevel(logging.INFO)
-logger = logging.getLogger("test_post_proc")
+logger = logging.getLogger("test_hplc_postpro")
 
 pytest_plugins = ["docker_compose"]
 
@@ -20,15 +21,15 @@ pytest_plugins = ["docker_compose"]
         (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, False),
     ],
 )
-def test_post_proc_agent(
-    initialise_client, retrieve_hplc_report, create_postproc_agent,
+def test_hplc_postpro_agent(
+    initialise_client, retrieve_hplc_report, create_hplc_postpro_agent,
     rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_solution_iri, local_agent_test
 ):
     sparql_client = initialise_client
     initialise_triples(sparql_client)
-    post_proc_agent = create_postproc_agent(register_agent=True, random_agent_iri=local_agent_test)
+    hplc_postpro_agent = create_hplc_postpro_agent(register_agent=True, random_agent_iri=local_agent_test)
     if local_agent_test:
-        post_proc_agent.start_monitoring_derivations()
+        hplc_postpro_agent.start_monitoring_derivations()
 
     # Verify that knowledge base is NOT empty
     res = sparql_client.getAmountOfTriples()
@@ -36,11 +37,19 @@ def test_post_proc_agent(
 
     # Upload HPLC report to file server
     local_file_path, timestamp_last_modified = retrieve_hplc_report(report_path_in_pkg)
-    hplc_report_iri = sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=local_file_path,
-        timestamp_last_modified=timestamp_last_modified, hplc_digital_twin=hplc_digital_twin)
+    hplc_report_path = local_file_path
+    hplc_report_path = hplc_report_path[1:] if hplc_report_path.startswith('/') else hplc_report_path
+    hplc_report_path = hplc_report_path[1:] if hplc_report_path.startswith('\\') else hplc_report_path
+    remote_report_subdir = os.path.join(conftest.getShortName(hplc_digital_twin), hplc_report_path)
+    hplc_report_iri = sparql_client.upload_raw_hplc_report_to_kg(
+        local_file_path=local_file_path,
+        timestamp_last_modified=timestamp_last_modified,
+        remote_report_subdir=remote_report_subdir,
+        hplc_digital_twin=hplc_digital_twin
+    )
 
     # Make the connection between HPLCReport and ChemicalSolution
-    # In normal operation, this should be done as part of Execution Agent
+    # In normal operation, this should be done as part of HPLCAgent
     sparql_client.connect_hplc_report_with_chemical_solution(hplc_report_iri, chemical_solution_iri)
 
     # Construct derivation_inputs with the iri of HPLCReport
@@ -48,12 +57,12 @@ def test_post_proc_agent(
 
     # Iterate over the list of inputs to add and update the timestamp
     for input in derivation_inputs:
-        post_proc_agent.derivationClient.addTimeInstance(input)
+        hplc_postpro_agent.derivationClient.addTimeInstance(input)
         # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
-        post_proc_agent.derivationClient.updateTimestamp(input)
+        hplc_postpro_agent.derivationClient.updateTimestamp(input)
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = post_proc_agent.derivationClient.createAsyncDerivationForNewInfo(post_proc_agent.agentIRI, derivation_inputs)
+    derivation_iri = hplc_postpro_agent.derivationClient.createAsyncDerivationForNewInfo(hplc_postpro_agent.agentIRI, derivation_inputs)
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
@@ -101,7 +110,7 @@ def test_post_proc_agent(
 
     # Shutdown the scheduler to clean up before the next test
     if local_agent_test:
-        post_proc_agent.scheduler.shutdown()
+        hplc_postpro_agent.scheduler.shutdown()
 
 
 def initialise_triples(sparql_client):

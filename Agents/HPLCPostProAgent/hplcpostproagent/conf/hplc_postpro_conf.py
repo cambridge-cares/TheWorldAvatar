@@ -3,13 +3,13 @@ from dotenv import dotenv_values
 import os
 
 
-class AgilentPostProcConfig(AgentConfig):
+class HPLCPostProConfig(AgentConfig):
     REGISTER_AGENT: bool
 
 
-def config_agilent_postproc(env_file: str = None) -> AgilentPostProcConfig:
+def config_hplc_postpro(env_file: str = None) -> HPLCPostProConfig:
     """Return configurations from either environment variables or env_file."""
     if env_file is not None:
-        return AgilentPostProcConfig(dotenv_values(env_file))
+        return HPLCPostProConfig(dotenv_values(env_file))
     else:
-        return AgilentPostProcConfig(os.environ)
+        return HPLCPostProConfig(os.environ)

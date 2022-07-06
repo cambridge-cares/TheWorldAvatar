@@ -1,4 +1,4 @@
-from agilentpostprocagent.hypo_rxn.hypo_rxn import *
+from hplcpostproagent.hypo_rxn.hypo_rxn import *
 
 TIME_TEMPERATURE_ECO_SCORE_FACTOR = 0.002
 AMBIENT_TEMPERATURE_DEGREECELSIUS = 25

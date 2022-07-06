@@ -6,11 +6,11 @@ from pyderivationagent import FlaskConfig
 from flask import Flask
 from pathlib import Path
 
-from agilentpostprocagent.kg_operations import *
-from agilentpostprocagent.data_model import *
-import agilentpostprocagent.hypo_rxn as hypo
+from hplcpostproagent.kg_operations import *
+from hplcpostproagent.data_model import *
+import hplcpostproagent.hypo_rxn as hypo
 
-class AgilentPostProcAgent(DerivationAgent):
+class HPLCPostProAgent(DerivationAgent):
     # TODO consider making __init__ of DerivationAgent to accept **kwargs
     def __init__(self,
         register_agent: bool=True,
@@ -80,6 +80,6 @@ def default():
         Instructional message at the app root.
     """
     msg  = "This is an asynchronous agent that capable of post-processing experiment raw data generated from lab equipment.<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/AgilentPostProcAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/AgilentPostProcAgent#readme, before merging back to main branch
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/HPLCPostProAgent#readme<BR>"
+    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/HPLCPostProAgent#readme, before merging back to main branch
     return msg

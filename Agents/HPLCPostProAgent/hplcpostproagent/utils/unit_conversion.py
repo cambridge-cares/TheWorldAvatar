@@ -1,4 +1,4 @@
-from agilentpostprocagent.data_model import *
+from hplcpostproagent.data_model import *
 
 # NOTE an assumption is that these UNIFIED units can be computed directly from each other without unit conversions
 UNIFIED_VOLUME_UNIT = OM_LITRE
