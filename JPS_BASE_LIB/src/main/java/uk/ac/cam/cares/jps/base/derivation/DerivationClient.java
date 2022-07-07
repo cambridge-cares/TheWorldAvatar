@@ -202,6 +202,7 @@ public class DerivationClient {
 		requestParams.put(DERIVATION_KEY, derivationIRI); // IRI of this derivation
 		requestParams.put(DERIVATION_TYPE_KEY, derivationType); // rdf:type of this derivation
 		requestParams.put(SYNC_NEW_INFO_FLAG, true); // set flag to indicate the derivation is for new info
+		requestParams.put(AGENT_IRI_KEY, agentIRI); // agent IRI
 
 		// execute HTTP request to create new information
 		LOGGER.debug("Creating <" + derivationIRI + "> using agent at <" + agentURL
