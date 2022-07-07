@@ -15,7 +15,8 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 WORKDIR /root/DerivationAsynExample
 # change this line to force maven to rebuild the war file
 RUN echo abcd
-RUN --mount=type=cache,target=/root/.m2/repository mvn clean install -DskipTests
+# -U flag is set to force maven to pull the lastest packages from the remote repositories if it's SNAPSHOT version
+RUN --mount=type=cache,target=/root/.m2/repository mvn clean install -U -DskipTests
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
