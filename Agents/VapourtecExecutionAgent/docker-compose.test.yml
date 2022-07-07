@@ -14,10 +14,10 @@ services:
         description: "Schedule and request execution of reaction experiment given the suggested conditions."
     ports:
       - 7001:5000
-    env_file:
-      - ./vtexeagent/tests/env_files/agent.vapourtec.execution.env.test
     extra_hosts:
       - localhost:host-gateway
+    env_file:
+      - ./vtexeagent/tests/env_files/agent.vapourtec.execution.env.test
 
   # Blazegraph
   blazegraph:
@@ -56,19 +56,19 @@ services:
         source: ./vtexeagent/tests/_for_docker_integration_test_vapourtec
         target: /app/vapourtec
 
-  # AgilentAgent for three-agent integration test
-  agilentagent:
-    image: ghcr.io/cambridge-cares/agilent_agent:1.0.0-SNAPSHOT
-    container_name: agilent_agent
+  # HPLCAgent for three-agent integration test
+  hplc_agent:
+    image: ghcr.io/cambridge-cares/hplc_agent:1.0.0-SNAPSHOT
+    container_name: hplc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     extra_hosts:
       - localhost:host-gateway
     env_file:
-      - ./vtexeagent/tests/env_files/agent.agilent.env.test
+      - ./vtexeagent/tests/env_files/agent.hplc.env.test
     volumes:
       - type: bind
-        source: ./vtexeagent/tests/_for_docker_integration_test_agilent
+        source: ./vtexeagent/tests/_for_docker_integration_test_hplc
         target: /app/CHEM32
 
 # Secrets used to set runtime passwords

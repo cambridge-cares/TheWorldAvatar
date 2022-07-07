@@ -19,8 +19,8 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 ## For three-agent integration test
 from vapourtecagent.agent import VapourtecAgent
 from vapourtecagent.conf import config_vapourtec
-from agilentagent.agent import AgilentAgent
-from agilentagent.conf import config_agilent
+from hplcagent.agent import HPLCAgent
+from hplcagent.conf import config_hplc
 
 # ----------------------------------------------------------------------------------
 # Constant and configuration
@@ -55,9 +55,9 @@ VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
 VAPOURTEC_AGENT_CFG = config_derivation_agent(VAPOURTEC_AGENT_ENV)
 
 HPLC_REPORT_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
-DOCKER_INTEGRATION_AGILENT_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test_agilent')
-AGILENT_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.agilent.env.test')
-AGILENT_AGENT_CFG = config_derivation_agent(AGILENT_AGENT_ENV)
+DOCKER_INTEGRATION_HPLC_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test_hplc')
+HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
+HPLC_AGENT_CFG = config_derivation_agent(HPLC_AGENT_ENV)
 
 # ----------------------------------------------------------------------------------
 # Pytest session related functions
@@ -247,8 +247,8 @@ def create_vapourtec_agent():
 
 ## For three-agent integration test
 @pytest.fixture(scope="module")
-def create_agilent_agent():
-    def _create_agilent_agent(
+def create_hplc_agent():
+    def _create_hplc_agent(
         hplc_digital_twin:str=None,
         hplc_report_periodic_timescale:int=None,
         hplc_report_container_dir:str=None,
@@ -257,12 +257,13 @@ def create_agilent_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        derivation_agent_config = config_derivation_agent(AGILENT_AGENT_ENV)
-        hplc_config = config_agilent(AGILENT_AGENT_ENV)
-        agilent_agent = AgilentAgent(
+        derivation_agent_config = config_derivation_agent(HPLC_AGENT_ENV)
+        hplc_config = config_hplc(HPLC_AGENT_ENV)
+        hplc_agent = HPLCAgent(
             hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
             hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
+            current_hplc_method=hplc_config.CURRENT_HPLC_METHOD,
             hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
             register_agent=hplc_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
@@ -278,9 +279,9 @@ def create_agilent_agent():
             agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        agilent_agent.register()
-        return agilent_agent
-    return _create_agilent_agent
+        hplc_agent.register()
+        return hplc_agent
+    return _create_hplc_agent
 
 
 # ----------------------------------------------------------------------------------
@@ -288,7 +289,7 @@ def create_agilent_agent():
 # ----------------------------------------------------------------------------------
 def create_hplc_xls_report(docker_integration:bool=False):
     if docker_integration:
-        file_path = os.path.join(DOCKER_INTEGRATION_AGILENT_DIR,f'{str(uuid.uuid4())}.xls')
+        file_path = os.path.join(DOCKER_INTEGRATION_HPLC_DIR,f'{str(uuid.uuid4())}.xls')
     else:
         file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.xls')
     if not os.path.exists(file_path):
@@ -302,7 +303,7 @@ def create_hplc_xls_report(docker_integration:bool=False):
 
 def create_hplc_txt_report(docker_integration:bool=False):
     if docker_integration:
-        file_path = os.path.join(DOCKER_INTEGRATION_AGILENT_DIR,f'{str(uuid.uuid4())}.txt')
+        file_path = os.path.join(DOCKER_INTEGRATION_HPLC_DIR,f'{str(uuid.uuid4())}.txt')
     else:
         file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.txt')
     if not os.path.exists(file_path):

@@ -42,7 +42,7 @@ def test_monitor_derivation(
     vapourtec_execution_agent.start_monitoring_derivations()
 
     # NOTE Add placeholder agent service iri to manage the digital twin of all hardware
-    # NOTE This should actually be done by the VapourtecAgent/AgilentAgent themselves when they are deployed
+    # NOTE This should actually be done by the VapourtecAgent/HPLCAgent themselves when they are deployed
     sparql_client.performUpdate("""INSERT {?hplc <%s> <%s>. ?vapourtec <%s> <%s>.} WHERE {?hplc a <%s>. ?vapourtec a <%s>.}""" % (
         utils.cf.ONTOLAB_ISMANAGEDBY, str(uuid.uuid4()), utils.cf.ONTOLAB_ISMANAGEDBY, str(uuid.uuid4()), utils.cf.ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, utils.cf.ONTOVAPOURTEC_VAPOURTECRS400
     ))
@@ -54,11 +54,11 @@ def test_monitor_derivation(
     # Instantiate derivation instance
     derivation_iri = vapourtec_execution_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_execution_agent.agentIRI, [new_rxn_exp_iri])
 
-    # Wait until derivations for vapourtec and agilent are instantiated
-    agilent_derivation = None
-    while not agilent_derivation:
+    # Wait until derivations for vapourtec and hplc are instantiated
+    hplc_derivation = None
+    while not hplc_derivation:
         time.sleep(10)
-        agilent_derivation = utils.get_agilent_derivation(new_rxn_exp_iri, sparql_client)
+        hplc_derivation = utils.get_hplc_derivation(new_rxn_exp_iri, sparql_client)
 
     # Insert placeholder triples to let the VapourtecExecutionAgent finish job
     g = Graph()
@@ -66,7 +66,7 @@ def test_monitor_derivation(
     placeholder_hplcreport = "http://placeholder/" + str(uuid.uuid4())
     g.add((URIRef(placeholder_hplcjob), RDF.type, URIRef(utils.cf.ONTOHPLC_HPLCJOB)))
     g.add((URIRef(placeholder_hplcreport), RDF.type, URIRef(utils.cf.ONTOHPLC_HPLCREPORT)))
-    g.add((URIRef(placeholder_hplcjob), URIRef(utils.cf.ONTODERIVATION_BELONGSTO), URIRef(agilent_derivation)))
+    g.add((URIRef(placeholder_hplcjob), URIRef(utils.cf.ONTODERIVATION_BELONGSTO), URIRef(hplc_derivation)))
     g.add((URIRef(placeholder_hplcjob), URIRef(utils.cf.ONTOHPLC_HASREPORT), URIRef(placeholder_hplcreport)))
     sparql_client.uploadGraph(g)
 
@@ -120,7 +120,7 @@ def test_docker_integration(
     )
 
     # NOTE Add placeholder agent service iri to manage the digital twin of all hardware
-    # NOTE This should actually be done by the VapourtecAgent/AgilentAgent themselves when they are deployed
+    # NOTE This should actually be done by the VapourtecAgent/HPLCAgent themselves when they are deployed
     sparql_client.performUpdate("""INSERT {?hplc <%s> <%s>. ?vapourtec <%s> <%s>.} WHERE {?hplc a <%s>. ?vapourtec a <%s>.}""" % (
         utils.cf.ONTOLAB_ISMANAGEDBY, str(uuid.uuid4()), utils.cf.ONTOLAB_ISMANAGEDBY, str(uuid.uuid4()), utils.cf.ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, utils.cf.ONTOVAPOURTEC_VAPOURTECRS400
     ))
@@ -132,11 +132,11 @@ def test_docker_integration(
     # Instantiate derivation instance
     derivation_iri = vapourtec_execution_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_execution_agent.agentIRI, [new_rxn_exp_iri])
 
-    # Wait until derivations for vapourtec and agilent are instantiated
-    agilent_derivation = None
-    while not agilent_derivation:
+    # Wait until derivations for vapourtec and hplc are instantiated
+    hplc_derivation = None
+    while not hplc_derivation:
         time.sleep(10)
-        agilent_derivation = utils.get_agilent_derivation(new_rxn_exp_iri, sparql_client)
+        hplc_derivation = utils.get_hplc_derivation(new_rxn_exp_iri, sparql_client)
 
     # Insert placeholder triples to let the VapourtecExecutionAgent finish job
     g = Graph()
@@ -144,7 +144,7 @@ def test_docker_integration(
     placeholder_hplcreport = "http://placeholder/" + str(uuid.uuid4())
     g.add((URIRef(placeholder_hplcjob), RDF.type, URIRef(utils.cf.ONTOHPLC_HPLCJOB)))
     g.add((URIRef(placeholder_hplcreport), RDF.type, URIRef(utils.cf.ONTOHPLC_HPLCREPORT)))
-    g.add((URIRef(placeholder_hplcjob), URIRef(utils.cf.ONTODERIVATION_BELONGSTO), URIRef(agilent_derivation)))
+    g.add((URIRef(placeholder_hplcjob), URIRef(utils.cf.ONTODERIVATION_BELONGSTO), URIRef(hplc_derivation)))
     g.add((URIRef(placeholder_hplcjob), URIRef(utils.cf.ONTOHPLC_HASREPORT), URIRef(placeholder_hplcreport)))
     sparql_client.uploadGraph(g)
 
@@ -169,14 +169,14 @@ def test_docker_integration(
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,derivation_periodic_timescale,fcexp_file_host_folder,hplc_report_wsl_folder",
     [
-        (utils.cf.NEW_RXN_EXP_1_IRI, 6, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_AGILENT_DIR),
-        (utils.cf.NEW_RXN_EXP_2_IRI, 7, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_AGILENT_DIR),
-        (utils.cf.NEW_RXN_EXP_3_IRI, 8, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_AGILENT_DIR),
+        (utils.cf.NEW_RXN_EXP_1_IRI, 6, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
+        (utils.cf.NEW_RXN_EXP_2_IRI, 7, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
+        (utils.cf.NEW_RXN_EXP_3_IRI, 8, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
     ],
 )
 def test_three_agents_docker_integration(
     initialise_client, create_vapourtec_execution_agent, generate_random_download_path, create_test_report,
-    create_vapourtec_agent, create_agilent_agent,
+    create_vapourtec_agent, create_hplc_agent,
     new_rxn_exp_iri, derivation_periodic_timescale, fcexp_file_host_folder, hplc_report_wsl_folder
 ):
     # Initialise triples
@@ -197,7 +197,7 @@ def test_three_agents_docker_integration(
     vapourtec_agent = create_vapourtec_agent(
         register_agent=True
     )
-    agilent_agent = create_agilent_agent(
+    hplc_agent = create_hplc_agent(
         register_agent=True
     )
 
@@ -213,22 +213,22 @@ def test_three_agents_docker_integration(
     # Instantiate derivation instance
     vtexe_derivation_iri = vapourtec_execution_agent.derivationClient.createAsyncDerivationForNewInfo(vapourtec_execution_agent.agentIRI, [new_rxn_exp_iri])
 
-    # Wait until derivations for vapourtec and agilent are instantiated
+    # Wait until derivations for vapourtec and hplc are instantiated
     vapourtec_derivation = None
     while not vapourtec_derivation:
         time.sleep(10)
         vapourtec_derivation = utils.get_vapourtec_derivation(new_rxn_exp_iri, sparql_client)
 
-    agilent_derivation = None
-    while not agilent_derivation:
+    hplc_derivation = None
+    while not hplc_derivation:
         time.sleep(10)
-        agilent_derivation = utils.get_agilent_derivation(new_rxn_exp_iri, sparql_client)
+        hplc_derivation = utils.get_hplc_derivation(new_rxn_exp_iri, sparql_client)
 
-    # Wait until derivations for vapourtec and agilent are instantiated
-    agilent_derivation_is_in_progress = False
-    while not agilent_derivation_is_in_progress:
+    # Wait until derivations for vapourtec and hplc are instantiated
+    hplc_derivation_is_in_progress = False
+    while not hplc_derivation_is_in_progress:
         time.sleep(20)
-        agilent_derivation_is_in_progress = utils.if_agilent_derivation_is_in_progress(agilent_derivation, sparql_client)
+        hplc_derivation_is_in_progress = utils.if_hplc_derivation_is_in_progress(hplc_derivation, sparql_client)
 
     ################################
     ## Check Vapourtec Derivation ##
@@ -269,21 +269,21 @@ def test_three_agents_docker_integration(
     assert new_rs400.hasState.stateLastUpdatedAt > old_rs400.hasState.stateLastUpdatedAt
 
     ##############################
-    ## Check Agilent Derivation ##
+    ## Check HPLC Derivation ##
     ##############################
     # Generate random file to the docker integration folder, the agent deployed in docker will pick it up
-    generated_file_path = create_test_report(agilent_agent.hplc_report_file_extension, True)
+    generated_file_path = create_test_report(hplc_agent.hplc_report_file_extension, True)
     # NOTE here we need to replace the first absolute path bit with the mounted folder in docker
-    local_file_path_in_docker = generated_file_path.replace(hplc_report_wsl_folder+'/', agilent_agent.hplc_report_container_dir)
+    local_file_path_in_docker = generated_file_path.replace(hplc_report_wsl_folder+'/', hplc_agent.hplc_report_container_dir)
 
     ## Check if the content of the uploaded file matches the local file
     # Wait for a bit to let the dockerised agent upload the file
-    time.sleep(agilent_agent.hplc_report_periodic_timescale * 2)
+    time.sleep(hplc_agent.hplc_report_periodic_timescale * 2)
     # Query remote file path
     # time.sleep(600)
-    remote_file_path = sparql_client.get_remote_hplc_report_path_given_local_file(agilent_agent.hplc_digital_twin, local_file_path_in_docker)
+    remote_file_path = sparql_client.get_remote_hplc_report_path_given_local_file(hplc_agent.hplc_digital_twin, local_file_path_in_docker)
     # Genereate random download path
-    full_downloaded_path = generate_random_download_path(agilent_agent.hplc_report_file_extension)
+    full_downloaded_path = generate_random_download_path(hplc_agent.hplc_report_file_extension)
     # Download the file and make sure all the content are the same
     sparql_client.download_remote_raw_hplc_report(remote_file_path=remote_file_path, downloaded_file_path=full_downloaded_path)
     assert filecmp.cmp(generated_file_path,full_downloaded_path)
@@ -293,9 +293,9 @@ def test_three_agents_docker_integration(
     currentTimestamp_derivation = 0
     while currentTimestamp_derivation == 0:
         time.sleep(20)
-        currentTimestamp_derivation = utils.get_timestamp(agilent_derivation, sparql_client)
-    lst_hplc_job_iri = utils.get_hplc_job(agilent_agent.hplc_digital_twin, new_rxn_exp_iri, chemical_solution_iri, sparql_client)
-    lst_derivation_outputs_iri = utils.get_derivation_outputs(agilent_derivation, sparql_client)
+        currentTimestamp_derivation = utils.get_timestamp(hplc_derivation, sparql_client)
+    lst_hplc_job_iri = utils.get_hplc_job(hplc_agent.hplc_digital_twin, new_rxn_exp_iri, chemical_solution_iri, sparql_client)
+    lst_derivation_outputs_iri = utils.get_derivation_outputs(hplc_derivation, sparql_client)
     assert len(lst_hplc_job_iri) == 1
     assert len(lst_derivation_outputs_iri) == 1
     assert lst_hplc_job_iri == lst_derivation_outputs_iri

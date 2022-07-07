@@ -1083,10 +1083,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                             # TODO maybe calculate based on residence time and other information {'labequip_1': 1, 'labequip_2': 2}
                             if vapourtec_rs400.hasState.clz == ONTOVAPOURTEC_IDLE:
                                 # TODO here we may provide functions for other analytical equipment
-                                agilent_hplc = self.get_hplc_given_vapourtec_rs400(vapourtec_rs400.instance_iri)
-                                if vapourtec_rs400.isManagedBy is not None and agilent_hplc.isManagedBy is not None:
+                                associated_hplc = self.get_hplc_given_vapourtec_rs400(vapourtec_rs400.instance_iri)
+                                if vapourtec_rs400.isManagedBy is not None and associated_hplc.isManagedBy is not None:
                                     # TODO here we can add functions to inform the owner of hardware to spin up agent for execution
-                                    return vapourtec_rs400, reactor, agilent_hplc
+                                    return vapourtec_rs400, reactor, associated_hplc
 
         return None, None, None
 
@@ -2134,7 +2134,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
         response = self.performQuery(query)
         if (len(response) > 1):
-            # NOTE here we assume one AgilentHPLC module has only ONE manufacturer, locates in only ONE laboratory, also has only ONE type of power supply
+            # NOTE here we assume one HPLC module has only ONE manufacturer, locates in only ONE laboratory, also has only ONE type of power supply
             # NOTE this might not hold universally, but we will simplify for the moment
             raise NotImplementedError("Not yet supported - VapourtecRS400 <%s> is associated with multiple HPLC: %s" % (vapourtec_rs400_iri, str(response)))
         elif (len(response) < 1):
@@ -2154,18 +2154,18 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         return hplc
 
     # TODO add unit test
-    def detect_new_hplc_report_from_agilent_derivation(self, agilent_derivation_iri: str):
-        agilent_derivation_iri = trimIRI(agilent_derivation_iri)
+    def detect_new_hplc_report_from_hplc_derivation(self, hplc_derivation_iri: str):
+        hplc_derivation_iri = trimIRI(hplc_derivation_iri)
         query = """SELECT ?hplc_report WHERE {?hplc_job <%s> <%s>. ?hplc_job <%s> ?hplc_report.}""" % (
-            ONTODERIVATION_BELONGSTO, agilent_derivation_iri, ONTOHPLC_HASREPORT
+            ONTODERIVATION_BELONGSTO, hplc_derivation_iri, ONTOHPLC_HASREPORT
         )
         response = self.performQuery(query)
         if (len(response) > 1):
-            # NOTE here we assume one Agilent Derivation has ONLY ONE HPLCJob and thus ONLY ONE HPLCReport
+            # NOTE here we assume one HPLC Derivation has ONLY ONE HPLCJob and thus ONLY ONE HPLCReport
             # NOTE this might not hold universally, but we will simplify for the moment
-            raise NotImplementedError("Not yet supported - Agilent Derivation <%s> is associated with multiple HPLCJob/HPLCReport: %s" % (agilent_derivation_iri, str(response)))
+            raise NotImplementedError("Not yet supported - HPLC Derivation <%s> is associated with multiple HPLCJob/HPLCReport: %s" % (hplc_derivation_iri, str(response)))
         elif (len(response) < 1):
-            logger.info("No HPLCJob/HPLCReport identified yet for Agilent Derivation <%s>." % (agilent_derivation_iri))
+            logger.info("No HPLCJob/HPLCReport identified yet for HPLC Derivation <%s>." % (hplc_derivation_iri))
             return None
         else:
             return response[0]['hplc_report']
