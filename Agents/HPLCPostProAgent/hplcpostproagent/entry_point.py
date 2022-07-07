@@ -1,20 +1,20 @@
 from pyderivationagent.conf import config_derivation_agent
-from vtexeagent.conf import config_vapourtec_execution
-from vtexeagent.agent import *
+from hplcpostproagent.conf import config_hplc_postpro
+
+from hplcpostproagent.agent import HPLCPostProAgent
+from hplcpostproagent.agent import default
 
 import logging
 
 # Avoid unnecessary logging information from py4j package
 logging.getLogger("py4j").setLevel(logging.INFO)
 
-
 def create_app():
     agent_config = config_derivation_agent()
-    exe_config = config_vapourtec_execution()
+    hplc_postpro_config = config_hplc_postpro()
 
-    agent = VapourtecExecutionAgent(
-        maximum_concurrent_experiment=exe_config.MAXIMUM_CONCURRENT_EXPERIMENT,
-        register_agent=exe_config.REGISTER_AGENT,
+    agent = HPLCPostProAgent(
+        register_agent=hplc_postpro_config.REGISTER_AGENT,
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
@@ -22,13 +22,15 @@ def create_app():
         kg_update_url=agent_config.SPARQL_UPDATE_ENDPOINT,
         kg_user=agent_config.KG_USERNAME,
         kg_password=agent_config.KG_PASSWORD,
+        fs_url=agent_config.FILE_SERVER_ENDPOINT,
+        fs_user=agent_config.FILE_SERVER_USERNAME,
+        fs_password=agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        logger_name="prod"
+        logger_name='prod'
     )
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
     agent.register()
     agent.start_monitoring_derivations()
-
     return agent.app

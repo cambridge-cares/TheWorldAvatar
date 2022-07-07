@@ -1,3 +1,7 @@
+# NOTE courtesy of Daniel (dln22), this file is adapted from https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_uploader/tests/conftest.py
+from rdflib import URIRef
+from rdflib import Graph
+from rdflib import RDF
 from flask import Flask
 import logging
 import pytest
@@ -8,29 +12,26 @@ import xlwt
 import os
 
 from pyderivationagent.conf import config_derivation_agent
-from vtexeagent.conf import config_vapourtec_execution
 
-from vtexeagent.kg_operations import ChemistryAndRobotsSparqlClient
-from vtexeagent.data_model import *
-from vtexeagent.agent import VapourtecExecutionAgent
+from hplcagent.kg_operations import ChemistryAndRobotsSparqlClient
+from hplcagent.data_model import *
+from hplcagent.agent import HPLCAgent
+from hplcagent.conf import config_hplc
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
-## For three-agent integration test
-from vapourtecagent.agent import VapourtecAgent
-from vapourtecagent.conf import config_vapourtec
-from hplcagent.agent import HPLCAgent
-from hplcagent.conf import config_hplc
 
 # ----------------------------------------------------------------------------------
 # Constant and configuration
 # ----------------------------------------------------------------------------------
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-ENV_FILES_DIR = os.path.join(THIS_DIR,'env_files')
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
+RESOURCE_DIR = os.path.join(THIS_DIR,'resources')
+HPLC_REPORT_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
+DOCKER_INTEGRATION_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'_downloaded_files_for_test')
 
 KG_SERVICE = "blazegraph"
@@ -38,30 +39,8 @@ KG_ROUTE = "blazegraph/namespace/kb/sparql"
 FS_SERVICE = "fileserver"
 FS_ROUTE = "FileServer/"
 
-VAPOURTEC_EXECUTION_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.execution.env.test')
+HPLC_AGENT_ENV = os.path.join(THIS_DIR,'agent.hplc.env.test')
 
-DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
-VAPOURTECRS400_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecRS400_Dummy'
-VAPOURTECR4REACTOR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Dummy'
-VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Another_Dummy'
-EXP_1_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/'
-NEW_RXN_EXP_1_IRI = EXP_1_BASE_IRI + 'ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70'
-NEW_RXN_EXP_2_IRI = EXP_1_BASE_IRI + 'ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8'
-NEW_RXN_EXP_3_IRI = EXP_1_BASE_IRI + 'ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf'
-
-# For three-agent integration test
-DOCKER_INTEGRATION_VAPOURTEC_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test_vapourtec')
-VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
-VAPOURTEC_AGENT_CFG = config_derivation_agent(VAPOURTEC_AGENT_ENV)
-
-HPLC_REPORT_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
-DOCKER_INTEGRATION_HPLC_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test_hplc')
-HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
-HPLC_AGENT_CFG = config_derivation_agent(HPLC_AGENT_ENV)
-
-# ----------------------------------------------------------------------------------
-# Pytest session related functions
-# ----------------------------------------------------------------------------------
 
 def pytest_sessionstart(session):
     """ This will run before all the tests"""
@@ -69,10 +48,10 @@ def pytest_sessionstart(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
-    if os.path.exists(DOWNLOADED_DIR):
-        shutil.rmtree(DOWNLOADED_DIR)
     if os.path.exists(HPLC_REPORT_DIR):
         shutil.rmtree(HPLC_REPORT_DIR)
+    if os.path.exists(DOWNLOADED_DIR):
+        shutil.rmtree(DOWNLOADED_DIR)
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
@@ -80,11 +59,10 @@ def pytest_sessionfinish(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
-    if os.path.exists(DOWNLOADED_DIR):
-        shutil.rmtree(DOWNLOADED_DIR)
     if os.path.exists(HPLC_REPORT_DIR):
         shutil.rmtree(HPLC_REPORT_DIR)
-
+    if os.path.exists(DOWNLOADED_DIR):
+        shutil.rmtree(DOWNLOADED_DIR)
 
 # ----------------------------------------------------------------------------------
 # Session-scoped test fixtures
@@ -143,6 +121,12 @@ def generate_random_download_path():
     return _generate_random_download_path
 
 @pytest.fixture(scope="session")
+def generate_random_hplc_digital_twin():
+    def _generate_random_hplc_digital_twin(hplc_report_file_extension):
+        return f'http://www.example.com/placeholder/HPLC_{hplc_report_file_extension}_{str(uuid.uuid4())}'
+    return _generate_random_hplc_digital_twin
+
+@pytest.fixture(scope="session")
 def initialise_client(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
@@ -158,10 +142,9 @@ def initialise_client(get_service_url, get_service_auth):
         fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd
     )
 
-    # Create folder for test hplc reports
+    # Create folder for HPLC report files
     if not os.path.exists(HPLC_REPORT_DIR):
         os.mkdir(HPLC_REPORT_DIR)
-
     # Create folder for downloaded files
     if not os.path.exists(DOWNLOADED_DIR):
         os.mkdir(DOWNLOADED_DIR)
@@ -180,72 +163,41 @@ def initialise_client(get_service_url, get_service_auth):
 # ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
-def create_vapourtec_execution_agent():
-    def _create_vapourtec_execution_agent(
-        maximum_concurrent_experiment:int=None,
-        register_agent:bool=False,
-        random_agent_iri:bool=False,
-        derivation_periodic_timescale:int=None,
-    ):
-        derivation_agent_config = config_derivation_agent(VAPOURTEC_EXECUTION_AGENT_ENV)
-        vapourtec_execution_config = config_vapourtec_execution(VAPOURTEC_EXECUTION_AGENT_ENV)
-        vapourtec_execution_agent = VapourtecExecutionAgent(
-            maximum_concurrent_experiment=vapourtec_execution_config.MAXIMUM_CONCURRENT_EXPERIMENT if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
-            register_agent=vapourtec_execution_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-            app=Flask(__name__),
-        )
-        vapourtec_execution_agent.register()
-        return vapourtec_execution_agent
-    return _create_vapourtec_execution_agent
+def initialise_hplc_digital_twin_triples(generate_random_hplc_digital_twin):
+    def _initialise_hplc_digital_twin_triples(sparql_client, hplc_report_file_extension, predefined_hplc_digital_twin:str=None):
+        if hplc_report_file_extension == 'xls':
+            filename_extension = DBPEDIA_XLSFILE
+        elif hplc_report_file_extension == 'txt':
+            filename_extension = DBPEDIA_TXTFILE
+        else:
+            raise NotImplementedError(f"HPLC report file extention {hplc_report_file_extension} not supported yet.")
 
-## For three-agent integration test
+        if predefined_hplc_digital_twin is None:
+            hplc_digital_twin = generate_random_hplc_digital_twin(hplc_report_file_extension)
+        else:
+            hplc_digital_twin = predefined_hplc_digital_twin
+
+        g = Graph()
+        g.add((URIRef(hplc_digital_twin), RDF.type, URIRef(ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY)))
+        g.add((URIRef(hplc_digital_twin), URIRef(ONTOHPLC_REPORTEXTENSION), URIRef(filename_extension)))
+        sparql_client.uploadGraph(g)
+        return hplc_digital_twin
+    return _initialise_hplc_digital_twin_triples
+
+
 @pytest.fixture(scope="module")
-def create_vapourtec_agent():
-    def _create_vapourtec_agent(
-        vapourtec_digital_twin:str=None,
-        vapourtec_state_periodic_timescale:int=None,
-        fcexp_file_container_folder:str=None,
-        register_agent:bool=False,
-        random_agent_iri:bool=False,
-        derivation_periodic_timescale:int=None,
-    ):
-        derivation_agent_config = config_derivation_agent(VAPOURTEC_AGENT_ENV)
-        vapourtec_config = config_vapourtec(VAPOURTEC_AGENT_ENV)
-        vapourtec_agent = VapourtecAgent(
-            vapourtec_digital_twin=vapourtec_config.VAPOURTEC_DIGITAL_TWIN if vapourtec_digital_twin is None else vapourtec_digital_twin,
-            vapourtec_state_periodic_timescale=vapourtec_config.VAPOURTEC_STATE_PERIODIC_TIMESCALE if vapourtec_state_periodic_timescale is None else vapourtec_state_periodic_timescale,
-            vapourtec_ip_address=vapourtec_config.VAPOURTEC_IP_ADDRESS,
-            fcexp_file_container_folder=vapourtec_config.FCEXP_FILE_CONTAINER_FOLDER if fcexp_file_container_folder is None else fcexp_file_container_folder,
-            register_agent=vapourtec_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-            app=Flask(__name__),
-        )
-        vapourtec_agent.register()
-        return vapourtec_agent
-    return _create_vapourtec_agent
+def initialise_hplc_derivation_input_triples():
+    def _initialise_hplc_derivation_input_triples(sparql_client):
+        chemical_solution_iri = 'http://www.example.com/placeholder/ChemicalSolution_' + str(uuid.uuid4())
+        rxn_exp_iri = 'http://www.example.com/placeholder/ReactionExperiment_' + str(uuid.uuid4())
+        g = Graph()
+        g.add((URIRef(chemical_solution_iri), RDF.type, URIRef(ONTOLAB_CHEMICALSOLUTION)))
+        g.add((URIRef(rxn_exp_iri), RDF.type, URIRef(ONTOREACTION_REACTIONEXPERIMENT)))
+        sparql_client.uploadGraph(g)
+        return rxn_exp_iri, chemical_solution_iri
+    return _initialise_hplc_derivation_input_triples
 
-## For three-agent integration test
+
 @pytest.fixture(scope="module")
 def create_hplc_agent():
     def _create_hplc_agent(
@@ -287,9 +239,10 @@ def create_hplc_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
 def create_hplc_xls_report(docker_integration:bool=False):
     if docker_integration:
-        file_path = os.path.join(DOCKER_INTEGRATION_HPLC_DIR,f'{str(uuid.uuid4())}.xls')
+        file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.xls')
     else:
         file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.xls')
     if not os.path.exists(file_path):
@@ -303,7 +256,7 @@ def create_hplc_xls_report(docker_integration:bool=False):
 
 def create_hplc_txt_report(docker_integration:bool=False):
     if docker_integration:
-        file_path = os.path.join(DOCKER_INTEGRATION_HPLC_DIR,f'{str(uuid.uuid4())}.txt')
+        file_path = os.path.join(DOCKER_INTEGRATION_DIR,f'{str(uuid.uuid4())}.txt')
     else:
         file_path = os.path.join(HPLC_REPORT_DIR,f'{str(uuid.uuid4())}.txt')
     if not os.path.exists(file_path):

@@ -65,11 +65,11 @@ class VapourtecExecutionAgent(DerivationAgent):
 
         # Check until get the digital twin of the most suitable hardware
         # This function also locates the digital twin of HPLC connected to the vapourtec_rs400
-        preferred_rs400, preferred_r4_reactor, agilent_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
+        preferred_rs400, preferred_r4_reactor, associated_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
             rxn_exp_instance)
-        while (preferred_rs400, preferred_r4_reactor, agilent_hplc) == (None, None, None):
+        while (preferred_rs400, preferred_r4_reactor, associated_hplc) == (None, None, None):
             time.sleep(60)
-            preferred_rs400, preferred_r4_reactor, agilent_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
+            preferred_rs400, preferred_r4_reactor, associated_hplc = self.sparql_client.get_preferred_vapourtec_rs400(
                 rxn_exp_instance)
 
         # Once selected the suitable digital twin, assign experiment to the reactor
@@ -78,17 +78,17 @@ class VapourtecExecutionAgent(DerivationAgent):
             r4_reactor_iri=preferred_r4_reactor.instance_iri
         )
 
-        # Now create vapourtec derivation and agilent derivation for the reaction experiment
+        # Now create vapourtec derivation and hplc derivation for the reaction experiment
         vapourtec_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
             preferred_rs400.isManagedBy, [rxn_exp_instance.instance_iri])
-        agilent_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
-            agilent_hplc.isManagedBy, [rxn_exp_instance.instance_iri, vapourtec_derivation_iri])
+        hplc_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(
+            associated_hplc.isManagedBy, [rxn_exp_instance.instance_iri, vapourtec_derivation_iri])
 
-        # Monitor the status of the agilent_derivation_iri, until it produced outputs
-        new_hplc_report = self.sparql_client.detect_new_hplc_report_from_agilent_derivation(agilent_derivation_iri)
+        # Monitor the status of the hplc_derivation_iri, until it produced outputs
+        new_hplc_report = self.sparql_client.detect_new_hplc_report_from_hplc_derivation(hplc_derivation_iri)
         while not new_hplc_report:
             time.sleep(60)
-            new_hplc_report = self.sparql_client.detect_new_hplc_report_from_agilent_derivation(agilent_derivation_iri)
+            new_hplc_report = self.sparql_client.detect_new_hplc_report_from_hplc_derivation(hplc_derivation_iri)
 
         # Add the HPLCReport instance to the derivation_outputs
         derivation_outputs.createNewEntity(new_hplc_report, ONTOHPLC_HPLCREPORT)

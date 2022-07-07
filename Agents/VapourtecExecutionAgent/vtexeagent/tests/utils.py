@@ -38,12 +38,12 @@ def get_timestamp(derivation_iri: str, sparql_client):
     # the queried results must be converted to int, otherwise it will not be comparable
     return int(sparql_client.performQuery(query_timestamp)[0]['time'])
 
-def get_agilent_derivation(rxn_exp_iri: str, sparql_client):
-    query = """SELECT ?agilent_derivation WHERE {?agilent_derivation <%s> <%s>; <%s> ?agilent_agent. ?agilent_agent ^<%s>/a <%s>.}""" % (
+def get_hplc_derivation(rxn_exp_iri: str, sparql_client):
+    query = """SELECT ?hplc_derivation WHERE {?hplc_derivation <%s> <%s>; <%s> ?hplc_agent. ?hplc_agent ^<%s>/a <%s>.}""" % (
         cf.ONTODERIVATION_ISDERIVEDFROM, rxn_exp_iri, cf.ONTODERIVATION_ISDERIVEDUSING, cf.ONTOLAB_ISMANAGEDBY, cf.ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY
     )
     response = sparql_client.performQuery(query)
-    return response[0]['agilent_derivation'] if len(response) > 0 else None
+    return response[0]['hplc_derivation'] if len(response) > 0 else None
 
 def get_vapourtec_derivation(rxn_exp_iri: str, sparql_client):
     query = """SELECT ?vapourtec_derivation WHERE {?vapourtec_derivation <%s> <%s>; <%s> ?vapourtec_agent. ?vapourtec_agent ^<%s>/a <%s>.}""" % (
@@ -57,7 +57,7 @@ def get_derivation_outputs(derivation_iri: str, sparql_client):
     response = sparql_client.performQuery(query)
     return [r['derivation_outputs'] for r in response]
 
-def if_agilent_derivation_is_in_progress(derivation_iri: str, sparql_client):
+def if_hplc_derivation_is_in_progress(derivation_iri: str, sparql_client):
     query = """SELECT ?status_type WHERE {<%s> <%s>/a ?status_type.}""" % (derivation_iri, cf.ONTODERIVATION_HASSTATUS)
     response = sparql_client.performQuery(query)
     status_type = response[0]['status_type'] if len(response) > 0 else None

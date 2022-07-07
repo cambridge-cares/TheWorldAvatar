@@ -7,7 +7,7 @@ from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
-import chemistry_and_robots.hardware.vapourtec as vapourtec
+import vapourtecagent.hardware.vapourtec as vapourtec
 
 from vapourtecagent.kg_operations import *
 from vapourtecagent.data_model import *

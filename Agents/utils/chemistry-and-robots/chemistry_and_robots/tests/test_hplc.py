@@ -1,6 +1,7 @@
 from chemistry_and_robots.tests.conftest import TargetIRIs
 import chemistry_and_robots.tests.conftest as conftest
 from chemistry_and_robots.hardware import hplc
+from rdflib import Graph
 import filecmp
 import pytest
 import os
@@ -16,11 +17,18 @@ def test_process_raw_hplc_report_file(initialise_triples, generate_random_downlo
     sparql_client = initialise_triples
     timestamp_last_modified = os.path.getmtime(local_file_path)
 
-    # First upload and download the report (as part of HPLCInput Agent), make sure the content is the same
-    hplc_report_iri = sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=local_file_path,
-        timestamp_last_modified=timestamp_last_modified, hplc_digital_twin=hplc_digital_twin)
+    # First upload the report and upload relevent triples (as part of HPLC Agent)
+    hplc_report_iri = sparql_client.upload_raw_hplc_report_to_kg(
+        local_file_path=local_file_path,
+        timestamp_last_modified=timestamp_last_modified,
+        remote_report_subdir=None,
+        hplc_digital_twin=hplc_digital_twin
+    )
+    g = Graph()
+    g = sparql_client.collect_triples_for_hplc_job("http://placeholder/rxn_exp", "http://placeholder/chem_sol", hplc_digital_twin, hplc_report_iri, "http://placeholder/hplc_method", g)
+    sparql_client.uploadGraph(g)
 
-    # Second download uploaded HPLC report file
+    # Second download uploaded HPLC report file, make sure the content is the same
     remote_file_path, file_extension = sparql_client.get_raw_hplc_report_remote_path_and_extension(hplc_report_iri)
     full_downloaded_path = generate_random_download_path(file_extension)
     sparql_client.download_remote_raw_hplc_report(remote_file_path=remote_file_path, downloaded_file_path=full_downloaded_path)
