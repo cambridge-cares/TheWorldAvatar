@@ -54,7 +54,7 @@ public class HeatEmissionQuery extends JSONObject{
                 row.put("Coordinate", heatcoordi);
                 row.put("Heat Emission", heatamount);
                 heatresult.put(row);
-                sparqlUpdate(Plant_item,Double.toString(heatamount));
+                new HeatEmissionQuery().sparqlUpdate(Plant_item,Double.toString(heatamount));
             }
         }
         heatresult1.put("result", heatresult); 	
@@ -62,7 +62,7 @@ public class HeatEmissionQuery extends JSONObject{
     }
     
     // Set up the region boundary
-    private static double[] Boundary(JSONObject inputBounds) {
+    public static double[] Boundary(JSONObject inputBounds) {
         String upper_limits = JsonPath.read(inputBounds.toString(), "$.job.upper_bounds");
         String lower_limits = JsonPath.read(inputBounds.toString(), "$.job.lower_bounds");
         String[] upper_split = upper_limits.split("#");
@@ -76,7 +76,7 @@ public class HeatEmissionQuery extends JSONObject{
     }
     
     // Query all the chemical plants, plant items and respective IRI as well as CO2 emissions
-    private static JSONArray IRIandCO2Query () {
+    public static JSONArray IRIandCO2Query () {
     	StringBuffer IRIandCO2Query = new StringBuffer("PREFIX ns2: <https://www.theworldavatar.com/kg/ontobuiltenv/>\n");
     	IRIandCO2Query.append("PREFIX geo: <http://www.opengis.net/ont/geosparql#>\n");
     	IRIandCO2Query.append("PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
@@ -98,7 +98,7 @@ public class HeatEmissionQuery extends JSONObject{
     }
     
     // Chemical plant fuel, CEI and thermal efficiency query
-    private static JSONArray FuelCEIEfficiency (String ChemialPlant) {
+    public static JSONArray FuelCEIEfficiency (String ChemialPlant) {
     	StringBuffer FuelCEIEffiQuery = new StringBuffer("PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
     	FuelCEIEffiQuery.append("PREFIX ocp: <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#>\n");
     	FuelCEIEffiQuery.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
@@ -117,7 +117,7 @@ public class HeatEmissionQuery extends JSONObject{
     }
     
     // Geometric coordination query
-    private static JSONArray CoordinateQuery (String CityFurnitureIRI) {
+    public static JSONArray CoordinateQuery (String CityFurnitureIRI) {
     	//StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#> SELECT ?s ?o WHERE {GRAPH <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry/>{?s ocgml:GeometryType ?o.?s ocgml:cityObjectId <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/cityfurniture/UUID_31385923-9cf7-4e4e-b134-165117b4e3e2/>.}}");
     	StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
     	coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");	
@@ -131,7 +131,7 @@ public class HeatEmissionQuery extends JSONObject{
     }
   
     // Calculate heat emission in xyz coordinate 
-    private static String HeatEmissionCoordinate (JSONArray coordiSpatialQueryResult) {
+    public static String HeatEmissionCoordinate (JSONArray coordiSpatialQueryResult) {
     	String buildingX = "0";
     	String buildingY = "0";
     	String buildingZ = "0";
@@ -167,7 +167,7 @@ public class HeatEmissionQuery extends JSONObject{
     }
     
     // Put the heat emssion data into the blazegraph via SPARQL update
-    private static void sparqlUpdate (String Plant_item, String Heat_value) {
+    public void sparqlUpdate (String Plant_item, String Heat_value) {
     	String Heat_of_plantitem = Plant_item+"_Heat";
     	String rdf_label = Heat_of_plantitem.substring(47);
     	
