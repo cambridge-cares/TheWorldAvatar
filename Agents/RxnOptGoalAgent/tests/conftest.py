@@ -16,12 +16,12 @@ from doeagent.agent import DoEAgent
 from doeagent.conf import config_doe
 from vtexeagent.agent import VapourtecExecutionAgent
 from vtexeagent.conf import config_vapourtec_execution
-from agilentpostprocagent.agent import AgilentPostProcAgent
-from agilentpostprocagent.conf import config_agilent_postproc
+from hplcpostproagent.agent import HPLCPostProAgent
+from hplcpostproagent.conf import config_hplc_postpro
 from vapourtecagent.agent import VapourtecAgent
 from vapourtecagent.conf import config_vapourtec
-from agilentagent.agent import AgilentAgent
-from agilentagent.conf import config_agilent
+from hplcagent.agent import HPLCAgent
+from hplcagent.conf import config_hplc
 
 
 logging.getLogger("py4j").setLevel(logging.INFO)
@@ -59,9 +59,9 @@ FS_ROUTE = "FileServer/"
 # "extra_hosts: - localhost:host-gateway" in the docker-compose.test.yml
 DOE_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.doe.env.test')
 VAPOURTEC_EXECUTION_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.execution.env.test')
-AGILENT_POSTPROC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.agilent.postproc.env.test')
+HPLC_POSTPRO_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.postpro.env.test')
 VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
-AGILENT_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.agilent.env.test')
+HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
 
 
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOE_AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
@@ -283,15 +283,15 @@ def create_vapourtec_execution_agent():
     return _create_vapourtec_execution_agent
 
 @pytest.fixture(scope="module")
-def create_agilent_postproc_agent():
-    def _create_agilent_postproc_agent(
+def create_hplc_postpro_agent():
+    def _create_hplc_postpro_agent(
         register_agent:bool=False,
         random_agent_iri:bool=False,
     ):
-        derivation_agent_config = config_derivation_agent(AGILENT_POSTPROC_AGENT_ENV)
-        agilent_postproc_config = config_agilent_postproc(AGILENT_POSTPROC_AGENT_ENV)
-        agilent_postproc_agent = AgilentPostProcAgent(
-            register_agent=agilent_postproc_config.REGISTER_AGENT if not register_agent else register_agent,
+        derivation_agent_config = config_derivation_agent(HPLC_POSTPRO_AGENT_ENV)
+        hplc_postpro_config = config_hplc_postpro(HPLC_POSTPRO_AGENT_ENV)
+        hplc_postpro_agent = HPLCPostProAgent(
+            register_agent=hplc_postpro_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
@@ -305,9 +305,9 @@ def create_agilent_postproc_agent():
             agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        agilent_postproc_agent.register()
-        return agilent_postproc_agent
-    return _create_agilent_postproc_agent
+        hplc_postpro_agent.register()
+        return hplc_postpro_agent
+    return _create_hplc_postpro_agent
 
 @pytest.fixture(scope="module")
 def create_vapourtec_agent():
@@ -345,8 +345,8 @@ def create_vapourtec_agent():
     return _create_vapourtec_agent
 
 @pytest.fixture(scope="module")
-def create_agilent_agent():
-    def _create_agilent_agent(
+def create_hplc_agent():
+    def _create_hplc_agent(
         hplc_digital_twin:str=None,
         hplc_report_periodic_timescale:int=None,
         hplc_report_container_dir:str=None,
@@ -355,9 +355,9 @@ def create_agilent_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        derivation_agent_config = config_derivation_agent(AGILENT_AGENT_ENV)
-        hplc_config = config_agilent(AGILENT_AGENT_ENV)
-        agilent_agent = AgilentAgent(
+        derivation_agent_config = config_derivation_agent(HPLC_AGENT_ENV)
+        hplc_config = config_hplc(HPLC_AGENT_ENV)
+        hplc_agent = HPLCAgent(
             hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
             hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
@@ -377,9 +377,9 @@ def create_agilent_agent():
             agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        agilent_agent.register()
-        return agilent_agent
-    return _create_agilent_agent
+        hplc_agent.register()
+        return hplc_agent
+    return _create_hplc_agent
 
 # ----------------------------------------------------------------------------------
 # Helper functions
