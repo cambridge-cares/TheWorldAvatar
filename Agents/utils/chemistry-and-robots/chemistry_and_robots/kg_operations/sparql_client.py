@@ -1495,7 +1495,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         if len(response) > 1:
             raise Exception("Multiple matches for filepath and extension for raw HPLC report <%s> was found: %s" % (hplc_report_iri, str(response)))
         elif len(response) < 1:
-            raise Exception("No raw HPLC report found for <%s>" % hplc_report_iri)
+            raise Exception("No raw HPLC report found for <%s> when querying: %s" % (hplc_report_iri, query))
         else:
             remote_file_path = response[0]['remote_path']
             try:

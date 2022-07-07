@@ -38,22 +38,7 @@ HPLC_DIGITAL_TWIN_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_1'
 HPLC_DIGITAL_TWIN_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_2'
 CHEMICAL_SOLUTION_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_1_1'
 CHEMICAL_SOLUTION_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_2_1'
-PLACEHOLDER_PERFORMANCE_INDICATOR_LIST_1 = [
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_yield_1',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_conversion_1',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_eco_score_1',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_e_factor_1',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_sty_1',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_cost_1'
-]
-PLACEHOLDER_PERFORMANCE_INDICATOR_LIST_2 = [
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_yield_2',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_conversion_2',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_eco_score_2',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_e_factor_2',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_sty_2',
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI+'placeholder_cost_2'
-]
+HPLC_METHOD_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy'
 
 # Configuration env files
 # NOTE the triple store URL provided in the agent.*.env files are the URL to access blazegraph container WITHIN the docker stack

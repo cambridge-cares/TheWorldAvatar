@@ -1,6 +1,7 @@
 import uuid
 from chemistry_and_robots.tests.conftest import TargetIRIs
 import chemistry_and_robots.tests.conftest as conftest
+from rdflib import Graph
 import logging
 import filecmp
 import pytest
@@ -572,28 +573,36 @@ def test_get_hplc_local_report_folder_path_n_file_extension(initialise_triples, 
     assert (local_folder_path, file_extension) == (expected_local_folder_path, expected_file_extension)
 
 @pytest.mark.parametrize(
-    "local_file_path,hplc_digital_twin,chemical_solution_iri,internal_standard_species,internal_standard_run_conc",
+    "local_file_path,hplc_digital_twin,chemical_solution_iri,internal_standard_species,internal_standard_run_conc,hplc_method_iri",
     [
-        (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value),
-        (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value),
+        (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
     ],
 )
-def test_upload_download_process_raw_hplc_report(initialise_triples, generate_random_download_path, local_file_path, hplc_digital_twin, chemical_solution_iri, internal_standard_species, internal_standard_run_conc):
-    """This is an integration test of five methods that are called by different agents: upload_raw_hplc_report_to_fs_kg, get_raw_hplc_report_remote_path_and_extension,
+def test_upload_download_process_raw_hplc_report(initialise_triples, generate_random_download_path, local_file_path, hplc_digital_twin, chemical_solution_iri, internal_standard_species, internal_standard_run_conc, hplc_method_iri):
+    """This is an integration test of five methods that are called by different agents: upload_raw_hplc_report_to_kg, get_raw_hplc_report_remote_path_and_extension,
     download_remote_raw_hplc_report, connect_hplc_report_with_chemical_solution, and process_raw_hplc_report."""
     sparql_client = initialise_triples
     timestamp_last_modified = os.path.getmtime(local_file_path)
 
-    # First upload and download the report (as part of HPLCInput Agent), make sure the content is the same
-    hplc_report_iri = sparql_client.upload_raw_hplc_report_to_fs_kg(local_file_path=local_file_path,
-        timestamp_last_modified=timestamp_last_modified, hplc_digital_twin=hplc_digital_twin)
+    # First upload the report and upload relevent triples (as part of HPLC Agent - delegated by VapourtecExecutionAgent)
+    hplc_report_iri = sparql_client.upload_raw_hplc_report_to_kg(
+        local_file_path=local_file_path,
+        timestamp_last_modified=timestamp_last_modified,
+        remote_report_subdir=None,
+        hplc_digital_twin=hplc_digital_twin
+    )
+
+    # Second make the connection between HPLCReport and ChemicalSolution (as part of Execution Agent)
+    g = Graph()
+    g = sparql_client.collect_triples_for_hplc_job("http://placeholder/rxn_exp_"+str(uuid.uuid4()), chemical_solution_iri, hplc_digital_twin, hplc_report_iri, hplc_method_iri, g)
+    sparql_client.uploadGraph(g)
+
+    # Second download uploaded HPLC report file, make sure the content is the same
     remote_file_path, file_extension = sparql_client.get_raw_hplc_report_remote_path_and_extension(hplc_report_iri)
     full_downloaded_path = generate_random_download_path(file_extension)
     sparql_client.download_remote_raw_hplc_report(remote_file_path=remote_file_path, downloaded_file_path=full_downloaded_path)
     assert filecmp.cmp(local_file_path,full_downloaded_path)
-
-    # Second make the connection between HPLCReport and ChemicalSolution (as part of Execution Agent)
-    sparql_client.connect_hplc_report_with_chemical_solution(hplc_report_iri, chemical_solution_iri)
 
     # Third process the raw report (as part of PostProc Agent)
     hplc_report_instance = sparql_client.process_raw_hplc_report(hplc_report_iri, internal_standard_species, internal_standard_run_conc)
