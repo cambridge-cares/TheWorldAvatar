@@ -10,7 +10,7 @@ logger = logging.getLogger('test_rxn_integration')
     "hplc_report_target_folder,fcexp_file_container_folder,local_agent_test",
     [
         (utils.cf.HPLC_REPORT_LOCAL_TEST_DIR, utils.cf.FCEXP_FILE_DIR, True),
-        # (utils.cf.DOCKER_INTEGRATION_DIR, None, False),
+        (utils.cf.DOCKER_INTEGRATION_DIR, None, False),
     ],
 )
 def test_rxn_integration(
@@ -65,7 +65,10 @@ def test_rxn_integration(
     hplc_agent.get_dict_of_hplc_files() # perform the init check first
     # Generate HPLC report for test in hplc_report_target_folder
     # For docker-integration test, the file will be mounted to docker automatically
+    logger.info("======================================================================================================================")
     local_file_path, timestamp_last_modified = retrieve_hplc_report(hplc_agent.hplc_report_file_extension, hplc_report_target_folder)
+    logger.info("Dummy HPLC report for test generated with local file path <%s> at %s" % (local_file_path, str(timestamp_last_modified)))
+    logger.info("======================================================================================================================")
     hplc_agent.monitor_local_report_folder() # now the generated report can be uploaded
 
     time.sleep(3600)

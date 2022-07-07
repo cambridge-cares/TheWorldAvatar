@@ -1,73 +1,73 @@
 version: "3.8"
 
 services:
-  # doe_agent:
-  #   image: ghcr.io/cambridge-cares/doe_agent:1.0.0-SNAPSHOT
-  #   container_name: doe_agent
-  #   environment:
-  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-  #   ports:
-  #     - 7000:5000
-  #   env_file:
-  #     - ./tests/env_files/agent.doe.env.test
-  #   extra_hosts:
-  #     - localhost:host-gateway
+  doe_agent:
+    image: ghcr.io/cambridge-cares/doe_agent:1.0.0-SNAPSHOT
+    container_name: doe_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - 7000:5000
+    env_file:
+      - ./tests/env_files/agent.doe.env.test
+    extra_hosts:
+      - localhost:host-gateway
 
-  # vapourtec_execution_agent:
-  #   image: ghcr.io/cambridge-cares/vapourtec_execution_agent:1.0.0-SNAPSHOT
-  #   container_name: vapourtec_execution_agent
-  #   environment:
-  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-  #   ports:
-  #     - 7001:5000
-  #   env_file:
-  #     - ./tests/env_files/agent.vapourtec.execution.env.test
-  #   extra_hosts:
-  #     - localhost:host-gateway
+  vapourtec_execution_agent:
+    image: ghcr.io/cambridge-cares/vapourtec_execution_agent:1.0.0-SNAPSHOT
+    container_name: vapourtec_execution_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - 7001:5000
+    env_file:
+      - ./tests/env_files/agent.vapourtec.execution.env.test
+    extra_hosts:
+      - localhost:host-gateway
 
-  # agilent_postproc_agent:
-  #   image: ghcr.io/cambridge-cares/agilent_postproc_agent:1.0.0-SNAPSHOT
-  #   container_name: agilent_postproc_agent
-  #   environment:
-  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-  #   ports:
-  #     - 7002:5000
-  #   env_file:
-  #     - ./tests/env_files/agent.agilent.postproc.env.test
-  #   extra_hosts:
-  #     - localhost:host-gateway
+  hplc_postpro_agent:
+    image: ghcr.io/cambridge-cares/hplc_postpro_agent:1.0.0-SNAPSHOT
+    container_name: hplc_postpro_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - 7002:5000
+    env_file:
+      - ./tests/env_files/agent.hplc.postpro.env.test
+    extra_hosts:
+      - localhost:host-gateway
 
-  # vapourtec_agent:
-  #   image: ghcr.io/cambridge-cares/vapourtec_agent:1.0.0-SNAPSHOT
-  #   container_name: vapourtec_agent
-  #   environment:
-  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-  #   ports:
-  #     - 7003:5000
-  #   extra_hosts: # NOTE this ensures FlowCommander to be reachable via "localhost"
-  #     - localhost:host-gateway
-  #   env_file:
-  #     - ./tests/env_files/agent.vapourtec.env.test
-  #   volumes:
-  #     - type: bind
-  #       source: ./tests/_for_docker_integration_test
-  #       target: /app/vapourtec
+  vapourtec_agent:
+    image: ghcr.io/cambridge-cares/vapourtec_agent:1.0.0-SNAPSHOT
+    container_name: vapourtec_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - 7003:5000
+    extra_hosts: # NOTE this ensures FlowCommander to be reachable via "localhost"
+      - localhost:host-gateway
+    env_file:
+      - ./tests/env_files/agent.vapourtec.env.test
+    volumes:
+      - type: bind
+        source: ./tests/_for_docker_integration_test
+        target: /app/vapourtec
 
-  # agilent_agent:
-  #   image: ghcr.io/cambridge-cares/agilent_agent:1.0.0-SNAPSHOT
-  #   container_name: agilent_agent
-  #   environment:
-  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-  #   ports:
-  #     - 7004:5000
-  #   extra_hosts:
-  #     - localhost:host-gateway
-  #   env_file:
-  #     - ./tests/env_files/agent.agilent.env.test
-  #   volumes:
-  #     - type: bind
-  #       source: ./tests/_for_docker_integration_test
-  #       target: /app/CHEM32
+  hplc_agent:
+    image: ghcr.io/cambridge-cares/hplc_agent:1.0.0-SNAPSHOT
+    container_name: hplc_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - 7004:5000
+    extra_hosts:
+      - localhost:host-gateway
+    env_file:
+      - ./tests/env_files/agent.hplc.env.test
+    volumes:
+      - type: bind
+        source: ./tests/_for_docker_integration_test
+        target: /app/CHEM32
 
   # Blazegraph
   blazegraph:
