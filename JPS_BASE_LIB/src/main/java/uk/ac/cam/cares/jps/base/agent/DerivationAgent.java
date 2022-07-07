@@ -93,7 +93,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 				String agentServiceIRI = requestParams.getString(DerivationClient.AGENT_IRI_KEY);
 				this.devClient.writeSyncDerivationNewInfo(outputs.getOutputTriples(),
 						outputs.getNewDerivedIRI(), agentServiceIRI, inputs.getAllIris(),
-						derivationType, outputs.getRetrievedInputsAt());
+						derivationIRI, derivationType, outputs.getRetrievedInputsAt());
 				res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY,
 						outputs.getRetrievedInputsAt());
 				res.put(DerivationClient.AGENT_OUTPUT_KEY,

@@ -411,11 +411,10 @@ public class DerivationSparql {
 
 	// TODO add unit test
 	void writeSyncDerivationNewInfo(List<TriplePattern> outputTriples, List<String> entities,
-			String agentIRI, List<String> inputsIRI, String derivationType, Long retrievedInputsAt) {
+			String agentIRI, List<String> inputsIRI, String derivationIRI, String derivationType,
+			Long retrievedInputsAt) {
 		ModifyQuery modify = Queries.MODIFY();
 
-		// create a unique IRI for this new derived quantity
-		String derivationIRI = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
 		// add <derivation> <rdf:type> <derivationType>
 		modify.insert(iri(derivationIRI).isA(iri(derivationType)));
 

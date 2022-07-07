@@ -243,9 +243,10 @@ public class DerivationClient {
 
 	// TODO add comments
 	public void writeSyncDerivationNewInfo(List<TriplePattern> outputTriples, List<String> entities,
-			String agentIRI, List<String> inputsIRI, String derivationType, Long retrievedInputsAt) {
-		this.sparqlClient.writeSyncDerivationNewInfo(outputTriples, entities, agentIRI, inputsIRI, derivationType,
-				retrievedInputsAt);
+			String agentIRI, List<String> inputsIRI, String derivationIRI, String derivationType,
+			Long retrievedInputsAt) {
+		this.sparqlClient.writeSyncDerivationNewInfo(outputTriples, entities, agentIRI, inputsIRI, derivationIRI,
+				derivationType, retrievedInputsAt);
 	}
 
 	/**
