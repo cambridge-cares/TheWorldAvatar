@@ -59,7 +59,7 @@ public class DerivationSparql {
 	private String derivationInstanceBaseURL; // an example of this can be
 												// "https://www.example.com/triplestore/repository/"
 
-	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
+	public static String derivednamespace = "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
 
 	// placeholder string used by method getAllDerivations()
 	private static final String PLACEHOLDER = "http://This_is_a_placeholder_string";
@@ -1398,7 +1398,7 @@ public class DerivationSparql {
 
 		// Complete query string:
 		// PREFIX derived:
-		// <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+		// <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
 		// PREFIX time: <http://www.w3.org/2006/time#>
 		// SELECT DISTINCT ?upstreamDerivation ?upstreamDerivationType
 		// WHERE {
@@ -1473,7 +1473,7 @@ public class DerivationSparql {
 		// complete query string
 		// PREFIX time: <http://www.w3.org/2006/time#>
 		// PREFIX derived:
-		// <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+		// <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
 		// INSERT { ?derivation derived:hasStatus <statusIRI> .
 		// <statusIRI> a derived:Requested . }
 		// WHERE { { SELECT ?derivation

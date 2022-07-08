@@ -12,7 +12,7 @@
     details on how version numbers should be selected -->
 
 
-    <version>1.11.2-164-dev-create-sync-derivations-for-new-info-SNAPSHOT</version>
+    <version>1.11.2-165-dev-update-derivation-tbox-namespace-SNAPSHOT</version>
 
     <!-- Project Properties -->
     <properties>
