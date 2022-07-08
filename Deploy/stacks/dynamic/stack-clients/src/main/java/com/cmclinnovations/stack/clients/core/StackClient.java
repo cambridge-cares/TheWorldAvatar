@@ -1,6 +1,13 @@
 package com.cmclinnovations.stack.clients.core;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
+import java.util.stream.Stream;
+
+import com.cmclinnovations.stack.clients.core.datasets.Dataset;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class StackClient {
 
@@ -42,6 +49,29 @@ public final class StackClient {
 
     public static void setInStack(boolean inStack) {
         StackClient.inStack = inStack;
+    }
+
+    public static void uploadInputDatasets() {
+        try (Stream<Path> files = Files.list(Path.of("/inputs/config"))) {
+            files.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".json"))
+                    .forEach(StackClient::uploadInputDataset);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public static void uploadInputDataset(Path configFile) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            Dataset dataset = objectMapper.readValue(configFile.toFile(), Dataset.class);
+            dataset.loadData();
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
+        }
     }
 
 }
