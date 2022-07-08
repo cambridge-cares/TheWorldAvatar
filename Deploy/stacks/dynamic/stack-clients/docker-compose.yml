@@ -9,3 +9,10 @@ services:
       # Ensure all secret files are mapped to the /run/secrets/ directory
       # and are read only inside the container (add ":ro" on the end)
       - ./inputs/secrets:/run/secrets:ro
+      - stack_scratch:/stack_scratch
+
+volumes:
+  stack_scratch:
+    name: ${STACK_NAME}_scratch
+    labels:
+      - com.docker.stack.namespace:${STACK_NAME}

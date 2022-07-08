@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -324,23 +325,31 @@ public final class DockerService extends AbstractService {
 
     private void interpolateVolumes(ContainerSpec containerSpec) {
         List<Mount> mounts = containerSpec.getMounts();
-        if (null != mounts) {
-            for (Mount mount : mounts) {
-                if (MountType.VOLUME == mount.getType()) {
+        if (null == mounts) {
+            mounts = new ArrayList<>();
+            containerSpec.withMounts(mounts);
+        }
 
-                    mount.withSource(StackClient.prependStackName(mount.getSource()));
+        mounts.add(new Mount()
+                .withType(MountType.VOLUME)
+                .withSource("scratch")
+                .withTarget(StackClient.SCRATCH_DIR));
 
-                    VolumeOptions volumeOptions = mount.getVolumeOptions();
-                    if (null == volumeOptions) {
-                        volumeOptions = new VolumeOptions().withLabels(StackClient.getStackNameLabelMap());
-                        mount.withVolumeOptions(volumeOptions);
+        for (Mount mount : mounts) {
+            if (MountType.VOLUME == mount.getType()) {
+
+                mount.withSource(StackClient.prependStackName(mount.getSource()));
+
+                VolumeOptions volumeOptions = mount.getVolumeOptions();
+                if (null == volumeOptions) {
+                    volumeOptions = new VolumeOptions().withLabels(StackClient.getStackNameLabelMap());
+                    mount.withVolumeOptions(volumeOptions);
+                } else {
+                    Map<String, String> labels = volumeOptions.getLabels();
+                    if (null == labels) {
+                        volumeOptions.withLabels(StackClient.getStackNameLabelMap());
                     } else {
-                        Map<String, String> labels = volumeOptions.getLabels();
-                        if (null == labels) {
-                            volumeOptions.withLabels(StackClient.getStackNameLabelMap());
-                        } else {
-                            labels.putAll(StackClient.getStackNameLabelMap());
-                        }
+                        labels.putAll(StackClient.getStackNameLabelMap());
                     }
                 }
             }
