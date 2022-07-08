@@ -134,5 +134,7 @@ def timeseriesquery(endpoint, ifcdataframe):
                 newrow.append(str(paramvalue[0]))
                 property_dataframe.loc[len(property_dataframe.index)]=newrow
     
+    # Disconnect from the PostgreSQL server
+    tsclient.disconnectRDB()
     ifcdataframe=pd.concat([ifcdataframe,property_dataframe],ignore_index=True)
     return ifcdataframe
