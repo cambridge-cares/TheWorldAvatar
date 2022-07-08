@@ -173,7 +173,8 @@ public class DerivationClient {
 
 	/**
 	 * This method creates a new synchronous derived instance on spot via sending an
-	 * HTTP request to the agentURL associated with the given agentIRI.
+	 * HTTP request to the agentURL queried from the knowledge graph that associated
+	 * with the given agentIRI.
 	 * 
 	 * @param agentIRI
 	 * @param inputsIRI
@@ -186,7 +187,23 @@ public class DerivationClient {
 			throws ClientProtocolException, IOException {
 		// retrieve agentURL for HTTP request
 		String agentURL = this.sparqlClient.getAgentUrlGivenAgentIRI(agentIRI);
+		return createSyncDerivationForNewInfo(agentIRI, agentURL, inputsIRI, derivationType);
+	}
 
+	/**
+	 * This method creates a new synchronous derived instance on spot via sending an
+	 * HTTP request to the provided agentURL, which user should make sure that it is
+	 * associated with the provided agentIRI.
+	 * 
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @param derivationType
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public Derivation createSyncDerivationForNewInfo(String agentIRI, String agentURL, List<String> inputsIRI,
+			String derivationType) throws ClientProtocolException, IOException {
 		// create a unique IRI for this new derived quantity
 		String derivationIRI = this.sparqlClient.createDerivationIRI();
 		Derivation createdDerivation = new Derivation(derivationIRI, derivationType);
