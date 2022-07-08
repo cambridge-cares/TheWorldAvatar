@@ -171,10 +171,17 @@ public class DerivationClient {
 		return derivations;
 	}
 
-	// TODO add comments
-	// query agentURL, call (KG update done at agent side)
-	// another function that developer provide the URL, then directly call (KG
-	// update done at agent side)
+	/**
+	 * This method creates a new synchronous derived instance on spot via sending an
+	 * HTTP request to the agentURL associated with the given agentIRI.
+	 * 
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @param derivationType
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public Derivation createSyncDerivationForNewInfo(String agentIRI, List<String> inputsIRI, String derivationType)
 			throws ClientProtocolException, IOException {
 		// retrieve agentURL for HTTP request
@@ -242,7 +249,18 @@ public class DerivationClient {
 		return createdDerivation;
 	}
 
-	// TODO add comments
+	/**
+	 * This method writes triples of the new created synchronous derivation for new
+	 * information (new instances) to the knowledge graph.
+	 * 
+	 * @param outputTriples
+	 * @param entities
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @param derivationIRI
+	 * @param derivationType
+	 * @param retrievedInputsAt
+	 */
 	public void writeSyncDerivationNewInfo(List<TriplePattern> outputTriples, List<String> entities,
 			String agentIRI, List<String> inputsIRI, String derivationIRI, String derivationType,
 			Long retrievedInputsAt) {

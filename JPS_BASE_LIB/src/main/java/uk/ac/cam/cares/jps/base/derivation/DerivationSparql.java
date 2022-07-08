@@ -383,13 +383,23 @@ public class DerivationSparql {
 		return derivedQuantity;
 	}
 
+	/**
+	 * This method creates a new IRI of derivation instance.
+	 * 
+	 * @return
+	 */
 	String createDerivationIRI() {
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivationInstanceBaseURL + "derived_" + UUID.randomUUID().toString();
 		return derivedQuantity;
 	}
 
-	// TODO add unit test
+	/**
+	 * This method queries the agentURL given agentIRI.
+	 * 
+	 * @param agentIRI
+	 * @return
+	 */
 	String getAgentUrlGivenAgentIRI(String agentIRI) {
 		SelectQuery query = Queries.SELECT();
 
@@ -409,7 +419,18 @@ public class DerivationSparql {
 		return queryResult;
 	}
 
-	// TODO add unit test
+	/**
+	 * This method writes all triples generated for the new created synchronous
+	 * derivation to the knowledge graph.
+	 * 
+	 * @param outputTriples
+	 * @param entities
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @param derivationIRI
+	 * @param derivationType
+	 * @param retrievedInputsAt
+	 */
 	void writeSyncDerivationNewInfo(List<TriplePattern> outputTriples, List<String> entities,
 			String agentIRI, List<String> inputsIRI, String derivationIRI, String derivationType,
 			Long retrievedInputsAt) {
@@ -1115,7 +1136,7 @@ public class DerivationSparql {
 	 * @param derivedQuantity
 	 * @param agentIRI
 	 * @return
-	 */ // TODO add unit test
+	 */
 	JSONObject mapInstancesToAgentInputs(List<String> inputs, String agentIRI) {
 		String typeKey = "type";
 		String inputKey = "input";

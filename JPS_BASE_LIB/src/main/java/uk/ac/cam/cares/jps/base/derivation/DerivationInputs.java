@@ -90,7 +90,6 @@ public class DerivationInputs {
 		return this.getInputs().get(rdfType);
 	}
 
-	// TODO add unit test
 	public List<String> getAllIris() {
 		return this.getInputs().values().stream().flatMap(i -> i.stream()).collect(Collectors.toList());
 	}
