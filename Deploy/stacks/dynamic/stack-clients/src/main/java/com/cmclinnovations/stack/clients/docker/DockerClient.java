@@ -197,7 +197,8 @@ public class DockerClient extends BaseClient {
                 }
                 cmd = List.of("sh", "-c",
                         Arrays.stream(cmd).collect(Collectors.joining("' '", "'", "'"))
-                                + "<< '\04\04\04'\n" + hereDocument + "\04\04\04")
+                                + "<< '\04\04\04'\n" + hereDocument + (hereDocument.endsWith("\n") ? "" : "\n")
+                                + "\04\04\04")
                         .toArray(new String[] {});
             }
 
