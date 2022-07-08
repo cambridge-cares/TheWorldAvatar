@@ -209,7 +209,14 @@ public class ThingsBoardInputAgent{
             // Update each time series
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
                 // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
-                OffsetDateTime endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                OffsetDateTime endDataTime;
+                try{
+                	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                } catch (Exception e) {
+                	throw new JPSRuntimeException("Could not get max time!");
+                } finally {
+                	tsClient.disconnectRDB();
+                }
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If there is already a maximum time
                 if (endDataTime != null) {

@@ -191,7 +191,6 @@ public class ESPHomeUpdateAgentLauncher extends JPSAgent {
         // If all are empty no new readings are available
         else if(statusAndTimeStamp.isEmpty()) {
             LOGGER.info("No new readings are available.");
-            tsClient.disconnectRDB();
             jsonMessage.accumulate("Result", "No new readings are available.");
         }
 		return jsonMessage;

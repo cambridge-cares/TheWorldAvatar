@@ -114,7 +114,6 @@ public class AQMeshInputAgentLauncher {
         // If both are empty no new readings are available
         else if(particleReadings.isEmpty() && gasReadings.isEmpty()) {
             LOGGER.info("No new readings are available.");
-            tsClient.disconnectRDB();
         }
         // One reading is empty and the other is not. This is likely due to asynchronous access to the readings, which
         // sets the pointers for each reading separately (should not happen when only using the agent unless there is an API error).

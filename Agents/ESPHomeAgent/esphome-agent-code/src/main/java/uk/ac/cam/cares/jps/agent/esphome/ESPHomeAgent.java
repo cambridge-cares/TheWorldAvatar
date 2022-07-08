@@ -200,6 +200,8 @@ public class ESPHomeAgent extends JPSAgent{
     	timeseries = tsClient.getLatestData(dataIRI);
     	} catch (JPSRuntimeException e) {
     		throw new JPSRuntimeException(GETLATESTDATA_ERROR_MSG, e);
+    	} finally {
+    		tsClient.disconnectRDB();
     	}
     		
     	//process timeseries object and convert to a suitable form, retrieve values only
@@ -252,6 +254,8 @@ public class ESPHomeAgent extends JPSAgent{
     	timeseries = tsClient.getLatestData(dataIRI);
     	} catch (JPSRuntimeException e) {
     		throw new JPSRuntimeException(GETLATESTDATA_ERROR_MSG, e);
+    	} finally {
+    		tsClient.disconnectRDB();
     	}
     		
     	//process timeseries object and convert to a suitable form, retrieve values only
@@ -272,7 +276,6 @@ public class ESPHomeAgent extends JPSAgent{
 		} catch (JPSRuntimeException e) {
 			throw new JPSRuntimeException(ESPHOME_ERROR_MSG, e);
 		}
-    	tsClient.disconnectRDB();
 		return result;
     }
 

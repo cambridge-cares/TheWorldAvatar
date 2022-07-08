@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
@@ -144,8 +145,14 @@ public class ESPHomeUpdateAgent{
                 // Get the classes (datatype) corresponding to each JSON key needed for initialization
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
+                try {
                 tsClient.initTimeSeries(iris, classes, timeUnit);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+            } catch (Exception e) {
+            	throw new JPSRuntimeException("Could not initialize timeseries!");
+            } finally {
+            	tsClient.disconnectRDB();
+            }
             }
         }
     }
@@ -171,6 +178,8 @@ public class ESPHomeUpdateAgent{
         		else {
         			throw e;
         		}        		
+        	} finally {
+        		tsClient.disconnectRDB();
         	}
         }
         return true;
@@ -200,7 +209,14 @@ public class ESPHomeUpdateAgent{
             // Update each time series
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
                 // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
-                OffsetDateTime endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                OffsetDateTime endDataTime;
+                try{
+                	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                } catch (Exception e) {
+                	throw new JPSRuntimeException("Could not get max time!");
+                } finally {
+                	tsClient.disconnectRDB();
+                }
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If there is already a maximum time
                 if (endDataTime != null) {
@@ -211,12 +227,17 @@ public class ESPHomeUpdateAgent{
                 }
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
+                	try {
                     tsClient.addTimeSeriesData(ts);
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                } catch (Exception e) {
+                	throw new JPSRuntimeException("Could not add timeseries data!");
+                } finally {
+                	tsClient.disconnectRDB();
+                }
                 }
                 
             }
-            tsClient.disconnectRDB();
         }
         // Is a problem as time series objects must be the same every time to ensure proper insert into the database
         else {

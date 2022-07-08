@@ -190,7 +190,6 @@ public class NUSDavisWeatherStationInputAgentLauncher extends JPSAgent {
         // If all are empty no new readings are available
         else if(weatherDataReadings.isEmpty()) {
             LOGGER.info("No new readings are available.");
-            tsClient.disconnectRDB();
             jsonMessage.accumulate("Result", "No new readings are available.");
         }
         return jsonMessage;
