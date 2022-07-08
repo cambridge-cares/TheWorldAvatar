@@ -365,6 +365,7 @@ Once the new information is generated is finished, you may get results from SPAR
 | `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_7843ed41-a60e-4fdb-94eb-450164b6ed93>` | 1650312245 |
 | `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_28aea05d-4801-4f63-a498-a61287e664ee>` | 1650312245 |
 | `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_ecb4acda-b4e8-499c-b1ed-ec6a9e9d1c47>` | 1650312255 |
+
 During the course of update, you may also see IRIs appear at the `status` and `status_type` columns, and there may be instances `0` appear in `inputTime` for `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_7843ed41-a60e-4fdb-94eb-450164b6ed93>`, `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_28aea05d-4801-4f63-a498-a61287e664ee>`, and `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_ecb4acda-b4e8-499c-b1ed-ec6a9e9d1c47>` - as by design these async derivations are directly connected with its upstream derivation via `<isDerivedFrom>` before the outputs of the upstream derivations are generated, thus the inputs of these three derivation instances are all in fact their upstream derivations, thus timestamp with `0` are added.
 
 ## Updating existing information
