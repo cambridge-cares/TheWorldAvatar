@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.utils.TempDir;
 import com.github.dockerjava.api.command.CopyArchiveToContainerCmd;
 import com.github.dockerjava.api.command.CreateConfigCmd;
 import com.github.dockerjava.api.command.CreateSecretCmd;
@@ -263,35 +264,40 @@ public class DockerClient extends BaseClient {
         executeSimpleCommand(containerId, "mkdir", "-p", directoryPath);
     }
 
-    public final class TempDir implements AutoCloseable {
+    private final class RemoteTempDir extends TempDir {
 
         private final String containerId;
-        private final String path;
 
-        public TempDir(String containerId, String path) {
+        public RemoteTempDir(String containerId, String path) {
+            super(Path.of(path));
             this.containerId = containerId;
-            this.path = path;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        @Override
-        public String toString() {
-            return path;
         }
 
         @Override
         public void close() throws RuntimeException {
-            deleteDirectory(containerId, path);
+            deleteDirectory(containerId, getPath().toString());
+        }
+
+        @Override
+        public void copyFrom(Path sourcePath) {
+            String targetDir = toString();
+            if (Files.isDirectory(sourcePath)) {
+                sendFolder(containerId, sourcePath.toString(), targetDir);
+            } else if (Files.isRegularFile(sourcePath)) {
+                sendFiles(containerId, sourcePath.getParent().toString(), List.of(sourcePath.getFileName().toString()),
+                        targetDir);
+            } else {
+                throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir
+                        + "' as the source was niether a file nor a directory.");
+        }
+
         }
     }
 
-    public TempDir makeTempDir(String containerId) {
+    public RemoteTempDir makeTempDir(String containerId) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         createComplexCommand(containerId, "mktemp", "-d").withOutputStream(outputStream).exec();
-        return new TempDir(containerId, outputStream.toString().replaceAll("\\r?\\n?", ""));
+        return new RemoteTempDir(containerId, outputStream.toString().replaceAll("\\r?\\n?", ""));
     }
 
     public void deleteFile(String containerId, String filePath) {

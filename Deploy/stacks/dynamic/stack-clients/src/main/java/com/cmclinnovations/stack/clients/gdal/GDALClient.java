@@ -2,12 +2,10 @@ package com.cmclinnovations.stack.clients.gdal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -16,9 +14,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
-import com.cmclinnovations.stack.clients.docker.DockerClient.TempDir;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
+import com.cmclinnovations.stack.clients.utils.TempDir;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -40,9 +38,9 @@ public class GDALClient extends ContainerClient {
             Ogr2OgrOptions options) {
         String containerId = getContainerId("gdal");
 
-        try (TempDir tmpDir = makeTempDir(containerId)) {
+        try (TempDir tmpDir = makeRemoteTempDir(containerId)) {
             sendFilesContent(containerId, Map.of(layername, fileContents.getBytes()),
-                    tmpDir.getPath());
+                    tmpDir.toString());
 
             uploadVectorToPostGIS(database, layername, tmpDir + "/" + layername, null, options);
         }
@@ -93,8 +91,8 @@ public class GDALClient extends ContainerClient {
         String gdalContainerId = getContainerId("gdal");
         String postGISContainerId = getContainerId("postgis");
 
-        try (TempDir tempDir = makeTempDir(gdalContainerId)) {
-            sendFolder(gdalContainerId, dirPath, tempDir.getPath());
+        try (TempDir tempDir = makeRemoteTempDir(gdalContainerId)) {
+            sendFolder(gdalContainerId, dirPath, tempDir.toString());
 
             List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, layername, tempDir, options);
 
@@ -136,7 +134,7 @@ public class GDALClient extends ContainerClient {
             String inputFormat = fileTypeEntry.getKey();
             for (String filePath : fileTypeEntry.getValue()) {
 
-                String outputPath = generateRasterOutPath(tempDir.getPath(), filePath, layername);
+                String outputPath = generateRasterOutPath(tempDir.toString(), filePath, layername);
                 geotiffFiles.add(outputPath);
 
                 Path directoryPath = Paths.get(outputPath).getParent();

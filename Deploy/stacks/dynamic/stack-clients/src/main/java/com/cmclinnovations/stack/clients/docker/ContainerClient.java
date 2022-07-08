@@ -7,7 +7,8 @@ import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
-import com.cmclinnovations.stack.clients.docker.DockerClient.TempDir;
+import com.cmclinnovations.stack.clients.utils.LocalTempDir;
+import com.cmclinnovations.stack.clients.utils.TempDir;
 import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.Secret;
@@ -59,7 +60,15 @@ public abstract class ContainerClient extends BaseClient {
         dockerClient.makeDir(containerId, directoryPath);
     }
 
-    protected final TempDir makeTempDir(String containerId) {
+    protected final TempDir makeLocalTempDir() {
+        try {
+            return new LocalTempDir();
+        } catch (IOException ex) {
+            throw new RuntimeException("Faile to create local temporary directory.", ex);
+        }
+    }
+
+    protected final TempDir makeRemoteTempDir(String containerId) {
         return dockerClient.makeTempDir(containerId);
     }
 
