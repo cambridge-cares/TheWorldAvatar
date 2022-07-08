@@ -193,7 +193,6 @@ public class ThingsBoardInputAgentLauncher extends JPSAgent {
         // If all are empty no new readings are available
         else if(ElectricalTemperatureHumidityReadings.isEmpty()) {
             LOGGER.info("No new readings are available.");
-            tsClient.disconnectRDB();
             jsonMessage.accumulate("Result", "No new readings are available.");
         }
 		return jsonMessage;
