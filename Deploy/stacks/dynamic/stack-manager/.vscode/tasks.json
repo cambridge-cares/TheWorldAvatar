@@ -34,7 +34,8 @@
                 }
             },
             "dependsOn": [
-                "compose-push"
+                "compose-push",
+                "remove-service"
             ],
             "presentation": {
                 "reveal": "always"
@@ -54,7 +55,7 @@
         {
             "type": "shell",
             "label": "remove-service",
-            "command": "docker service rm ${input:stackName}_stack-manager",
+            "command": "docker service rm ${input:stackName}_stack-manager ; exit 0",
             "presentation": {
                 "reveal": "always"
             }

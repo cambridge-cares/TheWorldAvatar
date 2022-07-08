@@ -17,8 +17,7 @@
             "hostName": "localhost",
             "port": "5005",
             "preLaunchTask": "compose-deploy-dev",
-            "projectName": "stack-manager",
-            "postDebugTask": "remove-service"
+            "projectName": "stack-manager"
         },
         {
             "type": "java",
