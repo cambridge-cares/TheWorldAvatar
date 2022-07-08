@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.clients.gdal;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
@@ -21,6 +25,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 public class GDALClient extends ContainerClient {
+
+    private static final Logger logger = LoggerFactory.getLogger(GDALClient.class);
 
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
@@ -35,82 +41,113 @@ public class GDALClient extends ContainerClient {
     }
 
     public void uploadVectorStringToPostGIS(String database, String layername, String fileContents,
-            Ogr2OgrOptions options) {
-        String containerId = getContainerId("gdal");
+            Ogr2OgrOptions options, boolean append) {
 
-        try (TempDir tmpDir = makeRemoteTempDir(containerId)) {
-            sendFilesContent(containerId, Map.of(layername, fileContents.getBytes()),
-                    tmpDir.toString());
-
-            uploadVectorToPostGIS(database, layername, tmpDir + "/" + layername, null, options);
+        try (TempDir tmpDir = makeLocalTempDir()) {
+            Path filePath = tmpDir.getPath().resolve(layername);
+            try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
+                writer.append(fileContents);
+                writer.flush();
+                uploadVectorToPostGIS(database, layername, filePath.toString(), options, append);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to write string for vector '" + layername
+                        + "' layer to a file in a temporary directory.");
+            }
         }
     }
 
-    public void uploadVectorFileToPostGIS(String database, String layername, String filePath, Ogr2OgrOptions options) {
-        String fileContents;
-        try {
-            fileContents = Files.readString(Path.of(filePath));
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read file '" + filePath + "'.", ex);
+    public void uploadVectorFilesToPostGIS(String database, String layername, String dirPath, Ogr2OgrOptions options,
+            boolean append) {
+        try (TempDir tmpDir = makeLocalTempDir()) {
+            tmpDir.copyFrom(Path.of(dirPath));
+            String gdalContainerId = getContainerId("gdal");
+            Multimap<String, String> foundGeoFiles = findGeoFiles(gdalContainerId, tmpDir.toString());
+            for (Collection<String> filesOfType : foundGeoFiles.asMap().values()) {
+                for (String filePath : filesOfType) {
+                    uploadVectorToPostGIS(database, layername, filePath, options, append);
+                }
+            }
         }
-        uploadVectorStringToPostGIS(database, layername, fileContents, options);
     }
 
-    public void uploadVectorURLToPostGIS(String database, String layername, String url, Ogr2OgrOptions options) {
-        uploadVectorToPostGIS(database, layername, url, null, options);
+    public void uploadVectorFileToPostGIS(String database, String layername, String filePath, Ogr2OgrOptions options,
+            boolean append) {
+
+        try (TempDir tmpDir = makeLocalTempDir()) {
+            Path sourcePath = Path.of(filePath);
+            tmpDir.copyFrom(sourcePath);
+            uploadVectorToPostGIS(database, layername, tmpDir.getPath().resolve(sourcePath.getFileName()).toString(),
+                    options, append);
+        }
     }
 
-    private void uploadVectorToPostGIS(String database, String layername, String filePath, String fileContents,
-            Ogr2OgrOptions options) {
+    public void uploadVectorURLToPostGIS(String database, String layername, String url, Ogr2OgrOptions options,
+            boolean append) {
+        uploadVectorToPostGIS(database, layername, url, options, append);
+    }
+
+    private void uploadVectorToPostGIS(String database, String layername, String filePath, Ogr2OgrOptions options,
+            boolean append) {
 
         String containerId = getContainerId("gdal");
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
-        createComplexCommand(containerId, options.appendToArgs("ogr2ogr", "-overwrite",
+        String execId = createComplexCommand(containerId, options.appendToArgs(layername, "ogr2ogr",
                 "-f", "PostgreSQL",
                 computePGSQLSourceString(database),
                 filePath,
-                "-nln", layername))
-                .withHereDocument(fileContents)
+                "--config", "OGR_TRUNCATE", append ? "NO" : "YES",
+                "--config", "PG_USE_COPY", "YES"))
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
-                .withEnvVar("PG_USE_COPY", "YES")
                 .withEnvVars(options.getEnv())
                 .exec();
 
+        handleErrors(errorStream, execId);
+    }
+
+    private void handleErrors(ByteArrayOutputStream errorStream, String execId) {
         if (0 != errorStream.size()) {
-            throw new RuntimeException("Docker exec command wrote the following to stderr:\n" + errorStream.toString());
+            long commandErrorCode = getCommandErrorCode(execId);
+            if (0 != commandErrorCode) {
+                throw new RuntimeException("Docker exec command returned '" + commandErrorCode
+                        + "' and wrote the following to stderr:\n" + errorStream.toString());
+            } else {
+                logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
+            }
         }
     }
 
     public void uploadRasterFilesToPostGIS(String database, String layername,
-            String dirPath, GDALTranslateOptions options) {
+            String dirPath, GDALTranslateOptions options, boolean append) {
 
         String gdalContainerId = getContainerId("gdal");
         String postGISContainerId = getContainerId("postgis");
 
-        try (TempDir tempDir = makeRemoteTempDir(gdalContainerId)) {
-            sendFolder(gdalContainerId, dirPath, tempDir.toString());
+        try (TempDir tempDir = makeLocalTempDir()) {
+
+            tempDir.copyFrom(Path.of(dirPath));
 
             List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, layername, tempDir, options);
 
             ensurePostGISRasterSupportEnabled(postGISContainerId, database);
 
-            uploadRasters(postGISContainerId, database, layername, geotiffFiles);
+            uploadRasters(postGISContainerId, database, layername, geotiffFiles, append);
         }
     }
 
-    private Multimap<String, String> findRasterFiles(String containerId, String dirPath) {
+    private Multimap<String, String> findGeoFiles(String containerId, String dirPath) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        createComplexCommand(containerId, "gdalmanage", "identify", "-r", dirPath)
+        String execId = createComplexCommand(containerId, "gdalmanage", "identify", "-r", dirPath)
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .exec();
 
-        String errors = errorStream.toString();
+        handleErrors(errorStream, execId);
+
         return outputStream.toString().lines()
                 .map(entry -> entry.split(": "))
                 .collect(ArrayListMultimap::create,
@@ -121,7 +158,7 @@ public class GDALClient extends ContainerClient {
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String layername, TempDir tempDir,
             GDALTranslateOptions options) {
 
-        Multimap<String, String> foundRasterFiles = findRasterFiles(gdalContainerId, tempDir.toString());
+        Multimap<String, String> foundRasterFiles = findGeoFiles(gdalContainerId, tempDir.toString());
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
@@ -143,7 +180,7 @@ public class GDALClient extends ContainerClient {
                     createdDirectories.add(directoryPath);
                 }
 
-                createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
+                String execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
                         "-if", inputFormat,
                         // https://gdal.org/drivers/raster/cog.html#raster-cog
                         "-of", "COG",
@@ -154,33 +191,33 @@ public class GDALClient extends ContainerClient {
                         .withEnvVars(options.getEnv())
                         .exec();
 
-                if (0 != errorStream.size()) {
-                    throw new RuntimeException(
-                            "Docker exec command wrote the following to stderr:\n" + errorStream.toString());
-                }
+                handleErrors(errorStream, execId);
             }
         }
         return geotiffFiles;
     }
 
     private void ensurePostGISRasterSupportEnabled(String postGISContainerId, String database) {
-        createComplexCommand(postGISContainerId,
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+        String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
                 .withHereDocument("CREATE EXTENSION IF NOT EXISTS postgis_raster;" +
                         "SET SESSION postgis.enable_outdb_rasters = True;" +
                         "SET SESSION postgis.gdal_enabled_drivers = 'COG';")
+                .withErrorStream(errorStream)
                 .exec();
+        handleErrors(errorStream, execId);
     }
 
     private void uploadRasters(String postGISContainerId, String database, String layername,
-            List<String> geotiffFiles) {
+            List<String> geotiffFiles, boolean append) {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-
+        String mode = append ? "-a" : "-d";
         String execId = createComplexCommand(postGISContainerId, "bash", "-c",
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
-                "raster2pgsql -d -C -t auto -R -F -I -M -Y"
+                "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
                         + geotiffFiles.stream().collect(Collectors.joining(" ", " ", " "))
                         + layername
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")
@@ -188,10 +225,7 @@ public class GDALClient extends ContainerClient {
                 .withErrorStream(errorStream)
                 .exec();
 
-        if (0 != getCommandErrorCode(execId)) {
-            throw new RuntimeException(
-                    "Docker exec command wrote the following to stderr:\n" + errorStream.toString());
-        }
+        handleErrors(errorStream, execId);
     }
 
     private String generateRasterOutPath(String basePathIn, String filePath, String layerName) {

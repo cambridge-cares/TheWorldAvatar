@@ -22,7 +22,7 @@ public class TempTestCalls {
         String rasterDatabase = "rasters";
         postGISClient.createDatabase(rasterDatabase);
         gdalClient.uploadRasterFilesToPostGIS(rasterDatabase, "elevation", "/inputs/data/rasters",
-                new GDALTranslateOptions());
+                new GDALTranslateOptions(), false);
         String databaseName = "test_database";
         String filePath = "/inputs/data/031WAF112.json";
 
@@ -32,17 +32,17 @@ public class TempTestCalls {
 
             String fileContents = Files.readString(Path.of(filePath));
             gdalClient.uploadVectorStringToPostGIS(databaseName, "layer_from_string",
-                    fileContents, new Ogr2OgrOptions().setSridIn("EPSG:4326"));
+                    fileContents, new Ogr2OgrOptions().setSridIn("EPSG:4326"), false);
 
             gdalClient.uploadVectorFileToPostGIS(databaseName, "layer_from_file",
-                    filePath, new Ogr2OgrOptions());
+                    filePath, new Ogr2OgrOptions(), true);
 
             gdalClient.uploadVectorURLToPostGIS(databaseName, "layer_from_url",
                     "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/031WAF112/polygon",
-                    new Ogr2OgrOptions().setSridIn("EPSG:4326").setSridOut("EPSG:27700"));
+                    new Ogr2OgrOptions().setSridIn("EPSG:4326").setSridOut("EPSG:27700"), false);
 
-            postGISClient.removeDatabase(databaseName);
-            postGISClient.removeDatabase(databaseName);
+            postGISClient.removeDatabase(rasterDatabase);
+            postGISClient.removeDatabase(rasterDatabase);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

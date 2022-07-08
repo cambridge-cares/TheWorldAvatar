@@ -1,19 +1,25 @@
 package com.cmclinnovations.stack.clients.gdal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 class CommonOptions<T extends CommonOptions<T>> {
 
     private String sridIn = null;
     private String sridOut = null;
 
+    @JsonProperty
     private final Map<String, String> inputDatasetOpenOptions = new HashMap<>();
-
+    @JsonProperty
     private final Map<String, String> envVars = new HashMap<>();
+    @JsonProperty
+    private final Map<String, List<String>> otherOptions = new HashMap<>();
 
     protected CommonOptions() {
     }
@@ -33,6 +39,11 @@ class CommonOptions<T extends CommonOptions<T>> {
         return (T) this;
     }
 
+    public T addOtherOption(String option, String... values) {
+        otherOptions.put(option, Arrays.asList(values));
+        return (T) this;
+    }
+
     public T withEnv(String key, String value) {
         envVars.put(key, value);
         return (T) this;
@@ -43,7 +54,7 @@ class CommonOptions<T extends CommonOptions<T>> {
     }
 
     protected List<String> appendCommonToArgs(String... args) {
-        List<String> allArgs = new ArrayList<>();
+        List<String> allArgs = new ArrayList<>(args.length);
         Collections.addAll(allArgs, args);
 
         if (null != sridOut) {
@@ -62,6 +73,10 @@ class CommonOptions<T extends CommonOptions<T>> {
 
         inputDatasetOpenOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-oo", name, value));
 
+        otherOptions.forEach((option, values) -> {
+            allArgs.add(option);
+            allArgs.addAll(values);
+        });
         return allArgs;
     }
 
