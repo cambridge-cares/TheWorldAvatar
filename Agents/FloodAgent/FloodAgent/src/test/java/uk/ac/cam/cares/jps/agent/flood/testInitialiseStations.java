@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.flood;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +24,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +33,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -123,8 +122,8 @@ public class testInitialiseStations {
 	@Test
 	public void testInitTimeSeriesTables() throws UnsupportedCharsetException, IOException, URISyntaxException {
 		InitialiseStations.initFloodStationsWithAPI(api,storeClient);
-		
-		InitialiseStations.initTimeSeriesTables(sparqlClient, tsClient);
+		List<Station> stations = sparqlClient.getStationsOriginal();
+		InitialiseStations.initTimeSeriesTables(tsClient, stations);
         List<String> measures = sparqlClient.getMeasures();
 		
 		for (String measure : measures) {
@@ -141,17 +140,6 @@ public class testInitialiseStations {
 		InitialiseStations.setTsClient(tsClient);
 		
 		InitialiseStations.main(new String[0]);
-		
-		// check for added rdf type
-		List<String> stations = sparqlClient.getStations();
-		
-		// query <station> a ?something
-		for (String station : stations) {
-			SelectQuery query = Queries.SELECT();
-			GraphPattern queryPattern = iri(station).isA(query.var());
-			query.where(queryPattern);
-			Assertions.assertFalse(storeClient.executeQuery(query.getQueryString()).getJSONObject(0).isEmpty());
-		}
 	}
 	
 	@AfterEach

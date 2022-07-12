@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.http.HttpResponse;
@@ -221,6 +222,41 @@ public class DerivationClient {
 
 	public String createAsyncDerivationForNewInfo(String agentIRI, List<String> inputsAndDerivations) {
 		return createAsyncDerivation(new ArrayList<>(), agentIRI, inputsAndDerivations, true);
+	}
+
+	public List<String> bulkCreateAsyncDerivations(List<List<String>> entitiesList, List<String> agentIRIList,
+			List<List<String>> inputsList, List<Boolean> forUpdateFlagList) {
+		List<String> derivations = this.sparqlClient.bulkCreateDerivationsAsync(entitiesList, agentIRIList, inputsList, forUpdateFlagList);
+		LOGGER.info("Instantiated asynchronous derivations " + derivations);
+
+		// add timestamp to each derivation
+		this.sparqlClient.addTimeInstance(derivations);
+
+		// mark up the derivation with current timestamp for those that not created for async update
+		// i.e. those created for markup
+		for (int i = 0; i < derivations.size(); i++) {
+			if (!forUpdateFlagList.get(i)) {
+				this.sparqlClient.updateTimeStamp(derivations.get(i));
+			}
+		}
+
+		return derivations;
+	}
+
+	public List<String> bulkCreateAsyncDerivationsForNewInfo(List<String> agentIRIList, List<List<String>> inputsAndDerivationsList) {
+		List<List<String>> entitiesList = IntStream.range(0, agentIRIList.size()).mapToObj(i -> new ArrayList<String>())
+				.collect(Collectors.toList());
+		List<Boolean> forAsyncUpdateFlagList = IntStream.range(0, entitiesList.size()).mapToObj(i -> true)
+				.collect(Collectors.toList());
+
+		List<String> derivations = this.sparqlClient.bulkCreateDerivationsAsync(entitiesList, agentIRIList, inputsAndDerivationsList,
+				forAsyncUpdateFlagList);
+		LOGGER.info("Instantiated asynchronous derivations " + derivations);
+
+		// add timestamp to each derivation
+		this.sparqlClient.addTimeInstance(derivations);
+
+		return derivations;
 	}
 
 	/**

@@ -31,10 +31,10 @@ public class APIConnector {
 	
 	public HttpEntity getData() throws ClientProtocolException, IOException, URISyntaxException {
 		HttpGet request = new HttpGet(builder.build());
-		LOGGER.info("Downloading from " + request);
+		LOGGER.debug("Downloading from " + request);
 		CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpResponse response = httpclient.execute(request);
-        LOGGER.info("Download complete");
+        LOGGER.debug("Download complete");
         return response.getEntity();
 	}
 }
