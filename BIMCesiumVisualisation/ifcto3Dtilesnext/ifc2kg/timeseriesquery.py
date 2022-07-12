@@ -1,6 +1,7 @@
 # Standard library imports
 import pandas as pd
 import re
+import datetime
 
 # Third party imports
 from SPARQLWrapper import SPARQLWrapper, POST, GET, JSON
@@ -95,22 +96,42 @@ def timeseriesquery(endpoint, ifcdataframe):
             
             # Query for time series data
             timeseries_query = """
+                PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                 PREFIX saref:  <https://saref.etsi.org/core/>
-                PREFIX units:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-                SELECT ?property ?datairi
+                PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+                PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                SELECT ?property ?datairi ?symbol
                 WHERE {
                     # Get all properties measured by a device of the Fridge
                     <""" +dataframe['asset'][row] + """> saref:hasProperty ?property. 
                     
                     ?property <https://saref.etsi.org/core/isMeasuredByDevice> ?device; 
-                        units:hasValue ?datairi. 
-                }
+                        om:hasValue ?datairi. 
+                    
+                    # Get symbol for unit of measurement if any
+                    OPTIONAL{
+                        ?datairi om:hasUnit ?unitofmeasure;
+                            rdf:type om:Measure.
+                    
+                        ?unitofmeasure skos:notation ?symbol.
+                    }
+                } ORDER BY ?property
                 """
             ts_df = querykg(fridge_endpoint, timeseries_query)
             
             # Retrieve Java's Instant class to initialise TimeSeriesClient
             Instant = jpsBaseLibView.java.time.Instant
             instant_class = Instant.now().getClass()
+
+            # Add Current Time Stamp to dataframe
+            currenttimestamp=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            newrow= list(rowtemplate)
+            newrow.append("Current Time Stamp")
+            newrow.append("String")
+            newrow.append(currenttimestamp)
+            property_dataframe.loc[len(property_dataframe.index)]=newrow
+
             # Initialise TimeSeriesClient
             tsclient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.TSCLIENT_FILE)
             
@@ -119,6 +140,10 @@ def timeseriesquery(endpoint, ifcdataframe):
                 paramtitle=ts_df['property'][rowts].split(dataframe["asset"][row]).pop(1)
                 # Add space before each capital
                 paramtitle=re.sub(r"(?<![A-Z])(?<!^)([A-Z])",r" \1",paramtitle)
+
+                # Add symbol for measurement unit if there is one
+                if ts_df['symbol'][rowts]!="":
+                    paramtitle+= " ("+ts_df['symbol'][rowts] + ")"
                 
                 # Retrieve time series value for parameter
                 timeseries = tsclient.getLatestData(ts_df['datairi'][rowts])
