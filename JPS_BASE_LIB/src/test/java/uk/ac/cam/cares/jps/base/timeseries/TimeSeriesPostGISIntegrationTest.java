@@ -11,6 +11,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -91,4 +92,9 @@ public class TimeSeriesPostGISIntegrationTest {
         // check it's the same geometry
         Assert.assertTrue(tsQueried.getValuesAsPoint("http://data1").get(0).equals(point));
     }
+
+    @AfterClass
+	public static void disconnect() throws SQLException {
+        conn.close();
+	}
 }
