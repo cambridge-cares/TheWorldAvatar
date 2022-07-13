@@ -443,13 +443,13 @@ def checkaggregatedBus(numOfBus):
             aggregatedBusList.append(aggregatedBus)
     return aggregatedBusList
 
-if __name__ == '__main__': 
-    # topoConfig = rootNodeAndNameSpace(10, 14, 'ukdigitaltwin_test2', 'Great_Britain')
-    # print(topoConfig)
-    # createTopologyGraph(topoConfig, 'sameRegionWithBus', ["275", "400"], None, True, 'default')
+# if __name__ == '__main__': 
+#     # topoConfig = rootNodeAndNameSpace(10, 14, 'ukdigitaltwin_test2', 'Great_Britain')
+#     # print(topoConfig)
+#     # createTopologyGraph(topoConfig, 'sameRegionWithBus', ["275", "400"], None, True, 'default')
     
-    topoConfig = rootNodeAndNameSpace(29, 99, 'ukdigitaltwin_test2', 'Great_Britain')
-    print(topoConfig)
-    createTopologyGraph(topoConfig, 'closestBus', [], None, True, 'default')
+#     topoConfig = rootNodeAndNameSpace(29, 99, 'ukdigitaltwin_test2', 'Great_Britain')
+#     print(topoConfig)
+#     createTopologyGraph(topoConfig, 'closestBus', [], None, True, 'default')
     
-    print('**************Terminated**************')
+#     print('**************Terminated**************')

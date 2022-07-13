@@ -41,6 +41,7 @@ HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
+TTL = '.ttl'
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
@@ -70,11 +71,7 @@ userSpecified = False
 """Main function: create the named graph Model_EBus and their sub graphs each ELine"""
 def BranchModelKGInstanceCreator(ObjectSet, BranchObjectNameList, numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, \
     AgentIRI, derivationClient, updateEndpointIRI, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"): 
-
     store = LocalGraphStore(storeType)
-    defaultStoredPath = UK_PG.UKElineModel.StoreGeneratedOWLs
-    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
-    
     print('################START BranchModelKGInstanceCreator#################')
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())
     namespace = UK_PG.ontopowsys_namespace  
@@ -94,6 +91,10 @@ def BranchModelKGInstanceCreator(ObjectSet, BranchObjectNameList, numOfBus, topo
             datatype = XSD.dateTimeStamp)))
     g.add((URIRef(ElectricalELineModelIRI), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(powerSystemModelIRI)))
     g.add((URIRef(ElectricalELineModelIRI), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBranchModel')))
+
+    containerOfModelVariableIRIList = []
+    containerOfAgentIRIList = []
+    containerOfELineNodeIRI = []
 
     for elineName in BranchObjectNameList:         
         eline = ObjectSet[elineName]
@@ -164,20 +165,25 @@ def BranchModelKGInstanceCreator(ObjectSet, BranchObjectNameList, numOfBus, topo
         
         # print(g.serialize(format="pretty-xml").decode("utf-8"))
 
-        ## add derviation 
-        ## TODO: bulk derivationClient
-        derivationClient.createAsyncDerivation(list(ModelVariableIRIList), AgentIRI, [ELineNodeIRI], False)
+        containerOfModelVariableIRIList.append(ModelVariableIRIList)
+        containerOfAgentIRIList.append(AgentIRI)
+        containerOfELineNodeIRI.append([ELineNodeIRI])
+
+    ## add derviation 
+    ## derivationClient.createAsyncDerivation(list(ModelVariableIRIList), AgentIRI, [ELineNodeIRI], False)
+    derivationClient.bulkCreateAsyncDerivations(containerOfModelVariableIRIList, containerOfAgentIRIList, containerOfELineNodeIRI, [False for iri in containerOfAgentIRIList])
 
     # generate/update OWL files
     if updateLocalOWLFile == True:    
-        # Store/update the generated owl files      
-        if filepath[-2:] != "\\": 
-            filepath_ = filepath + '\\' + 'BranchModel_' + str(numOfBus) + '_Bus_Grid'  + OWL
+        # Store/update the generated owl files 
+        defaultStoredPath = ObjectSet[BranchObjectNameList[0]].StoreGeneratedOWLs
+        filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)     
+        if filepath[-1:] != "\\": 
+            filepath_ = filepath + '\\' + 'BranchModel_' + str(numOfBus) + '_Bus_Grid'  + TTL
         else:
-            filepath_ = filepath + 'BranchModel_' + str(numOfBus) + '_Bus_Grid'  + OWL
+            filepath_ = filepath + 'BranchModel_' + str(numOfBus) + '_Bus_Grid'  + TTL
         storeGeneratedOWLs(g, filepath_)
-        print(filepath_)
- 
+    
     sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)   #(endpoint_iri, endpoint_iri)
     sparql_client.uploadOntology(filepath_)
 

@@ -259,7 +259,7 @@ class UKElineModel:
         self.LOSS_P = None
         self.LOSS_Q = None
 
-        # Bus node IRI
+        # Eline node IRI
         self.BranchNodeIRI = BranchNodeIRI
     
     def __dir__(self):
@@ -406,7 +406,7 @@ class UKEGenModel_CostFunc(UKEGenModel):
 
     """Initialise the cost function"""
     def __init__(self, numOfBus:int, generatorNodeIRI:str, toBeRetrofittedGeneratorNodeIRI:str = None, CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
-            super().__init__(numOfBus, generatorNodeIRI) ## enforce to inherite the initialiser from the father class
+            super().__init__(numOfBus, generatorNodeIRI, toBeRetrofittedGeneratorNodeIRI) ## enforce to inherite the initialiser from the father class
             self.MODEL = piecewiseOrPolynomial # 1: piecewise linear; 2: polynomial
             self.STARTUP = 0
             self.SHUTDOWN = 0

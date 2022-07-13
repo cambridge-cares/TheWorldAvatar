@@ -34,6 +34,7 @@ HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
+TTL = '.ttl'
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
@@ -71,8 +72,6 @@ def BusModelKGInstanceCreator(ObjectSet, BusObjectNameList, numOfBus, topologyNo
     AgentIRI, derivationClient, updateEndpointIRI, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
     ## Set up the default storage path
     store = LocalGraphStore(storeType)
-    defaultStoredPath = UK_PG.UKEbusModel.StoreGeneratedOWLs
-    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     print('################START BusModelKGInstanceCreator#################')
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())
     namespace = UK_PG.ontopowsys_namespace  
@@ -91,6 +90,10 @@ def BusModelKGInstanceCreator(ObjectSet, BusObjectNameList, numOfBus, topologyNo
     g.add((URIRef(powerSystemModelIRI), URIRef(ontoecape_space_and_time_extended.hasTimestamp.iri), Literal(powerSystemNodetimeStamp, \
     datatype = XSD.dateTimeStamp)))
     g.add((URIRef(ElectricalBusModelIRI), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(powerSystemModelIRI)))
+
+    containerOfModelVariableIRIList = []
+    containerOfAgentIRIList = []
+    containerOfBusNodeIRIList = []
 
     for busName in BusObjectNameList:          
         ebus = ObjectSet[busName]
@@ -164,18 +167,25 @@ def BusModelKGInstanceCreator(ObjectSet, BusObjectNameList, numOfBus, topologyNo
         ModelVariableIRIList.append(varNode)
         
         # print(g.serialize(format="pretty-xml").decode("utf-8"))
+
+        containerOfModelVariableIRIList.append(ModelVariableIRIList)
+        containerOfAgentIRIList.append(AgentIRI)
+        containerOfBusNodeIRIList.append([BusNodeIRI])
         
-        ## TODO: change to the bulk derivationClient
-        ## add derviation 
-        derivationClient.createAsyncDerivation(list(ModelVariableIRIList), AgentIRI, [BusNodeIRI], False)
+    ## add derviation 
+    ## derivationClient.createAsyncDerivation(list(ModelVariableIRIList), AgentIRI, [BusNodeIRI], False)
+    derivationClient.bulkCreateAsyncDerivations(containerOfModelVariableIRIList, containerOfAgentIRIList, containerOfBusNodeIRIList, [False for iri in containerOfAgentIRIList])
 
     ## generate/update OWL files
-    if updateLocalOWLFile == True:    
+    
+    if updateLocalOWLFile == True:  
+        defaultStoredPath = ObjectSet[BusObjectNameList[0]].StoreGeneratedOWLs
+        filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
         # Store/update the generated owl files      
-        if filepath[-2:] != "\\": 
-            filepath_ = filepath + '\\' + 'BusModel_' + str(numOfBus) + '_Bus_Grid' + OWL
+        if filepath[-1:] != "\\": 
+            filepath_ = filepath + '\\' + 'BusModel_' + str(numOfBus) + '_Bus_Grid' + TTL
         else:
-            filepath_ = filepath + 'BusModel_' + str(numOfBus) + '_Bus_Grid' + OWL
+            filepath_ = filepath + 'BusModel_' + str(numOfBus) + '_Bus_Grid' + TTL
         storeGeneratedOWLs(g, filepath_)
 
         ## update the graph to endpoint

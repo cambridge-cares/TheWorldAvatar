@@ -29,6 +29,7 @@ HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
+TTL = '.ttl'
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
@@ -264,10 +265,10 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
             ## generate/update OWL files
             if updateLocalOWLFile == True:
                 # Store/update the generated owl files      
-                if filepath[-2:] != '\\': 
-                    filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
+                if filepath[-1:] != '\\': 
+                    filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + TTL
                 else:
-                    filepath_ = filepath + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
+                    filepath_ = filepath + str(counter) + UNDERSCORE + plantname + '_UK' + TTL
                 storeGeneratedOWLs(graph, filepath_)
                   
         counter += 1 

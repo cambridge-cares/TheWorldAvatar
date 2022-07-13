@@ -82,12 +82,11 @@ number_of_localOWLFiles = 1
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
-def GeneratorModelKGInstanceCreator(ObjectSet, GeneratorObjectNameList, NewGeneratorObjectNameList, OPFIndicator, newGeneratorType:str, numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, \
+def GeneratorModelKGInstanceCreator(ObjectSet, GeneratorObjectNameList, retrofitResults, OPFIndicator, newGeneratorType:str, numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, \
     AgentIRI, derivationClient, updateEndpointIRI, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
     ## Set up the default storage path
     store = LocalGraphStore(storeType)
-    defaultStoredPath = UK_PG.UKEGenModel.StoreGeneratedOWLs
-    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile) 
+    
     global number_of_localOWLFiles  
     print('################START createModel_EGen#################')
     namespace = UK_PG.ontopowsys_namespace  
@@ -122,7 +121,11 @@ def GeneratorModelKGInstanceCreator(ObjectSet, GeneratorObjectNameList, NewGener
         
         g.add((URIRef(t_box.ontopowsys_PowerSystemModel + 'OptimalPowerFlowModel'), RDFS.subClassOf, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
         g.add((URIRef(t_box.ontopowsys_PowerSystemModel + 'PowerFlowModel'), RDFS.subClassOf, URIRef(ontopowsys_PowerSystemModel.PowerSystemModel.iri)))
-            
+
+        containerOfModelVariableIRIList = []
+        containerOfAgentIRIList = []
+        containerOfGeneratorNodeIRI = []
+           
         ### craete generator instances with both input and output atrributes ###
         while counter < (500 * number_of_localOWLFiles) and counter < len(GeneratorObjectNameList): 
             ## generatorNodeIRI of the topology
@@ -234,14 +237,23 @@ def GeneratorModelKGInstanceCreator(ObjectSet, GeneratorObjectNameList, NewGener
 
             # print(g.serialize(format="pretty-xml").decode("utf-8"))
 
-            ## add derviation ##TODO: add bulk method 
-            derivationClient.createAsyncDerivation(list(ModelVariableIRIList), AgentIRI, [generatorNodeIRI], False)
+            containerOfModelVariableIRIList.append(ModelVariableIRIList)
+            containerOfAgentIRIList.append(AgentIRI)
+            containerOfGeneratorNodeIRI.append([generatorNodeIRI])
+
             counter += 1
+        ## add derviation
+        ## derivationClient.createAsyncDerivation(list(ModelVariableIRIList), AgentIRI, [generatorNodeIRI], False)
+        derivationClient.bulkCreateAsyncDerivations(containerOfModelVariableIRIList, containerOfAgentIRIList, containerOfGeneratorNodeIRI, [False for iri in containerOfAgentIRIList])
+
+        
 
         ## generate/update OWL files
         if updateLocalOWLFile == True: # and (counter == 500 or number_of_localOWLFiles == totalFileNumber): 
-            ## Store/update the generated owl files      
-            if filepath[-2:] != '\\': 
+            ## Store/update the generated owl files 
+            defaultStoredPath = ObjectSet[GeneratorObjectNameList[0]].StoreGeneratedOWLs
+            filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)      
+            if filepath[-1:] != '\\': 
                 filepath_ = filepath + '\\' + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + TTL
             else:
                 filepath_ = filepath + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + TTL 
@@ -267,8 +279,8 @@ def GeneratorModelKGInstanceCreator(ObjectSet, GeneratorObjectNameList, NewGener
     g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontoecape_technical_system)))
     g.set((g.identifier, RDFS.comment, Literal('This ontology represents the newly added generators and their relationship with the generators being retrofitted.'))) 
     ## Link topologyNodeIRI with PowerSystemModel and ElectricalGeneratorModelIRI
-    for newGenName in NewGeneratorObjectNameList: 
-        egen = ObjectSet[newGenName]
+    for oldAndNewGenName in retrofitResults: 
+        egen = ObjectSet[oldAndNewGenName[1]]
         newGeneratorNodeIRI = egen.generatorNodeIRI 
         existingGeneratorNodeIRI = egen.toBeRetrofittedGeneratorNodeIRI
         if newGeneratorType == "SMR":
@@ -284,7 +296,10 @@ def GeneratorModelKGInstanceCreator(ObjectSet, GeneratorObjectNameList, NewGener
 
         ## create new added generators and their relationship with the generators being retrofitted
         g.add((URIRef(newGeneratorNodeIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
-        g.add((URIRef(existingGeneratorNodeIRI), URIRef(t_box.ontopowsys_PowerSystemModel + "isReplacedBy"), URIRef(newGeneratorNodeIRI)))
+        if oldAndNewGenName[0] is not None: 
+            g.add((URIRef(existingGeneratorNodeIRI), URIRef(t_box.ontopowsys_PowerSystemModel + "isReplacedBy"), URIRef(newGeneratorNodeIRI)))
+        else:
+            g.add((URIRef(existingGeneratorNodeIRI), URIRef(t_box.ontopowsys_PowerSystemModel + "isIntegratedBy"), URIRef(newGeneratorNodeIRI)))
         ## add generation technology
         g.add((URIRef(newGeneratorNodeIRI), URIRef(ontocape_technical_system.realizes.iri), URIRef(EnergyGenerationIRI)))    
         g.add((URIRef(EnergyGenerationIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGeneration.iri))) 

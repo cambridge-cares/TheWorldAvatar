@@ -31,6 +31,8 @@ class ModelFactor:
     Bio = ['Biomass']
     CCGT = ['http://www.theworldavatar.com/kb/ontoeip/CombinedCycleGasTurbine']
     OCGT = ['http://www.theworldavatar.com/kb/ontoeip/OpenCycleGasTurbine']
+
+    Renewable = ['Solar','Hydro', 'PumpHydro', 'Wind']
     
     FixMaintenanceCostsKey = "FixMaintenanceCosts_"
     OperationalExpenditureCostsKey = "OperationalExpenditureCosts_"
