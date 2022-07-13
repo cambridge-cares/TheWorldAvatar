@@ -90,10 +90,7 @@ public class HeatEmissionQuery extends JSONObject{
     	IRIandCO2Query.append("?x om:hasUnit ?a .");
     	IRIandCO2Query.append("?a om:symbol ?unit .");
     	IRIandCO2Query.append("FILTER regex(str(?plant_item), \"Plant_item\")}");
-        String IRIandCO2 = AccessAgentCaller.query("jibusinessunits", IRIandCO2Query.toString());
-        JSONObject IRIandCO2json = new JSONObject(IRIandCO2);
-        String IRIandCO2ResultString = IRIandCO2json.getString("result");
-        JSONArray IRIandCO2QueryResult = new JSONArray(IRIandCO2ResultString);
+    	JSONArray IRIandCO2QueryResult = AccessAgentCaller.queryStore("jibusinessunits", IRIandCO2Query.toString());
     	return IRIandCO2QueryResult;
     }
     
@@ -109,10 +106,7 @@ public class HeatEmissionQuery extends JSONObject{
     	FuelCEIEffiQuery.append("?cei om:hasNumericalValue ?CEI .");
     	FuelCEIEffiQuery.append("?cei om:hasUnit ?a .");
     	FuelCEIEffiQuery.append("?a om:symbol ?unit .}");
-    	String plantInfo = AccessAgentCaller.query("jibusinessunits", FuelCEIEffiQuery.toString());
-        JSONObject plantInfojson = new JSONObject(plantInfo);
-        String plantInfoResultString = plantInfojson.getString("result");
-        JSONArray plantInfoQueryResult = new JSONArray(plantInfoResultString); 
+    	JSONArray plantInfoQueryResult = AccessAgentCaller.queryStore("jibusinessunits", FuelCEIEffiQuery.toString());
     	return plantInfoQueryResult;
     }
     
@@ -123,10 +117,7 @@ public class HeatEmissionQuery extends JSONObject{
     	coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");	
     	coordinateQuery.append("GRAPH <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry/> {?geometricIRI ocgml:GeometryType ?polygonData.\n");
     	coordinateQuery.append("?geometricIRI ocgml:cityObjectId <").append(CityFurnitureIRI).append(">.}}");
-    	String coordiresult = AccessAgentCaller.query("jriEPSG24500", coordinateQuery.toString());
-        JSONObject coordiresultjson = new JSONObject(coordiresult);
-        String coordiSpatialResultString = coordiresultjson.getString("result");
-        JSONArray coordiSpatialQueryResult = new JSONArray(coordiSpatialResultString);
+    	JSONArray coordiSpatialQueryResult = AccessAgentCaller.queryStore("jriEPSG24500", coordinateQuery.toString());
     	return coordiSpatialQueryResult;
     }
   
@@ -183,6 +174,7 @@ public class HeatEmissionQuery extends JSONObject{
     	
     	UpdateRequest ur = ub.buildRequest();
     	System.out.println(ur);
-    	AccessAgentCaller.updateStore("http://localhost:48080/ontochemplant", ur.toString()); 
+    	//AccessAgentCaller.updateStore("http://localhost:48080/ontochemplant", ur.toString()); 
+    	AccessAgentCaller.updateStore("http://host.docker.internal:48080/ontochemplant", ur.toString()); 
     }
 }
