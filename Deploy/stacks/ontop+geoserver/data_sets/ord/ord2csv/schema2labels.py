@@ -172,25 +172,35 @@ def populate_tables(message: ord_schema.Message, trace: Optional[str] = None, re
 
     this_trace, scalars, messages, maps, enums = get_fields_values(message, None, reaction_id)
     # print(trace+this_trace, scalars, 'ENUMS:',enums)
-    row = []
-    for item in label1 + label2:
-        if item in scalars.keys():
-            row.append(scalars[item])
-        else:
-            row.append(None)
+    #row = []
+    row = get_row(scalars, label1+label2)
+   
 
     # ideally create a table here with the name trace+this_trace
-    file = open('./results/'+trace+this_trace+'.csv', encoding='utf-8', mode='a', newline='')
-    writer = csv.writer(file)
-    writer.writerow(row)
-    file.close()
+    append_to_file('./results/'+trace+this_trace+'.csv', row)
+    #file = open('./results/'+trace+this_trace+'.csv', encoding='utf-8', mode='a', newline='')
+    #writer = csv.writer(file)
+    #writer.writerow(row)
+    #file.close()
 
     for (field, value) in messages+maps:
         populate_tables(value, this_trace, reaction_id)
 
 
+def get_row(scalars: Dict[str, str], labels: List[str]) -> List[str]:
+    row = []
+    for item in labels:
+        if item in scalars.keys():
+           row.append(scalars[item])
+        else:
+           row.append(None)
+    return row
 
-
+def append_to_file(file: str, row: List[str]):
+    file = open(file, encoding='utf-8', mode='a', newline='')
+    writer = csv.writer(file)
+    writer.writerow(row)
+    file.close()
 
 
 
