@@ -147,7 +147,7 @@ public class TimeSeriesRDBClient<T> {
 	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
 	 * @param tsIRI IRI of the timeseries provided as string
 	 */
-	protected void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
+	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
 		
 		// Generate UUID as unique RDB table name
 		String tsTableName = UUID.randomUUID().toString();		
@@ -190,6 +190,7 @@ public class TimeSeriesRDBClient<T> {
 			// Initialise RDB table for storing time series data
 			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass);
 			
+			return tsTableName;
 		} catch (JPSRuntimeException e) {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
