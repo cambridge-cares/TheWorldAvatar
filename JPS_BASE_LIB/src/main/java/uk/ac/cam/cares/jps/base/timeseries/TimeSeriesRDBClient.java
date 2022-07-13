@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
+import org.postgis.Geometry;
+
 import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -690,9 +693,10 @@ public class TimeSeriesRDBClient<T> {
 	 * @param dataColumnNames list of column names in the tsTable corresponding to the data IRIs
 	 * @param dataIRI list of data IRIs provided as string
 	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
+	 * @throws SQLException
 	 */
 	private void createEmptyTimeSeriesTable(String tsTable, Map<String,String> dataColumnNames, List<String> dataIRI,
-											List<Class<?>> dataClass) {
+											List<Class<?>> dataClass) throws SQLException {
 		
 		// Create table
 		CreateTableColumnStep createStep = context.createTableIfNotExists(tsTable);
@@ -702,7 +706,11 @@ public class TimeSeriesRDBClient<T> {
     	
     	// Create 1 column for each value
     	for (int i = 0; i < dataIRI.size(); i++) {
-    		createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(dialect, dataClass.get(i)));
+			if (Geometry.class.isAssignableFrom(dataClass.get(i))) {
+				createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDefaultDataType("geometry"));
+			} else {
+				createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(dialect, dataClass.get(i)));
+			}
     	}
 
     	// Send consolidated request to RDB
@@ -715,8 +723,9 @@ public class TimeSeriesRDBClient<T> {
 	 * @param tsTable name of the timeseries table provided as string
 	 * @param ts time series to write into the table
 	 * @param dataColumnNames list of column names in the tsTable corresponding to the data in the ts
+	 * @throws SQLException
 	 */
-	private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String,String> dataColumnNames) {
+	private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String,String> dataColumnNames) throws SQLException {
 		List<String> dataIRIs = ts.getDataIRIs();
 
 		// Retrieve RDB table from table name
@@ -734,6 +743,7 @@ public class TimeSeriesRDBClient<T> {
     	List<Integer> rowsWithMatchingTime = new ArrayList<>();
     	// Populate columns row by row
         InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
+		int num_rows_without_matching_time = 0;
         for (int i=0; i<ts.getTimes().size(); i++) {
         	// newValues is the row elements
         	if (!checkTimeRowExists(tsTable, ts.getTimes().get(i))) {
@@ -743,11 +753,16 @@ public class TimeSeriesRDBClient<T> {
     				newValues[j+1] = (ts.getValues(dataIRIs.get(j)).get(i));
     			}
     			insertValueStep = insertValueStep.values(newValues);
+				num_rows_without_matching_time += 1;
         	} else {
         		rowsWithMatchingTime.add(i);
         	}
 		}
-		insertValueStep.execute();
+		// open source jOOQ does not support postgis, hence not using execute() directly
+		if (num_rows_without_matching_time != 0) {
+			// if this gets executed when it's 0, null values will be added
+			conn.prepareStatement(insertValueStep.toString()).executeUpdate();
+		}
 		
 		// update existing rows with matching time value
 		// only one row can be updated in a single query
@@ -759,7 +774,10 @@ public class TimeSeriesRDBClient<T> {
 				
 				if (i == (ts.getDataIRIs().size()-1)) {
 					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
-					.where(timeColumn.eq(ts.getTimes().get(rowIndex))).execute();
+					.where(timeColumn.eq(ts.getTimes().get(rowIndex)));
+
+					// open source jOOQ does not support postgis geometries, hence not using execute() directly
+					conn.prepareStatement(updateStep.toString()).executeUpdate();
 				} else {
 					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex));
 				}	
