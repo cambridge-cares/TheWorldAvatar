@@ -132,7 +132,9 @@ public final class NginxService extends ContainerService implements ReverseProxy
 
     private String getProxyPassValue(Connection connection, String hostname) {
         URL url = connection.getUrl();
-        return url.getProtocol() + "://" + hostname + "/";
+        String fileComponent = url.getFile();
+        fileComponent = fileComponent.isEmpty() ? "/" : fileComponent;
+        return url.getProtocol() + "://" + hostname + fileComponent;
     }
 
     private String getServerURL(Connection connection, String hostname) {
