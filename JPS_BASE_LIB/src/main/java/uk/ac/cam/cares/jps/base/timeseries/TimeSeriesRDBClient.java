@@ -148,7 +148,21 @@ public class TimeSeriesRDBClient<T> {
 	 * @param tsIRI IRI of the timeseries provided as string
 	 */
 	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
-		
+		return initTimeSeriesTable(dataIRI, dataClass, tsIRI, null);
+	}
+
+	/**
+	 * similar to above, but specifically to use with PostGIS
+	 * the additional argument srid is to restrict any geometry columns to the srid
+	 * if not needed, set to null, or use above the above method
+	 * @param dataIRI
+	 * @param dataClass
+	 * @param tsIRI
+	 * @param srid
+	 * @return
+	 */
+	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI, Integer srid) {
+
 		// Generate UUID as unique RDB table name
 		String tsTableName = UUID.randomUUID().toString();		
 		
@@ -188,7 +202,7 @@ public class TimeSeriesRDBClient<T> {
 			populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI);
 			
 			// Initialise RDB table for storing time series data
-			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass);
+			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid);
 			
 			return tsTableName;
 		} catch (JPSRuntimeException e) {
@@ -697,7 +711,7 @@ public class TimeSeriesRDBClient<T> {
 	 * @throws SQLException
 	 */
 	private void createEmptyTimeSeriesTable(String tsTable, Map<String,String> dataColumnNames, List<String> dataIRI,
-											List<Class<?>> dataClass) throws SQLException {
+											List<Class<?>> dataClass, Integer srid) throws SQLException {
 		
 		// Create table
 		CreateTableColumnStep createStep = context.createTableIfNotExists(tsTable);
@@ -705,10 +719,15 @@ public class TimeSeriesRDBClient<T> {
     	// Create time column
     	createStep = createStep.column(timeColumn);
     	
+		List<String> additionalGeomColumns = new ArrayList<>();
+		List<Class<?>> classForAdditionalGeomColumns = new ArrayList<>();
+
     	// Create 1 column for each value
     	for (int i = 0; i < dataIRI.size(); i++) {
 			if (Geometry.class.isAssignableFrom(dataClass.get(i))) {
-				createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDefaultDataType("geometry"));
+				// these columns will be added with their respective restrictions
+				additionalGeomColumns.add(dataColumnNames.get(dataIRI.get(i)));
+				classForAdditionalGeomColumns.add(dataClass.get(i));
 			} else {
 				createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(dialect, dataClass.get(i)));
 			}
@@ -716,8 +735,41 @@ public class TimeSeriesRDBClient<T> {
 
     	// Send consolidated request to RDB
     	createStep.execute();
+
+		// add remaining geometry columns with restrictions
+		if (additionalGeomColumns.size() > 0) {
+			addGeometryColumns(tsTable, additionalGeomColumns, classForAdditionalGeomColumns, srid);
+		}	
 	}
 	
+	/**
+	 * workaround because open source jOOQ DataType class does not support geometry datatypes properly
+	 * rather than creating a generic geometry column, this will restrict the column to the class provided
+	 * e.g. Polygon, Point, Multipolygon, along with the srid, if provided
+	 * @throws SQLException
+	 */
+	private void addGeometryColumns(String tsTable, List<String> columnNames, List<Class<?>> dataTypes, Integer srid) throws SQLException {
+		String sql = "alter table \"" + tsTable + "\" ";
+		for (int i = 0; i < columnNames.size(); i++) {
+			if (i != columnNames.size() - 1) {
+				sql += "add " + columnNames.get(i) + " geometry(" +  dataTypes.get(i).getSimpleName();
+				if (srid != null) {
+					sql += "," + String.valueOf(srid) + "), ";
+				} else {
+					sql += "), ";
+				}
+			} else {
+				sql += "add " + columnNames.get(i) + " geometry(" +  dataTypes.get(i).getSimpleName();
+				if (srid != null) {
+					sql += "," + String.valueOf(srid) + ");";
+				} else {
+					sql += ");";
+				}
+			}
+		}
+		conn.prepareStatement(sql).executeUpdate();
+	}
+
 	/**
 	 * Append time series data from TimeSeries object to (existing) RDB table
 	 * <p>Requires existing RDB connection
