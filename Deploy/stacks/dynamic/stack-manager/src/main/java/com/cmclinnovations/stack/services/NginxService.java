@@ -109,7 +109,8 @@ public final class NginxService extends ContainerService implements ReverseProxy
         if (null != externalPath) {
             try (InputStream inStream = new BufferedInputStream(
                     NginxService.class.getResourceAsStream(LOCATIONS_CONF_TEMPLATE))) {
-                String upstreamName = StackClient.prependStackName(endpoint.getKey());
+                String serviceName = service.getName();
+                String upstreamName = serviceName + "_" + endpoint.getKey();
                 NginxConfigParser parser = new NginxConfigParser(inStream);
                 NgxConfig configTemplate = parser.parse();
                 configTemplate.getEntries();
@@ -132,7 +133,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
                                         .filter(token -> token.getToken().contains("$server_port"))
                                         .forEach(token -> token
                                                 .setToken(token.getToken().replace("$server_port", publishedPort))));
-                        upstreams.put(upstreamName, getServerURL(connection, service.getName()));
+                        upstreams.put(upstreamName, getServerURL(connection, serviceName));
                     }
                     locationConfigOut.addEntry(locationBlock);
                 }
