@@ -19,6 +19,8 @@ import org.junit.Test;
 import org.postgis.Point;
 import org.postgis.Polygon;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 public class TimeSeriesPostGISIntegrationTest {
 	// Using special testcontainers URL that will spin up a Docker container when accessed by a driver
 	// (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!
@@ -28,6 +30,8 @@ public class TimeSeriesPostGISIntegrationTest {
 	
 	private static Connection conn;
     private static DSLContext context;
+
+    private String tableName;
 
 	// RDB client
 	private TimeSeriesRDBClient<Integer> tsClient;
@@ -43,54 +47,84 @@ public class TimeSeriesPostGISIntegrationTest {
 	}
 
     @Before
-	public void initialiseRDBClient() {
+	public void initialiseRDBClientAndTable() {
     	tsClient = new TimeSeriesRDBClient<>(Integer.class);
     	tsClient.setRdbURL(dbURL);
 		tsClient.setRdbUser(user);
 		tsClient.setRdbPassword(password);
+
+        tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class), "http://ts1", 4326);
 	}	
 
     @After
     public void clearDatabase() {
         tsClient.deleteAll();
     }
+
     /**
-     * this checks that the column type is set correctly for any postgis geometry classes
-     * only Point and Polygon are included here but any should work
+     * simple test that checks the number of columns is correct
      */
     @Test
-    public void testInitTimeSeriesTable() {
-        String tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1", "http://data2"), Arrays.asList(Point.class, Polygon.class), "http://ts1");
-        
-        // ignoring time column, all columns should be set to "geometry"
-        Assert.assertTrue(context.meta().getTables(tableName).get(0).fieldStream().filter(f -> !f.getName().contentEquals("time"))
-        .allMatch(f -> f.getDataType().getTypeName().contentEquals("geometry")));
+    public void testInitTimeSeriesTable() {        
+        // 1 for time column and 1 for the geometry column
+        Assert.assertTrue(context.meta().getTables(tableName).get(0).fields().length == 2);
+    }
+    /**
+     * uploading a geometry with the wrong srid will throw an exception
+     * the column was initialised with 4326 and this function tries to upload a point with 4325
+     */
+    @Test
+    public void testWrongSRID() {
+        // a dummy point
+        Point point = new Point();
+		point.setX(1);
+		point.setY(1);
+		point.setSrid(4325);
+		List<List<?>> values = new ArrayList<>();
+		values.add(Arrays.asList(point));
+
+		TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"), values);
+
+        // upload to database
+		Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));;
     }
 
     /**
-     * uploads dummy data to postgis, queries it and ensure they're the same
+     * uploading the wrong geometry type will throw an exception
+     * @throws SQLException
+     */
+    @Test 
+    public void testWrongGeometry() throws SQLException {
+        Polygon polygon = new Polygon("POLYGON ((1 1, 2 1, 2 2, 1 2, 1 1))");
+        polygon.setSrid(4326);
+
+        List<List<?>> values = new ArrayList<>();
+		values.add(Arrays.asList(polygon));
+
+		TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"), values);
+        // upload to database
+		Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));;
+    }
+
+    /**
+     * uploads dummy data, queries it and checks if it's the same
      */
     @Test
     public void testAddTimeSeriesData() {
-        tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class), "http://ts1");
-
-        // a dummy point
         Point point = new Point();
 		point.setX(1);
 		point.setY(1);
 		point.setSrid(4326);
 		List<List<?>> values = new ArrayList<>();
 		values.add(Arrays.asList(point));
-		TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"), values);
 
-        // upload to database
-		tsClient.addTimeSeriesData(Arrays.asList(tsUpload));
+        // upload data
+        TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"), values);
+        tsClient.addTimeSeriesData(Arrays.asList(tsUpload));
 
-        // query from database
-        TimeSeries<Integer> tsQueried = tsClient.getTimeSeries(Arrays.asList("http://data1"));
-        
-        // check it's the same geometry
-        Assert.assertTrue(tsQueried.getValuesAsPoint("http://data1").get(0).equals(point));
+        // query and check if it's the same
+        Point queriedPoint = tsClient.getTimeSeries(Arrays.asList("http://data1")).getValuesAsPoint("http://data1").get(0);
+        Assert.assertTrue(queriedPoint.equals(point));
     }
 
     @AfterClass
