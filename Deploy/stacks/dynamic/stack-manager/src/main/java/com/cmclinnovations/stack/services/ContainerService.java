@@ -27,11 +27,21 @@ public class ContainerService extends AbstractService {
     public ContainerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(serviceManager, config);
         Objects.requireNonNull(stackName, "A 'stackName' must be provided for all container-based services.");
-        config.getDockerServiceSpec().withName(StackClient.prependStackName(config.getDockerServiceSpec().getName()));
+        config.getDockerServiceSpec().withName(StackClient.prependStackName(config.getDockerServiceSpec().getName())
+                // See comments in the getHostName method
+                .replace('_', '-'));
         setEnvironmentVariable(StackClient.STACK_NAME_KEY, stackName);
     }
 
     final String getContainerName() {
+        return getName();
+    }
+
+    public String getHostName() {
+        // Officially hostnames can't contain "_" characters but Docker uses them.
+        // Currently Docker only seems to add the service name as an alias,
+        // it ignores any manually added ones, so have to replace "_" characters in the
+        // service name rather than just here.
         return getName();
     }
 

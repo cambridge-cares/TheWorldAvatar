@@ -26,7 +26,7 @@ public final class PostGISService extends ContainerService {
         setEnvironmentVariableIfAbsent("POSTGRES_PASSWORD_FILE", DEFAULT_PASSWORD_FILE);
         setEnvironmentVariableIfAbsent("PGPASSFILE", PGPASS_FILE.toString());
 
-        endpointConfig = new PostGISEndpointConfig("postgis", getContainerName(), DEFAULT_PORT,
+        endpointConfig = new PostGISEndpointConfig("postgis", getHostName(), DEFAULT_PORT,
                 getEnvironmentVariable("POSTGRES_USER"), getEnvironmentVariable("POSTGRES_PASSWORD_FILE"));
     }
 
