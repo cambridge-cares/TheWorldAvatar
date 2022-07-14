@@ -1,30 +1,65 @@
-PREFIX ems: <https://www.theworldavatar.com/kg/ontoems/>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+# Third party ontologies
+PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX ea:		<http://environment.data.gov.uk/flood-monitoring/def/core/>
+PREFIX os: 		<http://data.ordnancesurvey.co.uk/ontology/spatialrelations/>
+
+# Internal ontologies
+PREFIX ems:     <https://www.theworldavatar.com/kg/ontoems/>
+PREFIX ts:      <https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#>
 
 SELECT * 
 WHERE	{
+            # Required parameters (all must be present or nothing returned)
 			{
 				[IRI]
-                <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?Latitude ;
-				<http://www.w3.org/2003/01/geo/wgs84_pos#long> ?Longitude ;
-				<http://environment.data.gov.uk/flood-monitoring/def/core/stationReference> ?Station_Reference .
+                ems:hasObservationLocation ?Location ;
+                ems:dataSource ?Data_Source .
 			}
+
+            # Optional parameters (some may be present, some may not)
 			{
-				
-				OPTIONAL { [IRI] <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/easting> ?Easting . }
-				OPTIONAL { [IRI] <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/northing> ?Northing . }
-				OPTIONAL { [IRI] <http://environment.data.gov.uk/flood-monitoring/def/core/gridReference> ?Grid_Reference . }
-                OPTIONAL { [IRI] <https://www.theworldavatar.com/kg/ontoems/dataSource> ?Data_Source . }
-                OPTIONAL { [IRI] <https://www.theworldavatar.com/kg/ontoems/hasObservationLocation> ?Observation_Location . }
-    			OPTIONAL { [IRI] <http://environment.data.gov.uk/flood-monitoring/def/core/dateOpened> ?Date_Opened . }
-				OPTIONAL { [IRI] <http://www.w3.org/2000/01/rdf-schema#label> ?Station_Name . }
-				OPTIONAL { [IRI] ems:reports/om:hasValue ?Measurement . }
+                # Generic to all locations
+                OPTIONAL { [IRI] rdfs:label ?Label . }
+                OPTIONAL { [IRI] rdfs:comment ?Comment . }
+
+                # Generic to all EMS locations
+                OPTIONAL { [IRI] ems:hasObservationElevation ?Elevation . }
+
+                # Specific to Environment Agency stations
+				OPTIONAL { [IRI] os:easting ?Easting . }
+				OPTIONAL { [IRI] os:northing ?Northing . }
+				OPTIONAL { [IRI] ea:gridReference ?Grid_Reference . }
+                OPTIONAL { [IRI] ea:stationReference ?Station_Reference . }
+                OPTIONAL { [IRI] ea:catchmentName ?Catchment_Name . }
+                OPTIONAL { [IRI] ea:dateOpened ?Date_Opened . }
+                OPTIONAL { [IRI] ea:riverName ?River_Name . }
+                OPTIONAL { [IRI] ea:town ?Town . }
+                OPTIONAL { [IRI] ea:RLOIid ?RLO_lid . }
+                OPTIONAL { [IRI] ea:wiskiID ?Wiski_ID . }
 			}
+
+            # If there's a measurement with values, get its details
 			OPTIONAL {
 				?Measurement
-                <http://environment.data.gov.uk/flood-monitoring/def/core/parameterName> ?Measurement_Parameter ;
-				<http://environment.data.gov.uk/flood-monitoring/def/core/qualifier> ?Measurement_Qualifier ;
-				<http://environment.data.gov.uk/flood-monitoring/def/core/unitName> ?Measurement_Unit .
-				FILTER ( !BOUND(?Measurement) )
+				om:hasUnit ?Measurement_Unit . # TODO: Change to "om:hasUnit/om:symbol" when the data is updated?
+                OPTIONAL { ?Measurement ea:qualifier ?Measurement_Qualifier . }
+                OPTIONAL { ?Measurement ea:parameterName ?Measurement_Parameter . }
+                OPTIONAL { ?Measurement ea:period ?Measurement_Period . }
+				FILTER EXISTS {
+                	 [IRI] ems:reports/om:hasValue ?Measurement .  
+                }
+			}
+  
+  			# If ?Forecast is bound, get its details
+			OPTIONAL {
+				?Forecast
+                om:hasUnit ?Measurement_Unit ; # TODO: Change to "om:hasUnit/om:symbol" when the data is updated?
+                ems:createdOn ?Forecast_Created .
+				FILTER EXISTS {
+                    [IRI] ems:reports/ems:hasForecastedValue ?Forecast .
+                }
 			}
 		}

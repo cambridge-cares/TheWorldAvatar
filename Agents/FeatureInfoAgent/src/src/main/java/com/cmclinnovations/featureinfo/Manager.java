@@ -123,12 +123,15 @@ public class Manager {
             if(this.properties.getProperty("timeseries_url") == null) {
                 throw new IllegalStateException("Cannot find required 'timeseries_url' key in properties!");
             }
+            LOGGER.info("URL: " + this.properties.getProperty("timeseries_url"));
             if(this.properties.getProperty("timeseries_user") == null) {
                 throw new IllegalStateException("Cannot find required 'timeseries_user' key in properties!");
             }
+            LOGGER.info("USER: " + this.properties.getProperty("timeseries_user"));
             if(this.properties.getProperty("timeseries_pass") == null) {
                 throw new IllegalStateException("Cannot find required 'timeseries_pass' key in properties!");
             }
+            LOGGER.info("PASS: " + this.properties.getProperty("timeseries_pass"));
 
             // Initialise timeseries client
             this.tsClient = new TimeSeriesClient<Instant>(
@@ -138,6 +141,9 @@ public class Manager {
                 this.properties.get("timeseries_user").toString(),
                 this.properties.get("timeseries_pass").toString()
             );
+
+
+            LOGGER.info("Read properties file.");
         } 
     }
 
@@ -149,7 +155,8 @@ public class Manager {
     public JSONObject grabAll() throws Exception {
         // Query KG to get metadata
         Map<String, List<String>> metadata = getMetadata();
-        
+        LOGGER.info("Got the metadata.");
+
         // Convert to JSON
         JSONObject metaJSON = new JSONObject();
         for(String key : metadata.keySet()) {
@@ -169,11 +176,17 @@ public class Manager {
                 metaJSON.put(key, array);
             }
         }
-
+        LOGGER.info("Converted metadata to JSON.");
         System.out.println(metaJSON.toString(2));
-
+        
         // Get timeseries JSON
-        JSONArray timeJSON = getTimeSeries(metadata);
+        JSONArray timeJSON = null;
+        try {
+            timeJSON = getTimeSeries(metadata);
+            LOGGER.info("Got the timeseries (if present).");
+        } catch(Exception excep) {
+            LOGGER.error(excep);
+        }
 
         // Combine into single object and return
         JSONObject result = new JSONObject();
@@ -201,7 +214,18 @@ public class Manager {
             entry.keySet().forEach(key -> {
                 String fixedKey = key.replaceAll(Pattern.quote("_"), " ");
                 if(!metadata.containsKey(fixedKey)) metadata.put(fixedKey, new ArrayList<>());
-                metadata.get(fixedKey).add(entry.optString(key));
+
+                String value = entry.optString(key);
+
+                // Misc fudging
+                if(fixedKey.equals("Measurement Unit")) {
+                    value = Lookups.UNITS.get(value);
+                }
+                if(fixedKey.equals("Measurement Parameter") && value.contains("#")) {
+                    value = value.split(Pattern.quote("#"))[1];
+                }
+
+                metadata.get(fixedKey).add(value);
             });
         }
         return metadata;
@@ -245,27 +269,35 @@ public class Manager {
             throw excep;
         }
 
-        // Find mathing query class
-        for(String className : classes) {
-            if(Lookups.CLASSES.containsKey(className)) {
+        // // Find mathing query class
+        // for(String className : classes) {
+        //     if(Lookups.CLASSES.containsKey(className)) {
 
-                // Instantiate from class name
-                try {
-                    Class<? extends AbstractQuery> clazz = Lookups.CLASSES.get(className); 
-                    Constructor<? extends AbstractQuery> constructor = clazz.getConstructor(String.class, String.class);
-                    this.queryHandler = constructor.newInstance(this.iri, this.endpoint);
-                    System.out.println("Using query handler: " + clazz.getSimpleName());
-                } catch(Exception excep) {
-                    throw new Exception("Cannot construct query handler for this feature type!");
-                }
-            }   
-        }
+        //         // Instantiate from class name
+        //         try {
+        //             Class<? extends AbstractQuery> clazz = Lookups.CLASSES.get(className); 
+        //             Constructor<? extends AbstractQuery> constructor = clazz.getConstructor(String.class, String.class);
+        //             this.queryHandler = constructor.newInstance(this.iri, this.endpoint);
+        //             System.out.println("Using query handler: " + clazz.getSimpleName());
+        //         } catch(Exception excep) {
+        //             throw new Exception("Cannot construct query handler for this feature type!");
+        //         }
+        //     }   
+        // }
 
         // No specific query class, try looking for a pre-written sparql file
         if(queryHandler == null) {
             for(String className : classes) {
+
+                String query = null;
+                if(Lookups.FILES.containsKey(className)) {
+                    query = getQueryFile(Lookups.FILES.get(className));
+                } else {
+                    query = "";
+                }
+
                 try {
-                    String query = getQueryFile(className);
+                  
                     if(!query.isBlank()) {
                         // Sanitise IRI
                         String fixedIRI = this.iri;
@@ -295,8 +327,11 @@ public class Manager {
      * @param iris
      * @return
      */
-    protected JSONArray getTimeSeries( Map<String, List<String>> metadata) {
+    protected JSONArray getTimeSeries(Map<String, List<String>> metadata) {
         List<String> measures = metadata.get("Measurement");
+        measures.forEach(measure -> {
+            System.out.println("Measure: " + measure);
+        });
 
         if(measures != null && !measures.isEmpty()) {
 
@@ -312,9 +347,23 @@ public class Manager {
                     // May have no data, skip
                 }
             });
+            LOGGER.info("Got timeseries instances, there are " + timeseries.size());
+
+            timeseries.forEach(ts -> {
+                System.out.println("Times:" + ts.getTimes().size());
+            });
+
+            try {
+                Utils.getCombinedTimeSeries(tsClient, timeseries);
+            } catch(Exception exception) {
+                LOGGER.info("ERROR");
+                LOGGER.error(exception);
+            }
 
             // Combine all timeseries for this location into a single object
+            LOGGER.info("Combining...");
             TimeSeries<Instant> combined = Utils.getCombinedTimeSeries(tsClient, timeseries);
+            LOGGER.info("Combined timeseries instances into a single instance.");
 
             // Convert timeseries to JSON
             Map<String, String> units = new HashMap<>();
@@ -329,8 +378,10 @@ public class Manager {
                 String headerStr = "";
                 if(metadata.get("Measurement Parameter") != null && metadata.get("Measurement Parameter").size() > i) {
 
-                    if(metadata.get("Measurement Quantity") != null && metadata.get("Measurement Quantity").size() > i) {
+                    if(metadata.get("Measurement Qualifier") != null && metadata.get("Measurement Qualifier").size() > i) {
                         headerStr = metadata.get("Measurement Parameter").get(i) + " (" + metadata.get("Measurement Quantity").get(i) + ")";
+                    } else {
+                        headerStr = metadata.get("Measurement Parameter").toString();
                     }
                 }
 
@@ -414,15 +465,6 @@ public class Manager {
         for(int i = 0; i < jsonResult.length(); i++) {
             JSONObject entry = jsonResult.optJSONObject(i);
             String clazz = entry.optString("class");
-
-            // Get the last part of the class IRI
-            if(clazz.contains("#")) {
-                int lastHash = clazz.lastIndexOf("#");
-                clazz = clazz.substring(lastHash + 1, clazz.length());
-            } else {
-                int lastSlash = clazz.lastIndexOf("/");
-                clazz = clazz.substring(lastSlash + 1, clazz.length());
-            }
 
             // Store class name that should match query file
             classes[i] = clazz;

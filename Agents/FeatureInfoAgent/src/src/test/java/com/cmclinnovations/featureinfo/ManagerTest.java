@@ -42,9 +42,13 @@ public class ManagerTest {
         //     "http://environment.data.gov.uk/flood-monitoring/id/stations/7015",
         //     "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/flood_ontoems/sparql"
         // );
+        // MANAGER = new Manager(
+        //     "http://environment.data.gov.uk/flood-monitoring/id/stations/3401TH",
+        //     "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/flood_ontoems/sparql"
+        // );
         MANAGER = new Manager(
-            "http://environment.data.gov.uk/flood-monitoring/id/stations/3401TH",
-            "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/flood_ontoems/sparql"
+            "http://www.theworldavatar.com/kb/ontoems/ReportingStation_0004ca28-5675-4075-ab17-99304cedcb3c",
+            "http://localhost:48083/blazegraph/namespace/metoffice/sparql"
         );
 
         try {
@@ -57,18 +61,18 @@ public class ManagerTest {
     /**
      * Check that the class of a feature can be determined.
      */
-    @Ignore
     @Test
+    @Ignore
     public void testGetFeatureClass() {
         LOGGER.debug("Querying for feature classes...");
 
         try {
             String[] classes = MANAGER.getFeatureClasses();
+             System.out.println("Classes:");
             System.out.println(String.join(", ", classes));
 
             Assertions.assertNotNull(classes, "Could not determine class(es) for feature!");
             Assertions.assertTrue(classes.length > 0, "No classes reported for feature!");
-            Assertions.assertTrue(Arrays.asList(classes).contains("ReportingStation"), "Expected classes for this case to include 'WaterLevelReportingStation'");
 
         } catch(IOException ioExcep) {
             Assertions.fail(ioExcep);
@@ -78,13 +82,15 @@ public class ManagerTest {
     /**
      * Tests that the query files can be read.
      */
-    @Ignore
     @Test
+    @Ignore
     public void testGetQueryHandler() {
         LOGGER.debug("Testing that a query handler can be produced...");
 
         try {
-            String[] classes = new String[]{"ReportingStation"};
+            String[] classes = MANAGER.getFeatureClasses();
+            System.out.println("Classes:");
+            System.out.println(String.join(", ", classes));
 
             for(String clazz : classes) {
                 AbstractQuery handler = MANAGER.setupQueryHandler();
@@ -98,7 +104,6 @@ public class ManagerTest {
     /**
      * Tests that metadata can be queried from the KG.
      */
-    @Ignore
     @Test
     public void testGetMetadata() {
         LOGGER.debug("Testing that metadata from the KG can be retrieved...");

@@ -6,34 +6,50 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.cmclinnovations.featureinfo.queries.AbstractQuery;
-
 /**
  * Misc hardcoded lookups
  */
 public class Lookups {
     
     /**
-     * Map of class names to AbstractQuery classes
+     * Map of class IRIs to query files
      */
-    public static Map<String, Class<? extends AbstractQuery>> CLASSES = new HashMap<>();
+    public static Map<String, String> FILES = new HashMap<>();
 
     /**
      * Keys not to show in output meta JSON
      */
     public static Set<String> HIDDEN_META = new HashSet<>(Arrays.asList(
         "measurement",
-        "id"
+        "id",
+        "report",
+        "forecast",
+        "measurement unit",
+        "measurement parameter",
+        "measurement qualifier"
     ));
 
     /**
-     * Initialiser
+     * Units IRIs to labels.
+     */
+    public static Map<String, String> UNITS = new HashMap<>();
+
+    /**
+     * Initialiser.
      */
     static {
-        // Classes for querying
-        // CLASSES.put("WaterLevelReportingStation", ReportingStationQuery.class);
-        // CLASSES.put("ReportingStation", ReportingStationQuery.class);
-        // CLASSES.put("Station", ReportingStationQuery.class);
+        // Environmental Measurement Stations
+        FILES.put("https://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation", "WaterLevelReportingStation");
+        FILES.put("https://www.theworldavatar.com/kg/ontoems/ReportingStation", "ReportingStation");
+
+        // Units
+        UNITS.put("http://www.ontology-of-units-of-measure.org/resource/om-2/degree", "\\u00B0");
+        UNITS.put("http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius", "\\u2103");
+        UNITS.put("http://www.ontology-of-units-of-measure.org/resource/om-2/hectopascal", "hPa");
+        UNITS.put("http://www.ontology-of-units-of-measure.org/resource/om-2/metre", "m");
+        UNITS.put("http://www.ontology-of-units-of-measure.org/resource/om-2/mile-StatutePerHour", "mph");
+        UNITS.put("http://www.ontology-of-units-of-measure.org/resource/om-2/one", "-");
+        UNITS.put("http://www.ontology-of-units-of-measure.org/resource/om-2/percent", "%");
     }
 
 }

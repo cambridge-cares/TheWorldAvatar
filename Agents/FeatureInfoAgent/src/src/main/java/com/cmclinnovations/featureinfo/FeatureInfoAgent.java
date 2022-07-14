@@ -60,19 +60,6 @@ public class FeatureInfoAgent extends JPSAgent {
         LOGGER.error("This is a test ERROR message");
         LOGGER.fatal("This is a test FATAL message");
         System.out.println("This is a test SYSTEM.OUT message");
-
-        // Read the properties file
-        // try {
-        //     // EmailAgentConfiguration.readProperties();
-        //     LOGGER.debug("FeatureInfoAgent has been initialised.");
-
-        // } catch (IOException ioException) {
-        //     LOGGER.error("Could not read the required properties file!");
-        //     VALID = false;
-
-        //     // Cannot throw UnavailableException here unless we're using Java EE
-        //     throw new IllegalStateException("EmailAgent is not in valid state, could not read properties.", ioException);
-        // }
     }
 
     /**
@@ -85,7 +72,6 @@ public class FeatureInfoAgent extends JPSAgent {
      */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-        LOGGER.info("hello?");
         return new JSONObject();
     }
 
@@ -133,6 +119,7 @@ public class FeatureInfoAgent extends JPSAgent {
                         requestParams.getString("endpoint"),
                         this.getServletContext()
                     );
+                    grabber.readProperties();
 
                     return grabber.grabAll();
                 } catch(Exception excep) {
