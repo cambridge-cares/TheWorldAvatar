@@ -60,7 +60,7 @@
             "label": "remove-service",
             "command": "docker service rm ${input:stackName}_stack-client ; exit 0",
             "presentation": {
-                "reveal": "always"
+                "reveal": "never"
             }
         }
     ],
