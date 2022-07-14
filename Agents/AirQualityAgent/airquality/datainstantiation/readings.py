@@ -72,7 +72,9 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     #logger.info('Time series data successfully retrieved.')
 
     # Map dataIRI to ts_id as dictionary key
-    mapping = instantiated_obs[['ts_id', 'dataIRI']].set_index('ts_id').to_dict('index')
+    mapping = instantiated_obs[['ts_id', 'dataIRI']].set_index('ts_id')
+    mapping = mapping[~mapping.index.duplicated(keep='first')]
+    mapping = mapping.to_dict('index')
     ts_data = {mapping[k]['dataIRI']:v for k,v in ts_data.items()}
 
     # Initialise TimeSeriesClient
@@ -608,7 +610,7 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
                     values = non_missing.loc[ts_id]['value']
                     values = [values] if isinstance(values, float) else values.values.tolist()
                     all_ts[ts_id] = {'times': times,
-                                    'values': values }
+                                     'values': values }
 
     return all_ts
 
