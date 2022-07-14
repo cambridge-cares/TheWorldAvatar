@@ -91,8 +91,7 @@
      <dependency>
 		  <groupId>uk.ac.cam.cares.jps</groupId>
 		  <artifactId>jps-base-lib</artifactId>
-		  <version>1.6.0</version>
-		  <scope>compile</scope>
+		  <version>1.11.3</version>
 	  </dependency>
 	  <dependency>
 		  <groupId>com.jayway.jsonpath</groupId>
