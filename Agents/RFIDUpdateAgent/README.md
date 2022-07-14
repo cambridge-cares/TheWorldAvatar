@@ -79,7 +79,7 @@ The API properties contains the necessary information for the RFID API (see the 
 the port number and keys. It should contain the following keys:
 - `variable` the value to retrieved from the API.
 - `limit` the number of historical readings to retrieve from the API.
-- `path.url` the URL for where the RFID servlet is located, the default should be http://localhost:1016/rfid-servlet. 
+- `path.url` the URL for where the RFID servlet is located, the default should be http://localhost:1016/rfid-agent. 
 - `keys` the keys that represents the RFID tag numbers.
 More information can be found in the example property file `api.properties` in the `config` folder.
 
