@@ -13,5 +13,15 @@
                 ]
             }
         }
+    },
+    "endpoints": {
+        "sparql": {
+            "url": "http://localhost:8080/blazegraph/namespace/",
+            "externalPath": "/blazegraph/sparql"
+        },
+        "ui": {
+            "url": "http://localhost:8080/blazegraph/",
+            "externalPath": "/blazegraph/ui"
+        }
     }
 }
