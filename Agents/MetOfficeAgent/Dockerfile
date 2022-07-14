@@ -24,6 +24,7 @@ COPY ./setup.py .
 COPY ./resources/metoffice.properties ./resources/metoffice.properties
 
 # Install Python package and the required libraries
+RUN python -m pip install --upgrade pip
 RUN pip install -e .
 # Installation of agentlogging currently suspended due to performance issues
 #RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
