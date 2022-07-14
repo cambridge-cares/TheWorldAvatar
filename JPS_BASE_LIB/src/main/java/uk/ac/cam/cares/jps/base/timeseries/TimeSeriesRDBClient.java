@@ -751,20 +751,19 @@ public class TimeSeriesRDBClient<T> {
 	private void addGeometryColumns(String tsTable, List<String> columnNames, List<Class<?>> dataTypes, Integer srid) throws SQLException {
 		String sql = "alter table \"" + tsTable + "\" ";
 		for (int i = 0; i < columnNames.size(); i++) {
-			if (i != columnNames.size() - 1) {
-				sql += "add " + columnNames.get(i) + " geometry(" +  dataTypes.get(i).getSimpleName();
-				if (srid != null) {
-					sql += "," + String.valueOf(srid) + "), ";
-				} else {
-					sql += "), ";
-				}
+			sql += "add " + columnNames.get(i) + " geometry(" +  dataTypes.get(i).getSimpleName();
+
+			// add srid if given
+			if (srid != null) {
+				sql += "," + String.valueOf(srid) + ")";
 			} else {
-				sql += "add " + columnNames.get(i) + " geometry(" +  dataTypes.get(i).getSimpleName();
-				if (srid != null) {
-					sql += "," + String.valueOf(srid) + ");";
-				} else {
-					sql += ");";
-				}
+				sql += ")";
+			}
+
+			if (i != columnNames.size() - 1) {
+				sql += ", ";
+			} else {
+				sql += ";";
 			}
 		}
 		conn.prepareStatement(sql).executeUpdate();
