@@ -107,11 +107,7 @@ class Manager {
             }
 
             if(e.altKey && e.key === "Enter") {
-
-
-                let layers = MapHandler.MAP.getStyle().layers;
-                console.log(layers);
-               // self.toggleFullscreen();
+               self.toggleFullscreen();
             }
         });
     }

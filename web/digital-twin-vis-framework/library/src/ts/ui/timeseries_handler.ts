@@ -20,6 +20,13 @@ class TimeseriesHandler {
     public parseData(entries) {
         this._selectedData = [];
 
+        if(!Array.isArray(entries)) {
+            // Not a JSON Array, wrap in one
+            let temp = [];
+            temp.push(entries);
+            entries = temp;
+        }
+
         // Parse raw JSON into expanded form
         for(var i = 0; i < entries.length; i++) {
             var entry = entries[i];
