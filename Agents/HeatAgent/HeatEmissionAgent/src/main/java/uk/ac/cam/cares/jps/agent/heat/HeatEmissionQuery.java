@@ -174,7 +174,8 @@ public class HeatEmissionQuery extends JSONObject{
     	
     	UpdateRequest ur = ub.buildRequest();
     	System.out.println(ur);
-    	//AccessAgentCaller.updateStore("http://localhost:48080/ontochemplant", ur.toString()); 
     	AccessAgentCaller.updateStore("http://host.docker.internal:48080/ontochemplant", ur.toString()); 
+    	//This line below is for update the data in Claudius 
+    	//AccessAgentCaller.updateStore("jibusinessunits", ur.toString()); 
     }
 }
