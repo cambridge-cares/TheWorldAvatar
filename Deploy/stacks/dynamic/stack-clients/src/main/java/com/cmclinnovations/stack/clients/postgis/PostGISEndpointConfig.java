@@ -12,7 +12,6 @@ public class PostGISEndpointConfig extends PasswordEndpointConfig {
     private final String hostName;
     private final String port;
     private final String username;
-    private final String passwordFile;
 
     private final String jdbcURL;
     private final String jdbcDriver;
@@ -23,11 +22,10 @@ public class PostGISEndpointConfig extends PasswordEndpointConfig {
     }
 
     public PostGISEndpointConfig(String name, String hostName, String port, String username, String passwordFile) {
-        super(name);
+        super(name, passwordFile);
         this.hostName = hostName;
         this.port = port;
         this.username = username;
-        this.passwordFile = passwordFile;
 
         // By default assume PostgreSQL, calculate jdbcURL when requested
         this.jdbcURL = null;
@@ -45,10 +43,6 @@ public class PostGISEndpointConfig extends PasswordEndpointConfig {
 
     public String getUsername() {
         return username;
-    }
-
-    public String getPasswordFile() {
-        return passwordFile;
     }
 
     public String getJdbcURL(String database) {

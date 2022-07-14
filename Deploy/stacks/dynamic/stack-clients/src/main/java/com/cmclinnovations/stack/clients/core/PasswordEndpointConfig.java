@@ -8,15 +8,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class PasswordEndpointConfig extends AbstractEndpointConfig {
 
-    protected PasswordEndpointConfig(String name) {
+    private final String passwordFile;
+
+    protected PasswordEndpointConfig(String name, String passwordFile) {
         super(name);
+        this.passwordFile = passwordFile;
     }
 
-    public abstract String getPasswordFile();
+    public String getPasswordFile() {
+        return passwordFile;
+    }
 
     @JsonIgnore
     public String getPassword() {
-        final String passwordFile = getPasswordFile();
         final String password;
         if (null == passwordFile) {
             password = "";
