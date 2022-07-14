@@ -19,6 +19,7 @@ import com.github.odiszapc.nginxparser.NgxBlock;
 import com.github.odiszapc.nginxparser.NgxConfig;
 import com.github.odiszapc.nginxparser.NgxDumper;
 import com.github.odiszapc.nginxparser.NgxEntry;
+import com.github.odiszapc.nginxparser.NgxParam;
 import com.github.odiszapc.nginxparser.javacc.NginxConfigParser;
 import com.github.odiszapc.nginxparser.javacc.ParseException;
 
@@ -122,6 +123,15 @@ public final class NginxService extends ContainerService implements ReverseProxy
                         locationBlock.addValue(FileUtils.fixSlashs(externalPath.getPath(), true, true));
                         locationBlock.findParam("proxy_pass")
                                 .addValue(getProxyPassValue(connection, upstreamName));
+
+                        String publishedPort = Integer.toString(getConfig().getDockerServiceSpec().getEndpointSpec()
+                                .getPorts().get(0).getPublishedPort());
+                        locationBlock.findAll(NgxParam.class, "proxy_set_header").stream()
+                                .map(NgxParam.class::cast)
+                                .forEach(param -> param.getTokens().stream()
+                                        .filter(token -> token.getToken().contains("$server_port"))
+                                        .forEach(token -> token
+                                                .setToken(token.getToken().replace("$server_port", publishedPort))));
                         upstreams.put(upstreamName, getServerURL(connection, service.getName()));
                     }
                     locationConfigOut.addEntry(locationBlock);
