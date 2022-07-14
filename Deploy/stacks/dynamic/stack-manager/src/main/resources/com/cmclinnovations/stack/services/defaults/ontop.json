@@ -32,6 +32,10 @@
         "sparql": {
             "url": "http://localhost:8080/sparql",
             "externalPath": "/ontop/sparql"
+        },
+        "ui": {
+            "url": "http://localhost:8080/",
+            "externalPath": "/ontop/ui"
         }
     }
 }
