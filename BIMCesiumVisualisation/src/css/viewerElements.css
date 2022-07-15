@@ -1,0 +1,25 @@
+.toolbar {
+    display: block;
+    position: absolute;
+    padding: 2px 8px;
+    top: 15px;
+    left: 15px;
+    background-color: rgba(38, 38, 38, 0.95);
+    color: white;
+    font-size: 14px;
+    font-family: 'Open Sans';
+}
+
+.backdrop {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    padding: 8px;
+    background-color: rgba(38, 38, 38, 0.95);
+    font-size: 14px;
+    font-family: 'Open Sans';
+    color: white;
+    border: 1px solid #444;
+}

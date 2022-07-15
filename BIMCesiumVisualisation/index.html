@@ -1,132 +1,22 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+  <!-- Include custom CSS files -->
+  <link rel="stylesheet" href="src/css/viewerElements.css">
+  <link rel="stylesheet" href="src/css/assetInfobox.css">
 
   <!-- Include the CesiumJS JavaScript and CSS files -->
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.95/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.95/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-  <style>
-    .panel {
-      display: block;
-      position: absolute;
-      padding: 2px 8px;
-      top: 15px;
-      left: 15px;
-      background-color: rgba(38, 38, 38, 0.95);
-      color: white;
-      font-size: 14px;
-      font-family: 'Open Sans';
-    }
-
-    .backdrop {
-      display: none;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      pointer-events: none;
-      padding: 8px;
-      background-color: rgba(38, 38, 38, 0.95);
-      font-size: 14px;
-      font-family: 'Open Sans';
-      color: white;
-      border: 1px solid #444;
-    }
-
-    .biminfobox {
-      display: none;
-      position: absolute;
-      top: 60px;
-      right: 15px;
-      max-width: 480px;
-      pointer-events: none;
-      background-color: rgba(38, 38, 38, 0.95);
-      white-space: pre-line;
-      font-size: 16px;
-      font-family: 'Open Sans';
-      color: white;
-      border-radius: 4px;
-      border: 1px solid #444;
-      box-shadow: 0 0 10px 1px #000;
-    }
-
-    .biminfobox-title {
-      display: block;
-      height: 20px;
-      padding: 10px 8px;
-      background: rgba(84, 84, 84, 1);
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      box-sizing: content-box;
-      border-top-left-radius: 4px;
-      border-top-right-radius: 4px;
-    }
-
-    .biminfobox h3 {
-      margin: 0px;
-      padding: 0px;
-      font-size: 18px;
-    }
-
-    .biminfobox-content {
-      padding: 4px 10px;
-      width: 100%;
-    }
-
-    #bim-infobox-table td {
-      vertical-align: middle;
-      text-align: left;
-      padding: 4px 8px;
-      border-top: 1px solid rgba(38, 38, 38, 0.95);
-    }
-
-    #bim-infobox-table tr:last-child {
-      border-bottom: 1px solid rgba(38, 38, 38, 0.95);
-    }
-
-    #bim-infobox-table table {
-      background-color: rgba(84, 84, 84, 0.8);
-    }
-
-    #bim-infobox-table tr:nth-child(odd) {
-      background-color: rgba(84, 84, 84, 0.25);
-    }
-
-    #close {
-      display: none;
-      position:absolute;
-      top:75px;
-      right: 30px;
-      background: transparent;
-      border: none;
-      border-radius: 2px;
-      font-weight: bold;
-      font-size: 16px;
-      padding: 0 5px;
-      margin: 0;
-      color: white;
-    }
-    #close:focus {
-      background: rgba(238, 136, 0, 0.44);
-      outline: none;
-    }
-    #close:hover {
-      background: #888;
-      color: #000;
-    }
-    #close:active {
-      background: #a00;
-      color: #000;
-    } 
-  </style>
 </head>
 
 <body>
   <div id="cesiumContainer"></div>
-  <div class="panel">
+  <div class="toolbar">
     <label for="toggleFeature"> Show/Hide roof and ceiling</label>
     <input type="checkbox" id="toggleFeature" onclick="hideFeature()"> 
   </div>
@@ -139,11 +29,14 @@
     /**
      * Add the tileset to the viewer and set its model matrix for geolocation
      * @param cesiumtileset   name of tileset.json file
+     * @param x               latitude or x coordinate of a geolocation
+     * @param y               longitude or y coordinate of a geolocation
+     * @param z               elevation or z coordinate of a geolocation
      * @return                Cesium viewer primitive object
      */
-    function addTileset(cesiumtileset) {
-      var tile_fpath = "./ifcto3Dtilesnext/data/";
-      coordinates = Cesium.Cartesian3.fromDegrees(103.77398, 1.30411, 0);
+    function addTileset(cesiumtileset, x, y, z=0) {
+      let tile_fpath = "./ifcto3Dtilesnext/data/";
+      coordinates = Cesium.Cartesian3.fromDegrees(x,y,z);
 
       return viewer.scene.primitives.add(
         new Cesium.Cesium3DTileset({
@@ -156,7 +49,7 @@
 
     // Show or hide the ceiling depending on checkbox input
     function hideFeature() {
-      var checkBox = document.getElementById("toggleFeature");
+      let checkBox = document.getElementById("toggleFeature");
       if (checkBox.checked == true) {
         tileset_ceiling.show = false;
       } else {
@@ -166,7 +59,6 @@
 
     // Close the metadata infobox on click
     function closeMetadata() {
-      const metadataBox = document.getElementsByClassName("biminfobox")[0];
       // Set transition time and effects for metadata infobox
       window.setTimeout(function () {
         metadataBox.style.transform = 'translate(100%, 0)';
@@ -230,8 +122,8 @@
     viewer.container.appendChild(closeElement);
 
     // Add tilesets to the viewer
-    const tileset_bim = addTileset("tileset_bim.json");
-    const tileset_ceiling = addTileset("tileset_ceiling.json");
+    const tileset_bim = addTileset("tileset_bim.json",103.77398, 1.30411);
+    const tileset_ceiling = addTileset("tileset_ceiling.json", 103.77398, 1.30411);
 
     // Zoom to the tileset, with a small offset so that it is fully visible
     const offset = new Cesium.HeadingPitchRange(
