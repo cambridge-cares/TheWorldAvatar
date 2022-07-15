@@ -679,6 +679,7 @@ public class TimeSeriesRDBClient<T> {
 		// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
 		context.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
 			   .column(tsTableNameColumn).column(columnNameColumn).execute();
+		context.createIndex().on(DSL.table(DSL.name(dbTableName)), Arrays.asList(dataIRIcolumn,tsIRIcolumn,tsTableNameColumn,columnNameColumn)).execute();
 	}
 	
 	/**
@@ -735,6 +736,9 @@ public class TimeSeriesRDBClient<T> {
 
     	// Send consolidated request to RDB
     	createStep.execute();
+
+		// create index on time column for quicker searches
+		context.createIndex().on(DSL.table(DSL.name(tsTable)), timeColumn).execute();
 
 		// add remaining geometry columns with restrictions
 		if (additionalGeomColumns.size() > 0) {
