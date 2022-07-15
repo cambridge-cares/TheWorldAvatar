@@ -1,3 +1,5 @@
+from optparse import Option
+from matplotlib.pyplot import sca
 import ord_schema
 from ord_schema import reaction_pb2 as re
 from typing import Dict, Iterable, List, Optional, Tuple, Type, TypeVar, Union
@@ -5,7 +7,7 @@ import csv
 
 
 
-def get_field_labels(message: ord_schema.Message, trace: Optional[str] = None, message_label: Optional[str] = None) -> Tuple[(str, List, List, List, List)]:
+def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, List)]:
     """Converts a message to its subfields and stores their names in lists.
 
     Args:
@@ -15,16 +17,11 @@ def get_field_labels(message: ord_schema.Message, trace: Optional[str] = None, m
     Returns:
         a tuple of (this_trace, scalars, messages, maps, enums, key, repeat)
     """
-    if trace == None:
-        this_trace = message.DESCRIPTOR.name
-   
-    else:
-        this_trace = trace+'_'+message.DESCRIPTOR.name
 
     messages = []
     repeats = []
     maps = []
-    scalars = ['reaction_id', 'key', 'item']
+    scalars = ['reaction_id','parent_message','parent_key', 'parent_item']
     for field in message.DESCRIPTOR.fields:
 
         if(field.type == field.TYPE_MESSAGE and field.message_type.GetOptions().map_entry):
@@ -44,7 +41,7 @@ def get_field_labels(message: ord_schema.Message, trace: Optional[str] = None, m
         else:
             scalars.append(field.name)
         
-    return (this_trace,scalars, messages, maps, repeats)
+    return (scalars, messages, maps, repeats)
 
 
 
@@ -52,7 +49,7 @@ def get_field_labels(message: ord_schema.Message, trace: Optional[str] = None, m
 
 
 
-def create_tables(message: ord_schema.Message, trace: Optional[str] = None, message_label: Optional[str] = None):
+def create_tables(message: ord_schema.Message, message_label: Optional[str] = None):
     """Converts a message to its equivalent csv tables.
 
     Args:
@@ -69,22 +66,19 @@ def create_tables(message: ord_schema.Message, trace: Optional[str] = None, mess
     repeats = []
     maps = []
     scalars = []
-    
-
-    if trace is None:
-        trace = ''
-    else:
-        trace = trace+'_'
+    row = []
 
     # get this_trace and the lists for scalars, messages, maps, and enums    
-    this_trace, scalars, messages, maps, repeats = get_field_labels(message=message, trace=None, message_label=message_label)
-    # print(trace, this_trace,scalars, messages, maps, repeats)
-    # print(trace,'\n\t',this_trace, message_label)
+    scalars, messages, maps, repeats = get_field_labels(message=message)
+    # adding all the column labels to the header array, row
+    row = scalars+['child_key_count', 'child_messages']
+
     
     # ideally create a table here with the name trace+this_trace
-    file = open('./results/'+trace+this_trace+'.csv', encoding='utf-8', mode='w', newline='')
+    file = open('./results/'+message.DESCRIPTOR.name+'.csv', encoding='utf-8', mode='w', newline='')
     writer = csv.writer(file)
-    writer.writerow(scalars)
+
+    writer.writerow(row)
     file.close()
 
 
@@ -103,13 +97,14 @@ def create_tables(message: ord_schema.Message, trace: Optional[str] = None, mess
             # for nested messages
             new_message = getattr(message, item)
 
-        create_tables(new_message, trace+this_trace, message_label)
+        create_tables(new_message, message_label)
 
 def get_fields_values(message: ord_schema.Message, 
                     trace: Optional[str] = None, 
                     reaction_id: Optional[str] = None,
                     key_value: Optional[str] = None, 
-                    item_value: Optional[int] = None) -> Tuple[(str, List, List, List, Dict)]:
+                    item_value: Optional[int] = None,
+                    parent_name: Optional[str] = None) -> Tuple[(str, List, List, List, Dict)]:
     """Converts a message to its subfields and subvalues.
 
     Args:
@@ -131,7 +126,7 @@ def get_fields_values(message: ord_schema.Message,
     messages = []
     repeats = []
     maps = []
-    scalars = {'reaction_id' : reaction_id}
+    scalars = {'reaction_id' : reaction_id, 'parent_message': parent_name}
     
     
         
@@ -141,29 +136,29 @@ def get_fields_values(message: ord_schema.Message,
                 # possible handling of the map keys:
                 for key, subvalue in value.items():
                     #maps.append((field.name, subvalue))
-                    maps.append((field.name, key, subvalue))
+                    maps.append((field.message_type.name, key, subvalue))
             else:
                 # possible implementation of the the repeat index
                 for i, subvalue in enumerate(value):
                     #repeats.append((field.name, subvalue))
-                    repeats.append((field.name, i,subvalue))
+                    repeats.append((field.message_type.name, i,subvalue))
 
 
         else:     
             if field.type == field.TYPE_MESSAGE:
-                messages.append((field.name, None, value))
+                messages.append((field.message_type.name, None, value))
             else:
                 if field.type == field.TYPE_ENUM:
                     scalars.update({field.name : field.enum_type.values_by_number[value].name})  
                 else:
-                    scalars.update({field.name : value, 'key' : key_value, 'item' : item_value})
-
+                    scalars.update({field.name : value, 'parent_key' : key_value, 'parent_item' : item_value})
+        
         
     return (this_trace,scalars, messages, maps, repeats)
 
 def populate_tables(message: ord_schema.Message, trace: Optional[str] = None, 
                     reaction_id: Optional[str] = None,
-                    message_label: Optional[str] = None,
+                    parent_name: Optional[str] = None,
                     key_value: Optional[str] = None,
                     item_value: Optional[int] = None):
     """Converts a message to its scalar subfields and write them into corresponding csv files.
@@ -192,18 +187,19 @@ def populate_tables(message: ord_schema.Message, trace: Optional[str] = None,
         trace = trace+'_'
 
     # get this_trace and the lists for scalars, messages, maps, and enums    
-    
-    this_trace, scalar_labels, _, _, _ = get_field_labels(message=message, trace=None, message_label=message_label)
+    scalar_labels, _,_,_ = get_field_labels(message=message)
+    #this_trace, scalar_labels, _, _, _ = get_field_labels(message=message, trace=None, message_label=message_label)
     # print(trace+this_trace,'labels\n',label1+label2)
 
     this_trace, scalars, messages, maps, repeats = get_fields_values(message=message, trace=None, reaction_id = reaction_id, 
-                                                                        key_value=key_value, item_value=item_value)
+                                                                        key_value=key_value, item_value=item_value,
+                                                                        parent_name=parent_name)
     #row = []
     row = get_row(scalars, scalar_labels)
    
 
     # ideally create a table here with the name trace+this_trace
-    append_to_file('./results/'+trace+this_trace+'.csv', row)
+    append_to_file('./results/'+message.DESCRIPTOR.name+'.csv', row)
     #file = open('./results/'+trace+this_trace+'.csv', encoding='utf-8', mode='a', newline='')
     #writer = csv.writer(file)
     #writer.writerow(row)
@@ -222,7 +218,7 @@ def populate_tables(message: ord_schema.Message, trace: Optional[str] = None,
             new_item = item_value
             new_key = key_value
             #print(this_trace, field, key_or_item)
-        populate_tables(value, trace+this_trace, reaction_id, message_label, new_key, new_item)
+        populate_tables(value, trace+this_trace, reaction_id, message.DESCRIPTOR.name, new_key, new_item)
 
 
 def get_row(scalars: Dict[str, str], labels: List[str]) -> List[str]:
