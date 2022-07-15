@@ -13,3 +13,10 @@ Python modules developed for data instantiation and query are briefly described 
 * solar_energy_query.py: This script queries the KG and visualises the electric energy consmuption data using the Digital Twin Visualisation Framework ([DTVF]).
 
 To interact with the [TheWorldAvatar] (TWA) code base (mainly) written in Java, the [py4jps] Python wrapper is used.
+
+Note I: Run MetOfficeSolarSensorAgent.solar_sensor_instantiation.py before running PostcodeSolarEnergyAgent.solar_energy_instantiation.py.
+
+Note II: Running any python file available here will require the use of the agent folder. For example, to run solar_energy_instantiation.py, use the following command:
+         python -m PostcodeSolarEnergyAgent.solar_energy_instantiation
+
+         Follow the instructions provided in README.md available under MetOfficeSolarSensorAgent to know how to run MetOfficeSolarSensorAgent.solar_energy_instantiation.py.
