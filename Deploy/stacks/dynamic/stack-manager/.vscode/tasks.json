@@ -50,6 +50,13 @@
             ],
             "presentation": {
                 "reveal": "always"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "powershell"
+                    }
+                }
             }
         },
         {
@@ -58,6 +65,13 @@
             "command": "docker service rm ${input:stackName}_stack-manager ; exit 0",
             "presentation": {
                 "reveal": "never"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "powershell"
+                    }
+                }
             }
         }
     ],
