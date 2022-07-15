@@ -90,6 +90,10 @@ public class DerivationInputs {
 		return this.getInputs().get(rdfType);
 	}
 
+	public List<String> getAllIris() {
+		return this.getInputs().values().stream().flatMap(i -> i.stream()).collect(Collectors.toList());
+	}
+
 	public void addToInputs(String rdfType, List<String> iris) {
 		rdfType = trimIRI(rdfType);
 		iris = trimIRI(iris);
