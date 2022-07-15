@@ -24,12 +24,7 @@ def get_field_labels(message: ord_schema.Message, trace: Optional[str] = None, m
     messages = []
     repeats = []
     maps = []
-    if message_label == 'MAPS':
-        scalars = ['reaction_id', 'key']
-    elif message_label == 'REPEATED':
-        scalars = ['reaction_id', 'item']
-    else:
-        scalars = ['reaction_id']
+    scalars = ['reaction_id', 'key', 'item']
     for field in message.DESCRIPTOR.fields:
 
         if(field.type == field.TYPE_MESSAGE and field.message_type.GetOptions().map_entry):
@@ -113,8 +108,8 @@ def create_tables(message: ord_schema.Message, trace: Optional[str] = None, mess
 def get_fields_values(message: ord_schema.Message, 
                     trace: Optional[str] = None, 
                     reaction_id: Optional[str] = None,
-                    message_label: Optional[str] = None, 
-                    key_or_item: Optional[Union[str, int]] = None) -> Tuple[(str, List, List, List, Dict)]:
+                    key_value: Optional[str] = None, 
+                    item_value: Optional[int] = None) -> Tuple[(str, List, List, List, Dict)]:
     """Converts a message to its subfields and subvalues.
 
     Args:
@@ -161,14 +156,7 @@ def get_fields_values(message: ord_schema.Message,
                 if field.type == field.TYPE_ENUM:
                     scalars.update({field.name : field.enum_type.values_by_number[value].name})  
                 else:
-                    if message_label == 'MAPS':
-                        scalars.update({field.name : value ,'key' : key_or_item})
-                        #print('key': key_or_item)
-                    elif message_label == 'REPEATED':
-                        scalars.update({field.name : value , 'item': key_or_item})
-                        #print('item': key_or_item)
-                    else:
-                        scalars.update({field.name : value})
+                    scalars.update({field.name : value, 'key' : key_value, 'item' : item_value})
 
         
     return (this_trace,scalars, messages, maps, repeats)
@@ -176,7 +164,8 @@ def get_fields_values(message: ord_schema.Message,
 def populate_tables(message: ord_schema.Message, trace: Optional[str] = None, 
                     reaction_id: Optional[str] = None,
                     message_label: Optional[str] = None,
-                    key_or_item: Optional[Union[int,str]] = None):
+                    key_value: Optional[str] = None,
+                    item_value: Optional[int] = None):
     """Converts a message to its scalar subfields and write them into corresponding csv files.
 
     Args:
@@ -193,6 +182,9 @@ def populate_tables(message: ord_schema.Message, trace: Optional[str] = None,
     repeats = []
     maps = []
     scalars = {}
+
+    #new_key = None
+    #new_item = None
     
     if trace is None:
         trace = ''
@@ -205,8 +197,7 @@ def populate_tables(message: ord_schema.Message, trace: Optional[str] = None,
     # print(trace+this_trace,'labels\n',label1+label2)
 
     this_trace, scalars, messages, maps, repeats = get_fields_values(message=message, trace=None, reaction_id = reaction_id, 
-                                                                        message_label=message_label,key_or_item=key_or_item)
-    # print(trace+this_trace, scalars, 'ENUMS:',enums)
+                                                                        key_value=key_value, item_value=item_value)
     #row = []
     row = get_row(scalars, scalar_labels)
    
@@ -221,11 +212,17 @@ def populate_tables(message: ord_schema.Message, trace: Optional[str] = None,
     for (field, key_or_item,value) in messages+maps+repeats:
         if (field, key_or_item,value) in maps:
             message_label = 'MAPS'
-        if (field, key_or_item,value) in repeats:
+            new_key = key_or_item
+            new_item = item_value
+        elif (field, key_or_item,value) in repeats:
             message_label = 'REPEATED'
+            new_item = key_or_item
+            new_key = key_value
+        else:
+            new_item = item_value
+            new_key = key_value
             #print(this_trace, field, key_or_item)
-        # print(this_trace, message_label)
-        populate_tables(value, trace+this_trace, reaction_id, message_label, key_or_item)
+        populate_tables(value, trace+this_trace, reaction_id, message_label, new_key, new_item)
 
 
 def get_row(scalars: Dict[str, str], labels: List[str]) -> List[str]:
