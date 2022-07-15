@@ -32,9 +32,17 @@ data = message_helpers.load_message(pb, dataset_pb2.Dataset)
 
 
 # Create the csv files
+
+Reaction = ord_schema.reaction_pb2.Reaction()
+ReactionIdentifier = ord_schema.reaction_pb2.ReactionIdentifier()
+Compound = ord_schema.reaction_pb2.Compound()
+ReactionProvenance = ord_schema.reaction_pb2.ReactionProvenance()
+
+#st.create_tables(Reaction)
 st.create_tables(data.reactions[0])
 #  Populate the csv tables using the data of each reaction
 for reaction in data.reactions:
+
    # Converts each reaction in the dataset to equivalent csv tables 
    st.populate_tables(reaction,None, reaction.reaction_id)
 
