@@ -71,15 +71,18 @@ def create_tables(message: ord_schema.Message, message_label: Optional[str] = No
     # get this_trace and the lists for scalars, messages, maps, and enums    
     scalars, messages, maps, repeats = get_field_labels(message=message)
     # adding all the column labels to the header array, row
-    row = scalars+['child_key_count', 'child_messages']
+    row = scalars
 
     
     # ideally create a table here with the name trace+this_trace
-    file = open('./results/'+message.DESCRIPTOR.name+'.csv', encoding='utf-8', mode='w', newline='')
-    writer = csv.writer(file)
-
-    writer.writerow(row)
-    file.close()
+    file_1 = open('./results/'+message.DESCRIPTOR.name+'_literals'+'.csv', encoding='utf-8', mode='w', newline='')
+    file_2 = open('./results/'+message.DESCRIPTOR.name+'_subordinates'+'.csv', encoding='utf-8', mode='w', newline='')
+    writer_1 = csv.writer(file_1)
+    writer_2 = csv.writer(file_2)
+    writer_1.writerow(row)
+    writer_2.writerow(['reaction_id','parent_key', 'parent_item', 'parent_class','key','item', 'subordinate_classes'])
+    file_1.close()
+    file_2.close()
 
 
     for item in messages+maps+repeats:
@@ -196,28 +199,35 @@ def populate_tables(message: ord_schema.Message, trace: Optional[str] = None,
                                                                         parent_name=parent_name)
     #row = []
     row = get_row(scalars, scalar_labels)
-   
+    
 
     # ideally create a table here with the name trace+this_trace
-    append_to_file('./results/'+message.DESCRIPTOR.name+'.csv', row)
+    append_to_file('./results/'+message.DESCRIPTOR.name+'_literals'+'.csv', row)
     #file = open('./results/'+trace+this_trace+'.csv', encoding='utf-8', mode='a', newline='')
     #writer = csv.writer(file)
     #writer.writerow(row)
     #file.close()
-
+    class_dict = {'reaction_id' : reaction_id , 'parent_class' : parent_name, 'parent_key' : key_value , 'parent_item' : item_value}
     for (field, key_or_item,value) in messages+maps+repeats:
         if (field, key_or_item,value) in maps:
             message_label = 'MAPS'
             new_key = key_or_item
             new_item = item_value
+            pair = {'key' : key_or_item, 'subordinate_classes' : field}
         elif (field, key_or_item,value) in repeats:
             message_label = 'REPEATED'
             new_item = key_or_item
             new_key = key_value
+            pair = {'item' : key_or_item, 'subordinate_classes' : field}
         else:
+            message_label = 'MESSAGE'
             new_item = item_value
             new_key = key_value
-            #print(this_trace, field, key_or_item)
+            pair = {'key' : None, 'subordinate_classes' : field}
+        class_dict.update(pair)
+        class_row = get_row(class_dict, ['reaction_id','parent_key', 'parent_item', 'parent_class','key','item', 'subordinate_classes'])
+        
+        append_to_file('./results/'+message.DESCRIPTOR.name+'_subordinates'+'.csv', class_row)
         populate_tables(value, trace+this_trace, reaction_id, message.DESCRIPTOR.name, new_key, new_item)
 
 
@@ -229,6 +239,8 @@ def get_row(scalars: Dict[str, str], labels: List[str]) -> List[str]:
         else:
            row.append(None)
     return row
+
+
 
 def append_to_file(file: str, row: List[str]):
     file = open(file, encoding='utf-8', mode='a', newline='')
