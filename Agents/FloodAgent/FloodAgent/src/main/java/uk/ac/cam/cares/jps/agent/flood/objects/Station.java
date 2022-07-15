@@ -30,11 +30,16 @@ public class Station {
     private String town;
     private String dateOpened;
     private Map<String, String> displayProperties;
-    private List<String> measures; // IRIs of measures
     private List<TimeSeries<Instant>> ts_list;
-    private Map<String, String> measureNameMap; // measure IRI to parameter name
-    private Map<String, String> measureUnitMap; // measure IRI to unit
-    private Map<String, String> measureSubTypeMap; // measure IRI to sub type name
+	private List<Measure> measures;
+
+	private Station downstream;
+	private Station upstream;
+
+	private Double stageUpper = null;
+	private Double stageLower = null;
+	private Double downstageUpper = null;
+	private Double downstageLower = null;
 
     // icons to use
     static Map<String, String> icons = new HashMap<String, String>() {
@@ -59,17 +64,24 @@ public class Station {
     	this.displayProperties = new HashMap<String, String>();
     	this.ts_list = new ArrayList<>();
     	this.measures = new ArrayList<>();
-    	this.measureNameMap = new HashMap<>();
-    	this.measureUnitMap = new HashMap<>();
-    	this.measureSubTypeMap = new HashMap<>();
     }
     
-    public void addMeasure(String measure) {
-    	this.measures.add(measure);
-    }
-    
-    public List<String> getMeasures() {
-    	return this.measures;
+	public void addMeasure(Measure measure) {
+		boolean duplicateExists = false;
+		for (Measure localmeasure : this.measures) {
+			if (localmeasure.getIri().contentEquals(measure.getIri())) {
+				duplicateExists = true;
+				LOGGER.warn("Duplicate measure detected in station");
+			}
+		}
+		if (!duplicateExists) {
+			this.measures.add(measure);
+		}
+	}
+
+	// return measures in this station
+    public List<Measure> getMeasures() {
+    	return this.measures; 
     }
     
     public void setLabel(String label) {
@@ -231,38 +243,17 @@ public class Station {
     	}
     }
     
-    public void setMeasureName(String measureIri, String measureName) {
-    	this.measureNameMap.put(measureIri, measureName);
-    }
-    
-    public String getMeasureName(String measure) {
-    	return this.measureNameMap.get(measure);
-    }
-    
-    public void setMeasureSubTypeName(String measureIri, String subTypeName) {
-    	this.measureSubTypeMap.put(measureIri, subTypeName);
-    }
-    
-    public String getMeasureSubTypeName(String measure) {
-    	return this.measureSubTypeMap.get(measure);
-    }
-    
-    public void setMeasureUnit(String measureIri, String unit) {
-    	this.measureUnitMap.put(measureIri, unit);
-    }
-    
-    public String getMeasureUnit(String measure) {
-    	return this.measureUnitMap.get(measure);
-    }
-    
     // some stations measure more than 1 property, at the moment icon is only determined from one of them
     public String getIconImage() {
-    	List<String> measures = new ArrayList<>(measureNameMap.keySet());
-    	if (icons.containsKey(this.measureNameMap.get(measures.get(0)))) {
-    		return icons.get(this.measureNameMap.get(measures.get(0)));
-    	} else {
-    		return "ea-water-level";
-    	}
+		if (measures.size() > 0) {
+			if (icons.containsKey(this.measures.get(0).getParameterName())) {
+				return icons.get(this.measures.get(0).getParameterName());
+			} else {
+				return "ea-water-level";
+			}
+		} else {
+			return "ea-water-level";
+		}
     }
     
     /**
@@ -274,4 +265,52 @@ public class Station {
     			+ "Some stations measure rainfall, wind and temperature.";	
     	return description;
     }
+
+	public void setStageUpper(double stageUpper) {
+		this.stageUpper = stageUpper;
+	}
+
+	public void setStageLower(double stageLower) {
+		this.stageLower = stageLower;
+	}
+
+	public Double getStageUpper() {
+		return this.stageUpper;
+	}
+
+	public Double getStageLower() {
+		return this.stageLower;
+	}
+
+	public void setDownstageUpper(double downstageUpper) {
+		this.downstageUpper = downstageUpper;
+	}
+
+	public void setDownstageLower(double downstageLower) {
+		this.downstageLower = downstageLower;
+	}
+
+	public Double getDownstageUpper() {
+		return this.downstageUpper;
+	}
+
+	public Double getDownstageLower() {
+		return this.downstageLower;
+	}
+
+	public void setDownstream(Station downstream) {
+		this.downstream = downstream;
+	}
+
+	public Station getDownstream() {
+		return this.downstream;
+	}
+
+	public void setUpstream(Station upstream) {
+		this.upstream = upstream;
+	}
+
+	public Station getUpstream() {
+		return this.upstream;
+	}
 }

@@ -1,7 +1,11 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -19,7 +23,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
+import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -34,9 +41,6 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 public class UpdateStations {
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(UpdateStations.class);
-    
-    // boolean to check if RDB data is uploaded
-    static boolean updated;
     
     // err msg
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
@@ -89,27 +93,40 @@ public class UpdateStations {
     		UpdateStations.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	}
     	
-    	if (!sparqlClient.checkUpdateDateExists(date)) {
-    		LOGGER.info("Updating data for " + date);
-    		
-			List<Map<?,?>> processed_data;
-	    	try {            
-	            // process data into tables before upload
-	            processed_data = processAPIResponse(api);
-	    	} catch (Exception e) {
-	    		LOGGER.error(e.getMessage());
-	    		throw new JPSRuntimeException(e);
-	    	}
-	        
-	        updated = false;
-	        // upload to postgres
-	        uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
-	        
-	        // update last updated date
-	        sparqlClient.addUpdateDate(date);
-    	} else {
-    		LOGGER.info("Data for " + date + " exists, ignoring update request");
-    	}
+		LOGGER.info("Updating data for " + date);
+		
+		List<Map<String,?>> processed_data;
+		try {            
+			// process data into tables before upload
+			processed_data = processAPIResponse(api);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
+
+		// upload to postgres
+		uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
+
+		List<String> measureIRIs = new ArrayList<>(processed_data.get(0).keySet());
+		
+		// checks final value and marks it as normal/high/low
+		List<Measure> stageScaleMeasureList = sparqlClient.addRangeForStageScale(tsClient, measureIRIs);
+		List<Measure> downstageMeasureList = sparqlClient.addRangeForDownstageScale(tsClient, measureIRIs);
+
+		// calculate difference between first and final values, and mark as rising/falling/steady
+		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
+		sparqlClient.addTrends(tsClient, stageScaleMeasureList, lowerbound, upperbound);
+		sparqlClient.addTrends(tsClient, downstageMeasureList, lowerbound, upperbound);
+
+		// update last updated date
+		addUpdateDate(date);
+
+		// clean up
+		deleteEmptyTables();
+
+		// if we don't disconnect, the next scheduled run will usually fail due to timeout, without reconnecting
+		tsClient.disconnectRDB();
 	}
 	
 	/**
@@ -120,12 +137,22 @@ public class UpdateStations {
 	 * @throws ParseException 
 	 * @throws URISyntaxException 
 	 */
-	static List<Map<?,?>> processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
+	static List<Map<String,?>> processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
 		LOGGER.info("Processing data from API");
 		HttpEntity response = api.getData();
-		// convert response to JSON Object
-		String response_string = EntityUtils.toString(response);
-        JSONObject response_jo = new JSONObject(response_string);
+
+		// write data to file (easier to debug)
+		if (Config.READINGS_DIR == null) {
+			Config.READINGS_DIR = System.getProperty("user.home");
+		}
+		File readingsFile = Paths.get(Config.READINGS_DIR, "readings.json").toFile();
+		FileOutputStream outputStream = new FileOutputStream(readingsFile);
+		response.writeTo(outputStream);
+
+		// read data from downloaded file
+		FileInputStream inputStream = new FileInputStream(readingsFile);
+		JSONTokener tokener = new JSONTokener(inputStream);
+		JSONObject response_jo = new JSONObject(tokener);
         JSONArray readings = response_jo.getJSONArray("items");
         
         // collect data belonging to the same URL into lists
@@ -174,7 +201,7 @@ public class UpdateStations {
         	}
         }
         
-        List<Map<?,?>> processed_data = new ArrayList<>();
+        List<Map<String,?>> processed_data = new ArrayList<>();
         processed_data.add(datatime_map);
         processed_data.add(datavalue_map);
         
@@ -187,7 +214,7 @@ public class UpdateStations {
 	
 	@SuppressWarnings("unchecked")
 	static void uploadDataToRDB(LocalDate date, TimeSeriesClient<Instant> tsClient, FloodSparql sparqlClient,
-			List<Map<?,?>> processed_data) {
+			List<Map<String,?>> processed_data) {
 		Map<String, List<Instant>> datatime_map = (Map<String, List<Instant>>) processed_data.get(0);
 		Map<String, List<Double>> datavalue_map = (Map<String, List<Double>>) processed_data.get(1);
         Iterator<String> iter = datatime_map.keySet().iterator();
@@ -212,22 +239,30 @@ public class UpdateStations {
 					String station = items.getString("station");
 					String unit = items.getString("unitName");
 					String parameterName = items.getString("parameterName");
-					String qualifier = items.getString("parameter");
-					
-					// add this missing information in blazegraph and rdb
-					sparqlClient.addMeasureToStation(station, dataIRI,unit,parameterName,qualifier);
+					String qualifier = items.getString("qualifier");
 					
 					// check if station exists, if not, instantiate
 					if (!sparqlClient.checkStationExists(station)) {
-						response = new APIConnector(station).getData();
-						response_jo = new JSONObject(EntityUtils.toString(response));
-						items = response_jo.getJSONObject("items");
-						double lat = items.getDouble("lat");
-						double lon = items.getDouble("long");
-						String stationRef = items.getString("stationReference");
-						
-						sparqlClient.addNewStation(station, lat, lon, stationRef);
+						HttpEntity newstation = new APIConnector(station).getData();
+						JSONObject newstation_jo = new JSONObject(EntityUtils.toString(newstation));
+						if (newstation_jo.getJSONObject("items").has("lat")) {
+							LOGGER.info("Instantiating a new station " + station);
+							sparqlClient.postToRemoteStore(new APIConnector(station+".rdf").getData());
+
+							// add approripate rdf type and blazegraph coordinates
+							Station stationObject = new Station(station);
+							stationObject.setLat(newstation_jo.getJSONObject("items").getDouble("lat"));
+							stationObject.setLon(newstation_jo.getJSONObject("items").getDouble("lon"));
+							Measure measure = new Measure(dataIRI);
+							measure.setParameterName(parameterName);
+							stationObject.addMeasure(measure);
+
+							sparqlClient.addStationTypeAndCoordinates(Arrays.asList(stationObject));
+						}
 					}
+
+					// add this missing information in blazegraph and rdb
+					sparqlClient.addMeasureToStation(station, dataIRI,unit,parameterName,qualifier);
 					
 					tsClient.initTimeSeries(Arrays.asList(dataIRI), Arrays.asList(Double.class), null);
 					
@@ -241,21 +276,12 @@ public class UpdateStations {
         	}
         	
         	try {
-        		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
-    			Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
-    			TimeSeries<Instant> ts_query = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRI), lowerbound, upperbound);
-    			
-    			// ensure that we do not upload duplicate data
-    			if (ts_query.getTimes().size() == 0) {
-    				// create time series object to upload to the client
-                	List<List<?>> values = new ArrayList<>();
-                	values.add(datavalue_map.get(dataIRI));
-                	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
-                	tsClient.addTimeSeriesData(ts);
-                	LOGGER.debug("Uploaded data for " + dataIRI);
-    			} else {
-    				LOGGER.info("Skipping " + dataIRI + ", data for " + date + " exists");
-    			}
+    			// create time series object to upload to the client
+                List<List<?>> values = new ArrayList<>();
+                values.add(datavalue_map.get(dataIRI));
+                TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
+                tsClient.addTimeSeriesData(ts);
+                LOGGER.debug("Uploaded data for " + dataIRI);
         	} catch (Exception e) {
         		num_failures += 1;
         	    LOGGER.error(e.getMessage());
@@ -264,11 +290,27 @@ public class UpdateStations {
         }
         
         LOGGER.info("Failed to add " + Integer.toString(num_failures) + " data set out of the processed data");
-        // consider updated if at least one was updated..
-        if (num_failures < datatime_map.size()) {
-        	updated = true;
-        }
-        
         tsClient.disconnectRDB();
+	}
+
+	static void addUpdateDate(LocalDate date) {
+		List<List<?>> values = new ArrayList<>();
+		values.add(Arrays.asList(date));
+		TimeSeries<Instant> ts = new TimeSeries<Instant>(Arrays.asList(date.atStartOfDay(ZoneOffset.UTC).toInstant()), Arrays.asList(Config.TIME_IRI), values);
+		tsClient.addTimeSeriesData(ts);
+	}
+
+	static void deleteEmptyTables() {
+		List<String> measures = sparqlClient.getAllMeasuresWithTimeseries();
+
+		List<String> emptyMeasures = new ArrayList<>();
+		for (String measure : measures) {
+			if(tsClient.getLatestData(measure).getTimes().size() < 1) {
+				tsClient.deleteIndividualTimeSeries(measure);
+				emptyMeasures.add(measure);
+			}
+		}
+
+		sparqlClient.deleteMeasures(emptyMeasures);
 	}
 }
