@@ -27,7 +27,7 @@ FROM retriever as builder
 
 COPY src ./src/
 
-RUN mvn package
+RUN mvn deploy
 
 #==================================================================================================
 

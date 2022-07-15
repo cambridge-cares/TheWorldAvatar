@@ -3,9 +3,3 @@ services:
   stack-client:
     image: docker.cmclinnovations.com/stack-client:1.0-SNAPSHOT
     build: .
-
-  stack-client-lib:
-    image: docker.cmclinnovations.com/stack-client-lib:1.0-SNAPSHOT
-    build:
-      context: .
-      target: builder
