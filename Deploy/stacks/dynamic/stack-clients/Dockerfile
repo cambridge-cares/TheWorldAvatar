@@ -23,14 +23,8 @@ RUN mvn clean dependency:resolve
 # Second stage: build war file
 #==================================================================================================
 
-FROM maven:3.8.3-adoptopenjdk-11 as builder
+FROM retriever as builder
 
-COPY --from=retriever /root/.m2 /root/.m2
-
-# Copy in Java source and build jar
-WORKDIR /root/code
-
-COPY pom.xml ./
 COPY src ./src/
 
 RUN mvn package
