@@ -17,7 +17,7 @@
     "endpoints": {
         "sparql": {
             "url": "http://localhost:8080/blazegraph/namespace/",
-            "externalPath": "/blazegraph/sparql"
+            "externalPath": "/blazegraph/namespace"
         },
         "ui": {
             "url": "http://localhost:8080/blazegraph/",
