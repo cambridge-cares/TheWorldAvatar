@@ -50,6 +50,14 @@ public class DerivationClient {
 	public static final String DOWNSTREAMDERIVATION_KEY = "downstream_derivation";
 	public static final String SYNC_NEW_INFO_FLAG = "sync_new_info";
 	public static final String AGENT_IRI_KEY = "agent_service_iri";
+
+	// NOTE GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET wraps around
+	// GET_AGENT_INPUT_PARAMS defined in JPSHttpServlet.java, which is used to wrap
+	// the input parameters of an HTTP request to a JSONObject with the key "query",
+	// ideally the key in JPSHttpServlet.java should made public so that we don't
+	// need to re-implement it here
+	public static final String GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET = "?query=";
+
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	DerivationSparql sparqlClient;
@@ -233,9 +241,10 @@ public class DerivationClient {
 				+ "> with http request " + requestParams);
 		HttpResponse httpResponse;
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		String originalRequest = agentURL + "?query=" + requestParams.toString();
+		String originalRequest = agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET + requestParams.toString();
 		HttpGet httpGet = new HttpGet(
-				agentURL + "?query=" + URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
+				agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
+						+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
 
 		httpResponse = httpClient.execute(httpGet);
 		if (httpResponse.getStatusLine().getStatusCode() != 200) {
@@ -1192,8 +1201,9 @@ public class DerivationClient {
 				// uk.ac.cam.cares.jps.base.derivation.DerivationClient.updatePureSyncDerivation(DerivationClient.java:1010)
 				HttpResponse httpResponse;
 				CloseableHttpClient httpClient = HttpClients.createDefault();
-				String originalRequest = agentURL + "?query=" + requestParams.toString();
-				HttpGet httpGet = new HttpGet(agentURL + "?query="
+				String originalRequest = agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
+						+ requestParams.toString();
+				HttpGet httpGet = new HttpGet(agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
 						+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
 
 				httpResponse = httpClient.execute(httpGet);
