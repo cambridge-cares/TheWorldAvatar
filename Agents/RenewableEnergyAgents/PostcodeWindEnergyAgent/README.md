@@ -16,7 +16,7 @@ To interact with the [TheWorldAvatar] (TWA) code base (mainly) written in Java, 
 
 Note I: Run MetOfficeWindSensorAgent.wind_sensor_instantiation.py before running PostcodeWindEnergyAgent.wind_energy_instantiation.py.
 
-Note II: Running any python file available here will require the use of the agent folder. For example, to run wind_energy_instantiation.py use the following command:
+Note II: Running any python file available here will require the change of directory to the <root> folder named RenewableEnergyAgents and the use of the agent folder called PostcodeWindEnergyAgent. For example, to run wind_energy_instantiation.py use the following command:
          python -m PostcodeWindEnergyAgent.wind_energy_instantiation
 
          Follow the instructions provided in README.md available under MetOfficeWindSensorAgent to know how to run MetOfficeWindSensorAgent.wind_energy_instantiation.py.

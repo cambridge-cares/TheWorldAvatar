@@ -16,7 +16,7 @@ To interact with the [TheWorldAvatar] (TWA) code base (mainly) written in Java, 
 
 Note I: Run MetOfficeSolarSensorAgent.solar_sensor_instantiation.py before running PostcodeSolarEnergyAgent.solar_energy_instantiation.py.
 
-Note II: Running any python file available here will require the use of the agent folder. For example, to run solar_energy_instantiation.py, use the following command:
+Note II: Running any python file available here will require the change of directory to the <root> folder named RenewableEnergyAgents and the use of the agent folder called PostcodeSolarEnergyAgent. For example, to run solar_energy_instantiation.py, use the following command:
          python -m PostcodeSolarEnergyAgent.solar_energy_instantiation
 
          Follow the instructions provided in README.md available under MetOfficeSolarSensorAgent to know how to run MetOfficeSolarSensorAgent.solar_energy_instantiation.py.

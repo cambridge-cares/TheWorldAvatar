@@ -22,9 +22,6 @@ FORMAT_HOURLY = '%H:%M:%SZ'
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
-    # Namespace for this example data
-    'ex': 'http://www.theworldavatar.com/kb/ts_example/',
-    'tsa': 'http://www.theworldavatar.com/kb/ontotimeseries/',
     # Namespaces for used ontologies
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
@@ -32,12 +29,12 @@ PREFIXES = {
     'xsd': 'http://www.w3.org/2001/XMLSchema#',
     'geolit': 'http://www.bigdata.com/rdf/geospatial/literals/v1#',
     'geo': 'http://www.bigdata.com/rdf/geospatial#>',
-    'ssn': 'https://www.w3.org/TR/vocab-ssn/', ### I think this is correct but double check
-    'ontoenergysystem': 'http://theworldavatar.com/ontology/ontoenergysystem/',
-    'ontoweather': 'http://www.theworldavatar.com/kb/ts_example/', ### Example prefix for now
-    'ontoturbine': 'http://www.theworldavatar.com/kb/ts_example/', ### Example prefix for now
-    'ontosolarpanel': 'http://www.theworldavatar.com/kb/ts_example/', ### Example prefix for now
-    'ontoenergy': 'http://www.theworldavatar.com/kb/ts_example/', ### Example prefix for now
+    'ssn': 'https://www.w3.org/TR/vocab-ssn/',
+    'ontoenergysystem': 'https://theworldavatar.com/kg/ontoenergysystem/',
+    'ontoweather': 'https://www.theworldavatar.com/kg/ontoweather/',
+    'ontoturbine': 'https://www.theworldavatar.com/kg/ontoturbine/',
+    'ontosolarpanel': 'https://www.theworldavatar.com/kg/ontosolarpanel/',
+    'ontoenergy': 'https://www.theworldavatar.com/kg/ontoenergy/',
     'om': 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'sosa': 'http://www.w3.org/ns/sosa'
 }
