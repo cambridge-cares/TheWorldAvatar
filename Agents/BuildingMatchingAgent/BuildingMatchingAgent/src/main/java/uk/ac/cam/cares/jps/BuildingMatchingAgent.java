@@ -27,7 +27,7 @@ public class BuildingMatchingAgent extends JPSAgent {
     public static final String URI_LISTEN = "/match";
     public static final String KEY_OCGML = "ocgml";
     public static final String KEY_OBE = "obe";
-    public static final String KEY_NAMESPACE = "namespace";
+    public static final String KEY_PREFIXIRI = "prefixIRI";
 
     private static final Logger LOGGER = LogManager.getLogger(BuildingMatchingAgent.class);
     private static final String REQUEST_RECEIVED_MSG = "Request received.";
@@ -70,13 +70,13 @@ public class BuildingMatchingAgent extends JPSAgent {
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException{
         if(!requestParams.isEmpty() && requestParams.get(JPSConstants.METHOD).equals(HttpMethod.PUT)){
-            if(!requestParams.has(KEY_OCGML) || !requestParams.has(KEY_OBE) || !requestParams.has(KEY_NAMESPACE)){
+            if(!requestParams.has(KEY_OCGML) || !requestParams.has(KEY_OBE) || !requestParams.has(KEY_PREFIXIRI)){
                 throw new BadRequestException("Missing request parameters");
             }
             else {
                 targetResourceId_ocgml = requestParams.getString(KEY_OCGML);
                 targetResourceId_obe = requestParams.getString(KEY_OBE);
-                bldgGraph = requestParams.getString(KEY_NAMESPACE).endsWith("/")?  requestParams.getString(KEY_NAMESPACE)+"building/" :  requestParams.getString(KEY_NAMESPACE)+"/building/";
+                bldgGraph = requestParams.getString(KEY_PREFIXIRI).endsWith("/")?  requestParams.getString(KEY_PREFIXIRI)+"building/" :  requestParams.getString(KEY_PREFIXIRI)+"/building/";
             }
             return true;
         }
