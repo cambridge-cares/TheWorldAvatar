@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 July 2022         #
+# Last Update Date: 14 July 2022         #
 ##########################################
 
 """
@@ -11,10 +11,11 @@ import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 
 def populationDensityCalculator(centre:str, radius, queryEndPointLabel: str) -> float:
-    if not "#" in centre:
+    if not "#" in centre and type(centre) is list and len(centre) == 2:
+        centre = str(centre[0]) + "#" + str(centre[1])
+    else:
         raise ValueError("Cannot calculate population density from centre")
 
     queryStr = """

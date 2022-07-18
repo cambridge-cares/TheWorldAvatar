@@ -1,15 +1,25 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 16 June 2022         #
+# Last Update Date: 18 July 2022         #
 ##########################################
 
 import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery
+from SMRSitePreSelection.AnnualElectricityProduction import ElectricityProductionDistribution
+from UK_Digital_Twin_Package.OWLfileStorer import readFile
+from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 
+"""Create an object of Class CO2FactorAndGenCostFactor"""
+ukmf = ModelFactor.ModelFactor()
 
+"""Model Parameter Array"""
+modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
+
+##FIXME: add methof to calculate the operation hours
 def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_label):
+    results = []
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -23,16 +33,24 @@ def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_la
     PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
     PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity ?LatLon
+    SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity ?LatLon ?FuelType ?GenerationTechnology
     WHERE
     {
+    ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
+    ?GBElectricitySystemIRI ontoenergysystem:hasRelevantPlace/owl:sameAs <https://dbpedia.org/page/Great_Britain> .
+
     <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
     <%s> ontocape_upper_level_system:isComposedOfSubsystem ?Bus . 
     
     ?PowerGenerator meta_model_topology:hasOutput ?Bus .
     ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .  
     ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator . 
+
     ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnologyIRI .
+    ?GenerationTechnologyIRI rdf:type ?GenerationTechnology .
+    
+    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?FuelTypeIRI .
+    ?FuelTypeIRI rdf:type ?FuelType . 
     
     FILTER NOT EXISTS { ?GenerationTechnologyIRI rdf:type <http://www.theworldavatar.com/kb/ontoeip/WindOffshore> .}  
     
@@ -42,16 +60,26 @@ def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_la
     ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
 
     ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
-    ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
-       
+    ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .   
     }
     """% (topologyNodeIRI, topologyNodeIRI)
 
     print('...starts queryGeneratorToBeRetrofitted_AllPowerPlant...')
     res = json.loads(performQuery(endPoint_label, queryStr))
     print('...finishes queryGeneratorToBeRetrofitted_AllPowerPlant...')
-    return res 
 
+    for r in res:
+            arranged_res = {
+                        "PowerGenerator": r["PowerGenerator"],
+                        "Bus": r["Bus"],
+                        "Capacity": r["Capacity"],
+                        "LatLon": [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])],
+                        "fuelOrGenType": r["GenerationTechnology"] if "Wind" in r["FuelType"] else r["FuelType"]
+                        }
+            results.append(arranged_res)
+    return results 
+
+##FIXME: add methof to calculate the operation hours
 def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endPoint_label):
     results = []
     for gen in retrofitGenerator:
@@ -68,7 +96,7 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
         PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
         PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
         PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-        SELECT DISTINCT ?Bus ?Capacity ?LatLon
+        SELECT DISTINCT ?Bus ?Capacity ?LatLon ?FuelType ?GenerationTechnology
         WHERE
         {
         <%s> meta_model_topology:hasOutput ?Bus .
@@ -82,6 +110,12 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
         
         ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
         ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
+
+        ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnologyIRI .
+        ?GenerationTechnologyIRI rdf:type ?GenerationTechnology .
+        
+        ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?FuelTypeIRI .
+        ?FuelTypeIRI rdf:type ?FuelType . 
         
         }
         """% (gen, gen, gen)
@@ -89,17 +123,56 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
         print('...starts queryGeneratorToBeRetrofitted_SelectedGenerator...')
         res = json.loads(performQuery(endPoint_label, queryStr))[0]
         print('...finishes queryGeneratorToBeRetrofitted_SelectedGenerator...')
-        arranged_res = {"PowerGenerator" : gen,
+        arranged_res = {
+                        "PowerGenerator" : gen,
                         "Bus": res["Bus"],
                         "Capacity": res["Capacity"],
-                        "LatLon": [float(res['LatLon'].split('#')[0]), float(res['LatLon'].split('#')[1])]}
+                        "LatLon": [float(res['LatLon'].split('#')[0]), float(res['LatLon'].split('#')[1])],
+                        "fuelOrGenType": res["GenerationTechnology"] if "Wind" in res["FuelType"] else res["FuelType"],
+                        "annualOperatingHours": 0
+                        }
         results.append(arranged_res)
     return results 
 
-def queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(retrofitGenerationTechType:list, topologyNodeIRI:str, endPoint_label):
+def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofitGenerationOrFuelType:list, topologyNodeIRI:str, endPoint_label):  
     results = []
-    for techType in retrofitGenerationTechType:
-        queryStr = """
+    keys = ElectricityProductionDistribution.keys()
+    for type in retrofitGenerationOrFuelType:
+        if type not in keys:
+            raise ValueError("!!!The given type of the generator should be in the ElectricityProductionDistribution!!!")       
+        if "#" in type:
+            fuelOrGenType = str(type.split('#')[1])
+        else:
+            fuelOrGenType = str(type) 
+
+        if fuelOrGenType in ukmf.Nuclear:
+            CO2EmissionFactor = modelFactorArrays[2][4]
+        elif fuelOrGenType in ukmf.Bio:
+            CO2EmissionFactor = modelFactorArrays[3][4]
+        elif fuelOrGenType in ukmf.Coal: 
+            CO2EmissionFactor = modelFactorArrays[4][4]
+        elif fuelOrGenType in ukmf.NaturalGasOrOil: 
+            CO2EmissionFactor = modelFactorArrays[5][4]
+        elif fuelOrGenType in ukmf.Solar:  
+            CO2EmissionFactor = modelFactorArrays[7][4]
+        elif fuelOrGenType in ukmf.Hydro:  
+            CO2EmissionFactor = modelFactorArrays[8][4]
+        elif fuelOrGenType in ukmf.PumpHydro:  
+            CO2EmissionFactor = modelFactorArrays[9][4]
+        elif fuelOrGenType in ukmf.WindOnshore:  
+            CO2EmissionFactor = modelFactorArrays[10][4]    
+        elif fuelOrGenType in ukmf.WindOffshore:  
+            CO2EmissionFactor = modelFactorArrays[11][4]       
+        elif fuelOrGenType in ukmf.Waste:  
+            CO2EmissionFactor = modelFactorArrays[12][4]       
+        else:
+            CO2EmissionFactor = modelFactorArrays[13][4]  
+
+        print(CO2EmissionFactor) 
+
+        annualGenerationOfGivenType = ElectricityProductionDistribution[type]
+        queryStr_1 = """
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
@@ -115,15 +188,20 @@ def queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(retrofitGener
         SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity ?LatLon
         WHERE
         {
+        ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
+        ?GBElectricitySystemIRI ontoenergysystem:hasRelevantPlace/owl:sameAs <https://dbpedia.org/page/Great_Britain> .
+
         <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
         <%s> ontocape_upper_level_system:isComposedOfSubsystem ?Bus . 
         
         ?PowerGenerator meta_model_topology:hasOutput ?Bus .
         ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .  
         ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator . 
-        ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?FuelType .
-        
-        ?FuelType rdf:type <%s> .
+
+        {?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?FuelType .
+        ?FuelType rdf:type <%s> . } UNION 
+        {?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?TechType .
+        ?TechType rdf:type <%s> . }
 
         ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnologyIRI .
 
@@ -137,14 +215,57 @@ def queryGeneratorToBeRetrofitted_SelectedGenerationTechnologyType(retrofitGener
         ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
         ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
         }
-        """% (topologyNodeIRI, topologyNodeIRI, techType)
+        """% (topologyNodeIRI, topologyNodeIRI, type, type)
+        
+        queryStr_totalGeneration = """
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+        PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
+        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+        PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+        PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+        PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+        PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+        PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
+        PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+        PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+        SELECT (SUM(?Capacity) as ?Total_Capacity)
+        WHERE
+        {
+        {?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?FuelType .
+        ?FuelType rdf:type <%s> . } UNION 
+        {?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?TechType .
+        ?TechType rdf:type <%s> . }
 
-        print('...starts queryGeneratorToBeRetrofitted_SelectedPowerPlant...')
-        res = json.loads(performQuery(endPoint_label, queryStr))
-        print('...finishes queryGeneratorToBeRetrofitted_SelectedPowerPlant...')    
+        ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator .
+        ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
+        ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
+        ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
+        }
+        """% (type, type)
+
+        print('...starts queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType...')
+        res = json.loads(performQuery(endPoint_label, queryStr_1))
+        print('...finishes queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType...')  
+        print('...starts query total capacity...')
+        Total_Capacity = json.loads(performQuery(endPoint_label, queryStr_totalGeneration))[0]["Total_Capacity"]
+        print('...finishes queryGeneratorToBeRetrofitted_SelectedPowerPlant...')   
+        annualOperatingHours = round(float(annualGenerationOfGivenType)/float(Total_Capacity), 2)
+        print("The operating hours of the", type, " is", annualOperatingHours)
+                
         for r in res:
-            r['LatLon'] = [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])]
-            results.append(r)
+            arranged_res = {
+                            "PowerGenerator" : r["PowerGenerator"],
+                            "Bus": r["Bus"],
+                            "Capacity": r["Capacity"],
+                            "LatLon": [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])],
+                            "fuelOrGenType": type,
+                            "annualOperatingHours": float(annualOperatingHours),
+                            "CO2EmissionFactor": CO2EmissionFactor
+                            }
+            results.append(arranged_res) 
+
     return results 
 
 ############################################OLD####################################
