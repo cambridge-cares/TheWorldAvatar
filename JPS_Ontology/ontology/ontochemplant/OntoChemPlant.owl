@@ -9,7 +9,7 @@
      xmlns:OntoChemPlant="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28 June 2022</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">18 July 2022</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology defined for representing the processes, business and geospatial information of a chemical plant</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -54,19 +54,6 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasCompanyPowerConsumption -->
-
-
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasCompanyPowerConsumption">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#Company"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an entity and its annual power consumption</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has company power consumption</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasDesignCapacity -->
 
 
@@ -76,18 +63,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a chemical plant and its design capacity</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has design capacity</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasFlowRate -->
-
-
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasFlowRate">
-        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FlowRate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to represent the measured flow rate of a material.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has flow rate</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -204,6 +179,19 @@
     
 
 
+    <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasPowerConsumption -->
+
+
+    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasPowerConsumption">
+        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#Company"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an entity and its annual power consumption</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has power consumption</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasProcessCondition -->
 
 
@@ -239,6 +227,25 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a building and its utility costs</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has utility cost</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#isAssociatedWith -->
+
+
+    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#isAssociatedWith">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#InputChemical"/>
+                    <rdf:Description rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#OutputChemical"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FlowRate"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is associated with</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -377,6 +384,18 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isRelatedTo -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isRelatedTo">
+        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FlowRate"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Process"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is related to</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#realizes -->
 
 
@@ -420,6 +439,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasInputChemical">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Process"/>
         <rdfs:range rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#InputChemical"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has input chemical</rdfs:label>
@@ -431,6 +451,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasOutputChemical">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Process"/>
         <rdfs:range rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#OutputChemical"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has output chemical</rdfs:label>
@@ -470,19 +491,6 @@
     
 
 
-    <!-- http://ontology.eil.utoronto.ca/icontact.owl#hasPostalCode -->
-
-
-    <owl:DatatypeProperty rdf:about="http://ontology.eil.utoronto.ca/icontact.owl#hasPostalCode">
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icontact.owl#Address"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an address and its associated postal code</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://ontology.eil.utoronto.ca/icontact.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has postal code</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasBusinessActivity -->
 
 
@@ -492,19 +500,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a company and its main business activity</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has business activity</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasLandlotNumber -->
-
-
-    <owl:DatatypeProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasLandlotNumber">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#LandLotDetails"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a land lot and its associated ID</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has land lot number</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -585,28 +580,15 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasThermalEfficiency -->
+    <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasyearofEstablishment -->
 
 
-    <owl:DatatypeProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasThermalEfficiency">
-        <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#ChemicalPlant"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an entity and its thermal efficiency</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has thermal efficiency</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasyearofFormation -->
-
-
-    <owl:DatatypeProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasyearofFormation">
+    <owl:DatatypeProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasyearofEstablishment">
         <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#Company"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a company and its year of formation</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has year of formation</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has year of establishment</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -688,7 +670,7 @@
                 <owl:onClass rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#FuelType"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chemical plant owned by company</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An industrial plant established to produce chemicals</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chemical plant</rdfs:label>
     </owl:Class>
@@ -718,7 +700,7 @@
 
 
     <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#Company">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Name of company</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An institution created to conduct business [WordNet]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Company</rdfs:label>
     </owl:Class>
@@ -909,7 +891,7 @@
 
     <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#Revenue">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Revenue earned by company in 2020</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total amount of income of an orgnasiation prior to any deductions</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Revenue</rdfs:label>
     </owl:Class>
@@ -1027,7 +1009,7 @@
                 <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building owned by company</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A structure that has a roof and walls and stands more or less permanently in one place [WordNet]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.purl.org/oema/infrastructure/Building</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building</rdfs:label>
     </owl:Class>
@@ -1178,7 +1160,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species">
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Species</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ontokin species</rdfs:label>
     </owl:Class>
     
 
@@ -1210,7 +1192,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerConsumption">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power consumption of company</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The utilisation of power to satisfy needs or in manufacturing, e.g., chemical manufacturing</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power consumption</rdfs:label>
     </owl:Class>
@@ -1273,10 +1255,6 @@
      -->
 
 
-    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#isAssociatedWith">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is associated with</rdfs:label>
-    </rdf:Description>
     <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#stores">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a storage tank and its contents</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
@@ -1290,10 +1268,6 @@
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf">
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is composed of</rdfs:label>
-    </rdf:Description>
-    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isRelatedTo">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is related to</rdfs:label>
     </rdf:Description>
 </rdf:RDF>
 
