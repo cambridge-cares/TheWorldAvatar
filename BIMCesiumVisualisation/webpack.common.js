@@ -1,28 +1,15 @@
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 // Copy folders to output
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-// The path to the CesiumJS source code
+// Path to the CesiumJS source code
 const cesiumSource = 'node_modules/cesium/Source';
 const cesiumWorkers = '../Build/Cesium/Workers';
 
 module.exports = {
-    mode: 'development',
     entry: {
-        app: './src/index.js'
+        app: './src/js/index.js'
     },
-    output: {
-        filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist'),
-        clean: true,
-        sourcePrefix: '',
-    },
-    devtool: 'eval',
-    devServer:{
-        port: 3000,
-        compress: true,
-      },
     amd: {
         // Enable webpack-friendly use of require in Cesium
         toUrlUndefined: true
@@ -39,17 +26,18 @@ module.exports = {
             use: [ 'style-loader', 'css-loader' ]
         },]
     },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: 'src/index.html'
-        }),
-        // Copy Cesium Assets, Widgets, and Workers to a static directory
+    plugins: [        
         new CopyWebpackPlugin({
             patterns: [
+                // Copy Cesium Assets, Widgets, and Workers to a static directory
                 { from: path.join(cesiumSource, cesiumWorkers), to: 'Workers' },
                 { from: path.join(cesiumSource, 'Assets'), to: 'Assets' },
                 { from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' },
-                // Copy tilesets and their glTF into the output folder
+                /* Copy tilesets and their glTF files into the output folder.
+                Do not add these using Webpack's loaders or asset modules, as
+                Webpack minifies and obfuscate the tilesets as per its default 
+                behaviour for all files, and Cesium is unable to read them yet
+                */
                 { from: 'src/data', to: 'data' },
             ]
         }),
