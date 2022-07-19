@@ -1,9 +1,9 @@
-#Building Matching Agent
+# Building Matching Agent
 
-###Introduction
+### Introduction
 The building matching agent is used to link a building instantiated in OntoBuiltEnv to its corresponding instance instantiated in OntoCityGML. The link is created by using UPRNs as the identifiers.
 
-###Input
+### Input
 The agent accepts 3 input parameters in a JSONObject format with the keys: "ocgml", "obe" and "prefixIRI" where,<br/>
 "ocgml" is the endpoint containing buildings instantiated in OntoCityGML, "obe" is the endpoint containing buildings instantiated in OntoBuiltEnv and "prefixIRI" 
 is the complete IRI of the OntoCityGML namespace. 
@@ -15,7 +15,7 @@ Example input: <br/>
 &emsp; "prefixIRI": "http:<span></span>//127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/" <br/>
 }
 
-###Output
+### Output
 The relationship/link between the OntoBuiltEnv and OntoCityGML buildings is written to the knowledge graph in the OntoBuilEnv namespace. <br/>
 The newly added triples have the form <br/>
 1. Subject - OntoBuiltEnv building instance 
@@ -23,7 +23,7 @@ The newly added triples have the form <br/>
 3. Object - OntoCityGML building instance
 
 
-###Requirements
+### Requirements
 The following prerequisites are required before running the Building Matching Agent
 1. 2 SPARQL endpoints containing buildings instantiated in OntoCityGML and OntoBuiltEnv respectively
 2. On the OntoCityGML namespace, run the [Thematic Surface Discovery Agent](https://github.com/cambridge-cares/CitiesKG/blob/develop/agents/README.md#thematic-surface-discovery-agent-user-guide) in the restructure mode followed 
@@ -47,7 +47,7 @@ This step is used to link a building in OntoCityGML to its corresponding UPRN(s)
    5. In this repository, locate the agents properties file in _agents/src/main/resources/config.properties_, and set the uri.route to `http://localhost:48080/access-agent/access/test`, replacing `test` with the name of the namespace to connect to. 
    6. Build and deploy the AccessAgent as described in the README of the [JPS_ACCESS_AGENT directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT) in the TWA repository.
 
-###Building the <i>Building Matching Agent</i>
+### Building the <i>Building Matching Agent</i>
 1. The Building Matching Agent is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central). You'll need to provide your credentials in single-word text files located like this:
 ```
 ./credentials/
