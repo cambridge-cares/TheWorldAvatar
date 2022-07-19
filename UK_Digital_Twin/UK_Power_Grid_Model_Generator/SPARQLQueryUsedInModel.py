@@ -58,6 +58,7 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint_label):
 
 def queryEGenInfo(topologyNodeIRI, endPoint_label):
     queryStr = """
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
@@ -73,6 +74,9 @@ def queryEGenInfo(topologyNodeIRI, endPoint_label):
     SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?LatLon
     WHERE
     {
+    ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
+    ?GBElectricitySystemIRI ontoenergysystem:hasRelevantPlace/owl:sameAs <https://dbpedia.org/page/Great_Britain> .
+
     <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
     <%s> ontocape_upper_level_system:isComposedOfSubsystem ?Bus . 
     

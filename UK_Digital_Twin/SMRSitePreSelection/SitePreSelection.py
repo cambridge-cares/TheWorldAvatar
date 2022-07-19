@@ -30,6 +30,7 @@ class SitePreSelection(object):
             demandCapacityRatio:float,
             bankRate:float,
             carbonTax:float,
+            shutNonRetrofittedGenerator:float,
             DiscommissioningCostEstimatedLevel:int = 1 ## the number 0 indicates the using the minimum decommissioning cost, while 1 for middle and 2 for high
         ):
 
@@ -46,6 +47,7 @@ class SitePreSelection(object):
         self.geospatialQueryEndpointLabel = geospatialQueryEndpointLabel
         self.i = bankRate
         self.carbonTax = carbonTax
+        self.shutNonRetrofittedGenerator = shutNonRetrofittedGenerator
 
         if DiscommissioningCostEstimatedLevel in [0,1,2]:
             self.DcLevel = DiscommissioningCostEstimatedLevel
@@ -68,9 +70,15 @@ class SitePreSelection(object):
         ##-- Set up constraint for number of heads --##
         ## 1. the replacedCapacity
         replacedCapacity = 0
-        for gen in self.generatorToBeReplacedList:
-            replacedCapacity += float(gen["Capacity"])
-        replacedCapacity = float(self.capRatio) * float(replacedCapacity)
+        if self.shutNonRetrofittedGenerator is True:
+            for gen in self.generatorToBeReplacedList:
+                replacedCapacity += float(gen["Capacity"])
+            replacedCapacity = float(self.capRatio) * float(replacedCapacity)
+        else: 
+            for s in range(len(self.generatorToBeReplacedList)):
+                gen = self.generatorToBeReplacedList[s]
+                bv = self.binaryVarNameList[s]
+                replacedCapacity += float(gen["Capacity"]) * self.varSets[bv]
 
         ## 2. the total capacity of SMR
         totalSMRCapacity = 0
@@ -106,7 +114,7 @@ class SitePreSelection(object):
             
             ## the protential carbon emssion cost if the old generator is not being replaced by SMR
             for l in range(self.L):
-                carbonCost += existingGenCap * CO2EmissionFactor * annualOperatingHours * self.carbonTax * (1 + self.i) **(-(l - 1))
+                carbonCost += float(existingGenCap) * float(CO2EmissionFactor) * float(annualOperatingHours) * float(self.carbonTax) * (1 + float(self.i)) **(-(l - 1))
 
             totalSMRCapitalCost += bv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
             totalDiscommissioningCost += bv * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))

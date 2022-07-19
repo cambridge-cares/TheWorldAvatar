@@ -195,13 +195,15 @@ class OptimalPowerFlowAnalysis:
                     parse(iri, rule='IRI')
                 retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryEndpointLabel)
             
+                retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryEndpointLabel)
+                retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryEndpointLabel)
+            
             self.retrofitListBeforeSelection = retrofitListBeforeSelection
             retrofitListBeforeSelection_ = retrofitListBeforeSelection.copy()
-            print(len(self.retrofitListBeforeSelection))
             ## Perform site pre-selection analysis
             siteSelector = sp.SitePreSelection(self.queryEndpointLabel, retrofitListBeforeSelection, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost, \
                 self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.demandCapacityRatio, \
-                self.bankRate, self.CarbonTax, self.DiscommissioningCostEstimatedLevel)
+                self.bankRate, self.CarbonTax, self.shutNonRetrofittedGenerator, self.DiscommissioningCostEstimatedLevel)
             siteSelector.SMRSitePreSelector()
             
             self.siteToBeReplaced = siteSelector.siteSelected
@@ -210,17 +212,12 @@ class OptimalPowerFlowAnalysis:
                 retrofitListBeforeSelection_.remove(site)
 
             self.siteNotSelected = retrofitListBeforeSelection_ ## those not to be replaced generator will keep running or shut down
-############################################FIXME:###################################################################################################
-        #     self.retrofitExistingGenPairList = []  #####TODO: temperary list used for visulisation
-        #     self.toBeRetrofittedGeneratorNodeList = []
-        #     for regen in retrofitList:
-        #         retrofit_existing_GenPair = [regen["PowerGenerator"], None, None, None, None, None] ## generator IRI, existing gen object name, retrofitting gen object name, lat-lon, capacity
-        #         self.retrofitExistingGenPairList.append(retrofit_existing_GenPair)
-        #         self.toBeRetrofittedGeneratorNodeList.append(str(regen["PowerGenerator"]))
-        # else:
-        #     self.retrofitExistingGenPairList = [] 
-        #     self.toBeRetrofittedGeneratorNodeList = []
-        print(len(self.siteToBeReplaced), len(self.siteNotSelected), len(self.retrofitListBeforeSelection))
+
+        print("The carbon tax is £/tCO2", self.CarbonTax)
+        print("The total number of generator is", len(self.generatorNodeList))
+        print("The total number of protential sites is", len(self.retrofitListBeforeSelection))
+        print("The total number of sites to be replcced by SMR is",  len(self.siteToBeReplaced))
+        print("The total number of sites not to be replaced (shut-down)", len(self.siteNotSelected))
         return 
 
     """This method is called to initialize the model entities objects: model input"""
@@ -281,40 +278,28 @@ class OptimalPowerFlowAnalysis:
         ## remove the shut down generator from the generatorNodeList
 
         print(len(self.generatorNodeList))
+        
+        generatorNodeListNonDeleted = self.generatorNodeList.copy()
+
         if self.shutNonRetrofittedGenerator:
-            i = 0
-            for egen in self.generatorNodeList:
+            for egen in generatorNodeListNonDeleted:
                 if egen[0] in [gen["PowerGenerator"] for gen in self.retrofitListBeforeSelection]:
                     self.generatorNodeList.remove(egen)
-                    i += 1
-            print(i)
         else:
-            for egen in self.generatorNodeList:
+            for egen in generatorNodeListNonDeleted:
                 if egen[0] in [gen["PowerGenerator"] for gen in self.siteToBeReplaced]:
                     self.generatorNodeList.remove(egen)
 
-        print(len(self.generatorNodeList))
+        print("The number of the existing power plant is", len(self.generatorNodeList))
 
         for egen in self.generatorNodeList:
             objectName = UK_PG.UKEGenModel.EGenKey + str(self.generatorNodeList.index(egen)) ## egen model python object name
-
-        ############################################FIXME:###################################################################################################   
-            # if str(egen[0]) in self.toBeRetrofittedGeneratorNodeList:
-            #     indexOfList = self.toBeRetrofittedGeneratorNodeList.index(str(egen[0]))
-            #     self.retrofitExistingGenPairList[indexOfList][1] = objectName # existing gen
-            #     self.retrofitExistingGenPairList[indexOfList][2] = UK_PG.UKEGenModel.EGenRetrofitKey + str(indexOfList) # retrofitted SMR
-            #     self.retrofitExistingGenPairList[indexOfList][3] = egen[8] # latlon
-            #     self.retrofitExistingGenPairList[indexOfList][4] = egen[7] # fuel
-            #     self.retrofitExistingGenPairList[indexOfList][5] = egen[6] # capcity
-            # NonRG = [objectName, egen[8], egen[7], egen[6]]
-            # self.nonRetroGenList.append(NonRG) 
-
             uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), None, self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
             uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
             ###add EGen model parametor###
             ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio)
             self.GeneratorObjectList.append(objectName)
-        print(len(self.GeneratorObjectList))
+        
         ### Initialisation of the SMR Generator Model Entities ###
         if self.withRetrofit is True:
             for i in range(len(modelFactorArrays)):
@@ -336,7 +321,7 @@ class OptimalPowerFlowAnalysis:
                 #self.GeneratorObjectList.append(objectName)
         else: 
             self.GeneratorToBeRetrofittedObjectList = []
-
+        ## print(len(self.siteToBeReplaced), len(self.GeneratorToBeRetrofittedObjectList), len(self.GeneratorObjectList))
         self.ObjectSet = ObjectSet
         return     
     
@@ -495,7 +480,6 @@ class OptimalPowerFlowAnalysis:
         branch = self.results["branch"]
         gen = self.results["gen"]
         
-        
         ##--Bus--##  
         ##  VM_OUTPUT, VM_OUTPUT, P_GEN, G_GEN, PD_OUTPUT, GD_OUTPUT        
         ## post processsing of the bus results   
@@ -571,36 +555,8 @@ class OptimalPowerFlowAnalysis:
                 index = int(UK_PG.UKEGenModel.OUTPUT_VARIABLE[key])
                 setattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + str(index_regen)), key, generatorPostResult[index_gen][index])        
             index_regen += 1
-            index_gen += 1  
+            index_gen += 1 
         return 
-
-##FIXME: delete this method
-    # def RetrofittingResultProcesser(self):
-    #     """
-    #     Replace the existing generator with the new retrofitted generator
-    #     """
-    #     if self.withRetrofit is True:
-    #         # self.retrofitResults = [] ## 1.old or None: old for replacing, None for integrate; 2. new generator
-    #         # self.generatorRetrofitted = [] ## the existing generator replaced by the new generator
-    #         # self.generatorIntergratedWithSMR = [] ## the existing generator is intergated with the new generator
-    #         # # self.NewlyAddedGenenrators_replacing = [] ## the new generators 
-    #         # # self.NewlyAddedGenenrators_integrating = [] ## the new generators 
-    #         # for retrofitExistingGenPair in self.retrofitExistingGenPairList:
-    #         #     # print(retrofitExistingGenPair[1], self.ObjectSet[retrofitExistingGenPair[1]].PG_OUTPUT)
-    #         #     existingGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[1]), "PG_OUTPUT"), 2) ## existing generator
-    #         #     retrofittedGenOutput = round(getattr(self.ObjectSet.get(retrofitExistingGenPair[2]), "PG_OUTPUT"), 2) ## SMR
-    #         #     if retrofittedGenOutput >= existingGenOutput and existingGenOutput < 1: ## SMR retrofitts the existing generator 
-    #         #         existRetroPairResult = [retrofitExistingGenPair[1], retrofitExistingGenPair[2]] ## 1. old; 2: new
-    #         #         self.generatorRetrofitted.append(retrofitExistingGenPair[0])
-    #         #         # self.NewlyAddedGenenrators_replacing.append(retrofitExistingGenPair[2])
-    #         #     if existingGenOutput > 1 and retrofittedGenOutput > 1: ## SMR intergrates with the existing generator 
-    #         #         existRetroPairResult = [None, retrofitExistingGenPair[2]]
-    #         #         self.generatorIntergratedWithSMR.append(retrofitExistingGenPair[0])
-    #         #         # self.NewlyAddedGenenrators_integrating.append(retrofitExistingGenPair[2])
-    #         #     self.retrofitResults.append(existRetroPairResult) 
-    #         for name in self.GeneratorToBeRetrofittedObjectList:    
-    #             self.GeneratorObjectList.append(name) ## all generator objects after retrofitting including existing generator objects and SMRs, does not include the shut down generator
-    #     return 
     
     def ModelPythonObjectOntologiser(self):
         """
@@ -633,7 +589,7 @@ if __name__ == '__main__':
     loadAllocatorName = "regionalDemandLoad"
     EBusModelVariableInitialisationMethodName= "defaultInitialisation"
     ELineInitialisationMethodName = "defaultBranchInitialiser"
-    CarbonTax = 0
+    CarbonTax = 300
     piecewiseOrPolynomial = 2
     pointsOfPiecewiseOrcostFuncOrder = 2
     baseMVA = 100
@@ -646,7 +602,7 @@ if __name__ == '__main__':
     newGeneratorType = "SMR"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
 
-    shutNonRetrofittedGenerator = True
+    shutNonRetrofittedGenerator = False
 
     discountRate = 0.02
     bankRate = 0.0125
@@ -672,9 +628,7 @@ if __name__ == '__main__':
     testOPF1.OPFModelInputFormatter()
     testOPF1.OptimalPowerFlowAnalysisSimulation()
     testOPF1.ModelOutputFormatter()
-    #TOBE DELETED: testOPF1.RetrofittingResultProcesser()
-
-#     testOPF1.ModelPythonObjectOntologiser()
+    ## testOPF1.ModelPythonObjectOntologiser()
 
     def powerPlantgeoJSONCreator(retrofitResults, class_label): 
         geojson_file = """
@@ -736,9 +690,9 @@ if __name__ == '__main__':
 #     # for attr in testOPF1.ObjectSet.get('EGen-1134').__dir__():
 #     #     print(attr, getattr(testOPF1.ObjectSet.get('EGen-1134'), attr)) 
 
-    print("*****This are EGen toberetrofitted results*****")
-    for attr in testOPF1.ObjectSet.get('EGenRetrofit-11').__dir__():
-        print(attr, getattr(testOPF1.ObjectSet.get('EGenRetrofit-11'), attr)) 
+    # print("*****This are EGen toberetrofitted results*****")
+    # for attr in testOPF1.ObjectSet.get('EGenRetrofit-11').__dir__():
+    #     print(attr, getattr(testOPF1.ObjectSet.get('EGenRetrofit-11'), attr)) 
 
     retrofitResults = [] 
     for smrname in testOPF1.GeneratorToBeRetrofittedObjectList:
@@ -748,9 +702,11 @@ if __name__ == '__main__':
     print(len(retrofitResults))
     print(len(testOPF1.GeneratorToBeRetrofittedObjectList))
     print(len(testOPF1.siteToBeReplaced))
-    for shutdown in testOPF1.siteNotSelected:
-        existRetroPairResult = [ 'N/A', "#99A3A4", 'Shut Down', shutdown['Capacity'], shutdown['LatLon'], shutdown['fuelOrGenType']]
-        retrofitResults.append(existRetroPairResult)
+    ##TODO: how to deal with the visulisation of the non-chosen generators
+    if testOPF1.shutNonRetrofittedGenerator is True:
+        for shutdown in testOPF1.siteNotSelected:
+            existRetroPairResult = [ 'N/A', "#99A3A4", 'Shut Down', shutdown['Capacity'], shutdown['LatLon'], shutdown['fuelOrGenType']]
+            retrofitResults.append(existRetroPairResult)
     print(len(retrofitResults))
     print(len(testOPF1.siteNotSelected))
     for gen in testOPF1.GeneratorObjectList:
@@ -759,4 +715,4 @@ if __name__ == '__main__':
         retrofitResults.append(existRetroPairResult)
     print(len(retrofitResults))
 
-    powerPlantgeoJSONCreator(retrofitResults, 'newtestSMR_'+ str(CarbonTax))
+    powerPlantgeoJSONCreator(retrofitResults, 'SMR50_'+ str(CarbonTax) + "ifShutDown" + str(shutNonRetrofittedGenerator))

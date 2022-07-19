@@ -146,29 +146,29 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
             fuelOrGenType = str(type) 
 
         if fuelOrGenType in ukmf.Nuclear:
-            CO2EmissionFactor = modelFactorArrays[2][4]
+            CO2EmissionFactor = float(modelFactorArrays[2][4].replace('\n', ''))
         elif fuelOrGenType in ukmf.Bio:
-            CO2EmissionFactor = modelFactorArrays[3][4]
+            CO2EmissionFactor = float(modelFactorArrays[3][4].replace('\n', ''))
         elif fuelOrGenType in ukmf.Coal: 
-            CO2EmissionFactor = modelFactorArrays[4][4]
+            CO2EmissionFactor = float(modelFactorArrays[4][4].replace('\n', ''))
         elif fuelOrGenType in ukmf.NaturalGasOrOil: 
-            CO2EmissionFactor = modelFactorArrays[5][4]
+            CO2EmissionFactor = float(modelFactorArrays[5][4].replace('\n', ''))
         elif fuelOrGenType in ukmf.Solar:  
-            CO2EmissionFactor = modelFactorArrays[7][4]
+            CO2EmissionFactor = float(modelFactorArrays[7][4].replace('\n', ''))
         elif fuelOrGenType in ukmf.Hydro:  
-            CO2EmissionFactor = modelFactorArrays[8][4]
+            CO2EmissionFactor = float(modelFactorArrays[8][4].replace('\n', ''))
         elif fuelOrGenType in ukmf.PumpHydro:  
-            CO2EmissionFactor = modelFactorArrays[9][4]
+            CO2EmissionFactor = float(modelFactorArrays[9][4].replace('\n', ''))
         elif fuelOrGenType in ukmf.WindOnshore:  
-            CO2EmissionFactor = modelFactorArrays[10][4]    
+            CO2EmissionFactor = float(modelFactorArrays[10][4].replace('\n', ''))  
         elif fuelOrGenType in ukmf.WindOffshore:  
-            CO2EmissionFactor = modelFactorArrays[11][4]       
+            CO2EmissionFactor = float(modelFactorArrays[11][4].replace('\n', ''))       
         elif fuelOrGenType in ukmf.Waste:  
-            CO2EmissionFactor = modelFactorArrays[12][4]       
+            CO2EmissionFactor = float(modelFactorArrays[12][4].replace('\n', ''))       
         else:
-            CO2EmissionFactor = modelFactorArrays[13][4]  
+            CO2EmissionFactor = float(modelFactorArrays[13][4].replace('\n', ''))  
 
-        print(CO2EmissionFactor) 
+        # print(CO2EmissionFactor) 
 
         annualGenerationOfGivenType = ElectricityProductionDistribution[type]
         queryStr_1 = """
@@ -185,7 +185,7 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
         PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
         PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
         PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-        SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity ?LatLon
+        SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity ?LatLon ?place 
         WHERE
         {
         ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
@@ -214,6 +214,8 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
 
         ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
         ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
+
+        ?PowerPlant ontoenergysystem:hasRelevantPlace/owl:sameAs ?place .
         }
         """% (topologyNodeIRI, topologyNodeIRI, type, type)
         
@@ -252,7 +254,7 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
         Total_Capacity = json.loads(performQuery(endPoint_label, queryStr_totalGeneration))[0]["Total_Capacity"]
         print('...finishes queryGeneratorToBeRetrofitted_SelectedPowerPlant...')   
         annualOperatingHours = round(float(annualGenerationOfGivenType)/float(Total_Capacity), 2)
-        print("The operating hours of the", type, " is", annualOperatingHours)
+        # print("The operating hours of the", type, " is", annualOperatingHours)
                 
         for r in res:
             arranged_res = {
@@ -262,7 +264,8 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
                             "LatLon": [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])],
                             "fuelOrGenType": type,
                             "annualOperatingHours": float(annualOperatingHours),
-                            "CO2EmissionFactor": CO2EmissionFactor
+                            "CO2EmissionFactor": CO2EmissionFactor,
+                            "place": r["place"]
                             }
             results.append(arranged_res) 
 
