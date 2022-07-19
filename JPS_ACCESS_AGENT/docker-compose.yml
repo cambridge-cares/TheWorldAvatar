@@ -10,7 +10,7 @@ services:
         STOREROUTER_ENDPOINT: "http://blazegraph-access-agent:8080/blazegraph/namespace/kb/sparql"
     pull_policy: if_not_present
     ports:
-      - "48080:8080"
+      - 48888:8080
     networks:
       - default
       
@@ -25,7 +25,7 @@ services:
     volumes:
       - blazegraph_data:/data
     ports:
-      - 48081:8080
+      - 48889:8080
     networks:
       - default
       
