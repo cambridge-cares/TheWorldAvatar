@@ -98,10 +98,14 @@ def retrieve_station_data_from_api(crs: str = 'EPSG:4326') -> list:
     # StationIDs are no unique identifiers for stations (e.g. a station with several
     # measurement features has different IDs). Hence, the  station name will also 
     # serve as unique identifier
-    stations = [{'station': s['properties']['label'].split('-')[0],
-                 'latitude': s['geometry']['coordinates'][0],
-                 'longitude': s['geometry']['coordinates'][1], 
-                 'elevation': s['geometry']['coordinates'][2],
+    stations = [{'station': None if not s.get('properties') else
+                            s.get('properties').get('label').split('-')[0],
+                 'latitude': None if not s.get('geometry') else 
+                             s.get('geometry').get('coordinates')[0],
+                 'longitude': None if not s.get('geometry') else 
+                              s.get('geometry').get('coordinates')[1],
+                 'elevation': None if not s.get('geometry') else 
+                              s.get('geometry').get('coordinates')[2],
                 } for s in stations_raw ]
     df = pd.DataFrame(stations)
     
@@ -200,6 +204,9 @@ def clean_api_data(dataframe: pd.DataFrame):
                           'GB_SamplingFeature_missingFOI']
     data = data[~data['station'].isin(stations_to_remove)]
 
+    # Remove stations with missing location information
+    data = data.dropna(subset=['latitude', 'longitude'])
+
     # Potentially switch returned coordinates, as some of the returned station
     # locations are far outside the UK and lat/lon are most likely mixed up
     data['switch'] = data.apply(lambda x: check_coordinates(x['latitude'], x['longitude']), axis=1)
@@ -249,4 +256,4 @@ def check_coordinates(lat: float, lon:float):
 if __name__ == '__main__':
 
     response = instantiate_all_stations()
-    print(f"Number of instantiated stations: {response[0]}")
+    print(f"Number of instantiated stations: {response}")

@@ -384,11 +384,16 @@ def retrieve_station_details_from_api(crs: str = 'EPSG:4326'):
 
     # Create DataFrame from json response and condition data to ensure 
     # consistency with instantiated station information
-    stations = [{'station': s['properties']['label'].split('-')[0],
-                 'latitude': s['geometry']['coordinates'][0],
-                 'longitude': s['geometry']['coordinates'][1], 
-                 'elevation': s['geometry']['coordinates'][2],
-                 'ts_id': list(s['properties']['timeseries'].keys())
+    stations = [{'station': None if not s.get('properties') else
+                            s.get('properties').get('label').split('-')[0],
+                 'latitude': None if not s.get('geometry') else 
+                             s.get('geometry').get('coordinates')[0],
+                 'longitude': None if not s.get('geometry') else 
+                              s.get('geometry').get('coordinates')[1],
+                 'elevation': None if not s.get('geometry') else 
+                              s.get('geometry').get('coordinates')[2],
+                 'ts_id': None if not s.get('properties') else 
+                          list(s.get('properties').get('timeseries').keys())
                 } for s in stations_raw ]
     df = pd.DataFrame(stations)
     # Create separate rows for each reported time series
