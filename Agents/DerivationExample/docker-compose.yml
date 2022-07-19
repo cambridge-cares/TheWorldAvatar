@@ -25,13 +25,19 @@ services:
   postgres:
     container_name: "postgres"
     environment:
-      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
     image: docker.cmclinnovations.com/postgres:13.3-alpine
     restart: unless-stopped
+    secrets:
+      - postgres_password
     ports:
       - "7432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+secrets:
+  postgres_password:
+    file: credentials/postgres_password
 
 volumes:
   blazegraph_data:
