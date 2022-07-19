@@ -15,8 +15,6 @@ services:
 
   blazegraph:
     container_name: "blazegraph"
-    environment:
-      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
     restart: unless-stopped
     ports:
