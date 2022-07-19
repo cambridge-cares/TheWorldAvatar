@@ -71,7 +71,7 @@ public class Config {
 
 			LOGGER.info("Time series will be queried from " + POSTGRES_URL);
 		} else {
-			String errmsg = "The environment variable TIMESERIES_DB is not set";
+			String errmsg = "The environment variable POSTGRES_DB is not set";
 			LOGGER.error(errmsg);
 			throw new RuntimeException(errmsg);
 		}

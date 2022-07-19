@@ -15,13 +15,8 @@ services:
       
   blazegraph:
     container_name: "blazegraph"
-    environment:
-      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
     restart: unless-stopped
-    # Add a secret to set the password for BASIC authentication
-    secrets: # username is bg_user
-      - blazegraph_password
     ports:
       - "8889:8080"
     volumes:
@@ -41,7 +36,6 @@ services:
       - "58000:8000"
     volumes:
       - file_server:/app/fs_root
-      - external_maven_repo:/root/.m2
 
   python-service:
     container_name: python-service
@@ -52,7 +46,44 @@ services:
     ports:
       - 5000:5000
 
+  ship-input-agent:
+    container_name: ship-input-agent
+    image: ship-input-agent
+    build:
+      context: ./ShipInputAgent
+    ports:
+      - 8082:8080
+      - 8002:8000
+    environment:
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,address=*:8000,server=y,suspend=n"
+      KG_PROTOCOL: "http"
+      KG_PATH: "blazegraph/namespace/ship/sparql/ship/sparql"
+      KG_PORT: 8080
+      KG_HOST: "blazegraph"
+      POSTGRES_HOST: "postgis"
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postpass"
+      POSTGRES_DB: "postgres"
+      DATA_DIR: "/data"
+    volumes:
+      - ./ShipInputAgent/data:/data
+
+  postgis:
+    # image: docker.cmclinnovations.com/postgres:13.3-alpine
+    image: postgis/postgis:14-3.2-alpine
+    container_name: "postgis"
+    environment:
+      POSTGRES_PASSWORD: "postpass"
+    ports:
+      - 7432:5432
+    security_opt:
+      - label=disable
+    restart: unless-stopped
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+
 volumes:
-  external_maven_repo:
   file_server:  
   blazegraph_data:
+  postgis_data:
