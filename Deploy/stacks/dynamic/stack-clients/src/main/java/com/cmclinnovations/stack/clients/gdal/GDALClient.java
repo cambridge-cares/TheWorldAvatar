@@ -178,6 +178,7 @@ public class GDALClient extends ContainerClient {
                 Path directoryPath = Paths.get(outputPath).getParent();
                 if (!createdDirectories.contains(directoryPath)) {
                     makeDir(gdalContainerId, directoryPath.toString());
+                    executeSimpleCommand(gdalContainerId, "chown", "-R", "1000:1000", directoryPath.toString());
                     createdDirectories.add(directoryPath);
                 }
 
