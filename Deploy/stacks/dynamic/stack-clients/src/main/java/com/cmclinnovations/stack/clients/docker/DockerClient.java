@@ -147,6 +147,9 @@ public class DockerClient extends BaseClient {
 
         private final Map<String, String> envVars = new HashMap<>();
 
+        private long initialisationTimeout = 10;
+        private long evaluationTimeout = 60;
+
         public ComplexCommand(String containerId, String... cmd) {
             execCreateCmd = internalClient.execCreateCmd(containerId);
             this.cmd = cmd;
@@ -187,6 +190,16 @@ public class DockerClient extends BaseClient {
             return this;
         }
 
+        public ComplexCommand withInitialisationTimeout(long timeout) {
+            this.initialisationTimeout = timeout;
+            return this;
+        }
+
+        public ComplexCommand withEvaluationTimeout(long timeout) {
+            this.evaluationTimeout = timeout;
+            return this;
+        }
+
         public String exec() {
             boolean attachStdin = null != inputStream;
             boolean attachStdout = null != outputStream;
@@ -224,9 +237,9 @@ public class DockerClient extends BaseClient {
                 try (ExecStartResultCallback result = execStartCmd
                         .exec(new ExecStartResultCallback(outputStream, errorStream))) {
                     if (wait) {
-                        result.awaitCompletion(60, TimeUnit.SECONDS);
+                        result.awaitCompletion(evaluationTimeout, TimeUnit.SECONDS);
                     } else {
-                        result.awaitStarted(10, TimeUnit.SECONDS);
+                        result.awaitStarted(initialisationTimeout, TimeUnit.SECONDS);
                     }
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
