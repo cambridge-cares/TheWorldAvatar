@@ -19,7 +19,7 @@ Example input: <br/>
 The relationship/link between the OntoBuiltEnv and OntoCityGML buildings is written to the knowledge graph in the OntoBuilEnv namespace. <br/>
 The newly added triples have the form <br/>
 1. Subject - OntoBuiltEnv building instance 
-2. Predicate - https:<span></span>//www.<span></span>theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation
+2. Predicate - https:<span></span>//www<span></span>.theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation
 3. Object - OntoCityGML building instance
 
 
