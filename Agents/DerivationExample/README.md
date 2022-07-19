@@ -22,18 +22,16 @@ You'll need to provide  your credentials in single-word text files in the `crede
   credentials/
       repo_username.txt
       repo_password.txt
-      blazegraph_password
       postgres_password
 ```
 
 `repo_username.txt` should contain your github username, and `repo_password.txt` your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-`blazegraph_password` and `postgres_password` will set the password for the postgres and blazegraph containers.
+`postgres_password` will set the password for the postgres container.
 
-Next, you will also need to populate the file `DerivationExample/src/main/resources/credentials.properties` with the passwords you set for your blazegraph and postgres containers, i.e.
+Next, you will also need to populate the file `DerivationExample/src/main/resources/credentials.properties` with the passwords you set for your postgres container, i.e.
 ```
 db.password = [YOUR_POSTGRES_PASSWORD]
-kg.password = [YOUR_BLAZEGRAPH_PASSWORD]
 ```
 You should leave the other fields unchanged.
 
