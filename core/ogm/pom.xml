@@ -4,9 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-
+    <packaging>jar</packaging>
     <groupId>uk.ac.cam.cares.ogm</groupId>
     <artifactId>ogm</artifactId>
+    <name>ogm</name>
+
     <version>1.0.0</version>
 
     <properties>
@@ -34,6 +36,22 @@
             <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
         </repository>
     </repositories>
+
+    <!-- Parent POM -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <!-- Repository locations to deploy to -->
+    <distributionManagement>
+        <repository>
+            <id>repo</id>
+            <name>TheWorldAvatar Maven Repository</name>
+            <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
