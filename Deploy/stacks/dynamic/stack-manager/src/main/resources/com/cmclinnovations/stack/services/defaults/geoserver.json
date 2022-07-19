@@ -1,0 +1,78 @@
+{
+    "type": "geoserver",
+    "ServiceSpec": {
+        "Name": "geoserver",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "docker.cmclinnovations.com/geoserver:2.20.4",
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "geotiffs",
+                        "Target": "/geotiffs",
+                        "ReadOnly": false
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_datadir",
+                        "Target": "/var/geoserver/datadir",
+                        "VolumeOptions": {
+                            "NoCopy": false
+                        }
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_logs",
+                        "Target": "/var/geoserver/logs"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_gwc_cache",
+                        "Target": "/var/geoserver/gwc_cache_dir"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_gwc_config",
+                        "Target": "/var/geoserver/gwc_config"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_grib_cache",
+                        "Target": "/var/geoserver/grib_cache_dir"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_netcdf_data",
+                        "Target": "/var/geoserver/netcdf_data_dir"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        },
+        "EndpointSpec": {
+            "Ports": [
+                {
+                    "Name": "web",
+                    "Protocol": "tcp",
+                    "TargetPort": "8080",
+                    "PublishedPort": "8081"
+                }
+            ]
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080/geoserver/",
+            "externalPath": "/geoserver/"
+        }
+    }
+}
