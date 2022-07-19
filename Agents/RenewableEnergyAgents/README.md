@@ -56,7 +56,7 @@ sosa: http://www.w3.org/ns/sosa
 
 ### 1. Instantiate and Query Geospatial Time Series Data
 
-Follow the instructions provided in the README.md file of each agent listed below to instantiate and query related geospatial time-series data.
+Download the [data folder] and put it at the same level of Agents\RenewableEnergyAgents. Follow the instructions provided in the README.md file of each agent listed below to instantiate and query related geospatial time-series data.
 
 * MetOfficeSolarSensorAgent
 * MetOfficeWindSensorAgent
@@ -104,3 +104,4 @@ In Docker Desktop:
 [py4jps]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper
 [properties file]: resources/renewable_energy_agents.properties
 [Create a Mapbox API access token]: https://account.mapbox.com/access-tokens/
+[data folder]: https://www.dropbox.com/sh/2dgpwmedboumkkt/AAAPUxMSa5BTw10iPVkReBGaa/Codes/Research%20project%20code?dl=0&subfolder_nav_tracking=1
