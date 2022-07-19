@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
+import org.postgis.Geometry;
+
 import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -144,8 +147,22 @@ public class TimeSeriesRDBClient<T> {
 	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
 	 * @param tsIRI IRI of the timeseries provided as string
 	 */
-	protected void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
-		
+	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
+		return initTimeSeriesTable(dataIRI, dataClass, tsIRI, null);
+	}
+
+	/**
+	 * similar to above, but specifically to use with PostGIS
+	 * the additional argument srid is to restrict any geometry columns to the srid
+	 * if not needed, set to null, or use above the above method
+	 * @param dataIRI
+	 * @param dataClass
+	 * @param tsIRI
+	 * @param srid
+	 * @return
+	 */
+	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI, Integer srid) {
+
 		// Generate UUID as unique RDB table name
 		String tsTableName = UUID.randomUUID().toString();		
 		
@@ -185,8 +202,9 @@ public class TimeSeriesRDBClient<T> {
 			populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI);
 			
 			// Initialise RDB table for storing time series data
-			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass);
+			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid);
 			
+			return tsTableName;
 		} catch (JPSRuntimeException e) {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
@@ -661,6 +679,7 @@ public class TimeSeriesRDBClient<T> {
 		// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
 		context.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
 			   .column(tsTableNameColumn).column(columnNameColumn).execute();
+		context.createIndex().on(DSL.table(DSL.name(dbTableName)), Arrays.asList(dataIRIcolumn,tsIRIcolumn,tsTableNameColumn,columnNameColumn)).execute();
 	}
 	
 	/**
@@ -690,9 +709,10 @@ public class TimeSeriesRDBClient<T> {
 	 * @param dataColumnNames list of column names in the tsTable corresponding to the data IRIs
 	 * @param dataIRI list of data IRIs provided as string
 	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
+	 * @throws SQLException
 	 */
 	private void createEmptyTimeSeriesTable(String tsTable, Map<String,String> dataColumnNames, List<String> dataIRI,
-											List<Class<?>> dataClass) {
+											List<Class<?>> dataClass, Integer srid) throws SQLException {
 		
 		// Create table
 		CreateTableColumnStep createStep = context.createTableIfNotExists(tsTable);
@@ -700,23 +720,68 @@ public class TimeSeriesRDBClient<T> {
     	// Create time column
     	createStep = createStep.column(timeColumn);
     	
+		List<String> additionalGeomColumns = new ArrayList<>();
+		List<Class<?>> classForAdditionalGeomColumns = new ArrayList<>();
+
     	// Create 1 column for each value
     	for (int i = 0; i < dataIRI.size(); i++) {
-    		createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(dialect, dataClass.get(i)));
+			if (Geometry.class.isAssignableFrom(dataClass.get(i))) {
+				// these columns will be added with their respective restrictions
+				additionalGeomColumns.add(dataColumnNames.get(dataIRI.get(i)));
+				classForAdditionalGeomColumns.add(dataClass.get(i));
+			} else {
+				createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(dialect, dataClass.get(i)));
+			}
     	}
 
     	// Send consolidated request to RDB
     	createStep.execute();
+
+		// create index on time column for quicker searches
+		context.createIndex().on(DSL.table(DSL.name(tsTable)), timeColumn).execute();
+
+		// add remaining geometry columns with restrictions
+		if (additionalGeomColumns.size() > 0) {
+			addGeometryColumns(tsTable, additionalGeomColumns, classForAdditionalGeomColumns, srid);
+		}	
 	}
 	
+	/**
+	 * workaround because open source jOOQ DataType class does not support geometry datatypes properly
+	 * rather than creating a generic geometry column, this will restrict the column to the class provided
+	 * e.g. Polygon, Point, Multipolygon, along with the srid, if provided
+	 * @throws SQLException
+	 */
+	private void addGeometryColumns(String tsTable, List<String> columnNames, List<Class<?>> dataTypes, Integer srid) throws SQLException {
+		String sql = "alter table \"" + tsTable + "\" ";
+		for (int i = 0; i < columnNames.size(); i++) {
+			sql += "add " + columnNames.get(i) + " geometry(" +  dataTypes.get(i).getSimpleName();
+
+			// add srid if given
+			if (srid != null) {
+				sql += "," + String.valueOf(srid) + ")";
+			} else {
+				sql += ")";
+			}
+
+			if (i != columnNames.size() - 1) {
+				sql += ", ";
+			} else {
+				sql += ";";
+			}
+		}
+		conn.prepareStatement(sql).executeUpdate();
+	}
+
 	/**
 	 * Append time series data from TimeSeries object to (existing) RDB table
 	 * <p>Requires existing RDB connection
 	 * @param tsTable name of the timeseries table provided as string
 	 * @param ts time series to write into the table
 	 * @param dataColumnNames list of column names in the tsTable corresponding to the data in the ts
+	 * @throws SQLException
 	 */
-	private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String,String> dataColumnNames) {
+	private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String,String> dataColumnNames) throws SQLException {
 		List<String> dataIRIs = ts.getDataIRIs();
 
 		// Retrieve RDB table from table name
@@ -734,6 +799,7 @@ public class TimeSeriesRDBClient<T> {
     	List<Integer> rowsWithMatchingTime = new ArrayList<>();
     	// Populate columns row by row
         InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
+		int num_rows_without_matching_time = 0;
         for (int i=0; i<ts.getTimes().size(); i++) {
         	// newValues is the row elements
         	if (!checkTimeRowExists(tsTable, ts.getTimes().get(i))) {
@@ -743,11 +809,16 @@ public class TimeSeriesRDBClient<T> {
     				newValues[j+1] = (ts.getValues(dataIRIs.get(j)).get(i));
     			}
     			insertValueStep = insertValueStep.values(newValues);
+				num_rows_without_matching_time += 1;
         	} else {
         		rowsWithMatchingTime.add(i);
         	}
 		}
-		insertValueStep.execute();
+		// open source jOOQ does not support postgis, hence not using execute() directly
+		if (num_rows_without_matching_time != 0) {
+			// if this gets executed when it's 0, null values will be added
+			conn.prepareStatement(insertValueStep.toString()).executeUpdate();
+		}
 		
 		// update existing rows with matching time value
 		// only one row can be updated in a single query
@@ -759,7 +830,10 @@ public class TimeSeriesRDBClient<T> {
 				
 				if (i == (ts.getDataIRIs().size()-1)) {
 					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
-					.where(timeColumn.eq(ts.getTimes().get(rowIndex))).execute();
+					.where(timeColumn.eq(ts.getTimes().get(rowIndex)));
+
+					// open source jOOQ does not support postgis geometries, hence not using execute() directly
+					conn.prepareStatement(updateStep.toString()).executeUpdate();
 				} else {
 					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex));
 				}	

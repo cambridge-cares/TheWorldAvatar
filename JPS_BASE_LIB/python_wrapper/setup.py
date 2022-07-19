@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='py4jps',
-    version='1.0.18',
+    version='1.0.22',
     author='Daniel Nurkowski',
     author_email='danieln@cmclinnovations.com',
     license='MIT',

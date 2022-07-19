@@ -104,3 +104,4 @@ zip -r output.zip *.*
 cp output.zip ${inputDir}
 rm -r output.zip
 echo "Simulation Completed."
+
