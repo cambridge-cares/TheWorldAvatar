@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.GDALTranslateOptions;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
@@ -15,6 +16,8 @@ public class TempTestCalls {
     }
 
     static void doStuff() {
+
+        StackClient.uploadInputDatasets();
 
         GDALClient gdalClient = new GDALClient();
         PostGISClient postGISClient = new PostGISClient();
