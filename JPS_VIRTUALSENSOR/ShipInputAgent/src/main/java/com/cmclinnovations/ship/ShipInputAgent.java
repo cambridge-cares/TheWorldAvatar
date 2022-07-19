@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,9 +30,10 @@ public class ShipInputAgent extends HttpServlet {
     private static TimeSeriesClient<Instant> tsClient;
     private static RemoteStoreClient storeClient;
     private static QueryClient client;
-    private static Random randomGenerator = new Random();
+    private int fileIndex = -999;
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        LOGGER.info("Received POST request to update ship data");
         if (Config.KG_URL == null || Config.POSTGRES_URL == null) {
             Config.initURLs();
             storeClient = new RemoteStoreClient(Config.KG_URL, Config.KG_URL);
@@ -52,15 +52,17 @@ public class ShipInputAgent extends HttpServlet {
         client.updateTimeSeriesData(ships);
     }
 
-    static List<Ship> mockShipAPI()  {
+    List<Ship> mockShipAPI()  {
         File dataDir = new File(Config.DATA_DIR);
         File[] dataFiles = dataDir.listFiles();
+
+        if (fileIndex == -999 || fileIndex == dataFiles.length) {
+            fileIndex = 0;
+        }
         
-        // randomly pick a timepoint...
-        File randomFile = dataFiles[randomGenerator.nextInt(dataFiles.length)];
         FileInputStream inputStream;
         try {
-            inputStream = new FileInputStream(randomFile);
+            inputStream = new FileInputStream(dataFiles[fileIndex]);
         } catch (FileNotFoundException e) {
             LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
@@ -81,6 +83,7 @@ public class ShipInputAgent extends HttpServlet {
             ship.setTimestamp(currentTime);
         }
 
+        fileIndex += 1; // increment for next call
         return ships;
     }
 }
