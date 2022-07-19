@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
@@ -231,7 +232,9 @@ public class GDALClient extends ContainerClient {
 
     private String generateRasterOutPath(String basePathIn, String filePath, String layerName) {
         return FileUtils.replaceExtension(
-                Path.of("/geotiffs", layerName).resolve(Path.of(basePathIn).relativize(Path.of(filePath))).toString(),
+                Path.of(StackClient.GEOTIFFS_DIR, layerName)
+                        .resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
+                        .toString(),
                 ".tif");
     }
 

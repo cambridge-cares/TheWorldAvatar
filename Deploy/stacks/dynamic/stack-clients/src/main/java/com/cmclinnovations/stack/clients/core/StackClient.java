@@ -14,6 +14,7 @@ public final class StackClient {
     public static final String STACK_NAME_KEY = "STACK_NAME";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
     public static final String SCRATCH_DIR = "/stack_scratch";
+    public static final String GEOTIFFS_DIR = "/geotiffs";
 
     private static final String stackName;
 
