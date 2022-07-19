@@ -15,6 +15,9 @@ module.exports = merge(common, {
     sourcePrefix: '',
   },
   optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
     minimizer: [
       `...`, // extends existing plugins
       new CssMinimizerPlugin(),
