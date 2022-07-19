@@ -107,7 +107,7 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, sparqlquery, false);
 			
-			StoreClientInterface kbClient = AccessHandler.getStoreClient(targetIRI, true, false);
+			StoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
 			
 			JSONObject JSONresult = new JSONObject();
 			String result = null;
@@ -150,7 +150,7 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, null, false);
 			
-			StoreClientInterface kbClient = AccessHandler.getStoreClient(targetIRI, false, true);
+			StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
 			
 			kbClient.insert(graphIRI, body, contentType);
 		} catch (RuntimeException e) {
@@ -178,7 +178,7 @@ public class AccessAgent extends JPSAgent{
 			if (sparqlupdate!=null) {
 				//update
 				logInputParams(requestParams, sparqlupdate, false);
-				StoreClientInterface kbClient = AccessHandler.getStoreClient(targetIRI, false, true);
+				StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
 				LOGGER.info("Store client instantiated for update endpoint: "+kbClient.getUpdateEndpoint());
 				LOGGER.info("Performing SPARQL update.");
 				kbClient.executeUpdate(sparqlupdate);
@@ -187,7 +187,7 @@ public class AccessAgent extends JPSAgent{
 			}else if(sparqlquery!=null){
 				//query
 				logInputParams(requestParams, sparqlquery, false);
-				StoreClientInterface kbClient = AccessHandler.getStoreClient(targetIRI, true, false);
+				StoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
 				LOGGER.info("Store client instantiated for query endpoint: "+kbClient.getQueryEndpoint());
 				LOGGER.info("Performing SPARQL query.");
 				result = kbClient.execute(sparqlquery);
@@ -204,7 +204,25 @@ public class AccessAgent extends JPSAgent{
 		}
 	}
 	
-	
+	/**
+	 * Instantiate a store client using StoreRouter
+	 * @param targetIRI
+	 * @param isQuery
+	 * @param isUpdate
+	 * @return
+	 */
+	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {
+		try {
+			StoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, isQuery, isUpdate);
+			if (storeClient == null) {
+				throw new RuntimeException();
+			}
+			return storeClient;
+		}catch (RuntimeException e) {
+			LOGGER.error("Failed to instantiate StoreClient");
+			throw new JPSRuntimeException("Failed to instantiate StoreClient");
+		}	 
+	}
 	
 	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {	    
