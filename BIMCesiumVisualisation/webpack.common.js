@@ -20,12 +20,6 @@ module.exports = {
         },
         mainFiles: ['index', 'Cesium']
     },
-    module: {
-        rules: [{
-            test: /\.css$/,
-            use: [ 'style-loader', 'css-loader' ]
-        },]
-    },
     plugins: [        
         new CopyWebpackPlugin({
             patterns: [
