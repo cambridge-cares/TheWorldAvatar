@@ -12,6 +12,6 @@ The agents also query the KG and output the sensor location to GeoJSON files and
 
 ## Visualisation
 
-Follow the instructions provided in the [project's readme file] to generate the GUI.
+Follow the instructions provided in the [main readme file] of project to generate the GUI.
 
-[project's readme file]: ../README.md
+[main readme file]: ../README.md

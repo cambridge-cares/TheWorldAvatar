@@ -77,8 +77,8 @@ The `<root>\dtvf_visualisation\docker` folder contains the required files to bui
 
 Please note the caveats below before attempting to build the service using Docker:
 
-* The example visualisation within the Docker image will be based on the current content of the `<root>\dtvf_visualisation\queried_data` repository at the point of building the image. This is also the repository to which all queried data files are written automatically  if the `output.directory` field in the [properties file] is not changed.
-* A connection to the internet is required to contact remote resources and use the mapping libraries.
+* The visualisation within the Docker image will be based on the current content of the `<root>\dtvf_visualisation\queried_data` repository at the point of building the image. This is also the repository to which all queried data files are written automatically  if the `output.directory` field in the [properties file] is not changed.
+* A connection to the internet is required to contact remote resources and use the mapping libraries. [Create a Mapbox API access token] if not done yet and replace <PUT_YOUR_KEY_HERE> with the token in the files Agents/RenewableEnergyAgents/dtvf_visualisation/index.html and Agents/RenewableEnergyAgents/resources/renewable_energy_agents.properties in order for the visualisation to work.
 * At the time of writing, the JS and CSS files comprising the framework are stored within the  visualisation folder (in the `js` and `css` directories). In the future, these files will be separated from the data, hosted remotely (perhaps on the kg.cmclinnovations.com site), then imported as remote resources in any visualisation.
 
 #### 2.2. Docker Commands
@@ -100,6 +100,7 @@ In Docker Desktop:
 
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
-[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
-[py4jps]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/python_wrapper
+[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
+[py4jps]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper
 [properties file]: resources/renewable_energy_agents.properties
+[Create a Mapbox API access token]: https://account.mapbox.com/access-tokens/
