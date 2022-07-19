@@ -57,9 +57,8 @@ public final class StackClient {
             files.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".json"))
                     .forEach(StackClient::uploadInputDataset);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read in dataset config file(s).", ex);
         }
     }
 
