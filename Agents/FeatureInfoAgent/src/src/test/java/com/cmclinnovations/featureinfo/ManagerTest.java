@@ -1,18 +1,15 @@
 package com.cmclinnovations.featureinfo;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -47,8 +44,8 @@ public class ManagerTest {
         //     "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/flood_ontoems/sparql"
         // );
         MANAGER = new Manager(
-            "http://www.theworldavatar.com/kb/ontoems/ReportingStation_0004ca28-5675-4075-ab17-99304cedcb3c",
-            "http://localhost:48083/blazegraph/namespace/metoffice/sparql"
+            "https://www.theworldavatar.com/kg/ontoems/ReportingStation_03aa0705-2727-499b-9391-ab3b5f19a07b",
+            "http://localhost:8890/blazegraph/namespace/metoffice/sparql"
         );
 
         try {
@@ -62,13 +59,12 @@ public class ManagerTest {
      * Check that the class of a feature can be determined.
      */
     @Test
-    @Ignore
     public void testGetFeatureClass() {
         LOGGER.debug("Querying for feature classes...");
 
         try {
             String[] classes = MANAGER.getFeatureClasses();
-             System.out.println("Classes:");
+            System.out.println("Classes:");
             System.out.println(String.join(", ", classes));
 
             Assertions.assertNotNull(classes, "Could not determine class(es) for feature!");
@@ -83,7 +79,6 @@ public class ManagerTest {
      * Tests that the query files can be read.
      */
     @Test
-    @Ignore
     public void testGetQueryHandler() {
         LOGGER.debug("Testing that a query handler can be produced...");
 
@@ -111,7 +106,12 @@ public class ManagerTest {
         try {
             Map<String, List<String>> result = MANAGER.getMetadata();
             Assertions.assertNotNull(result, "No result from KG!");
-            Assertions.assertTrue(result.keySet().size() > 0, "No JSON entries in result!");
+            Assertions.assertTrue(result.keySet().size() > 0, "No entries in result!");
+
+            JSONObject converted = MANAGER.toJSON(result);
+            System.out.println(converted.toString(2));
+            Assertions.assertNotNull(converted, "No result from covnersion to JSON!");
+            Assertions.assertTrue(converted.keySet().size() > 0, "No JSON entries in result!");
 
         } catch(Exception excep) {
             Assertions.fail(excep);
@@ -121,20 +121,16 @@ public class ManagerTest {
     /**
      * 
      */
-    @Ignore
     @Test
     public void testGetTimeseries() {
         LOGGER.debug("Testing if timeseries data can be retrieved...");
 
-        Set<String> measurementIRIs = new HashSet<>();
-        measurementIRIs.add("http://environment.data.gov.uk/flood-monitoring/id/measures/3401TH-level-downstage-i-15_min-mASD");
-        measurementIRIs.add("http://environment.data.gov.uk/flood-monitoring/id/measures/3401TH-level-stage-i-15_min-mASD");
-
+        String measurementIRI = "https://www.theworldavatar.com/kg/ontoems/Measure_53728a1e-54a4-4ad8-aa74-43091cb97d98";
         try {
-            TimeSeries<Instant> result = MANAGER.getTimeseries("http://environment.data.gov.uk/flood-monitoring/id/measures/3401TH-level-downstage-i-15_min-mASD");
+            TimeSeries<Instant> result = MANAGER.getTimeseriesObject(measurementIRI);
             Assertions.assertNotNull(result, "Could not retrieve timeseries data for feature!");
-            
             System.out.println(result);
+
         } catch(Exception excep) {
             Assertions.fail(excep);
         }
@@ -150,7 +146,13 @@ public class ManagerTest {
         try {
             JSONObject result = MANAGER.grabAll();
             Assertions.assertNotNull(result, "Could not retrieve meta OR time data for feature!");
-            Assertions.assertNotNull(result.getString("meta"), "Could not retrieve metadata for feature!");
+            Assertions.assertNotNull(result.getJSONObject("meta"), "Could not retrieve metadata for feature!");
+
+            PrintWriter myFile = new PrintWriter("./test-output.json", "UTF-8");
+            myFile.println(result.toString(2));
+            myFile.close();
+
+            System.out.println("--- TEST DONE ---");
         } catch(Exception excep) {
             Assertions.fail(excep);
         }

@@ -3,7 +3,6 @@ package com.cmclinnovations.featureinfo;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,7 +24,6 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.jena.sparql.function.library.langeq;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -123,15 +121,12 @@ public class Manager {
             if(this.properties.getProperty("timeseries_url") == null) {
                 throw new IllegalStateException("Cannot find required 'timeseries_url' key in properties!");
             }
-            LOGGER.info("URL: " + this.properties.getProperty("timeseries_url"));
             if(this.properties.getProperty("timeseries_user") == null) {
                 throw new IllegalStateException("Cannot find required 'timeseries_user' key in properties!");
             }
-            LOGGER.info("USER: " + this.properties.getProperty("timeseries_user"));
             if(this.properties.getProperty("timeseries_pass") == null) {
                 throw new IllegalStateException("Cannot find required 'timeseries_pass' key in properties!");
             }
-            LOGGER.info("PASS: " + this.properties.getProperty("timeseries_pass"));
 
             // Initialise timeseries client
             this.tsClient = new TimeSeriesClient<Instant>(
@@ -158,32 +153,22 @@ public class Manager {
         LOGGER.info("Got the metadata.");
 
         // Convert to JSON
-        JSONObject metaJSON = new JSONObject();
-        for(String key : metadata.keySet()) {
-            if(Lookups.HIDDEN_META.contains(key.toLowerCase())) continue;
+        JSONObject metaJSON = toJSON(metadata);
 
-            List<String> values = metadata.get(key);
-            Set<String> uniques = new LinkedHashSet<>(values);
-
-            if(uniques.size() == 1) {
-                String value = values.get(0);
-                if(value != null && !value.isEmpty()) {
-                    metaJSON.put(key, values.get(0));
-                }
-            } else {
-                JSONArray array = new JSONArray();
-                array.putAll(values);
-                metaJSON.put(key, array);
-            }
-        }
-        LOGGER.info("Converted metadata to JSON.");
-        System.out.println(metaJSON.toString(2));
-        
         // Get timeseries JSON
         JSONArray timeJSON = null;
         try {
-            timeJSON = getTimeSeries(metadata);
-            LOGGER.info("Got the timeseries (if present).");
+            List<String> iris = new ArrayList<>();
+            if(metadata.get("Measurement") != null) iris.addAll(metadata.get("Measurement"));
+            if(metadata.get("Forecast") != null) iris.addAll(metadata.get("Forecast"));
+
+            // Get the timeseries data objects (keyed by IRI)
+            Map<String, TimeSeries<Instant>> tsObjects = getTimeseriesObjects(iris);
+
+            System.out.println(tsObjects.size());
+            timeJSON = getTimeseriesJSON(metadata, tsObjects);
+            // LOGGER.info("Got the observed and forecast timeseries (if present).");
+
         } catch(Exception excep) {
             LOGGER.error(excep);
         }
@@ -218,17 +203,59 @@ public class Manager {
                 String value = entry.optString(key);
 
                 // Misc fudging
-                if(fixedKey.equals("Measurement Unit")) {
+                if(fixedKey.equals("Location") && value.contains("#")) {
+                    String[] parts = value.split(Pattern.quote("#"));
+                    value = parts[1] + ", " + parts[0];
+                }
+                if(fixedKey.equals("Elevation")) {
+                    value = value + "m";
+                }
+                if(fixedKey.endsWith(" Unit")) {
+                    
+                    if(Lookups.UNITS.get(value).contains(";")) {
+                        System.out.println(Lookups.UNITS.get(value));
+                    }
                     value = Lookups.UNITS.get(value);
                 }
-                if(fixedKey.equals("Measurement Parameter") && value.contains("#")) {
-                    value = value.split(Pattern.quote("#"))[1];
+                if(fixedKey.endsWith(" Quantities")) {
+                    String[] parts = value.split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+                    value = String.join(" ", parts);
                 }
 
                 metadata.get(fixedKey).add(value);
             });
         }
         return metadata;
+    }
+
+    /**
+     * 
+     * @param metaMap
+     */
+    protected JSONObject toJSON(Map<String, List<String>> metaMap) {
+         // Convert to JSON
+         JSONObject metaJSON = new JSONObject();
+
+         for(String key : metaMap.keySet()) {
+             if(Lookups.HIDDEN_META.contains(key.toLowerCase())) continue;
+ 
+             List<String> values = metaMap.get(key);
+             Set<String> uniques = new LinkedHashSet<>(values);
+ 
+             if(uniques.size() == 1) {
+                 String value = values.get(0);
+                 if(value != null && !value.isEmpty()) {
+                     metaJSON.put(key, values.get(0));
+                 }
+             } else {
+                 JSONArray array = new JSONArray();
+                 array.putAll(values);
+                 metaJSON.put(key, array);
+             }
+         }
+
+         LOGGER.info("Converted metadata to JSON.");
+         return metaJSON;
     }
 
     /**
@@ -269,22 +296,6 @@ public class Manager {
             throw excep;
         }
 
-        // // Find mathing query class
-        // for(String className : classes) {
-        //     if(Lookups.CLASSES.containsKey(className)) {
-
-        //         // Instantiate from class name
-        //         try {
-        //             Class<? extends AbstractQuery> clazz = Lookups.CLASSES.get(className); 
-        //             Constructor<? extends AbstractQuery> constructor = clazz.getConstructor(String.class, String.class);
-        //             this.queryHandler = constructor.newInstance(this.iri, this.endpoint);
-        //             System.out.println("Using query handler: " + clazz.getSimpleName());
-        //         } catch(Exception excep) {
-        //             throw new Exception("Cannot construct query handler for this feature type!");
-        //         }
-        //     }   
-        // }
-
         // No specific query class, try looking for a pre-written sparql file
         if(queryHandler == null) {
             for(String className : classes) {
@@ -323,83 +334,87 @@ public class Manager {
     }
 
     /**
+     * Given a list of measurement or forecast IRIs, this method uses the TimeseriesClient to 
+     * query, populate, and return TimeSeries<Instant> instances.
+     * 
+     * @param iris measurement and/or forecast IRIs.
+     * 
+     * @return resulting TimeSeries<Instant> instances.
+     */
+    protected Map<String, TimeSeries<Instant>> getTimeseriesObjects(List<String> iris) {
+        Map<String, TimeSeries<Instant>> timeseries = new HashMap<>();
+
+        iris.forEach(iri -> {
+            try {
+                TimeSeries<Instant> data = this.getTimeseriesObject(iri);
+                if(!data.getTimes().isEmpty()) {
+                    // Skip instantiated timeseries with no data
+                    timeseries.put(iri, data);
+                }
+            } catch(Exception excep) {
+                // May not be instantiated, skip
+                LOGGER.warn("Could not get timeseries instance for IRI: " + iri);
+            }
+        });
+
+        return timeseries;
+    }
+
+    /**
      * 
      * @param iris
      * @return
      */
-    protected JSONArray getTimeSeries(Map<String, List<String>> metadata) {
-        List<String> measures = metadata.get("Measurement");
-        measures.forEach(measure -> {
-            System.out.println("Measure: " + measure);
+    protected JSONArray getTimeseriesJSON(Map<String, List<String>> metadata, Map<String, TimeSeries<Instant>> timeseries) {
+        // Combine all timeseries for this location into a single object
+        List<TimeSeries<Instant>> tsList = new ArrayList<>(timeseries.values());
+        TimeSeries<Instant> combined = Utils.getCombinedTimeSeries(tsClient, tsList);
+        LOGGER.info("Combined timeseries instances into a single instance.");
+
+        // Convert timeseries to JSON
+        Map<String, String> units = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
+
+        timeseries.keySet().forEach(iri -> {
+            // Very dodgy way of handling this (worry about later)
+
+            if(iri.contains("Measure")) {
+                int index = metadata.get("Measurement").indexOf(iri);
+                String unit = metadata.get("Measurement Unit").get(index);
+                units.put(iri, unit);
+
+                if(unit.contains(";")) {
+                    System.out.println(unit);
+                }
+               
+                String quantity = metadata.get("Measured Quantities").get(index);
+                headers.put(iri, quantity);
+
+            } else if(iri.contains("Forecast")) {
+                int index = metadata.get("Forecast").indexOf(iri);
+                String unit = metadata.get("Forecast Symbol").get(index);
+                units.put(iri, unit);
+
+                if(unit.contains(";")) {
+                    System.out.println(unit);
+                }
+
+                String quantity = metadata.get("Forecast Quantities").get(index);
+                quantity += " (Forecast)";
+                headers.put(iri, quantity);
+            }
         });
 
-        if(measures != null && !measures.isEmpty()) {
-
-            // Query for the timeseries data
-            List<TimeSeries<Instant>> timeseries = new ArrayList<>();
-            measures.forEach(iri -> {
-                try {
-                    TimeSeries<Instant> data = this.getTimeseries(iri);
-                    if(!data.getTimes().isEmpty()) {
-                        timeseries.add(data);
-                    }
-                } catch(Exception excep) {
-                    // May have no data, skip
-                }
-            });
-            LOGGER.info("Got timeseries instances, there are " + timeseries.size());
-
-            timeseries.forEach(ts -> {
-                System.out.println("Times:" + ts.getTimes().size());
-            });
-
-            try {
-                Utils.getCombinedTimeSeries(tsClient, timeseries);
-            } catch(Exception exception) {
-                LOGGER.info("ERROR");
-                LOGGER.error(exception);
-            }
-
-            // Combine all timeseries for this location into a single object
-            LOGGER.info("Combining...");
-            TimeSeries<Instant> combined = Utils.getCombinedTimeSeries(tsClient, timeseries);
-            LOGGER.info("Combined timeseries instances into a single instance.");
-
-            // Convert timeseries to JSON
-            Map<String, String> units = new HashMap<>();
-            Map<String, String> headers = new HashMap<>();
-
-            for(int i = 0; i < measures.size(); i++) {
-                String unitStr = "";
-                if(metadata.get("Measurement Unit") != null && metadata.get("Measurement Unit").size() > i) {
-                    unitStr = metadata.get("Measurement Unit").get(i);
-                }
-
-                String headerStr = "";
-                if(metadata.get("Measurement Parameter") != null && metadata.get("Measurement Parameter").size() > i) {
-
-                    if(metadata.get("Measurement Qualifier") != null && metadata.get("Measurement Qualifier").size() > i) {
-                        headerStr = metadata.get("Measurement Parameter").get(i) + " (" + metadata.get("Measurement Quantity").get(i) + ")";
-                    } else {
-                        headerStr = metadata.get("Measurement Parameter").toString();
-                    }
-                }
-
-                units.put(measures.get(i), unitStr);
-                headers.put(measures.get(i), headerStr);
-            }
-
-            try {
-                JSONArray timeseriesJSON = tsClient.convertToJSON(
-                    new ArrayList<>(Arrays.asList(combined)), 
-                    Collections.nCopies(timeseries.size(), 1),
-                    new ArrayList<>(Arrays.asList(units)), 
-                    new ArrayList<>(Arrays.asList(headers))
-                );
-                return timeseriesJSON;
-            } catch(Exception excep) {
-                excep.printStackTrace(System.out);
-            }
+        try {
+            JSONArray timeseriesJSON = tsClient.convertToJSON(
+                new ArrayList<>(Arrays.asList(combined)), 
+                Collections.nCopies(timeseries.size(), 1),
+                new ArrayList<>(Arrays.asList(units)), 
+                new ArrayList<>(Arrays.asList(headers))
+            );
+            return timeseriesJSON;
+        } catch(Exception excep) {
+            excep.printStackTrace(System.out);
         }
 
         return null;
@@ -411,7 +426,7 @@ public class Manager {
      * @param measurementIRIs
      * @return
      */
-    protected TimeSeries<Instant> getTimeseries(String iri) {
+    protected TimeSeries<Instant> getTimeseriesObject(String iri) {
         // Determine bounds (last 24 hours)
         Instant lowerBound = LocalDateTime.now().minusDays(7).toInstant(ZoneOffset.UTC);
         Instant upperBound = LocalDateTime.now().toInstant(ZoneOffset.UTC);

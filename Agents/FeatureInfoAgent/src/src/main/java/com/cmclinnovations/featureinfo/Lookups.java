@@ -25,8 +25,21 @@ public class Lookups {
         "report",
         "forecast",
         "measurement unit",
+        "forecast unit",
         "measurement parameter",
-        "measurement qualifier"
+        "measurement qualifier",
+        "quantity",
+        "quantity1",
+        "quantity2",
+        "symbol",
+        "measurement symbol",
+        "forecast symbol",
+        "unit",
+        "measured quantities",
+        "forecast quantities",
+        "forecast created",
+        "quantity forecasted",
+        "quantity measured"
     ));
 
     /**
@@ -39,7 +52,7 @@ public class Lookups {
      */
     static {
         // Environmental Measurement Stations
-        FILES.put("https://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation", "WaterLevelReportingStation");
+        FILES.put("https://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation", "ReportingStation");
         FILES.put("https://www.theworldavatar.com/kg/ontoems/ReportingStation", "ReportingStation");
 
         // Units

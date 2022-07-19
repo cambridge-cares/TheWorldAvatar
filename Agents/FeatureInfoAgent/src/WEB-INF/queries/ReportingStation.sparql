@@ -24,6 +24,7 @@ WHERE	{
                 # Generic to all locations
                 OPTIONAL { [IRI] rdfs:label ?Label . }
                 OPTIONAL { [IRI] rdfs:comment ?Comment . }
+				OPTIONAL { [IRI] ems:hasIdentifier ?Identifier . }
 
                 # Generic to all EMS locations
                 OPTIONAL { [IRI] ems:hasObservationElevation ?Elevation . }
@@ -39,27 +40,33 @@ WHERE	{
                 OPTIONAL { [IRI] ea:town ?Town . }
                 OPTIONAL { [IRI] ea:RLOIid ?RLO_lid . }
                 OPTIONAL { [IRI] ea:wiskiID ?Wiski_ID . }
+				OPTIONAL { [IRI] ems:hasDownstreamStation ?Downstream_Station . }
 			}
 
             # If there's a measurement with values, get its details
-			OPTIONAL {
-				?Measurement
-				om:hasUnit ?Measurement_Unit . # TODO: Change to "om:hasUnit/om:symbol" when the data is updated?
+			{
+				[IRI] ems:reports/om:hasValue ?Measurement .
+				?Measurement ^om:hasValue/rdf:type ?quantity_measured .
+				BIND(REPLACE(STR(?quantity_measured), ".*\\/",  "") as ?Measured_Quantities) .
+				?Measurement om:hasUnit ?Measurement_Unit .
+				OPTIONAL { ?Measurement_Unit om:symbol ?Measurement_Symbol. }
                 OPTIONAL { ?Measurement ea:qualifier ?Measurement_Qualifier . }
                 OPTIONAL { ?Measurement ea:parameterName ?Measurement_Parameter . }
+				OPTIONAL { ?Measurement ea:valueType ?Value_Type . }
                 OPTIONAL { ?Measurement ea:period ?Measurement_Period . }
-				FILTER EXISTS {
-                	 [IRI] ems:reports/om:hasValue ?Measurement .  
-                }
+				OPTIONAL { ?Measurement ems:hasCurrentRange ?range .
+                           BIND(REPLACE(STR(?range), ".*\\/",  "") as ?Range) }
+				OPTIONAL { ?Measurement ems:hasCurrentTrend ?trend .
+                           BIND(REPLACE(STR(?trend), ".*\\/",  "") as ?Trend) }
 			}
-  
+			UNION
   			# If ?Forecast is bound, get its details
-			OPTIONAL {
-				?Forecast
-                om:hasUnit ?Measurement_Unit ; # TODO: Change to "om:hasUnit/om:symbol" when the data is updated?
-                ems:createdOn ?Forecast_Created .
-				FILTER EXISTS {
-                    [IRI] ems:reports/ems:hasForecastedValue ?Forecast .
-                }
+			{
+				[IRI] ems:reports/ems:hasForecastedValue ?Forecast .
+				?Forecast ^ems:hasForecastedValue/rdf:type ?quantity_forecasted .
+				BIND(REPLACE(STR(?quantity_forecasted), ".*\\/",  "") as ?Forecast_Quantities) .
+                ?Forecast om:hasUnit ?Forecast_Unit .
+				OPTIONAL { ?Forecast_Unit om:symbol ?Forecast_Symbol. }
+                ?Forecast ems:createdOn ?Forecast_Created .
 			}
 		}
