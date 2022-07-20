@@ -10,27 +10,33 @@ To spin up the stack (with default settings) please follow the instructions belo
     ```
     docker swarm init
     ``` 
-5. In the `Run and Debug` side panel of VSCode run the `Debug Stack Manager` configuration. Remarks:
+5. In the `Run and Debug` side panel of VSCode run the `Debug Stack Manager` configuration. This should bring up 7 containers, i.e. gdal, ontop, adminer, postgis, blazegraph, nginx, and geoserver.
+Remarks:
    * In case not all containers start up successfully, try running the `Debug Stack Manager` configuration again
    * In case the `geoserver` container does not start up successfully (likely due to time out issues), try pulling the respective image manually by running 
     ```
    docker pull docker.cmclinnovations.com/geoserver:2.20.4
    ```
-6. The Adminer and Ontop GUI endpoints should be available at `http://localhost:8080/adminer/ui/` and `http://localhost:8080/ontop/sparql/` respectivly. To check the exposed ports run
-    ```
-    docker servise ls
-    ```
+6. Geoserver should be available at `http://localhost:8082/geoserver/web/`. Log in using username `admin` and the previously specified password.
+7. The Adminer and Ontop GUI endpoints should be available at `http://localhost:8080/adminer/ui/` and `http://localhost:8080/ontop/sparql/`, respectively. 
+
+To check the exposed ports, run
+```
+docker servise ls
+```
 
 ## Further remarks
 
 * A total RAM size of 32GB is recommended for smooth execution.
 
 * Pulling some images requires access to the Docker registry at CMCL. In case you have not gotten your credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page. To test your access, simply run 
-```
-docker login docker.cmclinnovations.com
-```
+    ```
+    docker login docker.cmclinnovations.com
+    ```
 
-* To (permanently) remove all Docker containers run
+* Avoid mappings to port `8081` in case McAffee is running on your machine to avoid potential port mapping issues with occupied ports.
+
+* To (permanently) remove all Docker containers run the following (Docker swarm needs to be re-initialised before spinning the stack up again)
     ```
     docker swarm leave --force
     ```
