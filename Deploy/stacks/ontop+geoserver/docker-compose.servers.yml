@@ -62,10 +62,16 @@ services:
       - postgis_data:/var/lib/postgresql/data
 
   geoserver:
-    image: geosolutionsit/geoserver:${GEOSERVER_VERSION}
+    image: docker.cmclinnovations.com/geoserver:${GEOSERVER_VERSION}
     container_name: "geoserver"
+    build:
+      args:
+        GEOSERVER_VERSION: ${GEOSERVER_VERSION}
+      context: geoserver
     env_file:
       - geoserver/geoserver.env
+    environment:
+      PLUGIN_DYNAMIC_URLS: "http://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/extensions/geoserver-${GEOSERVER_VERSION}-vectortiles-plugin.zip"
     ports:
       - ${GEOSERVER_PORT}:8080
     volumes:

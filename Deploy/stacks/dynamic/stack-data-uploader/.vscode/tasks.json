@@ -1,0 +1,86 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "compose-build",
+            "command": "docker compose -f docker-compose-build.yml build",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "compose-push",
+            "command": "docker compose -f docker-compose-build.yml push",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "dependsOn": [
+                "compose-build"
+            ],
+        },
+        {
+            "type": "shell",
+            "label": "compose-deploy-dev-internal",
+            "command": "docker stack deploy --compose-file=docker-compose.yml --compose-file=docker-compose-debug.yml --with-registry-auth ${input:stackName}",
+            "options": {
+                "env": {
+                    "STACK_NAME": "${input:stackName}"
+                }
+            },
+            "dependsOn": [
+                "compose-push",
+                "remove-service"
+            ],
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "compose-deploy-dev",
+            "command": "sleep 1",
+            "dependsOn": [
+                "compose-deploy-dev-internal"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "powershell"
+                    }
+                }
+            }
+        },
+        {
+            "type": "shell",
+            "label": "remove-service",
+            "command": "docker service rm ${input:stackName}_stack-data-uploader ; exit 0",
+            "presentation": {
+                "reveal": "never"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "powershell"
+                    }
+                }
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "stackName",
+            "type": "promptString",
+            "description": "Name your stack.",
+            "default": "TEST_STACK"
+        }
+    ]
+}
