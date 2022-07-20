@@ -6,25 +6,11 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch App",
-            "request": "launch",
-            "mainClass": "com.cmclinnovations.stack.App",
-        },
-        {
-            "type": "java",
-            "name": "Launch and attach Docker",
+            "name": "Debug Stack Manager",
             "request": "attach",
             "hostName": "localhost",
             "port": "5005",
             "preLaunchTask": "compose-deploy-dev",
-            "projectName": "stack-manager"
-        },
-        {
-            "type": "java",
-            "name": "Attach Docker",
-            "request": "attach",
-            "hostName": "localhost",
-            "port": "5005",
             "projectName": "stack-manager"
         }
     ]
