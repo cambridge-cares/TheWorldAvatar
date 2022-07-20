@@ -99,7 +99,7 @@
             "id": "stackName",
             "type": "promptString",
             "description": "Name your stack.",
-            "default": "TEST_STACK"
+            "default": "TEST-STACK"
         }
     ]
 }
