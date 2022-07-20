@@ -10,7 +10,7 @@
     details on how version numbers should be selected -->
 
 
-    <version>1.11.7</version>
+    <version>1.11.7-dev-postgres-derivation-example-SNAPSHOT</version>
 
     <!-- Project Properties -->
     <properties>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.22</version>
+            <version>42.4.0</version>
         </dependency>
 
         <!-- ??? -->
