@@ -13,7 +13,7 @@
                     "Name": "web",
                     "Protocol": "tcp",
                     "TargetPort": "80",
-                    "PublishedPort": "8080"
+                    "PublishedPort": "3838"
                 }
             ]
         }

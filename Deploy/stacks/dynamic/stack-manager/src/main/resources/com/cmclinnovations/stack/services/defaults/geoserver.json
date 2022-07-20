@@ -64,7 +64,7 @@
                     "Name": "web",
                     "Protocol": "tcp",
                     "TargetPort": "8080",
-                    "PublishedPort": "8082"
+                    "PublishedPort": "3839"
                 }
             ]
         }

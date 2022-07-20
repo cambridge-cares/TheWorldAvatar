@@ -10,15 +10,15 @@ To spin up the stack (with default settings) please follow the instructions belo
     ```
     docker swarm init
     ``` 
-5. In the `Run and Debug` side panel of VSCode run the `Debug Stack Manager` configuration. This should bring up 7 containers, i.e. gdal, ontop, adminer, postgis, blazegraph, nginx, and geoserver.
+5. In the `Run and Debug` side panel of VSCode run the `Build and Debug Stack Manager` configuration. This should bring up 7 containers, i.e. gdal, ontop, adminer, postgis, blazegraph, nginx, and geoserver.
 Remarks:
    * In case not all containers start up successfully, try running the `Debug Stack Manager` configuration again
    * In case the `geoserver` container does not start up successfully (likely due to time out issues), try pulling the respective image manually by running 
     ```
    docker pull docker.cmclinnovations.com/geoserver:2.20.4
    ```
-6. Geoserver should be available at `http://localhost:8082/geoserver/web/`. Log in using username `admin` and the previously specified password.
-7. The Adminer and Ontop GUI endpoints should be available at `http://localhost:8080/adminer/ui/` and `http://localhost:8080/ontop/sparql/`, respectively. 
+6. Geoserver should be available at `http://localhost:3839/geoserver/web/`. Log in using username `admin` and the previously specified password.
+7. The Adminer and Ontop GUI endpoints should be available at `http://localhost:3838/adminer/ui/` and `http://localhost:3838/ontop/sparql/`, respectively. 
 
 To check the exposed ports, run
 ```
@@ -34,7 +34,7 @@ docker servise ls
     docker login docker.cmclinnovations.com
     ```
 
-* Avoid mappings to port `8081` in case McAffee is running on your machine to avoid potential port mapping issues with occupied ports.
+* In case any of the endpoints is not resolvable after spinning up the stack, try exploring whether the specified ports might be pre-occupied by other programs.
 
 * To (permanently) remove all Docker containers run the following (Docker swarm needs to be re-initialised before spinning the stack up again)
     ```
