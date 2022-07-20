@@ -12,6 +12,15 @@
             "port": "5005",
             "preLaunchTask": "compose-deploy-dev",
             "projectName": "stack-manager"
+        },
+        {
+            "type": "java",
+            "name": "Build and Debug Stack Manager",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "5005",
+            "preLaunchTask": "compose-deploy-dev-build",
+            "projectName": "stack-manager"
         }
     ]
 }

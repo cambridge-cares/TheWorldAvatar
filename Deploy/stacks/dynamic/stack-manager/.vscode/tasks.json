@@ -34,11 +34,30 @@
                 }
             },
             "dependsOn": [
-                "compose-push",
                 "remove-service"
             ],
             "presentation": {
                 "reveal": "always"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "compose-deploy-dev-build",
+            "command": "sleep 1",
+            "dependsOn": [
+                "compose-push",
+                "compose-deploy-dev-internal"
+            ],
+            "dependsOrder": "sequence",
+            "presentation": {
+                "reveal": "always"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "powershell"
+                    }
+                }
             }
         },
         {
