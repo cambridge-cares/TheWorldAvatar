@@ -22,6 +22,8 @@ services:
     volumes:
       - blazegraph_data:/data
 
+  # if the postgres_data volume was initialised with an older version, it is required to remove it
+  # docker volume rm postgres_data
   postgres:
     container_name: "postgres"
     environment:
