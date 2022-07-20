@@ -10,7 +10,7 @@ To spin up the stack (with default settings) please follow the instructions belo
     ```
     docker swarm init
     ``` 
-5. In the `Run and Debug` side panel of VSCode run the `Build and Debug Stack Manager` configuration. This should bring up 7 containers, i.e. gdal, ontop, adminer, postgis, blazegraph, nginx, and geoserver.
+5. In the `Run and Debug` side panel of VSCode run the `Debug Stack Manager` configuration. This should bring up 7 containers, i.e. gdal, ontop, adminer, postgis, blazegraph, nginx, and geoserver.
 Remarks:
    * In case not all containers start up successfully, try running the `Debug Stack Manager` configuration again
    * In case the `geoserver` container does not start up successfully (likely due to time out issues), try pulling the respective image manually by running 

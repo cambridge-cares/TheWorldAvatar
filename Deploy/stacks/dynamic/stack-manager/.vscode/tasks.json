@@ -45,7 +45,7 @@
             "label": "compose-deploy-dev-build",
             "command": "sleep 1",
             "dependsOn": [
-                "compose-push",
+                "compose-build",
                 "compose-deploy-dev-internal"
             ],
             "dependsOrder": "sequence",
