@@ -13,9 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -88,7 +86,7 @@ public class AccessAgent extends JPSAgent{
 	}
 		
 	/**
-	 * Perform HTTP GET. This will be either a SPARQL query or "get" all triples (from specified graph).
+	 * Perform HTTP GET. This will "get" all triples (from specified graph).
 	 * @param requestParams
 	 * @return
 	 */
@@ -99,9 +97,10 @@ public class AccessAgent extends JPSAgent{
 		String accept = MiscUtil.optNullKey(requestParams, JPSConstants.HEADERS);		
 	    String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
 	    String graphIRI = MiscUtil.optNullKey(requestParams, JPSConstants.TARGETGRAPH);
-	    
-	    if(sparqlupdate != null) {
-	    	throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is not allowed");
+	    	    
+	    if(sparqlquery!=null && sparqlupdate!=null) {
+	    	throw new JPSRuntimeException("parameters " + JPSConstants.QUERY_SPARQL_QUERY + " and " 
+	    									+ JPSConstants.QUERY_SPARQL_UPDATE + " are not allowed");
 	    }
 	    
 		try {
@@ -111,16 +110,11 @@ public class AccessAgent extends JPSAgent{
 			
 			JSONObject JSONresult = new JSONObject();
 			String result = null;
-			//Note: Using HTTP GET for queries is now deprecated. HTTP POST is used instead. 
-			if (sparqlquery != null) { 
-				//query
-				result = kbClient.execute(sparqlquery);
-				JSONresult.put("result",result);
-			}else {	
-				//get
-				result = kbClient.get(graphIRI, accept);
-				JSONresult.put("result",result);
-			}
+			
+			//get
+			result = kbClient.get(graphIRI, accept);
+			JSONresult.put("result",result);
+		
 			return JSONresult;
 		
 		} catch (RuntimeException e) {
