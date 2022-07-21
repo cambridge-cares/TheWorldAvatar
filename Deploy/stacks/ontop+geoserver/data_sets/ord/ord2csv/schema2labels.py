@@ -1,4 +1,5 @@
 from optparse import Option
+from matplotlib.pyplot import sca
 import ord_schema
 from ord_schema import reaction_pb2 as re
 from typing import Dict, Iterable, List, Optional, Tuple, Type, TypeVar, Union
@@ -20,7 +21,7 @@ def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, Li
     messages = []
     repeats = []
     maps = []
-    scalars = ['reaction_id','parent_message','parent_key', 'parent_item']
+    scalars = ['ID']
     for field in message.DESCRIPTOR.fields:
 
         if(field.type == field.TYPE_MESSAGE and field.message_type.GetOptions().map_entry):
@@ -42,7 +43,11 @@ def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, Li
     return (scalars, messages, maps, repeats)
 
 
-
+def create_file(name: str, scalars):
+    file = open('./results/'+name+'.csv', encoding='utf-8', mode='w', newline='')
+    writer_1 = csv.writer(file)
+    writer_1.writerow(scalars)
+    file.close()    
 
 
 
@@ -64,22 +69,25 @@ def create_tables(message: ord_schema.Message, message_label: Optional[str] = No
     repeats = []
     maps = []
     scalars = []
-    row = []
+
 
     # get this_trace and the lists for scalars, messages, maps, and enums    
     scalars, messages, maps, repeats = get_field_labels(message=message)
     # adding all the column labels to the header array, row
-    row = ['reaction_id', 'parent_message', 'parent_key_index', 'current_key_index', 'trace','label', 'field_name', 'value', 'child_key_index']
 
     
     # create a table for each independent message
-    file = open('./results/'+message.DESCRIPTOR.name+'.csv', encoding='utf-8', mode='w', newline='')
-    writer_1 = csv.writer(file)
-    writer_1.writerow(row)
-    file.close()
+    create_file(name=message.DESCRIPTOR.name, scalars=scalars)
+    #file = open('./results/'+message.DESCRIPTOR.name+'.csv', encoding='utf-8', mode='w', newline='')
+    #writer_1 = csv.writer(file)
+    #writer_1.writerow(scalars)
+    #file.close()
 
     for item in messages+maps+repeats:
-
+        header = ['ID', message.DESCRIPTOR.name+'_ID', item+'_ID', 'key_or_index' ]
+        if item in messages:
+            header = ['ID', message.DESCRIPTOR.name+'_ID', item+'_ID' ]
+        create_file(name=message.DESCRIPTOR.name+'_'+item, scalars=header)
         try:
             # for messages defined in the main schema
             new_message = getattr(re, item)
@@ -87,6 +95,7 @@ def create_tables(message: ord_schema.Message, message_label: Optional[str] = No
         except:
             # for nested messages
             new_message = getattr(message, item)
+
 
         create_tables(new_message)
 
@@ -117,7 +126,7 @@ def get_fields_values(message: ord_schema.Message,
     messages = []
     repeats = []
     maps = []
-    scalars = []
+    scalars = {}
     
         
     for field, value in message.ListFields():
@@ -127,32 +136,26 @@ def get_fields_values(message: ord_schema.Message,
                 for key, subvalue in value.items():
                     #maps.append((field.name, subvalue))
                     maps.append((field.message_type.fields_by_name["value"].message_type.name, key, subvalue))
-                    scalars.append((parent_name, parent_key_index, current_key_index, trace, 'MAP', field.name, field.message_type.fields_by_name["value"].message_type.name, key))
             else:
                 # possible implementation of the the repeat index
                 for i, subvalue in enumerate(value):
                     #repeats.append((field.name, subvalue))
                     repeats.append((field.message_type.name, i,subvalue))
-                    scalars.append((parent_name, parent_key_index, current_key_index, trace, 'REPEATED', field.name, field.message_type.name, i))
+
 
         else:     
             if field.type == field.TYPE_MESSAGE:
                 messages.append((field.message_type.name, None, value))
-                scalars.append((parent_name, parent_key_index, current_key_index, trace, 'MESSAGE', field.name, field.message_type.name, None))
             else:
                 if field.type == field.TYPE_ENUM:
-                    scalars.append((parent_name, parent_key_index, current_key_index, trace, 'SCALAR', field.name, field.enum_type.values_by_number[value].name, None))
+                    scalars.update({field.name : field.enum_type.values_by_number[value].name})
                 else:
-                    scalars.append((parent_name, parent_key_index, current_key_index, trace, 'SCALAR', field.name, value, None))
+                    scalars.update({field.name : value})
         
         
     return (trace,scalars, messages, maps, repeats)
 
-def populate_tables(message: ord_schema.Message, trace: Optional[str] = None, 
-                    reaction_id: Optional[str] = None,
-                    parent_name: Optional[str] = None,
-                    parent_key_index: Optional[str] = None,
-                    current_key_index: Optional[str] = None):
+def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None):
     """Converts a message to its scalar subfields and write them into corresponding csv files.
 
     Args:
@@ -164,35 +167,65 @@ def populate_tables(message: ord_schema.Message, trace: Optional[str] = None,
         updated csv files in the results folder
     """
 
+    #if message.DESCRIPTOR.name in ID.keys():
+    #    ID[message.DESCRIPTOR.name] +=1
+    #else:
+    #    ID.update({message.DESCRIPTOR.name : 1})
+
+    if message.DESCRIPTOR.name in ID.keys() and message.DESCRIPTOR.name =='Reaction':
+        ID[message.DESCRIPTOR.name] += 1
+    if message.DESCRIPTOR.name not in ID.keys():
+        ID.update({message.DESCRIPTOR.name : 1})
+
+
+
+
+
+
+
+
     # this_trace = '\t'+trace
     messages = []
     repeats = []
     maps = []
-    scalars = []
+    scalars = {}
 
     
-    if trace is None:
-        trace = message.DESCRIPTOR.name
 
+    labels, _,_,_ = get_field_labels(message=message)
+    _, scalars, messages, maps, repeats = get_fields_values(message=message, trace=None, reaction_id = None, 
+                                                                        parent_name=None, current_key_index=None, 
+                                                                        parent_key_index=None)
+    scalars.update({'ID' : ID[message.DESCRIPTOR.name]})
 
-    _, scalars, messages, maps, repeats = get_fields_values(message=message, trace=trace, reaction_id = reaction_id, 
-                                                                        parent_name=parent_name, current_key_index=current_key_index, 
-                                                                        parent_key_index=parent_key_index)
+    row = get_row(scalars=scalars, labels=labels)
 
     # append the data to the corresponding table
-    append_to_file(file='./results/'+message.DESCRIPTOR.name+'.csv', reaction_id=reaction_id, scalars=scalars, message_name=parent_name)
+    append_to_file(file='./results/'+message.DESCRIPTOR.name+'.csv', row=row)
 
 
-    for (field, new_key_index,value) in messages+maps+repeats:
-        # set the trace based on message type
-        if new_key_index is None:
-            this_trace = field
+    for (field, key_or_index,value) in messages+maps+repeats:
+        #handle the ID dictionary
+        if field in ID.keys():
+            ID[field]+=1
         else:
-            this_trace = field+'['+str(new_key_index)+']'
+            ID.update({field : 1})
+        if message.DESCRIPTOR.name+'_'+field in ID.keys():
+            ID[message.DESCRIPTOR.name+'_'+field] +=1
+        else:
+            ID.update({message.DESCRIPTOR.name+'_'+field : 1})
+        
+        # get the row for intermidary tables
+        row = [ID[message.DESCRIPTOR.name+'_'+field], ID[message.DESCRIPTOR.name], ID[field], key_or_index]
+        if (field, key_or_index,value) in messages:
+            row = [ID[message.DESCRIPTOR.name+'_'+field], ID[message.DESCRIPTOR.name], ID[field]]
+        
+        append_to_file(file='./results/'+message.DESCRIPTOR.name+'_'+field+'.csv', row=row)
 
-        populate_tables(message=value, trace=trace+'.'+this_trace, 
-        reaction_id=reaction_id, parent_name=message.DESCRIPTOR.name, 
-        parent_key_index=current_key_index, current_key_index=new_key_index)
+
+
+        # call the recursive function
+        populate_tables(message=value, ID=ID)
 
 
 def get_row(scalars: Dict[str, str], labels: List[str]) -> List[str]:
@@ -206,12 +239,10 @@ def get_row(scalars: Dict[str, str], labels: List[str]) -> List[str]:
 
 
 
-def append_to_file(file: str, reaction_id: str, message_name: str, scalars: List[Tuple]):
+def append_to_file(file: str, row: list):
     file = open(file, encoding='utf-8', mode='a', newline='')
     writer = csv.writer(file)
-    for (parent_name, parent_key_index, current_key_index, trace,label, field_name, value, child_key_index) in scalars:
-        row = [reaction_id, parent_name, parent_key_index, current_key_index, trace,label, field_name, value, child_key_index]
-        writer.writerow(row)
+    writer.writerow(row)
     file.close()
 
 
