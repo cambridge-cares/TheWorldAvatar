@@ -3,7 +3,7 @@
 To spin up the stack (with default settings) please follow the instructions below:
 
 0. In the Docker Desktop General Settings enable the `Expose daemon on tcp://localhost:2375 without TLS` option.
-1. Open this folder in VSCode.
+1. Open this folder as Workspace in VSCode (i.e. to ensure availability of pre-defined run configurations).
 2. Create two files called `postgis_password` and `geoserver_password` in the `stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for postgis and geoserver, respectively.
 3. Create two files called `repo_username.txt` and `repo_password.txt` in the `stack-manager/docker/credentials` directory. Populate the files with your github username and access token (i.e. with scope to write packages), respectively.
 4. Initialise docker swarm by running
@@ -22,7 +22,7 @@ Remarks:
 
 To check the exposed ports, run
 ```
-docker servise ls
+docker service ls
 ```
 
 ## Further remarks
