@@ -6,31 +6,62 @@ The purpose of the AccessAgent is to handle HTTP requests to perform SPARQL quer
 The agent will also perform requests to "get" and "insert" entire graphs. This agent extends the JPSAgent framework and can be called using methods 
 in the AccessAgentCaller class in jps_base_lib.
 
-## Spining up AccessAgent stack and setting up the AccessAgent in a dev environment
+## The AccessAgent dev stack
 
-The AccessAgent stack (see docker-compose.yml) contains the Access Agent on port 48080 and an empty Blazegraph container on port 48081. The Blazegraph container will host the store routing information. 
-Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry, respectively. Credentials are required to pull from the CMCL registry. 
+The access-agent-dev-stack contains the Access Agent (on port 48888) and a Blazegraph (on port 48889). The purpose of the Blazegraph is to store the routing information used by the access agent in your dev environment. 
+Routing information is stored in the default "kb" namespace and the access agent is configured to use this is as the STOREROUTER_ENDPOINT.
 
-From the command line, in same directory as this README, run:
+### Spining up the Access Agent dev stack
+
+From the command line, in the access-agent-dev-stack directory, run:
 ```
 docker-compose up -d --no-build
 ```
-Next, you will need to populate the default "kb" namespace in Blazegraph with your routing information. This can be done using the Blazegraph user interface at `localhost:48081/blazegraph`.
-Routing information consists of 5 triples e.g. for the "ontokin" triple store
+Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry, respectively. 
+Note: Credentials are required to pull from the CMCL registry. 
+
+### Uploading routing information to the dev stack
+To upload routing information. 
+Populate the routing.json file in access-agent-dev-stack directory with the routing information you want to upload.
+You need to provide a "label", "queryEndpoint" and "updateEndpoint" for each store/namespace. (The routing.json template contains two examples.)
+Next, run the script uploadRouting.sh (in Linux or WSL).
 ```
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint>	"http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint> "http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource>.
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual>.
-<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/2000/01/rdf-schema#label> "ontokin".
+bash ./uploadRouting.sh
+```
+Note: 
+1. Routing triples can also be added 'manually' (e.g. through the user interface) to the "kb" namespace of the access-agent-dev-stack Blazegraph. 
+2. The uploader will not overwrite information if a "label" already exists. You will need to do this 'manually'.
+
+### Calling the Access Agent in your dev environment 
+
+The access agent is available at http://localhost:48888 (or http://host.docker.internal:48888 if calling it from a docker container on windows).
+
+The AccessAgent is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB.
+In order to call the access agent in your local dev environment the targetResourceID needs to be a url with the localhost and port number, e.g.
+```
+http://localhost:48888/label (or http://host.docker.internal:48888/label if calling the access agent from inside a docker container)
+```
+where label corresponds to the label uploaded to the router
+
+## Building the Access Agent
+
+The docker-compose and Dockerfile to build the Access Agent can be found in the docker-build directory.
+
+### Version numbers
+When building a new version of the access agent remember:
+1. The AccessAgent version number on line 25 of the Dockerfile must match that in the AccessAgent pom.xml
+2. The image version number in the docker-compose file should be updated
+3. Also update the access agent image version in the dev stack to match the new version you are about to build and publish (../access-agent-dev-stack/docker-compose.yml)
+
+### Building
+To build the Access Agent image, in docker-build directory run:
+```
+docker-compose build
 ```
 
-## Calling the AccessAgent
+If building a new version of the image, the new image should be pushed to the GitHub container registry
+```
+docker push ghcr.io/cambridge-cares/access-agent:X.Y.Z
+```
+where X.Y.Z is the new version number.
 
-Set the environment variable ACCESSAGENT_HOST to localhost:48080; or if in a docker container either 172.17.0.1:48080 or host.docker.internal:48080
-The local AccessAgent can then be called using the queryStore and updateStore methods found in jps_base_lib by supplying a targetResourceID that corresponds to the label provided in the routing information (i.e. in the above example "ontokin"). 
-NOTE: JPS_BASE_LIB version "1.12.1-DEV-ACCESSAGENT-CONFIG-VARIABLES-SNAPSHOT" or later must be used.
-
-Alternatively, the desired host can be supplied via the targetResourceID in the form of a url. For example, targetResourceID = "http://localhost:48080/ontokin" will send the request to the local AccessAgent on port 48080. Whereas, targetResourceID = "http://www.theworldavatar.com:83/ontokin" will send the request to the default AccessAgent on Claudius.
-
-If no ACCESSAGENT_HOST environment variable is set nor url supplied as the targetResourceID, the request will be sent to the default AccessAgent host at "http://www.theworldavatar.com:83".
