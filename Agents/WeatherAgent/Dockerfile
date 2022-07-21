@@ -4,8 +4,8 @@ FROM maven:3.6-openjdk-11-slim as retriever
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 COPY ./pom.xml /root
-COPY ./credentials /root/credentials
-COPY ./.m2 /root/.m2
+COPY ./docker/credentials /root/credentials
+COPY ./docker/.m2 /root/.m2
 
 # Populate settings templates with credentials, repo name
 WORKDIR /root/.m2
@@ -47,8 +47,7 @@ RUN apt update && apt install -y zip
 
 # Remove version suffix when copying the war to simplify the entrypoint script
 COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
-COPY ./docker/entrypoint.sh .
 
 # Run the entrypoint script
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["catalina.sh", "jpda", "run"]
 #==================================================================================================
