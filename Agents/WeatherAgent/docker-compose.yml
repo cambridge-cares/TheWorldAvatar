@@ -10,7 +10,6 @@ services:
       - "8081:8080"
 
     volumes:
-      - external_maven_repo:/root/.m2
       - logs:/root/.jps
 
   blazegraph:
@@ -33,7 +32,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
-    image: docker.cmclinnovations.com/postgres:13.3-alpine
+    image: postgres:14.4-alpine
     restart: unless-stopped
     secrets: # username is postgres
       - postgres_password
@@ -53,7 +52,5 @@ volumes:
     name: "blazegraph_data"
   postgres_data:
     name: "postgres_data"
-  external_maven_repo:
-    name: "external_maven_repo" 
   logs:
     name: "logs"
