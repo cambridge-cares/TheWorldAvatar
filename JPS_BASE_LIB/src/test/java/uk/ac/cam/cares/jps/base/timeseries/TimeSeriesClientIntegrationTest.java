@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.lang.reflect.Field;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -22,6 +22,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 
+import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
@@ -66,7 +67,7 @@ public class SparqlClient {
 	
 	// derivation realted
 	public static Prefix p_derivation = SparqlBuilder.prefix("derivation",
-			iri("https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#"));
+			iri(DerivationSparql.derivednamespace));
 	public static Iri belongsTo = p_derivation.iri("belongsTo");
 
 	public SparqlClient(StoreClientInterface storeClient) {

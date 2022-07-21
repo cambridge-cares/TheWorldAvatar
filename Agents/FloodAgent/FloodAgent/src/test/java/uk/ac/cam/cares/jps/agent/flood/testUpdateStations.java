@@ -98,7 +98,7 @@ public class testUpdateStations {
 		api = mock(APIConnector.class);
 		when(api.getData()).thenReturn(entity);
 		
-		List<Map<?,?>> processed_data = UpdateStations.processAPIResponse(api);
+		List<Map<String,?>> processed_data = UpdateStations.processAPIResponse(api);
 		Map<String, List<Instant>> map1 = (Map<String, List<Instant>>) processed_data.get(0);
 		Map<String, List<Double>> map2 = (Map<String, List<Double>>) processed_data.get(1);
 	}
@@ -126,7 +126,7 @@ public class testUpdateStations {
 		api = mock(APIConnector.class);
 		when(api.getData()).thenReturn(entity);
 		
-		List<Map<?,?>> processed_data = UpdateStations.processAPIResponse(api);
+		List<Map<String,?>> processed_data = UpdateStations.processAPIResponse(api);
 		UpdateStations.uploadDataToRDB(LocalDate.now(), tsClient, sparqlClient, processed_data);
 	}
 	
