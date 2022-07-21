@@ -26,6 +26,8 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -40,27 +42,27 @@ class WeatherQueryClient {
 
 	// prefix
 	static String ontoems = "https://www.theworldavatar.com/kg/ontoems/";
-    static Prefix p_ems = SparqlBuilder.prefix("station",iri(ontoems));
+    static Prefix p_ems = SparqlBuilder.prefix("ems",iri(ontoems));
 	static Prefix p_om = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
 	private static Prefix p_geo = SparqlBuilder.prefix("geo",iri("http://www.bigdata.com/rdf/geospatial#"));
     
     // classes
 	private static Iri ReportingStation = p_ems.iri("ReportingStation");
 	private static Iri lat_lon = iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon");
-    static Iri CloudCover = p_ems.iri("CloudCover"); // not in ems tbox, should be subclass of om:Ratio
-    static Iri Rainfall = p_ems.iri("Rainfall");
-    static Iri AtmosphericPressure = p_ems.iri("AtmosphericPressure");
-    static Iri AirTemperature = p_ems.iri("AirTemperature");
-    static Iri RelativeHumidity = p_ems.iri("RelativeHumidity");
-    static Iri WindSpeed = p_ems.iri("WindSpeed");
-    static Iri WindDirection = p_ems.iri("WindDirection");
+    static String CloudCover = ontoems +"CloudCover"; // not in ems tbox, should be subclass of om:Ratio
+    static String Rainfall = ontoems + "Rainfall";
+    static String AtmosphericPressure = ontoems + "AtmosphericPressure";
+    static String AirTemperature = ontoems + "AirTemperature";
+    static String RelativeHumidity = ontoems + "RelativeHumidity";
+    static String WindSpeed = ontoems + "WindSpeed";
+    static String WindDirection = ontoems + "WindDirection";
 	static Iri Measure = p_om.iri("Measure");
     
     // properties
     static Iri reports = p_ems.iri("reports");
     static Iri hasValue = p_om.iri("hasValue");
     private static Iri hasUnit = p_om.iri("hasUnit");
-	private static Iri hasObservationLocation = p_om.iri("hasObservationLocation");
+	private static Iri hasObservationLocation = p_ems.iri("hasObservationLocation");
     
     // IRI of units used
     private static Iri unit_mm = p_om.iri("millimetre");
@@ -72,12 +74,12 @@ class WeatherQueryClient {
     private static Iri unit_percentage = p_om.iri("PercentageUnit");
     
     // measured properties
-    private static List<Iri> weatherClasses = Arrays.asList(CloudCover, Rainfall,
+    private static List<String> weatherClasses = Arrays.asList(CloudCover, Rainfall,
 	    AtmosphericPressure, AirTemperature, RelativeHumidity, WindSpeed, WindDirection);
     
     // fixed units for each measured property
     @SuppressWarnings("serial")
-	static Map<Iri, Iri> unitMap = new HashMap<Iri , Iri>() {{
+	static Map<String, Iri> unitMap = new HashMap<String , Iri>() {{
     	put(CloudCover, unit_percentage);
     	put(Rainfall, unit_mm);
     	put(AtmosphericPressure, unit_mbar);
@@ -129,7 +131,7 @@ class WeatherQueryClient {
     	List<Class<?>> classlist_for_timeseries = new ArrayList<>();
     	
     	// add 1 sensor per property
-    	for (Iri weatherClass : weatherClasses) {
+    	for (String weatherClass : weatherClasses) {
     		Iri quantity = p_ems.iri("quantity_" + UUID.randomUUID());
 			String measureIri = ontoems + "measure_" + UUID.randomUUID();
     		Iri measure = iri(measureIri);
@@ -140,7 +142,7 @@ class WeatherQueryClient {
     		
     		// triples to insert
     		modify.insert(station.has(reports,quantity));
-    		modify.insert(quantity.isA(weatherClass).andHas(hasValue,measure));
+    		modify.insert(quantity.isA(iri(weatherClass)).andHas(hasValue,measure));
     		modify.insert(measure.isA(Measure).andHas(hasUnit,unitMap.get(weatherClass)));
     	}
     	
@@ -228,6 +230,7 @@ class WeatherQueryClient {
      * @param station_iri
      */
     void updateStation(String station_iri) {
+		// will be replaced by postgis
 		// get the coordinates of this station
 		// build coordinate query
 		SelectQuery query2 = Queries.SELECT();
@@ -239,24 +242,28 @@ class WeatherQueryClient {
 		String[] latlon = coordinates.split("#");
 		
 		// the key for this map is the weather class, value is the corresponding value
-		Map<Iri,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(Double.parseDouble(latlon[0]), Double.parseDouble(latlon[1]));
-		Iterator<Iri> weatherClasses = newWeatherData.keySet().iterator();
+		Map<String,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(Double.parseDouble(latlon[0]), Double.parseDouble(latlon[1]));
 	    
 		// to construct time series object
 		List<String> datavalue_list = new ArrayList<>();
 		List<List<?>> value_list = new ArrayList<>();
 		
-		// we need to find the data value for the corresponding weather class
-		while (weatherClasses.hasNext()) {
-			Iri weatherClass = weatherClasses.next();
-			SelectQuery query3 = Queries.SELECT();
-			Variable data = query3.var();
-			Variable datavalue = query3.var();
-			
-			query3.select(datavalue).where(data.isA(weatherClass).andHas(hasValue,datavalue)).prefix(p_om,p_ems);
-			
-			datavalue_list.add(storeClient.executeQuery(query3.getQueryString()).getJSONObject(0).getString(datavalue.getQueryString().substring(1)));
-			double numericalValue = newWeatherData.get(weatherClass);
+		// query measure IRIs and match numerical values to it
+		SelectQuery query3 = Queries.SELECT();
+		Variable quantity = query3.var();
+		Variable measure = query3.var();
+		Variable weatherType = query3.var();
+		
+		GraphPattern gp = GraphPatterns.and(iri(station_iri).has(reports,quantity), quantity.isA(weatherType).andHas(hasValue,measure));
+		
+		query3.select(measure, weatherType).where(gp).prefix(p_om,p_ems);
+
+		JSONArray queryResults = storeClient.executeQuery(query3.getQueryString());
+
+		for (int i = 0; i < queryResults.length(); i++) {
+			JSONObject queryResult = queryResults.getJSONObject(i);
+			datavalue_list.add(queryResult.getString(measure.getQueryString().substring(1)));
+			double numericalValue = newWeatherData.get(queryResult.getString(weatherType.getQueryString().substring(1)));
 			value_list.add(Arrays.asList(numericalValue));
 		}
 		

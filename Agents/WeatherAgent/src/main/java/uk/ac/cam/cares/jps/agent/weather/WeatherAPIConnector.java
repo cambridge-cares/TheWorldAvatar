@@ -24,7 +24,7 @@ class WeatherAPIConnector {
 	 * @param lon
 	 * @return
 	 */
-	static Map<Iri,Double> getWeatherDataFromOpenWeather(double lat, double lon) {
+	static Map<String,Double> getWeatherDataFromOpenWeather(double lat, double lon) {
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost("api.openweathermap.org")
                 .setPath("/data/2.5/weather");
 		builder.setParameter("lat", String.valueOf(lat));
@@ -50,7 +50,7 @@ class WeatherAPIConnector {
 			}
 
 			// collect results into a Map			
-			Map<Iri,Double> resultMap = new HashMap<>();
+			Map<String,Double> resultMap = new HashMap<>();
 			resultMap.put(WeatherQueryClient.Rainfall, precipitation);
 			resultMap.put(WeatherQueryClient.AtmosphericPressure, apiresult.getJSONObject("main").getDouble("pressure"));
 			resultMap.put(WeatherQueryClient.CloudCover,apiresult.getJSONObject("clouds").getDouble("all")/100);
