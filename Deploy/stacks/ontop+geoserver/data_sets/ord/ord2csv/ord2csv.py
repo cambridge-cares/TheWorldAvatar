@@ -27,6 +27,7 @@ url = "https://github.com/open-reaction-database/ord-data/blob/main/data/fc/ord_
 pb = 'ord_dataset-fc83743b978f4deea7d6856deacbfe53.pb.gz'
 
 
+
 # Load Dataset message
 data = message_helpers.load_message(pb, dataset_pb2.Dataset)
 
@@ -45,10 +46,10 @@ ID = {}
 
 # st.populate_tables(message=data.reactions[0], ID=ID)
 
-for reaction in data.reactions:
+for i, reaction in enumerate(data.reactions):
 
    # Converts each reaction in the dataset to equivalent csv tables 
-   st.populate_tables(reaction, ID)
+   st.populate_tables(reaction, ID, i+1)
 
 
 

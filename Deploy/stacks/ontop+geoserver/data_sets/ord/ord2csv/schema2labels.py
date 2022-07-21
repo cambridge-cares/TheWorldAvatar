@@ -85,8 +85,6 @@ def create_tables(message: ord_schema.Message, message_label: Optional[str] = No
 
     for item in messages+maps+repeats:
         header = ['ID', message.DESCRIPTOR.name+'_ID', item+'_ID', 'key_or_index' ]
-        if item in messages:
-            header = ['ID', message.DESCRIPTOR.name+'_ID', item+'_ID' ]
         create_file(name=message.DESCRIPTOR.name+'_'+item, scalars=header)
         try:
             # for messages defined in the main schema
@@ -99,12 +97,7 @@ def create_tables(message: ord_schema.Message, message_label: Optional[str] = No
 
         create_tables(new_message)
 
-def get_fields_values(message: ord_schema.Message, 
-                    trace: Optional[str] = None, 
-                    reaction_id: Optional[str] = None,
-                    parent_name: Optional[str] = None,
-                    parent_key_index: Optional[str] = None, 
-                    current_key_index: Optional[int] = None) -> Tuple[(str, List, List, List, Dict)]:
+def get_fields_values(message: ord_schema.Message) -> Tuple[(Dict, List, List, List)]:
     """Converts a message to its subfields and subvalues.
 
     Args:
@@ -153,9 +146,9 @@ def get_fields_values(message: ord_schema.Message,
                     scalars.update({field.name : value})
         
         
-    return (trace,scalars, messages, maps, repeats)
+    return (scalars, messages, maps, repeats)
 
-def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None):
+def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, root_index : Optional[int] = None):
     """Converts a message to its scalar subfields and write them into corresponding csv files.
 
     Args:
@@ -171,17 +164,9 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None):
     #    ID[message.DESCRIPTOR.name] +=1
     #else:
     #    ID.update({message.DESCRIPTOR.name : 1})
-
-    if message.DESCRIPTOR.name in ID.keys() and message.DESCRIPTOR.name =='Reaction':
-        ID[message.DESCRIPTOR.name] += 1
-    if message.DESCRIPTOR.name not in ID.keys():
-        ID.update({message.DESCRIPTOR.name : 1})
-
-
-
-
-
-
+    
+    if root_index is not None:
+        ID.update({message.DESCRIPTOR.name : root_index})
 
 
     # this_trace = '\t'+trace
@@ -193,9 +178,7 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None):
     
 
     labels, _,_,_ = get_field_labels(message=message)
-    _, scalars, messages, maps, repeats = get_fields_values(message=message, trace=None, reaction_id = None, 
-                                                                        parent_name=None, current_key_index=None, 
-                                                                        parent_key_index=None)
+    scalars, messages, maps, repeats = get_fields_values(message=message)
     scalars.update({'ID' : ID[message.DESCRIPTOR.name]})
 
     row = get_row(scalars=scalars, labels=labels)
@@ -217,8 +200,7 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None):
         
         # get the row for intermidary tables
         row = [ID[message.DESCRIPTOR.name+'_'+field], ID[message.DESCRIPTOR.name], ID[field], key_or_index]
-        if (field, key_or_index,value) in messages:
-            row = [ID[message.DESCRIPTOR.name+'_'+field], ID[message.DESCRIPTOR.name], ID[field]]
+
         
         append_to_file(file='./results/'+message.DESCRIPTOR.name+'_'+field+'.csv', row=row)
 
@@ -241,7 +223,7 @@ def get_row(scalars: Dict[str, str], labels: List[str]) -> List[str]:
 
 def append_to_file(file: str, row: list):
     file = open(file, encoding='utf-8', mode='a', newline='')
-    writer = csv.writer(file)
+    writer = csv.writer(file, quotechar='\"', quoting=csv.QUOTE_MINIMAL)
     writer.writerow(row)
     file.close()
 
