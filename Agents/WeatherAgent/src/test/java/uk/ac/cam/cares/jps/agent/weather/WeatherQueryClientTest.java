@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.weather;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.Instant;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -48,7 +49,7 @@ public class WeatherQueryClientTest {
 
     WeatherQueryClient weatherClient;
     RemoteStoreClient storeClient;
-    TimeSeriesClient<Long> tsClient;
+    TimeSeriesClient<Instant> tsClient;
     
     // this string is copied from the blazegraph workbench window when you create a new namespace
     // the name of the namespace is weather, with geospatial enabled
@@ -78,7 +79,7 @@ public class WeatherQueryClientTest {
  		
  		// Set up a kb client that points to the location of the triple store
      	storeClient = new RemoteStoreClient(sparql_endpoint,sparql_endpoint);	
-     	tsClient = new TimeSeriesClient<Long>(storeClient, Long.class, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+     	tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
      	weatherClient = new MockWeatherQueryClient(storeClient, tsClient);
 	}
 	
@@ -94,15 +95,15 @@ public class WeatherQueryClientTest {
         
         // getting weather data
         weatherClient.getLatestWeatherData(station);
-        TimeSeries<Long> historicalData1 = weatherClient.getHistoricalWeatherData(station,1);
+        TimeSeries<Instant> historicalData1 = weatherClient.getHistoricalWeatherData(station,1);
         
         // updating data
-        long oldtimestamp = weatherClient.getLastUpdateTime(station);
+        Instant oldtimestamp = weatherClient.getLastUpdateTime(station);
         Thread.sleep(1500); // wait for 1.5 second to ensure next timestamp is at least 1 second greater
         weatherClient.updateStation(station);
-        long newtimestamp = weatherClient.getLastUpdateTime(station);
-        Assertions.assertTrue(newtimestamp > oldtimestamp);
-        TimeSeries<Long> historicalData2 = weatherClient.getHistoricalWeatherData(station,1);
+        Instant newtimestamp = weatherClient.getLastUpdateTime(station);
+        Assertions.assertTrue(newtimestamp.isAfter(oldtimestamp));
+        TimeSeries<Instant> historicalData2 = weatherClient.getHistoricalWeatherData(station,1);
         Assertions.assertTrue(historicalData2.getTimes().size() > historicalData1.getTimes().size());
         
         // geospatial functions
@@ -122,7 +123,7 @@ public class WeatherQueryClientTest {
 		boolean exist = false;
 		SelectQuery query = Queries.SELECT();
 		Variable var = query.var();
-		query.select(var).where(var.isA(iri(WeatherQueryClient.ontostation+"WeatherStation")));
+		query.select(var).where(var.isA(iri(WeatherQueryClient.ontoems+"ReportingStation")));
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
 		if (queryResult.length() == 1)  {

@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.weather;
 
+import java.time.Instant;
+
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 import org.apache.logging.log4j.LogManager;
@@ -36,9 +38,8 @@ public class CreateStation extends JPSAgent {
     	if (validateInput(requestParams)) {
     		String latlon = requestParams.getString("latlon");
     		
-    		Config.initProperties();
     		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-    		TimeSeriesClient<Long> tsClient = new TimeSeriesClient<Long>(storeClient, Long.class, Config.dburl, Config.dbuser, Config.dbpassword);
+    		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     		
     		// replaced with mock client in the junit tests
     		if (weatherClient == null ) {

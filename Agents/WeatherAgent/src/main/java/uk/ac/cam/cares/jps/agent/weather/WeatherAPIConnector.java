@@ -25,7 +25,6 @@ class WeatherAPIConnector {
 	 * @return
 	 */
 	static Map<Iri,Double> getWeatherDataFromOpenWeather(double lat, double lon) {
-    	Config.initProperties();
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost("api.openweathermap.org")
                 .setPath("/data/2.5/weather");
 		builder.setParameter("lat", String.valueOf(lat));
@@ -52,15 +51,15 @@ class WeatherAPIConnector {
 
 			// collect results into a Map			
 			Map<Iri,Double> resultMap = new HashMap<>();
-			resultMap.put(WeatherQueryClient.OutsideAirPrecipitation, precipitation);
-			resultMap.put(WeatherQueryClient.OutsideAirPressure, apiresult.getJSONObject("main").getDouble("pressure"));
-			resultMap.put(WeatherQueryClient.OutsideAirCloudCover,apiresult.getJSONObject("clouds").getDouble("all")/100);
-			resultMap.put(WeatherQueryClient.OutsideWindSpeed, apiresult.getJSONObject("wind").getDouble("speed"));
+			resultMap.put(WeatherQueryClient.Rainfall, precipitation);
+			resultMap.put(WeatherQueryClient.AtmosphericPressure, apiresult.getJSONObject("main").getDouble("pressure"));
+			resultMap.put(WeatherQueryClient.CloudCover,apiresult.getJSONObject("clouds").getDouble("all")/100);
+			resultMap.put(WeatherQueryClient.WindSpeed, apiresult.getJSONObject("wind").getDouble("speed"));
 			if (apiresult.getJSONObject("wind").has("deg")) {
-				resultMap.put(WeatherQueryClient.OutsideWindDirection, apiresult.getJSONObject("wind").getDouble("deg"));
+				resultMap.put(WeatherQueryClient.WindDirection, apiresult.getJSONObject("wind").getDouble("deg"));
 			}
-			resultMap.put(WeatherQueryClient.OutsideAirRelativeHumidity, apiresult.getJSONObject("main").getDouble("humidity"));
-			resultMap.put(WeatherQueryClient.OutsideAirTemperature, apiresult.getJSONObject("main").getDouble("temp"));
+			resultMap.put(WeatherQueryClient.RelativeHumidity, apiresult.getJSONObject("main").getDouble("humidity"));
+			resultMap.put(WeatherQueryClient.AirTemperature, apiresult.getJSONObject("main").getDouble("temp"));
 			
             return resultMap;
         } catch (Exception e) {

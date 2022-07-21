@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
+import java.time.Instant;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,7 +60,7 @@ public class WeatherAgentIntegrationTest {
 	private File props_file;
 	
 	RemoteStoreClient storeClient;
-	TimeSeriesClient<Long> tsClient;
+	TimeSeriesClient<Instant> tsClient;
 	
 	// this string is copied from the blazegraph workbench window when you create a new namespace
     // the name of the namespace is weather, with geospatial enabled
@@ -115,7 +116,7 @@ public class WeatherAgentIntegrationTest {
 		outputStream.close();
 		
 		storeClient = new RemoteStoreClient(sparql_endpoint,sparql_endpoint);	
-     	tsClient = new TimeSeriesClient<Long>(storeClient, Long.class, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+     	tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
 	}
 	
 	@Test

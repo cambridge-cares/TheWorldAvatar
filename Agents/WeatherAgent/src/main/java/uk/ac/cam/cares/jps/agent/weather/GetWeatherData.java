@@ -59,12 +59,8 @@ public class GetWeatherData extends JPSAgent{
     	JSONObject response = null;
     	
     	if (validateInput(requestParams, request)) {
-	    	// will only read the file if it's null
-	    	Config.initProperties();
-	    	
-	    	Config.initProperties();
 			RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-			TimeSeriesClient<Long> tsClient = new TimeSeriesClient<Long>(storeClient, Long.class, Config.dburl, Config.dbuser, Config.dbpassword);
+			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 			
 			// replaced with mock client in the junit tests
 			if (weatherClient == null ) {
@@ -74,9 +70,9 @@ public class GetWeatherData extends JPSAgent{
 			String station = requestParams.getString("station");
 			
 			//updates station if it's more than 30 minute old
-			long currenttime = Instant.now().getEpochSecond();
-			long lastupdate = weatherClient.getLastUpdateTime(station);
-			if ((currenttime-lastupdate) > 1800) {
+			Instant currenttime = Instant.now();
+			Instant lastupdate = weatherClient.getLastUpdateTime(station); 
+			if ((currenttime.getEpochSecond()-lastupdate.getEpochSecond()) > 1800) {
 				// this will ensure the servlet will always return a response even if the API call fails
 				try {
 					weatherClient.updateStation(station);
@@ -87,7 +83,7 @@ public class GetWeatherData extends JPSAgent{
 			}
 			
 	        String path = request.getServletPath();
-	        TimeSeries<Long> ts = null; // time series object containing weather data
+	        TimeSeries<Instant> ts = null; // time series object containing weather data
 	        switch (path) {
 	        	case urlPatternHistory:
 	        		ts = weatherClient.getHistoricalWeatherData(station, requestParams.getInt("hour"));

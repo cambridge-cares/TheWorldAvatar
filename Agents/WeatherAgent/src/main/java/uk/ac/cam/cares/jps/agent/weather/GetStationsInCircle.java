@@ -36,7 +36,6 @@ public class GetStationsInCircle extends JPSAgent{
 		JSONObject response = new JSONObject();
 		
 		if (validateInput(requestParams)) {
-			Config.initProperties();
     		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
     		WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient);
     		

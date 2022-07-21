@@ -9,14 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -27,7 +26,7 @@ class MockWeatherQueryClient extends WeatherQueryClient{
 		super(storeClient);
 	}
 	
-	MockWeatherQueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient) {
+	MockWeatherQueryClient(StoreClientInterface storeClient, TimeSeriesClient<Instant> tsClient) {
 		super(storeClient, tsClient);
 	}
 
@@ -36,14 +35,13 @@ class MockWeatherQueryClient extends WeatherQueryClient{
 		// construct time series object
 		// first query all data values
 		SelectQuery query = Queries.SELECT();
-		Variable datavalue = query.var();
-		Iri[] predicates = {hasSubsystem,observes,hasValue};
-		GraphPattern queryPattern = getQueryGraphPattern(query, predicates, iri(station_iri), datavalue);
-		query.select(datavalue).where(queryPattern).prefix(p_ontosensor,p_system);
+		Variable measure = query.var();
+		GraphPattern queryPattern = iri(station_iri).has(PropertyPaths.path(reports,hasValue),measure);
+		query.select(measure).where(queryPattern).prefix(p_ems,p_om);
 		
 		JSONArray queryResult = this.storeClient.executeQuery(query.getQueryString());
 		List<String> datavalue_list = queryResult.toList().stream()
-				.map(iri -> ((HashMap<String,String>) iri).get(datavalue.getQueryString().substring(1)))
+				.map(iri -> ((HashMap<String,String>) iri).get(measure.getQueryString().substring(1)))
 				.collect(Collectors.toList()); 
 		
 		// add dummy data
@@ -53,12 +51,8 @@ class MockWeatherQueryClient extends WeatherQueryClient{
 		}
 		
 		// append new values to time series table
-		TimeSeries<Long> ts = new TimeSeries<Long>(Arrays.asList(Instant.now().getEpochSecond()), datavalue_list, value_list);
+		TimeSeries<Instant> ts = new TimeSeries<Instant>(Arrays.asList(Instant.now()), datavalue_list, value_list);
 		tsClient.addTimeSeriesData(ts);
-		
-		// update last updated timestamp
-		DerivationClient dClient = new DerivationClient(storeClient);
-		dClient.updateTimestamp(station_iri);
 	}
 
 }

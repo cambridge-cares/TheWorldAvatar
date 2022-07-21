@@ -34,12 +34,8 @@ public class UpdateStation extends JPSAgent{
         JSONObject response = new JSONObject();
     	
     	if (validateInput(requestParams)) {
-	    	// will only read the file if it's null
-	    	Config.initProperties();
-	    	
-	    	Config.initProperties();
 			RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-			TimeSeriesClient<Long> tsClient = new TimeSeriesClient<Long>(storeClient, Long.class, Config.dburl, Config.dbuser, Config.dbpassword);
+			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 			
 			// replaced with mock client in the junit tests
 			WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient, tsClient);
@@ -47,9 +43,9 @@ public class UpdateStation extends JPSAgent{
 			String station = requestParams.getString("station");
 			
 			//updates station if it's more than 30 minute old
-			long currenttime = Instant.now().getEpochSecond();
-			long lastupdate = weatherClient.getLastUpdateTime(station);
-			if ((currenttime-lastupdate) > 1800) {
+			Instant currenttime = Instant.now();
+			Instant lastupdate = weatherClient.getLastUpdateTime(station);
+			if ((currenttime.getEpochSecond()-lastupdate.getEpochSecond()) > 1800) {
 				// this will ensure the servlet will always return a response even if the API call fails
 				try {
 					weatherClient.updateStation(station);

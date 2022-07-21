@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.weather;
 
 import java.net.URI;
+import java.time.Instant;
 
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
@@ -26,12 +27,8 @@ public class DeleteStation extends JPSAgent{
         JSONObject response = new JSONObject();
     	
     	if (validateInput(requestParams)) {
-	    	// will only read the file if it's null
-	    	Config.initProperties();
-	    	
-	    	Config.initProperties();
 			RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-			TimeSeriesClient<Long> tsClient = new TimeSeriesClient<Long>(storeClient, Long.class, Config.dburl, Config.dbuser, Config.dbpassword);
+			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 			
 			// replaced with mock client in the junit tests
 			WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient, tsClient);
