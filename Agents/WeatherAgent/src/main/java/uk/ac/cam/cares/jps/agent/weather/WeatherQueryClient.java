@@ -25,7 +25,6 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -156,10 +155,6 @@ class WeatherQueryClient {
     	// then create a table for this weather station
     	tsClient.initTimeSeries(datalist_for_timeseries, classlist_for_timeseries, null);
     	
-    	// add timestamp to the station to use this as an input to a derivation
-    	DerivationClient dClient = new DerivationClient(storeClient);
-    	dClient.addTimeInstance(ontostation+station_name);
-    	
     	// populate with current weather data
     	updateStation(ontostation+station_name);
     	
@@ -209,10 +204,6 @@ class WeatherQueryClient {
 
     	// then delete all time series data in one go
     	tsClient.deleteTimeSeries(timeseriesIRI);
-    	
-    	// finally remove time stamp added using the derivation client
-    	DerivationClient dClient = new DerivationClient(storeClient);
-    	dClient.removeTimeInstance(station_iri);
     }
     
     long getLastUpdateTime(String station_iri) {
@@ -266,10 +257,6 @@ class WeatherQueryClient {
 		// append new values to time series table
 		TimeSeries<Long> ts = new TimeSeries<Long>(Arrays.asList(Instant.now().getEpochSecond()), datavalue_list, value_list);
 		tsClient.addTimeSeriesData(ts);
-		
-		// update last updated timestamp
-		DerivationClient dClient = new DerivationClient(storeClient);
-		dClient.updateTimestamp(station_iri);
     }
 
     /**
