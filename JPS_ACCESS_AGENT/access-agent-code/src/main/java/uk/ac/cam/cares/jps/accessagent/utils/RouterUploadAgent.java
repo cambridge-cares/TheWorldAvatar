@@ -25,8 +25,8 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
  * @author csl37
  *
  */
-@WebServlet(urlPatterns = {RoutingUploaderServlet.UPLOAD_URL})
-public class RoutingUploaderServlet  extends JPSAgent{
+@WebServlet(urlPatterns = {RouterUploadAgent.UPLOAD_URL})
+public class RouterUploadAgent  extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
 
@@ -35,14 +35,17 @@ public class RoutingUploaderServlet  extends JPSAgent{
 	/**
      * Logger for error output.
      */
-    private static final Logger LOGGER = LogManager.getLogger(RoutingUploaderServlet.class);
+    private static final Logger LOGGER = LogManager.getLogger(RouterUploadAgent.class);
 	    
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
-    	validateInput(requestParams);
+    	if (!validateInput(requestParams)) {
+			throw new JSONException("RouterUploadAgent: Input parameters not valid.\n");
+		}
     	
-    	JSONArray array = requestParams.getJSONArray(JPSConstants.CONTENT);  
+    	String body = MiscUtil.optNullKey(requestParams,JPSConstants.CONTENT);
+    	JSONArray array = new JSONArray(body);  
     	
     	//providing a storerouter endpoint is optional 
     	String routerEndpoint = MiscUtil.optNullKey(requestParams,"routerEndpoint");
@@ -52,7 +55,7 @@ public class RoutingUploaderServlet  extends JPSAgent{
     	RemoteStoreClient storeClient = new RemoteStoreClient(routerEndpoint,routerEndpoint);   	  	    	
     	
     	LOGGER.info("Uploading to: "+routerEndpoint);
-    	RoutingUploaderTool uploaderTool = new RoutingUploaderTool();
+    	RouterUploadTool uploaderTool = new RouterUploadTool();
     	int nUploaded = uploaderTool.uploadRoutingData(array, storeClient);
         
         return new JSONObject().put("Result:", Integer.toString(nUploaded)+" endpoint(s) uploaded.");
@@ -68,28 +71,35 @@ public class RoutingUploaderServlet  extends JPSAgent{
 	    	
 	    	//POST only
 	    	String method = MiscUtil.optNullKey(requestParams,JPSConstants.METHOD);
-	        if (method != HttpPost.METHOD_NAME) {
-        		LOGGER.error("Not HTTP POST");
+	        if (!method.equals(HttpPost.METHOD_NAME)) {
+        		LOGGER.error("Method is: "+method+". Only "+HttpPost.METHOD_NAME+" accepted.");
         		return false;
         	}
 	    	
 	        //JSONObject
-	        JSONArray array = requestParams.getJSONArray(JPSConstants.CONTENT);    	    	
+	        String body = MiscUtil.optNullKey(requestParams,JPSConstants.CONTENT);
+	        JSONArray array = null;
+	        try {
+	        	array = new JSONArray(body);
+	        }catch(JSONException ex) {
+	        	LOGGER.error("Content is not a JSONArray.");
+	        	return false;
+	        }
 	    	
 	        int size = array.length();
 	        if (size < 1) {return false;}
 	        
 	    	for (int i = 0; i < size; i++) {
 	    		JSONObject obj = array.getJSONObject(i); 
-	        	if(!obj.has(RoutingUploaderTool.LABEL)) {
+	        	if(!obj.has(RouterUploadTool.LABEL)) {
 	        		LOGGER.error("LABEL missing");
 	        		return false;
 	        	}
-	        	if(!obj.has(RoutingUploaderTool.QUERY_ENDPOINT)) {
+	        	if(!obj.has(RouterUploadTool.QUERY_ENDPOINT)) {
 	        		LOGGER.error("QUERY_ENDPOINT missing");
 	        		return false;
 	        	}
-	        	if(!obj.has(RoutingUploaderTool.UPDATE_ENDPOINT)) {
+	        	if(!obj.has(RouterUploadTool.UPDATE_ENDPOINT)) {
 	        		LOGGER.error("UPDATE_ENDPOINT missing");
 	        		return false;
 	        	}

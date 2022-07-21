@@ -8,16 +8,6 @@
 
 	<display-name>access-agent</display-name>
 
-	<servlet>
-		<servlet-name>AccessAgentServlet</servlet-name>
-		<servlet-class>uk.ac.cam.cares.jps.accessagent.AccessAgent</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>AccessAgentServlet</servlet-name>
-		<url-pattern>/</url-pattern>
-	</servlet-mapping>
-	
 	<filter>
 		<filter-name>CorsFilter</filter-name>
 		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>

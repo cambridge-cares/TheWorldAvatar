@@ -15,19 +15,19 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
  * This class is a tool to upload store routing data 
  * (used by the AccessAgent and StoreRouter) to a triple store.
  * See the method 
- * {@link uk.ac.cam.cares.jps.accessagent.utils.RoutingUploaderTool#uploadRoutingData uploadRoutingData}
+ * {@link uk.ac.cam.cares.jps.accessagent.utils.RouterUploadTool#uploadRoutingData uploadRoutingData}
  * for details. <br>
  * Note: If routing data already exists for a given label, it is not overridden.
  * 
  * @author csl37
  *
  */
-public class RoutingUploaderTool {
+public class RouterUploadTool {
 
-	private static final Logger LOGGER = LogManager.getLogger(RoutingUploaderTool.class);
+	private static final Logger LOGGER = LogManager.getLogger(RouterUploadTool.class);
 	
-	private static final String ONTOKGROUTER = "http://www.theworldavatar.com/kb/ontokgrouter/";
-    private static final String RDF_TYPE = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
+	public static final String ONTOKGROUTER = "http://www.theworldavatar.com/kb/ontokgrouter/";
+	public static final String RDF_TYPE = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
     
     public static final String LABEL = "label";
 	public static final String QUERY_ENDPOINT = "queryEndpoint";
