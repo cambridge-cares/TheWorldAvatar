@@ -53,11 +53,7 @@ public class WeatherAgentIntegrationTest {
 	
 	// Create Docker container with postgres 13.3 image from Docker Hub
 	@Container
-	private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
-	
-	// to record original values in the properties file
-	private Properties props;
-	private File props_file;
+	private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.4");
 	
 	RemoteStoreClient storeClient;
 	TimeSeriesClient<Instant> tsClient;
@@ -90,12 +86,6 @@ public class WeatherAgentIntegrationTest {
 		} catch (Exception e) {
 			throw new JPSRuntimeException("AgentIntegrationTest: Docker container startup failed. Please try running tests again");
 		}
-		InputStream inputstream = new ClassPathResource("credentials.properties").getInputStream();
-		props_file = new ClassPathResource("credentials.properties").getFile();
-		
-		props = new Properties();
-		props.load(inputstream);
-		
         URIBuilder builder = new URIBuilder().setScheme("http").setHost(blazegraph.getHost()).setPort(blazegraph.getFirstMappedPort()).setPath("/blazegraph/namespace");
 		
 		// create a new namespace (endpoint) on blazegraph with geospatial enabled
@@ -106,19 +96,11 @@ public class WeatherAgentIntegrationTest {
 		
 		String sparql_endpoint = response.getLastHeader("Location").getValue();
 		
-		FileOutputStream outputStream = new FileOutputStream(props_file);
-		Properties temp_props = new Properties(props);
-		temp_props.setProperty("kg.url", sparql_endpoint);
-		temp_props.setProperty("db.url",postgres.getJdbcUrl());
-		temp_props.setProperty("db.user", postgres.getUsername());
-		temp_props.setProperty("db.password", postgres.getPassword());
-		temp_props.store(outputStream, "Temporary file created by WeatherAgentIntegrationTest, this should be overwritten with the original values after the test completes");
-		outputStream.close();
-		
 		storeClient = new RemoteStoreClient(sparql_endpoint,sparql_endpoint);	
      	tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
 	}
 	
+	// commented out tests that requires 
 	@Test
 	public void integrationTest() {
 		// create a station in the test container
@@ -126,7 +108,8 @@ public class WeatherAgentIntegrationTest {
 		mockCreateRequest.put("latlon", "1.0#0.10");
 		CreateStation create = new CreateStation();
 		// the MockWeatherQueryClient does not make an API connection
-		create.setWeatherQueryClient(new MockWeatherQueryClient(storeClient, tsClient));
+		MockWeatherQueryClient weatherClient = new MockWeatherQueryClient(storeClient, tsClient);
+		create.setWeatherQueryClient(weatherClient);
 		JSONObject response = create.processRequestParameters(mockCreateRequest);
 		
 		String createdStation = response.getString("station");
@@ -136,6 +119,7 @@ public class WeatherAgentIntegrationTest {
 		mockCircleRequest.put("radius", 1);
 		mockCircleRequest.put("centre", "1.0#0.10");
 		GetStationsInCircle getStationsInCircle = new GetStationsInCircle();
+		getStationsInCircle.setWeatherQueryClient(weatherClient);
 		List<Object> stationsInCircle = getStationsInCircle.processRequestParameters(mockCircleRequest)
 				.getJSONArray("station").toList();
 		Assertions.assertTrue(stationsInCircle.contains(createdStation));
@@ -145,6 +129,7 @@ public class WeatherAgentIntegrationTest {
 		mockRectangleRequest.put("southwest", "0.9#0");
 		mockRectangleRequest.put("northeast", "1.1#0.2");
 		GetStationsInRectangle getStationsInRectangle = new GetStationsInRectangle();
+		getStationsInRectangle.setWeatherQueryClient(weatherClient);
 		List<Object> stationsInRectangle = getStationsInRectangle.processRequestParameters(mockRectangleRequest)
 				.getJSONArray("station").toList();
 		Assertions.assertTrue(stationsInRectangle.contains(createdStation));
@@ -161,7 +146,7 @@ public class WeatherAgentIntegrationTest {
 		JSONObject timeSeriesResponse = getWeatherData.processRequestParameters(mockGetRequest, httprequest);
 		
 		// try to deserialise the response into a TimeSeries object
-		Type timeSeriesType = new TypeToken<TimeSeries<Long>>() {}.getType();
+		Type timeSeriesType = new TypeToken<TimeSeries<Instant>>() {}.getType();
         new Gson().fromJson(timeSeriesResponse.toString(), timeSeriesType);
         
 		// get historical weather data, requires an additional input:
@@ -175,6 +160,7 @@ public class WeatherAgentIntegrationTest {
 		
 		// delete this station
 		DeleteStation delete = new DeleteStation();
+		delete.setWeatherQueryClient(weatherClient);
 		delete.processRequestParameters(mockGetRequest);
 	}
 	
@@ -184,10 +170,6 @@ public class WeatherAgentIntegrationTest {
 	 */
 	@AfterEach
 	public void cleanup() throws IOException {
-		FileOutputStream outputStream = new FileOutputStream(props_file);
-		props.store(outputStream, "Reverted to original values after being used by WeatherAgentIntegrationTest");
-		outputStream.close();
-		
 		if (blazegraph.isRunning()) {
 			blazegraph.stop();
 		}

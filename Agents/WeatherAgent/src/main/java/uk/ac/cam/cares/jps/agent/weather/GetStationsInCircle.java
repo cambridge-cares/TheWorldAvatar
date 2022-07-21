@@ -26,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  */
 @WebServlet(urlPatterns = {"/GetStationsInCircle"})
 public class GetStationsInCircle extends JPSAgent{
-
+	private WeatherQueryClient weatherClient = null;
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(GetStationsInCircle.class);
 	private static final long serialVersionUID = 1L;
@@ -37,8 +37,12 @@ public class GetStationsInCircle extends JPSAgent{
 		
 		if (validateInput(requestParams)) {
     		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-    		WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient);
-    		
+
+    		// replaced with mock client in the junit tests
+    		if (weatherClient == null ) {
+    			weatherClient = new WeatherQueryClient(storeClient);
+    		}
+
 			String centre = requestParams.getString("centre");
 			double radius = requestParams.getDouble("radius");
 			
@@ -67,4 +71,14 @@ public class GetStationsInCircle extends JPSAgent{
 			throw new BadRequestException(e);
 		}
 	}
+
+	/**
+     * this setter is created purely for the purpose of junit testing where 
+     * the weather client is replaced with a mock client that does not 
+     * connect to the weather API
+     * @param weatherClient
+     */
+    void setWeatherQueryClient(WeatherQueryClient weatherClient) {
+    	this.weatherClient = weatherClient;
+    }
 }

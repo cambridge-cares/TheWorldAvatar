@@ -25,7 +25,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  */
 @WebServlet(urlPatterns = {"/GetStationsInRectangle"})
 public class GetStationsInRectangle extends JPSAgent{
-
+	private WeatherQueryClient weatherClient = null;
 	/**
 	 * 
 	 */
@@ -38,7 +38,10 @@ public class GetStationsInRectangle extends JPSAgent{
 		
 		if (validateInput(requestParams)) {
     		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-    		WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient);
+    		// replaced with mock client in the junit tests
+    		if (weatherClient == null ) {
+    			weatherClient = new WeatherQueryClient(storeClient);
+    		}
     		
 			String southwest = requestParams.getString("southwest");
 			String northeast = requestParams.getString("northeast");
@@ -71,4 +74,14 @@ public class GetStationsInRectangle extends JPSAgent{
 			throw new BadRequestException(e);
 		}
 	}
+
+	/**
+     * this setter is created purely for the purpose of junit testing where 
+     * the weather client is replaced with a mock client that does not 
+     * connect to the weather API
+     * @param weatherClient
+     */
+    void setWeatherQueryClient(WeatherQueryClient weatherClient) {
+    	this.weatherClient = weatherClient;
+    }
 }

@@ -21,6 +21,7 @@ public class DeleteStation extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	// for logging
 	private static final Logger LOGGER = LogManager.getLogger(DeleteStation.class);
+	private WeatherQueryClient weatherClient = null;
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -28,10 +29,12 @@ public class DeleteStation extends JPSAgent{
     	
     	if (validateInput(requestParams)) {
 			RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-			
-			// replaced with mock client in the junit tests
-			WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient, tsClient);
+    		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+    		
+    		// replaced with mock client in the junit tests
+    		if (weatherClient == null ) {
+    			weatherClient = new WeatherQueryClient(storeClient, tsClient);
+    		}
 	    	
 			String station = requestParams.getString("station");
 			
@@ -58,4 +61,14 @@ public class DeleteStation extends JPSAgent{
 			throw new BadRequestException(e);
 		}
 	}
+
+	/**
+     * this setter is created purely for the purpose of junit testing where 
+     * the weather client is replaced with a mock client that does not 
+     * connect to the weather API
+     * @param weatherClient
+     */
+    void setWeatherQueryClient(WeatherQueryClient weatherClient) {
+    	this.weatherClient = weatherClient;
+    }
 }

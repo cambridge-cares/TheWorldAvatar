@@ -12,7 +12,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 

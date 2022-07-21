@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -94,7 +93,7 @@ class WeatherQueryClient {
 	
     // SERVICE keyword is not supported by query builder
     private static String geospatialQueryTemplate = "PREFIX geo: <http://www.bigdata.com/rdf/geospatial#>\r\n"
-    		+ "PREFIX om: <%s>\r\n"
+    		+ "PREFIX ems: <%s>\r\n"
     		+ "\r\n"
     		+ "SELECT * WHERE {\r\n"
     		+ "    SERVICE geo:search \r\n"
@@ -341,7 +340,7 @@ class WeatherQueryClient {
 				.andHas(p_geo.iri("spatialCircleRadius"), radius));
 		
 		
-		String query = String.format(geospatialQueryTemplate, "http://www.ontology-of-units-of-measure.org/resource/om-2/", queryPattern.getQueryString());
+		String query = String.format(geospatialQueryTemplate, ontoems, queryPattern.getQueryString());
 		
 		List<String> queryResult = storeClient.executeQuery(query).toList().stream()
 				.map(station_iri -> ((HashMap<String,String>) station_iri).get(varKey))
@@ -368,7 +367,7 @@ class WeatherQueryClient {
 				.andHas(p_geo.iri("spatialRectangleSouthWest"), southwest)
 				.andHas(p_geo.iri("spatialRectangleNorthEast"), northeast));
 				
-		String query = String.format(geospatialQueryTemplate, "http://www.ontology-of-units-of-measure.org/resource/om-2/", queryPattern.getQueryString());
+		String query = String.format(geospatialQueryTemplate, ontoems, queryPattern.getQueryString());
 		
 		List<String> queryResult = storeClient.executeQuery(query).toList().stream()
 				.map(station_iri -> ((HashMap<String,String>) station_iri).get(varKey))
