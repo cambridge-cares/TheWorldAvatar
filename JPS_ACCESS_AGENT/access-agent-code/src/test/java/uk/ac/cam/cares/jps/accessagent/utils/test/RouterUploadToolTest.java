@@ -18,8 +18,6 @@ class RouterUploadToolTest {
 	
 	RouterUploadTool uploader = new RouterUploadTool();
 	
-	//TODO test with routerendpoint
-	
 	@Test
 	void testUploadRoutingData() {	
 		
