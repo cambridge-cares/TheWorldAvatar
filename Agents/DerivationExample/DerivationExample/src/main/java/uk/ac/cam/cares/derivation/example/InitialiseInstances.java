@@ -63,9 +63,10 @@ public class InitialiseInstances extends JPSAgent{
 		DerivationClient devClient = new DerivationClient(storeClient, derivationInstanceBaseURL);
     	
     	LOGGER.info("Initialising new instances, all existing instances will get deleted");
-    	sparqlClient.clearKG();
+    	
     	TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	tsClient.deleteAll();
+		sparqlClient.clearKG();
     	
     	// record the IRIs of the created instances to link them later
     	String input = sparqlClient.createInputData();
