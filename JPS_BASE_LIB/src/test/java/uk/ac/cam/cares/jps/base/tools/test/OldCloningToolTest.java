@@ -33,7 +33,7 @@ import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
-import uk.ac.cam.cares.jps.base.tools.CloningTool;
+import uk.ac.cam.cares.jps.base.tools.OldCloningTool;
 
 /**
  * Unit tests for Cloning Tool
@@ -41,7 +41,7 @@ import uk.ac.cam.cares.jps.base.tools.CloningTool;
  * @author Casper Lindberg
  *
  */
-public class CloningToolTest {
+public class OldCloningToolTest {
 
 		// temporary folder for testing
 		@Rule
@@ -77,7 +77,7 @@ public class CloningToolTest {
 			int stepSize = 99;
 			
 			//default constructor
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			
 			Field field = null;
 			
@@ -119,7 +119,7 @@ public class CloningToolTest {
 			
 			int stepSize = 99;
 			
-			CloningTool cloningTool = new CloningTool(stepSize);
+			OldCloningTool cloningTool = new OldCloningTool(stepSize);
 			
 			Field field = null;
 			
@@ -143,7 +143,7 @@ public class CloningToolTest {
 		@Test
 		public void testSingleStepClone() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			StoreClientInterface source = createTestClient();
 			FileBasedStoreClient target = new FileBasedStoreClient();
 			
@@ -176,7 +176,7 @@ public class CloningToolTest {
 		@Test
 		public void testCloneQuads() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
-			CloningTool cloningTool = new CloningTool(1);
+			OldCloningTool cloningTool = new OldCloningTool(1);
 			cloningTool.setQuadsStore();
 			StoreClientInterface source = createTestClient();
 			FileBasedStoreClient target = new FileBasedStoreClient();
@@ -220,7 +220,7 @@ public class CloningToolTest {
 		@Test
 		public void testCloneTriples() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
-			CloningTool cloningTool = new CloningTool(1);
+			OldCloningTool cloningTool = new OldCloningTool(1);
 			cloningTool.setTripleStore();
 			StoreClientInterface source = createTestClient();
 			FileBasedStoreClient target = new FileBasedStoreClient();
@@ -264,8 +264,8 @@ public class CloningToolTest {
 		@Test
 		public void testCloneCountLessThanStepSize() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
-			CloningTool cloningTool1 = new CloningTool();
-			CloningTool cloningTool = Mockito.spy(cloningTool1);
+			OldCloningTool cloningTool1 = new OldCloningTool();
+			OldCloningTool cloningTool = Mockito.spy(cloningTool1);
 			
 			StoreClientInterface source = createTestClient();
 			FileBasedStoreClient target = new FileBasedStoreClient();
@@ -293,7 +293,7 @@ public class CloningToolTest {
 		@Test
 		public void testCloneWithNamedGraph() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 			
-			CloningTool cloningTool = new CloningTool(1);
+			OldCloningTool cloningTool = new OldCloningTool(1);
 			StoreClientInterface source = createTestClient();
 			FileBasedStoreClient target = new FileBasedStoreClient();
 			
@@ -328,7 +328,7 @@ public class CloningToolTest {
 		@Test
 		public void testCreateTag() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			StoreClientInterface kbClient = createTestClient();
 			
 			Method method = null;
@@ -350,7 +350,7 @@ public class CloningToolTest {
 		@Test
 		public void testCheckCount() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			StoreClientInterface kbClient = createTestClient();
 			
 			assertFalse(cloningTool.checkCount(kbClient, null));
@@ -368,7 +368,7 @@ public class CloningToolTest {
 		@Test 
 		public void testCheckTags() {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			
 			StoreClientInterface kbClient = createTestClient();
 			String graph = null;
@@ -393,7 +393,7 @@ public class CloningToolTest {
 		@Test
 		public void testCountTriples() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			StoreClientInterface kbClient = createTestClient();
 			
 			Var[] sparqlArgs = getSparqlArgs();
@@ -427,7 +427,7 @@ public class CloningToolTest {
 		@Test
 		public void testCountQuery() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			
 			//Check count variable
 			Field field = null;
@@ -472,7 +472,7 @@ public class CloningToolTest {
 		@Test
 		public void testBuildConstruct() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			
 			Var[] sparqlArgs = getSparqlArgs();
 			Var varS = sparqlArgs[0];
@@ -515,7 +515,7 @@ public class CloningToolTest {
 		@Test
 		public void testBuildInsert() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			
 			//test arguments -- default graph
 			String graph = null;
@@ -547,7 +547,7 @@ public class CloningToolTest {
 		@Test
 		public void testBuildTagUpdate() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			
 			Var[] sparqlArgs = getSparqlArgs();
 			Var varS = sparqlArgs[0];
@@ -630,7 +630,7 @@ public class CloningToolTest {
 		@Test
 		public void testExpressions() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			
 			String expectedTag = "_Tag";
 			
@@ -692,7 +692,7 @@ public class CloningToolTest {
 					"      { ?s  ?p  ?o}}\n";
 			
 			//Invoke method
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			assertNotNull(cloningTool.getClass().getDeclaredMethod("buildSparqlConstruct", String.class));
 			Method method = cloningTool.getClass().getDeclaredMethod("buildSparqlConstruct", String.class);
 			method.setAccessible(true);		
@@ -716,7 +716,7 @@ public class CloningToolTest {
 					"  { ?s  ?p  ?o}\n";
 			
 			//Invoke method
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			assertNotNull(cloningTool.getClass().getDeclaredMethod("buildSparqlConstruct", String.class));
 			Method method = cloningTool.getClass().getDeclaredMethod("buildSparqlConstruct", String.class);
 			method.setAccessible(true);		
@@ -741,7 +741,7 @@ public class CloningToolTest {
 			Model model = getTestModel();
 			
 			//Invoke method
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			assertNotNull(cloningTool.getClass().getDeclaredMethod("buildSparqlUpdate", String.class, Model.class));
 			Method method = cloningTool.getClass().getDeclaredMethod("buildSparqlUpdate", String.class, Model.class);
 			method.setAccessible(true);
@@ -767,7 +767,7 @@ public class CloningToolTest {
 			Model model = getTestModel();
 			
 			// access private member
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			assertNotNull(cloningTool.getClass().getDeclaredMethod("buildSparqlUpdate", String.class, Model.class));
 			Method method = cloningTool.getClass().getDeclaredMethod("buildSparqlUpdate", String.class, Model.class);
 			method.setAccessible(true);
@@ -825,7 +825,7 @@ public class CloningToolTest {
 		 */
 		private Var[] getSparqlArgs() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 			
-			CloningTool cloningTool = new CloningTool();
+			OldCloningTool cloningTool = new OldCloningTool();
 			
 			//Get sparql variables
 			assertNotNull(cloningTool.getClass().getDeclaredField("varS"));

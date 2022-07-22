@@ -41,7 +41,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * @author Casper Lindberg
  *
  */
-public class CloningTool {
+public class OldCloningTool {
 
 	String strTag = "_Tag";	//Tag ending
 	boolean splitUpdate;
@@ -76,7 +76,7 @@ public class CloningTool {
 	/**
 	 * Default constructor. Cloning split over multiple operations of 1 million triples
 	 */
-	public CloningTool(){
+	public OldCloningTool(){
 		//set defaults
 		splitUpdate = true;
 		stepSize = 1000000;
@@ -86,7 +86,7 @@ public class CloningTool {
 	 * Constructor to set number of triples cloned per step. Cloning is split over multiple operations. 
 	 * @param stepSize
 	 */
-	public CloningTool(int stepSize){
+	public OldCloningTool(int stepSize){
 		//set defaults
 		splitUpdate = true;
 		this.stepSize = stepSize;
