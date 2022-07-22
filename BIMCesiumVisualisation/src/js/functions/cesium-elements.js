@@ -46,3 +46,17 @@ export function addTileset(cesiumviewer, cesiumtileset, x, y, z = 0) {
     html += "</div>" + htmlTable + "</table>";
     return html;
 }
+
+/**
+ *
+ * @param radius
+ * @return    object location
+ */
+export function computeCircle(radius) {
+    const positions = [];
+    for (let i = 0; i < 360; i++) {
+        const radians = Cesium.Math.toRadians(i);
+        positions.push(new Cesium.Cartesian2(radius * Math.cos(radians), radius * Math.sin(radians)));
+    }
+    return positions;
+}
