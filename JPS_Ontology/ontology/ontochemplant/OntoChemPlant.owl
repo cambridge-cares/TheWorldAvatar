@@ -507,6 +507,9 @@
      -->
 
 
+    
+
+
     <!-- http://ontology.eil.utoronto.ca/icontact.owl#hasPostalCode -->
 
 
@@ -531,7 +534,7 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has business activity</rdfs:label>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasLandLotNumber -->
@@ -635,13 +638,14 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has thermal efficiency</rdfs:label>
     </owl:DatatypeProperty>
-
     
+
 
     <!-- http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasYearOfEstablishment -->
 
 
     <owl:DatatypeProperty rdf:about="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasYearOfEstablishment">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#Company"/>
         <rdfs:range rdf:resource="https://www.w3.org/TR/xmlschema11-2/#gYear"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a company and its year of formation</rdfs:comment>
