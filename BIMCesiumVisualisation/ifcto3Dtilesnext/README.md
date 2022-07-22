@@ -1,7 +1,7 @@
 # IFC Conversion to 3D Tiles Next
 
 ## Description
-This module processes an IFC file through the knowledge graph into the [3D Tiles Next](https://github.com/CesiumGS/3d-tiles/tree/main/next) specifications for visualisation in Cesium. It assumes that the IFC model has been preprocessed according to the [Tips for BIM processing](#tips-for-bim-processing) section, and that a Blazegraph server can be run locally. 
+This conversion tool processes an IFC file through the knowledge graph into the [3D Tiles Next](https://github.com/CesiumGS/3d-tiles/tree/main/next) specifications for visualisation in Cesium. It assumes that the IFC model has been preprocessed according to the [Tips for BIM processing](#tips-for-bim-processing) section, and that a Blazegraph server can be run locally. 
 
 A brief description of its workflow can be found below:
 1. The IFC file is converted into a TTL file and stored in a knowledge graph
@@ -59,7 +59,7 @@ A brief description of its workflow can be found below:
             - If not, download the latest release of the shaded executable JAR archive from https://github.com/pipauwel/IFCtoRDF/releases
         4. Blazegraph.jar
             - No configuration is required as this workflow will automate the upload and query requirements
-            - If not, download the latest release `BUT NOT Release Candidate` of blazegraph.jar from the Release section on https://github.com/blazegraph/database
+            - If not, download the latest release **BUT NOT Release Candidate** of blazegraph.jar from the Release section on https://github.com/blazegraph/database
 7) If any of the Ifc assets have additional semantic or dynamic data sources eg postgreSQL for timeseries, please add in a custom parameter/value "HasAdditionalDataSource: Yes" in BIM for that asset following the [custom parameters](#tips-for-bim-processing) section
     - The current workflow will extract the relevant data from the required sources
     - Note that this approach/code will need to be refactored once there is more data sources
