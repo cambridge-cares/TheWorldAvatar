@@ -87,6 +87,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+        <groupId>net.sf.py4j</groupId>
+        <artifactId>py4j</artifactId>
+        <version>0.10.9.1</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -130,6 +136,7 @@
         </executions>
       </plugin>
     </plugins>
+
     <pluginManagement>
       <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
@@ -176,9 +183,7 @@
     </pluginManagement>
   </build>
 
-
   <dependencyManagement>
-
 
     <dependencies>
 
