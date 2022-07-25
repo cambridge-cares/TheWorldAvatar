@@ -13,25 +13,25 @@ import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.Secret;
 
-public abstract class ContainerClient extends BaseClient {
+public class ContainerClient extends BaseClient {
 
     private final DockerClient dockerClient;
 
-    protected ContainerClient() {
+    public ContainerClient() {
         this.dockerClient = new DockerClient();
     }
 
-    protected ContainerClient(DockerClient dockerClient) {
+    public ContainerClient(DockerClient dockerClient) {
         this.dockerClient = dockerClient;
     }
 
     @Override
-    protected final <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public final <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
         writeEndpointConfig(endpointConfig, dockerClient);
     }
 
     @Override
-    protected final <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName,
+    public final <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName,
             Class<E> endpointConfigClass) {
         return readEndpointConfig(endpointName, endpointConfigClass, dockerClient);
     }
