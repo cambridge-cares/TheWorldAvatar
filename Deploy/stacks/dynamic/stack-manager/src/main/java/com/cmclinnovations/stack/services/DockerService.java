@@ -2,6 +2,7 @@ package com.cmclinnovations.stack.services;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
+import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.command.CreateNetworkCmd;
 import com.github.dockerjava.api.command.CreateServiceCmd;
@@ -64,7 +66,14 @@ public final class DockerService extends AbstractService {
     public DockerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(serviceManager, config);
 
-        dockerClient = new DockerClient(getEndpoint("dockerHost").getUri());
+        Connection endpoint = getEndpoint("dockerHost");
+        URI dockerUri;
+        if (null == endpoint) {
+            dockerUri = null;
+        } else {
+            dockerUri = endpoint.getUri();
+        }
+        dockerClient = new DockerClient(dockerUri);
 
         startDockerSwarm();
 

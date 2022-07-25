@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "stack-data-uploader"
+		},
+		{
+			"path": "common-scripts"
 		}
 	],
 	"settings": {

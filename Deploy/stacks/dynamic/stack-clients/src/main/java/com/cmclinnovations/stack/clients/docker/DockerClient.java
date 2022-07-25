@@ -62,39 +62,12 @@ import com.github.dockerjava.transport.DockerHttpClient;
 
 public class DockerClient extends BaseClient {
 
-    private static final String DOCKER_INTERNAL_HOST = "host.docker.internal";
-    private static final String DEFAULT_DOCKER_PORT = "2375";
-
     protected static final Logger LOGGER = LoggerFactory.getLogger(DockerClient.class);
 
     private final com.github.dockerjava.api.DockerClient internalClient;
 
-    private static Optional<Boolean> isInsideContainer = Optional.empty();
-
-    private static final URI getDockerURI() {
-        if (isInsideContainer.isEmpty()) {
-            try {
-                URL url = new URL("http://" + DOCKER_INTERNAL_HOST + ":" + DEFAULT_DOCKER_PORT + "/_ping");
-
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                con.setRequestMethod("GET");
-                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    isInsideContainer = Optional.of(true);
-                } else {
-                    isInsideContainer = Optional.of(false);
-                }
-            } catch (MalformedURLException | ProtocolException ex) {
-                throw new RuntimeException("Something has gon very wrong.", ex);
-            } catch (IOException ex) {
-                // Failiure to connect means outside container
-                isInsideContainer = Optional.of(false);
-            }
-        }
-        return isInsideContainer.get() ? URI.create("tcp://" + DOCKER_INTERNAL_HOST + ":" + DEFAULT_DOCKER_PORT) : null;
-    }
-
     public DockerClient() {
-        this(getDockerURI());
+        this(null);
     }
 
     public DockerClient(URI endpoint) {
@@ -105,6 +78,7 @@ public class DockerClient extends BaseClient {
             // TODO need to set up TLS so that the unsecured Docker port "2375" doesn't need
             // to be opened.
             // dockerConfigBuilder.withDockerTlsVerify(true);
+            // dockerConfigBuilder.withDockerCertPath("dockerCertPath");
         }
 
         DockerClientConfig dockerConfig = dockerConfigBuilder
@@ -124,7 +98,13 @@ public class DockerClient extends BaseClient {
     }
 
     public String executeSimpleCommand(String containerId, String... cmd) {
-        return createComplexCommand(containerId, cmd).exec();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        String execId = createComplexCommand(containerId, cmd)
+                .withOutputStream(outputStream)
+                .withErrorStream(outputStream)
+                .exec();
+        String output = outputStream.toString();
+        return execId;
     }
 
     public ComplexCommand createComplexCommand(String containerId, String... cmd) {

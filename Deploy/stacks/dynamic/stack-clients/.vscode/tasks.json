@@ -6,54 +6,34 @@
         {
             "type": "shell",
             "label": "compose-build",
-            "command": "docker compose -f docker-compose-build.yml build",
-            "group": "build",
-            "presentation": {
-                "reveal": "always"
+            "command": "bash",
+            "args": [
+                "-c",
+                "./stack.sh build"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
             }
         },
         {
             "type": "shell",
-            "label": "compose-push",
-            "command": "docker compose -f docker-compose-build.yml push",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "presentation": {
-                "reveal": "always"
-            },
-            "dependsOn": [
-                "compose-build"
+            "label": "compose-deploy-internal",
+            "command": "bash",
+            "args": [
+                "-c",
+                "./stack.sh start ${input:stackName} ${config:debug.port}"
             ]
         },
         {
             "type": "shell",
-            "label": "compose-deploy-dev-internal",
-            "command": "docker stack deploy --compose-file=docker-compose.yml --compose-file=docker-compose-debug.yml --with-registry-auth ${input:stackName}",
-            "options": {
-                "env": {
-                    "STACK_NAME": "${input:stackName}"
-                }
-            },
-            "dependsOn": [
-                "compose-push",
-                "remove-service"
-            ],
-            "presentation": {
-                "reveal": "always"
-            }
-        },
-        {
-            "type": "shell",
-            "label": "compose-deploy-dev",
+            "label": "compose-build-deploy",
             "command": "sleep 1",
             "dependsOn": [
-                "compose-deploy-dev-internal"
+                "compose-build",
+                "compose-deploy-internal"
             ],
-            "presentation": {
-                "reveal": "always"
-            },
+            "dependsOrder": "sequence",
             "windows": {
                 "options": {
                     "shell": {
@@ -64,11 +44,11 @@
         },
         {
             "type": "shell",
-            "label": "remove-service",
-            "command": "docker service rm ${input:stackName}_stack-client ; exit 0",
-            "presentation": {
-                "reveal": "never"
-            },
+            "label": "compose-deploy",
+            "command": "sleep 1",
+            "dependsOn": [
+                "compose-deploy-internal"
+            ],
             "windows": {
                 "options": {
                     "shell": {
@@ -83,7 +63,7 @@
             "id": "stackName",
             "type": "promptString",
             "description": "Name your stack.",
-            "default": "TEST_STACK"
+            "default": "TEST-STACK"
         }
     ]
 }

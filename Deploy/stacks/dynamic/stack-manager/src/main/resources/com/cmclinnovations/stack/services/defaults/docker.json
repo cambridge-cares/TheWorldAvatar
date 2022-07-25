@@ -1,8 +1,6 @@
 {
     "type": "docker",
     "endpoints": {
-        "dockerHost": {
-            "uri": "tcp://host.docker.internal:2375"
-        }
+        "dockerHost": {}
     }
 }
