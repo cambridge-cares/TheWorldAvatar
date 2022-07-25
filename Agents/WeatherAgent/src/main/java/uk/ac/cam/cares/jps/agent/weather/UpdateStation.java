@@ -37,7 +37,6 @@ public class UpdateStation extends JPSAgent{
 			RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 			
-			// replaced with mock client in the junit tests
 			WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient, tsClient);
 	    	
 			String station = requestParams.getString("station");
