@@ -20,6 +20,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,28 +28,28 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
-import uk.ac.cam.cares.jps.base.util.FileUtil;
+import uk.ac.cam.cares.jps.base.query.MockStoreClient;
 import uk.ac.cam.cares.jps.accessagent.AccessAgent;
 
 public class AccessAgentTest{
 
 	@TempDir
+	static
 	File tempFolder;
 	
-	private String filePath;
+	private static String filePath;
 	private String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 	
-	@BeforeEach
-	public void setUp() throws URISyntaxException, IOException {
+	@BeforeAll
+	public static void setUp() throws URISyntaxException, IOException {
 		// Test rdf file				
-		Path testResourcePath = Paths.get(this.getClass().getResource("/testRDF.rdf").toURI());
+		Path testResourcePath = Paths.get(AccessAgentTest.class.getResource("/testRDF.rdf").toURI());
 		Path tempFilePath = Paths.get(tempFolder.getPath() + "/testRDF.rdf");		
 		Files.copy(testResourcePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		filePath = tempFilePath.toString();
@@ -72,9 +73,9 @@ public class AccessAgentTest{
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
 		Mockito.doReturn(true).when(agent).validateInput(any(JSONObject.class));
-		Mockito.doReturn(null).when(agent).get(any(JSONObject.class));
-		Mockito.doNothing().when(agent).put(any(JSONObject.class));
-		Mockito.doReturn(null).when(agent).post(any(JSONObject.class));
+		Mockito.doReturn(null).when(agent).performGet(any(JSONObject.class));
+		Mockito.doNothing().when(agent).performPut(any(JSONObject.class));
+		Mockito.doReturn(null).when(agent).performPost(any(JSONObject.class));
 		
 		JSONObject requestParams;
 		
@@ -83,21 +84,21 @@ public class AccessAgentTest{
 		requestParams.put(JPSConstants.METHOD, HttpGet.METHOD_NAME);
 		agent.processRequestParameters(requestParams, null);
 		verify(agent).validateInput(requestParams);
-		verify(agent).get(requestParams);
+		verify(agent).performGet(requestParams);
 		
 		//test http put
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpPut.METHOD_NAME);
 		agent.processRequestParameters(requestParams, null);
 		verify(agent).validateInput(requestParams);
-		verify(agent).put(requestParams);
+		verify(agent).performPut(requestParams);
 		
 		//test http post
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpPost.METHOD_NAME);
 		agent.processRequestParameters(requestParams, null);
 		verify(agent).validateInput(requestParams);
-		verify(agent).post(requestParams);
+		verify(agent).performPost(requestParams);
 	}
 	
 	@Test
@@ -140,10 +141,7 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
 
-        JSONObject result = agent.get(jo);		
-		JSONArray ja = new JSONArray(result.getString("result")); 
-		jo = ja.getJSONObject(0); 
-		assertEquals("OH",jo.get("o").toString());
+		Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.performGet(jo);});
 	}
 	
 	@Test
@@ -159,54 +157,54 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
 
-		Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.get(jo);});		
+		Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.performGet(jo);});		
 	}
 	
 	@Test
 	public void testGetWithoutQuery() {
 		
 		// write a test file to temporary folder
-		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";		
-		String folderPath = tempFolder.getPath();
-		String testFilePath = folderPath + "/TestGet.nt";
-		FileUtil.writeFileLocally(testFilePath, content); 
+		String content =  "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";		
+		
+		MockStoreClient storeClient = new MockStoreClient();
+		storeClient.addTriple(	"<http://www.theworldavatar.com/kb/species/species.owl#species_10>",
+								"<http://www.w3.org/2008/05/skos#altLabel>",
+								"\"Ar\"");
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
-		Mockito.doReturn(createStoreClient(testFilePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
 		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "GET")
-			.put(JPSConstants.TARGETIRI, testFilePath)
+			.put(JPSConstants.TARGETIRI, "mockstore")
 			.put(JPSConstants.HEADERS, "application/n-triples");
 		
-        JSONObject result = agent.get(jo);		
+        JSONObject result = agent.performGet(jo);		
 		String strResult = result.getString("result"); 
 		
-		assertEquals(content, strResult);		
+		assertEquals(removeWhiteSpace(content), removeWhiteSpace(strResult));		
 	}
 	
 	@Test
 	public void testPut() {
 		
-		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";			
-		
-		String folderPath = tempFolder.getPath();
-		String testFilePath = folderPath + "/TestPut.nt"; 
+		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
-		Mockito.doReturn(createStoreClient(testFilePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		StoreClientInterface storeClient = new MockStoreClient(); 
+		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
 		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "PUT")
-			.put(JPSConstants.TARGETIRI, testFilePath)
+			.put(JPSConstants.TARGETIRI, "mockstore")
 			.put(JPSConstants.CONTENT, content)
 			.put(JPSConstants.CONTENTTYPE, "application/n-triples");
 		
-        agent.put(jo);		
+        agent.performPut(jo);		
 		
-        String strResult = FileUtil.readFileLocally(testFilePath);
+        String strResult = storeClient.get(null, Lang.NTRIPLES.getHeaderString());
 		
 		assertEquals(content, strResult);		
 	}
@@ -225,7 +223,7 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
 		
-        Assertions.assertThrows( JPSRuntimeException.class, ()->{agent.put(jo);});
+        Assertions.assertThrows( JPSRuntimeException.class, ()->{agent.performPut(jo);});
 	}
 	
 	@Test
@@ -240,14 +238,15 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
 		
-		Assertions.assertThrows(JPSRuntimeException.class,  ()->{agent.put(jo);});								
+		Assertions.assertThrows(JPSRuntimeException.class,  ()->{agent.performPut(jo);});								
 	}
 	
 	@Test
 	public void testPostWithSparqlUpdate() throws ParseException {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
-		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		StoreClientInterface storeClient = createStoreClient(filePath); 
+		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
 		
 		String testUpdate = getUpdateRequest().toString();
 		
@@ -257,10 +256,9 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI,  filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
 		
-		agent.post(jo);		
+		agent.performPost(jo);		
         
-        FileBasedStoreClient kbClient = new FileBasedStoreClient(filePath);
-        JSONArray ja = kbClient.executeQuery(queryString);
+        JSONArray ja = storeClient.executeQuery(queryString);
 		JSONObject result = ja.getJSONObject(0); 
 		assertEquals("TEST",result.get("o").toString());      
 	}
@@ -277,9 +275,9 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
 		
-		agent.post(jo);		
+		agent.performPost(jo);		
         		
-		JSONObject result = agent.get(jo);		
+		JSONObject result = agent.performPost(jo);		
 		JSONArray ja = new JSONArray(result.getString("result")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("OH",jo.get("o").toString());
@@ -296,17 +294,28 @@ public class AccessAgentTest{
 			.put(JPSConstants.METHOD, "POST")
 			.put(JPSConstants.TARGETIRI, filePath);
 		
-        Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.post(jo);});								
+        Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.performPost(jo);});								
 	}	
 	
 	///////////////////////////////////////////////
+	
+	/**
+	* Remove all white spaces and non-visible characters
+	* @param str
+	* @return
+	*/
+	private static String removeWhiteSpace(String string) {
+		return string.replaceAll("\\s+","");
+	}
 	
 	/**
 	 * Create test store client.
 	 * Could mock this instead.
 	 */
 	private StoreClientInterface createStoreClient(String file) {
-		return new FileBasedStoreClient(file);
+		MockStoreClient mockStoreClient = new MockStoreClient();
+		mockStoreClient.load(file);
+		return mockStoreClient;
 	}
 	
 	/**
