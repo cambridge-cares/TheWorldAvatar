@@ -51,7 +51,7 @@ class RouterUploadAgentTest {
 		verify(agent).validateInput(testObj);
 
 		// Should use default endpoint from the storerouter
-		verify(agent).getStoreClient(StoreRouter.STOREROUTER_ENDPOINT);
+		verify(agent).getStoreClient(StoreRouter.storeRouterEndpoint);
 		
 		//returned JSON object
 		assertEquals("2 endpoint(s) uploaded.",result.get("result"));

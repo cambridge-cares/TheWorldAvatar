@@ -62,17 +62,19 @@ public class StoreRouter{
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
 	
-	public static String STOREROUTER_ENDPOINT;
+	public static String storeRouterEndpoint;
+	public static final String STOREROUTER_ENDPOINT_NAME = "STOREROUTER_ENDPONT";
+	
 	static{
-		STOREROUTER_ENDPOINT = System.getenv(JPSConstants.STOREROUTER_ENDPOINT);
-		if(STOREROUTER_ENDPOINT == null) {
+		storeRouterEndpoint = System.getenv(STOREROUTER_ENDPOINT_NAME);
+		if(storeRouterEndpoint == null) {
 			// if endpoint is not set in the system environment  
 			// then get the default value from jps.properties
 			LOGGER.info("STOREROUTER_ENDPOINT not found in environment variables..."
 					+ " Using jps.properties.");
-			STOREROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);	
+			storeRouterEndpoint = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);	
 		}
-		LOGGER.info("STOREROUTER_ENDPOINT set to "+STOREROUTER_ENDPOINT);		
+		LOGGER.info("STOREROUTER_ENDPOINT set to "+storeRouterEndpoint);		
 	}
 	
 	/**
@@ -119,7 +121,7 @@ public class StoreRouter{
 			if (isFileBasedTargetResourceID(targetResourceID)) {
 			  
 				String relativePath = getPathComponent(targetResourceID);
-				String rootPath = getPathComponent(storeRouter.getLocalFilePath(STOREROUTER_ENDPOINT, TOMCAT_ROOT_LABEL));
+				String rootPath = getPathComponent(storeRouter.getLocalFilePath(storeRouterEndpoint, TOMCAT_ROOT_LABEL));
 				String filePath =  joinPaths(rootPath, relativePath);
 				LOGGER.info("File based resource. file path="+filePath);
 				
@@ -130,10 +132,10 @@ public class StoreRouter{
 				LOGGER.info("Remote store. targetResourceLabel="+targetResourceLabel);
 				
 				if (isQueryOperation) {
-					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
+					queryIRI = storeRouter.getQueryIRI(storeRouterEndpoint, targetResourceLabel);
 				}
 				if (isUpdateOperation) {
-					updateIRI = storeRouter.getUpdateIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
+					updateIRI = storeRouter.getUpdateIRI(storeRouterEndpoint, targetResourceLabel);
 				}
 				if (queryIRI != null && !queryIRI.isEmpty()) {
 					kbClient = new RemoteStoreClient(queryIRI);

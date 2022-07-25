@@ -51,7 +51,7 @@ public class RouterUploadAgent  extends JPSAgent{
     	//providing a storerouter endpoint is optional 
     	String routerEndpoint = MiscUtil.optNullKey(requestParams,"routerEndpoint");
     	if(routerEndpoint == null) {
-    		routerEndpoint = StoreRouter.STOREROUTER_ENDPOINT;    		
+    		routerEndpoint = StoreRouter.storeRouterEndpoint;    		
     	}
     	StoreClientInterface storeClient = getStoreClient(routerEndpoint);
     	

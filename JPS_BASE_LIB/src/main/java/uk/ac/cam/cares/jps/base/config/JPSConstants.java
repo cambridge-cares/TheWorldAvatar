@@ -6,9 +6,7 @@ public interface JPSConstants {
 	static String KNOWLEDGE_BASE_PATH_JPS_DATASET = "/jps/dataset";
 	
 	static String ACCESS_AGENT_PATH = "/access-agent/access";
-	
-	static String STOREROUTER_ENDPOINT = "STOREROUTER_ENDPOINT";
-		
+			
 	static String SCENARIO_NAME_BASE = "base";
 	static String SCENARIO_SUBDIR_KB = "kb";
 	static String SCENARIO_SUBDIR_DATA = "data";
