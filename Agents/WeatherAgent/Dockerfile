@@ -42,9 +42,6 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-# Install zip so that the entrypoint script can modify the war at runtime, if necessary
-RUN apt update && apt install -y zip
-
 # Remove version suffix when copying the war to simplify the entrypoint script
 COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
 
