@@ -9,7 +9,7 @@
     <artifactId>ogm</artifactId>
     <name>ogm</name>
 
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -146,6 +146,22 @@
             <artifactId>mockito-inline</artifactId>
             <version>3.11.2</version>
             <scope>test</scope>
+        </dependency>
+        <!-- https://repo.osgeo.org/repository/release/org.geotools/gt-main -->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>26.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-extension</artifactId>
+            <version>26.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-hsql</artifactId>
+            <version>26.3</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
