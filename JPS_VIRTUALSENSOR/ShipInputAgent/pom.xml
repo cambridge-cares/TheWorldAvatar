@@ -82,7 +82,7 @@
         <dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.11.5</version>
+			<version>1.11.8</version>
 		</dependency>
 
 		<dependency>
@@ -120,13 +120,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
             <scope>runtime</scope>
-        </dependency>
-
-        <!-- can be removed after base lib is merged -->
-        <dependency>
-            <groupId>org.postgis</groupId>
-            <artifactId>postgis-jdbc</artifactId>
-            <version>1.3.3</version>
         </dependency>
 	</dependencies>	
 </project>
