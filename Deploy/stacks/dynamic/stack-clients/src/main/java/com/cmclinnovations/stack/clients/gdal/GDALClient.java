@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
@@ -32,7 +33,7 @@ public class GDALClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     public GDALClient() {
-        postgreSQLEndpoint = readEndpointConfig("postgis", PostGISEndpointConfig.class);
+        postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
     }
 
     private String computePGSQLSourceString(String database) {
