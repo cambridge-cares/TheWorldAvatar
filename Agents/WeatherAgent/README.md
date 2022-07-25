@@ -51,11 +51,9 @@ The Docker container has the following access URLs
 
 1. WeatherAgent/CreateStation
 2. WeatherAgent/UpdateStation
-3. WeatherAgent/GetWeatherData/latest
-4. WeatherAgent/GetWeatherData/history
-5. WeatherAgent/GetStationsInCircle
-6. WeatherAgent/GetStationsInRectangle
-7. WeatherAgent/DeleteStation
+3. WeatherAgent/GetStationsInCircle
+4. WeatherAgent/GetStationsInRectangle
+5. WeatherAgent/DeleteStation
 
 These classes inherit the JPSAgent class, easiest way to interact with them is to use the AgentCaller class. These servlets receive HTTP GET requests with the input parameter being a JSON object within the `query` parameter, e.g. `http://localhost:8080/WeatherAgent/CreateStation?query=ENCODED_JSON_STRING`.
 
@@ -70,32 +68,6 @@ Input: IRI of the station to be updated with the key "station", e.g. {"station":
 For a successful update, it will return {"status": "update successful"} in its response.
 
 If the station was last updated 30 min ago, the request will be ignored. If the update process fails, check the logs saved at `~/.jps/logs` by default.
-
-### WeatherAgent/GetWeatherData
-Weather data can be obtained via two different URLs, both options return a time series object. If the weather data at this station is more than 30 minutes old, it will be updated automatically before returning the values.
-
-1) WeatherAgent/GetWeatherData/latest
-
-As the name suggests, this gives the latest data point.
-
-Input: IRI of the station to update with the "station" key, e.g. {"station": "http://station1"}
-
-Output: Serialised TimeSeries object using Gson
-
-To deserialise
-```
-Type timeSeriesType = new TypeToken<TimeSeries<Long>>() {}.getType();
-TimeSeries<Long> ts_deserialise = new Gson().fromJson(JSONSTRING, timeSeriesType);
- ```
- where `JSONSTRING` is the serialised time series response.
-
- 2) WeatherAgent/GetWeatherData/history
-
- This requires an additional input, the number of hours to query back, in addition to the station IRI.
-
- Input: This requires an additional input, the number of hours to query back with the key "hour", in addition to the station IRI, e.g. {"station": "http://station1", "hour":x}, where x is the number of hours before the current time.
-
- Output: Serialised TimeSeries object using Gson.
 
 ### WeatherAgent/GetStationsInCircle
 This function returns a list of station IRIs that are located within the given circle.

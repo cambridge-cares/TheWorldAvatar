@@ -137,26 +137,6 @@ public class WeatherAgentIntegrationTest {
 		// get weather data for this station
 		JSONObject mockGetRequest = new JSONObject();
 		mockGetRequest.put("station", createdStation);
-		GetWeatherData getWeatherData = new GetWeatherData();
-		getWeatherData.setWeatherQueryClient(new MockWeatherQueryClient(storeClient, tsClient));
-		
-		// get latest weather data (probably most common query)
-		HttpServletRequest httprequest = mock(HttpServletRequest.class); 
-		when(httprequest.getServletPath()).thenReturn(GetWeatherData.urlPatternLatest);
-		JSONObject timeSeriesResponse = getWeatherData.processRequestParameters(mockGetRequest, httprequest);
-		
-		// try to deserialise the response into a TimeSeries object
-		Type timeSeriesType = new TypeToken<TimeSeries<Instant>>() {}.getType();
-        new Gson().fromJson(timeSeriesResponse.toString(), timeSeriesType);
-        
-		// get historical weather data, requires an additional input:
-		// number of hours to query backwards
-		// this will give a time series from 10 hours before the current time
-		// up to the current time. For this test there is only 1 value
-		mockGetRequest.put("hour", 10); 
-		when(httprequest.getServletPath()).thenReturn(GetWeatherData.urlPatternHistory);
-		timeSeriesResponse = getWeatherData.processRequestParameters(mockGetRequest, httprequest);
-		new Gson().fromJson(timeSeriesResponse.toString(), timeSeriesType);
 		
 		// delete this station
 		DeleteStation delete = new DeleteStation();
