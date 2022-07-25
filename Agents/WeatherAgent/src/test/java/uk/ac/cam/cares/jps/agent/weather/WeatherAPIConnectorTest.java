@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
- * in order to run this you must have a valid API key stored in credentials.properties
+ * set value of apikey and comment @Disabled to run this
  * @author Kok Foong Lee
  *
  */
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 public class WeatherAPIConnectorTest {
 	@Test
     public void testAPI() {
-    	WeatherAPIConnector.getWeatherDataFromOpenWeather(0, 0);
+        String apikey = "REPLACE WITH API KEY";
+    	WeatherAPIConnector.getWeatherDataFromOpenWeather(0, 0, apikey);
     }
 }

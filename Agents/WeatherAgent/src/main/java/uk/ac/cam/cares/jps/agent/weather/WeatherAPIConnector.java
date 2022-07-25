@@ -17,19 +17,23 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 class WeatherAPIConnector {
 	 static final Logger LOGGER = LogManager.getLogger(WeatherAPIConnector.class);
+
+	 static Map<String,Double> getWeatherDataFromOpenWeather(double lat, double lon) {
+		return getWeatherDataFromOpenWeather(lat, lon, Config.apikey);
+	 }
 	/**
 	 * obtain current weather data given the set of coordinates (EPSG:4326)
 	 * @param lat
 	 * @param lon
 	 * @return
 	 */
-	static Map<String,Double> getWeatherDataFromOpenWeather(double lat, double lon) {
+	static Map<String,Double> getWeatherDataFromOpenWeather(double lat, double lon, String apikey) {
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost("api.openweathermap.org")
                 .setPath("/data/2.5/weather");
 		builder.setParameter("lat", String.valueOf(lat));
 		builder.setParameter("lon", String.valueOf(lon));
 		builder.setParameter("units", "metric");
-		builder.setParameter("appid", Config.apikey);
+		builder.setParameter("appid", apikey);
 		
 		try {
             HttpGet request = new HttpGet(builder.build());
