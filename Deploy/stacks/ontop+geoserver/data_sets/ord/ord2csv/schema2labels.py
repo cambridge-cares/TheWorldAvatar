@@ -1,4 +1,5 @@
 from optparse import Option
+from unittest import skip
 from matplotlib.pyplot import sca
 import ord_schema
 from ord_schema import reaction_pb2 as re
@@ -26,12 +27,12 @@ def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, Li
 
         if(field.type == field.TYPE_MESSAGE and field.message_type.GetOptions().map_entry):
             map_value = field.message_type.fields_by_name["value"]
-            maps.append(map_value.message_type.name)
+            maps.append((map_value.message_type.name, map_value.name))
         elif(field.type == field.TYPE_MESSAGE and not field.message_type.GetOptions().map_entry):
             if(field.label == field.LABEL_REPEATED): 
-                repeats.append(field.message_type.name)
+                repeats.append((field.message_type.name, field.name))
             else:
-                messages.append(field.message_type.name)
+                messages.append((field.message_type.name, field.name))
         #elif(field.type == field.TYPE_ENUM):
             # prints the enum type name
             # enums.append(field.enum_type.name)
@@ -83,21 +84,21 @@ def create_tables(message: ord_schema.Message, message_label: Optional[str] = No
     #writer_1.writerow(scalars)
     #file.close()
 
-    for item in messages+maps+repeats:
-        header = ['ID', message.DESCRIPTOR.name+'_ID', item+'_ID', 'key_or_index' ]
-        create_file(name=message.DESCRIPTOR.name+'_'+item, scalars=header)
+    for (field, field_name) in messages+maps+repeats:
+        header = ['ID', message.DESCRIPTOR.name+'_ID', field+'_ID', 'key_or_index' ]
+        create_file(name=message.DESCRIPTOR.name+'_'+field_name+'_'+field, scalars=header)
         try:
             # for messages defined in the main schema
-            new_message = getattr(re, item)
+            new_message = getattr(re, field)
 
         except:
             # for nested messages
-            new_message = getattr(message, item)
+            new_message = getattr(message, field)
 
 
         create_tables(new_message)
 
-def get_fields_values(message: ord_schema.Message) -> Tuple[(Dict, List, List, List)]:
+def get_fields_values(message: ord_schema.Message) -> Tuple[(Dict, Tuple , List, List, List)]:
     """Converts a message to its subfields and subvalues.
 
     Args:
@@ -119,7 +120,9 @@ def get_fields_values(message: ord_schema.Message) -> Tuple[(Dict, List, List, L
     messages = []
     repeats = []
     maps = []
-    scalars = {}
+    scalars_dict = {}
+    scalars_list = [message.DESCRIPTOR.name]
+
     
         
     for field, value in message.ListFields():
@@ -128,27 +131,29 @@ def get_fields_values(message: ord_schema.Message) -> Tuple[(Dict, List, List, L
                 # possible handling of the map keys:
                 for key, subvalue in value.items():
                     #maps.append((field.name, subvalue))
-                    maps.append((field.message_type.fields_by_name["value"].message_type.name, key, subvalue))
+                    maps.append((field.message_type.fields_by_name["value"].message_type.name, field.message_type.fields_by_name["value"].name, key, subvalue))
             else:
                 # possible implementation of the the repeat index
                 for i, subvalue in enumerate(value):
                     #repeats.append((field.name, subvalue))
-                    repeats.append((field.message_type.name, i,subvalue))
+                    repeats.append((field.message_type.name, field.name,i,subvalue))
 
 
         else:     
             if field.type == field.TYPE_MESSAGE:
-                messages.append((field.message_type.name, None, value))
+                messages.append((field.message_type.name, field.name, None, value))
             else:
                 if field.type == field.TYPE_ENUM:
-                    scalars.update({field.name : field.enum_type.values_by_number[value].name})
+                    scalars_dict.update({field.name : field.enum_type.values_by_number[value].name})
+                    scalars_list.append(field.enum_type.values_by_number[value].name)
                 else:
-                    scalars.update({field.name : value})
+                    scalars_dict.update({field.name : value})
+                    scalars_list.append(value)
         
         
-    return (scalars, messages, maps, repeats)
+    return (scalars_dict, tuple(scalars_list), messages, maps, repeats)
 
-def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, root_index : Optional[int] = None):
+def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITERAL_VALUE: Optional[Dict] = None, root_index : Optional[int] = None):
     """Converts a message to its scalar subfields and write them into corresponding csv files.
 
     Args:
@@ -173,41 +178,74 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, root
     messages = []
     repeats = []
     maps = []
-    scalars = {}
+    scalars_dict = {}
+    scalars_tuple = ()
 
     
 
-    labels, _,_,_ = get_field_labels(message=message)
-    scalars, messages, maps, repeats = get_fields_values(message=message)
-    scalars.update({'ID' : ID[message.DESCRIPTOR.name]})
+    #labels, _,_,_ = get_field_labels(message=message)
+    scalars_dict, scalars_tuple,messages, maps, repeats = get_fields_values(message=message)
+    #scalars_dict.update({'ID' : ID[message.DESCRIPTOR.name]})
 
-    row = get_row(scalars=scalars, labels=labels)
+
+    #row = get_row(scalars=scalars_dict, labels=labels)
 
     # append the data to the corresponding table
-    append_to_file(file='./results/'+message.DESCRIPTOR.name+'.csv', row=row)
+    #print(message.DESCRIPTOR.name,'\n', scalars_tuple)
+
+    # Avoid Repetition in the Scalar tables
+    #if (scalars_tuple in LITERAL_VALUE.keys()):
+    #    skip
+    #else:
+    #    LITERAL_VALUE.update({scalars_tuple : ID[message.DESCRIPTOR.name]})
+    #    append_to_file(file='./results/'+message.DESCRIPTOR.name+'.csv', row=row)
 
 
-    for (field, key_or_index,value) in messages+maps+repeats:
-        #handle the ID dictionary
-        if field in ID.keys():
-            ID[field]+=1
+
+    for (field, field_name,key_or_index,value) in messages+maps+repeats:
+        # The ID of the literal value in submessage (value)
+        labels, _,_,_ = get_field_labels(message=value)
+        scalars_dict, scalars_tuple,messages, maps, repeats = get_fields_values(message=value)
+        if value.DESCRIPTOR.name in ID.keys():
+            ID[value.DESCRIPTOR.name] += 1
         else:
-            ID.update({field : 1})
-        if message.DESCRIPTOR.name+'_'+field in ID.keys():
-            ID[message.DESCRIPTOR.name+'_'+field] +=1
+            ID.update({ value.DESCRIPTOR.name : 1})
+
+        scalars_dict.update({'ID' : ID[value.DESCRIPTOR.name]})
+    
+    
+        row = get_row(scalars=scalars_dict, labels=labels)
+    
+    
+        # Avoid Repetition in the Scalar tables
+        if (scalars_tuple in LITERAL_VALUE.keys()):
+            skip
         else:
-            ID.update({message.DESCRIPTOR.name+'_'+field : 1})
+            LITERAL_VALUE.update({scalars_tuple : ID[value.DESCRIPTOR.name]})
+            append_to_file(file='./results/'+value.DESCRIPTOR.name+'.csv', row=row)        
+
+
+
+        #if field in ID.keys():
+        #    ID[field]+=1
+        #else:
+        #    ID.update({field : 1})
+        # The first index of the intermediary tables:
+        if message.DESCRIPTOR.name+'_'+field_name+'_'+field in ID.keys():
+            ID[message.DESCRIPTOR.name+'_'+field_name+'_'+field] +=1
+        else:
+            ID.update({message.DESCRIPTOR.name+'_'+field_name+'_'+field : 1})
         
         # get the row for intermidary tables
-        row = [ID[message.DESCRIPTOR.name+'_'+field], ID[message.DESCRIPTOR.name], ID[field], key_or_index]
+        row = [ID[message.DESCRIPTOR.name+'_'+field_name+'_'+field], ID[message.DESCRIPTOR.name], LITERAL_VALUE[scalars_tuple], key_or_index]
 
         
-        append_to_file(file='./results/'+message.DESCRIPTOR.name+'_'+field+'.csv', row=row)
+        append_to_file(file='./results/'+message.DESCRIPTOR.name+'_'+field_name+'_'+field+'.csv', row=row)
 
 
 
         # call the recursive function
-        populate_tables(message=value, ID=ID)
+        populate_tables(message=value, ID=ID, LITERAL_VALUE=LITERAL_VALUE)
 
 
 def get_row(scalars: Dict[str, str], labels: List[str]) -> List[str]:

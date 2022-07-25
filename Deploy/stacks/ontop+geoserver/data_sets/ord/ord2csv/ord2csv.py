@@ -43,14 +43,13 @@ ReactionProvenance = ord_schema.reaction_pb2.ReactionProvenance()
 st.create_tables(data.reactions[0])
 #  Populate the csv tables using the data of each reaction
 ID = {}
-
+VALUE = {}
 # st.populate_tables(message=data.reactions[0], ID=ID)
 
 for i, reaction in enumerate(data.reactions):
 
    # Converts each reaction in the dataset to equivalent csv tables 
-   st.populate_tables(reaction, ID, i+1)
-
+   st.populate_tables(reaction, ID, VALUE,i+1)
 
 
 
