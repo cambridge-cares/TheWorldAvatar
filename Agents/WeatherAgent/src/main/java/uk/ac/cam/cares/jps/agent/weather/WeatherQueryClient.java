@@ -219,8 +219,9 @@ class WeatherQueryClient {
 		if (measures.size() > 0) {
 			return tsClient.getLatestData(measures.get(0)).getTimes().get(0);
 		} else {
-			
-			return Instant.ofEpochSecond(0);
+			String errmsg = station_iri + " probably does not exist";
+			LOGGER.error(errmsg);
+			throw new RuntimeException(errmsg);
 		}
     }
     
