@@ -36,6 +36,23 @@ public class AccessAgentCaller{
      */
     private static final Logger LOGGER = LogManager.getLogger(AccessAgentCaller.class);
 
+    public static final String ACCESSAGENT_HOST_NAME = "ACCESSAGENT_HOST";
+    public static String accessAgentHost;
+    
+    //Set the default value for the access agent host
+    //TODO this could be done by an "AgentRouter"
+    static{
+		accessAgentHost = System.getenv(ACCESSAGENT_HOST_NAME);
+		if(accessAgentHost == null) {
+			// Try get the access agent host from the environment variables
+			// if not found, then get from the jps.properties file
+			LOGGER.info("ACCESSAGENT_HOST not found in environment variables..."
+					+ " Using jps.properties.");
+			accessAgentHost = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);	
+		}
+		LOGGER.info("Default ACCESSAGENT_HOST set to "+accessAgentHost);		
+	}
+    
     /**
 	 * Default constructor
 	 */
@@ -330,14 +347,10 @@ public class AccessAgentCaller{
 			if(scheme == null) {
 				scheme = "http";
 			}
-			//If no authority is given then get the host 
-			if(authority == null) {
-				//TODO this should be done by an "Agent Locator"
-				authority = System.getenv("ACCESSAGENT_HOST");
-				if(authority == null) {
-					authority = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
-				}
-				LOGGER.info("ACCESSAGENT_HOST set to "+authority);
+			
+			//If no authority is given then get the default host
+			if(authority == null) {				
+				authority = accessAgentHost;
 			}
 			
 			requestUrl = new URI(scheme,authority,JPSConstants.ACCESS_AGENT_PATH,null,null);
