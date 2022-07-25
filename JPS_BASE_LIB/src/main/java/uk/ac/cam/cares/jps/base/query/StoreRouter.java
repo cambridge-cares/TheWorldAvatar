@@ -18,7 +18,6 @@ import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -63,15 +62,17 @@ public class StoreRouter{
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
 	
-	// get default ontokgrouter endpoint from jps.properties
 	public static String STOREROUTER_ENDPOINT;
 	static{
 		STOREROUTER_ENDPOINT = System.getenv(JPSConstants.STOREROUTER_ENDPOINT);
 		if(STOREROUTER_ENDPOINT == null) {
-			LOGGER.error("STOREROUTER_ENDPOINT environment variable not set!");
-			throw new JPSRuntimeException("STOREROUTER_ENDPOINT environment variable not set!");
+			// if endpoint is not set in the system environment  
+			// then get the default value from jps.properties
+			LOGGER.info("STOREROUTER_ENDPOINT not found in environment variables..."
+					+ " Using jps.properties.");
+			STOREROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);	
 		}
-		LOGGER.info("STOREROUTER_ENDPOINT set to "+STOREROUTER_ENDPOINT);
+		LOGGER.info("STOREROUTER_ENDPOINT set to "+STOREROUTER_ENDPOINT);		
 	}
 	
 	/**
