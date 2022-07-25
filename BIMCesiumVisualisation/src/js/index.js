@@ -2,12 +2,12 @@ import "../css/assetInfoBox.css"
 import "../css/viewerElements.css"
 var Cesium = require("cesium/Cesium");
 import "cesium/Widgets/widgets.css";
-import {addTileset, computeCircle, createMetadataHtml} from './functions/cesium-elements.js';
-import {addDiv, addCloseButton} from './functions/html-elements.js';
+import {addTileset, addModel, addKml, addWMSLayer, addWMTSLayer} from './functions/cesium_data_handler.js';
+import {addDiv, addCloseButton, createMetadataHtml} from './functions/html-elements.js';
 
 // Your access token can be found at: https://cesium.com/ion/tokens.
 // This is the default access token
-Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1N2Q0ZjVlYi1lNTI5LTQyODgtYjEyMC1mODY5YThkNjFkMGEiLCJpZCI6NzM3MjAsImlhdCI6MTYzNzEzNTQ0NX0.1QVv9JdfJ9_BaCcu01tMqVRMNWa6u9donyIKH7zX3so';
+Cesium.Ion.defaultAccessToken = 'your access token';
 
 // Create a new viewer object
 const viewer = new Cesium.Viewer("cesiumContainer");
@@ -18,36 +18,39 @@ const ceilingTileset = './data/tileset_ceiling.json';
 const tileset_bim = addTileset(viewer, bimTileset, 103.77398, 1.30411);
 const tileset_ceiling = addTileset(viewer, ceilingTileset, 103.77398, 1.30411);
 
-// add kml
-const KML = viewer.dataSources.add(Cesium.KmlDataSource.load('./data/test_geometry.kml',
-    {
-      camera: viewer.scene.camera,
-      canvas: viewer.scene.canvas,
-      clampToGround: true,
-    })
-);
+/* 
+// Adding gltf/glb models to the viewer
+const gltfpath = './data/model.gltf';
+const gltfmodel = addModel(viewer, gltfpath, 103.77398, 1.30411);
+*/
 
-const volume = new Cesium.PolylineVolumeGeometry({
-  vertexFormat : Cesium.VertexFormat.POSITION_ONLY,
-  polylinePositions : Cesium.Cartesian3.fromDegreesArray([
-    -72.0, 40.0,
-    -70.0, 35.0
-  ]),
-  shapePositions : computeCircle(100000.0)
-});
-
-viewer.camera.flyTo({
-  destination: Cesium.Cartesian3.fromDegrees(7.588534, 49.205952, 500),
-});
-
-
-// Zoom to the tileset, with a small offset so that it is fully visible
+// Zoom to the tileset or gltf/glb model, with a small offset so that it is fully visible
 const offset = new Cesium.HeadingPitchRange(
   Cesium.Math.toRadians(-45.0),
   Cesium.Math.toRadians(-45.0),
   80.0
 );
-// viewer.zoomTo(dataSource, offset);
+viewer.zoomTo(tileset_bim, offset);
+
+/* 
+// Adding KML models to the viewer
+const kmlpath = './data/model.kml';
+const kmlmodel =  addKml(viewer, kmlpath);
+
+// Adding WMS imagery layer to the viewer
+const wmsurl = 'url';
+const wmslayer = 'layername';
+addWMSLayer(viewer,wmsurl,wmslayer);
+
+// Adding WMTS imagery layer to the viewer
+const wmtsurl = 'url';
+const wmtslayer = 'layername';
+addWMTSLayer(viewer, wmtsurl,wmtslayer); 
+
+// Zoom to the KML models, WMS or WMTS imagery
+viewer.camera.flyTo({
+  destination: Cesium.Cartesian3.fromDegrees(latitude, longitude, elevation),
+}); */
 
 // Creating a metadata overlay element when mouse moves over an asset
 const promptOverlay = addDiv("backdrop");

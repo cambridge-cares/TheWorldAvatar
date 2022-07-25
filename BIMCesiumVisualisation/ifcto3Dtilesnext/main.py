@@ -2,7 +2,7 @@
 import subprocess
 
 # Third party imports
-import ifcopenshell
+# import ifcopenshell
 
 # Reader imports
 import utils
@@ -10,10 +10,10 @@ import ifc2gltf
 import ifc2kg
 import ifc2tileset as ts
 
-ifc= ifcopenshell.open(utils.INPUT_IFC) 
+# ifc= ifcopenshell.open(utils.INPUT_IFC)
 
 #Convert and split the ifc model into gltf files
-lookupdict= ifc2gltf.conv2gltf(ifc, utils.INPUT_IFC)
+# lookupdict= ifc2gltf.conv2gltf(ifc, utils.INPUT_IFC)
 
 #Convert to RDF triples and upload TTL file to local Blazegraph server
 ifc2kg.ifc2ttl(utils.INPUT_TTL, utils.NAMESPACE)
@@ -25,7 +25,7 @@ print("Blazegraph server has started")
 
 try: 
     #Add the filepath triples
-    ifc2kg.insertkg(utils.ENDPOINT, lookupdict)
+    # ifc2kg.insertkg(utils.ENDPOINT, lookupdict)
 
     # Query relevant information    
     df=ifc2kg.ifcquery(utils.ENDPOINT)
