@@ -26,7 +26,7 @@ In the commands below placeholders are shown as `<STACK NAME>`, you will need to
 
 To spin up the stack (with default settings) please follow the instructions below:
 
-1. Open the Workspace in this folder in VSCode (or go to the `stack-manager` directory in a `bash` terminal).
+1. Open the Workspace in the `Deploy/stacks/dynamic` directory in VSCode (or go to the `stack-manager` subdirectory within it in a `bash` terminal).
 
 2. Create two files called `postgis_password` and `geoserver_password` in the `stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for postgis and geoserver, respectively.
 
