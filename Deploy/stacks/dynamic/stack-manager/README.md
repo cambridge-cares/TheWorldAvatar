@@ -1,49 +1,94 @@
-## Spinning up the Stack
+# The Stack
+
+In the commands below placeholders are shown as `<STACK NAME>`, you will need to substitute in the required value when running the command.
+
+## Prerequisites
+
+### Hardware
+* A total RAM size of 32GB is recommended for smooth execution, particualry in Microsoft Windows.
+
+### Software
+* Building and running a stack has been tested in Microsoft Windows and to some degree Linux, it has not been tested within a MacOS environment.
+* Install [Git](https://git-scm.com/downloads).
+* Install [Docker](https://docs.docker.com/engine/install).
+* Preferably also install [VSCode](https://code.visualstudio.com/Download), required for development.
+#### For development
+* Install a [Java 11+ SDK](https://adoptium.net).
+* Optionally, install [Python](https://www.python.org/downloads).
+### Accounts
+* A [GitHub account](https://github.com), with an appropriate `read:packages` (or `write:packages` if developing) [access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
+* Pulling some images requires access to the Docker registry at CMCL. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page. To test your access, simply run 
+    ```console
+    docker login docker.cmclinnovations.com
+    ```
+    If you are not already logged in then enter in your GitHub username and access token when prompted.
+## Spinning up a Stack
 
 To spin up the stack (with default settings) please follow the instructions below:
 
-0. In the Docker Desktop General Settings enable the `Expose daemon on tcp://localhost:2375 without TLS` option.
-1. Open this folder as Workspace in VSCode (i.e. to ensure availability of pre-defined run configurations).
+1. Open the Workspace in this folder in VSCode (or go to the `stack-manager` directory in a `bash` terminal).
+
 2. Create two files called `postgis_password` and `geoserver_password` in the `stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for postgis and geoserver, respectively.
-3. Create two files called `repo_username.txt` and `repo_password.txt` in the `stack-manager/docker/credentials` directory. Populate the files with your github username and access token (i.e. with scope to write packages), respectively.
-4. Initialise docker swarm by running
-    ```
-    docker swarm init
-    ``` 
-5. In the `Run and Debug` side panel of VSCode run the `Debug Stack Manager` configuration. This should bring up 7 containers, i.e. gdal, ontop, adminer, postgis, blazegraph, nginx, and geoserver.
+
+3. From a terminal in the `stack-manager` directory, start the `stack-manager` container by running the following:
+        ```console
+        ./stack.sh start <STACK NAME>
+        ```
+    This will pull the required Docker images and start the core stack containers.
+    This should bring up 7 containers, i.e. gdal, ontop, adminer, postgis, blazegraph, nginx, and geoserver.
 Remarks:
    * In case not all containers start up successfully, try running the `Debug Stack Manager` configuration again
    * In case the `geoserver` container does not start up successfully (likely due to time out issues), try pulling the respective image manually by running 
-    ```
-   docker pull docker.cmclinnovations.com/geoserver:2.20.4
-   ```
-6. Geoserver should be available at `http://localhost:3839/geoserver/web/`. Log in using username `admin` and the previously specified password.
-7. The Adminer and Ontop GUI endpoints should be available at `http://localhost:3838/adminer/ui/` and `http://localhost:3838/ontop/sparql/`, respectively. 
+        ```console
+        docker pull docker.cmclinnovations.com/geoserver:2.20.4
+        ```
+3. Accessing the GUI webpages for the containers:
+    * The default exposed port number exposed by Docker is `3838`. To check the exposed port number, run
+        ```console
+        docker service ls --filter name=<STACK NAME>-nginx
+        ```
+    * The Geoserver GUI should be available at http://localhost:3838/geoserver/. Log in using the username `admin` and the password specified in the `geoserver_pasword` file.
+    * The Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. Enter `<STACK NAME>-postgis:5432` as the `Server` and the value from the `postgis_pasword` file as the `Password`.
+    * The Ontop GUI should be available at http://localhost:3838/ontop/ui.
+    * The Blazegraph Workbench should be available at http://localhost:3838/blazegraph/ui.
 
-To check the exposed ports, run
-```
-docker service ls
-```
+## Debugging the Stack Manager in VSCode
+
+1. Add the following entry into top level node the JSON file `stack-manager/.vscode/settings.json`, creating the file if it doesn't exist.
+    ```json
+    "debug.port": "<DEBUG PORT>"
+    ```
+    A value around `5005` for `<DEBUG PORT>` should be appropriate.
+
+2. In the `Run and Debug` side panel of VSCode run the `Debug (stack-manager)` configuration.
+
+## Developing the Stack Manager in VSCode
+
+You will need permission to push to the CMCL package repository to be able to build the stack-manager project
+
+1. Follow the instuctions in step 1. of [Debugging the Stack Manager in VSCode](#debugging-the-stack-manager-in-vscode)
+
+2. Create two files called `repo_username.txt` and `repo_password.txt` in the `stack-manager/docker/credentials` directory. Populate the files with your github username and access token (i.e. with scope to write packages), respectively.
+
+3. In the `Run and Debug` side panel of VSCode run the `Build and Debug (stack-manager)` configuration.
 
 ## Further remarks
 
-* A total RAM size of 32GB is recommended for smooth execution.
+* In case any of the endpoints is not resolvable after spinning up the stack, try exploring whether the specified ports might already be assigned to other program.
 
-* Pulling some images requires access to the Docker registry at CMCL. In case you have not gotten your credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page. To test your access, simply run 
-    ```
-    docker login docker.cmclinnovations.com
+* To remove an Docker Swarm service (e.g. geoserver), run
+    ```console
+    docker service rm <STACK NAME>-<SERVICE NAME>
     ```
 
-* In case any of the endpoints is not resolvable after spinning up the stack, try exploring whether the specified ports might be pre-occupied by other programs.
-
-* To (permanently) remove all Docker containers run the following (Docker swarm needs to be re-initialised before spinning the stack up again)
+* To remove a single Docker Swarm stack, run
+    ```console
+    docker stack rm <STACK NAME>
     ```
+
+* To (permanently) remove all Docker Swarm services, run
+    ```console
     docker swarm leave --force
-    ```
-
-* To remove an individual service (e.g. geoserver), run
-    ```
-    docker service rm TEST-STACK-geoserver
     ```
 
 <!-- Links -->
