@@ -28,14 +28,15 @@ public class CloningTool {
 	static ExprFactory exprFactory = new ExprFactory();
 	
 	//Default constructor
-	CloningTool(){
+	public CloningTool(){
 		stepSize = 100000;
 		overlap = (int) (stepSize*defaultOverlapRatio);
 	}
 		
-	CloningTool(int stepSize, int overlap){
+	public CloningTool(int stepSize, int overlap){
 		this.stepSize = stepSize;
 		this.overlap = overlap;
+		checkStepAndOverlap();
 	}
 	
 	/////////////////
@@ -58,6 +59,7 @@ public class CloningTool {
 	public void setStepsizeAndOverlap(int stepSize, int overlap) {
 		this.stepSize = stepSize;
 		this.overlap = overlap;
+		checkStepAndOverlap();
 	}
 	
 	/**
@@ -73,6 +75,16 @@ public class CloningTool {
 	*/
 	
 	/////////////////
+	
+	/**
+	 * Check step size is larger than overlap
+	 */
+	public void checkStepAndOverlap() {
+		if(overlap >= stepSize) {
+			throw new JPSRuntimeException("CloningTool: overlap cannot be larger than stepsize! (stepSize="
+											+stepSize+", overlap="+overlap+")");
+		}
+	}
 	
 	/**
 	 * Perform clone from source to target store
