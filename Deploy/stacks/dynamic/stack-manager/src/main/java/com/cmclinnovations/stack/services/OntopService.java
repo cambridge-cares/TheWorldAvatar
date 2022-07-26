@@ -6,9 +6,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-import com.cmclinnovations.stack.services.config.ServiceConfig;
+import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
+import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ContainerSpecConfig;
 
@@ -22,8 +24,16 @@ public final class OntopService extends ContainerService {
     private static final String ONTOP_DB_USER = "ONTOP_DB_USER";
     private static final String ONTOP_DB_PASSWORD_FILE = "ONTOP_DB_PASSWORD_FILE";
 
+    private static final String DEFAULT_PORT = "8080";
+
+    private final OntopEndpointConfig endpointConfig;
+
     public OntopService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
+
+        endpointConfig = new OntopEndpointConfig(
+                EndpointNames.ONTOP, getHostName(), DEFAULT_PORT,
+                "", null);
     }
 
     @Override
@@ -62,6 +72,8 @@ public final class OntopService extends ContainerService {
     @Override
     public void doPostStartUpConfiguration() {
         new OntopClient().updateOBDA(null);
+
+        writeEndpointConfig(endpointConfig);
     }
 
     @Deprecated
