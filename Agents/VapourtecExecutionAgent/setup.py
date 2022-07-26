@@ -11,7 +11,7 @@ setup(
     # url="https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/ExecutionAgent",
     # long_description=open('README.md').read(),
     # long_description_content_type="text/markdown",
-    packages=find_packages(exclude=('tests')),
+    packages=find_packages(exclude=['tests','tests.*']),
     install_requires=[
         'pyderivationagent', 'pandas', 'pydantic'
         # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'

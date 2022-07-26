@@ -11,7 +11,7 @@ setup(
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/133-dev-design-of-experiment/Agents/DoEAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    packages=find_packages(exclude=('tests')),
+    packages=find_packages(exclude=['tests','tests.*']),
     install_requires=['pyderivationagent', 'summit', 'pandas', 'pydantic'
     # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'
     # 'chemistry_and_robots @ git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots'
