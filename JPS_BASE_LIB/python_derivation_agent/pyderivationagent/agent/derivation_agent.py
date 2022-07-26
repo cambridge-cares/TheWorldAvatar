@@ -67,7 +67,7 @@ class DerivationAgent(object):
         self.app.config.from_object(flask_config)
 
         # initialise flask scheduler and assign time interval for monitorDerivations job
-        self.scheduler = APScheduler()
+        self.scheduler = APScheduler(app=self.app)
         self.time_interval = time_interval
 
         # assign IRI and HTTP URL of the agent
@@ -236,19 +236,22 @@ class DerivationAgent(object):
         """
         pass
 
-    def start_monitoring_derivations(self):
+    def add_job_monitoring_derivations(self):
         """
-            This method starts the periodical job to monitor derivation, also runs the flask app as an HTTP servlet.
+            This method schedules the periodical job to monitor asynchronous derivation, also adds the HTTP endpoint to handle synchronous derivation.
         """
-        self.scheduler.init_app(self.app)
         self.scheduler.add_job(id='monitor_derivations', func=self.monitor_async_derivations,
                                trigger='interval', seconds=self.time_interval)
-        self.scheduler.start()
-        self.logger.info("Monitor asynchronous derivations job is started with a time interval of %d seconds." % (
+        self.logger.info("Monitor asynchronous derivations job is scheduled with a time interval of %d seconds." % (
             self.time_interval))
 
         self.add_url_pattern(self.agentEndpoint, self.agentEndpoint[1:], self.handle_sync_derivations, methods=['GET'])
         self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
+
+    def start(self):
+        """This method starts all scheduled periodical jobs."""
+        if not self.scheduler.running:
+            self.scheduler.start()
 
     def handle_sync_derivations(self):
         requestParams = json.loads(unquote(request.url[len(request.base_url):])[
@@ -313,6 +316,6 @@ class DerivationAgent(object):
 
     def run_flask_app(self, **kwargs):
         """
-            This method starts the periodical job to monitor derivation, also runs the flask app as an HTTP servlet.
+            This method runs the flask app as an HTTP servlet.
         """
         self.app.run(**kwargs)
