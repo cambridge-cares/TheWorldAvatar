@@ -11,7 +11,7 @@ setup(
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    packages=find_packages(exclude=('tests')),
+    packages=find_packages(exclude=['tests','tests.*']),
     install_requires=['py4jps>=1.0.22', 'flask==2.1.0', 'gunicorn==20.0.4', 'Flask-APScheduler', 'rdflib', 'python-dotenv'
     # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'
     ],
