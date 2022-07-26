@@ -146,12 +146,10 @@ class HPLCAgent(DerivationAgent):
                 self.hplc_report_file_extension, self.hplc_report_container_dir, self.hplc_digital_twin, self.timestamp_check, str(self.dct_files_check)
             ))
 
-    def start_monitoring_local_report_folder(self):
+    def add_job_monitoring_local_report_folder(self, start=False):
         """
             This method starts the periodical job to monitor the HPLC local report folder.
         """
-        if self.scheduler.app is None:
-            self.scheduler.init_app(self.app)
 
         # NOTE It is assumed that all existing files before the agent got spun up will NOT be uploaded to the KG
         self.logger.info("Checking the files already exist before starting monitoring the new files...")
@@ -165,10 +163,10 @@ class HPLCAgent(DerivationAgent):
         )
         print("monitoring local report folder job added")
 
-        if not self.scheduler.running:
-            self.scheduler.start()
-        self.logger.info("Monitor local report folder job is started with a time interval of %d seconds." % (self.hplc_report_periodic_timescale))
+        self.logger.info("Monitor local report folder job is scheduled with a time interval of %d seconds." % (self.hplc_report_periodic_timescale))
 
+        if start:
+            self.start()
 
 # Show an instructional message at the HPLCInputAgent servlet root
 def default():

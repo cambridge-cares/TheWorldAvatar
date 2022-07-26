@@ -217,12 +217,10 @@ class VapourtecAgent(DerivationAgent):
     def vapourtec_is_idle(self) -> bool:
         return True if self.vapourtec_state == ONTOVAPOURTEC_IDLE else False
 
-    def start_monitoring_vapourtec_rs400_state(self):
+    def add_job_monitoring_vapourtec_rs400_state(self, start=False):
         """
             This method starts the periodical job to monitor the state of VapourtecRS400 module.
         """
-        if self.scheduler.app is None:
-            self.scheduler.init_app(self.app)
 
         # Add state monitoring job to scheduler
         self.scheduler.add_job(
@@ -233,11 +231,12 @@ class VapourtecAgent(DerivationAgent):
         )
 
         # Start the scheduler if it's not already started
-        if not self.scheduler.running:
-            self.scheduler.start()
-        self.logger.info("Monitor VapourtecRS400 state job is started with a time interval of %d seconds." % (
+        self.logger.info("Monitor VapourtecRS400 state job is scheduled with a time interval of %d seconds." % (
             self.vapourtec_state_periodic_timescale)
         )
+
+        if start:
+            self.start()
 
 
 # Show an instructional message at the VapourtecAgent servlet root

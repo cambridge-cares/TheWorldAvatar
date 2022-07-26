@@ -39,7 +39,7 @@ def test_monitor_derivation(
         random_agent_iri=True,
         derivation_periodic_timescale=derivation_periodic_timescale,
     )
-    vapourtec_execution_agent.start_monitoring_derivations()
+    vapourtec_execution_agent.add_job_monitoring_derivations(start=True)
 
     # NOTE Add placeholder agent service iri to manage the digital twin of all hardware
     # NOTE This should actually be done by the VapourtecAgent/HPLCAgent themselves when they are deployed

@@ -36,7 +36,7 @@ def test_monitor_local_report_folder(
         register_agent=True,
     )
 
-    hplc_agent.start_monitoring_local_report_folder()
+    hplc_agent.add_job_monitoring_local_report_folder(start=True)
 
     # Create a random file to be uploaded
     time.sleep(hplc_report_periodic_timescale * 2)
@@ -99,7 +99,7 @@ def test_monitor_derivation(
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
 
     # Start monitor derivations
-    hplc_agent.start_monitoring_derivations()
+    hplc_agent.add_job_monitoring_derivations(start=True)
 
     # Wait for some arbitrary time more then the derivation_periodic_timescale
     time.sleep(derivation_periodic_timescale + 1)
