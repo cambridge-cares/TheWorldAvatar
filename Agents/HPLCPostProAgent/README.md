@@ -146,7 +146,7 @@ After the derivation is updated, you will see outputs message like:
 Meanwhile, the testing script checks the progress by querying `{?performance_indicator OntoDerivation:belongsTo <createdDerivationInstance>; rdf:type/rdfs:subClassOf OntoRxn:PerformanceIndicator}`, i.e.:
 
 ```sparql
-PREFIX OntoDerivation:     <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX OntoDerivation:     <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
 PREFIX OntoRxn:            <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#>
 PREFIX rdf:                <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs:               <http://www.w3.org/2000/01/rdf-schema#>

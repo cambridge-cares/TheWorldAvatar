@@ -112,7 +112,7 @@ If everything is working as expected, an output on console should be expected si
 
 As the derivation is initialised as `Requested` with a timestamp of 0 and the inputs are marked with a timestamp of current time, the derivation is outdated and will be started automatically. The update will be taken care of by DoE Agent and the IRI of the suggested instance of `OntoRxn:ReactionVariation` will be generated and uploaded into the knowledge graph. This can be verified by querying {`?new_exp` `OntoDerivation:belongsTo` `<createdDerivationInstance>`}:
 ```
-PREFIX OntoDerivation:     <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX OntoDerivation:     <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
 PREFIX OntoDoE:            <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
 
 SELECT ?ontorxn_rxn_exp
