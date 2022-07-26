@@ -16,4 +16,4 @@ class PopulationDensityDataProperty:
         self.PopulationDensityDataPath = self.DataPath + str(self.VERSION) + '\population_gbr.csv'
 
         """Header"""
-        self.headerPopulationDensityData = ["Lat", "Lon", "Population"]
+        self.headerPopulationDensityData = ["Lat", "Lon", "Population\n"]

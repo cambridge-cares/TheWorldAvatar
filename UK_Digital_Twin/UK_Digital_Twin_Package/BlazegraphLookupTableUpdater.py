@@ -105,11 +105,11 @@ if __name__ == '__main__':
     # updateendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
     # label = "ukdigitaltwin_test1" 
     
-    endpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
-    queryendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
-    updateendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
+    endpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_pd/sparql"
+    queryendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_pd/sparql"
+    updateendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_pd/sparql"
     # queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin"
     # updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"
-    label = "ukdigitaltwin_test2"
+    label = "ukdigitaltwin_pd"
     
     updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, True,False)

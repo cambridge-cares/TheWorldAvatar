@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 July 2022         #
+# Last Update Date: 25 July 2022         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK population density graph."""
@@ -20,6 +20,7 @@ from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 import uuid
 from logging import raiseExceptions
+from pyasyncagent.kg_operations.sparql_client import PySparqlClient
 
 
 """Notation used in URI construction"""
@@ -55,7 +56,7 @@ def createPopulationDensityDataProperty(version):
     return data, header
 
 """Main Function: Add Triples to the named graph"""
-def addUKPopulationDensityTriples(version, OWLFileStoragePath = None, updateLocalOWLFile = True, storeType = 'default'):  
+def addUKPopulationDensityTriples(version, updateEndpointIRI, OWLFileStoragePath = None, updateLocalOWLFile = True, storeType = 'default'):  
     print(defaultStoredPath)
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
@@ -64,7 +65,7 @@ def addUKPopulationDensityTriples(version, OWLFileStoragePath = None, updateLoca
     
     data, header = createPopulationDensityDataProperty(version)    
     
-    if len(data[0]) != len(header):
+    if data[0] != header:
         raise Exception("The population density data header does not match!!")
     else:
         del data[0]
@@ -86,7 +87,8 @@ def addUKPopulationDensityTriples(version, OWLFileStoragePath = None, updateLoca
         PopulationIRI = dt.baseURL + SLASH + t_box.ontosdgName + SLASH + ukpd.PopulationKey + str(uuid.uuid4())
         valueOfPopulationIRI = dt.baseURL + SLASH + t_box.ontosdgName + SLASH + ukpd.valueKey + str(uuid.uuid4())
 
-        latlon = str(pd[0][1:len(pd[0])-1] + '#' + pd[1][1:len(pd[1])-1]).replace('\xa0', '')
+        ## latlon = str(pd[0][1:len(pd[0])-1] + '#' + pd[1][1:len(pd[1])-1]).replace('\xa0', '')
+        latlon = str(pd[0].replace('\n', '') + '#' + pd[1].replace('\n', '')).replace('\xa0', '')
 
         graph.add((URIRef(LocationPointIRI), RDF.type, URIRef(ontoSDG.Location.iri)))
         graph.add((URIRef(LocationPointIRI), URIRef(ontoenergysystem.hasWGS84LatitudeLongitude.iri), \
@@ -94,10 +96,9 @@ def addUKPopulationDensityTriples(version, OWLFileStoragePath = None, updateLoca
         graph.add((URIRef(LocationPointIRI), URIRef(ontoSDG.hasPopulation.iri), URIRef(PopulationIRI)))
         graph.add((URIRef(PopulationIRI), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(valueOfPopulationIRI)))
         graph.add((URIRef(valueOfPopulationIRI), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-        graph.add((URIRef(valueOfPopulationIRI),  URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(pd[2][1:len(pd[2])-2]))))
-             
+        graph.add((URIRef(valueOfPopulationIRI),  URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(pd[2].replace('\n', '')))))     
    
-        # print(graph.serialize(format="turtle").decode("utf-8"))
+        ## print(graph.serialize(format="turtle").decode("utf-8"))
             
     ## generate/update OWL files
     if updateLocalOWLFile == True:
@@ -108,10 +109,14 @@ def addUKPopulationDensityTriples(version, OWLFileStoragePath = None, updateLoca
             filepath_ = filepath + 'GB_Population_Density_' + str(version) + TTL
         
         storeGeneratedOWLs(graph, filepath_)
+    
+    sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+    sparql_client.uploadOntology(filepath_)
     return
 
 if __name__ == '__main__':
-    addUKPopulationDensityTriples(2019, None, True, 'default')
+    updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_pd/sparql"
+    addUKPopulationDensityTriples(2022, updateEndpointIRI,  None, True, 'default')
 
 
         

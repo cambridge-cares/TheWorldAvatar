@@ -86,7 +86,7 @@ class OptimalPowerFlowAnalysis:
         demandCapacityRatio:float,
         DiscommissioningCostEstimatedLevel:int,
         shutNonRetrofittedGenerator:bool,
-        queryEndpointLabel:str, endPointURL:str, endPointUser:str = None, endPointPassWord:str = None,
+        queryEndpointLabel:str, geospatialQueryEndpointLabel:str, endPointURL:str, endPointUser:str = None, endPointPassWord:str = None,
         OWLFileStoragePath = None, updateLocalPowerPlantOWLFileFlag:bool = True
         ):
        
@@ -133,6 +133,7 @@ class OptimalPowerFlowAnalysis:
             self.pointsOfPiecewiseOrcostFuncOrder = int(pointsOfPiecewiseOrcostFuncOrder)
         ##--4. specify the query/update endpoint information--##
         self.queryEndpointLabel = queryEndpointLabel
+        self.geospatialQueryEndpointLabel = geospatialQueryEndpointLabel
         self.endPointURL = endPointURL
         self.endPointUser = endPointUser
         self.endPointPassWord = endPointPassWord
@@ -199,17 +200,9 @@ class OptimalPowerFlowAnalysis:
             
             self.retrofitListBeforeSelection = retrofitListBeforeSelection
             retrofitListBeforeSelection_ = retrofitListBeforeSelection.copy()
-            
-            # numOfNG = 0
-            # for gen in retrofitListBeforeSelection:
-            #     if "NaturalGas" in gen["fuelOrGenType"]:
-            #         print(gen)
-            #         numOfNG += 1
-            # print("numOfNG is", numOfNG)
-
 
             ## Perform site pre-selection analysis
-            siteSelector = sp.SitePreSelection(self.queryEndpointLabel, retrofitListBeforeSelection, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost, \
+            siteSelector = sp.SitePreSelection(self.geospatialQueryEndpointLabel, retrofitListBeforeSelection, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost, \
                 self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.demandCapacityRatio, \
                 self.bankRate, self.CarbonTax, self.shutNonRetrofittedGenerator, self.DiscommissioningCostEstimatedLevel)
             siteSelector.SMRSitePreSelector()
@@ -222,8 +215,6 @@ class OptimalPowerFlowAnalysis:
                 siteToBeReplaced_copy.append(item_)
 
             for site in siteToBeReplaced_copy:
-                # del site['numberOfSMR']
-                print(site)
                 retrofitListBeforeSelection_.remove(site)
 
             self.siteNotSelected = retrofitListBeforeSelection_ ## those not to be replaced generator will keep running or shut down
@@ -237,7 +228,6 @@ class OptimalPowerFlowAnalysis:
 
     """This method is called to initialize the model entities objects: model input"""
     def ModelPythonObjectInputInitialiser(self): 
-        print(self.siteToBeReplaced)
         ##-- create model bus, branch and generator objects dynamically --##
         ObjectSet = locals()  
 
@@ -599,20 +589,20 @@ if __name__ == '__main__':
     AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
     slackBusNodeIRI = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591"   
     queryEndpointLabel = "ukdigitaltwin_test2"
+    geospatialQueryEndpointLabel = "ukdigitaltwin_pd"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
     loadAllocatorName = "regionalDemandLoad"
     EBusModelVariableInitialisationMethodName= "defaultInitialisation"
     ELineInitialisationMethodName = "defaultBranchInitialiser"
-    CarbonTax = 100
+    CarbonTax = 10000000
     piecewiseOrPolynomial = 2
     pointsOfPiecewiseOrcostFuncOrder = 2
     baseMVA = 150
     withRetrofit = True
     retrofitGenerator = []
-    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"]
-    # , 
-    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
-    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
+    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", 
+    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
+    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
     ##retrofitGenerationTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear"]
     newGeneratorType = "SMR"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
@@ -627,7 +617,7 @@ if __name__ == '__main__':
     NeighbourhoodRadiusForSMRUnitOf1MW = 200
     ProbabilityOfReactorFailure = 0.002985
     SMRCapability = 470
-    maxmumSMRUnitAtOneSite = 3
+    maxmumSMRUnitAtOneSite = 4
     demandCapacityRatio = 0.5
     DiscommissioningCostEstimatedLevel = 1
 
@@ -635,7 +625,7 @@ if __name__ == '__main__':
     testOPF1 = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, AgentIRI, "2017-01-31", slackBusNodeIRI, loadAllocatorName, EBusModelVariableInitialisationMethodName, ELineInitialisationMethodName,
         CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, 
         projectLifeSpan, SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, demandCapacityRatio, DiscommissioningCostEstimatedLevel,
-        shutNonRetrofittedGenerator, queryEndpointLabel, updateEndPointURL)
+        shutNonRetrofittedGenerator, queryEndpointLabel, geospatialQueryEndpointLabel, updateEndPointURL)
     
     testOPF1.retrofitGeneratorInstanceFinder()
     testOPF1.ModelPythonObjectInputInitialiser()

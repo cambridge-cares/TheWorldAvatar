@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 22 July 2022         #
+# Last Update Date: 26 July 2022         #
 ##########################################
 
 """
@@ -8,6 +8,7 @@ This module is used to pre-screen the protential SMR sites
 """
 from logging import raiseExceptions
 from tkinter import S
+from pyrsistent import b
 from pyscipopt import Model
 import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -60,21 +61,21 @@ class SitePreSelection(object):
     def SMRSitePreSelector(self):
         ##-- Setup model --##
         self.model = Model("SMRSitePreSelection")
-   
-        ##-- Binary and Integer variable --##
+
+        ##-- Binary variable --##
         self.varSets = locals()  
         self.binaryVarNameList = []
-        self.integerVarNameList = []
         for s in range(len(self.generatorToBeReplacedList)):
-            binaryVarName = "y_" + str(s)
-            integerVarName = "n_" + str(s)
-            self.varSets[binaryVarName] = self.model.addVar(binaryVarName, vtype = "B")
-            self.varSets[integerVarName] = self.model.addVar(integerVarName, vtype = "I",  lb = 0, ub = None)
-            self.binaryVarNameList.append(binaryVarName)
-            self.integerVarNameList.append(integerVarName)
-            ## the binary and integer variables constrians M * y >= n > = y ## 
-            self.model.addCons(self.varSets[binaryVarName] * self.N >= self.varSets[integerVarName])
-            self.model.addCons(self.varSets[integerVarName] >= self.varSets[binaryVarName])
+            sumOfBinaryVar = 0
+            binaryVarNameShortList = []
+            for i in range(self.N + 1):
+                binaryVarName = "y_" + str(s) + "_" + str(i) 
+                self.varSets[binaryVarName] = self.model.addVar(binaryVarName, vtype = "B")
+                binaryVarNameShortList.append(binaryVarName)
+                sumOfBinaryVar += self.varSets[binaryVarName]
+            self.binaryVarNameList.append(binaryVarNameShortList)
+            ## the binary variables constrians Sum(i, (0，4)) y_s_i = 1, where y_s_0 = 1 identifying there is no SMR in the site s ##  
+            self.model.addCons(sumOfBinaryVar == 1 )
 
         ##-- Set up constraint --##
         ## 1. the replacedCapacity
@@ -86,15 +87,16 @@ class SitePreSelection(object):
         else: 
             for s in range(len(self.generatorToBeReplacedList)):
                 gen = self.generatorToBeReplacedList[s]
-                bv = self.binaryVarNameList[s]
-                replacedCapacity += float(gen["Capacity"]) * self.varSets[bv]
+                bvList = self.binaryVarNameList[s]
+                for bv in bvList:
+                    replacedCapacity += float(gen["Capacity"]) * self.varSets[bv]
                 
         ## 2. the total capacity of SMR
         totalSMRCapacity = 0
-        for bv in self.binaryVarNameList:
-            i = self.binaryVarNameList.index(bv)
-            iv = self.integerVarNameList[i]
-            totalSMRCapacity += self.varSets[iv] * self.Cap_SMR
+        for bvList in self.binaryVarNameList:
+            for bv in bvList:
+                i = bvList.index(bv)
+                totalSMRCapacity += i * self.varSets[bv] * self.Cap_SMR
         ## 3. SMR capacity constraint
         self.model.addCons(totalSMRCapacity >= replacedCapacity, name = "SMR capacity constraint")
 
@@ -104,14 +106,12 @@ class SitePreSelection(object):
         carbonCost = 0
         totalProtentialCarbonCost = 0
         totalLifeMonetaryCost = 0
+
+        ## print(population_list, len(population_list))
         
         for s in range(len(self.binaryVarNameList)):
-            bv = self.varSets[self.binaryVarNameList[s]]
-            iv = self.varSets[self.integerVarNameList[s]]
 
-            ## FIXME: the neighbourhood radius of SMR , this redius relates with the total capcacity of the SMR located in the same site
-            ## therefore, rs is a variable instead of a constance
-            rs = iv * self.r0 * self.Cap_SMR **(0.5)
+            bvList = self.binaryVarNameList[s]
 
             existingGenCap = self.generatorToBeReplacedList[s]["Capacity"]
             existingGenFuelType = self.generatorToBeReplacedList[s]["fuelOrGenType"]
@@ -123,23 +123,28 @@ class SitePreSelection(object):
             else:
                 raise Exception("Cannot find the decommissioning cost for", existingGenFuelType)
             
-            ## the population within the circle centred at the to be replaced generator with the radius rs
-            ## TODO: test population, test geospatical
-            ## FIXME: as rs is a variable, it cannot become an input to a query, may need the pre-calculate values, for 1*redius, 2*redius...
-            # population = populationDensityCalculator(self.generatorToBeReplacedList[s]["LatLon"], rs, self.geospatialQueryEndpointLabel)
-            
-            ## the protential carbon emssion cost if the old generator is not being replaced by SMR
+            ## the protential carbon emission cost if the old generator is not being replaced by SMR
             for l in range(self.L):
                 carbonCost += float(existingGenCap) * float(CO2EmissionFactor) * float(annualOperatingHours) * float(self.carbonTax) * (1 + float(self.i)) **(-(l - 1))
 
-            totalSMRCapitalCost += iv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-            totalDiscommissioningCost += bv * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-            totalProtentialCarbonCost += (1-bv) * carbonCost * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+            population_list = [] ## has the same length as bvList
+            ## calculte the Neighbourhood radius for SMR unit and the population within the circle centred at the to be replaced generator with the radius rs
+            for bvname in bvList:
+                print(bvList)
+                i = bvList.index(bvname)
+                bv = self.varSets[bvname]
+                rs =  (self.r0/1000) * (i * self.Cap_SMR)**(0.5)
+                population = populationDensityCalculator(self.generatorToBeReplacedList[s]["LatLon"], rs, self.geospatialQueryEndpointLabel)
+                population_list.append(population)
 
-            # totalLifeMonetaryCost += bv * population * self.FP * self.Hu * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                totalSMRCapitalCost +=  int(i) * bv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L))) 
+                totalDiscommissioningCost += bv * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                if i == 0:
+                    totalProtentialCarbonCost += (1-bv) * carbonCost * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                totalLifeMonetaryCost += bv * population_list[i] * self.FP * self.Hu * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
 
         ##-- Set up the objective function --##
-        self.model.setObjective(totalSMRCapitalCost + totalDiscommissioningCost + totalProtentialCarbonCost, "minimize")
+        self.model.setObjective(totalSMRCapitalCost + totalDiscommissioningCost + totalProtentialCarbonCost + totalLifeMonetaryCost, "minimize")
 
         ##-- Set up optimisation method --##
         self.model.optimize()
@@ -149,14 +154,13 @@ class SitePreSelection(object):
         totalSMR = 0
         self.siteSelected = []
         for s in range(len(self.binaryVarNameList)):
-            y = self.binaryVarNameList[s]
-            n = self.integerVarNameList[s]
-            print((self.varSets[y].name), " = ", (self.model.getVal(self.varSets[y])))
-            print((self.varSets[n].name), " = ", (self.model.getVal(self.varSets[n])))
+            bvList = self.binaryVarNameList[s]
+            for bv in bvList:
+                print((self.varSets[bv].name), " = ", (self.model.getVal(self.varSets[bv])))
 
             # if self.model.getVal(self.varSets[n]) > 1:
             #     print(n, self.model.getVal(self.varSets[n]))
-
+            ## TODO: chenge the famula of counting the total number of totalSMR
             totalSMR += self.model.getVal(self.varSets[n])
 
             if self.model.getVal(self.varSets[y]) > 0:
@@ -177,9 +181,9 @@ class SitePreSelection(object):
         
 if __name__ == '__main__': 
     ##NOTUSED [0]generator IRI, [1]capcacity, [2]primary fuel, [3]generaor technology, [4]lat-lon 
-    test = SitePreSelection(None, [{"PowerGenerator": 1, "Bus": 1, "Capacity":10, "fuelOrGenType": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas", "LatLon":"52.209556#0.120046", "CO2EmissionFactor": 0.181, "annualOperatingHours": 3593.48},
+    test = SitePreSelection('ukdigitaltwin_pd', [{"PowerGenerator": 1, "Bus": 1, "Capacity": 10, "fuelOrGenType": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas", "LatLon":"52.209556#0.120046", "CO2EmissionFactor": 0.181, "annualOperatingHours": 3593.48},
     {"PowerGenerator": 1, "Bus": 1, "Capacity":500, "fuelOrGenType": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", "LatLon":"52.209556#0.120046", "CO2EmissionFactor": 0.319, "annualOperatingHours": 482.06}],
-     0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.5, 0.0125, 100, False, 3, 1)
+     0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.5, 0.0125, 100, False, 4, 1)
     test.SMRSitePreSelector()
     print(test.siteSelected)
    
