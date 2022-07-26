@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.accessagent.integrationtest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.http.client.methods.HttpPost;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -123,9 +122,10 @@ class AccessAgentIntegrationTest {
 		+ ":" + ACCESS_AGENT_CONTAINER.getFirstMappedPort()
 		+ "/access-agent/upload";
 		
-		IntegrationTestHelper.uploadRoutingData(targetStoreLabel, targetStoreEndpointInternal, uploadUrl);
-		
-		//TODO check upload successful
+		String uploaded = IntegrationTestHelper.uploadRoutingData(targetStoreLabel, targetStoreEndpointInternal, uploadUrl);
+		assertTrue("AccessAgentIntegrationTest: Routing data upload failed.", uploaded.equals("1 endpoint(s) uploaded."));
+				
+		//Connect to target store and set targetResourceID
 		targetStoreClient = new RemoteStoreClient(targetStoreEndpointExternal,targetStoreEndpointExternal);
 		
 		targetResourceID = "http://" + ACCESS_AGENT_CONTAINER.getHost() 

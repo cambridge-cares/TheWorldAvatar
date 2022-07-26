@@ -4,6 +4,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.http.Http;
@@ -14,12 +15,14 @@ import uk.ac.cam.cares.jps.base.http.Http;
  */
 public class IntegrationTestHelper {
 
-	public static void uploadRoutingData(String label, String endpoint, String uploadUrl) {
+	public static String uploadRoutingData(String label, String endpoint, String uploadUrl) {
 		
 		String routingData = getRoutingData(label, endpoint);
 				
 		HttpPost request = Http.post(uploadUrl, routingData, MediaType.APPLICATION_JSON.type, null);
-		Http.execute(request);	
+		String result = Http.execute(request);	
+		
+		return new JSONObject(result).getString("result");
 	}
 
 	public static String getRoutingData(String label, String endpoint) {
@@ -28,7 +31,7 @@ public class IntegrationTestHelper {
 					"	\"label\": \""+label+"\",\n"+
 					"	\"queryEndpoint\": \""+endpoint+"\",\n"+
 					"	\"updateEndpoint\": \""+endpoint+"\"\n"+
-					"},\n"+
+					"}\n"+
 				"]";
 	}
 	
