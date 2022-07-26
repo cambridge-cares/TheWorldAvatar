@@ -27,7 +27,7 @@ def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, Li
 
         if(field.type == field.TYPE_MESSAGE and field.message_type.GetOptions().map_entry):
             map_value = field.message_type.fields_by_name["value"]
-            maps.append((map_value.message_type.name, map_value.name))
+            maps.append((map_value.message_type.name, field.name))
         elif(field.type == field.TYPE_MESSAGE and not field.message_type.GetOptions().map_entry):
             if(field.label == field.LABEL_REPEATED): 
                 repeats.append((field.message_type.name, field.name))
@@ -131,7 +131,7 @@ def get_fields_values(message: ord_schema.Message) -> Tuple[(Dict, Tuple , List,
                 # possible handling of the map keys:
                 for key, subvalue in value.items():
                     #maps.append((field.name, subvalue))
-                    maps.append((field.message_type.fields_by_name["value"].message_type.name, field.message_type.fields_by_name["value"].name, key, subvalue))
+                    maps.append((field.message_type.fields_by_name["value"].message_type.name, field.name, key, subvalue))
             else:
                 # possible implementation of the the repeat index
                 for i, subvalue in enumerate(value):
@@ -187,18 +187,23 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITE
     scalars_dict, scalars_tuple,messages, maps, repeats = get_fields_values(message=message)
     #scalars_dict.update({'ID' : ID[message.DESCRIPTOR.name]})
 
-
-    #row = get_row(scalars=scalars_dict, labels=labels)
-
-    # append the data to the corresponding table
-    #print(message.DESCRIPTOR.name,'\n', scalars_tuple)
-
-    # Avoid Repetition in the Scalar tables
-    #if (scalars_tuple in LITERAL_VALUE.keys()):
-    #    skip
-    #else:
-    #    LITERAL_VALUE.update({scalars_tuple : ID[message.DESCRIPTOR.name]})
-    #    append_to_file(file='./results/'+message.DESCRIPTOR.name+'.csv', row=row)
+    if root_index is not None:
+        # Add the root index to the ID dictionary
+        ID.update({message.DESCRIPTOR.name : root_index})
+        # Add the the root index to the scalars dictionary
+        scalars_dict.update({'ID' : ID[message.DESCRIPTOR.name]})
+        # Get the target csv table column labels
+        labels, _,_,_ = get_field_labels(message=message)
+        row = get_row(scalars=scalars_dict, labels=labels)
+    
+        # append the data to the corresponding table
+    
+        # Avoid Repetition in the Scalar tables
+        if (scalars_tuple in LITERAL_VALUE.keys()):
+            skip
+        else:
+            LITERAL_VALUE.update({scalars_tuple : ID[message.DESCRIPTOR.name]})
+            append_to_file(file='./results/'+message.DESCRIPTOR.name+'.csv', row=row)
 
 
 
@@ -239,7 +244,6 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITE
         # get the row for intermidary tables
         row = [ID[message.DESCRIPTOR.name+'_'+field_name+'_'+field], ID[message.DESCRIPTOR.name], LITERAL_VALUE[scalars_tuple], key_or_index]
 
-        
         append_to_file(file='./results/'+message.DESCRIPTOR.name+'_'+field_name+'_'+field+'.csv', row=row)
 
 
