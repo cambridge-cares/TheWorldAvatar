@@ -472,10 +472,13 @@ public class DockerClient extends BaseClient {
 
     public Optional<Config> getConfig(String configName) {
         try (ListConfigsCmd listConfigsCmd = internalClient.listConfigsCmd()) {
+            String fullConfigName = StackClient.prependStackName(configName);
             return listConfigsCmd
-                    .withFilters(convertToConfigFilterMap(StackClient.prependStackName(configName),
+                    .withFilters(convertToConfigFilterMap(fullConfigName,
                             StackClient.getStackNameLabelMap()))
-                    .exec().stream().findFirst();
+                    .exec().stream()
+                    .filter(config -> config.getSpec().getName().equals(fullConfigName))
+                    .findFirst();
         }
     }
 
@@ -536,10 +539,13 @@ public class DockerClient extends BaseClient {
 
     public Optional<Secret> getSecret(String secretName) {
         try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
+            String fullSecretName = StackClient.prependStackName(secretName);
             return listSecretsCmd
-                    .withNameFilter(List.of(StackClient.prependStackName(secretName)))
+                    .withNameFilter(List.of(fullSecretName))
                     .withLabelFilter(StackClient.getStackNameLabelMap())
-                    .exec().stream().findFirst();
+                    .exec().stream()
+                    .filter(secret -> secret.getSpec().getName().equals(fullSecretName))
+                    .findFirst();
         }
     }
 
