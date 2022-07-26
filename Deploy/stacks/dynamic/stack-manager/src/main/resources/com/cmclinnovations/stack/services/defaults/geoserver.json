@@ -5,6 +5,9 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "docker.cmclinnovations.com/geoserver:2.20.4",
+                "Env": [
+                    "GEOSERVER_CSRF_WHITELIST=localhost"
+                ],
                 "Mounts": [
                     {
                         "Type": "volume",
@@ -57,16 +60,6 @@
                     }
                 ]
             }
-        },
-        "EndpointSpec": {
-            "Ports": [
-                {
-                    "Name": "web",
-                    "Protocol": "tcp",
-                    "TargetPort": "8080",
-                    "PublishedPort": "3839"
-                }
-            ]
         }
     },
     "endpoints": {
