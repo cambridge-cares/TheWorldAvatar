@@ -67,3 +67,7 @@ docker push ghcr.io/cambridge-cares/access-agent:X.Y.Z
 ```
 where X.Y.Z is the new version number.
 
+### Integration test
+Once built, the AccessAgentIntegrationTests can be run on the new version of the AccessAgent 
+by updating the ACCESS_AGENT_VERSION variable in the AccessAgentIntegrationTest class
+before running the tests.

@@ -26,11 +26,20 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 
 /**
- * Integration tests for the Access Agent
+ * Integration tests for the Access Agent.
+ * This uses the AccessAgentCaller methods in JPS_BASE_LIB 
+ * to call the AccessAgent inside a Docker container.
+ *  
+ * To test a new version of the AccessAgent:
+ * 1. Build the new AccessAgent Docker image 
+ * 	  if it doesn't already exist in the registry (see README) 
+ * 2. Update the ACCESS_AGENT_VERSION variable to the new version number
+ * 3. Run the integration tests.
+ * 
  * @author csl37
  *
  */
-//@Disabled("Requires test containers")
+//@Disabled("Requires Testcontainers and Docker to run. The AccessAgent Docker image must be built.")
 @Testcontainers
 class AccessAgentIntegrationTest {
 
