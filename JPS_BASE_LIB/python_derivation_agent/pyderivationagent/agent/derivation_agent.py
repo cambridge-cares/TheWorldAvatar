@@ -236,7 +236,7 @@ class DerivationAgent(object):
         """
         pass
 
-    def add_job_monitoring_derivations(self):
+    def add_job_monitoring_derivations(self, start=False):
         """
             This method schedules the periodical job to monitor asynchronous derivation, also adds the HTTP endpoint to handle synchronous derivation.
         """
@@ -248,10 +248,14 @@ class DerivationAgent(object):
         self.add_url_pattern(self.agentEndpoint, self.agentEndpoint[1:], self.handle_sync_derivations, methods=['GET'])
         self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
+        if start:
+            self.start()
+
     def start(self):
         """This method starts all scheduled periodical jobs."""
         if not self.scheduler.running:
             self.scheduler.start()
+            self.logger.info("Scheduler is started.")
 
     def handle_sync_derivations(self):
         requestParams = json.loads(unquote(request.url[len(request.base_url):])[

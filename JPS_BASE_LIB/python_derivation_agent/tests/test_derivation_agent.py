@@ -11,10 +11,10 @@ def test_integration_test(initialise_agent):
     )
 
     # Start the scheduler to monitor derivations
-    rng_agent.start_monitoring_derivations()
-    min_agent.start_monitoring_derivations()
-    max_agent.start_monitoring_derivations()
-    diff_agent.start_monitoring_derivations()
+    rng_agent.add_job_monitoring_derivations(start=True)
+    min_agent.add_job_monitoring_derivations(start=True)
+    max_agent.add_job_monitoring_derivations(start=True)
+    diff_agent.add_job_monitoring_derivations(start=True)
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
     rng_derivation_iri = rng_agent.derivationClient.createAsyncDerivationForNewInfo(
