@@ -24,6 +24,10 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
+# TODO - delete this once new version of pyderivationagent is released
+# TODO - update requirements.txt to use new version of pyderivationagent
+RUN python -m pip install git+https://github.com/cambridge-cares/TheWorldAvatar@161-dev-pyderivationagent-modifications#subdirectory=JPS_BASE_LIB/python_derivation_agent
+
 # # Re-install the version of JPS_BASE_LIB that is been developing
 # # (this will be required if the new features are not merged back to main)
 # RUN jpsrm uninstall JpsBaseLib

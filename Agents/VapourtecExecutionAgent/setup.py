@@ -13,7 +13,7 @@ setup(
     # long_description_content_type="text/markdown",
     packages=find_packages(exclude=['tests','tests.*']),
     install_requires=[
-        'pyderivationagent', 'pandas', 'pydantic'
+        'pyderivationagent>=1.1.0a', 'pandas', 'pydantic'
         # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'
     ],
     extras_require={

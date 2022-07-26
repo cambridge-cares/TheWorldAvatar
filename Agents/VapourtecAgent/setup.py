@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent', 'pandas', 'pydantic'
+    install_requires=['pyderivationagent>=1.1.0a', 'pandas', 'pydantic'
     # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'
     # 'chemistry_and_robots @ git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots'
     ],
