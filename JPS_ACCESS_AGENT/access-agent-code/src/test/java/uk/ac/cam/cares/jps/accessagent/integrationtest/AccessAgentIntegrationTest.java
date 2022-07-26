@@ -21,11 +21,15 @@ import org.testcontainers.utility.DockerImageName;
 
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 
+/**
+ * Integration tests for the Access Agent
+ * @author csl37
+ *
+ */
 //@Disabled("Requires test containers")
 @Testcontainers
 class AccessAgentIntegrationTest {
@@ -76,13 +80,6 @@ class AccessAgentIntegrationTest {
 	String targetResourceID;
 	
 	//////////////////////////////////////////////////
-	//Test data 
-	
-	static final String testContentType = MediaType.APPLICATION_N_TRIPLES.type;
-	static final String testContent = "<http://www.example.com/test/s> <http://www.example.com/test/p>	<http://www.example.com/test/o>.";
-	static final String query = "SELECT ?o WHERE {<http://www.example.com/test/s> <http://www.example.com/test/p> ?o.}";
-	
-	//////////////////////////////////////////////////
 	
 	@BeforeAll 
 	static void setupAll() {
@@ -93,6 +90,7 @@ class AccessAgentIntegrationTest {
 			throw new JPSRuntimeException("AccessAgentIntegrationTest: Docker container startup failed. Please try running tests again");
 		}
 	}
+	
 	@BeforeEach
 	void setupEach() {
 		try {	
@@ -112,7 +110,11 @@ class AccessAgentIntegrationTest {
 		
 		targetStoreLabel = "kb"+targetStoreContainer.getFirstMappedPort();
 		
-		uploadRoutingData(targetStoreLabel, targetStoreEndpointInternal);
+		String uploadUrl = "http://" + ACCESS_AGENT_CONTAINER.getHost() 
+		+ ":" + ACCESS_AGENT_CONTAINER.getFirstMappedPort()
+		+ "/access-agent/upload";
+		
+		IntegrationTestHelper.uploadRoutingData(targetStoreLabel, targetStoreEndpointInternal, uploadUrl);
 		
 		//TODO check upload successful
 		targetStoreClient = new RemoteStoreClient(targetStoreEndpointExternal,targetStoreEndpointExternal);
@@ -123,28 +125,6 @@ class AccessAgentIntegrationTest {
 		
 	}
 	
-	void uploadRoutingData(String label, String endpoint) {
-		
-		String routingData = getRoutingData(label, endpoint);
-		
-		String uploadUrl = "http://" + ACCESS_AGENT_CONTAINER.getHost() 
-		+ ":" + ACCESS_AGENT_CONTAINER.getFirstMappedPort()
-		+ "/access-agent/upload";
-		
-		HttpPost request = Http.post(uploadUrl, routingData, MediaType.APPLICATION_JSON.type, null);
-		Http.execute(request);	
-	}
-
-	String getRoutingData(String label, String endpoint) {
-		return "[\n"+
-					"{\n"+
-					"	\"label\": \""+label+"\",\n"+
-					"	\"queryEndpoint\": \""+endpoint+"\",\n"+
-					"	\"updateEndpoint\": \""+endpoint+"\"\n"+
-					"},\n"+
-				"]";
-	}
-
 	@AfterEach
 	public void stopEach() {
 		if (targetStoreContainer.isRunning()) {
@@ -165,6 +145,11 @@ class AccessAgentIntegrationTest {
 	//////////////////////////////////////////////////
 	// Integration tests
 	
+	// Test data 
+	static final String testContentType = MediaType.APPLICATION_N_TRIPLES.type;
+	static final String testContent = "<http://www.example.com/test/s> <http://www.example.com/test/p>	<http://www.example.com/test/o>.";
+	static final String query = "SELECT ?o WHERE {<http://www.example.com/test/s> <http://www.example.com/test/p> ?o.}";
+	
 	@Test
 	void testPostSparqlQuery() {
 		//insert test data 
@@ -182,7 +167,7 @@ class AccessAgentIntegrationTest {
 		//insert test data 
 		targetStoreClient.insert(null, testContent, testContentType);
 		
-		AccessAgentCaller.updateStore(targetResourceID, TestHelper.getUpdateRequest());
+		AccessAgentCaller.updateStore(targetResourceID, IntegrationTestHelper.getUpdateRequest());
 		JSONArray ja = targetStoreClient.executeQuery(query);
         JSONObject result = ja.getJSONObject(0); 
 		assertEquals("TEST",result.get("o").toString());
@@ -198,7 +183,7 @@ class AccessAgentIntegrationTest {
 		String result = AccessAgentCaller.get(targetResourceID, null, testContentType);
 		JSONObject jo = new JSONObject(result);
 		String result2 = jo.getString("result");
-		assertEquals(TestHelper.removeWhiteSpace(testContent), TestHelper.removeWhiteSpace(result2));
+		assertEquals(IntegrationTestHelper.removeWhiteSpace(testContent), IntegrationTestHelper.removeWhiteSpace(result2));
 	}
 	
 	@Test
@@ -209,7 +194,7 @@ class AccessAgentIntegrationTest {
         AccessAgentCaller.put(targetResourceID, null, newContent, testContentType);
         
         String result = targetStoreClient.get(null, testContentType);
-		assertTrue(TestHelper.removeWhiteSpace(result).contains(TestHelper.removeWhiteSpace(newContent)));
+		assertTrue(IntegrationTestHelper.removeWhiteSpace(result).contains(IntegrationTestHelper.removeWhiteSpace(newContent)));
 	}
 		
 }

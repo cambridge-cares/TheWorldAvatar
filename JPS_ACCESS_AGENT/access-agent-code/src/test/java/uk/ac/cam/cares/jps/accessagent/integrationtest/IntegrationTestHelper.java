@@ -1,40 +1,35 @@
 package uk.ac.cam.cares.jps.accessagent.integrationtest;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
-import java.lang.reflect.Field;
-
+import org.apache.http.client.methods.HttpPost;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 
-import uk.ac.cam.cares.jps.base.query.StoreRouter;
+import uk.ac.cam.cares.jps.base.discovery.MediaType;
+import uk.ac.cam.cares.jps.base.http.Http;
 
 /**
- * Contains shared methods for Access Agent integration tests
+ * Contains methods for Access Agent integration tests
  * @author csl37
  */
-public class TestHelper {
+public class IntegrationTestHelper {
 
-	/**
-	 * Get the OntoKGRouter endpoint from the StoreRouter class
-	 * @return
-	 */
-	public static String getRouterEndpoint() {
-		StoreRouter router = new StoreRouter();
-		Field field;
-		String ontokgrouterEndpoint = null;
-		try {
-			assertNotNull(router.getClass().getDeclaredField("STOREROUTER_ENDPOINT"));
-			field = router.getClass().getDeclaredField("STOREROUTER_ENDPOINT");
-			field.setAccessible(true);
-			ontokgrouterEndpoint = (String) field.get(null);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			fail("Failed to get OntoKGRouter endpoint!");
-			e.printStackTrace();
-		}	
-		return ontokgrouterEndpoint;
+	public static void uploadRoutingData(String label, String endpoint, String uploadUrl) {
+		
+		String routingData = getRoutingData(label, endpoint);
+				
+		HttpPost request = Http.post(uploadUrl, routingData, MediaType.APPLICATION_JSON.type, null);
+		Http.execute(request);	
+	}
+
+	public static String getRoutingData(String label, String endpoint) {
+		return "[\n"+
+					"{\n"+
+					"	\"label\": \""+label+"\",\n"+
+					"	\"queryEndpoint\": \""+endpoint+"\",\n"+
+					"	\"updateEndpoint\": \""+endpoint+"\"\n"+
+					"},\n"+
+				"]";
 	}
 	
 	/**
