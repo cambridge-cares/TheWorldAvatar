@@ -2,12 +2,19 @@ import "../css/assetInfoBox.css"
 import "../css/viewerElements.css"
 var Cesium = require("cesium/Cesium");
 import "cesium/Widgets/widgets.css";
-import {addTileset, addModel, addKml, addWMSLayer, addWMTSLayer} from './functions/cesium_data_handler.js';
+import {
+  addTileset,
+  addModel,
+  addKml,
+  addWMSLayer,
+  addWMTSLayer,
+  computeCircle
+} from './functions/cesium_data_handler.js';
 import {addDiv, addCloseButton, createMetadataHtml} from './functions/html-elements.js';
 
 // Your access token can be found at: https://cesium.com/ion/tokens.
 // This is the default access token
-Cesium.Ion.defaultAccessToken = 'your access token';
+Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1N2Q0ZjVlYi1lNTI5LTQyODgtYjEyMC1mODY5YThkNjFkMGEiLCJpZCI6NzM3MjAsImlhdCI6MTYzNzEzNTQ0NX0.1QVv9JdfJ9_BaCcu01tMqVRMNWa6u9donyIKH7zX3so';
 
 // Create a new viewer object
 const viewer = new Cesium.Viewer("cesiumContainer");
@@ -30,13 +37,14 @@ const offset = new Cesium.HeadingPitchRange(
   Cesium.Math.toRadians(-45.0),
   80.0
 );
-viewer.zoomTo(tileset_bim, offset);
+// viewer.zoomTo(tileset_bim, offset);
 
-/* 
+
 // Adding KML models to the viewer
-const kmlpath = './data/model.kml';
+const kmlpath = './data/test_geometry.kml';
 const kmlmodel =  addKml(viewer, kmlpath);
 
+/*
 // Adding WMS imagery layer to the viewer
 const wmsurl = 'url';
 const wmslayer = 'layername';
@@ -46,11 +54,11 @@ addWMSLayer(viewer,wmsurl,wmslayer);
 const wmtsurl = 'url';
 const wmtslayer = 'layername';
 addWMTSLayer(viewer, wmtsurl,wmtslayer); 
-
+*/
 // Zoom to the KML models, WMS or WMTS imagery
 viewer.camera.flyTo({
-  destination: Cesium.Cartesian3.fromDegrees(latitude, longitude, elevation),
-}); */
+  destination: Cesium.Cartesian3.fromDegrees(7.588534, 49.205952, 500),
+});
 
 // Creating a metadata overlay element when mouse moves over an asset
 const promptOverlay = addDiv("backdrop");
