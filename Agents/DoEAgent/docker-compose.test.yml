@@ -19,7 +19,7 @@ services:
   # Blazegraph
   blazegraph:
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
-    container_name: "blazegraph_test"
+    container_name: "blazegraph_doe_test"
     ports:
       - 27149:8080
     environment:

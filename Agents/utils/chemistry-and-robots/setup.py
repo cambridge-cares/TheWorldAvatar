@@ -13,7 +13,7 @@ setup(
     # long_description_content_type="text/markdown",
     packages=find_packages(exclude=('tests')),
     # TODO add pyderivationagent version number once it's released to PyPI
-    install_requires=['pyderivationagent', 'pydantic==1.9.0', 'xlrd', 'xlwt'],
+    install_requires=['pyderivationagent>=1.1.0a', 'pydantic==1.9.0', 'xlrd', 'xlwt'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",

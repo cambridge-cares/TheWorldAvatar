@@ -25,7 +25,7 @@ def test_example_doe(
 
     # Start the scheduler to monitor derivations if it's local agent test
     if local_agent_test:
-        doe_agent.start_monitoring_derivations()
+        doe_agent.add_job_monitoring_derivations(start=True)
 
     # Assert that there's currently no new experiment associated with the DoE instance
     old_doe_instance = sparql_client.get_doe_instance(doe_iri)

@@ -40,7 +40,7 @@ def test_monitor_derivation(
         random_agent_iri=True,
         derivation_periodic_timescale=derivation_periodic_timescale,
     )
-    vapourtec_agent.start_monitoring_derivations()
+    vapourtec_agent.add_job_monitoring_derivations(start=True)
 
     # Add timestamp to new_rxn_exp_iri (pure inputs)
     vapourtec_agent.derivationClient.addTimeInstance(new_rxn_exp_iri)

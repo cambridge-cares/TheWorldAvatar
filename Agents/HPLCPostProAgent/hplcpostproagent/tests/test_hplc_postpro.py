@@ -29,7 +29,7 @@ def test_hplc_postpro_agent(
     initialise_triples(sparql_client)
     hplc_postpro_agent = create_hplc_postpro_agent(register_agent=True, random_agent_iri=local_agent_test)
     if local_agent_test:
-        hplc_postpro_agent.start_monitoring_derivations()
+        hplc_postpro_agent.add_job_monitoring_derivations(start=True)
 
     # Verify that knowledge base is NOT empty
     res = sparql_client.getAmountOfTriples()

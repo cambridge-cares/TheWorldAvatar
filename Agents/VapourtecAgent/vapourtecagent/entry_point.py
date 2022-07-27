@@ -39,7 +39,7 @@ def create_app():
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
     agent.register()
-    agent.start_monitoring_derivations()
-    agent.start_monitoring_vapourtec_rs400_state()
+    agent.add_job_monitoring_derivations()
+    agent.add_job_monitoring_vapourtec_rs400_state(start=True)
 
     return agent.app
