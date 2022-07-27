@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.apache.jena.arq.querybuilder.AskBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -19,56 +19,56 @@ import uk.ac.cam.cares.jps.base.tools.CloningTool;
 
 @Testcontainers
 class CloningToolIntegrationTest {
-
+ 
+	static final int N_TEST_TRIPLES = 1000;
+	
 	static final String BLAZEGRAPH_IMAGE = "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"; 
 	static final int BLAZEGRAPH_INTERNAL_PORT = 9999;
 	
+	//Test triple template
+	static final String s = "<http://www.example.com/s%s>";
+	static final String p = "<http://www.example.com/p%s>";
+	static final String o = "<http://www.example.com/o%s>";
+
+	String testData;
+	
 	@Container
-	static final GenericContainer<?> SOURCE_CONTAINER = new GenericContainer<>(DockerImageName.parse(BLAZEGRAPH_IMAGE))
+	GenericContainer<?> sourceContainer = new GenericContainer<>(DockerImageName.parse(BLAZEGRAPH_IMAGE))
 												 .withExposedPorts(BLAZEGRAPH_INTERNAL_PORT);
 	
-	static final GenericContainer<?> TARGET_CONTAINER = new GenericContainer<>(DockerImageName.parse(BLAZEGRAPH_IMAGE))
+	GenericContainer<?> targetContainer = new GenericContainer<>(DockerImageName.parse(BLAZEGRAPH_IMAGE))
 			 .withExposedPorts(BLAZEGRAPH_INTERNAL_PORT);
 
-	static RemoteStoreClient sourceStoreClient;
-	static RemoteStoreClient targetStoreClient;
+	RemoteStoreClient sourceStoreClient;
+	RemoteStoreClient targetStoreClient;	
 	
-	static int expectedCount;
-	static String testData;
 	
-	@BeforeAll
-	static void setup() {
-		
+	@BeforeEach
+	void setup() {
 		try {
-			SOURCE_CONTAINER.start();
-			TARGET_CONTAINER.start();	
+			sourceContainer.start();
+			targetContainer.start();	
 		} catch (Exception e) {
 			throw new JPSRuntimeException("CloningToolIntegrationTest: Docker container startup failed. Please try running tests again");
 		}
 		
-		String sourceEndpoint = "http://" + SOURCE_CONTAINER.getHost() 
-		+ ":" + SOURCE_CONTAINER.getFirstMappedPort()
+		String sourceEndpoint = "http://" + sourceContainer.getHost() 
+		+ ":" + sourceContainer.getFirstMappedPort()
 		+ "/blazegraph/namespace/kb/sparql";
 		
 		sourceStoreClient = new RemoteStoreClient(sourceEndpoint,sourceEndpoint);
 		
-		String targetEndpoint = "http://" + TARGET_CONTAINER.getHost() 
-		+ ":" + TARGET_CONTAINER.getFirstMappedPort()
+		String targetEndpoint = "http://" + targetContainer.getHost() 
+		+ ":" + targetContainer.getFirstMappedPort()
 		+ "/blazegraph/namespace/kb/sparql";
 		
 		targetStoreClient = new RemoteStoreClient(targetEndpoint,targetEndpoint);
 		
-		//Load test data 
-		int i = 0;
-		int j = 100;
-		expectedCount = j-i;
-		
-		testData = createTriples(i,j);
-		String testDataUpdate = createInsertData(testData);
-		
-		sourceStoreClient.executeUpdate(testDataUpdate);
-		
-		assertEquals(expectedCount,sourceStoreClient.getTotalNumberOfTriples()); //check test data loaded
+		//Load test data 		
+		testData = createTriples(N_TEST_TRIPLES);		
+		sourceStoreClient.executeUpdate(createInsertData(testData));
+		//check test data loaded
+		assertEquals(N_TEST_TRIPLES,sourceStoreClient.getTotalNumberOfTriples()); 
 	}
 	
 	static String createInsertData(String triples) {
@@ -79,58 +79,61 @@ class CloningToolIntegrationTest {
 		return stringBuilder.toString();
 	}
 	
-	static String createTriples(int i, int j) {
+	static String createTriples(int N) {
 		
 		StringBuilder stringBuilder = new StringBuilder();
-		
-		for(int k = i; k < j; k++) {
-			String s = "<http://www.example.com/s"+Integer.toString(k)+"> "; 
-			String p = "<http://www.example.com/p"+Integer.toString(k)+"> ";
-			String o = "<http://www.example.com/o"+Integer.toString(k)+">.\n";
-			stringBuilder.append(s+p+o);
+	
+		for(int i = 0; i < N; i++) {
+			String si = String.format(s, Integer.toString(i)); 
+			String pi = String.format(p, Integer.toString(i));
+			String oi = String.format(o, Integer.toString(i));
+			stringBuilder.append(si+pi+oi+".\n");
 		}
-		
 		return stringBuilder.toString();
 	}
 	
-	@AfterAll
-	static void stopContainers() {
-		if (SOURCE_CONTAINER.isRunning()) {
-			SOURCE_CONTAINER.stop();
+	@AfterEach
+	void stopContainers() {
+		if (sourceContainer.isRunning()) {
+			sourceContainer.stop();
 		}
-		if (TARGET_CONTAINER.isRunning()) {
-			TARGET_CONTAINER.stop();
+		if (targetContainer.isRunning()) {
+			targetContainer.stop();
 		}
 	}
 	
 	@Test
 	void test() {
 		
-		CloningTool cloningTool = new CloningTool(20,5);
+		CloningTool cloningTool = new CloningTool(200,20);
 		cloningTool.clone(sourceStoreClient, targetStoreClient);
 		
-		assertEquals(expectedCount,targetStoreClient.getTotalNumberOfTriples());
-		assertTrue(checkTriples(0,10));
+		assertEquals(N_TEST_TRIPLES,targetStoreClient.getTotalNumberOfTriples());
+		assertTrue(checkTriples(N_TEST_TRIPLES));
 	}
 
-	boolean checkTriples(int i , int j) {
+	@Test
+	void testWithBlanks() {
+		
+	}
+	
+	boolean checkTriples(int N) {
 		
 		boolean check = true;
 		
-		for(int k = i; k < j; k++) {
+		for(int i = 0; i < N; i++) {
 		
-			String s = "<http://www.example.com/s"+Integer.toString(k)+">";
-			String p = "<http://www.example.com/p"+Integer.toString(k)+">";
-			String o = "<http://www.example.com/o"+Integer.toString(k)+">";
+			String si = String.format(s, Integer.toString(i));
+			String pi = String.format(p, Integer.toString(i));
+			String oi = String.format(o, Integer.toString(i));
 			
 	    	AskBuilder builder = new AskBuilder();
-			builder.addWhere(s, p, o);
+			builder.addWhere(si, pi, oi);
 			String askQuery = builder.build().toString();
 			String result = targetStoreClient.execute(askQuery);
 			JSONObject obj =  new JSONArray(result).getJSONObject(0);
 			check = (boolean) obj.get("ASK");
 		}
-		
 		return check;
 	}
 	
