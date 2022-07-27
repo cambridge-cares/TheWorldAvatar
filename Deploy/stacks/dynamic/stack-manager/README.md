@@ -1,4 +1,4 @@
-# The Stack
+# The Stack Manager
 
 In the commands below placeholders are shown as `<STACK NAME>`, you will need to substitute in the required value when running the command.
 
@@ -31,18 +31,12 @@ To spin up the stack (with default settings) please follow the instructions belo
 2. Create two files called `postgis_password` and `geoserver_password` in the `stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for postgis and geoserver, respectively.
 
 3. From a terminal in the `stack-manager` directory, start the `stack-manager` container by running the following:
-        ```console
-        ./stack.sh start <STACK NAME>
-        ```
+    ```console
+    ./stack.sh start <STACK NAME>
+    ```
     This will pull the required Docker images and start the core stack containers.
     This should bring up 7 containers, i.e. gdal, ontop, adminer, postgis, blazegraph, nginx, and geoserver.
-Remarks:
-   * In case not all containers start up successfully, try running the `Debug Stack Manager` configuration again
-   * In case the `geoserver` container does not start up successfully (likely due to time out issues), try pulling the respective image manually by running 
-        ```console
-        docker pull docker.cmclinnovations.com/geoserver:2.20.4
-        ```
-3. Accessing the GUI webpages for the containers:
+4. Accessing the GUI webpages for the containers:
     * The default exposed port number exposed by Docker is `3838`. To check the exposed port number, run
         ```console
         docker service ls --filter name=<STACK NAME>-nginx
@@ -51,6 +45,14 @@ Remarks:
     * The Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. Enter `<STACK NAME>-postgis:5432` as the `Server` and the value from the `postgis_pasword` file as the `Password`.
     * The Ontop GUI should be available at http://localhost:3838/ontop/ui.
     * The Blazegraph Workbench should be available at http://localhost:3838/blazegraph/ui.
+
+Remarks:
+   * In case not all containers start up successfully, try running the command again.
+   * In case the `geoserver` container does not start up successfully (likely due to time out issues), try pulling the image manually by running 
+        ```console
+        docker pull docker.cmclinnovations.com/geoserver:2.20.4
+        ```
+
 
 ## Debugging the Stack Manager in VSCode
 
@@ -68,7 +70,7 @@ You will need permission to push to the CMCL package repository to be able to bu
 
 1. Follow the instuctions in step 1. of [Debugging the Stack Manager in VSCode](#debugging-the-stack-manager-in-vscode)
 
-2. Create two files called `repo_username.txt` and `repo_password.txt` in the `stack-manager/docker/credentials` directory. Populate the files with your github username and access token (i.e. with scope to write packages), respectively.
+2. Create two files called `repo_username.txt` and `repo_password.txt` in the `stack-manager/docker/credentials` directory. Populate the files with your GitHub username and access token (with scope to write packages), respectively.
 
 3. In the `Run and Debug` side panel of VSCode run the `Build and Debug (stack-manager)` configuration.
 
