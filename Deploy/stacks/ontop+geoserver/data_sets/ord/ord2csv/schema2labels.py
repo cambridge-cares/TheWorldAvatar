@@ -242,7 +242,7 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITE
             ID.update({message.DESCRIPTOR.name+'_'+field_name+'_'+field : 1})
         
         # get the row for intermidary tables
-        row = [ID[message.DESCRIPTOR.name+'_'+field_name+'_'+field], ID[message.DESCRIPTOR.name], LITERAL_VALUE[scalars_tuple], key_or_index]
+        row = [ID[value.DESCRIPTOR.name], ID[message.DESCRIPTOR.name], LITERAL_VALUE[scalars_tuple], key_or_index]
 
         append_to_file(file='./results/'+message.DESCRIPTOR.name+'_'+field_name+'_'+field+'.csv', row=row)
 
