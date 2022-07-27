@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 14 July 2022         #
+# Last Update Date: 27 July 2022         #
 ##########################################
 
 """
@@ -201,7 +201,10 @@ class OptimalPowerFlowAnalysis:
             self.retrofitListBeforeSelection = retrofitListBeforeSelection
             retrofitListBeforeSelection_ = retrofitListBeforeSelection.copy()
 
+            print(retrofitListBeforeSelection)
+
             ## Perform site pre-selection analysis
+            ## TODO: test the new site selection
             siteSelector = sp.SitePreSelection(self.geospatialQueryEndpointLabel, retrofitListBeforeSelection, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost, \
                 self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.demandCapacityRatio, \
                 self.bankRate, self.CarbonTax, self.shutNonRetrofittedGenerator, self.DiscommissioningCostEstimatedLevel)
@@ -600,9 +603,10 @@ if __name__ == '__main__':
     baseMVA = 150
     withRetrofit = True
     retrofitGenerator = []
-    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", 
-    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
-    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
+    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"]
+    # , 
+    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
+    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
     ##retrofitGenerationTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear"]
     newGeneratorType = "SMR"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
