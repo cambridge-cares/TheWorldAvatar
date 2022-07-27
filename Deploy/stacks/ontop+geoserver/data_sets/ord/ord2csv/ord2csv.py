@@ -50,7 +50,7 @@ VALUE = {}
 #
 #   # Converts each reaction in the dataset to equivalent csv tables 
 #   st.populate_tables(reaction, ID, VALUE,i+1)
-st.populate_tables(data.reactions[0], ID, VALUE,0+1)
+st.populate_tables(data.reactions[1], ID, VALUE,1+1)
 
 
 
