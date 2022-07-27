@@ -18,6 +18,8 @@ public class CloningTool {
      */
     private static final Logger LOGGER = LogManager.getLogger(CloningTool.class);
 
+    private static final int MAX_ATTEMPTS = 5; //Maximum number of attempts to increase overlap before failing
+    
 	private int stepSize;
 	private int overlap;
 	private final double defaultOverlapRatio = 0.1; //10% overlap by default
@@ -81,8 +83,7 @@ public class CloningTool {
 	 */
 	public void checkStepAndOverlap() {
 		if(overlap >= stepSize) {
-			throw new JPSRuntimeException("CloningTool: overlap cannot be larger than stepsize! (stepSize="
-											+stepSize+", overlap="+overlap+")");
+			cloneFailed("overlap cannot be larger than stepsize!",0,0);
 		}
 	}
 	
@@ -97,8 +98,7 @@ public class CloningTool {
 		
 		//Target store must be empty
 		if(targetCount > 0) {
-			LOGGER.error("Target store is not empty. Abort!");
-			throw new JPSRuntimeException("Target store is not empty");
+			cloneFailed("Target store is not empty!",targetCount,0);
 		}
 		
 		int sourceCount = source.getTotalNumberOfTriples();		
@@ -106,29 +106,37 @@ public class CloningTool {
 		int sourceCountExBlanks = sourceCount - sourceBlankCount;
 		
 		LOGGER.info("Total source count: "+Integer.toString(sourceCount)
-				+", blanks: "+Integer.toString(sourceBlankCount));
-		
+				+", blanks: "+Integer.toString(sourceBlankCount));		
 		LOGGER.info("Starting clone..."
 				+"Step size: "+Integer.toString(stepSize)
 				+", overlap: "+Integer.toString(overlap));
 		
+		int attempts = 0;
 		int nExpected = 0;
 		int offset = 0;
 		while(nExpected<sourceCountExBlanks) {
 			
+			int oldnExpected = nExpected;
 			if(nExpected>0) {
 				offset = nExpected - overlap;
 			}
-			nExpected = offset+stepSize;
+			nExpected = Math.min(offset+stepSize,sourceCountExBlanks);
 
 			performCloneStep(source, target, getSparqlConstructNoBlanks(stepSize, offset));
 
-			//TODO implement overlap correction
-			targetCount = target.getTotalNumberOfTriples();
-			LOGGER.info("Cloned count: "+Integer.toString(targetCount)
-					+", expected count: "+Integer.toString(nExpected)
-					+", of "+Integer.toString(sourceCountExBlanks)
-					+" (exludes triples with blank nodes).");
+			//Overlap correction
+			targetCount = target.getTotalNumberOfTriples();			
+			if(targetCount < nExpected) {
+				adjustOverlap(targetCount, nExpected, attempts);
+				//Reset nExpected to retry step 
+				nExpected = oldnExpected;
+				attempts ++;
+			}else {
+				LOGGER.info("Cloned count: "+Integer.toString(targetCount)
+				+", expected count: "+Integer.toString(nExpected)
+				+", of "+Integer.toString(sourceCountExBlanks)
+				+" (exludes triples with blank nodes).");
+			}
 		}	
 		
 		//Clone blank nodes
@@ -138,18 +146,46 @@ public class CloningTool {
 		//Check target count
 		targetCount = target.getTotalNumberOfTriples();
 		if(targetCount != sourceCount) {
-			String errorMessage = "Clone unsuccessful! Target count: "
-					+Integer.toString(targetCount)
-					+", does not match source count: "
-					+Integer.toString(sourceCount)
-					+". Please clear target store!"; 
-			LOGGER.error(errorMessage);
-			throw new JPSRuntimeException(errorMessage);
+			String reason = "Please clear the target store and try again. "
+					+ " Consider increasing the step size and overlap."; 
+			cloneFailed(reason, targetCount, nExpected);
 		}
 		LOGGER.info("Clone successful! Cloned "+Integer.toString(targetCount)
 		+" of "+Integer.toString(sourceCount));		
 	}
-
+	
+	public void adjustOverlap(int targetCount, int nExpected, int attempts) {
+		
+		int countError = nExpected - targetCount;
+		
+		//Increase overlap by the larger of 10% of the step size or the size of countError
+		overlap += Math.max((int) (defaultOverlapRatio*stepSize), countError);
+		LOGGER.info("Cloned count: "+Integer.toString(targetCount)
+				+" does not match expected count "+Integer.toString(nExpected)
+				+". Increasing overlap to "+Integer.toString(overlap)
+				+" and retrying.");
+		
+		//fail if max attempts to correct overlap is reached
+		//or if overlap is larger than the step size
+		if(attempts>=MAX_ATTEMPTS || overlap >= stepSize) {
+			String reason = Integer.toString(attempts)
+					+" attempt(s) to increase overlap...\n" 
+					+" Please clear the target store! Consider increasing step size."; 
+			cloneFailed(reason, targetCount, nExpected);
+		}
+	}
+	
+	void cloneFailed(String reason, int targetCount, int nExpected) {
+		String errorMessage = "Cloning tool: clone failed...\n"
+		+"Reason: "+reason+"\n"
+		+"Parameters: stepSize="+Integer.toString(stepSize)
+		+", overlap="+Integer.toString(overlap)
+		+", target count="+Integer.toString(targetCount)
+		+", expected count="+Integer.toString(nExpected);		
+		LOGGER.error(errorMessage);
+		throw new JPSRuntimeException(errorMessage);
+	}
+	
 	/**
 	 * Perform a single clone step
 	 * @param source store
