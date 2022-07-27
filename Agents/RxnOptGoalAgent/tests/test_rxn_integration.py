@@ -10,7 +10,7 @@ logger = logging.getLogger('test_rxn_integration')
     "hplc_report_target_folder,fcexp_file_container_folder,local_agent_test",
     [
         (utils.cf.HPLC_REPORT_LOCAL_TEST_DIR, utils.cf.FCEXP_FILE_DIR, True),
-        (utils.cf.DOCKER_INTEGRATION_DIR, None, False),
+        # (utils.cf.DOCKER_INTEGRATION_DIR, None, False),
     ],
 )
 def test_rxn_integration(
@@ -44,12 +44,12 @@ def test_rxn_integration(
 
     # Start the scheduler to monitor derivations if it's local agent test
     if local_agent_test:
-        doe_agent.start_monitoring_derivations()
-        vapourtec_execution_agent.start_monitoring_derivations()
-        hplc_postpro_agent.start_monitoring_derivations()
-        vapourtec_agent.start_monitoring_derivations()
-        hplc_agent.start_monitoring_derivations()
-        hplc_agent.start_monitoring_local_report_folder()
+        doe_agent.add_job_monitoring_derivations(start=True)
+        vapourtec_execution_agent.add_job_monitoring_derivations(start=True)
+        hplc_postpro_agent.add_job_monitoring_derivations(start=True)
+        vapourtec_agent.add_job_monitoring_derivations(start=True)
+        hplc_agent.add_job_monitoring_derivations(start=True)
+        hplc_agent.add_job_monitoring_local_report_folder(start=True)
         sparql_client.update_vapourtec_rs400_state(vapourtec_agent.vapourtec_digital_twin, utils.cf.ONTOVAPOURTEC_IDLE, time.time())
 
     # Create derivation instance for new information, the timestamp of this derivation is 0
