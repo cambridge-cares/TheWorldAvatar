@@ -8,7 +8,7 @@ get_executables(){
     if command -v docker &> /dev/null
     then
         EXECUTABLE="docker"
-        COMPOSE_EXECUTABLE="docker-compose"
+        COMPOSE_EXECUTABLE="docker compose"
     else
 
         >&2 echo "ERROR Podman cannot run in swarm mode so will have to move to Kubenetes before this actually works"
