@@ -22,7 +22,7 @@ Images for the two containers are pulled from the Cambridge CARES container regi
 
 Populate the routing.json file in access-agent-dev-stack directory with the routing information you want to upload.
 You need to provide a "label", "queryEndpoint" and "updateEndpoint" for each store/namespace. (The routing.json template contains two examples.)
-Then, run the script uploadRouting.sh (in Linux or WSL).
+Then, run the bash script uploadRouting.sh.
 ```
 bash ./uploadRouting.sh
 ```
@@ -32,7 +32,7 @@ Note:
 
 ### Calling the Access Agent in your dev environment 
 
-The access agent is accessible on localhost:48888 (or host.docker.internal:48888 from a Docker container on Windows. On Linux/Windows the container name can be used as the host i.e. access-agent:48888 as long as the container is on the same Docker network as the access-agent container.).
+The access agent is accessible on localhost:48888 (or host.docker.internal:48888 from a Docker container on Windows. On Linux/Windows the container name and port can be used i.e. access-agent:8080 as long as the container is on the same Docker network as the access-agent container.).
 
 The AccessAgent is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. Both methods take two arguments: the targetResourceID and the SPARQL query/update.
 
