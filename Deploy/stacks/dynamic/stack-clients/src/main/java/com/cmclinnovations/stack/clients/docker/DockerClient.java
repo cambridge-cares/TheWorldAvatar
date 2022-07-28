@@ -5,11 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -282,7 +278,7 @@ public class DockerClient extends BaseClient {
             } else {
                 throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir
                         + "' as the source was niether a file nor a directory.");
-        }
+            }
 
         }
     }
