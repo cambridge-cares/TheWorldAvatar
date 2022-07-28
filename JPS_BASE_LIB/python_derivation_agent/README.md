@@ -80,9 +80,25 @@ from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 from youragent.kg_operations import YourSparqlClient
 from youragent.data_model import YOUR_CONCEPT
+from youragent.data_model import ANOTHER_CONCEPT
+from youragent.data_model import OUTPUT_CONCEPT_1
+from youragent.data_model import OUTPUT_CONCEPT_2
 from rdflib import Graph
 
 class YourAgent(DerivationAgent):
+    # Firstly, as the agent is designed to register itself in the knowledge graph when it is initialised
+    # One need to define the agent inputs/outputs by providing the concept IRIs as *args
+    # The registration is by default, which can be altered by setting flag REGISTER_AGENT=false in the env file
+    def agent_input_concepts(self, *args) -> list:
+        # Assume two input concepts are used by the agent, then developer need to provide it like below
+        # NOTE the way how it is passed in --> the asterisk "*" unpacks the list
+        return super().agent_input_concepts(*[YOUR_CONCEPT, ANOTHER_CONCEPT])
+
+    def agent_output_concepts(self, *args) -> list:
+        # Assume two output concepts are used by the agent, then developer need to provide it like below
+        # NOTE the way how it is passed in --> the asterisk "*" unpacks the list
+        return super().agent_output_concepts(*[OUTPUT_CONCEPT_1, OUTPUT_CONCEPT_2])
+
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Provide your agent logic that converts the agent inputs to triples of new created instances
         # The derivation_inputs will be in the format of key-value pairs with the concept as key and instance iri as value
@@ -102,13 +118,11 @@ class YourAgent(DerivationAgent):
         # You may want to create instance of YourSparqlClient for specific queries/updates you would like to perform
         # YourSparqlClient should be defined in your_sparql.py that will be introduced later in this README.md file
         # This client can be initialised with the configuration you already initialised in YourAgent.__init__ method
-        self.sparql_client = YourSparqlClient(
-            self.kgUrl, self.kgUpdateUrl, self.kgUser, self.kgPassword,
-            self.fs_url, self.fs_user, self.fs_password
-        )
+        # A convenient method get_sparql_client is provided to get sparql_client if provided YourSparqlClient as arg
+        sparql_client = self.get_sparql_client(YourSparqlClient)
 
         # Please note here we are using instance_iri of class YOUR_CONCEPT within the provided derivation_inputs
-        response = self.sparql_client.your_sparql_query(instance_iri)
+        response = sparql_client.your_sparql_query(instance_iri)
 
         # You may want to log something during agent execution
         self.logger.info("YourAgent has done something.")
@@ -226,6 +240,7 @@ def create_app():
         agent_endpoint = agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         app = Flask(__name__)
         flask_config = FlaskConfig(),
+        register_agent = agent_config.REGISTER_AGENT,
         logger_name = "dev"
     )
 
@@ -252,6 +267,7 @@ FILE_SERVER_ENDPOINT=http://www.example.com/FileServer/
 FILE_SERVER_USERNAME=
 FILE_SERVER_PASSWORD=
 ONTOAGENT_OPERATION_HTTP_URL=/Example
+REGISTER_AGENT=false
 ```
 You may want to commit this example file without credentials to git as a template for your agent configuration. At deployment, you can make a copy of this file, rename it to `youragent.env` and populate the credentials information. It is suggested to add `*.env` entry to your `.gitignore` of the agent folder, thus the renamed `youragent.env` (including credentials) will NOT be committed to git.
 

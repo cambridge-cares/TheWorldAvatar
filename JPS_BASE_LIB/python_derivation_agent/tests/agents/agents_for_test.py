@@ -17,7 +17,8 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
 
 class UpdateEndpoint(DerivationAgent):
     def update_derivations(self):
-        sparql_client = PySparqlClientForTest(self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword)
+        sparql_client = self.get_sparql_client(PySparqlClientForTest)
+
         diff_iri = sparql_client.getDifferenceIRI()
         diff_derivation = self.derivationClient.getDerivationsOf([diff_iri])[diff_iri]
         self.derivationClient.unifiedUpdateDerivation(diff_derivation)
@@ -25,8 +26,14 @@ class UpdateEndpoint(DerivationAgent):
 
 
 class DifferenceAgent(DerivationAgent):
+    def agent_input_concepts(self, *args) -> list:
+        return super().agent_input_concepts(*[RANDOM_EXAMPLE_MAXVALUE, RANDOM_EXAMPLE_MINVALUE])
+
+    def agent_output_concepts(self, *args) -> list:
+        return super().agent_output_concepts(*[RANDOM_EXAMPLE_DIFFERENCE])
+
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
-        sparql_client = PySparqlClientForTest(self.kgUrl, self.kgUrl)
+        sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get min and max value
         max_iri = derivation_inputs.getIris(RANDOM_EXAMPLE_MAXVALUE)[0]
@@ -42,8 +49,14 @@ class DifferenceAgent(DerivationAgent):
 
 
 class MaxValueAgent(DerivationAgent):
+    def agent_input_concepts(self, *args) -> list:
+        return super().agent_input_concepts(*[RANDOM_EXAMPLE_LISTOFPOINTS])
+
+    def agent_output_concepts(self, *args) -> list:
+        return super().agent_output_concepts(*[RANDOM_EXAMPLE_MAXVALUE])
+
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
-        sparql_client = PySparqlClientForTest(self.kgUrl, self.kgUrl)
+        sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the list of random points
         listofpoints_iri = derivation_inputs.getIris(
@@ -57,8 +70,14 @@ class MaxValueAgent(DerivationAgent):
 
 
 class MinValueAgent(DerivationAgent):
+    def agent_input_concepts(self, *args) -> list:
+        return super().agent_input_concepts(*[RANDOM_EXAMPLE_LISTOFPOINTS])
+
+    def agent_output_concepts(self, *args) -> list:
+        return super().agent_output_concepts(*[RANDOM_EXAMPLE_MINVALUE])
+
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
-        sparql_client = PySparqlClientForTest(self.kgUrl, self.kgUrl)
+        sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the list of random points
         listofpoints_iri = derivation_inputs.getIris(
@@ -72,8 +91,14 @@ class MinValueAgent(DerivationAgent):
 
 
 class RNGAgent(DerivationAgent):
+    def agent_input_concepts(self, *args) -> list:
+        return super().agent_input_concepts(*[RANDOM_EXAMPLE_NUMOFPOINTS, RANDOM_EXAMPLE_UPPERLIMIT, RANDOM_EXAMPLE_LOWERLIMIT])
+
+    def agent_output_concepts(self, *args) -> list:
+        return super().agent_output_concepts(*[RANDOM_EXAMPLE_LISTOFPOINTS, RANDOM_EXAMPLE_POINT])
+
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
-        sparql_client = PySparqlClientForTest(self.kgUrl, self.kgUrl)
+        sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the number of points to be generated
         numofpoints_iri = derivation_inputs.getIris(

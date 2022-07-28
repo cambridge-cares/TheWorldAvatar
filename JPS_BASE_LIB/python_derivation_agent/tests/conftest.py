@@ -230,6 +230,9 @@ def initialise_agent(initialise_triple_store):
             DERIVATION_INSTANCE_BASE_URL
         )
 
+        # Delete all triples before registering agents
+        sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+
         # Initialise derivation agents with temporary docker container endpoint
         rng_agent = create_rng_agent(RNGAGENT_ENV, endpoint)
         min_agent = create_min_agent(MINAGENT_ENV, endpoint)
@@ -301,6 +304,7 @@ def create_rng_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=True,
         app=Flask(__name__)
     )
 
@@ -316,6 +320,7 @@ def create_max_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=True,
         app=Flask(__name__)
     )
 
@@ -331,6 +336,7 @@ def create_min_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=True,
         app=Flask(__name__)
     )
 
@@ -346,6 +352,7 @@ def create_diff_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=True,
         app=Flask(__name__)
     )
 
@@ -359,7 +366,8 @@ def create_update_endpoint(env_file: str = None, sparql_endpoint: str = None):
         agent_iri=endpoint_config.ONTOAGENT_SERVICE_IRI, # just placeholder value, not used by anything
         time_interval=endpoint_config.DERIVATION_PERIODIC_TIMESCALE, # just placeholder value, not used by anything
         derivation_instance_base_url=endpoint_config.DERIVATION_INSTANCE_BASE_URL, # just placeholder value, not used by anything
-        kg_url=sparql_endpoint if sparql_endpoint is not None else endpoint_config.SPARQL_QUERY_ENDPOINT
+        kg_url=sparql_endpoint if sparql_endpoint is not None else endpoint_config.SPARQL_QUERY_ENDPOINT,
+        register_agent=False # the default value is True, so here we set it to False as we don't want to register the endpoint
     )
 
 

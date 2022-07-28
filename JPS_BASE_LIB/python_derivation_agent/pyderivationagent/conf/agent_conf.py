@@ -86,6 +86,7 @@ class AgentConfig(Config):
     FILE_SERVER_USERNAME: str
     FILE_SERVER_PASSWORD: str
     ONTOAGENT_OPERATION_HTTP_URL: str
+    REGISTER_AGENT: bool
 
 
 def config_derivation_agent(env_file: str = None) -> AgentConfig:

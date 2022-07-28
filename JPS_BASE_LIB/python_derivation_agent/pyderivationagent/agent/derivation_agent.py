@@ -1,3 +1,4 @@
+from typing import Type, TypeVar
 from flask_apscheduler import APScheduler
 from flask import Flask
 from flask import request
@@ -9,6 +10,9 @@ import agentlogging
 
 from pyderivationagent.kg_operations import *
 from pyderivationagent.data_model import DerivationInputs, DerivationOutputs
+
+# see https://mypy.readthedocs.io/en/latest/generics.html#type-variable-upper-bound
+PY_SPARQL_CLIENT = TypeVar('PY_SPARQL_CLIENT', bound=PySparqlClient)
 
 
 class FlaskConfig(object):
@@ -34,6 +38,7 @@ class DerivationAgent(object):
         app: Flask = Flask(__name__),
         flask_config: FlaskConfig = FlaskConfig(),
         agent_endpoint: str = "/",
+        register_agent: bool = True,
         logger_name: str = "dev"
     ):
         """
@@ -53,6 +58,7 @@ class DerivationAgent(object):
                 fs_user - username used to access the file server endpoint specified by fs_url
                 fs_password - password that set for the fs_user used to access the file server endpoint specified by fs_url
                 flask_config - configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
+                register_agent - boolean value, whether to register the agent to the knowledge graph
                 logger_name - logger names for getting correct loggers from agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/utils/python-utils/agentlogging/logging.py
         """
 
@@ -95,11 +101,56 @@ class DerivationAgent(object):
         self.derivationClient = self.jpsBaseLib_view.DerivationClient(
             self.storeClient, derivation_instance_base_url)
 
+        # initialise the SPARQL client as None, this will be replaced when get_sparql_client() is first called
+        self.sparql_client = None
+
+        # initialise the logger
         self.logger = agentlogging.get_logger(logger_name)
+
+        # register the agent to the KG if required
+        self.register_agent = register_agent
+        try:
+            self.register()
+        except Exception as e:
+            self.logger.error(
+                "Failed to register the agent <{}> to the KG <{}>. Error: {}".format(self.agentIRI, self.kgUrl, e),
+                stack_info=True, exc_info=True)
+
         self.logger.info(
             "DerivationAgent <%s> is initialised to monitor derivations in triple store <%s> with a time interval of %d seconds." % (
                 self.agentIRI, self.kgUrl, self.time_interval)
         )
+
+    def get_sparql_client(self, sparql_client_cls: Type[PY_SPARQL_CLIENT]) -> PY_SPARQL_CLIENT:
+        """This method returns a SPARQL client object that instantiated from sparql_client_cls, which should extend PySparqlClient class."""
+        if self.sparql_client is None or not isinstance(self.sparql_client, sparql_client_cls):
+            self.sparql_client = sparql_client_cls(
+                query_endpoint=self.kgUrl, update_endpoint=self.kgUpdateUrl,
+                kg_user=self.kgUser, kg_password=self.kgPassword,
+                fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_password
+            )
+        return self.sparql_client
+
+    def register(self):
+        """This method registers the agent to the knowledge graph by uploading its OntoAgent triples generated on-the-fly."""
+        if self.register_agent:
+            sparql_client = self.get_sparql_client(PySparqlClient)
+            input_concepts = self.agent_input_concepts()
+            output_concepts = self.agent_output_concepts()
+            if len(input_concepts) == 0 or len(output_concepts) == 0:
+                raise Exception("Failed to register the agent <{}> to the KG <{}>. Error: No input or output concepts specified.".format(self.agentIRI, self.kgUrl))
+            sparql_client.generate_ontoagent_instance(self.agentIRI, self.agentEndpoint, input_concepts, output_concepts)
+            self.logger.info("Agent <%s> is registered to the KG <%s>." % (self.agentIRI, self.kgUrl))
+        else:
+            self.logger.info("Flag register_agent is False. Agent <%s> is NOT registered to the KG <%s>." % (self.agentIRI, self.kgUrl))
+
+    def agent_input_concepts(self, *args) -> list:
+        """This method returns a list of input concepts of the agent. This should be overridden by the derived class."""
+        return [*args]
+
+    def agent_output_concepts(self, *args) -> list:
+        """This method returns a list of output concepts of the agent. This should be overridden by the derived class."""
+        return [*args]
 
     def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['GET'], *args, **kwargs):
         """

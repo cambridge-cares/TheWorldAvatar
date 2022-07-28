@@ -7,7 +7,10 @@ def test_integration_test(initialise_agent):
 
     all_instances = utils.initialise_triples_assert_pure_inputs(
         sparql_client=sparql_client,
-        derivation_client=derivation_client
+        derivation_client=derivation_client,
+        # Do NOT delete all triples, as we have just registered agent instances
+        # Instead, the triples are deleted as part of initialise_agent fixture
+        delete_all_triples=False
     )
 
     # Start the scheduler to monitor derivations
