@@ -17,7 +17,7 @@ ukmf = ModelFactor.ModelFactor()
 """Model Parameter Array"""
 modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
 
-##FIXME: add methof to calculate the operation hours
+##FIXME: add method to calculate the operation hours
 def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_label):
     results = []
     queryStr = """
@@ -79,7 +79,7 @@ def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_la
             results.append(arranged_res)
     return results 
 
-##FIXME: add methof to calculate the operation hours
+##FIXME: add method to calculate the operation hours
 def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endPoint_label):
     results = []
     for gen in retrofitGenerator:

@@ -341,7 +341,7 @@ class UKEGenModel:
    
     OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
-    def __init__(self, numOfBus:int, generatorNodeIRI:str, toBeRetrofittedGeneratorNodeIRI:str = None):
+    def __init__(self, numOfBus:int, generatorNodeIRI:str, fueltype:str, toBeRetrofittedGeneratorNodeIRI:str = None):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\Sleepycat_EBus"
         
@@ -377,6 +377,11 @@ class UKEGenModel:
         # Generator Node IRI
         self.generatorNodeIRI = generatorNodeIRI ## IRI represents the existing generator or the newly created IRI represents the SMR 
         self.toBeRetrofittedGeneratorNodeIRI = toBeRetrofittedGeneratorNodeIRI ## the old generator that will be replaced with the new generator
+        if "#" in fueltype:
+            fueltype = fueltype.split('#')[1]
+        elif "/" in fueltype:
+            fueltype = fueltype.split('/')[-1]
+        self.fueltype = fueltype
         
     def __dir__(self):
         return self.INPUT_VARIABLE_KEYS + self.OUTPUT_VARIABLE_KEYS
@@ -405,11 +410,13 @@ class UKEGenModel_CostFunc(UKEGenModel):
     INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
 
     """Initialise the cost function"""
-    def __init__(self, numOfBus:int, generatorNodeIRI:str, toBeRetrofittedGeneratorNodeIRI:str = None, CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
-            super().__init__(numOfBus, generatorNodeIRI, toBeRetrofittedGeneratorNodeIRI) ## enforce to inherite the initialiser from the father class
+    def __init__(self, numOfBus:int, generatorNodeIRI:str, CO2EmissionFactor:float, fueltype:str, toBeRetrofittedGeneratorNodeIRI:str = None, CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
+            super().__init__(numOfBus, generatorNodeIRI, fueltype, toBeRetrofittedGeneratorNodeIRI) ## enforce to inherite the initialiser from the father class
             self.MODEL = piecewiseOrPolynomial # 1: piecewise linear; 2: polynomial
             self.STARTUP = 0
             self.SHUTDOWN = 0
             self.NCOST = pointsOfPiecewiseOrcostFuncOrder
             self.COST = []
             self.CarbonTax = CarbonTax
+            self.CO2EmissionFactor = CO2EmissionFactor
+            

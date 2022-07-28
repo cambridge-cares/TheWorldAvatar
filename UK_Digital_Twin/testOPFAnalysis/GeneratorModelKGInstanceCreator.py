@@ -283,7 +283,7 @@ def GeneratorModelKGInstanceCreator(ObjectSet, GeneratorObjectNameList, retrofit
         egen = ObjectSet[oldAndNewGenName[1]]
         newGeneratorNodeIRI = egen.generatorNodeIRI 
         existingGeneratorNodeIRI = egen.toBeRetrofittedGeneratorNodeIRI
-        if newGeneratorType == "SMR":
+        if newGeneratorType == "SMR" or newGeneratorType == "SmallModularReactor":
             newGeneratorType = "SmallModularReactor" 
             primaryfueltype = "Nuclear"
             designcapacity = 470

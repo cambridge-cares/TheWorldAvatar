@@ -88,8 +88,9 @@ class SitePreSelection(object):
             for s in range(len(self.generatorToBeReplacedList)):
                 gen = self.generatorToBeReplacedList[s]
                 bvList = self.binaryVarNameList[s]
-                for bv in bvList:
-                    replacedCapacity += float(gen["Capacity"]) * self.varSets[bv]
+                for bvname in bvList:
+                    if bvList.index(bvname) > 0:
+                        replacedCapacity += float(gen["Capacity"]) * self.varSets[bvname]
                 
         ## 2. the total capacity of SMR
         totalSMRCapacity = 0
@@ -106,8 +107,6 @@ class SitePreSelection(object):
         carbonCost = 0
         totalProtentialCarbonCost = 0
         totalLifeMonetaryCost = 0
-
-        ## print(population_list, len(population_list))
         
         for s in range(len(self.binaryVarNameList)):
             bvList = self.binaryVarNameList[s]
@@ -123,25 +122,21 @@ class SitePreSelection(object):
             
             ## the protential carbon emission cost if the old generator is not being replaced by SMR
             for l in range(self.L):
-                carbonCost += float(existingGenCap) * float(CO2EmissionFactor) * float(annualOperatingHours) * float(self.carbonTax) * (1 + float(self.i)) **(-(l - 1))
+                ## l starts frm 0, therefore it is no need to use -(l-1) bus just use -l
+                carbonCost += float(existingGenCap) * float(CO2EmissionFactor) * float(annualOperatingHours) * float(self.carbonTax) * (1 + float(self.i)) **(-l)
 
-            population_list = [] ## has the same length as bvList
             ## calculte the Neighbourhood radius for SMR unit and the population within the circle centred at the to be replaced generator with the radius rs
             for bvname in bvList:
                 i = bvList.index(bvname)
                 bv = self.varSets[bvname]
-                rs =  (self.r0/1000) * (i * self.Cap_SMR)**(0.5)
-                population = populationDensityCalculator(self.generatorToBeReplacedList[s]["LatLon"], rs, self.geospatialQueryEndpointLabel)
-                population_list.append(population)
-                
-                totalLifeMonetaryCost += bv * population * self.FP * self.Hu * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-
-                print("--bvname, i, rs, population, population_list[i], population_list:--", bvname, i, rs, population, population_list[i], population_list)
-
                 totalSMRCapitalCost += int(i) * bv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L))) 
                 if i == 0:
                     totalDiscommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
                     totalProtentialCarbonCost += bv * carbonCost * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                else: 
+                    rs =  (self.r0/1000) * (i * self.Cap_SMR)  #**(0.5)##TODO: check the population of each rs, change the y00
+                    population = populationDensityCalculator(self.generatorToBeReplacedList[s]["LatLon"], rs, self.geospatialQueryEndpointLabel)
+                    totalLifeMonetaryCost += bv * population * self.FP * self.Hu * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
                 
         ##-- Set up the objective function --##
         self.model.setObjective(totalSMRCapitalCost + totalDiscommissioningCost + totalProtentialCarbonCost + totalLifeMonetaryCost, "minimize")

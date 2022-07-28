@@ -9,9 +9,9 @@
 # Last Update Date: 07 June 2022              #
 ###############################################
 
-import os, sys
-BASE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, BASE)
+# import os, sys
+# BASE = os.path.dirname(os.path.abspath(__file__))
+# sys.path.insert(0, BASE)
 #from jpsSingletons import jpsBaseLibGW
 from py4jps.resources import JpsBaseLib
 jpsBaseLibGW = JpsBaseLib()
@@ -28,19 +28,10 @@ def performQuery(kb, query, isQuery = True, isUpdate = False):
     response = KGClient.executeQuery((query))
     return str(response)
 
-    # try:
-    #     response = KGClient.executeQuery((query))
-    #     return str(response)
-    # except:
-    #     print("***WARNING:KGClient has not been created successfully.****")
-
 def performUpdate(kb, query, isQuery = True, isUpdate = True):
     # perform an example sparqle query, see the jps-base-lib docs for further details
     KGRouter = jpsBaseLib_view.StoreRouter 
     KGClient = KGRouter.getStoreClient(str(KGRouter.HTTP_KB_PREFIX) + str(kb), isQuery, isUpdate)
-
-    # KGClient = KGRouter.getStt(str(KGRouter.HTTP_KB_PREFIX) + str(kb), isQuery, isUpdate)
-
     try:
         response = KGClient.executeUpdate((query))
         return str(response)
@@ -48,7 +39,7 @@ def performUpdate(kb, query, isQuery = True, isUpdate = True):
         print("KGClient has not been created successfully.")
   
 def performFederatedQuery(query, queryendpoints:list):
-    # perform an example sparqle query, see the jps-base-lib docs for further details   
+    ## perform an example sparqle query, see the jps-base-lib docs for further details   
     RemoteKnowledgeBaseClient = jpsBaseLib_view.RemoteStoreClient()
     try: 
         response = RemoteKnowledgeBaseClient.executeFederatedQuery(list(queryendpoints), query)

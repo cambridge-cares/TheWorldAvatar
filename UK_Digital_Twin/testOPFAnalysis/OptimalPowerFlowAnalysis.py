@@ -1,11 +1,12 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 27 July 2022         #
+# Last Update Date: 28 July 2022         #
 ##########################################
 
 """
 Optimal Flow Analysis
 """
+from ast import Str
 from cgi import test
 from logging import raiseExceptions
 import sys, os, numpy, uuid
@@ -49,6 +50,7 @@ from pypower.dSbus_dV import dSbus_dV
 from pypower.idx_bus import BUS_I, PD, QD, VM, VA, GS, BUS_TYPE, PV, PQ, REF
 from pypower.idx_brch import PF, PT, QF, QT, F_BUS, TAP, SHIFT, T_BUS, BR_R, BR_X, BR_STATUS
 from pypower.idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
+import matplotlib.pyplot as plt
 
 ## create configuration objects
 SLASH = '/'
@@ -71,8 +73,7 @@ class OptimalPowerFlowAnalysis:
         startTime_of_EnergyConsumption:str,
         slackBusNodeIRI:str, loadAllocatorName:str, EBusModelVariableInitialisationMethodName:str,
         ELineInitialisationMethodName:str, 
-        CarbonTax:float, piecewiseOrPolynomial:int, pointsOfPiecewiseOrcostFuncOrder:int, baseMVA: float,
-        
+        CarbonTax:float, piecewiseOrPolynomial:int, pointsOfPiecewiseOrcostFuncOrder:int, baseMVA: float,  
         withRetrofit:bool, retrofitGenerator: list, retrofitGenerationTechTypeOrGenerationTechnology: list, newGeneratorType:str,
         discountRate:float,
         bankRate:float, 
@@ -98,7 +99,7 @@ class OptimalPowerFlowAnalysis:
         ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
         self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, queryEndpointLabel) ## ?BusNodeIRI ?BusLatLon
         self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, queryEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275 
-        self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, queryEndpointLabel) ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?Latlon       
+        self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, queryEndpointLabel) ## ?PowerGeneratorIRI ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?Latlon       
         ##--2. passing arguments--##
         ## specify the topology node
         self.topologyNodeIRI = topologyNodeIRI
@@ -201,13 +202,14 @@ class OptimalPowerFlowAnalysis:
             self.retrofitListBeforeSelection = retrofitListBeforeSelection
             retrofitListBeforeSelection_ = retrofitListBeforeSelection.copy()
 
-            print(retrofitListBeforeSelection)
+            print(self.geospatialQueryEndpointLabel, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost, \
+                self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.demandCapacityRatio, \
+                self.bankRate, self.CarbonTax, self.shutNonRetrofittedGenerator, self.maxmumSMRUnitAtOneSite, self.DiscommissioningCostEstimatedLevel)
 
             ## Perform site pre-selection analysis
-            ## TODO: test the new site selection
             siteSelector = sp.SitePreSelection(self.geospatialQueryEndpointLabel, retrofitListBeforeSelection, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost, \
                 self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.demandCapacityRatio, \
-                self.bankRate, self.CarbonTax, self.shutNonRetrofittedGenerator, self.DiscommissioningCostEstimatedLevel)
+                self.bankRate, self.CarbonTax, self.shutNonRetrofittedGenerator, self.maxmumSMRUnitAtOneSite, self.DiscommissioningCostEstimatedLevel)
             siteSelector.SMRSitePreSelector()
             
             self.siteToBeReplaced = siteSelector.siteSelected
@@ -300,7 +302,7 @@ class OptimalPowerFlowAnalysis:
 
         for egen in self.generatorNodeList:
             objectName = UK_PG.UKEGenModel.EGenKey + str(self.generatorNodeList.index(egen)) ## egen model python object name
-            uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), None, self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+            uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), float(egen[4]), str(egen[7]), None, self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
             uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
             ###add EGen model parametor###
             ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio)
@@ -316,10 +318,9 @@ class OptimalPowerFlowAnalysis:
                 raiseExceptions("The given generator type which used to retrofit the existing genenrators cannot be found in the factor list, please check the generator type.")
 
             for egen_re in self.siteToBeReplaced:
-                print(egen_re)
                 objectName = UK_PG.UKEGenModel.EGenRetrofitKey + str(self.siteToBeReplaced.index(egen_re)) ## egen_toBeRetrofitted model python object name 
                 newGeneratorNodeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
-                uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, str(egen_re["PowerGenerator"]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
+                uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), str(egen_re["PowerGenerator"]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
                 egen_re = [egen_re["PowerGenerator"], float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], self.SMRCapability * egen_re["numberOfSMR"], self.newGeneratorType] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?fuel type
                 uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
                 ###add EGen model parametor###
@@ -584,6 +585,36 @@ class OptimalPowerFlowAnalysis:
         self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath)  
         
         return 
+    
+    def CarbonEmissionCalculator(self):
+        self.totalCO2Emission = 0
+        for gen in self.GeneratorObjectList:
+            self.totalCO2Emission += float(self.ObjectSet[gen].PG_OUTPUT) * float(self.ObjectSet[gen].CO2EmissionFactor)
+        return 
+    
+    def energySupplyBreakDownPieChartCreator(self):
+        genTypeLabel = []
+        outPutData = []
+        for gen in self.GeneratorObjectList:
+            if not self.ObjectSet[gen].fueltype in genTypeLabel:
+                genTypeLabel.append(self.ObjectSet[gen].fueltype)
+                outPutData.append(float(self.ObjectSet[gen].PG_OUTPUT))
+            else:
+                i = genTypeLabel.index(self.ObjectSet[gen].fueltype) 
+                outPutData[i] += float(self.ObjectSet[gen].PG_OUTPUT)
+        totalOutputOfSMR = 0
+        for regen in self.GeneratorToBeRetrofittedObjectList:
+            totalOutputOfSMR += regen.ObjectSet[gen].PG_OUTPUT
+        
+        genTypeLabel.append(self.newGeneratorType)
+        outPutData.append(totalOutputOfSMR)
+
+        plt.pie(outPutData, labels=genTypeLabel, autopct='%1.1f%%', shadow=True, startangle=90)
+        plt.title('Energy Supply BreakDown')
+        plt.axis('equal')
+        plt.show()
+        
+        return 
             
 
 if __name__ == '__main__':        
@@ -597,16 +628,15 @@ if __name__ == '__main__':
     loadAllocatorName = "regionalDemandLoad"
     EBusModelVariableInitialisationMethodName= "defaultInitialisation"
     ELineInitialisationMethodName = "defaultBranchInitialiser"
-    CarbonTax = 10000000
+    CarbonTax = 100
     piecewiseOrPolynomial = 2
     pointsOfPiecewiseOrcostFuncOrder = 2
     baseMVA = 150
     withRetrofit = True
     retrofitGenerator = []
-    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"]
-    # , 
-    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
-    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
+    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", 
+    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
+    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
     ##retrofitGenerationTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear"]
     newGeneratorType = "SMR"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
