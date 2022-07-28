@@ -30,10 +30,9 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
  *  
  * <p> All requests must provide a "targetresourceiri" {@link JPSConstants.TARGETIRI} and 
  * use one of the following HTTP methods with request parameters: 
- * 	<p>HTTP GET: perform a SPARQL query or "get" (if no sparql query is provided) 
- * 		<br> (for query operation) sparql query {@link JPSConstants.QUERY_SPARQL_QUERY}
- * 		<br> (for get operation, optional) target graph {@link JPSConstants.TARGETGRAPH}
- * 		<br> (for get operation, optional) accept {@link JPSConstants.HEADERS}, see {@link MediaType}
+ * 	<p>HTTP GET: get the entire graph 
+ * 		<br> (optional) target graph {@link JPSConstants.TARGETGRAPH}
+ * 		<br> (optional) accept {@link JPSConstants.HEADERS}, see {@link MediaType}
  * 	<p>HTTP POST: perform a SPARQL update
  * 		<br> sparql update {@link JPSConstants.QUERY_SPARQL_UPDATE}
  * <p>HTTP PUT: "insert" graph  

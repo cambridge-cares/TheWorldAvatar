@@ -27,22 +27,22 @@ Then, run the script uploadRouting.sh (in Linux or WSL).
 bash ./uploadRouting.sh
 ```
 Note: 
-1. Routing triples can also be added 'manually' (e.g. through the user interface) to the "kb" namespace of the access-agent-dev-stack Blazegraph. 
-2. The uploader will not overwrite information if a "label" already exists. You will need to do this 'manually'.
+1. Routing triples can also be added manually (e.g. through the Blazegraph user interface) to the "kb" namespace of the access-agent-dev-stack Blazegraph. 
+2. The uploader will not overwrite information if a "label" already exists. You will need to do this manually.
 
 ### Calling the Access Agent in your dev environment 
 
-The access agent is accessible on localhost:48888 (or host.docker.internal:48888 if calling it from a docker container on windows).
+The access agent is accessible on localhost:48888 (or host.docker.internal:48888 from a Docker container on Windows. On Linux/Windows the container name can be used as the host i.e. access-agent:48888 as long as the container is on the same Docker network as the access-agent container.).
 
 The AccessAgent is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. Both methods take two arguments: the targetResourceID and the SPARQL query/update.
 
 There are two ways to call your local access agent:
-1. Set the ACCESSAGENT_HOST environment variable to localhost:48888 (or host.docker.internal:48888 if calling it from a docker container on windows. This can be done in the docker-compose file.). In this case, only the "label" needs to be supplied as the targetResourceID
+1. Set the ACCESSAGENT_HOST environment variable to localhost:48888 (or host.docker.internal:48888 or  access-agent:48888). This can be done in the docker-compose file. Then, only the label needs to be supplied as the targetResourceID
 2. Alternatively, a full URL containing the correct host:port can be supplied as the targetResourceID e.g.
 ```
 http://localhost:48888/label or http://host.docker.internal:48888/label
 ```
-where label corresponds to the label uploaded to the router.
+where the label corresponds to the label uploaded to the router.
 
 
 ## Building the Access Agent
