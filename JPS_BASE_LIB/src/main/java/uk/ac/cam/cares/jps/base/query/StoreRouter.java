@@ -63,7 +63,7 @@ public class StoreRouter{
 	public static final String TARGET_RESOURCE = "TargetResource";
 	
 	public static String storeRouterEndpoint;
-	public static final String STOREROUTER_ENDPOINT_NAME = "STOREROUTER_ENDPONT";
+	public static final String STOREROUTER_ENDPOINT_NAME = "STOREROUTER_ENDPOINT";
 	
 	static{
 		storeRouterEndpoint = System.getenv(STOREROUTER_ENDPOINT_NAME);
