@@ -38,7 +38,7 @@ import uk.ac.cam.cares.jps.base.query.StoreRouter;
  * @author csl37
  *
  */
-//@Disabled("Requires Testcontainers and Docker to run. The AccessAgent Docker image must be built.")
+@Disabled("Requires Testcontainers and Docker to run. The AccessAgent Docker image must be built.")
 @Testcontainers
 class AccessAgentIntegrationTest {
 
