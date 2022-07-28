@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project 
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <!--
         This Maven project contains no Java source code, it acts only to compress and upload
@@ -11,21 +8,21 @@
         GitHub repository.
     -->
     <modelVersion>4.0.0</modelVersion>
-    <groupId>uk.ac.cam.cares.jps</groupId>
-    <artifactId>jps-parent-pom</artifactId>
     <packaging>pom</packaging>
 
-    <!-- Version of this configuration -->
-    <version>1.0.0</version>
+    <!-- Copy these entries into the <parent> node in your project's pom.xml file -->
+    <groupId>uk.ac.cam.cares.jps</groupId>
+    <artifactId>jps-parent-pom</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
 
     <!-- Common properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-           
+
         <!-- Artifact ID used to download Log4J2 config (for runtime) -->
         <log.artifact>java-logging-dev</log.artifact>
     </properties>
-	
+
     <!-- Snapshot repository location to push to (note the ID should match a server ID in your ~/.m2/settings.xml -->
     <distributionManagement>
         <snapshotRepository>
@@ -38,7 +35,7 @@
     <build>
         <pluginManagement>
             <plugins>
-            
+
                 <!-- Ensures everything in ./WEB-INF gets copied into the final WAR
                 file's internal WEB-INF directory. -->
                 <plugin>
@@ -48,7 +45,7 @@
                     <configuration>
                         <warName>${project.artifactId}##${project.version}</warName>
                         <outputDirectory>output</outputDirectory>
-                   
+
                         <webResources>
                             <resource>
                                 <directory>${basedir}/WEB-INF</directory>
@@ -57,14 +54,14 @@
                         </webResources>
                     </configuration>
                 </plugin>
-            
+
                 <!-- Downloads and extracts ZIP archives from Maven repository -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>3.2.0</version>
-                    <executions>          
-                    
+                    <executions>
+
                         <!-- Downloads the Log4J2 config that will be used at runtime -->
                         <execution>
                             <id>download-runtime-log-config</id>
@@ -75,7 +72,7 @@
 
                             <configuration>
                                 <artifactItems>
-                                    <artifactItem>   
+                                    <artifactItem>
                                         <groupId>uk.ac.cam.cares.jps</groupId>
                                         <artifactId>${log.artifact}</artifactId>
                                         <version>1.0.0</version>
@@ -86,8 +83,8 @@
                                 </artifactItems>
                             </configuration>
                         </execution>
-                    
-                        <!-- Downloads the Log4J2 config (development) that will be used for unit tests --> 
+
+                        <!-- Downloads the Log4J2 config (development) that will be used for unit tests -->
                         <execution>
                             <id>download-test-log-config</id>
                             <phase>initialize</phase>
@@ -97,7 +94,7 @@
 
                             <configuration>
                                 <artifactItems>
-                                    <artifactItem>   
+                                    <artifactItem>
                                         <groupId>uk.ac.cam.cares.jps</groupId>
                                         <artifactId>java-logging-dev</artifactId>
                                         <version>1.0.0</version>
@@ -108,14 +105,54 @@
                                 </artifactItems>
                             </configuration>
                         </execution>
-                    
+
                     </executions>
                 </plugin>
+                <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
 
+                <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
+                <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.7.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
-    
+
     <!-- Commonly used, third party libraries -->
     <dependencyManagement>
         <dependencies>
@@ -144,6 +181,198 @@
                 <artifactId>log4j-web</artifactId>
                 <version>2.17.1</version>
                 <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>2.14.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.jsonld-java</groupId>
+                <artifactId>jsonld-java</artifactId>
+                <version>0.13.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-util</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-turtle</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-trig</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-rdfxml</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-ntriples</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-nquads</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-languages</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-jsonld</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-datatypes</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-queryparser-api</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-queryalgebra-model</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-query</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-api</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-model</artifactId>
+                <version>3.7.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>4.8-1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.checkerframework</groupId>
+                <artifactId>checker-qual</artifactId>
+                <version>3.23.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.36</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>1.7.36</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>2.17.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.13.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.13.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>2.13.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>4.4.15</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.13</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient-cache</artifactId>
+                <version>4.5.13</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient-osgi</artifactId>
+                <version>4.5.13</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.11.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.14</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>30.1.1-jre</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.12.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>3.0.2</version>
             </dependency>
 
             <!-- Testing -->
