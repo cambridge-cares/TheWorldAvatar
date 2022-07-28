@@ -1,7 +1,5 @@
 package com.cmclinnovations.stack.clients.ontop;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.clients.utils.TempFile;
@@ -26,6 +25,15 @@ import it.unibz.inf.ontop.spec.mapping.pp.SQLPPTriplesMap;
 import it.unibz.inf.ontop.spec.mapping.serializer.impl.OntopNativeMappingSerializer;
 
 final class SQLPPMappingImplementation implements SQLPPMapping {
+
+    // Matches comments that are on their own line
+    private static final Pattern WHOLE_LINE_COMMENT_PATTERN = Pattern.compile("^[\\t ]*#[\\t ]+.+\\r?\\n",
+            Pattern.MULTILINE);
+    // Matches comments that are at the end of a line, after some actual content
+    private static final Pattern END_OF_LINE_COMMENT_PATTERN = Pattern.compile("[\\t ]*#[\\t ]+.+(\\r?\\n)");
+    // Matches newline characters that follow the standard turtle seperators ",",
+    // ";" and "."
+    private static final Pattern TARGET_LINES_PATTERN = Pattern.compile("([,;\\.])[\\t ]*\\r?\\n+[\\t ]+");
 
     private final Map<String, String> prefixMap = new HashMap<>();
     private final List<SQLPPTriplesMap> triplesMap = new ArrayList<>();
@@ -47,19 +55,18 @@ final class SQLPPMappingImplementation implements SQLPPMapping {
 
     private static TempFile reformatMappingFile(Path ontopMappingFilePath) throws IOException {
         TempFile tempFilePath = createTempOBDAFile(ontopMappingFilePath);
-        try (BufferedReader bufferedReader = Files.newBufferedReader(ontopMappingFilePath);
-                BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFilePath.getPath())) {
-            bufferedReader.lines()
-                    .map(line -> line.replaceFirst("^ *#.*$", ""))
-                    .map(line -> line.replaceFirst("(, *|; *|\\. *)", "\1\n"))
-                    .forEachOrdered(string -> {
-                        try {
-                            bufferedWriter.write(string, 0, string.length());
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    });
-        }
+        String transformedMappings = Files.readString(ontopMappingFilePath);
+        // Remove all comments (any text following a # and a space or tab, e.g.,
+        // "This is not a comment # This is a comment", "None of this #is a comment")
+        // Replace whole line comments, remove the newline character(s)
+        transformedMappings = WHOLE_LINE_COMMENT_PATTERN.matcher(transformedMappings).replaceAll("");
+        // Replace comments at the end of a line, keep the newline character(s)
+        transformedMappings = END_OF_LINE_COMMENT_PATTERN.matcher(transformedMappings).replaceAll("$1");
+        // Ontop requires that the "target" (triple template) section is all on one line
+        // so remove newline characters that follow the standard turtle seperators ",",
+        // ";" and ".".
+        transformedMappings = TARGET_LINES_PATTERN.matcher(transformedMappings).replaceAll("$1 ");
+        Files.writeString(tempFilePath.getPath(), transformedMappings);
         return tempFilePath;
     }
 
