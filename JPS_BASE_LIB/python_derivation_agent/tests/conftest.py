@@ -1,14 +1,22 @@
+import shutil
+import tempfile
 from flask import Flask
 from testcontainers.core.container import DockerContainer
 
+from typing import get_type_hints
 from pathlib import Path
 import logging
 import pytest
+import random
+import uuid
 import time
 import os
 
 from pyderivationagent.agent import FlaskConfig
 from pyderivationagent.conf import config_derivation_agent
+from pyderivationagent.conf import config_generic
+from pyderivationagent.conf import AgentConfig
+from pyderivationagent.conf import Config
 
 from tests.agents.sparql_client_for_test import PySparqlClientForTest
 from tests.agents.agents_for_test import RNGAgent
@@ -30,6 +38,7 @@ ENV_FILES_DIR = os.path.join(THIS_DIR,'env_files')
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
+TEMP_ENV_FILE_DIR = os.path.join(THIS_DIR,'_temp_env_file')
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
@@ -85,6 +94,20 @@ class AllInstances():
     DERIV_DIFF: str = None
 
 
+class Config4Test1(Config):
+    STR_1: str
+    INT_1: int
+    BOOL_1_1: bool
+    BOOL_1_2: bool
+
+
+class Config4Test2(Config4Test1):
+    STR_2: str
+    INT_2: int
+    BOOL_2_1: bool
+    BOOL_2_2: bool
+
+
 # ----------------------------------------------------------------------------------
 # Pytest session related functions
 # ----------------------------------------------------------------------------------
@@ -95,6 +118,8 @@ def pytest_sessionstart(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
+    if os.path.exists(TEMP_ENV_FILE_DIR):
+        shutil.rmtree(TEMP_ENV_FILE_DIR)
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
@@ -102,6 +127,8 @@ def pytest_sessionfinish(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
+    if os.path.exists(TEMP_ENV_FILE_DIR):
+        shutil.rmtree(TEMP_ENV_FILE_DIR)
 
 
 # ----------------------------------------------------------------------------------
@@ -219,6 +246,44 @@ def initialise_agent(initialise_triple_store):
 
         # Clear logger at the end of the test
         clear_loggers()
+
+
+# ----------------------------------------------------------------------------------
+# Function-scoped test fixtures
+# ----------------------------------------------------------------------------------
+
+@pytest.fixture(scope="function")
+def generate_random_conf():
+    def _generate_random_conf(cls: Config):
+        conf_test_dct = {}
+        for field in cls.all_annotations():
+            var_type = get_type_hints(cls)[field]
+            if var_type == bool:
+                conf_test_dct[field] = bool(random.getrandbits(1))
+            elif var_type == str:
+                conf_test_dct[field] = str(uuid.uuid4())
+            elif var_type == int:
+                conf_test_dct[field] = random.randint(0, 100)
+            else:
+                raise ValueError('Unsupported type: {}'.format(var_type))
+        return conf_test_dct
+    return _generate_random_conf
+
+
+@pytest.fixture(scope="function")
+def generate_random_env_file(generate_random_conf):
+    def _generate_random_env_file(cls: Config):
+        if not os.path.exists(TEMP_ENV_FILE_DIR):
+            os.makedirs(TEMP_ENV_FILE_DIR)
+
+        conf_test_dct = generate_random_conf(cls)
+        env_file_path = os.path.join(TEMP_ENV_FILE_DIR, str(uuid.uuid4()) + ".env.test")
+        env_file = open(env_file_path, "x")
+        env_content = "\n".join(["{}={}".format(k, v) for k, v in conf_test_dct.items()])
+        env_file.write(env_content)
+        env_file.close()
+        return env_file_path, conf_test_dct
+    return _generate_random_env_file
 
 
 # ----------------------------------------------------------------------------------
