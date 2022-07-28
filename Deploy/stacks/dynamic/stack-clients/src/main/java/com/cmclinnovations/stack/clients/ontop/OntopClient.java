@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Map;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.utils.TempFile;
@@ -44,8 +44,9 @@ public class OntopClient extends ContainerClient {
                     .createTempOBDAFile(ontopMappingFilePath)) {
                 mapping.serialize(localTempOntopMappingFilePath.getPath());
 
-                sendFiles(containerId, localTempOntopMappingFilePath.getPath().getParent().toString(),
-                        List.of(localTempOntopMappingFilePath.getPath().getFileName().toString()),
+                sendFilesContent(containerId,
+                        Map.of(ontopMappingFilePath.getFileName().toString(),
+                                Files.readAllBytes(localTempOntopMappingFilePath.getPath())),
                         ontopMappingFilePath.getParent().toString());
             }
         } catch (IOException ex) {
