@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.clients.utils.TempFile;
@@ -36,7 +36,7 @@ final class SQLPPMappingImplementation implements SQLPPMapping {
     private static final Pattern TARGET_LINES_PATTERN = Pattern.compile("([,;\\.])[\\t ]*\\r?\\n+[\\t ]+");
 
     private final Map<String, String> prefixMap = new HashMap<>();
-    private final List<SQLPPTriplesMap> triplesMap = new ArrayList<>();
+    private final Map<String, SQLPPTriplesMap> triplesMap = new HashMap<>();
 
     public void addMappings(Path ontopMappingFilePath) {
         try (TempFile tempFilePath = reformatMappingFile(ontopMappingFilePath)) {
@@ -45,7 +45,10 @@ final class SQLPPMappingImplementation implements SQLPPMapping {
                     .loadProvidedPPMapping();
 
             prefixMap.putAll(extraMapings.getPrefixManager().getPrefixMap());
-            triplesMap.addAll(extraMapings.getTripleMaps());
+            // Add mappings, replacing existing ones if the new ones have the same IDs.
+            extraMapings.getTripleMaps().stream()
+                    .collect(Collectors.toMap(SQLPPTriplesMap::getId, Function.identity(),
+                            (oldEntry, newEntry) -> newEntry, () -> triplesMap));
         } catch (MappingException ex) {
             throw new RuntimeException(ex);
         } catch (IOException ex2) {
@@ -95,7 +98,7 @@ final class SQLPPMappingImplementation implements SQLPPMapping {
 
     @Override
     public ImmutableList<SQLPPTriplesMap> getTripleMaps() {
-        return ImmutableList.copyOf(triplesMap);
+        return ImmutableList.copyOf(triplesMap.values());
     }
 
     public void serialize(Path ontopMappingFilePath) throws IOException {
