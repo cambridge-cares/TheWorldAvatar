@@ -10,7 +10,7 @@
     details on how version numbers should be selected -->
 
 
-    <version>1.11.8</version>
+    <version>1.12.0-dev-accessagent-config-variables-SNAPSHOT-4</version>
 
     <!-- Project Properties -->
     <properties>

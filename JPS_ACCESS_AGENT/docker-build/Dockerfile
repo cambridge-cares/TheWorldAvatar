@@ -22,7 +22,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/access-agent-code/output/access-agent##1.4.0-SNAPSHOT-2.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/access-agent-code/output/access-agent##1.4.0-SNAPSHOT-5.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
