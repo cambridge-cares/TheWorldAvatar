@@ -1,24 +1,28 @@
-model_name: "TransE"
+model_name: "TransR"
 datasets:
-  - dataset: "pubchemmini"
+  - dataset: "pubchem"
     parameters:
-      learning_rate: 0.1
-      l1_flag: True
-      hidden_size: 60
-      batch_size: 16
-      epochs: 100
-      margin: 1.00
+      model_name: "TransR"
+      dataset_path : "../../../Dataset/PubChemMedium"
+      dataset_name: "pubchem"
+      l1_flag: False
+      batch_size: 42
+      epochs: 1000
       optimizer: "sgd"
-      sampling: "bern"
-      neg_rate: 1
-      dataset_path: "../../../Dataset"
       plot_embedding: True
       plot_entity_only: True
       plot_training_result: True
       plot_testing_result: True
-      result: "../../../Dataset/results"
-      figures: "../../../Dataset/figures"
-      device: "cpu"
+      device: "cuda"
+      test_step: 100
+      test_num: 500
+      learning_rate:  0.006926634126597585
+      save_model: True
+      ent_hidden_size : 95
+      rel_hidden_size : 249
+      margin: 0.081367834713
+      hits : [1, 3, 5, 10, 50, 100]
+
 
 
 

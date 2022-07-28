@@ -12,7 +12,7 @@ import numpy as np
 class PubchemReader:
 
     def __init__(self):
-        self.output_path = r'../Dataset/pubchemmedium-train.txt'
+        self.output_path = r'../Dataset/PubChem2000/pubchem-train.txt'
         self.pubchem_dir = r'../Dataset/pubchem.csv'
         self.line_template = '%s\t%s\t%s\n'
 
@@ -33,6 +33,8 @@ class PubchemReader:
         :param csv_reader:
         :return:
         """
+
+        all_values = {}
         all_lines = []
         relation_stoplist = ['fingerprint', 'compound_id']
         fields = csv_reader.fieldnames
@@ -42,21 +44,29 @@ class PubchemReader:
             row_counter = row_counter + 1
             if row_counter % 1000 == 0:
                 print('Row number ', row_counter)
+            head_entity = row['compound_id']
+            # all_lines.append(self.line_template % (head_entity, 'type', 'Species'))  # the head entity type triple
             for field_name in fields:
-                head_entity = row['compound_id']
+
                 relation = field_name
                 tail_entity = head_entity + '_' + relation
                 if relation not in relation_stoplist:
                     all_lines.append(self.line_template % (head_entity, relation, tail_entity))  # the fact triple
-                    all_lines.append(self.line_template % (tail_entity, 'type', 'Type_' + relation))  # the type triple
+                    # all_lines.append(self.line_template % (tail_entity, 'type', 'Type_' + relation))  # the type triple
 
-                    super_counter = super_counter + 2
+                    super_counter = super_counter + 3
                     if super_counter % 10000 == 0:
                         print(super_counter)
 
-        df = np.asarray(all_lines)
-        train_list, test_list, valid_list = np.split(df, [int(.6 * len(df)), int(.8 * len(df))])
-
+        # df = np.asarray(all_lines)
+        # train_list, test_list, valid_list = np.split(df, [int(.6 * len(df)), int(.8 * len(df))])
+        twenty_percent_length = round(len(all_lines) * 0.2)
+        sixty_percent_length = round(len(all_lines) * 0.6)
+        # train_list = random.sample(list(all_lines), sixty_percent_length)
+        train_list = all_lines
+        test_list = random.sample(list(all_lines), twenty_percent_length)
+        # valid_list = random.sample(list(train_list), twenty_percent_length)
+        valid_list = random.sample(list(all_lines), twenty_percent_length)
 
         # train_list = [all_lines.pop(random.randrange(len(all_lines))) for _ in range(math.floor(len(all_lines) * 0.7))]
         # train_content = ''.join(train_list)
@@ -89,7 +99,7 @@ class PubchemReader:
 
         csv_lines = open(self.pubchem_dir).readlines()
         print('Total rows', len(csv_lines))
-        file = csv_lines [0:10000]
+        file = csv_lines [0:2000]
         csv_reader = csv.DictReader(file)
         return csv_reader
 

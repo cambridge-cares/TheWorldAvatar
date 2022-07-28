@@ -110,3 +110,5 @@ JPS_Chatbot/jps-chatbot/UI/source/JPS_Query/models/nlu/component_6_EmbeddingInte
 JPS_Chatbot/jps-chatbot/UI/data_preparation/files/ONTOSPECIES_IDENDITIFERS_QUERY_RESULT
 JPS_Chatbot/jps-chatbot/UI/source/OntoSpeciesLog
 JPS_MARIE_AND_BERT/Dataset
+*.txt
+*.csv

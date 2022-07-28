@@ -2,7 +2,8 @@ import unittest
 
 
 class MyTestCase(unittest.TestCase):
-    def test_something(self):
+    def test_basic_training_with_FB15(self):
+
         self.assertEqual(True, True)  # add assertion here
 
 

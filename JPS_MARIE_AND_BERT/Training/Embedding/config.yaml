@@ -1,0 +1,30 @@
+model_name: "TransE"
+datasets:
+  - dataset: "pubchemsupermini"
+    parameters:
+      model_name: "TransE"
+      dataset_path : "../../../Dataset/Supermini"
+      dataset_name: "pubchemsupermini"
+      l1_flag: True
+      batch_size: 32
+      epochs: 1000
+      sampling: "uniform"
+      optimizer: "sgd"
+      plot_embedding: True
+      plot_entity_only: True
+      plot_training_result: True
+      plot_testing_result: True
+      result: "../../../Dataset/Supermini/results"
+      figures: "../../../Dataset/Supermini/figures"
+      device: "cuda"
+      test_step: 200
+      test_num: 1000
+      learning_rate: 0.001
+      save_model: True
+      hidden_size : 10
+      ent_hidden_size : 10
+      rel_hidden_size : 10
+
+
+
+

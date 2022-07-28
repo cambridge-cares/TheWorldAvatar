@@ -17,21 +17,21 @@ The main purpose of the experiments contains 3 parts:
 It is critical to estimate the computation expense of embedding the TWA KG.   
 
 The current experiment is conducted on the power station (`NERO`) of Xiaochi (32GB RAM, GPU with 20GB memory, Xeon E5-1620 CPU). 
+It is now estimated that the maximum batch size the GPU can handle is 2048 and the GPU is 3.5 times faster than the CPU. 
 
-It is purposed to experiment on the CARES HPC for a full-size test. 
-
+HPC1/CSD3
 
 ### Hyper-parameter optimization 
 
 - Experiment on different loss functions (model), the candidate models include 
-`[KG-BERT|TransE|TransD|TransH|TransG|TransM|TransR|Complex|ComplexN3|CP|RotatE`
+`[KG-BERT|TransE|TransD|TransH|TransG|TransM|TransR|DistMult]`
 
 - Experiment on different batch size, which is critical for the final accuracy
 - To find out the minimal epoch number needed for a satisfactory model accuracy. 
 
 ### Steps
-1. Configure CUDA and pytorch so that the training can run on the GPU on `NERO`
-2. To compare the performance of training with CPU and GPU on `NERO`
-3. To test the `Medium` training set and find out the rough training time. It appears the training time required is roughly proportional to the number of triples.   
+1. Configure CUDA and pytorch so that the training can run on the GPU on `NERO` (DONE)
+2. To compare the performance of training with CPU and GPU on `NERO`(GPU is 3.5 times faster than CPU)
+3. To test the `Medium` training set and find out the rough training time. It appears the training time required is roughly proportional to the number of triples. (About 1 hour to achieve a satisfactory accuracy on instance-level. )  
 4. To test whether it is feasible to run the full-size embedding on `NERO` with the simplest model `TransE` and 100 epochs. If it is feasible, find out the time needed.
 5. Try running the training on HPC so see whether there is an improvement. 

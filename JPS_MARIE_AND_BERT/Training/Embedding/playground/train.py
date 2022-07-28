@@ -15,7 +15,7 @@ def main():
 
     # Preparing data and cache the data for later usage
     #knowledge_graph = KnowledgeGraph(dataset=args.dataset_name, custom_dataset_path=args.dataset_path)
-    knowledge_graph = KnowledgeGraph(dataset='pubchemini', custom_dataset_path=r'../../../Dataset/test')
+    knowledge_graph = KnowledgeGraph()
     knowledge_graph.prepare_data()
 
     # Extracting the corresponding model config and definition from Importer().
@@ -27,9 +27,11 @@ def main():
     # Create, Compile and Train the model. While training, several evaluation will be performed.
     trainer = Trainer(model, config)
     trainer.build_model()
+    trainer.save_model()
 
 
 if __name__ == "__main__":
+    print('Hello we are here!')
     main()
 
 
