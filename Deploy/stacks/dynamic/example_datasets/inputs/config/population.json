@@ -1,0 +1,12 @@
+{
+    "name": "population",
+    "datasetDirectory": "population",
+    "database": "population",
+    "dataSubsets": [
+        {
+            "type": "Raster",
+            "name": "population",
+            "skip": false
+        }
+    ]
+}
