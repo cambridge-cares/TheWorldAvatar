@@ -27,6 +27,8 @@ public class Dataset {
 
     private List<String> ontopMappings;
 
+    private boolean skip;
+
     @JsonCreator
     public Dataset(@JsonProperty(value = "name") String name,
             @JsonProperty(value = "datasetDirectory") Path datasetDirectory,
@@ -34,7 +36,8 @@ public class Dataset {
             @JsonProperty(value = "database") String database,
             @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
-            @JsonProperty(value = "mappings") List<String> ontopMappings) {
+            @JsonProperty(value = "mappings") List<String> ontopMappings,
+            @JsonProperty(value = "skip") boolean skip) {
         this.name = name;
         this.datasetDirectory = (null != datasetDirectory) ? datasetDirectory : Path.of(name);
         this.workspaceName = (null != workspaceName) ? workspaceName : name;
@@ -42,49 +45,32 @@ public class Dataset {
         this.dataSubsets = (null != dataSubsets) ? dataSubsets : new ArrayList<>();
         this.geoserverStyles = (null != geoserverStyles) ? geoserverStyles : new ArrayList<>();
         this.ontopMappings = (null != ontopMappings) ? ontopMappings : new ArrayList<>();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Path getDatasetDirectory() {
-        return datasetDirectory;
-    }
-
-    public String getDatabase() {
-        return database;
-    }
-
-    public String getWorkspaceName() {
-        return workspaceName;
-    }
-
-    public List<DataSubset> getDataSubsets() {
-        return dataSubsets;
+        this.skip = skip;
     }
 
     public void loadData() {
-        PostGISClient postGISClient = new PostGISClient();
-        GDALClient gdalClient = new GDALClient();
-        GeoServerClient geoServerClient = new GeoServerClient();
-        OntopClient ontopClient = new OntopClient();
+        if (!skip) {
+            PostGISClient postGISClient = new PostGISClient();
+            GDALClient gdalClient = new GDALClient();
+            GeoServerClient geoServerClient = new GeoServerClient();
+            OntopClient ontopClient = new OntopClient();
 
-        Path fullDatasetDir = Path.of("/inputs", "data").resolve(datasetDirectory);
-        String fullDatasetDirStr = fullDatasetDir.toString();
+            Path fullDatasetDir = Path.of("/inputs", "data").resolve(datasetDirectory);
+            String fullDatasetDirStr = fullDatasetDir.toString();
 
-        postGISClient.createDatabase(database);
-        geoServerClient.createWorkspace(workspaceName);
+            postGISClient.createDatabase(database);
+            geoServerClient.createWorkspace(workspaceName);
 
-        geoserverStyles.forEach(style -> geoServerClient.loadStyle(style, workspaceName));
+            geoserverStyles.forEach(style -> geoServerClient.loadStyle(style, workspaceName));
 
-        dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).forEach(
-                subset -> {
-                    subset.loadData(gdalClient, fullDatasetDirStr, database);
-                    subset.createLayer(geoServerClient, fullDatasetDirStr, workspaceName, database);
-                });
+            dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).forEach(
+                    subset -> {
+                        subset.loadData(gdalClient, fullDatasetDirStr, database);
+                        subset.createLayer(geoServerClient, fullDatasetDirStr, workspaceName, database);
+                    });
 
-        ontopMappings.forEach(mapping -> ontopClient.updateOBDA(fullDatasetDir.resolve(mapping)));
+            ontopMappings.forEach(mapping -> ontopClient.updateOBDA(fullDatasetDir.resolve(mapping)));
+        }
     }
 
 }

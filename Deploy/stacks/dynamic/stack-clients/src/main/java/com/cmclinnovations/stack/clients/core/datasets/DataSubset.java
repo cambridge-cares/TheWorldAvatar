@@ -18,7 +18,7 @@ public abstract class DataSubset {
     private String schema;
     private String table;
 
-    @JsonProperty(defaultValue = "false")
+    @JsonProperty
     private boolean skip;
 
     public String getName() {
