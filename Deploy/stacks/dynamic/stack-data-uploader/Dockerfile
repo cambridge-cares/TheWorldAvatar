@@ -27,7 +27,7 @@ COPY src ./src/
 # Ensure that the latest versions of SNAPSHOT dependencies are always used
 ARG CACHEBUST=1
 
-RUN mvn package
+RUN mvn package --update-snapshots
 
 #==================================================================================================
 

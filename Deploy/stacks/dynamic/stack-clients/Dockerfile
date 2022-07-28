@@ -27,7 +27,7 @@ COPY src ./src/
 # Ensure that the latest versions of SNAPSHOT dependencies are always used
 ARG CACHEBUST=1
 
-RUN mvn deploy -DskipTests
+RUN mvn deploy --update-snapshots -DskipTests
 
 #==================================================================================================
 
