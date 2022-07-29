@@ -46,5 +46,5 @@ WORKDIR /app
 COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
 
 # Run the entrypoint script
-ENTRYPOINT ["catalina.sh", "jpda", "run"]
+ENTRYPOINT ["catalina.sh", "run"]
 #==================================================================================================
