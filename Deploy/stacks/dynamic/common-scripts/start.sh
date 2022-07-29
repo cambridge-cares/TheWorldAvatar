@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Load common functions
-. ${SCRIPTS_DIR}/common_functions.sh
+. "${SCRIPTS_DIR}/common_functions.sh"
 
 # Ensure swarm mode is initialised
 init_swarm
@@ -12,7 +12,7 @@ ${EXECUTABLE} pull -q docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
 ${EXECUTABLE} pull -q docker.cmclinnovations.com/geoserver:2.20.4
 
 # Remove existing services started from this directory
-${SCRIPTS_DIR}/stop.sh "${STACK_NAME}"
+"${SCRIPTS_DIR}/stop.sh" "${STACK_NAME}"
 
 if [[ $# -eq 2 ]]; then
     export DEBUG_PORT=${2}

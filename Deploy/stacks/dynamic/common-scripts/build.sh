@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Load common functions
-. ${SCRIPTS_DIR}/common_functions.sh
+. "${SCRIPTS_DIR}/common_functions.sh"
 
 # Attempt compatibility with podman
 get_executables
