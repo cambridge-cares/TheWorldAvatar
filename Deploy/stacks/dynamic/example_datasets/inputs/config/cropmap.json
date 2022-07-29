@@ -4,6 +4,12 @@
     "datasetDirectory": "cropmap",
     "dataSubsets": [
         {
+            "type": "Tabular",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "tabular"
+        },
+        {
             "type": "Vector",
             "skip": false,
             "schema": "public",
@@ -34,12 +40,6 @@
                 },
                 "defaultStyle": "the_world_avatar:cropmap"
             }
-        },
-        {
-            "type": "Tabular",
-            "skip": false,
-            "schema": "public",
-            "subdirectory": "tabular"
         }
     ],
     "styles": [
