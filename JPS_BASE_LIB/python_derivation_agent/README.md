@@ -81,23 +81,28 @@ from pyderivationagent import DerivationOutputs
 from youragent.kg_operations import YourSparqlClient
 from youragent.data_model import YOUR_CONCEPT
 from youragent.data_model import ANOTHER_CONCEPT
-from youragent.data_model import OUTPUT_CONCEPT_1
-from youragent.data_model import OUTPUT_CONCEPT_2
+from youragent.data_model import OUTPUT_CONCEPT
 from rdflib import Graph
 
+# NOTE For any developer to extend the DerivationAgent class, four @abstractmethod MUST be implemented
 class YourAgent(DerivationAgent):
     # Firstly, as the agent is designed to register itself in the knowledge graph when it is initialised
-    # One need to define the agent inputs/outputs by providing the concept IRIs as *args
+    # One need to define the agent inputs/outputs by providing the concept IRIs as return values
     # The registration is by default, which can be altered by setting flag REGISTER_AGENT=false in the env file
-    def agent_input_concepts(self, *args) -> list:
-        # Assume two input concepts are used by the agent, then developer need to provide it like below
-        # NOTE the way how it is passed in --> the asterisk "*" unpacks the list
-        return super().agent_input_concepts(*[YOUR_CONCEPT, ANOTHER_CONCEPT])
+    def agent_input_concepts(self) -> list:
+        # Assume two input concepts are used by the agent, then developer need to provide it in a list
+        return [YOUR_CONCEPT, ANOTHER_CONCEPT]
 
-    def agent_output_concepts(self, *args) -> list:
-        # Assume two output concepts are used by the agent, then developer need to provide it like below
-        # NOTE the way how it is passed in --> the asterisk "*" unpacks the list
-        return super().agent_output_concepts(*[OUTPUT_CONCEPT_1, OUTPUT_CONCEPT_2])
+    def agent_output_concepts(self) -> list:
+        # Assume one output concept is produced by the agent, then developer need to provide it in a list
+        # NOTE even ONE concept should be provided as a list
+        return [OUTPUT_CONCEPT]
+
+    def validate_inputs(self, http_request) -> bool:
+        # You may want to add some specific validation after the generic checks
+        if super().validate_inputs(http_request):
+            # do some specific checking
+            pass
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Provide your agent logic that converts the agent inputs to triples of new created instances

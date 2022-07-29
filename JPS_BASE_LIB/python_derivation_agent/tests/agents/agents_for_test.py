@@ -16,6 +16,15 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_HASPOINT
 from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
 
 class UpdateEndpoint(DerivationAgent):
+    def agent_input_concepts(self) -> list:
+        return []
+
+    def agent_output_concepts(self) -> list:
+        return []
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
+
     def update_derivations(self):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
@@ -26,11 +35,14 @@ class UpdateEndpoint(DerivationAgent):
 
 
 class DifferenceAgent(DerivationAgent):
-    def agent_input_concepts(self, *args) -> list:
-        return super().agent_input_concepts(*[RANDOM_EXAMPLE_MAXVALUE, RANDOM_EXAMPLE_MINVALUE])
+    def agent_input_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_MAXVALUE, RANDOM_EXAMPLE_MINVALUE]
 
-    def agent_output_concepts(self, *args) -> list:
-        return super().agent_output_concepts(*[RANDOM_EXAMPLE_DIFFERENCE])
+    def agent_output_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_DIFFERENCE]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
@@ -49,11 +61,14 @@ class DifferenceAgent(DerivationAgent):
 
 
 class MaxValueAgent(DerivationAgent):
-    def agent_input_concepts(self, *args) -> list:
-        return super().agent_input_concepts(*[RANDOM_EXAMPLE_LISTOFPOINTS])
+    def agent_input_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_LISTOFPOINTS]
 
-    def agent_output_concepts(self, *args) -> list:
-        return super().agent_output_concepts(*[RANDOM_EXAMPLE_MAXVALUE])
+    def agent_output_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_MAXVALUE]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
@@ -70,11 +85,14 @@ class MaxValueAgent(DerivationAgent):
 
 
 class MinValueAgent(DerivationAgent):
-    def agent_input_concepts(self, *args) -> list:
-        return super().agent_input_concepts(*[RANDOM_EXAMPLE_LISTOFPOINTS])
+    def agent_input_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_LISTOFPOINTS]
 
-    def agent_output_concepts(self, *args) -> list:
-        return super().agent_output_concepts(*[RANDOM_EXAMPLE_MINVALUE])
+    def agent_output_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_MINVALUE]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
@@ -91,11 +109,14 @@ class MinValueAgent(DerivationAgent):
 
 
 class RNGAgent(DerivationAgent):
-    def agent_input_concepts(self, *args) -> list:
-        return super().agent_input_concepts(*[RANDOM_EXAMPLE_NUMOFPOINTS, RANDOM_EXAMPLE_UPPERLIMIT, RANDOM_EXAMPLE_LOWERLIMIT])
+    def agent_input_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_NUMOFPOINTS, RANDOM_EXAMPLE_UPPERLIMIT, RANDOM_EXAMPLE_LOWERLIMIT]
 
-    def agent_output_concepts(self, *args) -> list:
-        return super().agent_output_concepts(*[RANDOM_EXAMPLE_LISTOFPOINTS, RANDOM_EXAMPLE_POINT])
+    def agent_output_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_LISTOFPOINTS, RANDOM_EXAMPLE_POINT]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)

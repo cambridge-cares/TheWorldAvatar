@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Type, TypeVar
 from flask_apscheduler import APScheduler
 from flask import Flask
@@ -22,7 +23,7 @@ class FlaskConfig(object):
     SCHEDULER_API_ENABLED = True
 
 
-class DerivationAgent(object):
+class DerivationAgent(ABC):
     def __init__(
         self,
         agent_iri: str,
@@ -110,11 +111,12 @@ class DerivationAgent(object):
         # register the agent to the KG if required
         self.register_agent = register_agent
         try:
-            self.register()
+            self.register_agent_in_kg()
         except Exception as e:
             self.logger.error(
                 "Failed to register the agent <{}> to the KG <{}>. Error: {}".format(self.agentIRI, self.kgUrl, e),
                 stack_info=True, exc_info=True)
+            raise e
 
         self.logger.info(
             "DerivationAgent <%s> is initialised to monitor derivations in triple store <%s> with a time interval of %d seconds." % (
@@ -131,26 +133,32 @@ class DerivationAgent(object):
             )
         return self.sparql_client
 
-    def register(self):
+    def register_agent_in_kg(self):
         """This method registers the agent to the knowledge graph by uploading its OntoAgent triples generated on-the-fly."""
         if self.register_agent:
             sparql_client = self.get_sparql_client(PySparqlClient)
             input_concepts = self.agent_input_concepts()
             output_concepts = self.agent_output_concepts()
+            if not isinstance(input_concepts, list) or not isinstance(output_concepts, list):
+                raise Exception("Failed to register the agent <{}> to the KG <{}>. Error: Input and output concepts must be lists. Received: {} (type: {}) and {} (type: {})".format(
+                    self.agentIRI, self.kgUrl, input_concepts, type(input_concepts), output_concepts, type(output_concepts)))
             if len(input_concepts) == 0 or len(output_concepts) == 0:
                 raise Exception("Failed to register the agent <{}> to the KG <{}>. Error: No input or output concepts specified.".format(self.agentIRI, self.kgUrl))
             sparql_client.generate_ontoagent_instance(self.agentIRI, self.agentEndpoint, input_concepts, output_concepts)
-            self.logger.info("Agent <%s> is registered to the KG <%s>." % (self.agentIRI, self.kgUrl))
+            self.logger.info("Agent <%s> is registered to the KG <%s> with input signature %s and output signature %s." % (
+                self.agentIRI, self.kgUrl, input_concepts, output_concepts))
         else:
             self.logger.info("Flag register_agent is False. Agent <%s> is NOT registered to the KG <%s>." % (self.agentIRI, self.kgUrl))
 
-    def agent_input_concepts(self, *args) -> list:
+    @abstractmethod
+    def agent_input_concepts(self) -> list:
         """This method returns a list of input concepts of the agent. This should be overridden by the derived class."""
-        return [*args]
+        pass
 
-    def agent_output_concepts(self, *args) -> list:
+    @abstractmethod
+    def agent_output_concepts(self) -> list:
         """This method returns a list of output concepts of the agent. This should be overridden by the derived class."""
-        return [*args]
+        pass
 
     def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['GET'], *args, **kwargs):
         """
@@ -268,6 +276,7 @@ class DerivationAgent(object):
         else:
             self.logger.info("Currently, no asynchronous derivation <isDerivedUsing> <%s>." % (self.agentIRI))
 
+    @abstractmethod
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         """
         This method perform the agent logic of converting derivation inputs to derivation outputs.
@@ -366,6 +375,7 @@ class DerivationAgent(object):
 
         return json.dumps(res)
 
+    @abstractmethod
     def validate_inputs(self, http_request) -> bool:
         return True
 
