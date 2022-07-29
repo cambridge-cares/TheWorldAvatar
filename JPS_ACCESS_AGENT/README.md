@@ -27,7 +27,7 @@ Then, run the bash script uploadRouting.sh.
 bash ./uploadRouting.sh
 ```
 Note: 
-1. Routing triples can also be added manually (e.g. through the Blazegraph user interface) to the "kb" namespace of the access-agent-dev-stack Blazegraph. 
+1. Routing triples can also be added manually (e.g. through the Blazegraph user interface 'http://localhost:48889/blazegraph') to the "kb" namespace of the access-agent-dev-stack Blazegraph. 
 2. The uploader will not overwrite information if a "label" already exists. You will need to do this manually.
 
 ### Calling the Access Agent in your dev environment 
