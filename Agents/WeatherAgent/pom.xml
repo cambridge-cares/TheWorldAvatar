@@ -182,5 +182,12 @@
             <version>3.5.7</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- for interacting with the stack -->
+        <dependency>
+            <groupId>com.cmclinnovations</groupId>
+            <artifactId>stack-clients</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
