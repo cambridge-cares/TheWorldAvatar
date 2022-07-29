@@ -1,0 +1,12 @@
+{
+    "name": "elevation",
+    "datasetDirectory": "elevation",
+    "database": "elevation",
+    "dataSubsets": [
+        {
+            "type": "Raster",
+            "name": "elevation",
+            "skip": false
+        }
+    ]
+}
