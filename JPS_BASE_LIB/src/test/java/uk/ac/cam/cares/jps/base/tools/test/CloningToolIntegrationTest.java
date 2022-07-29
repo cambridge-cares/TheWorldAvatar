@@ -2,9 +2,6 @@ package uk.ac.cam.cares.jps.base.tools.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.jena.arq.querybuilder.AskBuilder;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,11 +22,6 @@ class CloningToolIntegrationTest {
 	static final String BLAZEGRAPH_IMAGE = "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"; 
 	static final int BLAZEGRAPH_INTERNAL_PORT = 9999;
 	
-	//Test triple template
-	static final String s = "<http://www.example.com/s%s>";
-	static final String p = "<http://www.example.com/p%s>";
-	static final String o = "<http://www.example.com/o%s>";
-
 	String testData;
 	
 	@Container
@@ -65,33 +57,12 @@ class CloningToolIntegrationTest {
 		targetStoreClient = new RemoteStoreClient(targetEndpoint,targetEndpoint);
 		
 		//Load test data 		
-		testData = createTriples(N_TEST_TRIPLES);		
-		sourceStoreClient.executeUpdate(createInsertData(testData));
+		testData = CloningToolTestHelper.createTriples(N_TEST_TRIPLES);		
+		sourceStoreClient.executeUpdate(CloningToolTestHelper.createInsertData(testData));
 		//check test data loaded
 		assertEquals(N_TEST_TRIPLES,sourceStoreClient.getTotalNumberOfTriples()); 
 	}
-	
-	static String createInsertData(String triples) {
-		StringBuilder stringBuilder = new StringBuilder()
-									.append("INSERT DATA {")
-									.append(triples)
-									.append("}");
-		return stringBuilder.toString();
-	}
-	
-	static String createTriples(int N) {
-		
-		StringBuilder stringBuilder = new StringBuilder();
-	
-		for(int i = 0; i < N; i++) {
-			String si = String.format(s, Integer.toString(i)); 
-			String pi = String.format(p, Integer.toString(i));
-			String oi = String.format(o, Integer.toString(i));
-			stringBuilder.append(si+pi+oi+".\n");
-		}
-		return stringBuilder.toString();
-	}
-	
+			
 	@AfterEach
 	void stopContainers() {
 		if (sourceContainer.isRunning()) {
@@ -109,7 +80,7 @@ class CloningToolIntegrationTest {
 		cloningTool.clone(sourceStoreClient, targetStoreClient);
 		
 		assertEquals(N_TEST_TRIPLES,targetStoreClient.getTotalNumberOfTriples());
-		assertTrue(checkTriples(N_TEST_TRIPLES));
+		assertTrue(CloningToolTestHelper.checkTriples(N_TEST_TRIPLES, targetStoreClient));
 	}
 
 	@Test
@@ -117,24 +88,6 @@ class CloningToolIntegrationTest {
 		
 	}
 	
-	boolean checkTriples(int N) {
-		
-		boolean check = true;
-		
-		for(int i = 0; i < N; i++) {
-		
-			String si = String.format(s, Integer.toString(i));
-			String pi = String.format(p, Integer.toString(i));
-			String oi = String.format(o, Integer.toString(i));
-			
-	    	AskBuilder builder = new AskBuilder();
-			builder.addWhere(si, pi, oi);
-			String askQuery = builder.build().toString();
-			String result = targetStoreClient.execute(askQuery);
-			JSONObject obj =  new JSONArray(result).getJSONObject(0);
-			check = (boolean) obj.get("ASK");
-		}
-		return check;
-	}
+	
 	
 }
