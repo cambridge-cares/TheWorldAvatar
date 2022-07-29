@@ -86,6 +86,9 @@ from rdflib import Graph
 
 # NOTE For any developer to extend the DerivationAgent class, four @abstractmethod MUST be implemented
 class YourAgent(DerivationAgent):
+    ##############################
+    ## I. Derivation agent part ##
+    ##############################
     # Firstly, as the agent is designed to register itself in the knowledge graph when it is initialised
     # One need to define the agent inputs/outputs by providing the concept IRIs as return values
     # The registration is by default, which can be altered by setting flag REGISTER_AGENT=false in the env file
@@ -145,6 +148,31 @@ class YourAgent(DerivationAgent):
         g.add((URIRef("http://example/ExampleClass_UUID"), RDF.type, URIRef("http://example/ExampleClass")))
         g.add((URIRef("http://example/ExampleClass_UUID"), URIRef("http://example/hasValue"), Literal(5)))
         derivation_outputs.addGraph(g)
+
+    ###############################################################
+    ## II. Any other periodical job the necessary for your agent ##
+    ###############################################################
+    # Additionally, if you would like to define your own periodical job to be executed, you may do it like blow:
+    def your_periodical_job(self):
+        # Here provide the job logic to be executed periodically
+        pass
+
+    @DerivationAgent.periodical_job # This decorator enables the _start_your_periodical_job() to be called when calling start_all_periodical_job()
+    def _start_your_periodical_job(self):
+        # You also need to provide a function so that your periodical job can be started on its own
+        # self.scheduler is an object of APScheduler class
+        self.scheduler.add_job(
+            id='your_periodical_job', # the name for the periodical job
+            func=self.your_periodical_job, # the function for the periodical job
+            trigger='interval', # trigger type
+            seconds=timescale_for_your_periodical_job # the time interval you prefer for the job execution
+        )
+    # The start of your periodical job can be done in two ways once instantiated YourAgent (assume an object named "your_agent"):
+    # Option 1:
+    # your_agent._start_your_periodical_job() # start your periodical job independently
+    # Option 2:
+    # your_agent.start_all_periodical_job() # start your periodical job together with all other periodical jobs (e.g. _start_monitoring_derivations)
+    # An example is also provided in entry_point.py later in this README.md file
 ```
 
 `your_onto.py`
@@ -250,7 +278,11 @@ def create_app():
     )
 
     # Start listening sync/monitoring async derivations
-    agent.start_monitoring_derivations()
+    # There are two ways of doing this, the first way it to start the monitoring process independently by:
+    agent._start_monitoring_derivations() # Option 1
+    # Or, you can execute below line, which will start all periodical jobs that decorated with @DerivationAgent.periodical_job
+    # where _start_monitoring_derivations() will be called as well
+    # agent.start_all_periodical_job() # Option 2, particularly useful when custom periodical job is defined
 
     # Expose flask app of agent
     app = agent.app

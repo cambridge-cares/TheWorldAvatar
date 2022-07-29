@@ -123,6 +123,16 @@ class DerivationAgent(ABC):
                 self.agentIRI, self.kgUrl, self.time_interval)
         )
 
+    def periodical_job(func):
+        """This method is used to start a periodic job. This should be used as a decorator (@Derivation.periodical_job) for the method that needs to be executed periodically."""
+        def inner(self, *args, **kwargs):
+            func(self, *args, **kwargs)
+            if not self.scheduler.running:
+                self.scheduler.start()
+                self.logger.info("Scheduler is started.")
+        inner.__is_periodical_job__ = True
+        return inner
+
     def get_sparql_client(self, sparql_client_cls: Type[PY_SPARQL_CLIENT]) -> PY_SPARQL_CLIENT:
         """This method returns a SPARQL client object that instantiated from sparql_client_cls, which should extend PySparqlClient class."""
         if self.sparql_client is None or not isinstance(self.sparql_client, sparql_client_cls):
@@ -296,9 +306,10 @@ class DerivationAgent(ABC):
         """
         pass
 
-    def add_job_monitoring_derivations(self, start=False):
+    @periodical_job
+    def _start_monitoring_derivations(self):
         """
-            This method schedules the periodical job to monitor asynchronous derivation, also adds the HTTP endpoint to handle synchronous derivation.
+            This method starts the periodical job to monitor asynchronous derivation, also adds the HTTP endpoint to handle synchronous derivation.
         """
         self.scheduler.add_job(id='monitor_derivations', func=self.monitor_async_derivations,
                                trigger='interval', seconds=self.time_interval)
@@ -308,14 +319,11 @@ class DerivationAgent(ABC):
         self.add_url_pattern(self.agentEndpoint, self.agentEndpoint[1:], self.handle_sync_derivations, methods=['GET'])
         self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
-        if start:
-            self.start()
-
-    def start(self):
+    def start_all_periodical_job(self):
         """This method starts all scheduled periodical jobs."""
-        if not self.scheduler.running:
-            self.scheduler.start()
-            self.logger.info("Scheduler is started.")
+        all_periodical_jobs = [getattr(self, name) for name in dir(self) if callable(getattr(self, name)) and not name.startswith('__') and hasattr(getattr(self, name), '__is_periodical_job__')]
+        for func in all_periodical_jobs:
+            func()
 
     def handle_sync_derivations(self):
         requestParams = json.loads(unquote(request.url[len(request.base_url):])[

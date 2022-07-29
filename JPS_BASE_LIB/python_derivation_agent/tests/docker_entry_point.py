@@ -3,7 +3,7 @@ import tests.conftest as cft
 def create_rng_app():
     rng_agent = cft.create_rng_agent()
 
-    rng_agent.add_job_monitoring_derivations(start=True)
+    rng_agent.start_all_periodical_job()
 
     return rng_agent.app
 
@@ -11,7 +11,7 @@ def create_rng_app():
 def create_max_app():
     max_agent = cft.create_max_agent()
 
-    max_agent.add_job_monitoring_derivations(start=True)
+    max_agent.start_all_periodical_job()
 
     return max_agent.app
 
@@ -19,7 +19,7 @@ def create_max_app():
 def create_min_app():
     min_agent = cft.create_min_agent()
 
-    min_agent.add_job_monitoring_derivations(start=True)
+    min_agent.start_all_periodical_job()
 
     return min_agent.app
 
@@ -27,7 +27,7 @@ def create_min_app():
 def create_diff_app():
     diff_agent = cft.create_diff_agent()
 
-    diff_agent.add_job_monitoring_derivations(start=True)
+    diff_agent.start_all_periodical_job()
 
     return diff_agent.app
 
