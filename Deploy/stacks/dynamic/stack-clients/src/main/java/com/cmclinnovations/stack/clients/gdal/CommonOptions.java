@@ -1,12 +1,18 @@
 package com.cmclinnovations.stack.clients.gdal;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 class CommonOptions<T extends CommonOptions<T>> {
@@ -75,7 +81,9 @@ class CommonOptions<T extends CommonOptions<T>> {
 
         otherOptions.forEach((option, values) -> {
             allArgs.add(option);
-            allArgs.addAll(values);
+            values.stream()
+                    .map(value -> value.startsWith("@") ? handleFileArg(option, value) : value)
+                    .collect(Collectors.toCollection(() -> allArgs));
         });
         return allArgs;
     }
@@ -83,5 +91,21 @@ class CommonOptions<T extends CommonOptions<T>> {
     protected void addKeyValuePair(List<String> allArgs, String option, String name, String value) {
         allArgs.add(option);
         allArgs.add(name + "=" + value);
+    }
+
+    protected String handleFileArg(String option, String value) {
+        Path sourcePath = Path.of(value.replaceFirst("^@", ""));
+        Path scratchPath = Path.of(StackClient.SCRATCH_DIR, sourcePath.toString());
+        try {
+            Files.createDirectories(scratchPath.getParent());
+            Files.copy(sourcePath, scratchPath, StandardCopyOption.REPLACE_EXISTING);
+            return "@" + scratchPath;
+        } catch (IOException ex) {
+            throw new RuntimeException(
+                    "Failed to copy file '" + sourcePath + "'' referenced in GDAL option '" + option + "' to '"
+                            + scratchPath
+                            + "'.",
+                    ex);
+        }
     }
 }
