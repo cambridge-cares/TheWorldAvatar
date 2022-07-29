@@ -1,0 +1,13 @@
+{
+    "name": "elevation",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "elevation",
+    "dataSubsets": [
+        {
+            "type": "Raster",
+            "name": "elevation",
+            "skip": false
+        }
+    ]
+}
