@@ -46,7 +46,7 @@ def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, Li
 
 def create_file(name: str, scalars):
     file = open('./results/'+name+'.csv', encoding='utf-8', mode='w', newline='')
-    writer_1 = csv.writer(file)
+    writer_1 = csv.writer(file, quotechar='\"', quoting=csv.QUOTE_MINIMAL)
     writer_1.writerow(scalars)
     file.close()    
 
@@ -191,7 +191,7 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITE
         # Add the root index to the ID dictionary
         ID.update({message.DESCRIPTOR.name : root_index})
         # Add the the root index to the scalars dictionary
-        scalars_dict.update({'ID' : ID[message.DESCRIPTOR.name]})
+        scalars_dict.update({'ID' : 'I'+str(ID[message.DESCRIPTOR.name])})
         # Get the target csv table column labels
         labels, _,_,_ = get_field_labels(message=message)
         row = get_row(scalars=scalars_dict, labels=labels)
@@ -216,7 +216,7 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITE
         else:
             ID.update({ value.DESCRIPTOR.name : 1})
 
-        scalars_dict.update({'ID' : ID[value.DESCRIPTOR.name]})
+        scalars_dict.update({'ID' : 'I'+str(ID[value.DESCRIPTOR.name])})
     
     
         row = get_row(scalars=scalars_dict, labels=labels)
@@ -242,7 +242,7 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITE
             ID.update({message.DESCRIPTOR.name+'_'+field_name+'_'+field : 1})
         
         # get the row for intermidary tables
-        row = [ID[value.DESCRIPTOR.name], ID[message.DESCRIPTOR.name], LITERAL_VALUE[scalars_tuple], key_or_index]
+        row = ['I'+str(ID[value.DESCRIPTOR.name]), 'I'+str(ID[message.DESCRIPTOR.name]), 'I'+str(LITERAL_VALUE[scalars_tuple]), '['+str(key_or_index)+']']
 
         append_to_file(file='./results/'+message.DESCRIPTOR.name+'_'+field_name+'_'+field+'.csv', row=row)
 
