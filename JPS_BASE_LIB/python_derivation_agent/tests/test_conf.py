@@ -58,7 +58,7 @@ def test_config_derivation_agent(env_file):
     for key, value in config.__dict__.items():
         var_type = get_type_hints(AgentConfig)[key]
         if var_type == bool:
-            value = env.get(key) if type(env.get(key)) == bool else env.get(key).lower() in ['true', 'yes', '1']
+            env_value = env.get(key) if type(env.get(key)) == bool else env.get(key).lower() in ['true', 'yes', '1']
         else:
-            value = var_type(env.get(key))
-        assert value == var_type(env[key])
+            env_value = var_type(env.get(key))
+        assert value == env_value
