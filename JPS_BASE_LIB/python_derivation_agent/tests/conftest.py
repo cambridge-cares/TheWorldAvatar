@@ -1,5 +1,4 @@
 import shutil
-import tempfile
 from flask import Flask
 from testcontainers.core.container import DockerContainer
 
@@ -175,7 +174,7 @@ def get_service_auth():
 
 # NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
 @pytest.fixture(scope="module")
-def initialise_clients(get_service_url, get_service_auth):
+def initialise_clients_and_agents(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
     sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
@@ -194,6 +193,9 @@ def initialise_clients(get_service_url, get_service_auth):
         sparql_client.kg_client,
         DERIVATION_INSTANCE_BASE_URL
     )
+
+    # Delete all triples before anything
+    sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
     yield sparql_client, derivation_client, update_endpoint
 
@@ -367,6 +369,7 @@ def create_update_endpoint(env_file: str = None, sparql_endpoint: str = None):
         time_interval=endpoint_config.DERIVATION_PERIODIC_TIMESCALE, # just placeholder value, not used by anything
         derivation_instance_base_url=endpoint_config.DERIVATION_INSTANCE_BASE_URL, # just placeholder value, not used by anything
         kg_url=sparql_endpoint if sparql_endpoint is not None else endpoint_config.SPARQL_QUERY_ENDPOINT,
+        agent_endpoint=None, # not a real derivation agent should should not be provided agent_endpoint for sync derivations
         register_agent=False # the default value is True, so here we set it to False as we don't want to register the endpoint
     )
 

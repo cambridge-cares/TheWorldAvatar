@@ -16,14 +16,21 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_HASPOINT
 from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
 
 class UpdateEndpoint(DerivationAgent):
+    # NOTE Placeholder to enable instantiating UpdateEndpoint instance
     def agent_input_concepts(self) -> list:
         return []
 
+    # NOTE Placeholder to enable instantiating UpdateEndpoint instance
     def agent_output_concepts(self) -> list:
         return []
 
+    # NOTE Placeholder to enable instantiating UpdateEndpoint instance
     def validate_inputs(self, http_request) -> bool:
         return super().validate_inputs(http_request)
+
+    # NOTE Placeholder to enable instantiating UpdateEndpoint instance
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        pass
 
     def update_derivations(self):
         sparql_client = self.get_sparql_client(PySparqlClientForTest)

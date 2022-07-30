@@ -4,6 +4,7 @@ from flask_apscheduler import APScheduler
 from flask import Flask
 from flask import request
 from urllib.parse import unquote
+from urllib.parse import urlparse
 import json
 import time
 
@@ -38,7 +39,7 @@ class DerivationAgent(ABC):
         fs_password: str = None,
         app: Flask = Flask(__name__),
         flask_config: FlaskConfig = FlaskConfig(),
-        agent_endpoint: str = "/",
+        agent_endpoint: str = "http://localhost:5000/sync_derivation",
         register_agent: bool = True,
         logger_name: str = "dev"
     ):
@@ -48,7 +49,7 @@ class DerivationAgent(ABC):
             Arguments:
                 app - flask app object, an example: app = Flask(__name__)
                 agent_iri - OntoAgent:Service IRI of the derivation agent, an example: "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
-                agent_endpoint - data property OntoAgent:hasHttpUrl of OntoAgent:Operation of the derivation agent, an example: "http://localhost:7000/endpoint"
+                agent_endpoint - data property OntoAgent:hasHttpUrl of OntoAgent:Operation of the derivation agent, an example: "http://localhost:5000/endpoint"
                 time_interval - time interval between two runs of derivation monitoring job (in SECONDS)
                 derivation_instance_base_url - namespace to be used when creating derivation instance, an example: "http://www.example.com/triplestore/repository/"
                 kg_url - SPARQL query endpoint, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
@@ -173,9 +174,9 @@ class DerivationAgent(ABC):
     def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['GET'], *args, **kwargs):
         """
             This method is a wrapper of add_url_rule method of Flask object that adds customised URL Pattern to derivation agent.
-            #flask.Flask.add_url_rule.
-            For more information, visit https://flask.palletsprojects.com/en/2.0.x/api/
-            WARNING: Use of this is STRONGLY discouraged. The design intention of an derivation agent is to communicate via the KNOWLEDGE GRAPH, and NOT via HTTP requests.
+            For more information, visit https://flask.palletsprojects.com/en/2.0.x/api/#flask.Flask.add_url_rule
+            WARNING: Use of this by developer is STRONGLY discouraged.
+            The design intention of an derivation agent is to communicate via the KNOWLEDGE GRAPH, and NOT via HTTP requests.
 
             Arguments:
                 url_pattern - the endpoint url to associate with the rule and view function
@@ -316,7 +317,8 @@ class DerivationAgent(ABC):
         self.logger.info("Monitor asynchronous derivations job is scheduled with a time interval of %d seconds." % (
             self.time_interval))
 
-        self.add_url_pattern(self.agentEndpoint, self.agentEndpoint[1:], self.handle_sync_derivations, methods=['GET'])
+        url_pattern = urlparse(self.agentEndpoint).path
+        self.add_url_pattern(url_pattern, url_pattern.strip('/').replace('/', '_'), self.handle_sync_derivations, methods=['GET'])
         self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
     def start_all_periodical_job(self):
@@ -326,25 +328,46 @@ class DerivationAgent(ABC):
             func()
 
     def handle_sync_derivations(self):
-        requestParams = json.loads(unquote(request.url[len(request.base_url):])[
-            len("?query="):])
+        self.logger.info("Received synchronous derivation request: %s." % (request.url))
+        requestParams = json.loads(unquote(urlparse(request.url).query)[len("query="):])
         res = {}
         if self.validate_inputs(requestParams):
+            # serialises DerivationInputs objects from JSONObject
             inputs = self.jpsBaseLib_view.DerivationInputs(requestParams[self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY])
             self.logger.info("Received derivation request parameters: " + str(requestParams))
+
+            # retrieve necessary information
             derivationIRI = requestParams[self.jpsBaseLib_view.DerivationClient.DERIVATION_KEY]
             derivationType = requestParams[self.jpsBaseLib_view.DerivationClient.DERIVATION_TYPE_KEY]
+            syncNewInfoFlag = requestParams[self.jpsBaseLib_view.DerivationClient.SYNC_NEW_INFO_FLAG]
+
+            # initialise DerivationOutputs, also set up information
             outputs = self.jpsBaseLib_view.DerivationOutputs()
             outputs.setThisDerivation(derivationIRI)
             outputs.setRetrievedInputsAt(int(time.time()))
-            outputs.setOldEntitiesMap(requestParams[self.jpsBaseLib_view.DerivationClient.BELONGSTO_KEY])
-            outputs.setOldEntitiesDownstreamDerivationMap(requestParams[self.jpsBaseLib_view.DerivationClient.DOWNSTREAMDERIVATION_KEY])
+            if not syncNewInfoFlag:
+                outputs.setOldEntitiesMap(requestParams[self.jpsBaseLib_view.DerivationClient.BELONGSTO_KEY])
+                outputs.setOldEntitiesDownstreamDerivationMap(requestParams[self.jpsBaseLib_view.DerivationClient.DOWNSTREAMDERIVATION_KEY])
 
             # apply agent logic to convert inputs to outputs
             derivation_inputs = DerivationInputs(inputs)
             derivation_outputs = DerivationOutputs(outputs)
             self.process_request_parameters(derivation_inputs, derivation_outputs)
 
+            # return response if this sync derivation is generated for new info
+            if syncNewInfoFlag:
+                agentServiceIRI = requestParams[self.jpsBaseLib_view.DerivationClient.AGENT_IRI_KEY]
+                self.derivationClient.writeSyncDerivationNewInfo(
+                    outputs.getOutputTriples(), outputs.getNewDerivedIRI(),
+                    agentServiceIRI, inputs.getAllIris(),
+                    derivationIRI, derivationType, outputs.getRetrievedInputsAt()
+                )
+                res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = outputs.getRetrievedInputsAt()
+                res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = json.loads(str(outputs.getNewEntitiesJsonMap()))
+                self.logger.info("Synchronous derivation for new information generated successfully, returned response: " + str(res))
+                return json.dumps(res)
+
+            # only enters below if the computation was not for new information (new instances)
             derivation = self.jpsBaseLib_view.Derivation(derivationIRI, derivationType)
             if not derivation.isDerivationAsyn() and not derivation.isDerivationWithTimeSeries():
                 # construct and fire SPARQL update given DerivationOutputs objects, if normal
@@ -385,6 +408,35 @@ class DerivationAgent(ABC):
 
     @abstractmethod
     def validate_inputs(self, http_request) -> bool:
+        # developer can overwrite this function for customised validation
+        self.logger.info("Validating inputs: " + str(http_request))
+        if not bool(http_request):
+            self.logger.warn("RequestParams are empty, throwing BadRequestException...")
+            raise Exception("RequestParams are empty")
+
+        if self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY not in http_request:
+            self.logger.info("Agent <%s> received an empty request..." % self.agentIRI)
+            return False
+        else:
+            if self.jpsBaseLib_view.DerivationClient.DERIVATION_KEY not in http_request:
+                msg = "Agent <%s> received a request that doesn't have derivationIRI..." % self.agentIRI
+                self.logger.error(msg)
+                raise Exception(msg)
+            if http_request[self.jpsBaseLib_view.DerivationClient.SYNC_NEW_INFO_FLAG]:
+                if self.jpsBaseLib_view.DerivationClient.AGENT_IRI_KEY not in http_request:
+                    msg = "Agent <%s> received a request for sync new information that doesn't have information about agent IRI..." % self.agentIRI
+                    self.logger.error(msg)
+                    raise Exception(msg)
+            else:
+                if self.jpsBaseLib_view.DerivationClient.BELONGSTO_KEY not in http_request:
+                    msg = "Agent <%s> received a request that doesn't have information about old outputs..." % self.agentIRI
+                    self.logger.error(msg)
+                    raise Exception(msg)
+                if self.jpsBaseLib_view.DerivationClient.DOWNSTREAMDERIVATION_KEY not in http_request:
+                    msg = "Agent <%s> received a request that doesn't have information about downstream derivation..." % self.agentIRI
+                    self.logger.error(msg)
+                    raise Exception(msg)
+
         return True
 
     def run_flask_app(self, **kwargs):
