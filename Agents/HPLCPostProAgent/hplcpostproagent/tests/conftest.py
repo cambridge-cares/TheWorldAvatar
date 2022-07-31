@@ -11,7 +11,6 @@ import os
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 from pyderivationagent.conf import config_derivation_agent
-from hplcpostproagent.conf import config_hplc_postpro
 
 from hplcpostproagent.kg_operations import ChemistryAndRobotsSparqlClient
 from hplcpostproagent.agent import *
@@ -164,26 +163,24 @@ def create_hplc_postpro_agent():
         register_agent:bool=False,
         random_agent_iri:bool=False,
     ):
-        derivation_agent_config = config_derivation_agent(HPLC_POSTPRO_AGENT_ENV)
-        hplc_postpro_config = config_hplc_postpro(HPLC_POSTPRO_AGENT_ENV)
+        hplc_postpro_agent_config = config_derivation_agent(HPLC_POSTPRO_AGENT_ENV)
         hplc_postpro_agent = HPLCPostProAgent(
-            register_agent=hplc_postpro_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            register_agent=hplc_postpro_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=hplc_postpro_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=hplc_postpro_agent_config.DERIVATION_PERIODIC_TIMESCALE,
+            derivation_instance_base_url=hplc_postpro_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=hplc_postpro_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=hplc_postpro_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=hplc_postpro_agent_config.KG_USERNAME,
+            kg_password=hplc_postpro_agent_config.KG_PASSWORD,
+            fs_url=hplc_postpro_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=hplc_postpro_agent_config.FILE_SERVER_USERNAME,
+            fs_password=hplc_postpro_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=hplc_postpro_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
             flask_config=FlaskConfigTest(), # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
             logger_name='dev'
         )
-        hplc_postpro_agent.register()
         return hplc_postpro_agent
     return _create_hplc_postpro_agent
 

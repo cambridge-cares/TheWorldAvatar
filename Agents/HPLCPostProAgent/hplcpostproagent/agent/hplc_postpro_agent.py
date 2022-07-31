@@ -11,33 +11,22 @@ from hplcpostproagent.data_model import *
 import hplcpostproagent.hypo_rxn as hypo
 
 class HPLCPostProAgent(DerivationAgent):
-    # TODO consider making __init__ of DerivationAgent to accept **kwargs
     def __init__(self,
-        register_agent: bool=True,
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.register_agent = register_agent
 
         # Initialise the sparql_client
-        self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUrl, kg_user=self.kgUser, kg_password=self.kgPassword,
-            fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_password
-        )
+        self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
 
-    def register(self):
-        # TODO think about standardised way of specify if to register?
-        if self.register_agent:
-            try:
-                self.sparql_client.generate_ontoagent_instance(
-                    self.agentIRI,
-                    self.agentEndpoint,
-                    [ONTOHPLC_HPLCREPORT],
-                    [ONTOREACTION_PERFORMANCEINDICATOR]
-                )
-            except Exception as e:
-                self.logger.error(e, stack_info=True, exc_info=True)
-                raise Exception("Agent <%s> registration failed." % self.agentIRI)
+    def agent_input_concepts(self) -> list:
+        return [ONTOHPLC_HPLCREPORT]
+
+    def agent_output_concepts(self) -> list:
+        return [ONTOREACTION_PERFORMANCEINDICATOR]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         """This method takes iri of OntoHPLC:HPLCReport and generates a list of iris of OntoRxn:PerformanceIndicator."""
