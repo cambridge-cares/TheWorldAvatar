@@ -75,6 +75,23 @@ def config_generic(conf_cls: Config, env_file: str = None) -> Config:
 #####################################
 # AgentConfig class with required fields, default values, type checking, and typecasting for int and bool values
 class AgentConfig(Config):
+    """
+    This is a config class for the DerivationAgent.
+    It is a subclass of Config and can be extended to provide custom configurations for developed agents.
+    It has the following fields:
+      - ONTOAGENT_SERVICE_IRI: The IRI of the OntoAgent:Service for the configured agent.
+      - DERIVATION_PERIODIC_TIMESCALE: The time scale of the periodic job that monitors asynchronous derivations.
+      - DERIVATION_INSTANCE_BASE_URL: The base URL of the derivation instances that to be created by this agent.
+      - SPARQL_QUERY_ENDPOINT: The SPARQL endpoint to be used for querying the knowledge graph.
+      - SPARQL_UPDATE_ENDPOINT: The SPARQL endpoint to be used for updating the knowledge graph.
+      - KG_USERNAME: The username to access the SPARQL endpoint.
+      - KG_PASSWORD: The password to access the SPARQL endpoint.
+      - FILE_SERVER_ENDPOINT: The endpoint of the file server.
+      - FILE_SERVER_USERNAME: The username to access the file server.
+      - FILE_SERVER_PASSWORD: The password to access the file server.
+      - ONTOAGENT_OPERATION_HTTP_URL: The URL of the OntoAgent:Operation HTTP endpoint.
+      - REGISTER_AGENT: Whether to register the OntoAgent instance of the configured agent to knowledge graph.
+    """
     ONTOAGENT_SERVICE_IRI: str
     DERIVATION_PERIODIC_TIMESCALE: int
     DERIVATION_INSTANCE_BASE_URL: str
