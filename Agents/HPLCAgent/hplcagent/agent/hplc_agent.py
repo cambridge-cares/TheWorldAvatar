@@ -12,14 +12,12 @@ from hplcagent.data_model import *
 from hplcagent.conf import *
 
 class HPLCAgent(DerivationAgent):
-    # TODO consider making __init__ of DerivationAgent to accept **kwargs
     def __init__(self,
         hplc_digital_twin: str,
         hplc_report_periodic_timescale: str,
         hplc_report_container_dir: str,
         current_hplc_method: str,
         hplc_report_file_extension: str,
-        register_agent: bool=True,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -28,28 +26,18 @@ class HPLCAgent(DerivationAgent):
         self.hplc_report_container_dir = hplc_report_container_dir if hplc_report_container_dir.endswith("/") else hplc_report_container_dir + "/"
         self.current_hplc_method = current_hplc_method
         self.hplc_report_file_extension = hplc_report_file_extension
-        self.register_agent = register_agent
 
         # Initialise the sparql_client
-        self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUrl, kg_user=self.kgUser, kg_password=self.kgPassword,
-            fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_password
-        )
+        self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
 
-    def register(self):
-        # TODO think about standardised way of specify if to register?
-        if self.register_agent:
-            try:
-                self.sparql_client.generate_ontoagent_instance(
-                    self.agentIRI,
-                    self.agentEndpoint,
-                    [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALSOLUTION],
-                    [ONTOHPLC_HPLCJOB]
-                )
-                self.sparql_client.register_agent_with_hardware(self.agentIRI, self.hplc_digital_twin)
-            except Exception as e:
-                self.logger.error(e, stack_info=True, exc_info=True)
-                raise Exception("Agent <%s> registration failed." % self.agentIRI)
+    def agent_input_concepts(self) -> list:
+        return [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALSOLUTION]
+
+    def agent_output_concepts(self) -> list:
+        return [ONTOHPLC_HPLCJOB]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Record the time when the job starts
@@ -146,7 +134,8 @@ class HPLCAgent(DerivationAgent):
                 self.hplc_report_file_extension, self.hplc_report_container_dir, self.hplc_digital_twin, self.timestamp_check, str(self.dct_files_check)
             ))
 
-    def add_job_monitoring_local_report_folder(self, start=False):
+    @DerivationAgent.periodical_job
+    def _start_monitoring_local_report_folder(self):
         """
             This method starts the periodical job to monitor the HPLC local report folder.
         """
@@ -161,12 +150,9 @@ class HPLCAgent(DerivationAgent):
             trigger='interval',
             seconds=self.hplc_report_periodic_timescale
         )
-        print("monitoring local report folder job added")
 
         self.logger.info("Monitor local report folder job is scheduled with a time interval of %d seconds." % (self.hplc_report_periodic_timescale))
 
-        if start:
-            self.start()
 
 # Show an instructional message at the HPLCInputAgent servlet root
 def default():

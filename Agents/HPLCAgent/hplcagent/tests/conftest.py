@@ -11,12 +11,10 @@ import uuid
 import xlwt
 import os
 
-from pyderivationagent.conf import config_derivation_agent
-
 from hplcagent.kg_operations import ChemistryAndRobotsSparqlClient
 from hplcagent.data_model import *
 from hplcagent.agent import HPLCAgent
-from hplcagent.conf import config_hplc
+from hplcagent.conf import config_hplc_agent
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
@@ -209,29 +207,27 @@ def create_hplc_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        derivation_agent_config = config_derivation_agent(HPLC_AGENT_ENV)
-        hplc_config = config_hplc(HPLC_AGENT_ENV)
+        hplc_agent_config = config_hplc_agent(HPLC_AGENT_ENV)
         hplc_agent = HPLCAgent(
-            hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
-            hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
-            hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
-            current_hplc_method=hplc_config.CURRENT_HPLC_METHOD,
-            hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
-            register_agent=hplc_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            hplc_digital_twin=hplc_agent_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
+            hplc_report_periodic_timescale=hplc_agent_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
+            hplc_report_container_dir=hplc_agent_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
+            current_hplc_method=hplc_agent_config.CURRENT_HPLC_METHOD,
+            hplc_report_file_extension=hplc_agent_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
+            register_agent=hplc_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=hplc_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=hplc_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
+            derivation_instance_base_url=hplc_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=hplc_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=hplc_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=hplc_agent_config.KG_USERNAME,
+            kg_password=hplc_agent_config.KG_PASSWORD,
+            fs_url=hplc_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=hplc_agent_config.FILE_SERVER_USERNAME,
+            fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        hplc_agent.register()
         return hplc_agent
     return _create_hplc_agent
 

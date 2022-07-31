@@ -1,6 +1,5 @@
 from pyderivationagent.conf import AgentConfig
-from dotenv import dotenv_values
-import os
+from pyderivationagent.conf import config_generic
 
 
 class HPLCConfig(AgentConfig):
@@ -9,12 +8,8 @@ class HPLCConfig(AgentConfig):
     HPLC_REPORT_CONTAINER_DIR: str
     CURRENT_HPLC_METHOD: str
     HPLC_REPORT_FILE_EXTENSION: str
-    REGISTER_AGENT: bool
 
 
-def config_hplc(env_file: str = None) -> HPLCConfig:
+def config_hplc_agent(env_file: str = None) -> HPLCConfig:
     """Return configurations from either environment variables or env_file."""
-    if env_file is not None:
-        return HPLCConfig(dotenv_values(env_file))
-    else:
-        return HPLCConfig(os.environ)
+    return config_generic(HPLCConfig, env_file)
