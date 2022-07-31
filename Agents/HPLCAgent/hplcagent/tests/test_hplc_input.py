@@ -36,6 +36,11 @@ def test_monitor_local_report_folder(
         register_agent=True,
     )
 
+    # Check if the agent is registered with the hplc hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        hplc_digital_twin, utils.cf.ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
+    ))[0]['ASK']
+
     hplc_agent._start_monitoring_local_report_folder()
 
     # Create a random file to be uploaded
@@ -85,6 +90,11 @@ def test_monitor_derivation(
         random_agent_iri=True,
         derivation_periodic_timescale=derivation_periodic_timescale,
     )
+
+    # Check if the agent is registered with the hplc hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        hplc_digital_twin, utils.cf.ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
+    ))[0]['ASK']
 
     ## Instantiate derivation instance
     rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)
@@ -142,6 +152,11 @@ def test_docker_integration(
     sparql_client = initialise_client
     hplc_agent = create_hplc_agent(register_agent=True)
     hplc_digital_twin = initialise_hplc_digital_twin_triples(sparql_client, hplc_agent.hplc_report_file_extension, hplc_agent.hplc_digital_twin)
+
+    # Check if the agent is registered with the hplc hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        hplc_digital_twin, utils.cf.ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
+    ))[0]['ASK']
 
     ## Instantiate derivation instance
     rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)

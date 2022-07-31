@@ -30,6 +30,14 @@ class HPLCAgent(DerivationAgent):
         # Initialise the sparql_client
         self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
 
+        # Register the agent with vapourtec hardware
+        if self.register_agent:
+            try:
+                self.sparql_client.register_agent_with_hardware(self.agentIRI, self.hplc_digital_twin)
+            except Exception as e:
+                self.logger.error(e, stack_info=True, exc_info=True)
+                raise Exception("Agent <%s> registration with hardware <%s> failed." % (self.agentIRI, self.hplc_digital_twin))
+
     def agent_input_concepts(self) -> list:
         return [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALSOLUTION]
 
