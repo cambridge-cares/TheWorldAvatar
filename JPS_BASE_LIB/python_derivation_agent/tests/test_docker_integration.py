@@ -71,10 +71,10 @@ def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
     # Initialise derivation agents
     # NOTE register_agent_in_kg is not done by agents in docker due to delay between spinning up docker containers and the blazegraph becoming reachable
     # register_agent_in_kg for each agent is automatically called when instantiating rng_agent, min_agent, max_agent, diff_agent (as register_agent=True)
-    rng_agent = create_rng_agent(RNGAGENT_ENV)
-    min_agent = create_min_agent(MINAGENT_ENV)
-    max_agent = create_max_agent(MAXAGENT_ENV)
-    diff_agent = create_diff_agent(DIFFAGENT_ENV)
+    rng_agent = create_rng_agent(env_file=RNGAGENT_ENV, register_agent=True)
+    min_agent = create_min_agent(env_file=MINAGENT_ENV, register_agent=True)
+    max_agent = create_max_agent(env_file=MAXAGENT_ENV, register_agent=True)
+    diff_agent = create_diff_agent(env_file=DIFFAGENT_ENV, register_agent=True)
 
     logger.info("Initialising derivation agents finished.")
 

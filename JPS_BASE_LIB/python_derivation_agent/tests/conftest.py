@@ -236,10 +236,10 @@ def initialise_agent(initialise_triple_store):
         sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
         # Initialise derivation agents with temporary docker container endpoint
-        rng_agent = create_rng_agent(RNGAGENT_ENV, endpoint)
-        min_agent = create_min_agent(MINAGENT_ENV, endpoint)
-        max_agent = create_max_agent(MAXAGENT_ENV, endpoint)
-        diff_agent = create_diff_agent(DIFFAGENT_ENV, endpoint)
+        rng_agent = create_rng_agent(RNGAGENT_ENV, endpoint, True)
+        min_agent = create_min_agent(MINAGENT_ENV, endpoint, True)
+        max_agent = create_max_agent(MAXAGENT_ENV, endpoint, True)
+        diff_agent = create_diff_agent(DIFFAGENT_ENV, endpoint, True)
 
         yield sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent
 
@@ -295,7 +295,7 @@ def generate_random_env_file(generate_random_conf):
 # Agents create functions
 # ----------------------------------------------------------------------------------
 
-def create_rng_agent(env_file: str = None, sparql_endpoint: str = None):
+def create_rng_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -306,12 +306,12 @@ def create_rng_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        register_agent=True,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
 
-def create_max_agent(env_file: str = None, sparql_endpoint: str = None):
+def create_max_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -322,12 +322,12 @@ def create_max_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        register_agent=True,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
 
-def create_min_agent(env_file: str = None, sparql_endpoint: str = None):
+def create_min_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -338,12 +338,12 @@ def create_min_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        register_agent=True,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
 
-def create_diff_agent(env_file: str = None, sparql_endpoint: str = None):
+def create_diff_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -354,7 +354,7 @@ def create_diff_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        register_agent=True,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
