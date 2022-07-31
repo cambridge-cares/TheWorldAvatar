@@ -1,6 +1,5 @@
 from pyderivationagent.conf import AgentConfig
-from dotenv import dotenv_values
-import os
+from pyderivationagent.conf import config_generic
 
 
 class VapourtecConfig(AgentConfig):
@@ -11,12 +10,8 @@ class VapourtecConfig(AgentConfig):
     FCEXP_FILE_HOST_FOLDER: str
     FCEXP_TEMPLATE_FILENAME: str
     DRY_RUN: bool
-    REGISTER_AGENT: bool
 
 
-def config_vapourtec(env_file: str = None) -> VapourtecConfig:
+def config_vapourtec_agent(env_file: str = None) -> VapourtecConfig:
     """Return configurations from either environment variables or env_file."""
-    if env_file is not None:
-        return VapourtecConfig(dotenv_values(env_file))
-    else:
-        return VapourtecConfig(os.environ)
+    return config_generic(VapourtecConfig, env_file)

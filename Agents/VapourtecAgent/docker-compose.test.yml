@@ -7,6 +7,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    ports:
+      - 7000:5000
     extra_hosts: # NOTE this ensures FlowCommander to be reachable via "localhost"
       - localhost:host-gateway
     env_file:
