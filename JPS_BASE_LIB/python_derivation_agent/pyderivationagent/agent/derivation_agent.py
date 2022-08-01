@@ -318,7 +318,8 @@ class DerivationAgent(ABC):
             self.time_interval))
 
         url_pattern = urlparse(self.agentEndpoint).path
-        self.add_url_pattern(url_pattern, url_pattern.strip('/').replace('/', '_'), self.handle_sync_derivations, methods=['GET'])
+        url_pattern_name = url_pattern.strip('/').replace('/', '_') + '_handle_sync_derivations'
+        self.add_url_pattern(url_pattern, url_pattern_name, self.handle_sync_derivations, methods=['GET'])
         self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
     def start_all_periodical_job(self):
