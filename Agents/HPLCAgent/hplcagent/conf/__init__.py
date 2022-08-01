@@ -1,1 +1,1 @@
-from .hplc_conf import config_hplc
+from .hplc_conf import config_hplc_agent

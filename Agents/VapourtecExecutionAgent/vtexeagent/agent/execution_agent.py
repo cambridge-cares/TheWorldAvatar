@@ -13,30 +13,21 @@ class VapourtecExecutionAgent(DerivationAgent):
     def __init__(
         self,
         maximum_concurrent_experiment: int = 1,
-        register_agent: bool = True,
         **kwargs
     ):
         super().__init__(**kwargs)
         self.maximum_concurrent_experiment = maximum_concurrent_experiment
-        self.register_agent = register_agent
 
-        self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUpdateUrl, self.kgUser, self.kgPassword,
-            self.fs_url, self.fs_user, self.fs_password
-        )
+        self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
 
-    def register(self):
-        if self.register_agent:
-            try:
-                self.sparql_client.generate_ontoagent_instance(
-                    self.agentIRI,
-                    self.agentEndpoint,
-                    [ONTOREACTION_REACTIONEXPERIMENT],
-                    [ONTOHPLC_HPLCREPORT]
-                )
-            except Exception as e:
-                self.logger.error(e, stack_info=True, exc_info=True)
-                raise Exception("Agent <%s> registration failed." % self.agentIRI)
+    def agent_input_concepts(self) -> list:
+        return [ONTOREACTION_REACTIONEXPERIMENT]
+
+    def agent_output_concepts(self) -> list:
+        return [ONTOHPLC_HPLCREPORT]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Check if the input is in correct format, and return OntoReaction.ReactionExperiment/ReactionVariation instance

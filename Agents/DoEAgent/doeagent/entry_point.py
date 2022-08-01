@@ -1,5 +1,4 @@
 from pyderivationagent.conf import config_derivation_agent
-from doeagent.conf import config_doe
 
 from doeagent.agent import DoEAgent
 from doeagent.agent import default
@@ -11,7 +10,6 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
     agent_config = config_derivation_agent()
-    doe_config = config_doe()
 
     agent = DoEAgent(
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
@@ -22,13 +20,12 @@ def create_app():
         kg_user=agent_config.KG_USERNAME,
         kg_password=agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        register_agent=doe_config.REGISTER_AGENT,
+        register_agent=agent_config.REGISTER_AGENT,
         logger_name="prod"
     )
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
-    agent.register()
-    agent.add_job_monitoring_derivations(start=True)
+    agent.start_all_periodical_job()
 
     return agent.app

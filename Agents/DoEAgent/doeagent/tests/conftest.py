@@ -12,7 +12,6 @@ from pyderivationagent.conf import config_derivation_agent
 
 from doeagent.kg_operations import ChemistryAndRobotsSparqlClient
 from doeagent.agent import DoEAgent
-from doeagent.conf import config_doe
 from doeagent.data_model import *
 
 logging.getLogger("py4j").setLevel(logging.INFO)
@@ -145,24 +144,22 @@ def create_doe_agent():
         register_agent:bool=False,
         random_agent_iri:bool=False,
     ):
-        derivation_agent_config = config_derivation_agent(DOEAGENT_ENV)
-        doe_config = config_doe(DOEAGENT_ENV)
+        doe_agent_config = config_derivation_agent(DOEAGENT_ENV)
         doe_agent = DoEAgent(
-            register_agent=doe_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            register_agent=doe_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=doe_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=doe_agent_config.DERIVATION_PERIODIC_TIMESCALE,
+            derivation_instance_base_url=doe_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=doe_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=doe_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=doe_agent_config.KG_USERNAME,
+            kg_password=doe_agent_config.KG_PASSWORD,
+            fs_url=doe_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=doe_agent_config.FILE_SERVER_USERNAME,
+            fs_password=doe_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=doe_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__)
         )
-        doe_agent.register()
         return doe_agent
     return _create_doe_agent
 

@@ -30,10 +30,10 @@ class VapourtecAgent(DerivationAgent):
         fcexp_file_host_folder: str = "D:\Vapourtec\FCEXP",
         fcexp_template_filename: str = "ReactionTemplate.fcexp",
         dry_run: bool = True,
-        register_agent: bool = True,
         **kwargs
     ):
         super().__init__(**kwargs)
+
         self.vapourtec_digital_twin = vapourtec_digital_twin
         self.vapourtec_state_periodic_timescale = vapourtec_state_periodic_timescale
         self.vapourtec_ip_address = vapourtec_ip_address
@@ -41,15 +41,30 @@ class VapourtecAgent(DerivationAgent):
         self.fcexp_file_host_folder = fcexp_file_host_folder
         self.fcexp_template_filename = fcexp_template_filename
         self.dry_run = dry_run
-        self.register_agent = register_agent
-
-        self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUpdateUrl, self.kgUser, self.kgPassword,
-            self.fs_url, self.fs_user, self.fs_password
-        )
 
         self.fc_exe_connected = False
         self.vapourtec_state = ONTOVAPOURTEC_NULL
+
+        # Initialise the sparql_client
+        self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
+
+        # Register the agent with vapourtec hardware
+        if self.register_agent:
+            try:
+                self.sparql_client.register_agent_with_hardware(self.agentIRI, self.vapourtec_digital_twin)
+            except Exception as e:
+                self.logger.error(e, stack_info=True, exc_info=True)
+                raise Exception("Agent <%s> registration with hardware <%s> failed." % (self.agentIRI, self.vapourtec_digital_twin))
+
+
+    def agent_input_concepts(self) -> list:
+        return [ONTOREACTION_REACTIONEXPERIMENT]
+
+    def agent_output_concepts(self) -> list:
+        return [ONTOLAB_EQUIPMENTSETTINGS, ONTOVAPOURTEC_VAPOURTECINPUTFILE, ONTOLAB_CHEMICALSOLUTION]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
 
     def connect_flowcommander_exe(self):
         # Connect to FlowCommander instance opened at the given IP address
@@ -59,20 +74,6 @@ class VapourtecAgent(DerivationAgent):
             self.logger.info("Connected to FlowCommander instance at IP address: %s" % (self.vapourtec_ip_address))
         else:
             self.logger.info("FlowCommander instance is already connected at IP address: %s" % (self.vapourtec_ip_address))
-
-    def register(self):
-        if self.register_agent:
-            try:
-                self.sparql_client.generate_ontoagent_instance(
-                    self.agentIRI,
-                    self.agentEndpoint,
-                    [ONTOREACTION_REACTIONEXPERIMENT],
-                    [ONTOLAB_EQUIPMENTSETTINGS, ONTOVAPOURTEC_VAPOURTECINPUTFILE, ONTOLAB_CHEMICALSOLUTION]
-                )
-                self.sparql_client.register_agent_with_hardware(self.agentIRI, self.vapourtec_digital_twin)
-            except Exception as e:
-                self.logger.error(e, stack_info=True, exc_info=True)
-                raise Exception("Agent <%s> registration failed." % self.agentIRI)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Get ReactionExperiment dataclasses instances from the KG
@@ -217,7 +218,8 @@ class VapourtecAgent(DerivationAgent):
     def vapourtec_is_idle(self) -> bool:
         return True if self.vapourtec_state == ONTOVAPOURTEC_IDLE else False
 
-    def add_job_monitoring_vapourtec_rs400_state(self, start=False):
+    @DerivationAgent.periodical_job
+    def _start_monitoring_vapourtec_rs400_state(self):
         """
             This method starts the periodical job to monitor the state of VapourtecRS400 module.
         """
@@ -234,9 +236,6 @@ class VapourtecAgent(DerivationAgent):
         self.logger.info("Monitor VapourtecRS400 state job is scheduled with a time interval of %d seconds." % (
             self.vapourtec_state_periodic_timescale)
         )
-
-        if start:
-            self.start()
 
 
 # Show an instructional message at the VapourtecAgent servlet root

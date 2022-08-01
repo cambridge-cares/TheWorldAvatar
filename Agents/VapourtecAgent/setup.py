@@ -12,7 +12,8 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent>=1.1.0a', 'pandas', 'pydantic'
+    # TODO change pyderivationagent version number to stable release once it's released to PyPI
+    install_requires=['pyderivationagent>=1.1.0b', 'pandas', 'pydantic==1.9.0'
     # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'
     # 'chemistry_and_robots @ git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots'
     ],

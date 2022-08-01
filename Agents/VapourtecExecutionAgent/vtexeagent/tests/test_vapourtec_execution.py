@@ -5,7 +5,6 @@ import filecmp
 import pytest
 import uuid
 import time
-import os
 
 import vtexeagent.tests.utils as utils
 
@@ -39,7 +38,7 @@ def test_monitor_derivation(
         random_agent_iri=True,
         derivation_periodic_timescale=derivation_periodic_timescale,
     )
-    vapourtec_execution_agent.add_job_monitoring_derivations(start=True)
+    vapourtec_execution_agent._start_monitoring_derivations()
 
     # NOTE Add placeholder agent service iri to manage the digital twin of all hardware
     # NOTE This should actually be done by the VapourtecAgent/HPLCAgent themselves when they are deployed
@@ -200,6 +199,16 @@ def test_three_agents_docker_integration(
     hplc_agent = create_hplc_agent(
         register_agent=True
     )
+
+    # Check if the vapourtec agent is registered with the vapourtec hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        vapourtec_agent.vapourtec_digital_twin, utils.cf.ONTOLAB_ISMANAGEDBY, vapourtec_agent.agentIRI
+    ))[0]['ASK']
+
+    # Check if the hplc agent is registered with the hplc hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        hplc_agent.hplc_digital_twin, utils.cf.ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
+    ))[0]['ASK']
 
     # Save a local variable of vapourtec_rs_400
     old_rs400 = sparql_client.get_vapourtec_rs400(vapourtec_agent.vapourtec_digital_twin)

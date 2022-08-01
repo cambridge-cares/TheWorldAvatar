@@ -13,7 +13,7 @@ services:
         authors: "jb2197@cam.ac.uk"
         description: "Schedule and request execution of reaction experiment given the suggested conditions."
     ports:
-      - 7001:5000
+      - 7000:5000
     extra_hosts:
       - localhost:host-gateway
     env_file:
@@ -47,6 +47,8 @@ services:
     container_name: vapourtec_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - 7001:5000
     extra_hosts: # NOTE this ensures FlowCommander to be reachable via "localhost"
       - localhost:host-gateway
     env_file:
@@ -62,6 +64,8 @@ services:
     container_name: hplc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - 7002:5000
     extra_hosts:
       - localhost:host-gateway
     env_file:

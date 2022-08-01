@@ -36,7 +36,12 @@ def test_monitor_local_report_folder(
         register_agent=True,
     )
 
-    hplc_agent.add_job_monitoring_local_report_folder(start=True)
+    # Check if the agent is registered with the hplc hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        hplc_digital_twin, utils.cf.ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
+    ))[0]['ASK']
+
+    hplc_agent._start_monitoring_local_report_folder()
 
     # Create a random file to be uploaded
     time.sleep(hplc_report_periodic_timescale * 2)
@@ -86,6 +91,11 @@ def test_monitor_derivation(
         derivation_periodic_timescale=derivation_periodic_timescale,
     )
 
+    # Check if the agent is registered with the hplc hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        hplc_digital_twin, utils.cf.ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
+    ))[0]['ASK']
+
     ## Instantiate derivation instance
     rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)
     derivation_inputs = [rxn_exp_iri, chemical_solution_iri]
@@ -99,7 +109,7 @@ def test_monitor_derivation(
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
 
     # Start monitor derivations
-    hplc_agent.add_job_monitoring_derivations(start=True)
+    hplc_agent._start_monitoring_derivations()
 
     # Wait for some arbitrary time more then the derivation_periodic_timescale
     time.sleep(derivation_periodic_timescale + 1)
@@ -142,6 +152,11 @@ def test_docker_integration(
     sparql_client = initialise_client
     hplc_agent = create_hplc_agent(register_agent=True)
     hplc_digital_twin = initialise_hplc_digital_twin_triples(sparql_client, hplc_agent.hplc_report_file_extension, hplc_agent.hplc_digital_twin)
+
+    # Check if the agent is registered with the hplc hardware
+    assert sparql_client.performQuery("ASK {<%s> <%s> <%s>.}" % (
+        hplc_digital_twin, utils.cf.ONTOLAB_ISMANAGEDBY, hplc_agent.agentIRI
+    ))[0]['ASK']
 
     ## Instantiate derivation instance
     rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)
