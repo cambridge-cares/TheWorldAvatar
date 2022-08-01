@@ -1,12 +1,15 @@
 package uk.ac.cam.cares.jps;
 
 import org.apache.jena.arq.querybuilder.*;
+import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 
@@ -17,7 +20,9 @@ import javax.ws.rs.HttpMethod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.ogm.models.geo.GeometryType;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 @WebServlet(urlPatterns = {BuildingMatchingAgent.URI_LISTEN})
@@ -46,10 +51,15 @@ public class BuildingMatchingAgent extends JPSAgent {
     private static final String ATTR = "attr";
     private static final String QM ="?";
     private static final String FLAT = "flat";
+    private static final String SURF_GEOM = "surf_geom";
+    private static final String SURFACE_GEOMETRY = "surfaceGeometry";
+    private static final String GEOMETRY_TYPE = "geometryType";
+    private static final String DATATYPE = "datatype";
 
     private static String targetResourceId_ocgml = null;
     private static String targetResourceId_obe = null;
     private static String bldgGraph = null;
+    private static String surfGeomGraph = null;
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -77,6 +87,7 @@ public class BuildingMatchingAgent extends JPSAgent {
                 targetResourceId_ocgml = requestParams.getString(KEY_OCGML);
                 targetResourceId_obe = requestParams.getString(KEY_OBE);
                 bldgGraph = requestParams.getString(KEY_PREFIXIRI).endsWith("/")?  requestParams.getString(KEY_PREFIXIRI)+"building/" :  requestParams.getString(KEY_PREFIXIRI)+"/building/";
+                surfGeomGraph = requestParams.getString(KEY_PREFIXIRI).endsWith("/")?  requestParams.getString(KEY_PREFIXIRI)+"surfacegeometry/" :  requestParams.getString(KEY_PREFIXIRI)+"/surfacegeometry/";
             }
             return true;
         }
@@ -94,17 +105,16 @@ public class BuildingMatchingAgent extends JPSAgent {
             e.printStackTrace();
         }
 
-//        String ocgml_response = AccessAgentCaller.query(targetResourceId_ocgml, selectBuilder_ocgml.buildString());
-//        JSONArray ocgml_result = new JSONArray(new JSONObject(ocgml_response).getString("result"));
         JSONArray ocgml_result = AccessAgentCaller.queryStore(targetResourceId_ocgml, selectBuilder_ocgml.buildString());
         HashMap<String, String> ontocitygml = createOcgmlMapping(ocgml_result);
 
-//        String obe_response = AccessAgentCaller.query(targetResourceId_ocgml, selectBuilder_obe.buildString());
-//        JSONArray obe_result = new JSONArray(new JSONObject(obe_response).getString("result"));
         JSONArray obe_result = AccessAgentCaller.queryStore(targetResourceId_obe, selectBuilder_obe.buildString());
         HashMap<String, ArrayList> ontobuilenv = createObeMapping(obe_result);
 
         UpdateBuilder insertion = new UpdateBuilder();
+        UpdateBuilder insertion_centroid = new UpdateBuilder();
+        Coordinate lat_lon;
+        Coordinate centroid;
 
         for (String env_bldg : ontobuilenv.keySet()) {
             ArrayList<String> UPRNS = ontobuilenv.get(env_bldg);
@@ -129,23 +139,70 @@ public class BuildingMatchingAgent extends JPSAgent {
             if (!ocgml_bldg.isEmpty()) {
                 Triple triple = new Triple(NodeFactory.createURI(env_bldg), NodeFactory.createURI(kbUri + "hasOntoCityGMLRepresentation"), NodeFactory.createURI(ocgml_bldg));
                 insertion.addInsert(triple);
+                try {
+                    SelectBuilder geom_query = getGeomQuery(ocgml_bldg);
+                    JSONArray geom_result = AccessAgentCaller.queryStore(targetResourceId_ocgml, geom_query.buildString());
+                    if (geom_result.length()>1){
+                        Double xsum = 0.0;
+                        Double ysum = 0.0;
+                        Double zsum = 0.0;
+                        Double asum=0.0;
+                        for (int i = 0; i < geom_result.length(); i++) {
+                            String data = geom_result.getJSONObject(i).getString(GEOMETRY_TYPE);
+                            String datatypeIri = geom_result.getJSONObject(i).getString(DATATYPE);
+                            GeometryType.setSourceCrsName("EPSG:27700");
+                            GeometryType geometryType = new GeometryType(data, datatypeIri);
+                            Polygon polygon1 = null;
+                            try {
+                                Field polygon = geometryType.getClass().getDeclaredField("polygon");
+                                polygon.setAccessible(true);
+                                polygon1 = (Polygon) polygon.get(geometryType);
+                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                            centroid = geometryType.getCentroid();
+                            Double area = polygon1.getArea();
+                            xsum += centroid.x * area;
+                            ysum += centroid.y *area;
+                            zsum += centroid.z*area;
+                            asum += area;
+                        }
+                        lat_lon = new Coordinate(xsum/asum, ysum/asum, zsum/asum);
+                    }
+                    else {
+                        String data = geom_result.getJSONObject(0).getString(GEOMETRY_TYPE);
+                        String datatypeIri = geom_result.getJSONObject(0).getString(DATATYPE);
+                        GeometryType.setSourceCrsName("EPSG:27700");
+                        GeometryType geometryType = new GeometryType(data, datatypeIri);
+                        centroid = geometryType.getCentroid();
+                        lat_lon =centroid;
+                    }
+                    StringBuilder value = new StringBuilder();
+                    for (int i = 0; i < 2; i++)
+                        value.append("#").append(lat_lon.getOrdinate(i));
+                    value.deleteCharAt(0);
+                    triple = new Triple(NodeFactory.createURI(env_bldg), NodeFactory.createURI(kbUri + "hasWGS84LatitudeLongitude"), NodeFactory.createLiteral(value.toString(), new BaseDatatype("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon")));
+                    insertion_centroid.addInsert(triple);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         AccessAgentCaller.updateStore(targetResourceId_obe, new UpdateRequest().add(insertion.build()).toString());
+        AccessAgentCaller.updateStore(targetResourceId_obe, new UpdateRequest().add(insertion_centroid.build()).toString());
     }
 
     private static SelectBuilder ocgmlQueryBuilder() throws ParseException {
-        WhereBuilder where = new WhereBuilder().addPrefix("ocgml", ocgmlUri).addWhere("?bldg", "ocgml:objectClassId",  "26");
+        WhereBuilder where = new WhereBuilder().addPrefix(KEY_OCGML, ocgmlUri).addWhere(QM+BLDG, KEY_OCGML+":objectClassId",  "26");
 
-        SelectBuilder selectBuilder = new SelectBuilder().setDistinct(true)
-                .addPrefix("ocgml", ocgmlUri).addPrefix("osid", osidUri)
+        return new SelectBuilder().setDistinct(true)
+                .addPrefix(KEY_OCGML, ocgmlUri).addPrefix("osid", osidUri)
                 .addVar(QM+BLDG).addVar(QM+uprn)
                 .addGraph(NodeFactory.createURI(bldgGraph), where)
                 .addBind("IRI(REPLACE(str("+QM+BLDG+"), \"building\", \"cityobject\"))", QM+CITYOBJ)
                 .addWhere(QM+ATTR, "osid:intersectsFeature" , QM+CITYOBJ)
                 .addWhere(QM+ATTR, "osid:hasValue", QM+uprn).addOrderBy(QM+BLDG);
-        return selectBuilder;
     }
 
     private static SelectBuilder obeQueryBuilder() throws ParseException {
@@ -162,12 +219,24 @@ public class BuildingMatchingAgent extends JPSAgent {
                 .addWhere(QM+BLDG, "obe:hasIdentifier", QM+uprn)
                 .addUnion(inner_where);
 
-        SelectBuilder selectBuilder = new SelectBuilder()
+        return new SelectBuilder()
                 .addPrefix("obe", obeUri).addPrefix("dabgeo", dabgeoUri).addPrefix("kb", kbUri)
                 .addVar(QM+BLDG).addVar(QM+uprn)
                 .addWhere(where);
 
-        return selectBuilder;
+    }
+
+    private static SelectBuilder getGeomQuery(String bldg) throws ParseException {
+        WhereBuilder innerwhere = new WhereBuilder().addPrefix(KEY_OCGML, ocgmlUri).addWhere(QM+SURF_GEOM, KEY_OCGML+":parentId", QM+SURFACE_GEOMETRY).addWhere(QM+SURF_GEOM, KEY_OCGML+":GeometryType", QM+GEOMETRY_TYPE);
+        WhereBuilder where1 = new WhereBuilder().addPrefix(KEY_OCGML, ocgmlUri).addGraph(NodeFactory.createURI(bldgGraph), "<" + bldg + ">", KEY_OCGML+":lod0FootprintId", QM+SURFACE_GEOMETRY)
+                .addGraph(NodeFactory.createURI(surfGeomGraph), innerwhere);
+
+        return new SelectBuilder()
+                .addPrefix(KEY_OCGML, ocgmlUri)
+                .addVar(QM + SURF_GEOM).addVar(QM + GEOMETRY_TYPE).addVar(QM + DATATYPE)
+                .addWhere(where1)
+                .addBind("(DATATYPE("+QM+GEOMETRY_TYPE+"))", QM + DATATYPE);
+
     }
 
     private static HashMap<String, String> createOcgmlMapping(JSONArray ocgml_result){
