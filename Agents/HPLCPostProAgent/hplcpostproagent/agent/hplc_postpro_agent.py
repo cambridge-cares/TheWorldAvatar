@@ -69,6 +69,5 @@ def default():
         Instructional message at the app root.
     """
     msg  = "This is an asynchronous agent that capable of post-processing experiment raw data generated from lab equipment.<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/HPLCPostProAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/HPLCPostProAgent#readme, before merging back to main branch
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCPostProAgent#readme<BR>"
     return msg

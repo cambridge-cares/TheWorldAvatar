@@ -270,20 +270,6 @@ def test_get_r2_pump_given_vapourtec_rs400(initialise_triples):
     list_pumps_iri = [res.instance_iri for res in response]
     assert len(set(list_pumps_iri).difference(set(TargetIRIs.LIST_DUMMY_R2PUMPS.value))) == 0
 
-# TODO commented out for now, decide whether to keep it before merging back to develop based on the function in sparql_client.py
-# @pytest.mark.parametrize(
-#     "r4_reactor_iri,rxn_exp_conducted",
-#     [
-#         (TargetIRIs.VAPOURTECR4REACTOR_DUMMY_IRI.value, TargetIRIs.LIST_VAPR4_DUMMY_CONDUCTED_RXN_EXP.value),
-#         (TargetIRIs.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI.value, TargetIRIs.LIST_RXN_EXP_ASSIGNEDTO_VAPR4_ANOTHER_DUMMY.value),
-#     ],
-# )
-# def test_get_rxn_exp_conducted_in_r4_reactor(initialise_triples, r4_reactor_iri, rxn_exp_conducted):
-#     sparql_client = initialise_triples
-#     response = sparql_client.get_rxn_exp_conducted_in_r4_reactor(r4_reactor_iri)
-#     assert len(response) == len(rxn_exp_conducted)
-#     assert len(set(response).difference(set(rxn_exp_conducted))) == 0
-
 @pytest.mark.parametrize(
     "r4_reactor_iri,rxn_exp_assigned",
     [
@@ -296,20 +282,6 @@ def test_get_rxn_exp_assigned_to_r4_reactor(initialise_triples, r4_reactor_iri, 
     response = sparql_client.get_rxn_exp_assigned_to_r4_reactor(r4_reactor_iri)
     assert len(response) == len(rxn_exp_assigned)
     assert len(set(response).difference(set(rxn_exp_assigned))) == 0
-
-# TODO commented out for now, decide whether to keep it before merging back to develop based on the function in sparql_client.py
-# @pytest.mark.parametrize(
-#     "r4_reactor_iri,rxn_exp_pending",
-#     [
-#         (TargetIRIs.VAPOURTECR4REACTOR_DUMMY_IRI.value, []),
-#         (TargetIRIs.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI.value, []),
-#     ],
-# )
-# def test_get_rxn_exp_pending_for_r4_reactor(initialise_triples, r4_reactor_iri, rxn_exp_pending):
-#     sparql_client = initialise_triples
-#     response = sparql_client.get_rxn_exp_pending_for_r4_reactor(r4_reactor_iri)
-#     assert len(response) == len(rxn_exp_pending)
-#     assert len(set(response).difference(set(rxn_exp_pending))) == 0
 
 @pytest.mark.parametrize(
     "rxnexp_iri,input_chemical_iri",
@@ -560,19 +532,6 @@ def test_identify_rxn_exp_when_uploading_hplc_report(initialise_triples, hplc_di
     assert rxn_exp == expected_rxn_exp
 
 @pytest.mark.parametrize(
-    "hplc_iri,expected_local_folder_path,expected_file_extension",
-    [
-        (TargetIRIs.HPLC_DUMMY_IRI.value, TargetIRIs.HPLC_LOCAL_FOLDER_PATH.value, onto.XLSFILE_EXTENSION),
-        (TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.HPLC_LOCAL_FOLDER_PATH.value, onto.XLSFILE_EXTENSION),
-        (TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.HPLC_LOCAL_FOLDER_PATH.value, onto.TXTFILE_EXTENSION),
-    ],
-)
-def test_get_hplc_local_report_folder_path_n_file_extension(initialise_triples, hplc_iri, expected_local_folder_path, expected_file_extension):
-    sparql_client = initialise_triples
-    local_folder_path, file_extension = sparql_client.get_hplc_local_report_folder_path_n_file_extension(hplc_iri)
-    assert (local_folder_path, file_extension) == (expected_local_folder_path, expected_file_extension)
-
-@pytest.mark.parametrize(
     "local_file_path,hplc_digital_twin,chemical_solution_iri,internal_standard_species,internal_standard_run_conc,hplc_method_iri",
     [
         (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
@@ -683,12 +642,8 @@ def test_get_remote_hplc_report_path_given_local_file(initialise_triples, hplc_d
 
 # get_r4_reactor_rxn_exp_assigned_to
 
-# updateNewExperimentInKG
 # create_equip_settings_for_rs400_from_rxn_exp
 # get_autosampler_site_given_input_chemical
-# write_equip_settings_to_kg
-# write_performance_indicator_back_to_kg
-# write_output_chemical_of_chem_sol_back_to_kg
 
 # get_species_molar_mass_kilogrampermole
 # get_matching_species_from_hplc_results

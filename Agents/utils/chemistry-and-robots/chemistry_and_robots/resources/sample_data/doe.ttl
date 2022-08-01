@@ -21,7 +21,6 @@
     OntoDoE:hasSystemResponse :SystemResponse_1;
     OntoDoE:hasSystemResponse :SystemResponse_2;
     OntoDoE:utilisesHistoricalData :HistoricalData_1;
-    #OntoDoE:proposesNewExperiment :ReactionExperiment_new; # TODO delete this
 .
 
 :Strategy_1
@@ -97,8 +96,3 @@ OntoDoE:TSEMO
     OntoDoE:refersTo exp5:RxnExp_1;
     OntoDoE:numOfNewExp "1"^^xsd:integer; # the numOfNewExp is set to be 1 for the DoE design of this iteration
 .
-
-# TODO delete this
-#:ReactionExperiment_new
-#    rdf:type OntoRxn:ReactionExperiment;
-#.

@@ -53,7 +53,6 @@ class PumpSettings(EquipmentSettings):
     hasFlowRateSetting: Optional[FlowRateSetting] = None
     hasSampleLoopVolumeSetting: Optional[SampleLoopVolumeSetting] = None
     hasStoichiometryRatioSetting: Optional[StoichiometryRatioSetting]
-    # TODO revisit: Here pumpsLiquidFrom is kept as str for simplicity for now
     pumpsLiquidFrom: AutoSamplerSite
     clz: str = ONTOVAPOURTEC_PUMPSETTINGS
     specifies: VapourtecR2Pump
@@ -85,7 +84,7 @@ class Vial(BaseOntology):
     isFilledWith: Optional[ChemicalSolution] = None # NOTE ChemicalSolution is made optional to accommodate situation where vial is empty
     hasFillLevel: OM_Volume
     # hasWarningLevel: OM_Volume # NOTE hasWarningLevel is temporarily commented out before a decision is made whether keep it
-    # TODO bring hasWarningLevel back, this is needed when the fill level is below certain amount to remind the reseachers to add liquid
+    # TODO [when run in loop] bring hasWarningLevel back, this is needed when the fill level is below certain amount to remind the reseachers to add liquid
     hasMaxLevel: OM_Volume
     isHeldIn: str # NOTE here we simplify the implementation to use str instead of the actual AutoSamplerSite
 
@@ -107,7 +106,6 @@ class VapourtecR4Reactor(LabEquipment):
     hasReactorVolume: OM_Volume
     hasReactorTemperatureLowerLimit: OM_CelsiusTemperature
     hasReactorTemperatureUpperLimit: OM_CelsiusTemperature
-    # conducted: List[Union[str, ReactionExperiment]] = None # TODO here we provided str as an optional to simplify the implementation
 
     @pydantic.root_validator
     @classmethod

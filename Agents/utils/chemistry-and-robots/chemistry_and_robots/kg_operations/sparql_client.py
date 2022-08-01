@@ -48,48 +48,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return g
 
-    # TODO delete this function, should use collect_triples_for_new_experiment instead
-    def updateNewExperimentInKG(self, doe: DesignOfExperiment, newExp: List[ReactionExperiment]):
-        """
-            This method is used to populate the suggested new experiments back to the knowledge graph.
-            It firstly first serialise and upload ReactionVariation/ReactionExperiment instance to the knowledge graph.
-            It then replace the link between the OntoDoE:DesignOfExperiment instance and the old OntoReaction:ReactionExperiment/ReactionVariation instance with the new created OntoReaction:ReactionExperiment/ReactionVariation instance.
-
-            Arguments:
-                doe - instance of dataclass OntoDoE.DesignOfExperiment
-                newExp - a list of instance of dataclass OntoReaction.ReactionExperiment
-        """
-        # (1) first serialise and upload ReactionVariation/ReactionExperiment instance to KG
-        # Generate a file path that is used to store the created OntoReaction:ReactionVariation instance
-        filePath = f'{str(uuid.uuid4())}.ttl'
-        # Serialise the created OntoReaction:ReactionVariation/ReactionExperiment instance as a XML file
-        # All information should already be prepared and added to the instance
-        # Method create_instance_for_kg will write all information to rdflib Graph on-the-fly
-        g = Graph()
-        # NOTE although here we loop through the list of OntoReaction:ReactionVariation/ReactionExperiment
-        # NOTE in theory, the len(newExp) should be 1 (as we decided to make DoE Agent only suggest 1 experiment per derivation)
-        # NOTE the loop is added for the future development
-        for exp in newExp:
-            g = exp.create_instance_for_kg(g)
-        g.serialize(filePath, format='ttl')
-        # Upload the created OntoReaction:ReactionVariation/ReactionExperiment instance to knowledge graph
-        self.uploadOntology(filePath)
-        # Delete generated Turtle file
-        os.remove(filePath)
-
-        # (2) replace connection between OntoDoE:DesignOfExperiment with OntoDoE:NewExperiment
-        # Construct SPARQL Update string
-        # delete existing <DoE> <proposesNewExperiment> <newExp_old>
-        # add <DoE> <proposesNewExperiment> <newExp>
-        # NOTE here the for loop is added due to the same reason - for the future development
-        update = """DELETE {<%s> <%s> ?newexp .}""" % (doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT)
-        for exp in newExp:
-            update += """INSERT {<%s> <%s> <%s> .} """ % (doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT, exp.instance_iri)
-        update += """WHERE {<%s> <%s> ?newexp .}""" % (doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT)
-
-        # Perform SPARQL Update
-        self.performUpdate(update)
-
     def get_doe_instance(self, doe_iri) -> DesignOfExperiment:
         doe_iri = trimIRI(doe_iri)
         query_1 = """SELECT ?strategy ?domain ?hist_data WHERE { <%s> <%s> ?strategy; <%s> ?domain; <%s> ?hist_data. }""" % (
@@ -115,42 +73,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             proposesNewExperiment=self.getNewExperimentFromDoE(doe_iri)
         ) # TODO initialisation of ReactionExperiment is omitted here
         return doe_instance
-
-    # # TODO delete this function
-    # def getDoEInstanceIRI(self, strategy_instance: Strategy, domain_instance: Domain, system_response_instance: List[SystemResponse], historical_data_instance: HistoricalData) -> str:
-    #     """
-    #         This method retrieves the instance of OntoDoE:DesignOfExperiment given instance of OntoDoE:Strategy, OntoDoE:Domain, OntoDoE:SystemResponse, and OntoDoE:HistoricalData.
-
-    #         Arguments:
-    #             doe_instance - instance of dataclass OntoDoE.DesignOfExperiment
-    #     """
-
-    #     # Prepare query string, start with strategy and domain, then iterate over a list of system responses, finally historical data
-    #     query = """SELECT ?doe_instance \
-    #             WHERE { \
-    #             ?doe_instance <%s> <%s> ; \
-    #                 <%s> <%s> ; """ % (ONTODOE_USESSTRATEGY, strategy_instance.instance_iri, ONTODOE_HASDOMAIN, domain_instance.instance_iri)
-
-    #     for sysres in system_response_instance:
-    #         query = query + """<%s> <%s> ; """ % (ONTODOE_HASSYSTEMRESPONSE, sysres.instance_iri)
-    #     query = query + """<%s> <%s> . }""" % (ONTODOE_UTILISESHISTORICALDATA, historical_data_instance.instance_iri)
-    #     # Perform query
-    #     response = self.performQuery(query)
-    #     if (len(response) == 0 ):
-    #         raise Exception("""Unable to identify the OntoDoE:DesignOfExperiment instance given input: \
-    #             OntoDoE:Strategy <%s>; \
-    #             OntoDoE:Domain <%s>; \
-    #             OntoDoE:SystemResponse <%s>; \
-    #             OntoDoE:HistoricalData <%s>.""" % (strategy_instance.instance_iri, domain_instance.instance_iri, ">, <".join([sysres.instance_iri for sysres in system_response_instance]), historical_data_instance.instance_iri))
-    #     elif (len(response) > 1):
-    #         raise Exception("""Unable to uniquely identify the OntoDoE:DesignOfExperiment instance given input: \
-    #             OntoDoE:Strategy <%s>; \
-    #             OntoDoE:Domain <%s>; \
-    #             OntoDoE:SystemResponse <%s>; \
-    #             OntoDoE:HistoricalData <%s>. \
-    #             The list of identified OntoDoE:DesignOfExperiment instances are: <%s>.""" % (strategy_instance.instance_iri, domain_instance.instance_iri, ">, <".join([sysres.instance_iri for sysres in system_response_instance]), historical_data_instance.instance_iri, ">, <".join([list(r.values())[0] for r in response])))
-    #     else:
-    #         return response[0]['doe_instance']
 
     def getDoEDomain(self, domain_iri: str) -> Domain:
         """
@@ -1019,18 +941,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return g
 
-    # TODO delete this method, should use collect_triples_for_equip_settings instead
-    def write_equip_settings_to_kg(self, equip_settings: List[EquipmentSettings]):
-        filePath = f'{str(uuid.uuid4())}.ttl'
-
-        g = Graph()
-        for es in equip_settings:
-            g = es.create_instance_for_kg(g)
-        g.serialize(filePath, format='ttl')
-        self.uploadOntology(filePath)
-        # Delete generated TTL file
-        # os.remove(filePath)
-
     def get_rxn_con_or_perf_ind(self, list_: List[ReactionCondition] or List[PerformanceIndicator], clz, positionalID=None):
         var = []
         for l in list_:
@@ -1201,16 +1111,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return vapourtec_rs400
 
-    # TODO commented out for now, decide whether to keep it before merging back to develop
-    # def get_rxn_exp_conducted_in_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
-    #     r4_reactor_iri = trimIRI(r4_reactor_iri)
-    #     query = """
-    #             SELECT ?rxnexp WHERE {<%s> <%s> ?rxnexp.}
-    #             """ % (r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
-    #     response = self.performQuery(query)
-    #     list_rxn = [res['rxnexp'] for res in response]
-    #     return list_rxn
-
     def get_rxn_exp_assigned_to_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
         r4_reactor_iri = trimIRI(r4_reactor_iri)
         query = """
@@ -1219,15 +1119,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         response = self.performQuery(query)
         list_rxn = [res['rxnexp'] for res in response]
         return list_rxn
-
-    # TODO commented out for now, decide whether to keep it before merging back to develop
-    # def get_rxn_exp_pending_for_r4_reactor(self, r4_reactor_iri: str) -> List[str]:
-    #     r4_reactor_iri = trimIRI(r4_reactor_iri)
-    #     query = """SELECT ?rxnexp WHERE { ?rxnexp <%s> <%s>. FILTER NOT EXISTS { <%s> <%s> ?rxnexp. } }""" % (
-    #         ONTOREACTION_ISASSIGNEDTO, r4_reactor_iri, r4_reactor_iri, ONTOVAPOURTEC_CONDUCTED)
-    #     response = self.performQuery(query)
-    #     list_rxn = [res['rxnexp'] for res in response]
-    #     return list_rxn
 
     def get_r4_reactor_rxn_exp_assigned_to(self, rxn_exp_iri: str) -> str:
         rxn_exp_iri = trimIRI(rxn_exp_iri)
@@ -1312,7 +1203,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     instance_iri=info_['r4_reactor_temp_upper'],
                     hasValue=OM_Measure(instance_iri=info_['r4_reactor_temp_upper_measure'],hasUnit=info_['r4_reactor_temp_upper_unit'],hasNumericalValue=info_['r4_reactor_temp_upper_val'])
                 ),
-                # conducted=self.get_rxn_exp_conducted_in_r4_reactor(info_['r4_reactor']) # TODO commented out for now, decide whether to keep it before merging back to develop
             )
             list_r4_reactor.append(r4_reactor)
 
@@ -1393,22 +1283,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         response = self.performQuery(query)
         rxn_exp_queue = {res['rxn']:res['timestamp'] for res in response}
         return rxn_exp_queue
-
-    # TODO delete this method
-    def get_hplc_local_report_folder_path_n_file_extension(self, hplc_iri: str) -> Tuple[str, str]:
-        hplc_iri = trimIRI(hplc_iri)
-        query = """SELECT ?report_dir ?report_extension WHERE { <%s> <%s> ?report_dir; <%s> ?report_extension. }""" % (hplc_iri, ONTOHPLC_LOCALREPORTDIRECTORY, ONTOHPLC_REPORTEXTENSION)
-        response = self.performQuery(query)
-        if len(response) > 1:
-            raise Exception("Multiple report folders found for given instance of HPLC <%s>: %s" % (hplc_iri, str(response)))
-        elif len(response) < 1:
-            raise Exception("No report folders found for given instance of HPLC <%s>." % (hplc_iri))
-        else:
-            try:
-                file_extension = MAPPING_FILENAMEEXTENSION.get(response[0]['report_extension'])
-            except:
-                raise NotImplementedError("Handling HPLC local report with (%s) as filename extension is NOT supported yet." % (response[0]['report_extension']))
-            return response[0]['report_dir'], file_extension
 
     # TODO create unit test case
     def detect_new_hplc_report(self, hplc_digital_twin, start_timestamp, end_timestamp):
@@ -1998,17 +1872,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             g = pi.create_instance_for_kg(g)
         return g
 
-    # TODO delete below method, should use collect_triples_for_performance_indicators instead
-    def write_performance_indicator_back_to_kg(self, lst_performance_indicator: List[PerformanceIndicator]):
-        filePath = f'{str(uuid.uuid4())}.ttl'
-        g = Graph()
-        for pi in lst_performance_indicator:
-            g = pi.create_instance_for_kg(g)
-        g.serialize(filePath, format='ttl')
-        self.uploadOntology(filePath)
-        # Delete generated Turtle file
-        os.remove(filePath)
-
     # TODO add unit test
     def collect_triples_for_chromatogram_point(self, chrom_pts: List[ChromatogramPoint], hplc_report_iri: str, g: Graph) -> Graph:
         for pt in chrom_pts:
@@ -2026,23 +1889,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # <rxn_exp_iri> <hasOutputChemical> <output_chemical>
         g.add((URIRef(rxn_exp_iri), URIRef(ONTOREACTION_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
         return g
-
-    # TODO delete below method, should use collect_triples_for_output_chemical_of_chem_sol instead
-    def write_output_chemical_of_chem_sol_back_to_kg(self, chemical_solution: ChemicalSolution, rxn_exp_iri: str):
-        filePath = f'{str(uuid.uuid4())}.ttl'
-        g = Graph()
-        # NOTE we do NOT call create_instance_for_kg for chemical_solution here
-        # NOTE as the triples about the chemical_solution itself (and vial) should already be in the KG
-        # <chemical_solution> <refersToMaterial> <output_chemical>
-        g.add((URIRef(chemical_solution.instance_iri), URIRef(ONTOCAPE_REFERSTOMATERIAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
-        # Also add triples related to the OutputChemical
-        g = chemical_solution.refersToMaterial.create_instance_for_kg(g)
-        # <rxn_exp_iri> <hasOutputChemical> <output_chemical>
-        g.add((URIRef(rxn_exp_iri), URIRef(ONTOREACTION_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
-        g.serialize(filePath, format='ttl')
-        self.uploadOntology(filePath)
-        # Delete generated Turtle file
-        os.remove(filePath)
 
     # TODO add unit test
     def update_vapourtec_autosampler_liquid_level_millilitre(self, level_change_of_site: Dict[str, float], for_consumption: bool):
@@ -2221,66 +2067,3 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             if key in d:
                 return True
         return False
-
-    # ####################################################
-    # ## TODO move these functions to pyderivationagent ##
-    # ####################################################
-    # # TODO this should be made part of pyderivationagent.kg_operations.sparql_client.py
-    # def generate_ontoagent_instance(self, service_iri:str, http_url:str, input_types:List[str], output_types:List[str]):
-    #     operation_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_OPERATION)
-    #     msg_input_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGECONTENT)
-    #     msg_output_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGECONTENT)
-
-    #     g = Graph()
-    #     g.add((URIRef(service_iri), RDF.type, URIRef(ONTOAGENT_SERVICE)))
-    #     g.add((URIRef(service_iri), URIRef(ONTOAGENT_HASOPERATION), URIRef(operation_iri)))
-    #     g.add((URIRef(operation_iri), RDF.type, URIRef(ONTOAGENT_OPERATION)))
-    #     g.add((URIRef(operation_iri), URIRef(ONTOAGENT_HASINPUT), URIRef(msg_input_iri)))
-    #     g.add((URIRef(operation_iri), URIRef(ONTOAGENT_HASOUTPUT), URIRef(msg_output_iri)))
-    #     g.add((URIRef(operation_iri), URIRef(ONTOAGENT_HASHTTPURL), Literal(http_url, datatype=XSD.anyURI)))
-
-    #     g.add((URIRef(msg_input_iri), RDF.type, URIRef(ONTOAGENT_MESSAGECONTENT)))
-    #     for each_input in input_types:
-    #         msg_part_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGEPART)
-    #         g.add((URIRef(msg_input_iri), URIRef(ONTOAGENT_HASMANDATORYPART), URIRef(msg_part_iri)))
-    #         g.add((URIRef(msg_part_iri), RDF.type, URIRef(ONTOAGENT_MESSAGEPART)))
-    #         g.add((URIRef(msg_part_iri), URIRef(ONTOAGENT_HASTYPE), URIRef(each_input)))
-
-    #     g.add((URIRef(msg_output_iri), RDF.type, URIRef(ONTOAGENT_MESSAGECONTENT)))
-    #     for each_output in output_types:
-    #         msg_part_iri = initialiseInstanceIRI(getNameSpace(service_iri), ONTOAGENT_MESSAGEPART)
-    #         g.add((URIRef(msg_output_iri), URIRef(ONTOAGENT_HASMANDATORYPART), URIRef(msg_part_iri)))
-    #         g.add((URIRef(msg_part_iri), RDF.type, URIRef(ONTOAGENT_MESSAGEPART)))
-    #         g.add((URIRef(msg_part_iri), URIRef(ONTOAGENT_HASTYPE), URIRef(each_output)))
-
-    #     # NOTE SPARQL update with sub-query to ensure one agent service don't get duplicated entries in KG
-    #     # NOTE TODO this implies that ONE AGENT SERVICE ONLY HAS ONE ONTOAGENT:OPERATION
-    #     update = PREFIX_RDF + """INSERT { %s } WHERE { FILTER NOT EXISTS {<%s> rdf:type <%s>.} }""" % (
-    #         g.serialize(format='nt'), service_iri, ONTOAGENT_SERVICE
-    #     )
-    #     self.performUpdate(update)
-
-    # # TODO this should replace uploadFile in pyderivationagent.kg_operations.sparql_client.py
-    # def uploadFile_(self, local_file_path, filename_with_subdir: str=None) -> Tuple[str, float]:
-    #     """This function uploads the file at the given local file path to file server."""
-    #     if self.fs_url is None or self.fs_auth is None:
-    #         raise Exception("ERROR: Fileserver URL and auth are not provided correctly.")
-    #     with open(local_file_path, 'rb') as file_obj:
-    #         files = {'file': file_obj}
-    #         timestamp_upload, response = datetime.now().timestamp(), requests.post(
-    #             self.fs_url+filename_with_subdir if filename_with_subdir is not None else self.fs_url,
-    #             auth=self.fs_auth, files=files
-    #         )
-
-    #         # If the upload succeeded, return the remote file path and the timestamp when the file was uploaded
-    #         if (response.status_code == status_codes.codes.OK):
-    #             remote_file_path = response.headers['file']
-
-    #             return remote_file_path, timestamp_upload
-    #         else:
-    #             raise Exception("ERROR: Local file (%s) upload to file server <%s> failed with code %d and response body: %s" % (
-    #                 local_file_path, self.fs_url, response.status_code, str(response.content)))
-
-    # def uploadGraph(self, g: Graph):
-    #     update = """INSERT DATA {""" + g.serialize(format='nt') + "}"
-    #     self.performUpdate(update)

@@ -303,7 +303,6 @@ class TargetIRIs(Enum):
     DOE_SYS_RES_IRI_LIST = [DOE_SYS_RES_1_IRI, DOE_SYS_RES_2_IRI]
     DOE_HIST_DATA_IRI = DOE_BASE_IRI + 'HistoricalData_1'
     DOE_HIST_DATE_REFERTO_IRI = LIST_EXAMPLE_RXN_EXP
-    # DOE_NEW_EXP_IRI = DOE_BASE_IRI + 'ReactionExperiment_new' # TODO delete this as we decided to not put placeholder instances in KG when creating derivation for new info
     DOE_CONT_VAR_1_IRI = DOE_BASE_IRI + 'ContinuousVariable_1'
     DOE_CONT_VAR_2_IRI = DOE_BASE_IRI + 'ContinuousVariable_2'
     DOE_CONT_VAR_3_IRI = DOE_BASE_IRI + 'ContinuousVariable_3'
