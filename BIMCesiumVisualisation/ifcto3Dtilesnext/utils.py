@@ -11,26 +11,16 @@ TSCLIENT_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "properties"
 
 def read_properties_file(filepath):
     """
-        Reads SPARQL endpoints and output directory from properties file (as global variables)
-        
-        Arguments:
-            filepath - absolute file path to properties file
+    Reads SPARQL endpoints from properties file (as global variables)
+    
+    Arguments:
+        filepath - absolute file path to properties file
     """
     # Define global scope for global variables to be read from properties file
-    global INPUT_IFC, INPUT_TTL, NAMESPACE, ENDPOINT
+    global NAMESPACE, ENDPOINT
     
     # Read properties file
     property = ConfigObj(filepath)
-
-    # Extract input IFC file path
-    try:
-        input = property['ifcfilepath']
-        INPUT_IFC = input + '.ifc' 
-        INPUT_TTL = input + '.ttl'
-    except KeyError:
-        raise KeyError('Key "ifcfilepath" is missing in properties file: ' + filepath)
-    if input == '':
-        raise KeyError('No "ifcfilepath" value has been provided in properties file: ' + filepath)
 
     # Extract namespace
     try:
@@ -48,23 +38,44 @@ def read_properties_file(filepath):
     if input == '':
         raise KeyError('No "sparql.endpoint" value has been provided in properties file: ' + filepath)
 
+def read_ifc_file():
+    """
+    Reads IFC file located at ./data/ifc directory into required file paths
+    """
+    ifcpath= os.path.join('.','data', 'ifc')
+    filelist = [file for file in os.listdir(ifcpath) if os.path.isfile(os.path.join(ifcpath, file))]
+
+    global INPUT_IFC, INPUT_TTL
+
+    if not filelist:
+        raise FileNotFoundError('No ifc file is available at the ./data/ifc folder')
+    elif len(filelist)==1:
+        INPUT_IFC= os.path.join(ifcpath, filelist[0])
+        INPUT_TTL= INPUT_IFC.split('.ifc')[0] + '.ttl'
+        print(INPUT_IFC,INPUT_TTL)
+    else:
+        raise RuntimeError('More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file')
+
 def cleandir():
     """
-    Remove previously generated files from the directory while keeping any input ifc models and ttl files
+    Remove previously generated files from the directory while keeping any input ifc models
     """
     # Get a list of all files in directory
     for rootDir, subdirs, filelist in os.walk('./data/'):
         for filename in filelist:
             try:
                 filepath = os.path.join(rootDir, filename)
-                if "./data/ifc" not in filepath:
+                if "./data/ifc" not in filepath or filepath.endswith('.ttl'):
                     os.remove(filepath)
             except OSError:
                 print("Error while deleting file")
     
     # Delete any existing blazegraph databases
     if os.path.exists("blazegraph.jnl"):
-        os.remove("blazegraph.jnl") 
+        try:
+            os.remove("blazegraph.jnl") 
+        except OSError:
+            print("Error while deleting file")
 
 def dictfind(lst, key, value):
     """
@@ -78,3 +89,4 @@ def dictfind(lst, key, value):
 # Run when module is imported
 read_properties_file(PROPERTIES_FILE)
 cleandir()
+read_ifc_file()

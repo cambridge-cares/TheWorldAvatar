@@ -67,8 +67,8 @@ A brief description of its workflow can be found below:
 
 ## Usage
 1. Place the IFC file in `<root>\data\ifc`
-2. Navigate to the `config.properties` file (`<root>\properties`) and modify the input ifc file name
-    - If required, you may rename the namespace and kg server
+2. Configurations
+    - If required, you may rename the namespace and kg server at the `config.properties` file (`<root>\properties`)
     - By default, this module will delete any `<root>\blazegraph.jnl` file
         - This can be configured in `utils.py` 
         - If you wish to keep a local `blazegraph.jnl` with existing data, ensure that it is not in the `<root>` directory or subdirectories.
