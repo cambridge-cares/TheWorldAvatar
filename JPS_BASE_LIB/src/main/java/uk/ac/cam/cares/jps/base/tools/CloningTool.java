@@ -38,7 +38,9 @@ public class CloningTool {
 	public CloningTool(int stepSize, int overlap){
 		this.stepSize = stepSize;
 		this.overlap = overlap;
-		checkStepAndOverlap();
+		if(!checkStepAndOverlap()) {
+			cloneFailed("overlap cannot be larger than stepsize!",0,0);
+		}
 	}
 	
 	/////////////////
@@ -61,7 +63,9 @@ public class CloningTool {
 	public void setStepsizeAndOverlap(int stepSize, int overlap) {
 		this.stepSize = stepSize;
 		this.overlap = overlap;
-		checkStepAndOverlap();
+		if(!checkStepAndOverlap()) {
+			cloneFailed("overlap cannot be larger than stepsize!",0,0);
+		}
 	}
 	
 	/**
@@ -81,9 +85,11 @@ public class CloningTool {
 	/**
 	 * Check step size is larger than overlap
 	 */
-	public void checkStepAndOverlap() {
+	public boolean checkStepAndOverlap() {
 		if(overlap >= stepSize) {
-			cloneFailed("overlap cannot be larger than stepsize!",0,0);
+			return false;
+		}else {
+			return true;
 		}
 	}
 	
@@ -156,10 +162,9 @@ public class CloningTool {
 	
 	public void adjustOverlap(int targetCount, int nExpected, int attempts) {
 		
-		int countError = nExpected - targetCount;
-		
 		//Increase overlap by the larger of 10% of the step size or the size of countError
-		overlap += Math.max((int) (defaultOverlapRatio*stepSize), countError);
+		overlap += Math.max((int) (defaultOverlapRatio*stepSize), nExpected - targetCount);
+		
 		LOGGER.info("Cloned count: "+Integer.toString(targetCount)
 				+" does not match expected count "+Integer.toString(nExpected)
 				+". Increasing overlap to "+Integer.toString(overlap)
@@ -175,7 +180,7 @@ public class CloningTool {
 		}
 	}
 	
-	void cloneFailed(String reason, int targetCount, int nExpected) {
+	public void cloneFailed(String reason, int targetCount, int nExpected) {
 		String errorMessage = "Cloning tool: clone failed...\n"
 		+"Reason: "+reason+"\n"
 		+"Parameters: stepSize="+Integer.toString(stepSize)
@@ -192,7 +197,7 @@ public class CloningTool {
 	 * @param target store
 	 * @param constructQuery
 	 */
-	private void performCloneStep(StoreClientInterface source, StoreClientInterface target, String constructQuery) {
+	public void performCloneStep(StoreClientInterface source, StoreClientInterface target, String constructQuery) {
 		Model model = source.executeConstruct(constructQuery);
 		target.executeUpdate(getSparqlInsert(model));
 	}
@@ -217,7 +222,7 @@ public class CloningTool {
 	 * @param offset
 	 * @return
 	 */
-	private String getSparqlConstructNoBlanks(int stepsize, int offset) {
+	public String getSparqlConstructNoBlanks(int stepsize, int offset) {
 		
 		return "CONSTRUCT {?s ?p ?o}\n"+
 		"WHERE {?s ?p ?o."
@@ -229,7 +234,7 @@ public class CloningTool {
 	 * SPARQL construct query return only triples with blank nodes. 
 	 * @return
 	 */
-	private String getSparqlConstructBlanks() {
+	public String getSparqlConstructBlanks() {
 		
 		return "CONSTRUCT {?s ?p ?o}\n"+
 		"WHERE {?s ?p ?o."
@@ -241,7 +246,7 @@ public class CloningTool {
 	 * @param storeClient
 	 * @return
 	 */
-	Integer countBlanks(StoreClientInterface storeClient) {
+	public Integer countBlanks(StoreClientInterface storeClient) {
 		String query = "SELECT (COUNT(*) AS ?triples)"
 				+"WHERE { ?s ?p ?o."
 				+ "FILTER(  isblank(?s) || isblank(?o) )}";
