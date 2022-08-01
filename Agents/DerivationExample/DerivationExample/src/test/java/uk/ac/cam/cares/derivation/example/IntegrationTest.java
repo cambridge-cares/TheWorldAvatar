@@ -100,6 +100,7 @@ public class IntegrationTest {
 	public void testMinValueAgent() {
 		String input = initResponse.getString(InitialiseInstances.input_key);
 		JSONObject request = new JSONObject()
+				.put(DerivationClient.SYNC_NEW_INFO_FLAG, false) // this is added to indicate call for update
 				.put(DerivationClient.AGENT_INPUT_KEY,
 						new JSONObject().put(SparqlClient.getRdfTypeString(SparqlClient.InputData), input))
 				.put(DerivationClient.BELONGSTO_KEY,
@@ -120,6 +121,7 @@ public class IntegrationTest {
 	public void testMaxValueAgent() {
 		String input = initResponse.getString(InitialiseInstances.input_key);
 		JSONObject request = new JSONObject()
+				.put(DerivationClient.SYNC_NEW_INFO_FLAG, false) // this is added to indicate call for update
 				.put(DerivationClient.AGENT_INPUT_KEY,
 						new JSONObject().put(SparqlClient.getRdfTypeString(SparqlClient.InputData), input))
 				.put(DerivationClient.BELONGSTO_KEY,
@@ -149,6 +151,7 @@ public class IntegrationTest {
 		
 		// now call agent to update the table containing averages
 		JSONObject request = new JSONObject()
+				.put(DerivationClient.SYNC_NEW_INFO_FLAG, false) // this is added to indicate call for update
 				.put(DerivationClient.AGENT_INPUT_KEY,
 						new JSONObject().put(SparqlClient.getRdfTypeString(SparqlClient.InputData), input))
 				.put(DerivationClient.BELONGSTO_KEY,
@@ -172,6 +175,7 @@ public class IntegrationTest {
 		String max = initResponse.getString(InitialiseInstances.max_key);
 		
 		JSONObject request = new JSONObject()
+				.put(DerivationClient.SYNC_NEW_INFO_FLAG, false) // this is added to indicate call for update
 				.put(DerivationClient.AGENT_INPUT_KEY, new JSONObject()
 						.put(SparqlClient.getRdfTypeString(SparqlClient.MinValue), min)
 						.put(SparqlClient.getRdfTypeString(SparqlClient.MaxValue), max))
