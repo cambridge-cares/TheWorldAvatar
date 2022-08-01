@@ -47,7 +47,7 @@ def gendict4split(ifc):
     # Non-exhaustive. If required, add more classes in the format '.IfcFeatureType'
     for feature in ['.IfcWall', '.IfcWallStandardCase', '.IfcSlab[PredefinedType!="ROOF"]', '.IfcColumn', '.IfcDoor', '.IfcWindow', '.IfcCurtainWall', '.IfcPlate', '.IfcMember', '.IfcStair', '.IfcStairFlight', '.IfcRailing']:
         add_feature_to_dict("ifcbuilding", feature, dict_elements, ifc)
-    for feature in ['.IfcSlab[PredefinedType="ROOF"]', '.IfcCovering']:
+    for feature in ['.IfcSlab[PredefinedType="ROOF"]', '.IfcCovering','.IfcRoof']:
         add_feature_to_dict("ifcceiling", feature, dict_elements, ifc)
     for feature in ['.IfcBuildingElementProxy', '.IfcFlowTerminal']:
         add_feature_to_dict("ifcfurniture", feature, dict_elements, ifc)
