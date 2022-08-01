@@ -13,15 +13,13 @@ from chemistry_and_robots.kg_operations import ChemistryAndRobotsSparqlClient
 from chemistry_and_robots.data_model import *
 
 from doeagent.agent import DoEAgent
-from doeagent.conf import config_doe
 from vtexeagent.agent import VapourtecExecutionAgent
-from vtexeagent.conf import config_vapourtec_execution
+from vtexeagent.conf import config_vapourtec_execution_agent
 from hplcpostproagent.agent import HPLCPostProAgent
-from hplcpostproagent.conf import config_hplc_postpro
 from vapourtecagent.agent import VapourtecAgent
-from vapourtecagent.conf import config_vapourtec
+from vapourtecagent.conf import config_vapourtec_agent
 from hplcagent.agent import HPLCAgent
-from hplcagent.conf import config_hplc
+from hplcagent.conf import config_hplc_agent
 
 
 logging.getLogger("py4j").setLevel(logging.INFO)
@@ -231,24 +229,22 @@ def create_doe_agent():
         register_agent:bool=False,
         random_agent_iri:bool=False,
     ):
-        derivation_agent_config = config_derivation_agent(DOE_AGENT_ENV)
-        doe_config = config_doe(DOE_AGENT_ENV)
+        doe_agent_config = config_derivation_agent(DOE_AGENT_ENV)
         doe_agent = DoEAgent(
-            register_agent=doe_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            register_agent=doe_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=doe_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=doe_agent_config.DERIVATION_PERIODIC_TIMESCALE,
+            derivation_instance_base_url=doe_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=doe_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=doe_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=doe_agent_config.KG_USERNAME,
+            kg_password=doe_agent_config.KG_PASSWORD,
+            fs_url=doe_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=doe_agent_config.FILE_SERVER_USERNAME,
+            fs_password=doe_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=doe_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__)
         )
-        doe_agent.register()
         return doe_agent
     return _create_doe_agent
 
@@ -260,25 +256,23 @@ def create_vapourtec_execution_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        derivation_agent_config = config_derivation_agent(VAPOURTEC_EXECUTION_AGENT_ENV)
-        vapourtec_execution_config = config_vapourtec_execution(VAPOURTEC_EXECUTION_AGENT_ENV)
+        vapourtec_execution_agent_config = config_vapourtec_execution_agent(VAPOURTEC_EXECUTION_AGENT_ENV)
         vapourtec_execution_agent = VapourtecExecutionAgent(
-            maximum_concurrent_experiment=vapourtec_execution_config.MAXIMUM_CONCURRENT_EXPERIMENT if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
-            register_agent=vapourtec_execution_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            maximum_concurrent_experiment=vapourtec_execution_agent_config.MAXIMUM_CONCURRENT_EXPERIMENT if maximum_concurrent_experiment is None else maximum_concurrent_experiment,
+            register_agent=vapourtec_execution_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=vapourtec_execution_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=vapourtec_execution_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
+            derivation_instance_base_url=vapourtec_execution_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=vapourtec_execution_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=vapourtec_execution_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=vapourtec_execution_agent_config.KG_USERNAME,
+            kg_password=vapourtec_execution_agent_config.KG_PASSWORD,
+            fs_url=vapourtec_execution_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=vapourtec_execution_agent_config.FILE_SERVER_USERNAME,
+            fs_password=vapourtec_execution_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=vapourtec_execution_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        vapourtec_execution_agent.register()
         return vapourtec_execution_agent
     return _create_vapourtec_execution_agent
 
@@ -288,24 +282,22 @@ def create_hplc_postpro_agent():
         register_agent:bool=False,
         random_agent_iri:bool=False,
     ):
-        derivation_agent_config = config_derivation_agent(HPLC_POSTPRO_AGENT_ENV)
-        hplc_postpro_config = config_hplc_postpro(HPLC_POSTPRO_AGENT_ENV)
+        hplc_postpro_agent_config = config_derivation_agent(HPLC_POSTPRO_AGENT_ENV)
         hplc_postpro_agent = HPLCPostProAgent(
-            register_agent=hplc_postpro_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            register_agent=hplc_postpro_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=hplc_postpro_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=hplc_postpro_agent_config.DERIVATION_PERIODIC_TIMESCALE,
+            derivation_instance_base_url=hplc_postpro_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=hplc_postpro_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=hplc_postpro_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=hplc_postpro_agent_config.KG_USERNAME,
+            kg_password=hplc_postpro_agent_config.KG_PASSWORD,
+            fs_url=hplc_postpro_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=hplc_postpro_agent_config.FILE_SERVER_USERNAME,
+            fs_password=hplc_postpro_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=hplc_postpro_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        hplc_postpro_agent.register()
         return hplc_postpro_agent
     return _create_hplc_postpro_agent
 
@@ -319,28 +311,26 @@ def create_vapourtec_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        derivation_agent_config = config_derivation_agent(VAPOURTEC_AGENT_ENV)
-        vapourtec_config = config_vapourtec(VAPOURTEC_AGENT_ENV)
+        vapourtec_agent_config = config_vapourtec_agent(VAPOURTEC_AGENT_ENV)
         vapourtec_agent = VapourtecAgent(
-            vapourtec_digital_twin=vapourtec_config.VAPOURTEC_DIGITAL_TWIN if vapourtec_digital_twin is None else vapourtec_digital_twin,
-            vapourtec_state_periodic_timescale=vapourtec_config.VAPOURTEC_STATE_PERIODIC_TIMESCALE if vapourtec_state_periodic_timescale is None else vapourtec_state_periodic_timescale,
-            vapourtec_ip_address=vapourtec_config.VAPOURTEC_IP_ADDRESS,
-            fcexp_file_container_folder=vapourtec_config.FCEXP_FILE_CONTAINER_FOLDER if fcexp_file_container_folder is None else fcexp_file_container_folder,
-            register_agent=vapourtec_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            vapourtec_digital_twin=vapourtec_agent_config.VAPOURTEC_DIGITAL_TWIN if vapourtec_digital_twin is None else vapourtec_digital_twin,
+            vapourtec_state_periodic_timescale=vapourtec_agent_config.VAPOURTEC_STATE_PERIODIC_TIMESCALE if vapourtec_state_periodic_timescale is None else vapourtec_state_periodic_timescale,
+            vapourtec_ip_address=vapourtec_agent_config.VAPOURTEC_IP_ADDRESS,
+            fcexp_file_container_folder=vapourtec_agent_config.FCEXP_FILE_CONTAINER_FOLDER if fcexp_file_container_folder is None else fcexp_file_container_folder,
+            register_agent=vapourtec_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=vapourtec_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=vapourtec_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
+            derivation_instance_base_url=vapourtec_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=vapourtec_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=vapourtec_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=vapourtec_agent_config.KG_USERNAME,
+            kg_password=vapourtec_agent_config.KG_PASSWORD,
+            fs_url=vapourtec_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=vapourtec_agent_config.FILE_SERVER_USERNAME,
+            fs_password=vapourtec_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=vapourtec_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        vapourtec_agent.register()
         return vapourtec_agent
     return _create_vapourtec_agent
 
@@ -355,29 +345,27 @@ def create_hplc_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
     ):
-        derivation_agent_config = config_derivation_agent(HPLC_AGENT_ENV)
-        hplc_config = config_hplc(HPLC_AGENT_ENV)
+        hplc_agent_config = config_hplc_agent(HPLC_AGENT_ENV)
         hplc_agent = HPLCAgent(
-            hplc_digital_twin=hplc_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
-            hplc_report_periodic_timescale=hplc_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
-            hplc_report_container_dir=hplc_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
-            current_hplc_method=hplc_config.CURRENT_HPLC_METHOD,
-            hplc_report_file_extension=hplc_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
-            register_agent=hplc_config.REGISTER_AGENT if not register_agent else register_agent,
-            agent_iri=derivation_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-            time_interval=derivation_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
-            derivation_instance_base_url=derivation_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=derivation_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=derivation_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=derivation_agent_config.KG_USERNAME,
-            kg_password=derivation_agent_config.KG_PASSWORD,
-            fs_url=derivation_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=derivation_agent_config.FILE_SERVER_USERNAME,
-            fs_password=derivation_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=derivation_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            hplc_digital_twin=hplc_agent_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
+            hplc_report_periodic_timescale=hplc_agent_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
+            hplc_report_container_dir=hplc_agent_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
+            current_hplc_method=hplc_agent_config.CURRENT_HPLC_METHOD,
+            hplc_report_file_extension=hplc_agent_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
+            register_agent=hplc_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=hplc_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=hplc_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
+            derivation_instance_base_url=hplc_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=hplc_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=hplc_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=hplc_agent_config.KG_USERNAME,
+            kg_password=hplc_agent_config.KG_PASSWORD,
+            fs_url=hplc_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=hplc_agent_config.FILE_SERVER_USERNAME,
+            fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
+            agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
         )
-        hplc_agent.register()
         return hplc_agent
     return _create_hplc_agent
 
