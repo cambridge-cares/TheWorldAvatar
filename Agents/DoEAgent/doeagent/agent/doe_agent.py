@@ -17,30 +17,21 @@ logging.getLogger("numba").setLevel(logging.WARNING)
 class DoEAgent(DerivationAgent):
     # TODO consider making __init__ of DerivationAgent to accept **kwargs
     def __init__(self,
-        register_agent: bool=True,
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.register_agent = register_agent
 
         # Initialise the sparql_client
-        self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUrl, kg_user=self.kgUser, kg_password=self.kgPassword
-        )
+        self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
 
-    def register(self):
-        # TODO think about standardised way of specify if to register?
-        if self.register_agent:
-            try:
-                self.sparql_client.generate_ontoagent_instance(
-                    self.agentIRI,
-                    self.agentEndpoint,
-                    [ONTODOE_DESIGNOFEXPERIMENT],
-                    [ONTOREACTION_REACTIONEXPERIMENT]
-                )
-            except Exception as e:
-                self.logger.error(e, stack_info=True, exc_info=True)
-                raise Exception("Agent <%s> registration failed." % self.agentIRI)
+    def agent_input_concepts(self) -> list:
+        return [ONTODOE_DESIGNOFEXPERIMENT]
+
+    def agent_output_concepts(self) -> list:
+         return [ONTOREACTION_REACTIONEXPERIMENT]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance
@@ -82,6 +73,5 @@ def default():
         Instructional message at the app root.
     """
     msg  = "This is an asynchronous agent that capable of conducting Design Of Experiment (DoE).<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/133-dev-design-of-experiment/Agents/DoEAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/DoEAgent#readme, before merging back to develop branch
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DoEAgent#readme<BR>"
     return msg
