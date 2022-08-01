@@ -406,20 +406,20 @@ def test_assign_and_remove_rxn_exp_to_r4_reactor(initialise_triples, new_rxn_exp
     assert new_rxn_exp_iri not in response3
 
 @pytest.mark.parametrize(
-    "rxn_exp_iri,prior_rxn_exp",
+    "rxn_exp_iri,prior_rxn_exp,vapourtec_execution_agent_iri",
     [
-        (TargetIRIs.RXN_EXP_QUEUE_1.value, TargetIRIs.RXN_EXP_1_PRIOR.value),
-        (TargetIRIs.RXN_EXP_QUEUE_2.value, TargetIRIs.RXN_EXP_2_PRIOR.value),
-        (TargetIRIs.RXN_EXP_QUEUE_3.value, TargetIRIs.RXN_EXP_3_PRIOR.value),
-        (TargetIRIs.RXN_EXP_QUEUE_4.value, TargetIRIs.RXN_EXP_4_PRIOR.value),
-        (TargetIRIs.RXN_EXP_QUEUE_5.value, TargetIRIs.RXN_EXP_5_PRIOR.value),
-        (TargetIRIs.RXN_EXP_QUEUE_6.value, TargetIRIs.RXN_EXP_6_PRIOR.value),
-        (TargetIRIs.RXN_EXP_QUEUE_7.value, TargetIRIs.RXN_EXP_7_PRIOR.value),
+        (TargetIRIs.RXN_EXP_QUEUE_1.value, TargetIRIs.RXN_EXP_1_PRIOR.value, TargetIRIs.DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI.value),
+        (TargetIRIs.RXN_EXP_QUEUE_2.value, TargetIRIs.RXN_EXP_2_PRIOR.value, TargetIRIs.DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI.value),
+        (TargetIRIs.RXN_EXP_QUEUE_3.value, TargetIRIs.RXN_EXP_3_PRIOR.value, TargetIRIs.DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI.value),
+        (TargetIRIs.RXN_EXP_QUEUE_4.value, TargetIRIs.RXN_EXP_4_PRIOR.value, TargetIRIs.DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI.value),
+        (TargetIRIs.RXN_EXP_QUEUE_5.value, TargetIRIs.RXN_EXP_5_PRIOR.value, TargetIRIs.DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI.value),
+        (TargetIRIs.RXN_EXP_QUEUE_6.value, TargetIRIs.RXN_EXP_6_PRIOR.value, TargetIRIs.DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI.value),
+        (TargetIRIs.RXN_EXP_QUEUE_7.value, TargetIRIs.RXN_EXP_7_PRIOR.value, TargetIRIs.DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI.value),
     ],
 )
-def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_exp):
+def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_exp, vapourtec_execution_agent_iri):
     sparql_client = initialise_triples
-    rxn_exp_queue = sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_iri)
+    rxn_exp_queue = sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_iri, vapourtec_execution_agent_iri)
     assert all(item in [*rxn_exp_queue] for item in prior_rxn_exp)
 
 @pytest.mark.parametrize(

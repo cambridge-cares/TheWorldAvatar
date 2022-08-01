@@ -140,6 +140,7 @@ def clear_loggers():
             logger.removeHandler(handler)
 
 class TargetIRIs(Enum):
+    DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service' # same as in rxn_queue_test.ttl
     DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
     AUTOMATEDRXNPLATFORM_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'AutomatedRxnPlatform_Dummy'
     VAPOURTECRS400_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecRS400_Dummy'

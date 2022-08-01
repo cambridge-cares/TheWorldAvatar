@@ -1367,23 +1367,28 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         self.performUpdate(update)
         logger.info("ReactionExperiment <%s> is no longer assigned to VapourtecR4Reactor <%s>." % (rxn_exp_iri, r4_reactor_iri))
 
-    def get_prior_rxn_exp_in_queue(self, rxn_exp_iri: str) -> Dict[str, int]:
+    def get_prior_rxn_exp_in_queue(self, rxn_exp_iri: str, vapourtec_execution_agent_iri: str) -> Dict[str, int]:
+        """This method queries the instances of ReactionExperiment that are prior in the queue for execution.
+        NOTE: It is assumed there is only ONE possible OntoAgent:Service of DoE Agent. This can be extended if deemed necessary in the future."""
+        # TODO support query prior experiments in the situation of multiple DoE Agent available
         rxn_exp_iri = trimIRI(rxn_exp_iri)
+        vapourtec_execution_agent_iri = trimIRI(vapourtec_execution_agent_iri)
         query = PREFIX_RDF + """
                 SELECT ?rxn ?timestamp
                 WHERE {
-                    <%s> <%s> ?dd. ?dd <%s> <%s>; <%s>/<%s>/<%s> ?specific_timestamp.
+                    <%s> <%s> ?dd. ?dd <%s> ?doe_agent; <%s>/<%s>/<%s> ?specific_timestamp.
                     VALUES ?type {<%s> <%s>}.
                     ?rxn rdf:type ?type; <%s> ?doe_derivation.
-                    ?doe_derivation <%s> <%s>; <%s>/<%s>/<%s> ?timestamp.
+                    ?doe_derivation <%s> ?doe_agent; <%s>/<%s>/<%s> ?timestamp.
                     ?rxn ^<%s> ?exe_derivation.
                     ?exe_derivation <%s> <%s>.
                     ?exe_derivation <%s>/rdf:type ?status_type.
                     filter(?timestamp < ?specific_timestamp)
                 }
-                """ % (rxn_exp_iri, ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDUSING, DOEAGENT_SERVICE, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION,
-                ONTOREACTION_REACTIONEXPERIMENT, ONTOREACTION_REACTIONVARIATION, ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDUSING, DOEAGENT_SERVICE,
-                TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION, ONTODERIVATION_ISDERIVEDFROM, ONTODERIVATION_ISDERIVEDUSING, EXEAGENT_SERVICE, ONTODERIVATION_HASSTATUS)
+                """ % (rxn_exp_iri, ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDUSING, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION,
+                ONTOREACTION_REACTIONEXPERIMENT, ONTOREACTION_REACTIONVARIATION, ONTODERIVATION_BELONGSTO,
+                ONTODERIVATION_ISDERIVEDUSING, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION,
+                ONTODERIVATION_ISDERIVEDFROM, ONTODERIVATION_ISDERIVEDUSING, vapourtec_execution_agent_iri, ONTODERIVATION_HASSTATUS)
         logger.debug(query)
         response = self.performQuery(query)
         rxn_exp_queue = {res['rxn']:res['timestamp'] for res in response}

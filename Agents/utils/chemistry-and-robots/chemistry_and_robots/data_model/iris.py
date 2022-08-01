@@ -1,24 +1,4 @@
 from pyderivationagent.data_model.iris import *
-# # TODO move below IRIs to pyderivationagent.data_model.iris.py
-# ONTODERIVATION_BELONGSTO = ONTODERIVATION + 'belongsTo'
-# ONTODERIVATION_ISDERIVEDUSING = ONTODERIVATION + 'isDerivedUsing'
-# ONTODERIVATION_HASSTATUS = ONTODERIVATION + 'hasStatus'
-# ONTODERIVATION_REQUESTED = ONTODERIVATION + 'Requested'
-# ONTODERIVATION_INPROGRESS = ONTODERIVATION + 'InProgress'
-# ONTODERIVATION_FINISHED = ONTODERIVATION + 'Finished'
-
-# ONTOAGENT_SERVICE = ONTOAGENT + "Service"
-# ONTOAGENT_OPERATION = ONTOAGENT + "Operation"
-# ONTOAGENT_MESSAGECONTENT = ONTOAGENT + "MessageContent"
-# ONTOAGENT_MESSAGEPART = ONTOAGENT + "MessagePart"
-# ONTOAGENT_HASHTTPURL = ONTOAGENT + "hasHttpUrl"
-# ONTOAGENT_HASOUTPUT = ONTOAGENT + "hasOutput"
-
-
-# TODO below agent related IRIs should be placed at another location, tbd
-###--- Agent related IRIs ---###
-DOEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__DoE#Service'
-EXEAGENT_SERVICE = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service'
 
 
 ###--- Common Base URL ---###

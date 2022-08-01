@@ -44,14 +44,12 @@ class VapourtecExecutionAgent(DerivationAgent):
         self.logger.info(json.dumps(rxn_exp_instance.dict()))
 
         # Check until it's the turn for the given reaction experiment
-        rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(
-            rxn_exp_instance.instance_iri)
+        rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_instance.instance_iri, self.agentIRI)
         self.logger.info("ReactionExperiment <%s> has prior experiment in queue: %s" % (rxn_exp_instance.instance_iri, str(rxn_exp_queue)))
-        # TODO NOTE here the maximum_concurrent_experiment is configured at agent start, move to KG in the future iterations
+        # TODO NOTE [when run in loop] here the maximum_concurrent_experiment is configured at agent start, move to KG in the future iterations
         while len(rxn_exp_queue) > self.maximum_concurrent_experiment - 1:
             time.sleep(60)
-            rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(
-                rxn_exp_instance.instance_iri)
+            rxn_exp_queue = self.sparql_client.get_prior_rxn_exp_in_queue(rxn_exp_instance.instance_iri, self.agentIRI)
             self.logger.info("ReactionExperiment <%s> has prior experiment in queue: %s" % (rxn_exp_instance.instance_iri, str(rxn_exp_queue)))
 
         # Check until get the digital twin of the most suitable hardware
@@ -92,6 +90,5 @@ def default():
         Instructional message at the app root.
     """
     msg = "This is an asynchronous agent that capable of executing experiment in lab equipment.<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/ExecutionAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/ExecutionAgent#readme, before merging back to develop branch
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VapourtecExecutionAgent#readme<BR>"
     return msg
