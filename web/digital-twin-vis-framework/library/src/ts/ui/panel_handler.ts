@@ -184,47 +184,71 @@ class PanelHandler {
 	}
 
 
-    public addMetadata(url: string) {
-        console.log("Reading metadata...");
-        this.prepareMetaContainers(true, false);
+    /**
+     * Request and display metadata and timeseries for the input feature IRI.
+     * 
+     * @param iri 
+     * @param stackURL 
+     * @param endpoint 
+     * @returns 
+     */
+    public addSupportingData(feature: Object) {
+        console.log("Getting metadata and timeseries...");
+        
+        // Get required details
+        let iri = feature["properties"]["iri"];
+        let endpoint = feature["properties"]["endpoint"];
+        let stack = Manager.findStack(feature);
 
-        var promise = $.getJSON(url, function(json) {
+        // TEST
+        iri = "http://environment.data.gov.uk/flood-monitoring/id/stations/3401TH";
+        endpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/flood_ontoems/sparql";
+        stack = "http://localhost:55050";
+        // TEST
+
+        if(iri === undefined || endpoint === undefined || stack === undefined) {
+            console.error("Feature is missing required information to get metadata/timeseries!");
+            return;
+        }
+        this.prepareMetaContainers(true, true);
+
+        // Build the request to the FeatureInfoAgent
+        let agentURL = stack + "/feature-info-agent/get";
+        let params = { "iri": iri, "endpoint": endpoint };
+
+        let self = this;
+        var promise = $.getJSON(agentURL, params, function(json) {
+            console.log("Got a response");
+            // Get results
+            let meta = json["meta"];
+            let time = json["time"];
+
             // Render metadata tree
             document.getElementById("metaTreeContainer").innerHTML = "";
 
-            // @ts-ignore
-            let metaTree = JsonView.renderJSON(json, document.getElementById("metaTreeContainer"));
-            // @ts-ignore
-            JsonView.expandChildren(metaTree);
-            // @ts-ignore
-            JsonView.selectiveCollapse(metaTree)
-        });
-        return promise;
-    }
+            if(meta !== null && meta !== undefined) {
+                // @ts-ignore
+                let metaTree = JsonView.renderJSON(meta, document.getElementById("metaTreeContainer"));
+                // @ts-ignore
+                JsonView.expandChildren(metaTree);
+                // @ts-ignore
+                JsonView.selectiveCollapse(metaTree);
+            }
 
-    public addTimeseries(url: string) {
-        console.log("Reading timeseries...");
-        this.prepareMetaContainers(false, true);
+            // Render timeseries
+            document.getElementById("metaTimeContainer").innerHTML = "";
 
-        var promise = $.getJSON(url, function(json) {
-            return json;
-        });
-
-        let self = this;
-        return promise.then(
-            function(json) {
-                // Render timeseries
-                document.getElementById("metaTimeContainer").innerHTML = "";
-
+            if(time !== null && time !== undefined) {
                 // Plot data
-                self.timeseriesHandler.parseData(json);
+                self.timeseriesHandler.parseData(time);
                 self.timeseriesHandler.showData("metaTimeContainer");
 
                 // Auto-select the first option in the dropdown
                 let select = document.getElementById("time-series-select") as HTMLInputElement;
                 select.onchange(null);
             }
-        );
+        });
+        return promise;
     }
 
     public updateTimeseries(setName) {

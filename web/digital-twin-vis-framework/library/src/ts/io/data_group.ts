@@ -73,9 +73,10 @@ class DataGroup {
      * 
      * This method relies on the presumption that data sources have been parsed first.
      * 
+     * @param stack base URL of the connected stack
      * @param layersJSON JSON array of layer nodes.
      */
-    public parseDataLayers(layersJSON) {
+    public parseDataLayers(stack: string, layersJSON) {
         for(var i = 0; i < layersJSON.length; i++) {
             let node = layersJSON[i];
 
@@ -87,6 +88,9 @@ class DataGroup {
                 case MapProvider.MAPBOX:
                     let layerID = this.id + "." + node["id"];
                     layer = new MapBoxLayer(layerID, node["name"], source);
+
+                    // Register this layer to this connected stack
+                    Manager.STACK_LAYERS[stack].push(layerID);
                 break;
     
                 default:

@@ -107,6 +107,7 @@ class MapHandler_MapBox extends MapHandler {
 
             } else {
                 // Click on single feature
+                console.log(feature);
                 this.manager.showFeature(feature);
             }
         }

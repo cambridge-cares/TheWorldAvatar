@@ -19,6 +19,11 @@ class Manager {
     public static DATA_STORE: DataStore = new DataStore();
 
     /**
+     * Layer names keyed by the stack URLs they came from
+     */
+    public static STACK_LAYERS = {};
+
+    /**
      * Map handler instance.
      */
     private mapHandler: MapHandler;
@@ -32,11 +37,6 @@ class Manager {
      * Handles the side panel.
      */
     private panelHandler: PanelHandler;
-
-    /**
-     * Cache of base URLs for all stack endpoints.
-     */
-    private endPoints: string[];
 
     /**
      * Is the feature search bar currently up?
@@ -149,12 +149,16 @@ class Manager {
      * @returns promise object
      */
     public loadDefinitions(endPoints: string[]) {
-        this.endPoints = endPoints;
+        Manager.STACK_LAYERS = {};
+        endPoints.forEach(endPoint => {
+            Manager.STACK_LAYERS[endPoint] = [];
+        })
+
         let promises = [];
 
         endPoints.forEach(endPoint => {
             let visFile = (endPoint.endsWith("/")) ? (endPoint + "visualisation.json") : (endPoint + "/visualisation.json");
-            promises.push(Manager.DATA_STORE.loadDataGroups(visFile));
+            promises.push(Manager.DATA_STORE.loadDataGroups(endPoint, visFile));
         });
 
         return Promise.all(promises);
@@ -165,9 +169,10 @@ class Manager {
      */
     public loadImagesAndLinks() {
         let promises = [];
+        let endPoints = Object.keys(Manager.STACK_LAYERS);
 
-        for(let i = 0; i < this.endPoints.length; i++) {
-            let endPoint = this.endPoints[i];
+        for(let i = 0; i < endPoints.length; i++) {
+            let endPoint = endPoints[i];
 
             if(Manager.PROVIDER === MapProvider.MAPBOX) {
                 let iconFile = (endPoint.endsWith("/")) ? (endPoint + "icons.json") : (endPoint + "/icons.json");
@@ -199,18 +204,6 @@ class Manager {
         return this.controlHandler;
     }
     
-    /**
-     * Returns the depth-first, leaf data group to be used as the 
-     * default source of plotted data.
-     */
-    private getDefaultGroup(): DataGroup {
-        if(Manager.DATA_STORE.dataGroups.length === 0) {
-            throw new Error("No data has been loaded!");
-        }
-        let firstRoot = Manager.DATA_STORE.dataGroups[0];
-        return DataUtils.getDefaultGroup(firstRoot);
-    }
-
     /**
      * Given an array of hierarchal group names, find the data group that
      * corresponds to it and plot it. If no group names are passed, the
@@ -260,17 +253,8 @@ class Manager {
             this.panelHandler.setContent("");
         }
 
-        // Metadata
-        let metadataURL = feature["properties"]["metadataURL"];
-        if(metadataURL !== null && metadataURL !== undefined) {
-            this.panelHandler.addMetadata(metadataURL);
-        }
-
-        // Timeseries
-        let timeseriesURL = feature["properties"]["timeseriesURL"];
-        if(timeseriesURL !== null && timeseriesURL !== undefined) {
-            this.panelHandler.addTimeseries(timeseriesURL);
-        }
+        // TODO
+        this.panelHandler.addSupportingData(feature);
 
         let metaTreeButton = document.getElementById("treeButton");
         let timeseriesButton = document.getElementById("timeButton");
@@ -504,5 +488,24 @@ class Manager {
         let one = JSON.stringify(filterOne);
         let two = JSON.stringify(filterTwo);
         return one === two;
+    }
+
+    /**
+     * 
+     * @param feature 
+     * @returns 
+     */
+    public static findStack(feature: Object) {
+        let layer = feature["layer"]["id"];
+
+        if(layer !== null && layer !== undefined) {
+
+            for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                let layers = value as string[];
+                if(layers.includes(layer)) return stack;
+            }
+        }
+
+        return null;
     }
 }

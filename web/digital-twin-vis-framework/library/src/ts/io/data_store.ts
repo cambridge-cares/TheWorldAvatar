@@ -53,16 +53,17 @@ class DataStore {
      * Recursively find and load all DataGroups defined within the visualisation.json
      * file.
      * 
+     * @param stack base URL of the connected stack
      * @param visFile location of the visualisation.json file
      * 
      * @returns Promise that fulfills when all loading is complete
      */
-    public loadDataGroups(visFile: string) {
+    public loadDataGroups(stack: string, visFile: string) {
         console.log("Reading definition file at: "+ visFile);
         let self = this;
 
         return $.getJSON(visFile, function(json) {
-            self.recurseLoadDataGroups(json, null, self.dataGroups.length);
+            self.recurseLoadDataGroups(stack, json, null, self.dataGroups.length);
         }).fail((error) => {
             throw error;
         });    
@@ -72,7 +73,7 @@ class DataStore {
      * Recursively parses the visualisation definition file into hierarchal
      * DataGroup instances.
      */
-    private recurseLoadDataGroups(currentNode: Object, parentGroup: DataGroup, groupID: number) {
+    private recurseLoadDataGroups(stack: string, currentNode: Object, parentGroup: DataGroup, groupID: number) {
         if(!currentNode["name"]) {
             throw new Error("Cannot parse a DataGroup that has no name!")
         }
@@ -101,14 +102,14 @@ class DataStore {
             dataGroup.parseDataSources(currentNode["sources"]);
         }   
         if(currentNode["layers"]) {
-            dataGroup.parseDataLayers(currentNode["layers"]);
+            dataGroup.parseDataLayers(stack, currentNode["layers"]);
         }
 
         // Recurse into sub groups (if present)
         if(currentNode["groups"]) {
             for(var i = 0; i < currentNode["groups"].length; i++) {
                 let subNode = currentNode["groups"][i];
-                this.recurseLoadDataGroups(subNode, dataGroup, i);
+                this.recurseLoadDataGroups(stack, subNode, dataGroup, i);
             }
         }
     }
