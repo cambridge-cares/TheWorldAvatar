@@ -439,8 +439,8 @@ The release procedure is currently semi-automated and requires a few items:
 - Docker-desktop is installed and running on your local machine
 - You have access to the docker.cmclinnovations.com registry on your local machine, for more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
-## Formal release
-For a formal release, please create and checkout to a new branch from your feature branch once you are happy with the feature and above details are ready. The release process can then be started by using the commands below, depending on the operating system you're using. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!)
+## Stable version release
+For a stable version release, please create and checkout to a new branch from your feature branch once you are happy with the feature and above details are ready. The release process can then be started by using the commands below, depending on the operating system you're using. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!)
 
 WARNING: at the moment, releasing package from Windows OS has an issue that the package will not be installed correctly while executing "$PIPPATH --disable-pip-version-check install -e $SPATH"[dev]"" in install_script_pip.sh. Please use Linux to release future versions before the issue is fixed.
 
@@ -474,10 +474,10 @@ version='0.0.1',
 
 Finally, merge the release branch back to the feature branch and make a Pull Request for the feature branch to be merged back into the `main` branch.
 
-## Development release
-For development release, you may do it in your feature branch. The development package will be released to TestPyPI repository by default. Once you have collected the required information, the release process can then be started by using the commands below. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!)
+## Development version release
+For development version release, you may do it in your feature branch. The development package will be released to TestPyPI repository by default. Once you have collected the required information, the release process can then be started by using the commands below. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!)
 
-**NOTE: The development release requires the version number ends with a, b or rc to be compatible with the pre-release configuration on TestPyPI. For example, see [prerelease-example](https://pypi.org/project/prerelease-example/#history).**
+**NOTE: The development release requires the version number to contain a, b or rc (alpha, beta or release candidate) to be compatible with the pre-release configuration on TestPyPI. You may provide number at the end to differentiate different development version in the same pre-release stage, e.g., "1.1.0a1". In case no number is provided in the end (i.e., "1.0.0a"), "0" will be appended automatically to make it "1.0.0a0". For example, see [prerelease-example](https://pypi.org/project/prerelease-example/#history).**
 
 `(Linux)`
 ```sh
@@ -485,7 +485,7 @@ $ cd /<absolute_path_to>/TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent
 $ ./release_pyderivationagent_to_pypi.sh -d x.x.xa
 ```
 
-Please follow the instructions presented in the console once the process has begun. If everything goes well, change the version number and commit changes following the same procedure as in the formal release, but no pull request is required.
+Please follow the instructions presented in the console once the process has begun. If everything goes well, change the version number and commit changes following the same procedure as in the stable version release, but no pull request is required.
 
 # Authors #
 

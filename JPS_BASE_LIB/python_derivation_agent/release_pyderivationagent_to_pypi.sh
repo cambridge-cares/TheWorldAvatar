@@ -38,6 +38,7 @@ usage() {
 }
 
 main() {
+    check_dev_version_number
     install_packages_for_building
     bump_pyderivationagent_version_number
     install_pyderivationagent_and_test
@@ -47,6 +48,24 @@ main() {
     release_to_pypi main-pypi
     test_release main-pypi
     read -n 1 -s -r -p "Press any key to continue"
+}
+
+check_dev_version_number() {
+    echo "-------------------------------------------------------------------------"
+    echo "$STEP_NR. Checking the $PROJECT_NAME stable release version number"
+    echo "-------------------------------------------------------------------------"
+    echo
+    echo
+    if [[ "$NEXT_VERSION" =~ ^[0-9]*\.[0-9]*\.[0-9]*$ ]]
+    then
+        echo "Version number is correct. Proceeding with the stable release."
+    else
+        echo "The specified $PROJECT_NAME stable version number is $NEXT_VERSION, which is NOT correct. It should be something similar to 1.0.0. Aborting the release."
+        read -n 1 -s -r -p "Press any key to continue"
+        exit -1
+    fi
+
+    STEP_NR=$((STEP_NR+1))
 }
 
 install_packages_for_building() {
@@ -249,11 +268,11 @@ dev_release_check_dev_version_number() {
     echo "-------------------------------------------------------------------------"
     echo
     echo
-    if [[ "$DEV_VERSION" =~ ^.*a$|b$|rc$ ]] # the version number ends with a, b or rc
+    if [[ "$DEV_VERSION" =~ ^[0-9]*\.[0-9]*\.[0-9]*(a|b|rc)[0-9]*$ ]] # the version number should contain a, b or rc (alpha, beta or release candidate)
     then
         echo "Version number is correct. Proceeding with the dev release."
     else
-        echo "The version number is not correct. It should ends with a, b, or rc. Aborting the release."
+        echo "The specified $PROJECT_NAME dev version number is $DEV_VERSION, which is NOT correct. It should contain a, b, or rc (alpha, beta or release candidate), e.g., 1.1.0b1. Aborting the release."
         read -n 1 -s -r -p "Press any key to continue"
         exit -1
     fi
