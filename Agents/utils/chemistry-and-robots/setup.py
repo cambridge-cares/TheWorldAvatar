@@ -11,7 +11,7 @@ setup(
     # url="https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/utils/chemistry-and-robots",
     # long_description=open('README.md').read(),
     # long_description_content_type="text/markdown",
-    packages=find_packages(exclude=('tests')),
+    packages=find_packages(exclude=['tests','tests.*']),
     # TODO add pyderivationagent version number once it's released to PyPI
     install_requires=['pyderivationagent>=1.1.0a', 'pydantic==1.9.0', 'xlrd', 'xlwt'],
     extras_require={
