@@ -26,9 +26,12 @@ FC_MANUAL_COLLECT = "Manual Collect"
 FC_MANUAL_DIVERT = "Manual Divert"
 
 # Mapping int value returned by FlowCommander.GetState(fc) to the actual state
-# TODO expand to host all possible state
+# TODO double check if any other possible state
 MAPPING_VAPOURTEC_STATE = {
     0: ONTOVAPOURTEC_IDLE,
+    1: ONTOVAPOURTEC_INITIALISING,
+    2: ONTOVAPOURTEC_RUNNINGREACTION,
+    4: ONTOVAPOURTEC_FINALCLEANING,
 }
 
 # Mapping decimal place constraint with settings title
