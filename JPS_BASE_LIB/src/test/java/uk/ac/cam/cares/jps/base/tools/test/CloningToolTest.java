@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Field;
 
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -204,18 +205,6 @@ class CloningToolTest {
 	}
 	
 	@Test
-	void testCloneError() {
-		
-		//target store not empty
-		MockStoreClient sourceStoreClient = new MockStoreClient();
-		MockStoreClient targetStoreClient = new MockStoreClient();
-		targetStoreClient.addTriple("<s>", "<p>", "<o>");		
-		
-		CloningTool cloningTool = new CloningTool();
-		assertThrows(JPSRuntimeException.class, ()->{cloningTool.clone(sourceStoreClient, targetStoreClient);});
-	}
-	
-	@Test
 	void testPerformCloneStep() {
 
 		int N = 10;
@@ -275,4 +264,60 @@ class CloningToolTest {
         //attempts > Max attempts
         assertThrows(JPSRuntimeException.class, ()->{cloningTool.adjustOverlap(200, 300, 5);});          
 	}
+	
+	@Test
+	void testCloneError() {
+		
+		//target store not empty
+		MockStoreClient sourceStoreClient = new MockStoreClient();
+		MockStoreClient targetStoreClient = new MockStoreClient();
+		targetStoreClient.addTriple("<s>", "<p>", "<o>");		
+		
+		CloningTool cloningTool = new CloningTool();
+		assertThrows(JPSRuntimeException.class, ()->{cloningTool.clone(sourceStoreClient, targetStoreClient);});
+	}
+
+	//See CloningToolIntegrationTest for more complete tests
+	
+	@Test
+	void testClone() {
+
+		int N = 10;
+		
+		MockStoreClient sourceStoreClient = new MockStoreClient();
+		String sparqlInsert = CloningToolTestHelper.createInsertData(CloningToolTestHelper.createTriples(N));
+		sourceStoreClient.executeUpdate(sparqlInsert);
+		
+		MockStoreClient targetStoreClient = new MockStoreClient();
+		
+		CloningTool cloningTool = new CloningTool();
+		cloningTool.clone(sourceStoreClient,targetStoreClient);
+		
+		assertEquals(N, targetStoreClient.getTotalNumberOfTriples());
+		assertTrue(CloningToolTestHelper.checkTriples(N, targetStoreClient));
+	}
+	
+	@Test
+	void testCloneWithBlanks() {
+
+		int N = 10;
+		
+		MockStoreClient sourceStoreClient = new MockStoreClient();
+		String sparqlInsert = CloningToolTestHelper.createInsertData(CloningToolTestHelper.createTriples(N));
+		sourceStoreClient.executeUpdate(sparqlInsert);
+		sourceStoreClient.addTriple("_:b0", "<predicate>", "<object>"); //blank node
+		
+		WhereBuilder where = new WhereBuilder();
+		where.addWhere("_:b0", "<predicate>", "<object>");
+		
+		MockStoreClient targetStoreClient = new MockStoreClient();
+		
+		CloningTool cloningTool = new CloningTool();
+		cloningTool.clone(sourceStoreClient,targetStoreClient);
+		
+		assertEquals(N+1, targetStoreClient.getTotalNumberOfTriples());
+		assertTrue(CloningToolTestHelper.checkTriples(N, targetStoreClient));
+		assertTrue(CloningToolTestHelper.checkSingleTriple(targetStoreClient, where));
+	}
+	
 }

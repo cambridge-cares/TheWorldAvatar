@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.tools.test;
 
 import org.apache.jena.arq.querybuilder.AskBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -43,15 +44,21 @@ public class CloningToolTestHelper {
 			String si = String.format(s, Integer.toString(i));
 			String pi = String.format(p, Integer.toString(i));
 			String oi = String.format(o, Integer.toString(i));
+	
+			WhereBuilder where = new WhereBuilder();
+			where.addWhere(si, pi, oi);
 			
-	    	AskBuilder builder = new AskBuilder();
-			builder.addWhere(si, pi, oi);
-			String askQuery = builder.build().toString();
-			String result = targetStoreClient.execute(askQuery);
-			JSONObject obj =  new JSONArray(result).getJSONObject(0);
-			check = (boolean) obj.get("ASK");
+	    	check = checkSingleTriple(targetStoreClient, where);
 		}
 		return check;
 	}
 	
+	public static boolean checkSingleTriple(StoreClientInterface targetStoreClient, WhereBuilder where) {
+		
+		AskBuilder builder = new AskBuilder();
+		String askQuery = builder.build().toString();
+		String result = targetStoreClient.execute(askQuery);
+		JSONObject obj =  new JSONArray(result).getJSONObject(0);
+		return (boolean) obj.get("ASK");
+	}
 }
