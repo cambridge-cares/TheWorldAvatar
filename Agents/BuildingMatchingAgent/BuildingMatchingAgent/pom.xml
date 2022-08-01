@@ -45,6 +45,11 @@
       <version>1.11.0</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>uk.ac.cam.cares.ogm</groupId>
+      <artifactId>ogm</artifactId>
+      <version>1.0.1</version>
+    </dependency>
   </dependencies>
 
   <build>
