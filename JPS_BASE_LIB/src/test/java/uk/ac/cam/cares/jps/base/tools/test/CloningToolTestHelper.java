@@ -61,4 +61,8 @@ public class CloningToolTestHelper {
 		JSONObject obj =  new JSONArray(result).getJSONObject(0);
 		return (boolean) obj.get("ASK");
 	}
+	
+	public static String removeWhiteSpace(String string) {
+		return string.replaceAll("\\s+","");
+	}
 }

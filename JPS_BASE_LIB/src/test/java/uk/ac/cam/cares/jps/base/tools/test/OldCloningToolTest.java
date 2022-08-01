@@ -454,7 +454,7 @@ public class OldCloningToolTest {
 			method = cloningTool.getClass().getDeclaredMethod("countQuery", String.class, WhereBuilder.class);
 			method.setAccessible(true);
 			String value = (String) method.invoke(cloningTool, graph, where);
-			assertEquals(expectedValue, value.toString());
+			assertEquals(CloningToolTestHelper.removeWhiteSpace(expectedValue), CloningToolTestHelper.removeWhiteSpace(value.toString()));
 			
 			//test argument -- graph
 			graph = "http://example.com";

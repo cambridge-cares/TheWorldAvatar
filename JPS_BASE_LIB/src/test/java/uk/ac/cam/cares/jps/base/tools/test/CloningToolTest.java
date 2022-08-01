@@ -12,11 +12,6 @@ import uk.ac.cam.cares.jps.base.query.MockStoreClient;
 import uk.ac.cam.cares.jps.base.tools.CloningTool;
 
 class CloningToolTest {
-
-	//helper
-	public static String removeWhiteSpace(String string) {
-		return string.replaceAll("\\s+","");
-	}
 	
 	@Test
 	void testConstructor() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -173,7 +168,7 @@ class CloningToolTest {
 		CloningTool cloningTool = new CloningTool();
 		String query = cloningTool.getSparqlConstructNoBlanks(stepSize, offset);
 			
-		assertEquals(removeWhiteSpace(expected), removeWhiteSpace(query));
+		assertEquals(CloningToolTestHelper.removeWhiteSpace(expected), CloningToolTestHelper.removeWhiteSpace(query));
 	}
 	
 	@Test
@@ -186,7 +181,7 @@ class CloningToolTest {
 		CloningTool cloningTool = new CloningTool();
 		String query = cloningTool.getSparqlConstructBlanks();
 			
-		assertEquals(removeWhiteSpace(expected), removeWhiteSpace(query));
+		assertEquals(CloningToolTestHelper.removeWhiteSpace(expected), CloningToolTestHelper.removeWhiteSpace(query));
 	}
 	
 	@Test
