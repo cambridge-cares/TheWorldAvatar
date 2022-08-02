@@ -1,6 +1,5 @@
-from optparse import Option
+# Import modules
 from unittest import skip
-from matplotlib.pyplot import sca
 import ord_schema
 from ord_schema import reaction_pb2 as re
 from typing import Dict, List, Optional, Tuple
@@ -44,10 +43,10 @@ def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, Li
     return (scalars, messages, maps, repeats)
 
 
-def create_file(name: str, scalars):
+def create_file(name: str, scalars: List):
     file = open('./results/'+name+'.csv', encoding='utf-8', mode='w', newline='')
-    writer_1 = csv.writer(file, quotechar='\"', quoting=csv.QUOTE_MINIMAL)
-    writer_1.writerow(scalars)
+    writer = csv.writer(file, quotechar='\"', quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(scalars)
     file.close()    
 
 
