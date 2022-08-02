@@ -5,13 +5,15 @@ import java.nio.file.Path;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Tabular extends DataSubset {
 
-    private Ogr2OgrOptions options = new Ogr2OgrOptions();
+    @JsonProperty
+    private Ogr2OgrOptions ogr2ogrOptions = new Ogr2OgrOptions();
 
     public Ogr2OgrOptions getOptions() {
-        return options;
+        return ogr2ogrOptions;
     }
 
     @Override
