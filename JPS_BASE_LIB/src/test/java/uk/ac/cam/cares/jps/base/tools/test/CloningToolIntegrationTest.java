@@ -75,7 +75,7 @@ class CloningToolIntegrationTest {
 	}
 	
 	@Test
-	void test() {
+	void testClone() {
 		
 		CloningTool cloningTool = new CloningTool(400,40);
 		cloningTool.clone(sourceStoreClient, targetStoreClient);
@@ -85,7 +85,7 @@ class CloningToolIntegrationTest {
 	}
 
 	@Test
-	void testWithBlanks() {
+	void testCloneWithBlanks() {
 		
 		int nBlankTriples = 4;
 		String insertBlanks = "INSERT DATA{"
@@ -108,5 +108,32 @@ class CloningToolIntegrationTest {
 		assertTrue(CloningToolTestHelper.checkTriples(N_TEST_TRIPLES, targetStoreClient));
 		assertTrue(CloningToolTestHelper.checkSingleTriple(targetStoreClient, where));
 	}
+
+	@Test
+	void testStoreClientCloneToFail() {
+		assertThrows(JPSRuntimeException.class, ()->{targetStoreClient.cloneTo(sourceStoreClient);});
+	}
+	
+	@Test
+	void testStoreClientCloneTo() {
 		
+		sourceStoreClient.cloneTo(targetStoreClient);
+		
+		assertEquals(N_TEST_TRIPLES,targetStoreClient.getTotalNumberOfTriples());
+		assertTrue(CloningToolTestHelper.checkTriples(N_TEST_TRIPLES, targetStoreClient));
+	}
+
+	@Test
+	void testStoreClientCloneFromFail() {
+		assertThrows(JPSRuntimeException.class, ()->{sourceStoreClient.cloneFrom(targetStoreClient);});	
+	}
+	
+	@Test
+	void testStoreClientCloneFrom() {
+		
+		targetStoreClient.cloneFrom(sourceStoreClient);	
+		
+		assertEquals(N_TEST_TRIPLES,targetStoreClient.getTotalNumberOfTriples());
+		assertTrue(CloningToolTestHelper.checkTriples(N_TEST_TRIPLES, targetStoreClient));
+	}
 }
