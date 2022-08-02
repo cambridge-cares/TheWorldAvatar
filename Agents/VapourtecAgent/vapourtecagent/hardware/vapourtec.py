@@ -27,6 +27,8 @@ FC_MANUAL_DIVERT = "Manual Divert"
 
 # Mapping int value returned by FlowCommander.GetState(fc) to the actual state
 # TODO double check if any other possible state
+# NOTE when adding new mappings, remember to update the list in:
+# chemistry_and_robots.data_model.ontovapourtec.LIST_ONTOVAPOURTEC_VALIDSTATE
 MAPPING_VAPOURTEC_STATE = {
     0: ONTOVAPOURTEC_IDLE,
     1: ONTOVAPOURTEC_INITIALISING,
