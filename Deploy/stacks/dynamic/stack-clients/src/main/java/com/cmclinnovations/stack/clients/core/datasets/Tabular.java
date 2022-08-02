@@ -17,8 +17,7 @@ public class Tabular extends DataSubset {
     @Override
     public void loadData(GDALClient gdalClient, String datasetDir, String database) {
         Path dirPath = Path.of(datasetDir, getSubdirectory());
-        options.addLayerCreationOption("LAUNDER", "NO");
-        gdalClient.uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), options, false);
+        gdalClient.uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
     }
 
     @Override
