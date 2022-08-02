@@ -1,4 +1,6 @@
+import random
 import uuid
+from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
 from chemistry_and_robots.tests.conftest import TargetIRIs
 import chemistry_and_robots.tests.conftest as conftest
 from rdflib import Graph
@@ -10,6 +12,7 @@ import os
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 import chemistry_and_robots.data_model as onto
+import chemistry_and_robots.utils.dict_and_list as dal
 
 pytest_plugins = ["docker_compose"]
 
@@ -539,8 +542,8 @@ def test_identify_rxn_exp_when_uploading_hplc_report(initialise_triples, hplc_di
     ],
 )
 def test_upload_download_process_raw_hplc_report(initialise_triples, generate_random_download_path, local_file_path, hplc_digital_twin, chemical_solution_iri, internal_standard_species, internal_standard_run_conc, hplc_method_iri):
-    """This is an integration test of five methods that are called by different agents: upload_raw_hplc_report_to_kg, get_raw_hplc_report_remote_path_and_extension,
-    download_remote_raw_hplc_report, connect_hplc_report_with_chemical_solution, and process_raw_hplc_report."""
+    """This is an integration test of five methods that are called by different agents: upload_raw_hplc_report_to_kg, collect_triples_for_hplc_job,
+    get_raw_hplc_report_remote_path_and_extension, download_remote_raw_hplc_report, and process_raw_hplc_report."""
     sparql_client = initialise_triples
     timestamp_last_modified = os.path.getmtime(local_file_path)
 
@@ -557,13 +560,13 @@ def test_upload_download_process_raw_hplc_report(initialise_triples, generate_ra
     g = sparql_client.collect_triples_for_hplc_job("http://placeholder/rxn_exp_"+str(uuid.uuid4()), chemical_solution_iri, hplc_digital_twin, hplc_report_iri, hplc_method_iri, g)
     sparql_client.uploadGraph(g)
 
-    # Second download uploaded HPLC report file, make sure the content is the same
+    # Third download uploaded HPLC report file, make sure the content is the same
     remote_file_path, file_extension = sparql_client.get_raw_hplc_report_remote_path_and_extension(hplc_report_iri)
     full_downloaded_path = generate_random_download_path(file_extension)
     sparql_client.download_remote_raw_hplc_report(remote_file_path=remote_file_path, downloaded_file_path=full_downloaded_path)
     assert filecmp.cmp(local_file_path,full_downloaded_path)
 
-    # Third process the raw report (as part of PostProc Agent)
+    # Fourth process the raw report (as part of PostProc Agent)
     hplc_report_instance = sparql_client.process_raw_hplc_report(hplc_report_iri, internal_standard_species, internal_standard_run_conc)
     assert hplc_report_instance.instance_iri == hplc_report_iri
     assert hplc_report_instance.remoteFilePath == remote_file_path
@@ -626,6 +629,63 @@ def test_get_remote_hplc_report_path_given_local_file(initialise_triples, hplc_d
     remote_path = sparql_client.get_remote_hplc_report_path_given_local_file(hplc_digital_twin, hplc_local_file)
     assert remote_path == expected_remote_path
 
+def test_get_vapourtec_rs400(initialise_triples):
+    sparql_client = initialise_triples
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    assert vapourtec_rs400.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
+    assert vapourtec_rs400.manufacturer == TargetIRIs.VAPOURTEC_LTD.value
+    assert vapourtec_rs400.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
+    assert vapourtec_rs400.isManagedBy is None
+    assert vapourtec_rs400.consistsOf is not None
+    assert dal.check_if_two_lists_equal(TargetIRIs.VAPOURTECRS400_DUMMY_CONSISTS_OF_LIST.value,
+        [r.instance_iri for r in vapourtec_rs400.consistsOf])
+    assert vapourtec_rs400.hasState.clz == onto.ONTOVAPOURTEC_IDLE
+    assert vapourtec_rs400.hasState.stateLastUpdatedAt == 0
+
+def test_update_vapourtec_rs400_state(initialise_triples):
+    sparql_client = initialise_triples
+    # Before update, the state should be Idle
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    assert vapourtec_rs400.hasState.clz == onto.ONTOVAPOURTEC_IDLE
+    assert vapourtec_rs400.hasState.stateLastUpdatedAt == 0
+
+    # After update, the state should be Initialising
+    chosen_state = random.choice(onto.LIST_ONTOVAPOURTEC_VALIDSTATE)
+    sparql_client.update_vapourtec_rs400_state(
+        TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, chosen_state, 1)
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    assert vapourtec_rs400.hasState.clz == chosen_state
+    assert vapourtec_rs400.hasState.stateLastUpdatedAt == 1
+
+    # Nothing should change if the state is not updated
+    with pytest.raises(Exception) as e:
+        sparql_client.update_vapourtec_rs400_state(
+            TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, "http://vapourtec_rs400_state_"+str(uuid.uuid4()), 2)
+        assert "is not recognised as a valid state" in str(e.value)
+    sparql_client.update_vapourtec_rs400_state(
+        TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, chosen_state, 1)
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    assert vapourtec_rs400.hasState.clz == chosen_state
+    assert vapourtec_rs400.hasState.stateLastUpdatedAt == 1
+
+def test_register_agent_with_hardware(initialise_triples):
+    sparql_client = initialise_triples
+    agent_iri = "http://"+str(uuid.uuid4())
+    hardware_iri = "http://"+str(uuid.uuid4())
+    sparql_client.register_agent_with_hardware(
+        agent_iri=agent_iri, hardware_digital_twin=hardware_iri)
+    assert sparql_client.check_if_triple_exist(
+        hardware_iri, onto.ONTOLAB_ISMANAGEDBY, agent_iri)
+
+def test_connect_hplc_report_with_chemical_solution(initialise_triples):
+    sparql_client = initialise_triples
+    hplc_report_iri = "http://"+str(uuid.uuid4())
+    chemical_solution_iri = "http://"+str(uuid.uuid4())
+    sparql_client.connect_hplc_report_with_chemical_solution(
+        hplc_report_iri=hplc_report_iri, chemical_solution_iri=chemical_solution_iri)
+    assert sparql_client.check_if_triple_exist(
+        hplc_report_iri, onto.ONTOHPLC_GENERATEDFOR, chemical_solution_iri)
+
 #############################################
 ## sparql_client.py functions to be tested ##
 #############################################
@@ -634,21 +694,181 @@ def test_get_remote_hplc_report_path_given_local_file(initialise_triples, hplc_d
 #     sparql_client = ChemistryAndRobotsSparqlClient()
 #     pass
 
-# get_output_chemical_of_rxn_exp
-# get_ontocape_material
-# get_autosampler_from_vapourtec_rs400
-# sort_r2_pumps_in_vapourtec_rs400
-# get_rxn_con_or_perf_ind
+@pytest.mark.skip(reason="TODO")
+def test_detect_new_hplc_report(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
 
-# get_r4_reactor_rxn_exp_assigned_to
+    pass
 
-# create_equip_settings_for_rs400_from_rxn_exp
-# get_autosampler_site_given_input_chemical
+@pytest.mark.skip(reason="TODO")
+def test_update_vapourtec_autosampler_liquid_level_millilitre(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
 
-# get_species_molar_mass_kilogrampermole
-# get_matching_species_from_hplc_results
+    pass
 
-# get_species_density
-# get_species_material_cost
-# get_species_eco_score
-# identify_hplc_method_when_uploading_hplc_report
+@pytest.mark.skip(reason="TODO")
+def test_create_chemical_solution_for_reaction_outlet(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_release_vapourtec_rs400_settings(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_upload_vapourtec_input_file_to_kg(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_vapourtec_input_file(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_hplc_given_vapourtec_rs400(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_detect_new_hplc_report_from_hplc_derivation(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_output_chemical_of_rxn_exp(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_ontocape_material(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_autosampler_from_vapourtec_rs400(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_sort_r2_pumps_in_vapourtec_rs400(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_rxn_con_or_perf_ind(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_r4_reactor_rxn_exp_assigned_to(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_create_equip_settings_for_rs400_from_rxn_exp(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_autosampler_site_given_input_chemical(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_species_molar_mass_kilogrampermole(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_matching_species_from_hplc_results(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_species_density(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_species_material_cost(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_species_eco_score(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_ontokin_species_from_chem_rxn(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_autosampler(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_collect_triples_for_performance_indicators(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_collect_triples_for_output_chemical_of_chem_sol(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    sparql_client.collect_triples_for_output_chemical_of_chem_sol()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_collect_triples_for_hplc_job(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_collect_triples_for_chromatogram_point(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_collect_triples_for_new_experiment(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_collect_triples_for_equip_settings(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass

@@ -142,8 +142,11 @@ def clear_loggers():
 class TargetIRIs(Enum):
     DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service' # same as in rxn_queue_test.ttl
     DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
+    DUMMY_LAB_IRI = DUMMY_LAB_BASE_IRI + 'Laboratory_Dummy'
     AUTOMATEDRXNPLATFORM_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'AutomatedRxnPlatform_Dummy'
     VAPOURTECRS400_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecRS400_Dummy'
+    VAPOURTEC_LTD = DUMMY_LAB_BASE_IRI + 'VapourtecLtd'
+    VAPOURTECRS400_POWERSUPPLY = DUMMY_LAB_BASE_IRI + 'VapRS400_PowerSupply'
     HPLC_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLC_Dummy'
     BPR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'BPR_Dummy'
     VAPOURTECR4REACTOR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Dummy'
@@ -155,6 +158,10 @@ class TargetIRIs(Enum):
     VAPOURTECR2PUMP_3_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR2_3_Dummy'
     VAPOURTECR2PUMP_4_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR2_4_Dummy'
     AUTOSAMPLER_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'AutoSampler_Dummy'
+    VAPOURTECRS400_DUMMY_CONSISTS_OF_LIST = [VAPOURTECR4REACTOR_DUMMY_IRI,
+        VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI, VAPOURTECR2PUMP_1_DUMMY_IRI,
+        VAPOURTECR2PUMP_2_DUMMY_IRI, VAPOURTECR2PUMP_3_DUMMY_IRI,
+        VAPOURTECR2PUMP_4_DUMMY_IRI, AUTOSAMPLER_DUMMY_IRI]
     EXP_1_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/'
     EXP_2_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/'
     EXP_3_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_3/'
