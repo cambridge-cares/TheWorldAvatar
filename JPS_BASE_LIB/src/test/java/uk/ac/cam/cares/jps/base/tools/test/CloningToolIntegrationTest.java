@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.tools.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,7 +77,7 @@ class CloningToolIntegrationTest {
 	@Test
 	void test() {
 		
-		CloningTool cloningTool = new CloningTool(200,20);
+		CloningTool cloningTool = new CloningTool(400,40);
 		cloningTool.clone(sourceStoreClient, targetStoreClient);
 		
 		assertEquals(N_TEST_TRIPLES,targetStoreClient.getTotalNumberOfTriples());
@@ -86,8 +87,26 @@ class CloningToolIntegrationTest {
 	@Test
 	void testWithBlanks() {
 		
+		int nBlankTriples = 4;
+		String insertBlanks = "INSERT DATA{"
+				+ "<sblank0> <pblank0> _:b0 .\n"
+				+ "_:b0 <pblank1> <oblank1> .\n"
+				+ "_:b2 <pblank2> <oblank2> .\n"
+				+ "<sblank3> <pblank3> _:b3 .}";
+		sourceStoreClient.executeUpdate(insertBlanks);
+		
+		WhereBuilder where = new WhereBuilder()
+				.addWhere("<sblank0>", "<pblank0>", "_:b0")
+				.addWhere("_:b0", "<pblank1>", "<oblank1>")
+				.addWhere("_:b2", "<pblank2>", "<oblank2>")
+				.addWhere("<sblank3>", "<pblank3>", "_:b3");
+				
+		CloningTool cloningTool = new CloningTool(400,40);
+		cloningTool.clone(sourceStoreClient, targetStoreClient);
+		
+		assertEquals(N_TEST_TRIPLES+nBlankTriples,targetStoreClient.getTotalNumberOfTriples());
+		assertTrue(CloningToolTestHelper.checkTriples(N_TEST_TRIPLES, targetStoreClient));
+		assertTrue(CloningToolTestHelper.checkSingleTriple(targetStoreClient, where));
 	}
-	
-	
-	
+		
 }

@@ -272,7 +272,7 @@ class CloningToolTest {
 		assertThrows(JPSRuntimeException.class, ()->{cloningTool.clone(sourceStoreClient, targetStoreClient);});
 	}
 
-	//See CloningToolIntegrationTest for more complete tests
+	//See CloningToolIntegrationTest for more tests
 	
 	@Test
 	void testClone() {

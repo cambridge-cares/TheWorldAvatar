@@ -11,6 +11,11 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
+/**
+ * 
+ * @author csl37
+ *
+ */
 public class CloningTool {
 
 	/**
@@ -160,6 +165,23 @@ public class CloningTool {
 		+" of "+Integer.toString(sourceCount));		
 	}
 	
+	/**
+	 * Perform a single clone step
+	 * @param source store
+	 * @param target store
+	 * @param constructQuery
+	 */
+	public void performCloneStep(StoreClientInterface source, StoreClientInterface target, String constructQuery) {
+		Model model = source.executeConstruct(constructQuery);
+		target.executeUpdate(getSparqlInsert(model));
+	}
+	
+	/**
+	 * Adjust overlap
+	 * @param targetCount
+	 * @param nExpected
+	 * @param attempts
+	 */
 	public void adjustOverlap(int targetCount, int nExpected, int attempts) {
 		
 		//Increase overlap by the larger of 10% of the step size or the size of countError
@@ -180,6 +202,12 @@ public class CloningTool {
 		}
 	}
 	
+	/**
+	 * Log clone failed error and throw JPSRuntimeException
+	 * @param reason
+	 * @param targetCount
+	 * @param nExpected
+	 */
 	public void cloneFailed(String reason, int targetCount, int nExpected) {
 		String errorMessage = "Cloning tool: clone failed...\n"
 		+"Reason: "+reason+"\n"
@@ -190,18 +218,7 @@ public class CloningTool {
 		LOGGER.error(errorMessage);
 		throw new JPSRuntimeException(errorMessage);
 	}
-	
-	/**
-	 * Perform a single clone step
-	 * @param source store
-	 * @param target store
-	 * @param constructQuery
-	 */
-	public void performCloneStep(StoreClientInterface source, StoreClientInterface target, String constructQuery) {
-		Model model = source.executeConstruct(constructQuery);
-		target.executeUpdate(getSparqlInsert(model));
-	}
-	
+		
 	///////////////
 	// SPARQL  
 	
