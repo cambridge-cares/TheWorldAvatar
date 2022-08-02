@@ -41,7 +41,7 @@ const offset = new Cesium.HeadingPitchRange(
 
 
 // Adding KML models to the viewer
-const kmlpath = './data/test_geometry.kml';
+const kmlpath = './data/sewage_geometry.kml';
 const kmlmodel =  addKml(viewer, kmlpath);
 
 /*

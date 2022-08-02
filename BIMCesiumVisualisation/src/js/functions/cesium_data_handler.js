@@ -102,7 +102,7 @@ export function addTileset(cesiumviewer, cesiumtileset, x, y, z = 0) {
 }
 
 /**
- *
+ * compute shape of polylineVolume
  * @param radius
  * @return    object location
  */
@@ -120,25 +120,41 @@ function computeCircle(radius) {
     return positions;
 }
 
+/**
+ * Read data from KML to draw 3d geometric objects: line to polylineVolume, point to cylinder
+ * @param cesiumviewer    Cesium viewer object
+ * @param entities     data entity from kml
+ */
 function parseElements(cesiumviewer, entities) {
     var e;
     var pointCount = 0;
     var lineCount = 0;
     var values = entities.values;
-    console.dir(values); // debug the array
+    // console.dir(values); // debug the array
     var arrayPositions = [];
     for (var i = 0; i < values.length; i++) {
         e = values[i];
+        var data = e.kml.extendedData;
+        var width = 0;
+        if (Cesium.defined(data)) {
+            console.log("value=", data.sewWidth.value);
+            if (data.sewWidth.value != null){ //get width from kml, if the data is empty, set a fake value to it
+                width = data.sewWidth.value/100;
+            }else{
+                width = 0.5;
+            }
+        }
+
         if (Cesium.defined(e.position)) {
             // Placemark with Point geometry
-            pointCount++;
+            // pointCount++;
             var pointPosition = e.position;
             cesiumviewer.entities.add({
                 position: pointPosition,
                 cylinder: {
                     length: 5.0,
-                    topRadius: 1.0,
-                    bottomRadius: 1.0,
+                    topRadius: width,
+                    bottomRadius: width,
                     material: Cesium.Color.RED.withAlpha(0.5),
                     outline: true,
                     outlineColor: Cesium.Color.RED,
@@ -146,13 +162,13 @@ function parseElements(cesiumviewer, entities) {
             })
         } else if (Cesium.defined(e.polyline)) {
             // Placemark with LineString geometry
-            lineCount++;
+            // lineCount++;
             var linePosition = e.polyline.positions;
             // console.dir("position1:" + linePosition.getValue(Cesium.JulianDate.now()));
             cesiumviewer.entities.add({
                 polylineVolume:{
                     positions : linePosition,
-                    shape : computeCircle(0.5),
+                    shape : computeCircle(width),
                     material: Cesium.Color.GREEN.withAlpha(0.5),
                     outline: true,
                     outlineColor: Cesium.Color.GREEN,
@@ -165,6 +181,6 @@ function parseElements(cesiumviewer, entities) {
     }
 
 
-    console.dir("point:" + pointCount);
-    console.dir("line:" + lineCount);
+    // console.dir("point:" + pointCount);
+    // console.dir("line:" + lineCount);
 }
