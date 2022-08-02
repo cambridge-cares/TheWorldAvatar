@@ -11,6 +11,7 @@ class Strategy(BaseOntology):
     pass
 
 class TSEMO(Strategy):
+    clz: str = ONTODOE_TSEMO
     # this refers to the realisation of TSEMO algorithm in Summit python package
     # below are default value in Summit python package
     # more details, please visit: https://gosummit.readthedocs.io/en/latest/strategies.html#tsemo
@@ -20,13 +21,16 @@ class TSEMO(Strategy):
     populationSize: int = 100
 
 class LHS(Strategy):
+    clz: str = ONTODOE_LHS
     seed: int
     # TODO add support for object property <hasCriterion> <OntoDoE:Criterion>
 
 class DesignVariable(BaseOntology):
+    clz: str = ONTODOE_DESIGNVARIABLE
     name: str
 
 class ContinuousVariable(DesignVariable):
+    clz: str = ONTODOE_CONTINUOUSVARIABLE
     upperLimit: float
     lowerLimit: float
     positionalID: Optional[int]
@@ -44,12 +48,15 @@ class ContinuousVariable(DesignVariable):
         return values
 
 class CategoricalVariable(DesignVariable):
+    clz: str = ONTODOE_CATEGORICALVARIABLE
     pass
 
 class Domain(BaseOntology):
+    clz: str = ONTODOE_DOMAIN
     hasDesignVariable: List[DesignVariable]
 
 class SystemResponse(BaseOntology):
+    clz: str = ONTODOE_SYSTEMRESPONSE
     name: str
     maximise: bool
     positionalID: Optional[int]
@@ -57,10 +64,12 @@ class SystemResponse(BaseOntology):
     refersTo: str
 
 class HistoricalData(BaseOntology):
+    clz: str = ONTODOE_HISTORICALDATA
     refersTo: List[ReactionExperiment]
     numOfNewExp: int = 1
 
 class DesignOfExperiment(BaseOntology):
+    clz: str = ONTODOE_DESIGNOFEXPERIMENT
     usesStrategy: Strategy
     hasDomain: Domain
     hasSystemResponse: List[SystemResponse]
