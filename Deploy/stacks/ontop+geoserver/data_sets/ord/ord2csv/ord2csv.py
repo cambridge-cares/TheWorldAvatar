@@ -1,56 +1,41 @@
 # Import modules
-from email.encoders import encode_noop
-from encodings import utf_8
 import ord_schema
-from ord_schema import message_helpers, validations
+from ord_schema import message_helpers
 from ord_schema.proto import dataset_pb2
-
-
-
-import pandas as pd
-import numpy as np
 import os
 import wget
 
 import schema2labels as st
 
 
-# Download dataset from ord-data
 
-url = "https://github.com/open-reaction-database/ord-data/blob/main/data/1b/ord_dataset-1b3d2b114de1429e9b70c3b1c16c9263.pb.gz?raw=true"
-# pb = wget.download(url)
-# pb = 'ord_dataset-1b3d2b114de1429e9b70c3b1c16c9263.pb.gz'
 
-# Deoxyfluorinatoin data
-url = "https://github.com/open-reaction-database/ord-data/blob/main/data/fc/ord_dataset-fc83743b978f4deea7d6856deacbfe53.pb.gz?raw=true"
-# pb = wget.download(url)
+# Datafile name
 pb = 'ord_dataset-fc83743b978f4deea7d6856deacbfe53.pb.gz'
 
+# If the data does not exist in the directory, download the data
+if (not os.path.isfile(pb)):
+   # Download dataset from ord-data
+   url = "https://github.com/open-reaction-database/ord-data/blob/main/data/fc/"+pb+"?raw=true"
+   pb = wget.download(url)
 
 
-# Load Dataset message
+# Load the data; message_helpers is part of the ORD schema
 data = message_helpers.load_message(pb, dataset_pb2.Dataset)
 
 
-# Create the csv files
-
-Reaction = ord_schema.reaction_pb2.Reaction()
-ReactionIdentifier = ord_schema.reaction_pb2.ReactionIdentifier()
-Compound = ord_schema.reaction_pb2.Compound()
-ReactionProvenance = ord_schema.reaction_pb2.ReactionProvenance()
-
-#st.create_tables(Reaction)
+# Create the csv files by providing a message sample (an instance of a populated message or and initilized message)
 st.create_tables(data.reactions[0])
+
+
 #  Populate the csv tables using the data of each reaction
-ID = {}
-VALUE = {}
-# st.populate_tables(message=data.reactions[0], ID=ID)
+# ID stores the index value of the most recent message that is stored in csv files
+ID = {} # key: message name, value: index
+# VALUE stores the unique key:value pairs to ensure avoiding repetion of literals
+VALUE = {} # key: a tuple of all literal values of a message, value : index of the literal value 
 
+# Loop over all the reactions inside the dataset
 for i, reaction in enumerate(data.reactions):
-
+   # i is the index of the root message; in this case, reaction
    # Converts each reaction in the dataset to equivalent csv tables 
    st.populate_tables(reaction, ID, VALUE,i+1)
-# st.populate_tables(data.reactions[1], ID, VALUE,1+1)
-
-
-

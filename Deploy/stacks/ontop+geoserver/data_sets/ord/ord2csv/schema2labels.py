@@ -3,7 +3,7 @@ from unittest import skip
 from matplotlib.pyplot import sca
 import ord_schema
 from ord_schema import reaction_pb2 as re
-from typing import Dict, Iterable, List, Optional, Tuple, Type, TypeVar, Union
+from typing import Dict, List, Optional, Tuple
 import csv
 
 
@@ -203,7 +203,7 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITE
             skip
         else:
             LITERAL_VALUE.update({scalars_tuple : ID[message.DESCRIPTOR.name]})
-            append_to_file(file='./results/'+message.DESCRIPTOR.name+'.csv', row=row)
+            append_to_file(file_name=message.DESCRIPTOR.name, row=row)
 
 
 
@@ -227,7 +227,7 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITE
             skip
         else:
             LITERAL_VALUE.update({scalars_tuple : ID[value.DESCRIPTOR.name]})
-            append_to_file(file='./results/'+value.DESCRIPTOR.name+'.csv', row=row)        
+            append_to_file(file_name=value.DESCRIPTOR.name, row=row)        
 
 
 
@@ -244,7 +244,7 @@ def populate_tables(message: ord_schema.Message, ID: Optional[Dict] = None, LITE
         # get the row for intermidary tables
         row = ['I'+str(ID[value.DESCRIPTOR.name]), 'I'+str(ID[message.DESCRIPTOR.name]), 'I'+str(LITERAL_VALUE[scalars_tuple]), '['+str(key_or_index)+']']
 
-        append_to_file(file='./results/'+message.DESCRIPTOR.name+'_'+field_name+'_'+field+'.csv', row=row)
+        append_to_file(file_name=message.DESCRIPTOR.name+'_'+field_name+'_'+field, row=row)
 
 
 
@@ -263,8 +263,8 @@ def get_row(scalars: Dict[str, str], labels: List[str]) -> List[str]:
 
 
 
-def append_to_file(file: str, row: list):
-    file = open(file, encoding='utf-8', mode='a', newline='')
+def append_to_file(file_name: str, row: list):
+    file = open(file='./results/'+file_name+'.csv', encoding='utf-8', mode='a', newline='')
     writer = csv.writer(file, quotechar='\"', quoting=csv.QUOTE_MINIMAL)
     writer.writerow(row)
     file.close()
