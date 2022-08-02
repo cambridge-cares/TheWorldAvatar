@@ -2,7 +2,6 @@ package uk.ac.cam.cares.ogm.models.geo;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.citydb.database.adapter.blazegraph.SchemaManagerAdapter;
 import uk.ac.cam.cares.ogm.models.FieldAnnotation;
 import uk.ac.cam.cares.ogm.models.ModelAnnotation;
 

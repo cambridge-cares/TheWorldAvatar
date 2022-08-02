@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.ogm.models.geo;
 
-import org.citydb.database.adapter.blazegraph.SchemaManagerAdapter;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.ogm.models.FieldAnnotation;
 import uk.ac.cam.cares.ogm.models.Model;
