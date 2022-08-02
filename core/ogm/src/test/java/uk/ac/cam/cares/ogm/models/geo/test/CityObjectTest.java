@@ -1,14 +1,11 @@
 package uk.ac.cam.cares.ogm.models.geo.test;
 
-import org.citydb.database.adapter.blazegraph.SchemaManagerAdapter;
+
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.ogm.models.FieldAnnotation;
 import uk.ac.cam.cares.ogm.models.Model;
 import uk.ac.cam.cares.ogm.models.ModelAnnotation;
-import uk.ac.cam.cares.ogm.models.geo.CityObject;
-import uk.ac.cam.cares.ogm.models.geo.EnvelopeType;
-import uk.ac.cam.cares.ogm.models.geo.ExternalReference;
-import uk.ac.cam.cares.ogm.models.geo.GenericAttribute;
+import uk.ac.cam.cares.ogm.models.geo.*;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;

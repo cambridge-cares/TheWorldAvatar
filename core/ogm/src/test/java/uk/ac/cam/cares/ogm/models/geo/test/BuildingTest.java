@@ -1,11 +1,12 @@
 package uk.ac.cam.cares.ogm.models.geo.test;
 
-import org.citydb.database.adapter.blazegraph.SchemaManagerAdapter;
+
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.ogm.models.FieldAnnotation;
 import uk.ac.cam.cares.ogm.models.Model;
 import uk.ac.cam.cares.ogm.models.ModelAnnotation;
 import uk.ac.cam.cares.ogm.models.geo.Building;
+import uk.ac.cam.cares.ogm.models.geo.SchemaManagerAdapter;
 import uk.ac.cam.cares.ogm.models.geo.SurfaceGeometry;
 import uk.ac.cam.cares.ogm.models.geo.ThematicSurface;
 
