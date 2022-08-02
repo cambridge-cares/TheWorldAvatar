@@ -69,6 +69,9 @@ number_of_labels = 19
 
 input_ids = Input(shape=(max_len,), dtype=tf.int32, name="input_ids")
 input_mask = Input(shape=(max_len,), dtype=tf.int32, name="attention_mask")
+
+
+
 embeddings = bert(input_ids,attention_mask = input_mask)[0]
 out = tf.keras.layers.GlobalMaxPool1D()(embeddings)
 out = Dense(128, activation='relu')(out)

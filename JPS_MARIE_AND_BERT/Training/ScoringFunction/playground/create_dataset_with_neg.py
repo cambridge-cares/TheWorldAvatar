@@ -1,0 +1,35 @@
+# randomly select candidates and create negative samples.
+
+
+# load "question_set" into dataframe
+
+
+import pandas as pd
+import random
+
+raw_question_set = pd.read_csv('question_set', sep=',', header = None)
+
+# add col 3 with all 1
+# extract col 2 and get the list of entities
+# for each row, create n negative samples and assign 0
+
+
+raw_question_set.insert(3, 3, 1)
+raw_question_set.columns = ['question', 'head', 'tail', 'score']
+question_set_with_neg = pd.DataFrame(columns=raw_question_set.columns)
+
+entity_list = list(set( raw_question_set['tail'].values.tolist()))
+
+print(entity_list)
+for index, row in raw_question_set.iterrows():
+    q = row['question']
+    e_h = row['head']
+    e_t = row['tail']
+    label = 0
+    fake_candidates = [f_c for f_c in random.sample(entity_list, 2) if f_c != e_t]
+    for f_c in fake_candidates:
+        tmp = [q, e_h, f_c, label]
+        tmp_series = pd.Series(tmp, index = raw_question_set.columns)
+        raw_question_set = raw_question_set.append(tmp_series, ignore_index=True)
+
+print(raw_question_set)

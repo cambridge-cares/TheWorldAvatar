@@ -112,3 +112,8 @@ JPS_Chatbot/jps-chatbot/UI/source/OntoSpeciesLog
 JPS_MARIE_AND_BERT/Dataset
 *.txt
 *.csv
+*.tsv
+*.pb
+*.pt
+*.h5
+*.npy
