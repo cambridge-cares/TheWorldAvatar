@@ -18,6 +18,8 @@ from pyderivationagent.data_model import *
 from chemistry_and_robots.data_model import *
 from chemistry_and_robots.hardware import hplc
 
+from chemistry_and_robots.utils import dict_and_list as dal
+
 import logging
 logger = logging.getLogger('chemistry_and_robots_sparql_client')
 logging.getLogger('py4j').setLevel(logging.INFO)
@@ -71,7 +73,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasSystemResponse=self.getSystemResponses([list(res.values())[0] for res in response_2]),
             utilisesHistoricalData=self.getDoEHistoricalData(r['hist_data']),
             proposesNewExperiment=self.getNewExperimentFromDoE(doe_iri)
-        ) # TODO initialisation of ReactionExperiment is omitted here
+        )
         return doe_instance
 
     def getDoEDomain(self, domain_iri: str) -> Domain:
@@ -189,7 +191,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         historicalData_instance = HistoricalData(
             instance_iri=historicalData_iri,
-            numOfNewExp=num_[0], # TODO what if no instance is in place?
+            numOfNewExp=num_[0], # TODO [when run in loop] what if no instance is in place?
             refersTo=self.getReactionExperiment(rxnexp_iris)
             )
         return historicalData_instance
@@ -202,7 +204,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 rxnexp_iris - iri of OntoReaction:ReactionExperiment instance, can be either str of one instance, or a list of instances
         """
 
-        # TODO implement logic of querying information for OntoReaction:ReactionExperiment (most importantly parsing InputChemical and OutputChemical)
         if not isinstance(rxnexp_iris, list):
             rxnexp_iris = [rxnexp_iris]
 
@@ -275,7 +276,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         response = self.performQuery(query)
         logger.debug(response)
 
-        unique_chem_rxn = self.get_unique_values_in_list_of_dict(response, 'chem_rxn')
+        unique_chem_rxn = dal.get_unique_values_in_list_of_dict(response, 'chem_rxn')
         if len(unique_chem_rxn) > 1:
             raise Exception("Multiple OntoCAPE:ChemicalReaction identified for reaction experiment <%s>: %s" % (rxnexp_iri, str(unique_chem_rxn)))
         elif len(unique_chem_rxn) < 1:
@@ -296,14 +297,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_ontokin_species_from_chem_rxn(self, list_of_dict: List[Dict], species_role: str, species_type: str, ontospecies_key: str) -> List[OntoKin_Species]:
         """Example: species_role='reactant', species_type='reac_type', species_key='reac_species'"""
         list_species = []
-        if not self.check_if_key_in_list_of_dict(list_of_dict, species_role):
+        if not dal.check_if_key_in_list_of_dict(list_of_dict, species_role):
             return None
         else:
-            wanted_info = self.keep_wanted_keys_from_list_of_dict(list_of_dict, [species_role, species_type, ontospecies_key])
-            wanted_info = self.remove_duplicate_dict_from_list_of_dict(wanted_info)
-            unique_species_iri = self.get_unique_values_in_list_of_dict(wanted_info, species_role)
+            wanted_info = dal.keep_wanted_keys_from_list_of_dict(list_of_dict, [species_role, species_type, ontospecies_key])
+            wanted_info = dal.remove_duplicate_dict_from_list_of_dict(wanted_info)
+            unique_species_iri = dal.get_unique_values_in_list_of_dict(wanted_info, species_role)
             for u_s in unique_species_iri:
-                u_s_info = self.get_sublist_in_list_of_dict_matching_key_value(wanted_info, species_role, u_s)
+                u_s_info = dal.get_sublist_in_list_of_dict_matching_key_value(wanted_info, species_role, u_s)
                 if len(u_s_info) > 1:
                     raise Exception("Multiple OntoSpecies:Species identified given one instance of %s <%s>: %s" % (species_role ,u_s, str(u_s_info)))
                 elif len(u_s_info) < 1:
@@ -392,16 +393,16 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             lst_ontocape_material = []
 
             # generate different list for each OntoCAPE:Material
-            unique_ontocape_material_iri = self.get_unique_values_in_list_of_dict(response, ocm_query_key)
+            unique_ontocape_material_iri = dal.get_unique_values_in_list_of_dict(response, ocm_query_key)
             list_list_ontocape_material = []
             for iri in unique_ontocape_material_iri:
                 list_list_ontocape_material.append([res for res in response if iri == res[ocm_query_key]])
 
             for list_om in list_list_ontocape_material:
-                ontocape_material_iri = self.get_unique_values_in_list_of_dict(list_om, ocm_query_key)[0] # here we are sure this is the unique value of OntoCAPE:Material
+                ontocape_material_iri = dal.get_unique_values_in_list_of_dict(list_om, ocm_query_key)[0] # here we are sure this is the unique value of OntoCAPE:Material
 
                 # validate that the list of responses are only referring to one instance of OntoCAPE_SinglePhase, one instance of OntoCAPE_StateOfAggregation and one instance of OntoCAPE_Composition, otherwise raise an Exception
-                unique_single_phase_iri = self.get_unique_values_in_list_of_dict(list_om, 'single_phase')
+                unique_single_phase_iri = dal.get_unique_values_in_list_of_dict(list_om, 'single_phase')
                 if len(unique_single_phase_iri) > 1:
                     raise Exception("Multiple thermodynamicBehavior OntoCAPE:SinglePhase identified (<%s>) in one instance of OntoReaction:InputChemical/OntoReaction:OutputChemical/OntoCAPE:Material %s is currently NOT supported." % ('>, <'.join(unique_single_phase_iri), ontocape_material_iri))
                 elif len(unique_single_phase_iri) < 1:
@@ -409,7 +410,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 else:
                     unique_single_phase_iri = unique_single_phase_iri[0]
 
-                unique_state_of_aggregation_iri = self.get_unique_values_in_list_of_dict(list_om, 'state_of_aggregation')
+                unique_state_of_aggregation_iri = dal.get_unique_values_in_list_of_dict(list_om, 'state_of_aggregation')
                 if len(unique_state_of_aggregation_iri) > 1:
                     raise Exception("Multiple hasStateOfAggregation OntoCAPE:StateOfAggregation identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_state_of_aggregation_iri), unique_single_phase_iri))
                 elif len(unique_state_of_aggregation_iri) < 1:
@@ -421,7 +422,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         # TODO add support for other phase (solid, gas)
                         pass
 
-                unique_composition_iri = self.get_unique_values_in_list_of_dict(list_om, 'composition')
+                unique_composition_iri = dal.get_unique_values_in_list_of_dict(list_om, 'composition')
                 if len(unique_composition_iri) > 1:
                     raise Exception("Multiple has_composition OntoCAPE:Composition identified (<%s>) in one instance of OntoCAPE:SinglePhase %s is currently NOT supported." % ('>, <'.join(unique_composition_iri), unique_single_phase_iri))
                 elif len(unique_composition_iri) < 1:
@@ -509,7 +510,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
             response = self.performQuery(query)
 
-            unique_autosampler_list = self.get_unique_values_in_list_of_dict(response, 'autosampler')
+            unique_autosampler_list = dal.get_unique_values_in_list_of_dict(response, 'autosampler')
             logger.debug("The list of all available OntoVapourtec:AutoSampler in the knowledge graph (%s): %s" % (self.kg_client.getQueryEndpoint(), str(unique_autosampler_list)))
         else:
             given_autosampler_iri = trimIRI(given_autosampler_iri)
@@ -546,9 +547,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         list_autosampler = []
         for specific_autosampler in unique_autosampler_list:
-            info_of_specific_autosampler = self.get_sublist_in_list_of_dict_matching_key_value(response, 'autosampler', specific_autosampler) if given_autosampler_iri is None else response
+            info_of_specific_autosampler = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'autosampler', specific_autosampler) if given_autosampler_iri is None else response
 
-            unique_specific_autosampler_manufacturer_iri = self.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'autosampler_manufacturer')
+            unique_specific_autosampler_manufacturer_iri = dal.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'autosampler_manufacturer')
             if len(unique_specific_autosampler_manufacturer_iri) > 1:
                 raise Exception("Multiple dbpedia:manufacturer identified (<%s>) in one instance of OntoVapourtec:AutoSampler %s is currently NOT supported." % ('>, <'.join(unique_specific_autosampler_manufacturer_iri), specific_autosampler))
             elif len(unique_specific_autosampler_manufacturer_iri) < 1:
@@ -556,7 +557,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             else:
                 unique_specific_autosampler_manufacturer_iri = unique_specific_autosampler_manufacturer_iri[0]
 
-            unique_specific_autosampler_laboratory_iri = self.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'laboratory')
+            unique_specific_autosampler_laboratory_iri = dal.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'laboratory')
             if len(unique_specific_autosampler_laboratory_iri) > 1:
                 raise Exception("Multiple OntoLab:isContainedIn OntoLab:Laboratory identified (<%s>) for one instance of OntoVapourtec:AutoSampler %s." % ('>, <'.join(unique_specific_autosampler_laboratory_iri), specific_autosampler))
             elif len(unique_specific_autosampler_laboratory_iri) < 1:
@@ -564,7 +565,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             else:
                 unique_specific_autosampler_laboratory_iri = unique_specific_autosampler_laboratory_iri[0]
 
-            unique_specific_autosampler_power_supply_iri = self.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'autosampler_power_supply')
+            unique_specific_autosampler_power_supply_iri = dal.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'autosampler_power_supply')
             if len(unique_specific_autosampler_power_supply_iri) > 1:
                 raise Exception("Multiple OntoLab:hasPowerSupply OntoLab:PowerSupply identified (<%s>) for one instance of OntoVapourtec:AutoSampler %s is currently NOT supported." % ('>, <'.join(unique_specific_autosampler_power_supply_iri), specific_autosampler))
             elif len(unique_specific_autosampler_power_supply_iri) < 1:
@@ -575,10 +576,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             logger.debug("The sublist of all information related to the specific instance of OntoVapourtec:AutoSampler <%s> in the knowledge graph (%s): %s" %
                 (specific_autosampler, self.kg_client.getQueryEndpoint(), str(info_of_specific_autosampler)))
 
-            unique_site_list = self.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'site')
+            unique_site_list = dal.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'site')
             list_autosampler_site = []
             for specific_site in unique_site_list:
-                info_of_specific_site = self.get_sublist_in_list_of_dict_matching_key_value(info_of_specific_autosampler, 'site', specific_site)[0] # TODO here we assume only one, but to be varified by checking length
+                info_of_specific_site = dal.get_sublist_in_list_of_dict_matching_key_value(info_of_specific_autosampler, 'site', specific_site)[0] # TODO here we assume only one, but to be varified by checking length
                 # TODO add exceptions for lenth of the results, e.g. if len(info_of_specific_site) > 1:
                 # TODO add logger info/debug
                 if 'chemical_solution' in info_of_specific_site:
@@ -660,8 +661,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Populate the list of ReactionCondition based on query results
         list_con = []
 
-        unique_reaction_condition = self.get_unique_values_in_list_of_dict(response, 'condition')
-        dct_unique_rc = {rc:self.get_sublist_in_list_of_dict_matching_key_value(response, 'condition', rc) for rc in unique_reaction_condition}
+        unique_reaction_condition = dal.get_unique_values_in_list_of_dict(response, 'condition')
+        dct_unique_rc = {rc:dal.get_sublist_in_list_of_dict_matching_key_value(response, 'condition', rc) for rc in unique_reaction_condition}
         for rc in unique_reaction_condition:
             _info = dct_unique_rc[rc]
             __clz = list(set([d['clz'] for d in _info]))
@@ -720,8 +721,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             # Populate the list of PerformanceIndicator based on query results
             list_perf = []
-            unique_performance_indicator = self.get_unique_values_in_list_of_dict(response, 'perf')
-            dct_unique_pi = {pi:self.get_sublist_in_list_of_dict_matching_key_value(response, 'perf', pi) for pi in unique_performance_indicator}
+            unique_performance_indicator = dal.get_unique_values_in_list_of_dict(response, 'perf')
+            dct_unique_pi = {pi:dal.get_sublist_in_list_of_dict_matching_key_value(response, 'perf', pi) for pi in unique_performance_indicator}
             for pi in unique_performance_indicator:
                 _info = dct_unique_pi[pi]
                 __clz = list(set([d['clz'] for d in _info]))
@@ -849,7 +850,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         list_equip_setting.append(reactor_setting)
 
-        # TODO add support for PumpSettings
         # first identify the reference reactant
         dict_stoi_ratio = {cond.indicatesMultiplicityOf:cond for cond in rxnexp.hasReactionCondition if cond.clz == ONTOREACTION_STOICHIOMETRYRATIO}
         reference_input_chemical = [chem for chem in dict_stoi_ratio if abs(dict_stoi_ratio.get(chem).hasValue.hasNumericalValue - 1) < 0.000001]
@@ -944,8 +944,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_rxn_con_or_perf_ind(self, list_: List[ReactionCondition] or List[PerformanceIndicator], clz, positionalID=None):
         var = []
         for l in list_:
-            # TODO what if unknown positionalID when calling this function? in fact, does positionalID matter?
-            logger.error(l.__dict__)
+            # TODO [modify when run in loop] what if unknown positionalID when calling this function? in fact, does positionalID matter?
+            logger.debug(l.__dict__)
             if tuple((l.clz, l.positionalID)) == tuple((clz, positionalID)):
                 var.append(l)
         if len(var) > 1:
@@ -1022,7 +1022,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             raise Exception("AutoSampler <%s> is not uniquely identified in the knowledge graph, retrieved results: %s" % (autosampler_iri, str(autosampler)))
 
-    # TODO add unit test
     def get_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> VapourtecRS400:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
         query = PREFIX_RDF + \
@@ -1162,13 +1161,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 )
 
         response = self.performQuery(query)
-        unique_r4_reactor_list = self.get_unique_values_in_list_of_dict(response, 'r4_reactor')
+        unique_r4_reactor_list = dal.get_unique_values_in_list_of_dict(response, 'r4_reactor')
         logger.debug("The list of all OntoVapourtec:VapourtecR4Reactor associated with the given instance of OntoVapourtec:VapourtecRS400 <%s>: %s" % (
             vapourtec_rs400_iri, str(unique_r4_reactor_list)
         ))
         list_r4_reactor = []
         for specific_r4_reactor in unique_r4_reactor_list:
-            info_of_specific_r4_reactor = self.get_sublist_in_list_of_dict_matching_key_value(response, 'r4_reactor', specific_r4_reactor)
+            info_of_specific_r4_reactor = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'r4_reactor', specific_r4_reactor)
             if len(info_of_specific_r4_reactor) > 1:
                 raise Exception("Multiple records of OntoVapourtec:VapourtecR4Reactor <%s> are identified: %s" % (specific_r4_reactor, str(info_of_specific_r4_reactor)))
             elif len(info_of_specific_r4_reactor) < 1:
@@ -1217,13 +1216,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 """ % (vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOVAPOURTEC_VAPOURTECR2PUMP, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, ONTOVAPOURTEC_LOCATIONID)
 
         response = self.performQuery(query)
-        unique_r2_pump_list = self.get_unique_values_in_list_of_dict(response, 'r2_pump')
+        unique_r2_pump_list = dal.get_unique_values_in_list_of_dict(response, 'r2_pump')
         logger.debug("The list of all OntoVapourtec:VapourtecR2Pump associated with the given instance of OntoVapourtec:VapourtecRS400 <%s>: %s" % (
             vapourtec_rs400_iri, str(unique_r2_pump_list)
         ))
         list_r2_pump = []
         for specific_r2_pump in unique_r2_pump_list:
-            info_of_specific_r2_pump = self.get_sublist_in_list_of_dict_matching_key_value(response, 'r2_pump', specific_r2_pump)
+            info_of_specific_r2_pump = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'r2_pump', specific_r2_pump)
 
             if len(info_of_specific_r2_pump) > 1:
                 raise Exception("Multiple records of OntoVapourtec:VapourtecR4Reactor <%s> are identified: %s" % (specific_r2_pump, str(info_of_specific_r2_pump)))
@@ -1284,7 +1283,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         rxn_exp_queue = {res['rxn']:res['timestamp'] for res in response}
         return rxn_exp_queue
 
-    # TODO create unit test case
     def detect_new_hplc_report(self, hplc_digital_twin, start_timestamp, end_timestamp):
         query = """SELECT ?hplc_report WHERE { <%s> <%s> ?hplc_report. ?hplc_report <%s> ?timestamp.
                 FILTER(?timestamp > %f && ?timestamp < %f)}""" % (
@@ -1297,7 +1295,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         else:
             return response[0]['hplc_report']
 
-    # TODO create unit test case
     def collect_triples_for_hplc_job(
         self,
         rxn_exp_iri, chemical_solution_iri,
@@ -1307,7 +1304,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         hplc_job_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCJOB)
         logger.info("The initialised HPLCJob IRI is: <%s>" % (hplc_job_iri))
 
-        # TODO
         hplc_method_iri = trimIRI(hplc_method_iri)
         logger.info("The HPLCReport <%s> was generated using HPLCMethod <%s>" % (hplc_report_iri, hplc_method_iri))
 
@@ -1319,7 +1315,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         g.add((URIRef(hplc_report_iri), URIRef(ONTOHPLC_GENERATEDFOR), URIRef(chemical_solution_iri)))
         return g
 
-    # TODO create unit test case
     def upload_raw_hplc_report_to_kg(self, local_file_path, timestamp_last_modified, remote_report_subdir, hplc_digital_twin) -> str:
         try:
             remote_file_path, timestamp_upload = self.uploadFile(local_file_path, remote_report_subdir)
@@ -1328,6 +1323,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         except Exception as e:
             logger.error(e)
             # TODO need to think a way to inform the post proc agent about the failure of uploading the file
+            # TODO [when run in loop] repeat the upload process until the file is uploaded successfully?
             raise Exception("HPLC raw report (%s) upload failed with code %d" % (local_file_path))
 
         hplc_report_iri = initialiseInstanceIRI(getNameSpace(hplc_digital_twin), ONTOHPLC_HPLCREPORT)
@@ -1705,7 +1701,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         # Remove downloaded temporary file
         os.remove(temp_local_file_path)
-        # TODO think about when do we write these triples (generated ones for CHromatogramPoint and ChemicalSolution) back to the knowledge graph
         return hplc_report_instance
 
     def get_chromatogram_point_of_hplc_report(self, hplc_report_iri: str) -> List[ChromatogramPoint]:
@@ -1729,7 +1724,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         response = self.performQuery(query)
 
         list_chrom_pts = []
-        if len(response) != len(self.get_unique_values_in_list_of_dict(response, 'pt')):
+        if len(response) != len(dal.get_unique_values_in_list_of_dict(response, 'pt')):
             raise Exception("The ChromatogramPoint of the given HPLCReport <%s> is not uniquely stored: %s" % (
                 hplc_report_iri, str(response)))
         for r in response:
@@ -1872,7 +1867,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             g = pi.create_instance_for_kg(g)
         return g
 
-    # TODO add unit test
     def collect_triples_for_chromatogram_point(self, chrom_pts: List[ChromatogramPoint], hplc_report_iri: str, g: Graph) -> Graph:
         for pt in chrom_pts:
             g = pt.create_instance_for_kg(g)
@@ -1890,7 +1884,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         g.add((URIRef(rxn_exp_iri), URIRef(ONTOREACTION_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)))
         return g
 
-    # TODO add unit test
     def update_vapourtec_autosampler_liquid_level_millilitre(self, level_change_of_site: Dict[str, float], for_consumption: bool):
         delete_clause = []
         insert_clause = []
@@ -1913,7 +1906,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         update = """DELETE {""" + ' '.join(delete_clause) + """} INSERT {""" + ' '.join(insert_clause) + """} WHERE {""" + ' '.join(where_clause) + """}"""
         self.performUpdate(update)
 
-    # TODO add unit test
     def create_chemical_solution_for_reaction_outlet(self, autosampler_site_iri: str, amount_of_chemical_solution: float):
         g = Graph()
         autosampler_site_iri = trimIRI(autosampler_site_iri)
@@ -1929,7 +1921,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
         return g
 
-    # TODO add unit test
     def release_vapourtec_rs400_settings(self, vapourtec_rs400_iri: str):
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
         update = """DELETE {?hardware <%s> ?settings. ?settings <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
@@ -1937,7 +1928,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             )
         self.performUpdate(update)
 
-    # TODO add unit test
     def upload_vapourtec_input_file_to_kg(self, vapourtec_digital_twin, local_file_path, remote_file_subdir):
         try:
             remote_file_path, timestamp_upload = self.uploadFile(local_file_path, remote_file_subdir)
@@ -1959,7 +1949,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return vapourtec_input_file_iri
 
-    # TODO add unit test
     def get_vapourtec_input_file(self, vapourtec_input_file_iri) -> VapourtecInputFile:
         vapourtec_input_file_iri = trimIRI(vapourtec_input_file_iri)
         query = """SELECT ?lastLocalModifiedAt ?lastUploadedAt ?localFilePath ?remoteFilePath 
@@ -1974,7 +1963,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         vapourtec_input_file = VapourtecInputFile(instance_iri=vapourtec_input_file_iri, **response[0])
         return vapourtec_input_file
 
-    # TODO add unit test
     def get_hplc_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> HPLC:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
         query = """SELECT ?hplc ?hplc_manufacturer ?lab ?hplc_power_supply ?is_managed_by ?report_extension
@@ -2004,7 +1992,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
         return hplc
 
-    # TODO add unit test
     def detect_new_hplc_report_from_hplc_derivation(self, hplc_derivation_iri: str):
         hplc_derivation_iri = trimIRI(hplc_derivation_iri)
         query = """SELECT ?hplc_report WHERE {?hplc_job <%s> <%s>. ?hplc_job <%s> ?hplc_report.}""" % (
@@ -2020,50 +2007,3 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             return None
         else:
             return response[0]['hplc_report']
-
-
-    #######################################################
-    ## Some utility functions handling the list and dict ##
-    #######################################################
-    def get_sublist_in_list_of_dict_matching_key_value(self, list_of_dict: List[Dict], key: str, value: Any) -> list:
-        if len(list_of_dict) > 0:
-            try:
-                sublist = [d for d in list_of_dict if d[key] == value]
-            except KeyError:
-                logger.error("Key '%s' is not found in the given list of dict: %s" % (key, str(list_of_dict)))
-            else:
-                return sublist
-        else:
-            logger.error("An empty list is passed in while requesting return sublist given key '%s'." % (key))
-            return []
-
-    def get_unique_values_in_list_of_dict(self, list_of_dict: List[dict], key: str) -> list:
-        return list(set(self.get_value_from_list_of_dict(list_of_dict, key)))
-
-    def get_value_from_list_of_dict(self, list_of_dict: List[dict], key: str) -> list:
-        if len(list_of_dict) > 0:
-            try:
-                list_of_values = [d[key] for d in list_of_dict]
-            except KeyError:
-                logger.error("Key '%s' is not found in the given list of dict: %s" % (key, str(list_of_dict)))
-                return []
-            else:
-                return list_of_values
-        else:
-            logger.error("An empty list is passed in while requesting return value of key '%s'." % (key))
-            return []
-
-    def keep_wanted_keys_from_list_of_dict(self, list_of_dict: List[dict], wanted_keys: List[str]) -> list:
-        return_list = []
-        for one_dict in list_of_dict:
-            return_list.append({key:one_dict[key] for key in wanted_keys})
-        return return_list
-
-    def remove_duplicate_dict_from_list_of_dict(self, list_of_dict: List[dict]) -> list:
-        return [dict(t) for t in {tuple(sorted(d.items())) for d in list_of_dict}]
-
-    def check_if_key_in_list_of_dict(self, list_of_dict: List[dict], key: str):
-        for d in list_of_dict:
-            if key in d:
-                return True
-        return False
