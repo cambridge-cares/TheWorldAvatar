@@ -5,6 +5,8 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 
+import uk.ac.cam.cares.jps.base.tools.CloningTool;
+
 
 /**
  * This interface is to be implemented by store clients 
@@ -154,4 +156,22 @@ public interface StoreClientInterface {
     	int triples = Integer.parseInt(results.getJSONObject(0).get("triples").toString());
     	return triples;
 	}
+	
+    /**
+     * Clone contents of <b>this</b> store to the target store 
+     * @param target store client
+     */
+    default void cloneTo(StoreClientInterface targetStoreClient) {
+    	CloningTool cloningTool = new CloningTool();
+    	cloningTool.clone(this, targetStoreClient);
+    }
+    
+    /**
+     * Clone contents of source store to <b>this</b> store
+     * @param source store client
+     */
+    default void cloneFrom(StoreClientInterface sourceStoreClient) {
+    	CloningTool cloningTool = new CloningTool();
+    	cloningTool.clone(sourceStoreClient, this);
+    }
 }
