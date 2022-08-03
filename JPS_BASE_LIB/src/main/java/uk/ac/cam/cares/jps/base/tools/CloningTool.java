@@ -29,7 +29,6 @@ public class CloningTool {
 	private int overlap;
 	private final double defaultOverlapRatio = 0.1; //10% overlap by default
 	
-	//TODO ==false condition to be implemented
 	private boolean emptyTargetRequired = true; //require the target store is empty to start clone
 	
 	static ExprFactory exprFactory = new ExprFactory();
@@ -77,13 +76,10 @@ public class CloningTool {
 	 * Override the requirement for the target store to be empty
 	 * to start the clone
 	 */
-	//TODO implement this
-	/*
-	public void overrideEmptyTargetRequirement() {
+	public void overrideEmptyTarget() {
 		emptyTargetRequired = false;
 		LOGGER.info("Warning: overriding empty target store requirement.");
 	}
-	*/
 	
 	/////////////////
 	
@@ -106,10 +102,15 @@ public class CloningTool {
 	public void clone(StoreClientInterface source, StoreClientInterface target) {
 		
 		int targetCount = target.getTotalNumberOfTriples();
+		final int originalTargetCount = targetCount;
 		
 		//Target store must be empty
-		if(targetCount > 0) {
-			cloneFailed("Target store is not empty!",targetCount,0);
+		if(emptyTargetRequired) {
+			if( targetCount > 0) {
+				cloneFailed("Target store is not empty!",targetCount,0);
+			}
+		}else {
+			LOGGER.info("Target store not empty, count="+Integer.toString(originalTargetCount));
 		}
 		
 		int sourceCount = source.getTotalNumberOfTriples();		
@@ -137,13 +138,13 @@ public class CloningTool {
 
 			//Overlap correction
 			targetCount = target.getTotalNumberOfTriples();			
-			if(targetCount < nExpected) {
-				adjustOverlap(targetCount, nExpected, attempts);
+			if(targetCount - originalTargetCount < nExpected) {
+				adjustOverlap(targetCount - originalTargetCount, nExpected, attempts);
 				//Reset nExpected to retry step 
 				nExpected = oldnExpected;
 				attempts ++;
 			}else {
-				LOGGER.info("Cloned count: "+Integer.toString(targetCount)
+				LOGGER.info("Cloned count: "+Integer.toString(targetCount - originalTargetCount)
 				+", expected count: "+Integer.toString(nExpected)
 				+", of "+Integer.toString(sourceCountExBlanks)
 				+" (exludes triples with blank nodes).");
@@ -156,12 +157,12 @@ public class CloningTool {
 	
 		//Check target count
 		targetCount = target.getTotalNumberOfTriples();
-		if(targetCount != sourceCount) {
+		if(targetCount - originalTargetCount != sourceCount) {
 			String reason = "Please clear the target store and try again. "
 					+ " Consider increasing the step size and overlap."; 
-			cloneFailed(reason, targetCount, nExpected);
+			cloneFailed(reason, targetCount - originalTargetCount, nExpected);
 		}
-		LOGGER.info("Clone successful! Cloned "+Integer.toString(targetCount)
+		LOGGER.info("Clone successful! Cloned "+Integer.toString(targetCount - originalTargetCount)
 		+" of "+Integer.toString(sourceCount));		
 	}
 	

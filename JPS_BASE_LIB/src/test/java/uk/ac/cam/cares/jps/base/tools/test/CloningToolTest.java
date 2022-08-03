@@ -315,4 +315,27 @@ class CloningToolTest {
 		assertTrue(CloningToolTestHelper.checkSingleTriple(targetStoreClient, where));
 	}
 	
+	@Test
+	void testCloneWithNonEmptyTargetStore() {
+		
+		int N = 10;
+		
+		MockStoreClient sourceStoreClient = new MockStoreClient();
+		String sparqlInsert = CloningToolTestHelper.createInsertData(CloningToolTestHelper.createTriples(N));
+		sourceStoreClient.executeUpdate(sparqlInsert);
+		
+		MockStoreClient targetStoreClient = new MockStoreClient();
+		targetStoreClient.addTriple("<subject>", "<predicate>", "<object>");
+		
+		WhereBuilder where = new WhereBuilder();
+		where.addWhere("<subject>", "<predicate>", "<object>");
+		
+		CloningTool cloningTool = new CloningTool();
+		cloningTool.overrideEmptyTarget();
+		cloningTool.clone(sourceStoreClient,targetStoreClient);
+		
+		assertEquals(N+1, targetStoreClient.getTotalNumberOfTriples());
+		assertTrue(CloningToolTestHelper.checkTriples(N, targetStoreClient));
+		assertTrue(CloningToolTestHelper.checkSingleTriple(targetStoreClient, where));
+	}
 }
