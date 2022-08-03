@@ -32,7 +32,8 @@ class SitePreSelection(object):
             backUpCapacityRatio:float,
             bankRate:float,
             carbonTax:float,
-            backUpRetrofittedGenerator:bool,
+            pureBackUpAllGenerator:bool,
+            replaceRenewableGenerator:bool,
             maxmumSMRUnitAtOneSite:int,
             DiscommissioningCostEstimatedLevel:int = 1 ## the number 0 indicates the using the minimum decommissioning cost, while 1 for middle and 2 for high
         ):
@@ -50,7 +51,8 @@ class SitePreSelection(object):
         self.i = bankRate
         self.carbonTax = carbonTax
         self.N = maxmumSMRUnitAtOneSite
-        self.backUpRetrofittedGenerator = backUpRetrofittedGenerator
+        self.pureBackUpAllGenerator = pureBackUpAllGenerator
+        self.replaceRenewableGenerator = replaceRenewableGenerator
 
         if DiscommissioningCostEstimatedLevel in [0,1,2]:
             self.DcLevel = DiscommissioningCostEstimatedLevel
@@ -79,15 +81,17 @@ class SitePreSelection(object):
 
         ##-- Set up constraint --##
         ## 1. the replacedCapacity
-            ## backUpRetrofittedGenerator Flag:
+            ## pureBackUpAllGenerator Flag:
             ### a. when the back-up option is set to be True, no matter what generator types are involved, the SMR is not used to replace the generators but as the back up capacity;
             ### b. when the back-up option is set to be False, the SMR is used to relaced the carbon internsive generator and only back up the renewable generators (e.g., solar, wind)
         replacedCapacity = 0
-        if self.backUpRetrofittedGenerator is True:
+        if self.pureBackUpAllGenerator is True:
+            print('===This is a pure back-up scenario===')
             for gen in self.generatorToBeReplacedList:
                 replacedCapacity += float(gen["Capacity"])
             replacedCapacity = float(self.backUpCapRatio) * float(replacedCapacity)
-        else: 
+        elif not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator: 
+            print('===This is a half pure back-up (solar and wind) and half replacing scenario===')
             for s in range(len(self.generatorToBeReplacedList)):
                 gen = self.generatorToBeReplacedList[s]
                 if not ('Solar' in gen["fuelOrGenType"] or 'Wind' in gen["fuelOrGenType"]):
@@ -96,8 +100,16 @@ class SitePreSelection(object):
                         if bvList.index(bvname) > 0:
                             replacedCapacity += float(gen["Capacity"]) * self.varSets[bvname]
                 else:
-                    replacedCapacity += float(gen["Capacity"]) * float(self.backUpCapRatio) 
-                
+                    replacedCapacity += float(gen["Capacity"]) * float(self.backUpCapRatio)
+        else:
+            print('===This is a pure replacement scenario===')
+            for s in range(len(self.generatorToBeReplacedList)):
+                gen = self.generatorToBeReplacedList[s]
+                bvList = self.binaryVarNameList[s]
+                for bvname in bvList:
+                    if bvList.index(bvname) > 0:
+                        replacedCapacity += float(gen["Capacity"]) * self.varSets[bvname]
+
         ## 2. the total capacity of SMR
         totalSMRCapacity = 0
         for bvList in self.binaryVarNameList:
@@ -122,6 +134,8 @@ class SitePreSelection(object):
             annualOperatingHours = self.generatorToBeReplacedList[s]["annualOperatingHours"]
             CO2EmissionFactor = self.generatorToBeReplacedList[s]["CO2EmissionFactor"]
 
+            print(existingGenFuelType)
+
             if existingGenFuelType in DC.DiscommissioningCost.keys():
                 dc = DC.DiscommissioningCost[existingGenFuelType][self.DcLevel]
             else:
@@ -138,7 +152,10 @@ class SitePreSelection(object):
                 bv = self.varSets[bvname]
                 ## totalSMRCapitalCost += int(i) * bv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L))) 
                 if i == 0:
-                    totalDiscommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                    if not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator and not ('Solar' in existingGenFuelType or 'Wind' in existingGenFuelType):
+                        totalDiscommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                    elif not self.pureBackUpAllGenerator and self.replaceRenewableGenerator:
+                        totalDiscommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
                     totalProtentialCarbonCost += bv * carbonCost * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
                 else: 
                     rs =  (self.r0/1000) * ((i * self.Cap_SMR)**(0.5)) * 10
@@ -190,11 +207,11 @@ if __name__ == '__main__':
     ##NOTUSED [0]generator IRI, [1]capcacity, [2]primary fuel, [3]generaor technology, [4]lat-lon 
     GenCoal = [{'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_3b7acf93-cc8b-4ad7-9c85-2f737eace679', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'Capacity': '1559.0', 'LatLon': [51.38731, -3.4049], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/Wales'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_7bda0d1f-8df0-496c-8f7a-b328c70ffe2d', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'Capacity': '2000.0', 'LatLon': [53.304, -0.7815], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/East_Midlands'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_598cdc45-52b8-4027-888f-3eb4758b329c', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0', 'Capacity': '230.0', 'LatLon': [51.54907, -2.97053], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/Yorkshire_and_the_Humber'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_c2153e52-dee7-49d8-9ba2-90f83edfde5f', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'Capacity': '2000.0', 'LatLon': [53.36046, -0.81019], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/East_Midlands'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_a04e0e57-f847-426b-9cc3-c323d261aecd', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'Capacity': '2021.0', 'LatLon': [52.86463, -1.25829], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/East_Midlands'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_b32946fc-6abb-4df5-9437-7e01dbe1ca64', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_c4d7dcca-a7f5-4887-a460-31706ab7ec9c', 'Capacity': '1961.0', 'LatLon': [53.37234, -2.68912], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/North_West_England'}, {'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_74fbe81f-339b-41fe-b2da-940d05b774b2', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0', 'Capacity': '1320.0', 'LatLon': [53.74043, -0.9981], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal', 'annualOperatingHours': 482.06, 'CO2EmissionFactor': 0.319, 'place': 'https://dbpedia.org/page/Yorkshire_and_the_Humber'}]
     test = [{"PowerGenerator": 1, "Bus": 1, "Capacity": 10, "fuelOrGenType": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas", "LatLon":"52.209556#0.120046", "CO2EmissionFactor": 0.181, "annualOperatingHours": 3593.48},
-    {"PowerGenerator": 1, "Bus": 1, "Capacity":500, "fuelOrGenType": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", "LatLon":"52.209556#0.120046", "CO2EmissionFactor": 0.319, "annualOperatingHours": 482.06}]
+    {"PowerGenerator": 1, "Bus": 1, "Capacity":500, "fuelOrGenType": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Solar", "LatLon":"52.209556#0.120046", "CO2EmissionFactor": 0.319, "annualOperatingHours": 482.06}]
     
     gen = [{'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_20026d02-c3e8-42c0-90fc-278292409f9c', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'Capacity': '3.7', 'LatLon': [51.76599, -3.6216], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Solar', 'annualOperatingHours': 3430.73, 'CO2EmissionFactor': 0.0, 'place': 'https://dbpedia.org/page/Wales'}]
 
-    test = SitePreSelection('ukdigitaltwin_pd', gen, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, 2000, False, 4, 1)
+    test = SitePreSelection('ukdigitaltwin_pd', test, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, 2000, False, True, 4, 1)
     test.SMRSitePreSelector()
     print(test.siteSelected)
    
