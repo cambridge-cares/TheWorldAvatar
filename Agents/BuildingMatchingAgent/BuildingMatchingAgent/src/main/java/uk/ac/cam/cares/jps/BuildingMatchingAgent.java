@@ -8,8 +8,7 @@ import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 
@@ -19,9 +18,8 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
-import uk.ac.cam.cares.ogm.models.geo.GeometryType;
-
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -55,6 +53,12 @@ public class BuildingMatchingAgent extends JPSAgent {
     private static final String SURFACE_GEOMETRY = "surfaceGeometry";
     private static final String GEOMETRY_TYPE = "geometryType";
     private static final String DATATYPE = "datatype";
+
+    private static final String VALUE_DELIMITER = "#";
+    private static final String STRUCTURE_PREFIX = "POLYGON-";
+    private static final String STRUCTURE_DELIMITER = "-";
+
+    protected static final GeometryFactory factory = new GeometryFactory();
 
     private static String targetResourceId_ocgml = null;
     private static String targetResourceId_obe = null;
@@ -150,21 +154,13 @@ public class BuildingMatchingAgent extends JPSAgent {
                         for (int i = 0; i < geom_result.length(); i++) {
                             String data = geom_result.getJSONObject(i).getString(GEOMETRY_TYPE);
                             String datatypeIri = geom_result.getJSONObject(i).getString(DATATYPE);
-                            GeometryType.setSourceCrsName("EPSG:27700");
-                            GeometryType geometryType = new GeometryType(data, datatypeIri);
-                            Polygon polygon1 = null;
-                            try {
-                                Field polygon = geometryType.getClass().getDeclaredField("polygon");
-                                polygon.setAccessible(true);
-                                polygon1 = (Polygon) polygon.get(geometryType);
-                            } catch (NoSuchFieldException | IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                            centroid = geometryType.getCentroid();
-                            Double area = polygon1.getArea();
+
+                            Polygon polygon = getPolygon(data, datatypeIri);
+                            centroid = computeCentroid(polygon.getExteriorRing().getCoordinates(), true);
+                            Double area = polygon.getArea();
                             xsum += centroid.x * area;
                             ysum += centroid.y *area;
-                            zsum += centroid.z*area;
+                            zsum += centroid.z *area;
                             asum += area;
                         }
                         lat_lon = new Coordinate(xsum/asum, ysum/asum, zsum/asum);
@@ -172,10 +168,9 @@ public class BuildingMatchingAgent extends JPSAgent {
                     else {
                         String data = geom_result.getJSONObject(0).getString(GEOMETRY_TYPE);
                         String datatypeIri = geom_result.getJSONObject(0).getString(DATATYPE);
-                        GeometryType.setSourceCrsName("EPSG:27700");
-                        GeometryType geometryType = new GeometryType(data, datatypeIri);
-                        centroid = geometryType.getCentroid();
-                        lat_lon =centroid;
+                        Polygon polygon = getPolygon(data, datatypeIri);
+                        centroid = computeCentroid(polygon.getExteriorRing().getCoordinates(), true);
+                        lat_lon = centroid;
                     }
                     StringBuilder value = new StringBuilder();
                     for (int i = 0; i < 2; i++)
@@ -270,5 +265,46 @@ public class BuildingMatchingAgent extends JPSAgent {
         }
         ontobuilenv.put(subject_bldg, UPRNS_2);
         return ontobuilenv;
+    }
+
+    private static Polygon getPolygon(String data, String datatype) {
+        // decode coordinates
+        String[] valueStrings = data.split(VALUE_DELIMITER);
+        double[] values = new double[valueStrings.length];
+        for (int i = 0; i < valueStrings.length; i++) values[i] = Double.parseDouble(valueStrings[i]);
+        // Deserialize coordinates into rings based on structure string, which should be e.g. [...]POLYGON-3-24-15-15.
+        String[] splitDatatypeString = datatype.split(STRUCTURE_PREFIX); // ["...", "3-24-15-15"]
+        String[] splitStructureString = splitDatatypeString[splitDatatypeString.length-1].split(STRUCTURE_DELIMITER); // ["3", "24", "15", "15"]
+        String[] ringSizes = Arrays.copyOfRange(splitStructureString, 1, splitStructureString.length); // // ["24", "15", "15"]
+        LinearRing exterior = null;
+        LinearRing[] holes = new LinearRing[ringSizes.length - 1];
+        int k = 0;
+        try {
+            for (int i = 0; i < ringSizes.length; i++) {
+                int ringSize = Integer.parseInt(ringSizes[i]) / 3;
+                Coordinate[] coords = new Coordinate[ringSize];
+                for (int j = 0; j < ringSize; j++)
+                    coords[j] = new Coordinate(values[k++], values[k++], values[k++]);
+                if (i == 0) exterior = factory.createLinearRing(coords);
+                else holes[i - 1] = factory.createLinearRing(coords);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            throw new JPSRuntimeException(e);
+        }
+        Polygon polygon = factory.createPolygon(exterior, holes);
+        return polygon;
+    }
+
+    public static Coordinate computeCentroid(Coordinate[] coordinates, boolean skipLast) {
+        double x = 0;
+        double y = 0;
+        double z = 0;
+        int length = coordinates.length - (skipLast ? 1 : 0);
+        for (int i = 0; i < length; i++) {
+            x += coordinates[i].getX();
+            y += coordinates[i].getY();
+            z += coordinates[i].getZ();
+        }
+        return new Coordinate(x / length, y / length, z / length);
     }
 }
