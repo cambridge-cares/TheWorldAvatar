@@ -110,24 +110,6 @@ class PySparqlClient:
                 raise Exception("ERROR: Local file (%s) upload to file server <%s> failed with code %d and response body: %s" % (
                     local_file_path, self.fs_url, response.status_code, str(response.content)))
 
-    # TODO delete this function
-    # def uploadFile(self, local_file_path) -> Tuple[str, float]:
-    #     """This function uploads the file at the given local file path to file server."""
-    #     if self.fs_url is None or self.fs_auth is None:
-    #         raise Exception("ERROR: Fileserver URL and auth are not provided correctly.")
-    #     with open(local_file_path, 'rb') as file_obj:
-    #         files = {'file': file_obj}
-    #         timestamp_upload, response = datetime.now().timestamp(), requests.post(self.fs_url, auth=self.fs_auth, files=files)
-
-    #         # If the upload succeeded, write the remote file path to KG
-    #         if (response.status_code == status_codes.codes.OK):
-    #             remote_file_path = response.headers['file']
-
-    #             return remote_file_path, timestamp_upload
-    #         else:
-    #             raise Exception("ERROR: Local file (%s) upload to file server <%s> failed with code %d and response body: %s" % (
-    #                 local_file_path, self.fs_url, response.status_code, str(response.content)))
-
     def downloadFile(self, remote_file_path, downloaded_file_path):
         """This function downloads a file given the remote file path and the local file path to store the downloaded file."""
         response = requests.get(remote_file_path, auth=self.fs_auth)
