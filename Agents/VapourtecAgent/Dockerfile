@@ -49,10 +49,8 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
-# TODO - delete this once new version of pyderivationagent is released
-# TODO - update requirements.txt to use new version of pyderivationagent
-# RUN python -m pip install git+https://github.com/cambridge-cares/TheWorldAvatar@161-dev-pyderivationagent-modifications#subdirectory=JPS_BASE_LIB/python_derivation_agent
-RUN python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pyderivationagent==1.1.0b0
+# TODO - delete this once chemistry-and-robots package is released
+# TODO - update requirements.txt to use new version of chemistry-and-robots package
 RUN python -m pip install git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots
 
 

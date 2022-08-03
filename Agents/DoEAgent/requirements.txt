@@ -2,7 +2,7 @@
 ## The World Avatar related packages ##
 ## TODO uncomment to stable releases ##
 #######################################
-# pyderivationagent
+pyderivationagent==1.1.0
 git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
 # git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots
 
