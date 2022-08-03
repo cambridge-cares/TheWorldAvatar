@@ -2,11 +2,11 @@
 # Author: Wanni Xie (wx243@cam.ac.uk)             #
 # Last Update Date: 13 Jan 2022                   #
 ###################################################
-from DistanceCalculator import DistanceBasedOnGPSLocation as GPS_distance
 from collections import Counter
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
+from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation as GPS_distance
 from UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel import queryElectricityConsumption_LocalArea
 import UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox as query_topo
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model

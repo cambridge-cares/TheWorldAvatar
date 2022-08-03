@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 28 July 2022         #
+# Last Update Date: 03 August 2022       #
 ##########################################
 
 """
@@ -84,9 +84,10 @@ class OptimalPowerFlowAnalysis:
         ProbabilityOfReactorFailure:float,
         SMRCapability:float,
         maxmumSMRUnitAtOneSite: int,
-        demandCapacityRatio:float,
+        backUpCapacityRatio:float,
+        renewableEnergyOutputRatio:float,
         DiscommissioningCostEstimatedLevel:int,
-        shutNonRetrofittedGenerator:bool,
+        backUpRetrofittedGenerator:bool,
         queryEndpointLabel:str, geospatialQueryEndpointLabel:str, endPointURL:str, endPointUser:str = None, endPointPassWord:str = None,
         OWLFileStoragePath = None, updateLocalPowerPlantOWLFileFlag:bool = True
         ):
@@ -157,10 +158,10 @@ class OptimalPowerFlowAnalysis:
             raiseExceptions("withRetrofit has to be a bool number")
         else:
             self.withRetrofit = withRetrofit 
-        if type(shutNonRetrofittedGenerator) is not bool:
-            raiseExceptions("shutNonRetrofittedGenerator has to be a bool number")
+        if type(backUpRetrofittedGenerator) is not bool:
+            raiseExceptions("backUpRetrofittedGenerator has to be a bool number")
         else:
-            self.shutNonRetrofittedGenerator = shutNonRetrofittedGenerator
+            self.backUpRetrofittedGenerator = backUpRetrofittedGenerator
         self.retrofitGenerator = retrofitGenerator # GeneratorIRI, location, capacity
         self.retrofitGenerationFuelOrGenType = retrofitGenerationTechTypeOrGenerationTechnology    
         ##--7. Identify the generators type used to replace the exisiting generators--##
@@ -180,7 +181,8 @@ class OptimalPowerFlowAnalysis:
         self.NeighbourhoodRadiusForSMRUnitOf1MW = NeighbourhoodRadiusForSMRUnitOf1MW
         self.ProbabilityOfReactorFailure = ProbabilityOfReactorFailure
         self.SMRCapability = SMRCapability
-        self.demandCapacityRatio = demandCapacityRatio
+        self.backUpCapacityRatio = backUpCapacityRatio
+        self.renewableEnergyOutputRatio = renewableEnergyOutputRatio
         self.DiscommissioningCostEstimatedLevel = DiscommissioningCostEstimatedLevel
 
     """This method is called to select the site to be replaced by SMR"""
@@ -202,14 +204,19 @@ class OptimalPowerFlowAnalysis:
             self.retrofitListBeforeSelection = retrofitListBeforeSelection
             retrofitListBeforeSelection_ = retrofitListBeforeSelection.copy()
 
-            print(self.geospatialQueryEndpointLabel, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost, \
-                self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.demandCapacityRatio, \
-                self.bankRate, self.CarbonTax, self.shutNonRetrofittedGenerator, self.maxmumSMRUnitAtOneSite, self.DiscommissioningCostEstimatedLevel)
+            print("===The number of the generator that goes to the site selection method is:===", len(retrofitListBeforeSelection))
+
+            totalCapa = 0
+            for gen in retrofitListBeforeSelection:
+                totalCapa += float(gen["Capacity"])
+
+            print('The total capa of Solar is: ', totalCapa)
+
 
             ## Perform site pre-selection analysis
             siteSelector = sp.SitePreSelection(self.geospatialQueryEndpointLabel, retrofitListBeforeSelection, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost, \
-                self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.demandCapacityRatio, \
-                self.bankRate, self.CarbonTax, self.shutNonRetrofittedGenerator, self.maxmumSMRUnitAtOneSite, self.DiscommissioningCostEstimatedLevel)
+                self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.backUpCapacityRatio, \
+                self.bankRate, self.CarbonTax, self.backUpRetrofittedGenerator, self.maxmumSMRUnitAtOneSite, self.DiscommissioningCostEstimatedLevel)
             siteSelector.SMRSitePreSelector()
             
             self.siteToBeReplaced = siteSelector.siteSelected
@@ -223,6 +230,9 @@ class OptimalPowerFlowAnalysis:
                 retrofitListBeforeSelection_.remove(site)
 
             self.siteNotSelected = retrofitListBeforeSelection_ ## those not to be replaced generator will keep running or shut down
+        else:
+            self.siteToBeReplaced = []
+            self.siteNotSelected = []
 
         print("The carbon tax is £/tCO2", self.CarbonTax)
         print("The total number of generator is", len(self.generatorNodeList))
@@ -289,10 +299,11 @@ class OptimalPowerFlowAnalysis:
         print('The total number of generators:', len(self.generatorNodeList))
         generatorNodeListNonDeleted = self.generatorNodeList.copy()
 
-        if self.shutNonRetrofittedGenerator:
-            for egen in generatorNodeListNonDeleted:
-                if egen[0] in [gen["PowerGenerator"] for gen in self.retrofitListBeforeSelection]:
-                    self.generatorNodeList.remove(egen)
+        if self.backUpRetrofittedGenerator:
+            pass
+            # for egen in generatorNodeListNonDeleted:
+            #     if egen[0] in [gen["PowerGenerator"] for gen in self.retrofitListBeforeSelection]:
+            #         self.generatorNodeList.remove(egen)
         else:
             for egen in generatorNodeListNonDeleted:
                 if egen[0] in [gen["PowerGenerator"] for gen in self.siteToBeReplaced]:
@@ -305,7 +316,7 @@ class OptimalPowerFlowAnalysis:
             uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), float(egen[4]), str(egen[7]), None, self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
             uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
             ###add EGen model parametor###
-            ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio)
+            ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, capa_demand_ratio, self.renewableEnergyOutputRatio)
             self.GeneratorObjectList.append(objectName)
         
         ### Initialisation of the SMR Generator Model Entities ###
@@ -324,7 +335,7 @@ class OptimalPowerFlowAnalysis:
                 egen_re = [egen_re["PowerGenerator"], float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], self.SMRCapability * egen_re["numberOfSMR"], self.newGeneratorType] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?fuel type
                 uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
                 ###add EGen model parametor###
-                ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, capa_demand_ratio)
+                ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, capa_demand_ratio, self.renewableEnergyOutputRatio)
                 self.GeneratorToBeRetrofittedObjectList.append(objectName)
                 #self.GeneratorObjectList.append(objectName)
         else: 
@@ -583,16 +594,16 @@ class OptimalPowerFlowAnalysis:
         ##TODO: check if self.GeneratorToBeRetrofittedObjectList affect the code 
         GeneratorModelKGInstanceCreator(self.ObjectSet, self.GeneratorObjectList, self.GeneratorToBeRetrofittedObjectList, self.OPFOrPF, self.newGeneratorType, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
         self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath)  
-        
         return 
     
     def CarbonEmissionCalculator(self):
         self.totalCO2Emission = 0
         for gen in self.GeneratorObjectList:
-            self.totalCO2Emission += float(self.ObjectSet[gen].PG_OUTPUT) * float(self.ObjectSet[gen].CO2EmissionFactor)
+            self.totalCO2Emission += float(self.ObjectSet[gen].PG_OUTPUT) * float(self.ObjectSet[gen].CO2EmissionFactor)       
+        print("Total CO2 Emission is:", self.totalCO2Emission)
         return 
     
-    def energySupplyBreakDownPieChartCreator(self):
+    def EnergySupplyBreakDownPieChartCreator(self):
         genTypeLabel = []
         outPutData = []
         for gen in self.GeneratorObjectList:
@@ -603,17 +614,49 @@ class OptimalPowerFlowAnalysis:
                 i = genTypeLabel.index(self.ObjectSet[gen].fueltype) 
                 outPutData[i] += float(self.ObjectSet[gen].PG_OUTPUT)
         totalOutputOfSMR = 0
+        
         for regen in self.GeneratorToBeRetrofittedObjectList:
-            totalOutputOfSMR += regen.ObjectSet[gen].PG_OUTPUT
+            totalOutputOfSMR += self.ObjectSet[regen].PG_OUTPUT
         
         genTypeLabel.append(self.newGeneratorType)
         outPutData.append(totalOutputOfSMR)
 
-        plt.pie(outPutData, labels=genTypeLabel, autopct='%1.1f%%', shadow=True, startangle=90)
+        percentage = []
+        sum_up = sum(outPutData)
+        for output in outPutData:
+            p = round(output/sum_up, 2)
+            percentage.append(p * 100)
+
+        print(genTypeLabel)
+        print(percentage)
+        print(outPutData)
+
+        otherCapa = 0
+        labelToBeDeleted = []
+        dataToBeDeleted = []
+        for label in genTypeLabel:
+            if not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR']:
+                i = genTypeLabel.index(label)
+                labelToBeDeleted.append(label)
+                dataToBeDeleted.append(outPutData[i])
+                otherCapa += outPutData[i] 
+
+        for label in labelToBeDeleted:
+            genTypeLabel.remove(label)
+        
+        for data in dataToBeDeleted:
+            outPutData.remove(data)
+
+        outPutData.append(otherCapa)
+        genTypeLabel.append('Others')
+
+        print(genTypeLabel)
+        print(outPutData)
+
+        plt.pie(outPutData, labels=genTypeLabel, autopct='%1.1f%%', startangle=90)
         plt.title('Energy Supply BreakDown')
         plt.axis('equal')
-        plt.show()
-        
+        plt.show()     
         return 
             
 
@@ -628,20 +671,20 @@ if __name__ == '__main__':
     loadAllocatorName = "regionalDemandLoad"
     EBusModelVariableInitialisationMethodName= "defaultInitialisation"
     ELineInitialisationMethodName = "defaultBranchInitialiser"
-    CarbonTax = 100
+    CarbonTax = 20
     piecewiseOrPolynomial = 2
     pointsOfPiecewiseOrcostFuncOrder = 2
     baseMVA = 150
     withRetrofit = True
     retrofitGenerator = []
-    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", 
-    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
-    "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
+    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Solar", "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"]
+    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
+    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
     ##retrofitGenerationTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear"]
     newGeneratorType = "SMR"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
 
-    shutNonRetrofittedGenerator = False
+    backUpRetrofittedGenerator = False
 
     discountRate = 0.02
     bankRate = 0.0125
@@ -652,23 +695,26 @@ if __name__ == '__main__':
     ProbabilityOfReactorFailure = 0.002985
     SMRCapability = 470
     maxmumSMRUnitAtOneSite = 4
-    demandCapacityRatio = 0.5
+    backUpCapacityRatio = 0.7
+    renewableEnergyOutputRatio = 0.5
     DiscommissioningCostEstimatedLevel = 1
 
 
     testOPF1 = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, AgentIRI, "2017-01-31", slackBusNodeIRI, loadAllocatorName, EBusModelVariableInitialisationMethodName, ELineInitialisationMethodName,
         CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, 
-        projectLifeSpan, SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, demandCapacityRatio, DiscommissioningCostEstimatedLevel,
-        shutNonRetrofittedGenerator, queryEndpointLabel, geospatialQueryEndpointLabel, updateEndPointURL)
+        projectLifeSpan, SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, backUpCapacityRatio, renewableEnergyOutputRatio,
+        DiscommissioningCostEstimatedLevel, backUpRetrofittedGenerator, queryEndpointLabel, geospatialQueryEndpointLabel, updateEndPointURL)
     
     testOPF1.retrofitGeneratorInstanceFinder()
     testOPF1.ModelPythonObjectInputInitialiser()
     testOPF1.OPFModelInputFormatter()
     testOPF1.OptimalPowerFlowAnalysisSimulation()
     testOPF1.ModelOutputFormatter()
+    testOPF1.CarbonEmissionCalculator()
+    testOPF1.EnergySupplyBreakDownPieChartCreator()
     ## testOPF1.ModelPythonObjectOntologiser()
 
-    def powerPlantgeoJSONCreator(retrofitResults, class_label): 
+    def powerPlantgeoJSONCreator(retrofitResults, class_label, carbonTax): 
         geojson_file = """
         {
             "type": "FeatureCollection",
@@ -685,6 +731,7 @@ if __name__ == '__main__':
                 "Single SMR Design Capacity": "470MW",
                 "Number of SMR Units": "%s",
                 "Total SMR Output": "%s",
+                "Carbon tax rate": "%s",
                 "marker-color": "%s",
                 "marker-size": "small",
                 "marker-symbol": "marker"
@@ -696,7 +743,7 @@ if __name__ == '__main__':
                     %s
                 ]
                 }
-            },"""%(retrofitResults[i][5], retrofitResults[i][3], retrofitResults[i][2], retrofitResults[i][6], retrofitResults[i][0], retrofitResults[i][1], retrofitResults[i][4][1], retrofitResults[i][4][0])
+            },"""%(retrofitResults[i][5], retrofitResults[i][3], retrofitResults[i][2], retrofitResults[i][6], retrofitResults[i][0], carbonTax, retrofitResults[i][1], retrofitResults[i][4][1], retrofitResults[i][4][0])
             # adding new line 
             geojson_file += '\n'+feature
         
@@ -735,28 +782,23 @@ if __name__ == '__main__':
 
     retrofitResults = [] 
     totalCapacityBeingReplaced = 0
-    for smrname in testOPF1.GeneratorToBeRetrofittedObjectList:
-        i = testOPF1.GeneratorToBeRetrofittedObjectList.index(smrname)
-        if "#" in testOPF1.siteToBeReplaced[i]['fuelOrGenType']:
-            testOPF1.siteToBeReplaced[i]['fuelOrGenType'] = testOPF1.siteToBeReplaced[i]['fuelOrGenType'].split('#')[1]
-        elif "/" in testOPF1.siteNotSelected:
-            testOPF1.siteToBeReplaced[i]['fuelOrGenType'] = testOPF1.siteToBeReplaced[i]['fuelOrGenType'].split('/')[-1]
-        existRetroPairResult = [ round((testOPF1.ObjectSet[smrname].PG_OUTPUT),2), "#ed2400", 'Replaced', testOPF1.siteToBeReplaced[i]['Capacity'], testOPF1.siteToBeReplaced[i]['LatLon'], testOPF1.siteToBeReplaced[i]['fuelOrGenType'], testOPF1.siteToBeReplaced[i]['numberOfSMR']]
-        retrofitResults.append(existRetroPairResult)
-        totalCapacityBeingReplaced += float(testOPF1.siteToBeReplaced[i]['Capacity'])
-    print("Total capacity being replaced: ", totalCapacityBeingReplaced)
-    # print(len(retrofitResults))
+    
     # print(len(testOPF1.GeneratorToBeRetrofittedObjectList))
     # print(len(testOPF1.siteToBeReplaced))
     ##TODO: how to deal with the visulisation of the non-chosen generators
-    if testOPF1.shutNonRetrofittedGenerator is True:
-        for shutdown in testOPF1.siteNotSelected:
-            if "#" in shutdown['fuelOrGenType']:
-                shutdown['fuelOrGenType'] = shutdown['fuelOrGenType'].split('#')[1]
-            elif "/" in testOPF1.siteNotSelected:
-                shutdown['fuelOrGenType'] = shutdown['fuelOrGenType'].split('/')[-1]
-            existRetroPairResult = [ 'N/A', "#99A3A4", 'Shut Down', shutdown['Capacity'], shutdown['LatLon'], shutdown['fuelOrGenType'], 'N/A']
-            retrofitResults.append(existRetroPairResult)
+    if testOPF1.backUpRetrofittedGenerator is True:
+        for nonRetroffited in testOPF1.retrofitListBeforeSelection:
+            for gen in testOPF1.GeneratorObjectList:
+                if testOPF1.ObjectSet[gen].generatorNodeIRI == nonRetroffited['PowerGenerator']:
+                    if "#" in nonRetroffited['fuelOrGenType']:
+                        nonRetroffited['fuelOrGenType'] = nonRetroffited['fuelOrGenType'].split('#')[1]
+                    elif "/" in testOPF1.siteNotSelected:
+                        nonRetroffited['fuelOrGenType'] = nonRetroffited['fuelOrGenType'].split('/')[-1]
+                    existRetroPairResult = [ 'N/A', "#99A3A4", round((testOPF1.ObjectSet[gen].PG_OUTPUT),2), nonRetroffited['Capacity'], nonRetroffited['LatLon'], nonRetroffited['fuelOrGenType'], 'N/A']
+                    retrofitResults.append(existRetroPairResult)
+                    testOPF1.GeneratorObjectList.remove(gen)
+                    break  
+        print(len(testOPF1.retrofitListBeforeSelection), len(retrofitResults))  
     else:
         i = 0
         for stillOpen in testOPF1.siteNotSelected:
@@ -771,9 +813,21 @@ if __name__ == '__main__':
                     testOPF1.GeneratorObjectList.remove(gen)
                     i += 1
                     break
-    print("still open but not be replaced", i)
+        print("still open but not be replaced", i)
     # print(len(retrofitResults))
     # print(len(testOPF1.siteNotSelected))
+
+    for smrname in testOPF1.GeneratorToBeRetrofittedObjectList:
+            i = testOPF1.GeneratorToBeRetrofittedObjectList.index(smrname)
+            if "#" in testOPF1.siteToBeReplaced[i]['fuelOrGenType']:
+                testOPF1.siteToBeReplaced[i]['fuelOrGenType'] = testOPF1.siteToBeReplaced[i]['fuelOrGenType'].split('#')[1]
+            elif "/" in testOPF1.siteNotSelected:
+                testOPF1.siteToBeReplaced[i]['fuelOrGenType'] = testOPF1.siteToBeReplaced[i]['fuelOrGenType'].split('/')[-1]
+            existRetroPairResult = [round((testOPF1.ObjectSet[smrname].PG_OUTPUT),2), "#ed2400", 'Replaced', testOPF1.siteToBeReplaced[i]['Capacity'], testOPF1.siteToBeReplaced[i]['LatLon'], testOPF1.siteToBeReplaced[i]['fuelOrGenType'], testOPF1.siteToBeReplaced[i]['numberOfSMR']]
+            retrofitResults.append(existRetroPairResult)
+            totalCapacityBeingReplaced += float(testOPF1.siteToBeReplaced[i]['Capacity'])
+    print("Total capacity being replaced: ", totalCapacityBeingReplaced)
+    print(len(retrofitResults))
 
     # for gen in testOPF1.GeneratorObjectList:
     #     i = testOPF1.GeneratorObjectList.index(gen)
@@ -782,4 +836,4 @@ if __name__ == '__main__':
 
     print(len(retrofitResults))
 
-    powerPlantgeoJSONCreator(retrofitResults, 'NewSelector_'+ str(CarbonTax) + "ifShutDown" + str(shutNonRetrofittedGenerator))
+    powerPlantgeoJSONCreator(retrofitResults, 'Solar_'+ str(CarbonTax) + "_ifbackUp_" + str(backUpRetrofittedGenerator), CarbonTax)

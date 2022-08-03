@@ -342,20 +342,20 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
         cg_model_EGen.close()       
     return
 
-def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_ratio):
+def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_ratio, renewableEnergyOutputRatio):
     if not isinstance (EGen_Model, UK_PG.UKEGenModel) or not isinstance (EGen_Model, UK_PG.UKEGenModel_CostFunc):
         raise Exception('The first argument should be an instence of UKEGenModel or UKEGenModel_CostFunc')
     EGen_Model.BUS = int(OrderedBusNodeIRIList.index(egen[5])) # the connected bus number of the current generator should be in line with the index of the bus list
     capa = egen[6]
     EGen_Model.PG_INPUT = round((capa * demand_capa_ratio), 4)   
     
-    #TODO: how to assign the uppper and lower bound of the generator of different types
     primaryFuel = egen[7]
     if primaryFuel in ukmf.Renewable: 
-        if EGen_Model.PG_INPUT * 1.1 <=capa:
-            EGen_Model.PMAX = EGen_Model.PG_INPUT * 1.1 
-        else:
-            EGen_Model.PMAX = capa
+        EGen_Model.PMAX = capa * float(renewableEnergyOutputRatio)
+        # if EGen_Model.PG_INPUT * 1.1 <=capa:
+        #     EGen_Model.PMAX = EGen_Model.PG_INPUT * 1.1 
+        # else:
+        #     EGen_Model.PMAX = capa
     else:
         EGen_Model.PMAX = capa
     
