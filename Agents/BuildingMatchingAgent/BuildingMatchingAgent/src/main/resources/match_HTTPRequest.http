@@ -2,7 +2,7 @@ PUT http://localhost:8080/BuildingMatchingAgent/match
 Content-Type: application/json
 
 {
-  "ocgml": "http://localhost:48080/kings-lynn",
-  "obe": "http://localhost:48080/ontobuiltenv",
+  "ocgml": "http://localhost:48888/kings-lynn",
+  "obe": "http://localhost:48888/ontobuiltenv",
   "prefixIRI":"http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
 }
