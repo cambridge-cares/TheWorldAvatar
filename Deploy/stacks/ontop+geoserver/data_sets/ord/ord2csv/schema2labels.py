@@ -15,7 +15,7 @@ def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, Li
         trace: string; the trace of nested field names.
 
     Returns:
-        a tuple of (this_trace, scalars, messages, maps, enums, key, repeat)
+        a tuple of (scalars, messages, maps, repeats)
     """
 
     messages = []
@@ -32,6 +32,9 @@ def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, Li
                 repeats.append((field.message_type.name, field.name))
             else:
                 messages.append((field.message_type.name, field.name))
+        # Enums are also considered as scalars; if it is required to store them
+        # separatly, the following block of code should be uncommented and the enums
+        # list should be defined         
         #elif(field.type == field.TYPE_ENUM):
             # prints the enum type name
             # enums.append(field.enum_type.name)
@@ -44,6 +47,15 @@ def get_field_labels(message: ord_schema.Message) -> Tuple[(List, List, List, Li
 
 
 def create_file(name: str, scalars: List):
+    """Creates a csv file with the provided name and scalars as columns.
+
+    Args:
+        name: csv file name.
+        scalars: string; column labels of scalar values.
+
+    Returns:
+        an empy csv file in results directory
+    """
     file = open('./results/'+name+'.csv', encoding='utf-8', mode='w', newline='')
     writer = csv.writer(file, quotechar='\"', quoting=csv.QUOTE_MINIMAL)
     writer.writerow(scalars)
@@ -52,12 +64,11 @@ def create_file(name: str, scalars: List):
 
 
 
-def create_tables(message: ord_schema.Message, message_label: Optional[str] = None):
+def create_tables(message: ord_schema.Message):
     """Converts a message to its equivalent csv tables.
 
     Args:
         message: Proto to convert.
-        trace: string; the trace of nested field names.
 
     Returns:
         empty csv tables in the results folder with headers.
