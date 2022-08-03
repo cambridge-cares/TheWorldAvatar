@@ -506,7 +506,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			}
 		}
 
-		addDomain(objectProperty, domain, quantifier);
+		addDomain(objectProperty, domain);
 		addRange(objectProperty, range, quantifier);
 		OWLObjectProperty parentProperty = null;
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
@@ -548,10 +548,9 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domain
-	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws JPSRuntimeException {
+	private void addDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException {
 		if(domain==null || domain.isEmpty()){
 			return;
 		}
