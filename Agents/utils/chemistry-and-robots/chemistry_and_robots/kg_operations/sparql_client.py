@@ -1935,7 +1935,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     local_file_path, self.fs_url, timestamp_upload, remote_file_path))
         except Exception as e:
             logger.error(e)
-            raise Exception("Vapourtec input file (%s) upload failed with code %d" % (local_file_path))
+            raise Exception("Vapourtec input file (%s) upload failed with exception %s" % (local_file_path, str(e)))
 
         vapourtec_input_file_iri = initialiseInstanceIRI(getNameSpace(vapourtec_digital_twin), ONTOVAPOURTEC_VAPOURTECINPUTFILE)
         logger.info("The initialised VapourtecInputFile IRI is: <%s>" % (vapourtec_input_file_iri))

@@ -23,6 +23,7 @@ DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
 
 HPLC_XLS_REPORT_FILE = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_xls.xls')
 HPLC_TXT_REPORT_FILE = os.path.join(SAMPLE_DATA_DIR,'raw_hplc_report_txt.txt')
+VAPOURTEC_INPUT_FILE = os.path.join(SAMPLE_DATA_DIR,'vapourtec_input.csv')
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
@@ -140,6 +141,7 @@ def clear_loggers():
             logger.removeHandler(handler)
 
 class TargetIRIs(Enum):
+    CHEMICAL_REACTION_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/'
     DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service' # same as in rxn_queue_test.ttl
     DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
     DUMMY_LAB_IRI = DUMMY_LAB_BASE_IRI + 'Laboratory_Dummy'
@@ -148,6 +150,7 @@ class TargetIRIs(Enum):
     VAPOURTEC_LTD = DUMMY_LAB_BASE_IRI + 'VapourtecLtd'
     VAPOURTECRS400_POWERSUPPLY = DUMMY_LAB_BASE_IRI + 'VapRS400_PowerSupply'
     HPLC_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLC_Dummy'
+    HPLC_DUMMY_MANUFACTURER_IRI = DUMMY_LAB_BASE_IRI + 'HPLC_Manufacturer'
     BPR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'BPR_Dummy'
     VAPOURTECR4REACTOR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Dummy'
     VAPOURTECR4REACTOR_DUMMY_VOLUME = 10
@@ -158,6 +161,53 @@ class TargetIRIs(Enum):
     VAPOURTECR2PUMP_3_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR2_3_Dummy'
     VAPOURTECR2PUMP_4_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR2_4_Dummy'
     AUTOSAMPLER_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'AutoSampler_Dummy'
+    AUTOSAMPLER_LIQUID_LEVEL_DICT = {DUMMY_LAB_BASE_IRI + 'Site_56': 0.0,
+        DUMMY_LAB_BASE_IRI + 'Site_153': 0.0,
+        DUMMY_LAB_BASE_IRI + 'Site_3': 7.0,
+        DUMMY_LAB_BASE_IRI + 'Site_2': 7.0,
+        DUMMY_LAB_BASE_IRI + 'Site_1': 5.0,
+        DUMMY_LAB_BASE_IRI + 'Site_4': 7.0,
+        DUMMY_LAB_BASE_IRI + 'Site_216': 0.0,
+        DUMMY_LAB_BASE_IRI + 'Site_5': 3.0}
+    AUTOSAMPLER_LIQUID_COMPONENT_DICT = {
+        DUMMY_LAB_BASE_IRI + 'Site_4': [CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_637759',
+            CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_640180'],
+        DUMMY_LAB_BASE_IRI + 'Site_5': ['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+            'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+            CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_637759',
+            CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_640180',
+            'http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d',
+            'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',
+            'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',
+            'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'],
+        DUMMY_LAB_BASE_IRI + 'Site_3': ['http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d',
+            'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'],
+        DUMMY_LAB_BASE_IRI + 'Site_1': ['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+            'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',
+            'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'],
+        DUMMY_LAB_BASE_IRI + 'Site_2': ['http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+            'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb']
+    }
+    AUTOSAMPLER_LIQUID_LEVEL_UNIT_DICT = {
+        DUMMY_LAB_BASE_IRI + 'Site_153': onto.OM_MILLILITRE,
+        DUMMY_LAB_BASE_IRI + 'Site_4': onto.OM_MILLILITRE,
+        DUMMY_LAB_BASE_IRI + 'Site_56': onto.OM_MILLILITRE,
+        DUMMY_LAB_BASE_IRI + 'Site_5': onto.OM_MILLILITRE,
+        DUMMY_LAB_BASE_IRI + 'Site_3': onto.OM_MILLILITRE,
+        DUMMY_LAB_BASE_IRI + 'Site_1': onto.OM_MILLILITRE,
+        DUMMY_LAB_BASE_IRI + 'Site_216': onto.OM_MILLILITRE,
+        DUMMY_LAB_BASE_IRI + 'Site_2': onto.OM_MILLILITRE
+    }
+    AUTOSAMPLER_SITE_LOC_DICT = {
+        DUMMY_LAB_BASE_IRI + 'Site_153': '153',
+        DUMMY_LAB_BASE_IRI + 'Site_4': '4',
+        DUMMY_LAB_BASE_IRI + 'Site_56': '56',
+        DUMMY_LAB_BASE_IRI + 'Site_5': '5',
+        DUMMY_LAB_BASE_IRI + 'Site_3': '3',
+        DUMMY_LAB_BASE_IRI + 'Site_1': '1',
+        DUMMY_LAB_BASE_IRI + 'Site_216': '216',
+        DUMMY_LAB_BASE_IRI + 'Site_2': '2'
+    }
     VAPOURTECRS400_DUMMY_CONSISTS_OF_LIST = [VAPOURTECR4REACTOR_DUMMY_IRI,
         VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI, VAPOURTECR2PUMP_1_DUMMY_IRI,
         VAPOURTECR2PUMP_2_DUMMY_IRI, VAPOURTECR2PUMP_3_DUMMY_IRI,
@@ -215,7 +265,6 @@ class TargetIRIs(Enum):
     NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST = None
     NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST = None
 
-    CHEMICAL_REACTION_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/'
     CHEMICAL_REACTION_IRI = CHEMICAL_REACTION_BASE_IRI + 'ChemRxn_1'
     REACTANT_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_1': 'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
     CHEMICAL_REACTION_BASE_IRI + 'Species_2': 'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3'}
@@ -224,16 +273,42 @@ class TargetIRIs(Enum):
     CATALYST_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_5': 'http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d'}
     SOLVENT_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_6': 'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',
     CHEMICAL_REACTION_BASE_IRI + 'Species_7': 'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'}
-    LIST_RXN_EXP_1_INPUT_CHEMICAL_IRI = [EXP_1_BASE_IRI + 'InputChemical_1', EXP_1_BASE_IRI + 'InputChemical_2', EXP_1_BASE_IRI + 'InputChemical_3']
-    LIST_RXN_EXP_2_INPUT_CHEMICAL_IRI = [EXP_2_BASE_IRI + 'InputChemical_1', EXP_2_BASE_IRI + 'InputChemical_2', EXP_2_BASE_IRI + 'InputChemical_3']
-    LIST_RXN_EXP_3_INPUT_CHEMICAL_IRI = [EXP_3_BASE_IRI + 'InputChemical_1', EXP_3_BASE_IRI + 'InputChemical_2', EXP_3_BASE_IRI + 'InputChemical_3']
-    LIST_RXN_EXP_4_INPUT_CHEMICAL_IRI = [EXP_4_BASE_IRI + 'InputChemical_1', EXP_4_BASE_IRI + 'InputChemical_2', EXP_4_BASE_IRI + 'InputChemical_3']
-    LIST_RXN_EXP_5_INPUT_CHEMICAL_IRI = [EXP_5_BASE_IRI + 'InputChemical_1', EXP_5_BASE_IRI + 'InputChemical_2', EXP_5_BASE_IRI + 'InputChemical_3']
-    LIST_RXN_EXP_1_OUTPUT_CHEMICAL_IRI = [EXP_1_BASE_IRI + 'OutputChemical_4']
-    LIST_RXN_EXP_2_OUTPUT_CHEMICAL_IRI = [EXP_2_BASE_IRI + 'OutputChemical_4']
-    LIST_RXN_EXP_3_OUTPUT_CHEMICAL_IRI = [EXP_3_BASE_IRI + 'OutputChemical_4']
-    LIST_RXN_EXP_4_OUTPUT_CHEMICAL_IRI = [EXP_4_BASE_IRI + 'OutputChemical_4']
-    LIST_RXN_EXP_5_OUTPUT_CHEMICAL_IRI = [EXP_5_BASE_IRI + 'OutputChemical_4']
+    EXP_1_INPUT_CHEMICAL_1_IRI = EXP_1_BASE_IRI + 'InputChemical_1'
+    EXP_1_INPUT_CHEMICAL_2_IRI = EXP_1_BASE_IRI + 'InputChemical_2'
+    EXP_1_INPUT_CHEMICAL_3_IRI = EXP_1_BASE_IRI + 'InputChemical_3'
+    EXP_2_INPUT_CHEMICAL_1_IRI = EXP_2_BASE_IRI + 'InputChemical_1'
+    EXP_2_INPUT_CHEMICAL_2_IRI = EXP_2_BASE_IRI + 'InputChemical_2'
+    EXP_2_INPUT_CHEMICAL_3_IRI = EXP_2_BASE_IRI + 'InputChemical_3'
+    EXP_3_INPUT_CHEMICAL_1_IRI = EXP_3_BASE_IRI + 'InputChemical_1'
+    EXP_3_INPUT_CHEMICAL_2_IRI = EXP_3_BASE_IRI + 'InputChemical_2'
+    EXP_3_INPUT_CHEMICAL_3_IRI = EXP_3_BASE_IRI + 'InputChemical_3'
+    EXP_4_INPUT_CHEMICAL_1_IRI = EXP_4_BASE_IRI + 'InputChemical_1'
+    EXP_4_INPUT_CHEMICAL_2_IRI = EXP_4_BASE_IRI + 'InputChemical_2'
+    EXP_4_INPUT_CHEMICAL_3_IRI = EXP_4_BASE_IRI + 'InputChemical_3'
+    EXP_5_INPUT_CHEMICAL_1_IRI = EXP_5_BASE_IRI + 'InputChemical_1'
+    EXP_5_INPUT_CHEMICAL_2_IRI = EXP_5_BASE_IRI + 'InputChemical_2'
+    EXP_5_INPUT_CHEMICAL_3_IRI = EXP_5_BASE_IRI + 'InputChemical_3'
+    EXP_1_OUTPUT_CHEMICAL_IRI = EXP_1_BASE_IRI + 'OutputChemical_4'
+    EXP_2_OUTPUT_CHEMICAL_IRI = EXP_2_BASE_IRI + 'OutputChemical_4'
+    EXP_3_OUTPUT_CHEMICAL_IRI = EXP_3_BASE_IRI + 'OutputChemical_4'
+    EXP_4_OUTPUT_CHEMICAL_IRI = EXP_4_BASE_IRI + 'OutputChemical_4'
+    EXP_5_OUTPUT_CHEMICAL_IRI = EXP_5_BASE_IRI + 'OutputChemical_4'
+    LIST_RXN_EXP_1_INPUT_CHEMICAL_IRI = [EXP_1_INPUT_CHEMICAL_1_IRI, EXP_1_INPUT_CHEMICAL_2_IRI, EXP_1_INPUT_CHEMICAL_3_IRI]
+    LIST_RXN_EXP_2_INPUT_CHEMICAL_IRI = [EXP_2_INPUT_CHEMICAL_1_IRI, EXP_2_INPUT_CHEMICAL_2_IRI, EXP_2_INPUT_CHEMICAL_3_IRI]
+    LIST_RXN_EXP_3_INPUT_CHEMICAL_IRI = [EXP_3_INPUT_CHEMICAL_1_IRI, EXP_3_INPUT_CHEMICAL_2_IRI, EXP_3_INPUT_CHEMICAL_3_IRI]
+    LIST_RXN_EXP_4_INPUT_CHEMICAL_IRI = [EXP_4_INPUT_CHEMICAL_1_IRI, EXP_4_INPUT_CHEMICAL_2_IRI, EXP_4_INPUT_CHEMICAL_3_IRI]
+    LIST_RXN_EXP_5_INPUT_CHEMICAL_IRI = [EXP_5_INPUT_CHEMICAL_1_IRI, EXP_5_INPUT_CHEMICAL_2_IRI, EXP_5_INPUT_CHEMICAL_3_IRI]
+    LIST_RXN_EXP_1_OUTPUT_CHEMICAL_IRI = [EXP_1_OUTPUT_CHEMICAL_IRI]
+    LIST_RXN_EXP_2_OUTPUT_CHEMICAL_IRI = [EXP_2_OUTPUT_CHEMICAL_IRI]
+    LIST_RXN_EXP_3_OUTPUT_CHEMICAL_IRI = [EXP_3_OUTPUT_CHEMICAL_IRI]
+    LIST_RXN_EXP_4_OUTPUT_CHEMICAL_IRI = [EXP_4_OUTPUT_CHEMICAL_IRI]
+    LIST_RXN_EXP_5_OUTPUT_CHEMICAL_IRI = [EXP_5_OUTPUT_CHEMICAL_IRI]
+
+    AUTOSAMPLER_SITE_CHEMICAL_MAPPING_DICT = {
+        DUMMY_LAB_BASE_IRI + 'Site_3': EXP_1_INPUT_CHEMICAL_3_IRI,
+        DUMMY_LAB_BASE_IRI + 'Site_1': EXP_1_INPUT_CHEMICAL_1_IRI,
+        DUMMY_LAB_BASE_IRI + 'Site_2': EXP_1_INPUT_CHEMICAL_2_IRI
+    }
 
     RXNEXP_TYPE_DICT = {EXAMPLE_RXN_EXP_1_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,EXAMPLE_RXN_EXP_2_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,
         EXAMPLE_RXN_EXP_3_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,EXAMPLE_RXN_EXP_4_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,

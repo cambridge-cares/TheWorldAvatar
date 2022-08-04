@@ -1,4 +1,6 @@
+from datetime import datetime
 import random
+import time
 import uuid
 from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
 from chemistry_and_robots.tests.conftest import TargetIRIs
@@ -427,6 +429,7 @@ def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_e
     ],
 )
 def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_rxn_iri, reactant, product, catalyst, solvent):
+    """NOTE get_ontokin_species_from_chem_rxn is tested as part of testing get_chemical_reaction."""
     sparql_client = initialise_triples
     if rxn_type == onto.ONTOREACTION_REACTIONEXPERIMENT:
         chem_rxn = sparql_client.get_chemical_reaction(rxn_exp_iri)
@@ -676,6 +679,10 @@ def test_register_agent_with_hardware(initialise_triples):
         agent_iri=agent_iri, hardware_digital_twin=hardware_iri)
     assert sparql_client.check_if_triple_exist(
         hardware_iri, onto.ONTOLAB_ISMANAGEDBY, agent_iri)
+    # Remove temp agent that manages the digital twin
+    sparql_client.performUpdate("""DELETE WHERE {<%s> <%s> <%s>.}""" % (
+        hardware_iri, onto.ONTOLAB_ISMANAGEDBY, agent_iri
+    ))
 
 def test_connect_hplc_report_with_chemical_solution(initialise_triples):
     sparql_client = initialise_triples
@@ -686,6 +693,106 @@ def test_connect_hplc_report_with_chemical_solution(initialise_triples):
     assert sparql_client.check_if_triple_exist(
         hplc_report_iri, onto.ONTOHPLC_GENERATEDFOR, chemical_solution_iri)
 
+@pytest.mark.parametrize(
+    "local_file_path,hplc_digital_twin",
+    [
+        (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+    ],
+)
+def test_detect_new_hplc_report(initialise_triples, local_file_path, hplc_digital_twin):
+    sparql_client = initialise_triples
+
+    # Get the last modified time of the local file and record the start time
+    timestamp_last_modified = os.path.getmtime(local_file_path)
+    start_timestamp = datetime.now().timestamp()
+
+    # First upload the hplc report to kg
+    uploaded_hplc_report = sparql_client.upload_raw_hplc_report_to_kg(
+        local_file_path=local_file_path,
+        timestamp_last_modified=timestamp_last_modified,
+        remote_report_subdir=None,
+        hplc_digital_twin=hplc_digital_twin
+    )
+    time.sleep(2)
+    end_timestamp = datetime.now().timestamp()
+
+    # Then check if the hplc report is detected as new
+    detected_hplc_report = sparql_client.detect_new_hplc_report(
+        hplc_digital_twin=hplc_digital_twin,
+        start_timestamp=start_timestamp,
+        end_timestamp=end_timestamp
+    )
+
+    assert uploaded_hplc_report == detected_hplc_report
+
+def test_get_autosampler(initialise_triples):
+    sparql_client = initialise_triples
+    autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
+    assert autosampler.instance_iri == TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value
+    assert autosampler.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
+
+    # Check all autosampler site is populated correctly
+    autosampler_sites = autosampler.hasSite
+    assert all([(site.holds.hasFillLevel.hasValue.hasNumericalValue - TargetIRIs.AUTOSAMPLER_LIQUID_LEVEL_DICT.value[site.instance_iri]) < 0.0001 for site in autosampler_sites])
+    assert all([site.holds.hasFillLevel.hasValue.hasUnit == TargetIRIs.AUTOSAMPLER_LIQUID_LEVEL_UNIT_DICT.value[site.instance_iri] for site in autosampler_sites])
+    assert all([dal.check_if_two_lists_equal([comp.representsOccurenceOf for comp in site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem],
+        TargetIRIs.AUTOSAMPLER_LIQUID_COMPONENT_DICT.value[site.instance_iri]) for site in autosampler_sites if site.holds.isFilledWith is not None])
+    assert all([site.locationID == TargetIRIs.AUTOSAMPLER_SITE_LOC_DICT.value[site.instance_iri] for site in autosampler_sites])
+
+def test_get_autosampler_site_given_input_chemical(initialise_triples):
+    sparql_client = initialise_triples
+    autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
+    input_chem_lst = sparql_client.get_input_chemical_of_rxn_exp(TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value)
+
+    for input_chem in input_chem_lst:
+        assert input_chem.instance_iri == TargetIRIs.AUTOSAMPLER_SITE_CHEMICAL_MAPPING_DICT.value[
+            sparql_client.get_autosampler_site_given_input_chemical(autosampler=autosampler, input_chem=input_chem).instance_iri]
+
+def test_get_autosampler_from_vapourtec_rs400(initialise_triples):
+    sparql_client = initialise_triples
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    autosampler_from_rs400 = sparql_client.get_autosampler_from_vapourtec_rs400(vapourtec_rs400)
+    autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
+    assert autosampler_from_rs400 == autosampler
+
+def test_update_vapourtec_autosampler_liquid_level_millilitre(initialise_triples):
+    sparql_client = initialise_triples
+
+    # First query the vapourtec autosampler liquid level millilitre
+    autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
+    # NOTE here we assume the liquid level is in millilitre (as is provided in the test data)
+    assert all([site.holds.hasFillLevel.hasValue.hasUnit == onto.OM_MILLILITRE for site in autosampler.hasSite])
+    dct_site_loop_volume = {site.instance_iri:site.holds.hasFillLevel.hasValue.hasNumericalValue for site in autosampler.hasSite}
+
+    dct_site_loop_volume_to_change = {site.instance_iri:1 for site in [
+        site for site in autosampler.hasSite]}
+
+    # Then update the vapourtec autosampler liquid level millilitre for addition
+    sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(
+        level_change_of_site=dct_site_loop_volume_to_change,
+        for_consumption=False
+    )
+
+    # Then check if the vapourtec autosampler liquid level millilitre is updated
+    updated_autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
+    dct_site_loop_volume_updated = {site.instance_iri:site.holds.hasFillLevel.hasValue.hasNumericalValue for site in [
+        site for site in updated_autosampler.hasSite]}
+    assert all([(dct_site_loop_volume_updated[iri] - (dct_site_loop_volume[iri] + dct_site_loop_volume_to_change[iri])) < 0.0001 for iri in dct_site_loop_volume_updated])
+
+    # Update again but for consumption
+    sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(
+        level_change_of_site=dct_site_loop_volume_to_change,
+        for_consumption=True
+    )
+
+    # Check again
+    updated_autosampler_again = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
+    dct_site_loop_volume_updated_again = {site.instance_iri:site.holds.hasFillLevel.hasValue.hasNumericalValue for site in [
+        site for site in updated_autosampler_again.hasSite]}
+
+    assert all([(dct_site_loop_volume[iri] - dct_site_loop_volume_updated_again[iri]) < 0.0001 for iri in dct_site_loop_volume_updated_again])
+
 #############################################
 ## sparql_client.py functions to be tested ##
 #############################################
@@ -695,71 +802,121 @@ def test_connect_hplc_report_with_chemical_solution(initialise_triples):
 #     pass
 
 @pytest.mark.skip(reason="TODO")
-def test_detect_new_hplc_report(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-
-    pass
-
-@pytest.mark.skip(reason="TODO")
-def test_update_vapourtec_autosampler_liquid_level_millilitre(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-
-    pass
-
-@pytest.mark.skip(reason="TODO")
 def test_create_chemical_solution_for_reaction_outlet(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
+    autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
+    empty_site = [site.instance_iri for site in autosampler.hasSite if site.holds.isFilledWith is None][0]
+    g = sparql_client.create_chemical_solution_for_reaction_outlet(
+        autosampler_site_iri=empty_site, amount_of_chemical_solution=5)
+    g.query("""""")
+    autosampler_updated = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
     pass
 
-@pytest.mark.skip(reason="TODO")
 def test_release_vapourtec_rs400_settings(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
 
-@pytest.mark.skip(reason="TODO")
-def test_upload_vapourtec_input_file_to_kg(initialise_triples):
+    vapourtec_rs400_iri = TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
+    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
+        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_ISSPECIFIEDBY))[0]['ASK']
+
+    setting_iri = "http://"+str(uuid.uuid4())
+    sparql_client.performUpdate("""
+        INSERT {?hardware <%s> <%s>. <%s> <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware.}""" % (
+            onto.ONTOLAB_ISSPECIFIEDBY, setting_iri, setting_iri, onto.ONTOLAB_SPECIFIES,
+            vapourtec_rs400_iri, onto.SAREF_CONSISTSOF))
+    assert sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
+        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_ISSPECIFIEDBY))[0]['ASK']
+
+    sparql_client.release_vapourtec_rs400_settings(vapourtec_rs400_iri=vapourtec_rs400_iri)
+    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
+        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_ISSPECIFIEDBY))[0]['ASK']
+
+def test_upload_and_get_vapourtec_input_file(initialise_triples, generate_random_download_path):
+    """Integration test for upload_vapourtec_input_file_to_kg and test_get_vapourtec_input_file."""
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
 
-@pytest.mark.skip(reason="TODO")
-def test_get_vapourtec_input_file(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
+    local_file_path = conftest.VAPOURTEC_INPUT_FILE
+    timestamp_last_modified = os.path.getmtime(local_file_path)
+    start_timestamp = datetime.now().timestamp()
+    vapourtec_input_file_iri = sparql_client.upload_vapourtec_input_file_to_kg(
+        vapourtec_digital_twin=TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value,
+        local_file_path=local_file_path,
+        remote_file_subdir=None
+    )
+    end_timestamp = datetime.now().timestamp()
 
-@pytest.mark.skip(reason="TODO")
+    # Check if the vapourtec input file was uploaded to the kg
+    vapourtec_input_file = sparql_client.get_vapourtec_input_file(vapourtec_input_file_iri=vapourtec_input_file_iri)
+    assert vapourtec_input_file.instance_iri == vapourtec_input_file_iri
+    assert (vapourtec_input_file.lastLocalModifiedAt - timestamp_last_modified) <= 0.00001
+    assert vapourtec_input_file.lastUploadedAt >= start_timestamp
+    assert vapourtec_input_file.lastUploadedAt <= end_timestamp
+    assert vapourtec_input_file.localFilePath == local_file_path
+    assert sparql_client.fs_url in vapourtec_input_file.remoteFilePath
+
+    # Check that the file uploaded is the same as the test file
+    full_downloaded_path = generate_random_download_path('csv')
+    sparql_client.downloadFile(remote_file_path=vapourtec_input_file.remoteFilePath, downloaded_file_path=full_downloaded_path)
+    assert filecmp.cmp(local_file_path,full_downloaded_path)
+
 def test_get_hplc_given_vapourtec_rs400(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
+    hplc = sparql_client.get_hplc_given_vapourtec_rs400(vapourtec_rs400_iri=TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    assert hplc.instance_iri == TargetIRIs.HPLC_DUMMY_IRI.value
+    assert hplc.manufacturer == TargetIRIs.HPLC_DUMMY_MANUFACTURER_IRI.value
+    assert hplc.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
+    assert hplc.isManagedBy is None
 
-@pytest.mark.skip(reason="TODO")
+    # Register agent with hplc
+    agent_iri = "http://"+str(uuid.uuid4())
+    sparql_client.register_agent_with_hardware(agent_iri=agent_iri, hardware_digital_twin=TargetIRIs.HPLC_DUMMY_IRI.value)
+    hplc = sparql_client.get_hplc_given_vapourtec_rs400(vapourtec_rs400_iri=TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    assert hplc.isManagedBy == agent_iri
+
+    # Remove temp agent that manages the digital twin
+    sparql_client.performUpdate("""DELETE WHERE {<%s> <%s> <%s>.}""" % (
+        TargetIRIs.HPLC_DUMMY_IRI.value, onto.ONTOLAB_ISMANAGEDBY, agent_iri
+    ))
+
 def test_detect_new_hplc_report_from_hplc_derivation(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
 
-@pytest.mark.skip(reason="TODO")
-def test_get_output_chemical_of_rxn_exp(initialise_triples):
+    hplc_derivation_iri = "http://"+str(uuid.uuid4())
+    hplc_job_iri = "http://"+str(uuid.uuid4())
+    hplc_report_iri = "http://"+str(uuid.uuid4())
+    assert sparql_client.detect_new_hplc_report_from_hplc_derivation(
+        hplc_derivation_iri=hplc_derivation_iri) is None
+
+    sparql_client.performUpdate("""INSERT DATA {<%s> <%s> <%s>. <%s> <%s> <%s>.}""" % (
+        hplc_job_iri, onto.ONTODERIVATION_BELONGSTO, hplc_derivation_iri,
+        hplc_job_iri, onto.ONTOHPLC_HASREPORT, hplc_report_iri
+    ))
+    assert hplc_report_iri == sparql_client.detect_new_hplc_report_from_hplc_derivation(
+        hplc_derivation_iri=hplc_derivation_iri)
+
+@pytest.mark.parametrize(
+    "rxnexp_iri,output_chemical_iri",
+    [
+        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, TargetIRIs.LIST_RXN_EXP_1_OUTPUT_CHEMICAL_IRI.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, TargetIRIs.LIST_RXN_EXP_2_OUTPUT_CHEMICAL_IRI.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.LIST_RXN_EXP_3_OUTPUT_CHEMICAL_IRI.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.LIST_RXN_EXP_4_OUTPUT_CHEMICAL_IRI.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.LIST_RXN_EXP_5_OUTPUT_CHEMICAL_IRI.value),
+    ],
+)
+def test_get_input_chemical_of_rxn_exp(initialise_triples, rxnexp_iri, output_chemical_iri):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
+    response = sparql_client.get_output_chemical_of_rxn_exp(rxnexp_iri)
+    list_output_chemical = [res.instance_iri for res in response]
+    assert len(list_output_chemical) == len(output_chemical_iri)
+    assert len(set(list_output_chemical).difference(set(output_chemical_iri))) == 0
 
 @pytest.mark.skip(reason="TODO")
 def test_get_ontocape_material(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
-
-@pytest.mark.skip(reason="TODO")
-def test_get_autosampler_from_vapourtec_rs400(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
+    sparql_client.get_ontocape_material()
     pass
 
 @pytest.mark.skip(reason="TODO")
@@ -774,20 +931,20 @@ def test_get_rxn_con_or_perf_ind(initialise_triples):
     sparql_client = ChemistryAndRobotsSparqlClient()
     pass
 
-@pytest.mark.skip(reason="TODO")
 def test_get_r4_reactor_rxn_exp_assigned_to(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
+
+    rxn_exp_iri = "http://"+str(uuid.uuid4())
+    reactor_iri = "http://"+str(uuid.uuid4())
+    assert sparql_client.get_r4_reactor_rxn_exp_assigned_to(rxn_exp_iri=rxn_exp_iri) is None
+
+    sparql_client.performUpdate("""INSERT DATA {<%s> <%s> <%s>.}""" % (
+        rxn_exp_iri, onto.ONTOREACTION_ISASSIGNEDTO, reactor_iri
+    ))
+    assert reactor_iri == sparql_client.get_r4_reactor_rxn_exp_assigned_to(rxn_exp_iri=rxn_exp_iri)
 
 @pytest.mark.skip(reason="TODO")
 def test_create_equip_settings_for_rs400_from_rxn_exp(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
-
-@pytest.mark.skip(reason="TODO")
-def test_get_autosampler_site_given_input_chemical(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
     pass
@@ -800,36 +957,6 @@ def test_get_species_molar_mass_kilogrampermole(initialise_triples):
 
 @pytest.mark.skip(reason="TODO")
 def test_get_matching_species_from_hplc_results(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
-
-@pytest.mark.skip(reason="TODO")
-def test_get_species_density(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
-
-@pytest.mark.skip(reason="TODO")
-def test_get_species_material_cost(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
-
-@pytest.mark.skip(reason="TODO")
-def test_get_species_eco_score(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
-
-@pytest.mark.skip(reason="TODO")
-def test_get_ontokin_species_from_chem_rxn(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
-
-@pytest.mark.skip(reason="TODO")
-def test_get_autosampler(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
     pass
@@ -869,6 +996,24 @@ def test_collect_triples_for_new_experiment(initialise_triples):
 
 @pytest.mark.skip(reason="TODO")
 def test_collect_triples_for_equip_settings(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO after proper representation of species density")
+def test_get_species_density(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO after proper representation of species material cost")
+def test_get_species_material_cost(initialise_triples):
+    sparql_client = initialise_triples
+    sparql_client = ChemistryAndRobotsSparqlClient()
+    pass
+
+@pytest.mark.skip(reason="TODO after proper representation of species eco score")
+def test_get_species_eco_score(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
     pass
