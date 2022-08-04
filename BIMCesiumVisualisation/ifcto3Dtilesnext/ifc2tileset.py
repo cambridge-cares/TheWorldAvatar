@@ -50,16 +50,22 @@ def gen_root_content():
     # Generate a minimal tileset
     tileset= root_tile()
 
-    # Add the background furniture as root content if they exist
-    file_path="./data/gltf/ifcfurniture.gltf"
-    path=Path(file_path)
-    if path.is_file():
-        rootlist=[{"uri" : "./gltf/ifcbuilding.gltf"}, {"uri" : "./gltf/ifcfurniture.gltf"}]
-        # Tileset Nomenclature for multiple geometry files = contents:[{}]
-        tileset["root"]["contents"] = rootlist
-    else: 
-        # Tileset Nomenclature for 1 geometry file = content:{}
-        tileset["root"]["content"] = {"uri" : "./gltf/ifcbuilding.gltf"}
+    # Respective filepaths
+    building_file_path="./data/gltf/ifcbuilding.gltf"
+    bpath=Path(building_file_path)
+    furniture_file_path="./data/gltf/ifcfurniture.gltf"
+    fpath=Path(furniture_file_path)
+
+    # In a special case where there is no building and furniture, no root content is added
+    if bpath.is_file():
+        if fpath.is_file():
+            rootlist=[{"uri" : "./gltf/ifcbuilding.gltf"}, {"uri" : "./gltf/ifcfurniture.gltf"}]
+            # Tileset Nomenclature for multiple geometry files = contents:[{}]
+            tileset["root"]["contents"] = rootlist
+        else: 
+            # Tileset Nomenclature for 1 geometry file = content:{}
+            tileset["root"]["content"] = {"uri" : "./gltf/ifcbuilding.gltf"}
+    
     return tileset
 
 def init_asset_tiles():
@@ -141,7 +147,7 @@ def gen_tileset_assets(dataframe):
             # Add the asset name to establish a metadata skeleton
             'metadata': {
                     'class': "AssetMetaData",
-                    'properties': {"Asset Name": df_unique['name'][row].split(":")[1], "UID":df_unique['uid'][row]}
+                    'properties': {"Asset Name": df_unique['name'][row].split(":")[0], "UID":df_unique['uid'][row]}
             }
         })
     
