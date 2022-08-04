@@ -48,6 +48,11 @@ public class Manager {
     private static final Logger LOGGER = LogManager.getLogger(Manager.class);
 
     /**
+     * Configuration when interacting with TheStack
+     */
+    private static final Config STACK_CONFIG = new Config();
+
+    /**
      * Feature IRI.
      */
     private final String iri;
@@ -102,6 +107,12 @@ public class Manager {
     public Manager(String iri, String endpoint, ServletContext context) {
         this.iri = iri;
         this.endpoint = endpoint;
+
+        if(endpoint == null || endpoint.isEmpty()) {
+            // Get the blazegraph endpoint from the stack config
+            endpoint = Config.bg_url;
+        }
+
         this.rsClient = new RemoteStoreClient(endpoint);
         this.context = context;
     }
@@ -162,12 +173,16 @@ public class Manager {
             if(metadata.get("Measurement") != null) iris.addAll(metadata.get("Measurement"));
             if(metadata.get("Forecast") != null) iris.addAll(metadata.get("Forecast"));
 
+
+            System.out.println("Measurement IRIs are...");
+            iris.forEach(iri -> System.out.println(iri));
+
             // Get the timeseries data objects (keyed by IRI)
             Map<String, TimeSeries<Instant>> tsObjects = getTimeseriesObjects(iris);
+            System.out.println("Got timeseries instances: " + tsObjects.size());
 
-            System.out.println(tsObjects.size());
             timeJSON = getTimeseriesJSON(metadata, tsObjects);
-            // LOGGER.info("Got the observed and forecast timeseries (if present).");
+            LOGGER.info("Got the observed and forecast timeseries (if present).");
 
         } catch(Exception excep) {
             LOGGER.error(excep);
@@ -201,28 +216,29 @@ public class Manager {
                 if(!metadata.containsKey(fixedKey)) metadata.put(fixedKey, new ArrayList<>());
 
                 String value = entry.optString(key);
+                if(value == null) {
+                    System.out.println("Null value for key: " + key);
 
-                // Misc fudging
-                if(fixedKey.equals("Location") && value.contains("#")) {
-                    String[] parts = value.split(Pattern.quote("#"));
-                    value = parts[1] + ", " + parts[0];
-                }
-                if(fixedKey.equals("Elevation")) {
-                    value = value + "m";
-                }
-                if(fixedKey.endsWith(" Unit")) {
-                    
-                    if(Lookups.UNITS.get(value).contains(";")) {
-                        System.out.println(Lookups.UNITS.get(value));
+                } else {
+
+                    // Misc fudging
+                    if(fixedKey.equals("Location") && value.contains("#")) {
+                        String[] parts = value.split(Pattern.quote("#"));
+                        value = parts[1] + ", " + parts[0];
                     }
-                    value = Lookups.UNITS.get(value);
-                }
-                if(fixedKey.endsWith(" Quantities")) {
-                    String[] parts = value.split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
-                    value = String.join(" ", parts);
-                }
+                    if(fixedKey.equals("Elevation")) {
+                        value = value + "m";
+                    }
+                    if(fixedKey.endsWith(" Unit")) {
+                        value = Lookups.UNITS.get(value);
+                    }
+                    if(fixedKey.endsWith(" Quantities")) {
+                        String[] parts = value.split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+                        value = String.join(" ", parts);
+                    }
 
-                metadata.get(fixedKey).add(value);
+                    metadata.get(fixedKey).add(value);
+                }
             });
         }
         return metadata;
@@ -233,26 +249,33 @@ public class Manager {
      * @param metaMap
      */
     protected JSONObject toJSON(Map<String, List<String>> metaMap) {
-         // Convert to JSON
-         JSONObject metaJSON = new JSONObject();
+        // Convert to JSON
+        JSONObject metaJSON = new JSONObject();
 
-         for(String key : metaMap.keySet()) {
-             if(Lookups.HIDDEN_META.contains(key.toLowerCase())) continue;
- 
-             List<String> values = metaMap.get(key);
-             Set<String> uniques = new LinkedHashSet<>(values);
- 
-             if(uniques.size() == 1) {
-                 String value = values.get(0);
-                 if(value != null && !value.isEmpty()) {
-                     metaJSON.put(key, values.get(0));
-                 }
-             } else {
-                 JSONArray array = new JSONArray();
-                 array.putAll(values);
-                 metaJSON.put(key, array);
-             }
-         }
+        for(String key : metaMap.keySet()) {
+            if(Lookups.HIDDEN_META.contains(key.toLowerCase())) continue;
+
+            // If there exists a capitalised version of this key, skip this one
+            String upper = key.substring(0, 1).toUpperCase() + key.substring(1);
+            if(!upper.equals(key) && metaMap.containsKey(upper)) {
+                System.out.println("Map contains " + key + " and " + upper + ", skipping former");
+                continue;
+            }
+
+            List<String> values = metaMap.get(key);
+            Set<String> uniques = new LinkedHashSet<>(values);
+
+            if(uniques.size() == 1) {
+                String value = values.get(0);
+                if(value != null && !value.isEmpty()) {
+                    metaJSON.put(key, values.get(0));
+                }
+            } else {
+                JSONArray array = new JSONArray();
+                array.putAll(values);
+                metaJSON.put(key, array);
+            }
+        }
 
          LOGGER.info("Converted metadata to JSON.");
          return metaJSON;
@@ -308,16 +331,23 @@ public class Manager {
                 }
 
                 try {
-                  
                     if(!query.isBlank()) {
                         // Sanitise IRI
                         String fixedIRI = this.iri;
                         if(!fixedIRI.startsWith("<")) fixedIRI = "<" + fixedIRI;
                         if(!fixedIRI.endsWith(">")) fixedIRI += ">";
 
+                        // Inject feature IRI
                         query = query.replaceAll(Pattern.quote("[IRI]"), fixedIRI);
+
+                        // Inject ontop endpoint
+                        if(query.contains("[ONTOP]")) {
+                            String ontopEndpoint = Config.ot_url;
+                            query = query.replaceAll(Pattern.quote("[ONTOP]"), ontopEndpoint);
+                        }
+
+                        // Build handler to run query
                         this.queryHandler = new WrittenQuery(fixedIRI, this.endpoint, query);
-                        System.out.println("Using query handler: WrittenQuery");
                     }
                 } catch(Exception excep) {
                     // Ignore, file may be missing
@@ -366,7 +396,12 @@ public class Manager {
      * @return
      */
     protected JSONArray getTimeseriesJSON(Map<String, List<String>> metadata, Map<String, TimeSeries<Instant>> timeseries) {
+        if(timeseries.isEmpty()) {
+            return new JSONArray();
+        }
+
         // Combine all timeseries for this location into a single object
+        LOGGER.info("Combining timeseries instances...");
         List<TimeSeries<Instant>> tsList = new ArrayList<>(timeseries.values());
         TimeSeries<Instant> combined = Utils.getCombinedTimeSeries(tsClient, tsList);
         LOGGER.info("Combined timeseries instances into a single instance.");
@@ -383,7 +418,7 @@ public class Manager {
                 String unit = metadata.get("Measurement Unit").get(index);
                 units.put(iri, unit);
 
-                if(unit.contains(";")) {
+                if(unit != null && unit.contains(";")) {
                     System.out.println(unit);
                 }
                
@@ -395,7 +430,7 @@ public class Manager {
                 String unit = metadata.get("Forecast Symbol").get(index);
                 units.put(iri, unit);
 
-                if(unit.contains(";")) {
+                if(unit != null && unit.contains(";")) {
                     System.out.println(unit);
                 }
 
@@ -428,7 +463,7 @@ public class Manager {
      */
     protected TimeSeries<Instant> getTimeseriesObject(String iri) {
         // Determine bounds (last 24 hours)
-        Instant lowerBound = LocalDateTime.now().minusDays(7).toInstant(ZoneOffset.UTC);
+        Instant lowerBound = LocalDateTime.now().minusDays(28).toInstant(ZoneOffset.UTC);
         Instant upperBound = LocalDateTime.now().toInstant(ZoneOffset.UTC);
 
         // Fix the IRIs because the timeseries client is shit

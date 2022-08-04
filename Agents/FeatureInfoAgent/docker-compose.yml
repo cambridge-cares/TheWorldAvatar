@@ -5,9 +5,6 @@ services:
   feature-info-agent:
     image: docker.cmclinnovations.com/feature-info-agent:1.0.0-SNAPSHOT
     container_name: feature-info-agent
-    build:
-      context: "../"
-      dockerfile: "./docker/Dockerfile"
     restart: unless-stopped
     hostname: feature-info-agent
     environment:
@@ -15,3 +12,6 @@ services:
       PROPERTIES_FILE: "/root/feature-info.properties"
     ports:
       - "55050:8080" 
+    #configs:
+    #  - blazegraph
+    #  - ontop

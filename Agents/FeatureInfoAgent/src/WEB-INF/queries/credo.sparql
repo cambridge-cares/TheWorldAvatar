@@ -1,0 +1,6 @@
+PREFIX credo: <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#>
+select ?propertyLabel ?value
+{ SERVICE [ONTOP] {[IRI] ?hasProperty ?property. ?property ?hasValue ?value.}
+  ?hasValue rdfs:subPropertyOf* credo:hasValue;
+            rdfs:label ?propertyLabel.
+  ?hasProperty rdfs:subPropertyOf* credo:hasProperty}

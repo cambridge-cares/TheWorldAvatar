@@ -35,17 +35,9 @@ public class ManagerTest {
     @BeforeClass
     public static void setup() {
         // Initialise MANAGER with sample data (take from TheWorldAvatar.com/blazegraph)
-        // MANAGER = new Manager(
-        //     "http://environment.data.gov.uk/flood-monitoring/id/stations/7015",
-        //     "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/flood_ontoems/sparql"
-        // );
-        // MANAGER = new Manager(
-        //     "http://environment.data.gov.uk/flood-monitoring/id/stations/3401TH",
-        //     "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/flood_ontoems/sparql"
-        // );
         MANAGER = new Manager(
-            "https://www.theworldavatar.com/kg/ontoems/ReportingStation_03aa0705-2727-499b-9391-ab3b5f19a07b",
-            "http://localhost:8890/blazegraph/namespace/metoffice/sparql"
+            "http://theworldavatar.com/ontology/ontocredo/ontoaw.owl#assetAAWAAB",
+            "http://lee:3838/blazegraph/namespace/???/sparql"
         );
 
         try {
@@ -125,7 +117,7 @@ public class ManagerTest {
     public void testGetTimeseries() {
         LOGGER.debug("Testing if timeseries data can be retrieved...");
 
-        String measurementIRI = "https://www.theworldavatar.com/kg/ontoems/Measure_53728a1e-54a4-4ad8-aa74-43091cb97d98";
+        String measurementIRI = "http://environment.data.gov.uk/flood-monitoring/id/measures/3401TH-level-downstage-i-15_min-mASD";
         try {
             TimeSeries<Instant> result = MANAGER.getTimeseriesObject(measurementIRI);
             Assertions.assertNotNull(result, "Could not retrieve timeseries data for feature!");
