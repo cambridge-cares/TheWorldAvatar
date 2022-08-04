@@ -24,10 +24,10 @@ volumes:
 
 configs:
   blazegraph:
-    name: ${STACK_NAME}blazegraph
+    name: ${STACK_NAME}_blazegraph
     external: true
   ontop:
-    name: ${STACK_NAME}ontop
+    name: ${STACK_NAME}_ontop
     external: true
 
 networks:

@@ -4,14 +4,11 @@ services:
 
   feature-info-agent:
     image: docker.cmclinnovations.com/feature-info-agent:1.0.0-SNAPSHOT
-    container_name: feature-info-agent
-    restart: unless-stopped
-    hostname: feature-info-agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       PROPERTIES_FILE: "/root/feature-info.properties"
     ports:
       - "55050:8080" 
-    #configs:
-    #  - blazegraph
-    #  - ontop
+    configs:
+      - blazegraph
+      - ontop
