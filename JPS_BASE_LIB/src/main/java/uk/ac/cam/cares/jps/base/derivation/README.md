@@ -70,6 +70,29 @@ For synchronous agent responses, there are two types of derivations
    - It is assumed that the agents acting on these derivations add row(s) to some table(s), the entities under these derivations are not deleted and replaced.
    - The created derivation instances have rdf:type as `DerivationWithTimeSeries`.
 
+3. Derivation with or without time series, created for generating new information, initialised using `createSyncDerivationForNewInfo(String, List<String>, String)` or `createSyncDerivationForNewInfo(String, String, List<String>, String)`
+   - e.g. createSyncDerivationForNewInfo(agentIRI, inputsIRI, derivationType) when `agentURL` is unknown by the developer, in which case the agent HTTP endpoint will be queried by the framework
+   - Or developer can provide such HTTP endpoint to the method and use createSyncDerivationForNewInfo(agentIRI, agentURL, inputsIRI, derivationType) *NOTE that developer MUST make sure the provided `agentIRI` and `agentURL` matches with each other.*
+   - When calling this method, an HTTP request will be fired to the `agentURL` endpoint to request for computing new information with the provided inputs, i.e. the outputs of this derivation are to be generated. Therefore the developer MUST ensure the HTTP endpoint of the agent is up and running, also the computation is quick enough compared to the HTTP timeout setting. Moreover, *NONE* of the `inputsIRI` should be derived information of asynchronous derivations.
+   - The returned type of this method is `uk.ac.cam.cares.jps.base.derivation.Derivation`, developer can get the IRI of the created derivation and list of IRIs of the generated outputs via:
+     ```java
+     // create a derivation instance and get its outputs with a rdf:type of interest <http://this_is_a_specific_rdfType>
+     Derivation aDerivation = devClient.createSyncDerivationForNewInfo(agentIRI, inputsIRI, DerivationSparql.ONTODERIVATION_DERIVATION);
+     String derivationIRI = aDerivation.getIri();
+     List<String> outputsIRIsOfRdfType = aDerivation.getBelongsToIris("http://this_is_a_specific_rdfType");
+     ```
+   - This initialisation thus supports creating a graph of synchronous derivations on-the-fly without creating placeholder instances in the knowledge graph when only pure inputs exist:
+     ```java
+     // create a downstream derivation that takes the outputs of the derivation instance created just now as inputs
+     Derivation downstreamDerivation = devClient.createSyncDerivationForNewInfo(anotherAgentIRI, outputsIRIsOfRdfType, DerivationSparql.ONTODERIVATION_DERIVATION);
+     // again we retrieve its outputs with the interested rdf:type <http://specific_rdfType_of_downstream_derivation_outputs>
+     List<String> outputsOfDownstreamDerivation = derivation.getBelongsToIris("http://specific_rdfType_of_downstream_derivation_outputs");
+
+     // we can then combine these inputs to form yet another downstream derivation
+     List<String> combinedInputsIRI = Stream.concat(outputsIRIsOfRdfType.stream(), outputsOfDownstreamDerivation.stream()).collect(Collectors.toList());
+     Derivation yetAnotherDownstreamDerivation = devClient.createSyncDerivationForNewInfo(yetAnotherAgentIRI, combinedInputsIRI, DerivationSparql.ONTODERIVATION_DERIVATION);
+     ```
+
 For asynchronous agent operations, the derivation framework currently supports:
 1. Derivation without time series, created given the input instances, initialised using `uk.ac.cam.cares.jps.base.derivation.DerivationClient.createAsyncDerivation(List<String>, String, List<String>, boolean)`
    - e.g. createDerivation(entities, agentIRI, inputs, forUpdate)
@@ -258,4 +281,4 @@ Once the derivation instances are initialised using `createDerivation` and `crea
 # Example
 An example demonstrating the functionality of the derivation framework is provided in `TheWorldAvatar/Agents/DerivationExample`.
 
-The asynchronous operation functionality and mixed type DAG support of the derivation framework are demonstrated in `TheWorldAvatar/Agents/DerivationAsynExample`, please refer to its `README.md` for more details.
+The asynchronous operation functionality and mixed type DAG support of the derivation framework are demonstrated in `TheWorldAvatar/Agents/DerivationAsynExample` for both new information creation (`createAsyncDerivationForNewInfo`/`createSyncDerivationForNewInfo`) and existing information update (`unifiedUpdateDerivation`) modes, please refer to its `README.md` for more details.
