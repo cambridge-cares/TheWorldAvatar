@@ -216,7 +216,7 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
         ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
 
         ?PowerPlant ontoenergysystem:hasRelevantPlace/owl:sameAs ?place .
-        }
+        } LIMIT 5
         """% (topologyNodeIRI, topologyNodeIRI, type, type)
         
         queryStr_totalGeneration = """

@@ -271,6 +271,7 @@ class UKEGenModel:
     """EGen Node keys"""
     EGenKey = "EGen-"
     EGenRetrofitKey = "EGenRetrofit-"
+    EGenBackUpKey = "EGenBackUp-"
 
     ModelEGenKey = "ElectricalGeneratorModel_"
     

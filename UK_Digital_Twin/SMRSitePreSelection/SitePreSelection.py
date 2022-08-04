@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 26 July 2022         #
+# Last Update Date: 04 August 2022       #
 ##########################################
 
 """
@@ -13,7 +13,7 @@ from pyscipopt import Model
 import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
-import SMRSitePreSelection.DiscommissioningCost as DC
+import SMRSitePreSelection.DiscommissioningCost as DCost
 from SMRSitePreSelection.populationDensityCalculator import populationDensityCalculator
 from math import pi
 
@@ -67,6 +67,8 @@ class SitePreSelection(object):
         ##-- Binary variable --##
         self.varSets = locals()  
         self.binaryVarNameList = []
+        self.solarOrWindbinaryVarNameList = []
+        self.otherGeneratorbinaryVarNameList = []
         for s in range(len(self.generatorToBeReplacedList)):
             sumOfBinaryVar = 0
             binaryVarNameShortList = []
@@ -76,6 +78,10 @@ class SitePreSelection(object):
                 binaryVarNameShortList.append(binaryVarName)
                 sumOfBinaryVar += self.varSets[binaryVarName]
             self.binaryVarNameList.append(binaryVarNameShortList)
+            if 'Solar' in self.generatorToBeReplacedList[s]["fuelOrGenType"] or 'Wind' in self.generatorToBeReplacedList[s]["fuelOrGenType"]:
+                self.solarOrWindbinaryVarNameList.append(binaryVarNameShortList)
+            else:
+                self.otherGeneratorbinaryVarNameList.append(binaryVarNameShortList)
             ## the binary variables constrians Sum(i, (0，4)) y_s_i = 1, where y_s_0 = 1 identifying there is no SMR in the site s ##  
             self.model.addCons(sumOfBinaryVar == 1)
 
@@ -91,7 +97,7 @@ class SitePreSelection(object):
                 replacedCapacity += float(gen["Capacity"])
             replacedCapacity = float(self.backUpCapRatio) * float(replacedCapacity)
         elif not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator: 
-            print('===This is a half pure back-up (solar and wind) and half replacing scenario===')
+            print('===This is a half pure back-up (solar and wind) and half replacing scenario===')            
             for s in range(len(self.generatorToBeReplacedList)):
                 gen = self.generatorToBeReplacedList[s]
                 if not ('Solar' in gen["fuelOrGenType"] or 'Wind' in gen["fuelOrGenType"]):
@@ -134,10 +140,8 @@ class SitePreSelection(object):
             annualOperatingHours = self.generatorToBeReplacedList[s]["annualOperatingHours"]
             CO2EmissionFactor = self.generatorToBeReplacedList[s]["CO2EmissionFactor"]
 
-            print(existingGenFuelType)
-
-            if existingGenFuelType in DC.DiscommissioningCost.keys():
-                dc = DC.DiscommissioningCost[existingGenFuelType][self.DcLevel]
+            if existingGenFuelType in DCost.DiscommissioningCost.keys():
+                dc = DCost.DiscommissioningCost[existingGenFuelType][self.DcLevel]
             else:
                 raise Exception("Cannot find the decommissioning cost for", existingGenFuelType)
             
@@ -179,7 +183,8 @@ class SitePreSelection(object):
         ##-- Results post processing --##
         print("Optimal value:", self.model.getObjVal())
         totalSMR = 0
-        self.siteSelected = []
+        self.solarAndWindSiteSelected = []
+        self.otherSiteSelected = []
         for s in range(len(self.binaryVarNameList)):
             bvList = self.binaryVarNameList[s]
             numOfSMR = 0
@@ -189,19 +194,21 @@ class SitePreSelection(object):
                 numOfSMR += self.model.getVal(self.varSets[bvname]) * bvList.index(bvname)
             if numOfSMR >= 1:
                 self.generatorToBeReplacedList[s].update({"numberOfSMR": numOfSMR})
-                self.siteSelected.append(self.generatorToBeReplacedList[s]) 
+                if bvList in self.solarOrWindbinaryVarNameList:
+                    self.solarAndWindSiteSelected.append(self.generatorToBeReplacedList[s]) 
+                else:
+                    self.otherSiteSelected.append(self.generatorToBeReplacedList[s]) 
 
         totalSMRCapa = totalSMR * 470
-        # print(self.siteSelected, len(self.siteSelected))
+        ## print(self.siteSelected, len(self.siteSelected))
         capa = 0
-        for gen in self.siteSelected:
+        for gen in self.solarAndWindSiteSelected + self.otherSiteSelected:
             capa += float(gen["Capacity"])
-        print("The number of generator to be replaced is: ", len(self.siteSelected))
+        
+        print("The number of generator to be replaced is: ", len(self.solarAndWindSiteSelected + self.otherSiteSelected))
         print('Replaced capacity', capa)
         print('The totalSMR is', totalSMR, 'totalSMRCapa', totalSMRCapa)
-
-        return
-      
+        return      
         
 if __name__ == '__main__': 
     ##NOTUSED [0]generator IRI, [1]capcacity, [2]primary fuel, [3]generaor technology, [4]lat-lon 
@@ -211,9 +218,10 @@ if __name__ == '__main__':
     
     gen = [{'PowerGenerator': 'http://www.theworldavatar.com/kb/ontoeip/PowerGenerator_20026d02-c3e8-42c0-90fc-278292409f9c', 'Bus': 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'Capacity': '3.7', 'LatLon': [51.76599, -3.6216], 'fuelOrGenType': 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Solar', 'annualOperatingHours': 3430.73, 'CO2EmissionFactor': 0.0, 'place': 'https://dbpedia.org/page/Wales'}]
 
-    test = SitePreSelection('ukdigitaltwin_pd', test, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, 2000, False, True, 4, 1)
+    test = SitePreSelection('ukdigitaltwin_pd', test, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, 20, False, False, 4, 1)
     test.SMRSitePreSelector()
-    print(test.siteSelected)
+    print(test.solarAndWindSiteSelected)
+    print(test.otherSiteSelected)
    
 
 
