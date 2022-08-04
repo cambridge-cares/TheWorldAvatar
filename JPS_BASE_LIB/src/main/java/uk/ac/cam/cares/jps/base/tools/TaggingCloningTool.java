@@ -28,7 +28,8 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * Cloning Tool
  * 
  * Two cloning methods are implemented: a single step cloning method suitable for cloning small 
- * stores and a method which splits a large cloning operation into multiple smaller ones. 
+ * stores and a method which splits a large cloning operation into multiple smaller ones
+ * by tagging groups of triples in the source store. 
  * The single step clone can be used by first calling "setSingleStepClone" followed by a "clone" 
  * method, or alternatively by calling the method "singleStepClone" directly.
  * The split method is used be default, unless the total number of triples (or quads) in the store
@@ -38,10 +39,10 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * NOTE: If the sourceKB is a remote triple store (rather than quad store) then "setTripleStore()" 
  * must be set for the tool to function.
  * 
- * @author Casper Lindberg
+ * @author csl37
  *
  */
-public class OldCloningTool {
+public class TaggingCloningTool {
 
 	String strTag = "_Tag";	//Tag ending
 	boolean splitUpdate;
@@ -76,7 +77,7 @@ public class OldCloningTool {
 	/**
 	 * Default constructor. Cloning split over multiple operations of 1 million triples
 	 */
-	public OldCloningTool(){
+	public TaggingCloningTool(){
 		//set defaults
 		splitUpdate = true;
 		stepSize = 1000000;
@@ -86,7 +87,7 @@ public class OldCloningTool {
 	 * Constructor to set number of triples cloned per step. Cloning is split over multiple operations. 
 	 * @param stepSize
 	 */
-	public OldCloningTool(int stepSize){
+	public TaggingCloningTool(int stepSize){
 		//set defaults
 		splitUpdate = true;
 		this.stepSize = stepSize;
