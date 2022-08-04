@@ -34,7 +34,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class StoreRouter extends AbstractCachedRouter<String, String>{
+public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	private static Logger LOGGER = LogManager.getLogger(StoreRouter.class);
 	public static final String FILE="file://";
 	public static final String HTTP="http://";
@@ -79,6 +79,7 @@ public class StoreRouter extends AbstractCachedRouter<String, String>{
 	 * @param endpoint
 	 */
 	public static void setRouterEndpoint(String endpoint) {
+		//TODO constructor
 		if (storeRouter == null) {
 			storeRouter = new StoreRouter();
 		}
@@ -114,12 +115,14 @@ public class StoreRouter extends AbstractCachedRouter<String, String>{
 		
 		if (targetResourceID != null && !targetResourceID.isEmpty()) {
 			
+			//TODO constructor
 			if (storeRouter == null) {
 				storeRouter = new StoreRouter();
 			}
 		
 			if (isFileBasedTargetResourceID(targetResourceID)) {
 			  
+				//TODO get
 				String relativePath = getPathComponent(targetResourceID);
 				String rootPath = getPathComponent(storeRouter.getLocalFilePath(STOREROUTER_ENDPOINT, TOMCAT_ROOT_LABEL));
 				String filePath =  joinPaths(rootPath, relativePath);
@@ -132,9 +135,11 @@ public class StoreRouter extends AbstractCachedRouter<String, String>{
 				LOGGER.info("Remote store. targetResourceLabel="+targetResourceLabel);
 				
 				if (isQueryOperation) {
+					//TODO get
 					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
 				}
 				if (isUpdateOperation) {
+					//TODO get
 					updateIRI = storeRouter.getUpdateIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
 				}
 				if (queryIRI != null && !queryIRI.isEmpty()) {
