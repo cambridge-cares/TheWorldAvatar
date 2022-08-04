@@ -12,7 +12,40 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * 
+ * This class implements a cloning tool. 
+ * On large stores cloning is performed step-wise with an overlap between each step.
+ * <p>
+ * <b>How it works:</b>
+ * The order of triples in a store (or the order of results returned by a SPARQL query)
+ * is not fixed. This method assumes that there is, however, some level of 
+ * ordered grouping of triples in a store. Thus, the store can be cloned by 
+ * sequentially querying for groups of N triples in store using the OFFSET and LIMIT keywords.    
+ * An overlap is applied to capture locally unordered triples at the boundary 
+ * between two successive steps. While SPARQL does offer an ORDERBY keyword, sorting triples in 
+ * a large store every step is a very slow process. This method avoids the need to explicitly sort
+ * by exploiting the (assumed) internal data structure and order of the triple store.  
+ * <p>
+ * <b>Things to note and requirements:</b>
+ * Note that cloning is a slow process and success is not guaranteed.
+ * To avoid corruption of source data, the source store is only ever queried/read-only.  
+ * The tool requires that the target store is initially empty and will otherwise fail
+ * (unless this condition is {@link uk.ac.cam.cares.jps.base.tools.CloningTool#overrideEmptyTarget() overridden}
+ * prior to starting the cloning process). <br>
+ * The algorithm will attempt to increase the overlap if the initial overlap is too small.
+ * The clone will fail and return an error after 5 failed attempts to adjust the overlap
+ * or if the final number of triples in the target store does not match the number in the source store.
+ * In case of failure, the user should clear the target store.     
+ * <p>
+ * <b>How to use the tool:</b> 
+ * The simplest way to use the cloning tool is from a {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface} object with the methods 
+ * {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface#cloneTo cloneTo} and 
+ * {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface#cloneFrom cloneFrom}.
+ * <br>
+ * Alternatively, a CloningTool object can be instantiated. This allows control 
+ * over the step size, overlap and to override the requirement for an empty 
+ * target store. In this case the {@link uk.ac.cam.cares.jps.base.tools.CloningTool#clone clone}
+ * method should be used to clone from the source to the target store. 
+ *  
  * @author csl37
  *
  */
@@ -33,12 +66,20 @@ public class CloningTool {
 	
 	static ExprFactory exprFactory = new ExprFactory();
 	
-	//Default constructor
+	/**
+	 * Default constructor.
+	 * Step size is set to 500,000 triples with 10% overlap.
+	 */
 	public CloningTool(){
-		stepSize = 100000;
+		stepSize = 500000;
 		overlap = (int) (stepSize*defaultOverlapRatio);
 	}
-		
+	
+	/**
+	 * Constructor to set step size and overlap.
+	 * @param stepSize
+	 * @param overlap
+	 */
 	public CloningTool(int stepSize, int overlap){
 		this.stepSize = stepSize;
 		this.overlap = overlap;

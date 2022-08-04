@@ -158,8 +158,12 @@ public interface StoreClientInterface {
 	}
 	
     /**
-     * Clone contents of <b>this</b> store to the target store 
-     * @param target store client
+     * Clone contents of <i>this</i> store to the target store.<br>
+     * <b>Note:</b> cloning a large store is a slow process 
+     * and the target store must be empty. <br>Before initiating a clone see 
+     * {@link uk.ac.cam.cares.jps.base.tools.CloningTool CloningTool} 
+     * for more details.
+     * @param targetStoreClient
      */
     default void cloneTo(StoreClientInterface targetStoreClient) {
     	CloningTool cloningTool = new CloningTool();
@@ -167,8 +171,12 @@ public interface StoreClientInterface {
     }
     
     /**
-     * Clone contents of source store to <b>this</b> store
-     * @param source store client
+     * Clone contents of the source store to <i>this</i> store.<br>
+     * <b>Note:</b> cloning a large store is a slow process 
+     * and <i>this</i> store must be empty. <br>Before initiating a clone see 
+     * {@link uk.ac.cam.cares.jps.base.tools.CloningTool CloningTool} 
+     * for more details.
+     * @param sourceStoreClient
      */
     default void cloneFrom(StoreClientInterface sourceStoreClient) {
     	CloningTool cloningTool = new CloningTool();
