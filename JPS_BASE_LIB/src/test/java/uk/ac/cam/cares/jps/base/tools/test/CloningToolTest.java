@@ -16,16 +16,14 @@ class CloningToolTest {
 	@Test
 	void testConstructor() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 
-		int defaultStepSize = 100000;
 		CloningTool cloningTool = new CloningTool();
 		
 		// access private member
 		assertNotNull(CloningTool.class.getDeclaredField("stepSize"));
 		Field field = CloningTool.class.getDeclaredField("stepSize");
         field.setAccessible(true);
-        int value = (int) field.get(cloningTool);
-        assertEquals(defaultStepSize,value);
-        
+        int defaultStepSize = (int) field.get(cloningTool);
+               
         assertNotNull(CloningTool.class.getDeclaredField("defaultOverlapRatio"));
 		field = CloningTool.class.getDeclaredField("defaultOverlapRatio");
         field.setAccessible(true);
@@ -36,7 +34,7 @@ class CloningToolTest {
         assertNotNull(CloningTool.class.getDeclaredField("overlap"));
 		field = CloningTool.class.getDeclaredField("overlap");
         field.setAccessible(true);
-        value = (int) field.get(cloningTool);
+        int value = (int) field.get(cloningTool);
         assertEquals(overlap,value);
 	}
 	

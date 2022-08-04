@@ -58,9 +58,11 @@ public class CloningTool {
 
     private static final int MAX_ATTEMPTS = 5; //Maximum number of attempts to increase overlap before failing
     
-	private int stepSize;
-	private int overlap;
-	private final double defaultOverlapRatio = 0.1; //10% overlap by default
+    private final double defaultOverlapRatio = 0.1; //10% overlap by default
+    
+	private int stepSize = 500000;
+	private int overlap = (int) (stepSize*defaultOverlapRatio);
+	
 	
 	private boolean emptyTargetRequired = true; //require the target store is empty to start clone
 	
@@ -70,10 +72,7 @@ public class CloningTool {
 	 * Default constructor.
 	 * Step size is set to 500,000 triples with 10% overlap.
 	 */
-	public CloningTool(){
-		stepSize = 500000;
-		overlap = (int) (stepSize*defaultOverlapRatio);
-	}
+	public CloningTool(){}
 	
 	/**
 	 * Constructor to set step size and overlap.
