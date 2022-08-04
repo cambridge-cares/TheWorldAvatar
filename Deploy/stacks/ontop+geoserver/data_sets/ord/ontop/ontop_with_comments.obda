@@ -1,11 +1,11 @@
 [PrefixDeclaration]
-:		    http://example.org/crops/
-os: http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#
-op: http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#
-gc:         http://purl.org/gc/
-ex:		    http://example.org/
-sio:        http://semanticscience.org/resource/
-pubchem:    http://rdf.ncbi.nlm.nih.gov/pubchem/
+:		http://example.org/crops/
+os:           http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#
+op:           http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#
+gc:           http://purl.org/gc/
+ex:		http://example.org/
+sio:          http://semanticscience.org/resource/
+pubchem:      http://rdf.ncbi.nlm.nih.gov/pubchem/
 compound:	http://rdf.ncbi.nlm.nih.gov/pubchem/compound/
 descriptor:	http://rdf.ncbi.nlm.nih.gov/pubchem/descriptor/
 inchikey:	http://rdf.ncbi.nlm.nih.gov/pubchem/inchikey/
@@ -17,8 +17,9 @@ foaf:		http://xmlns.com/foaf/0.1/
 obda:		https://w3id.org/obda/vocabulary#
 rdfs:		http://www.w3.org/2000/01/rdf-schema#
 geo:		http://www.opengis.net/ont/geosparql#
-skos:       http://www.w3.org/2004/02/skos/core#
-
+skos:         http://www.w3.org/2004/02/skos/core#
+om:           http://www.ontology-of-units-of-measure.org/resource/om-2/
+OntoRxn:	https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#
 
 [MappingDeclaration] @collection [[
 mappingId pubchem_compound
