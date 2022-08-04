@@ -150,10 +150,14 @@ public class TimeSeriesClient<T> {
     	}
     }
     
-    /**
+	/**
      * similar to initTimeSeries, but uploads triples in one connection
      */
-    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null);
+	} 
+
+    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
         // create random time series IRI
     	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
     	
@@ -175,7 +179,7 @@ public class TimeSeriesClient<T> {
    	    // Step2: Try to initialise time series in relational database
    		for (int i = 0; i < dataIRIs.size(); i++) {
    			try {
-   	    		rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i));
+   	    		rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid);
    	    	} catch (JPSRuntimeException e_RdbCreate) {
    	    		// For exceptions thrown when initialising RDB elements in relational database,
    				// try to revert previous knowledge base instantiation

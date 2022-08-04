@@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Connection;
+import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -36,6 +38,8 @@ public class WriteOutputs {
     
     // output files
     private static String mainDirectory = "main";
+
+	private static String display_order = "display_order";
     
     // err msg
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
@@ -84,10 +88,14 @@ public class WriteOutputs {
     	String southwest = System.getenv("SOUTH_WEST");
     	String northeast = System.getenv("NORTH_EAST");
     	
-    	Map<String, Station> stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
+    	Map<String, Station> stations_map = sparqlClient.getStationsWithCoordinates(southwest, northeast);
+		List<Station> stations = new ArrayList<>(stations_map.values());
     	
     	// add time series to station objects, will also remove stations without any data
     	queryTimeSeries(stations, date);
+
+		// queries for station hasDownstreamStation station
+		List<Connection> connections = sparqlClient.getConnections(stations_map);
     	
     	// remove old outputs if exist
     	removeOldOutput();
@@ -122,34 +130,53 @@ public class WriteOutputs {
 	 * @param stations
 	 * @param date
 	 */
-	static void queryTimeSeries(Map<String, Station> stations, LocalDate date) {
+	static void queryTimeSeries(List<Station> stations, LocalDate date) {
 		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
 		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
-		List<String> stationsList = new ArrayList<>(stations.keySet());
-				
-		for (String stationIri : stationsList) {
+		
+		List<Station> stations_to_remove = new ArrayList<>();
+		for (Station station : stations) {
+			boolean includeMeasure = false;
 			try {
-				Station station = stations.get(stationIri);
-				List<String> measures = station.getMeasures();
+				List<Measure> measures = new ArrayList<>(station.getMeasures());
 				
-				for (String measure : measures) {
-					TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure), lowerbound, upperbound);
-					List<Instant> time = ts.getTimes();
+				for (Measure measure : measures) {
+					// this is to exclude measures with qualifiers that we don't understand
+					if (measure.getParameterName().contentEquals("Water Level")) {
+						if (measure.getQualifier().contentEquals("Stage") || measure.getQualifier().contentEquals("Downstream Stage")
+					    || measure.getQualifier().contentEquals("Groundwater") || measure.getQualifier().contentEquals("Tidal Level")) {
+							includeMeasure = true;
+						}
+					} else {
+						includeMeasure = true;
+					}
 					
-					// ignore blank time series
-					if(time.size() > 0) {
-						station.addTimeseries(ts);
+					if (includeMeasure) {
+						TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure.getIri()), lowerbound, upperbound);
+						List<Instant> time = ts.getTimes();
+						
+						// ignore blank time series
+						if(time.size() > 0) {
+							station.addTimeseries(ts);
+						}
+					} else {
+						station.getMeasures().remove(measure);
 					}
 				}				
 				
 				if (station.getTimeSeriesList().size() == 0) {
 					// do not plot this station if it does not have any data
-					stations.remove(stationIri);
+					stations_to_remove.add(station);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				LOGGER.error(e.getMessage());
-				LOGGER.error("Failed to query time series for " + stationIri);
+				LOGGER.error("Failed to query time series for " + station.getIri());
 			}
+		}
+
+		for (Station station : stations_to_remove) {
+			stations.remove(station);
 		}
 	}
 	
@@ -241,7 +268,7 @@ public class WriteOutputs {
 	 * location of file - Config.outputdir
 	 * name of file  - stations.geojson
 	 */
-	static void writeStationsToGeojson(Map<String, Station> stations) {
+	static void writeStationsToGeojson(List<Station> stations) {
 		File geojsonfile = new File(Paths.get(Config.outputdir, mainDirectory,"flood-stations.geojson").toString());
 		
 		// create geojson file
@@ -249,8 +276,7 @@ public class WriteOutputs {
 		featureCollection.put("type", "FeatureCollection");
 		JSONArray features = new JSONArray();
 		
-		for (String stationIri : stations.keySet()) {
-			Station station = stations.get(stationIri);
+		for (Station station : stations) {
 			// each station will be a feature within FeatureCollection
 			JSONObject feature = new JSONObject();
 			
@@ -284,22 +310,23 @@ public class WriteOutputs {
 		writeToFile(geojsonfile, featureCollection.toString(4));
 	}
 	
-	static void writeStationsMeta(Map<String, Station> stations) {
+	static void writeStationsMeta(List<Station> stations) {
 		File metafile = new File(Paths.get(Config.outputdir, mainDirectory,"stationsmeta.json").toString());
 		
 		JSONArray metaDataCollection = new JSONArray();
 		
-		for (String stationIri : stations.keySet()) {
-			Station station = stations.get(stationIri);
+		for (Station station : stations) {
 			// meta
 			JSONObject metadata = new JSONObject();
 			
 			metadata.put("id", station.getVisId());
+			metadata.put(display_order, Arrays.asList("Station properties","Measures"));
 			
+			// station properties
+			JSONObject stationProperties = new JSONObject();
 			for (String property : station.getDisplayProperties().keySet()) {
-				metadata.put(property, station.getDisplayProperties().get(property));
+				stationProperties.put(property, station.getDisplayProperties().get(property));
 			}
-			
 			// force order on the side panel
 			JSONArray properties_order = new JSONArray();
 			List<String> preferred_order = Arrays.asList("Name", "River", "Catchment", "Town", "Date opened", "Identifier", "Latitude", "Longitude");
@@ -308,7 +335,82 @@ public class WriteOutputs {
 					properties_order.put(key);
 				}
 			}
-			metadata.put("display_order", properties_order);
+			if (station.getStageLower() != null && station.getStageUpper() != null) {
+				JSONObject stageScale = new JSONObject();
+
+				JSONObject highValue = new JSONObject();
+				highValue.put("value", station.getStageUpper());
+				highValue.put("unit", station.getMeasures().get(0).getUnit());
+				stageScale.put("Typical high", highValue);
+
+				JSONObject lowValue = new JSONObject();
+				lowValue.put("value", station.getStageLower());
+				lowValue.put("unit", station.getMeasures().get(0).getUnit());
+				stageScale.put("Typical low", lowValue); 
+
+				stageScale.put(display_order, new JSONArray().put("Typical high").put("Typical low"));
+				stationProperties.put("Stage scale", stageScale);
+				properties_order.put("Stage scale");
+			}
+
+			if (station.getDownstageLower() != null && station.getDownstageUpper() != null) {
+				JSONObject downstageScale = new JSONObject();
+
+				JSONObject highValue = new JSONObject();
+				highValue.put("value", station.getDownstageUpper());
+				highValue.put("unit", station.getMeasures().get(0).getUnit());
+				downstageScale.put("Typical high", highValue);
+
+				JSONObject lowValue = new JSONObject();
+				lowValue.put("value", station.getDownstageLower());
+				lowValue.put("unit", station.getMeasures().get(0).getUnit());
+				downstageScale.put("Typical low", lowValue);
+
+				downstageScale.put(display_order, new JSONArray().put("Typical high").put("Typical low"));
+				stationProperties.put("Downstage scale", downstageScale);
+				properties_order.put("Downstage scale");
+			}
+
+			if (station.getDownstream() != null) {
+				Station downstreamStation = station.getDownstream();
+				stationProperties.put("Downstream station", downstreamStation.getLabel() + " (" + downstreamStation.getIdentifier() + ")");
+				properties_order.put("Downstream station");
+			}
+			if (station.getUpstream() != null) {
+				Station upstreamStation = station.getUpstream();
+				stationProperties.put("Upstream station", upstreamStation.getLabel() + " (" + upstreamStation.getIdentifier() + ")");
+				properties_order.put("Upstream station");
+			}
+			stationProperties.put(display_order, properties_order);
+			metadata.put("Station properties", stationProperties);
+
+			// measures
+			JSONObject measures_json = new JSONObject();
+			int i = 1;
+			for (Measure measure : station.getMeasures()) {
+				JSONArray measure_order = new JSONArray();
+
+				JSONObject measure_json = new JSONObject();
+				measure_json.put("Parameter name", measure.getParameterName());
+				measure_json.put("Qualifier", measure.getQualifier());
+
+				measure_order.put("Parameter name").put("Qualifier");
+				if (measure.getTrend() != null) {
+					measure_json.put("Trend", measure.getTrend());
+					measure_order.put("Trend");
+				}
+				if (measure.getRange() != null) {
+					measure_json.put("Range", measure.getRange());
+					measure_order.put("Range");
+				}
+				// this will force the display order on the vis framework
+				measure_json.put(display_order, measure_order);
+
+				measures_json.put("Measure " + String.valueOf(i), measure_json);
+				i++;
+			}
+			metadata.put("Measures", measures_json);
+			
 			metaDataCollection.put(metadata);
 		}
 		
@@ -320,7 +422,7 @@ public class WriteOutputs {
 	 * writes out data for a specific date
 	 * @param date
 	 */
-	static void writeTimeSeriesJson(Map<String, Station> stations, LocalDate date) {
+	static void writeTimeSeriesJson(List<Station> stations, LocalDate date) {
 		// write to file 
 		File file = new File(Paths.get(Config.outputdir, mainDirectory,"flood-" + date + "-timeseries.json").toString());
 		
@@ -330,18 +432,23 @@ public class WriteOutputs {
 		List<Map<String,String>> units = new ArrayList<>();
 		List<Integer> visId = new ArrayList<>();
 		
-		for (String stationIri : stations.keySet()) {
-			Station station = stations.get(stationIri);
-			TimeSeries<Instant> combined_ts = station.getCombinedTimeSeries(tsClient);
-			ts_list.add(combined_ts);
-			
+		for (Station station : stations) {
+			// sometimes connection to the RDB is unstable, causing some stations with missing timeseries object
+			try {
+				TimeSeries<Instant> combined_ts = station.getCombinedTimeSeries(tsClient);
+				ts_list.add(combined_ts);
+			} catch (IndexOutOfBoundsException e) {
+				LOGGER.warn(e.getMessage());
+				LOGGER.warn("Probably due to failed connections to the RDB");
+			}
+
 			Map<String,String> measure_header_map = new HashMap<>();
 			Map<String,String> measure_unit_map = new HashMap<>();
 			
-			for (String measureIri : combined_ts.getDataIRIs()) {
-				String header = station.getMeasureName(measureIri) + " (" + station.getMeasureSubTypeName(measureIri) + ")";
-				measure_header_map.put(measureIri, header);
-				measure_unit_map.put(measureIri, station.getMeasureUnit(measureIri));
+			for (Measure measure : station.getMeasures()) {
+				String header = measure.getParameterName() + " (" + measure.getQualifier() + ")";
+				measure_header_map.put(measure.getIri(), header);
+				measure_unit_map.put(measure.getIri(), measure.getUnit());
 			}
 			table_header.add(measure_header_map);
 			units.add(measure_unit_map);
