@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -15,6 +16,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.tools.CloningTool;
 
+@Disabled("These integration tests are quite slow") 
 @Testcontainers
 class CloningToolIntegrationTest {
  
