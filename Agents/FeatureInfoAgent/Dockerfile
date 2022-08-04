@@ -10,7 +10,7 @@ WORKDIR /root/.m2
 
 # (Note that | rather than / is used as the sed delimiter, since encrypted passwords can contain the former, but not the latter
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
-RUN sed -i "s|REPO_USERNAME|$(cat ./docker/credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ./docker/credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
+RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
 WORKDIR /root/src
@@ -29,7 +29,7 @@ WORKDIR /app
 
 COPY --from=builder /root/src/output/feature-info-agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 COPY --from=builder /root/src/feature-info.properties /root/feature-info.properties
-COPY ./docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
+COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
