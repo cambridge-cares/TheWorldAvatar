@@ -264,6 +264,30 @@ class TargetIRIs(Enum):
     NEW_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST = None
     NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST = None
     NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST = None
+    RXN_EXP_REACTION_CONDITION_CLZ_POSITIONAL_ID_DICT = {EXAMPLE_RXN_EXP_1_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
+        onto.ONTOREACTION_REACTIONSCALE:[None], onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:[None, 2, 3]},
+        EXAMPLE_RXN_EXP_2_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
+        onto.ONTOREACTION_REACTIONSCALE:[None], onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:[None, 2, 3]},
+        EXAMPLE_RXN_EXP_3_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
+        onto.ONTOREACTION_REACTIONSCALE:[None], onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:[None, 2, 3]},
+        EXAMPLE_RXN_EXP_4_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
+        onto.ONTOREACTION_REACTIONSCALE:[None], onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:[None, 2, 3]},
+        EXAMPLE_RXN_EXP_5_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
+        onto.ONTOREACTION_REACTIONSCALE:[None], onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:[None, 2, 3]},
+        NEW_RXN_EXP_1_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
+        onto.ONTOREACTION_REACTIONSCALE:[None], onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:[None, 2, 3]},
+        NEW_RXN_EXP_2_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
+        onto.ONTOREACTION_REACTIONSCALE:[None], onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:[None, 2, 3]},
+        NEW_RXN_EXP_3_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
+        onto.ONTOREACTION_REACTIONSCALE:[None], onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:[None, 2, 3]}}
+    RXN_EXP_REACTION_CONDITION_POSITIONAL_ID_DICT = {EXAMPLE_RXN_EXP_1_IRI:{EXP_1_BASE_IRI+'StoiRatio_2':2,EXP_1_BASE_IRI+'StoiRatio_3':3},
+        EXAMPLE_RXN_EXP_2_IRI:{EXP_2_BASE_IRI+'StoiRatio_2':2,EXP_2_BASE_IRI+'StoiRatio_3':3},
+        EXAMPLE_RXN_EXP_3_IRI:{EXP_3_BASE_IRI+'StoiRatio_2':2,EXP_3_BASE_IRI+'StoiRatio_3':3},
+        EXAMPLE_RXN_EXP_4_IRI:{EXP_4_BASE_IRI+'StoiRatio_2':2,EXP_4_BASE_IRI+'StoiRatio_3':3},
+        EXAMPLE_RXN_EXP_5_IRI:{EXP_5_BASE_IRI+'StoiRatio_2':2,EXP_5_BASE_IRI+'StoiRatio_3':3},
+        NEW_RXN_EXP_1_IRI:{EXP_1_BASE_IRI+'StoichiometryRatio_866bfdf2-0d32-40da-8fcb-f89669cf1d31':2,EXP_1_BASE_IRI+'StoichiometryRatio_c242fa46-e60c-481c-8dc2-741f69386f25':3},
+        NEW_RXN_EXP_2_IRI:{EXP_1_BASE_IRI+'StoichiometryRatio_6a845185-032d-41d8-86ff-6a9952418063':2,EXP_1_BASE_IRI+'StoichiometryRatio_4f55a3ff-3a06-4749-8775-52d7673497c7':3},
+        NEW_RXN_EXP_3_IRI:{EXP_1_BASE_IRI+'StoichiometryRatio_fb5fecbb-3de2-4d98-b96c-38a3d033ca2d':2,EXP_1_BASE_IRI+'StoichiometryRatio_3712c062-8b67-4a82-82d9-166ff34909ba':3}}
 
     CHEMICAL_REACTION_IRI = CHEMICAL_REACTION_BASE_IRI + 'ChemRxn_1'
     REACTANT_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_1': 'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
@@ -309,6 +333,15 @@ class TargetIRIs(Enum):
         DUMMY_LAB_BASE_IRI + 'Site_1': EXP_1_INPUT_CHEMICAL_1_IRI,
         DUMMY_LAB_BASE_IRI + 'Site_2': EXP_1_INPUT_CHEMICAL_2_IRI
     }
+
+    SPECIES_MOLAR_MASS_DICT = {"http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b": 106.124/1000,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3": 58.08/1000,
+        CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_637759': 146.19/1000,
+        CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_640180': 234.29/1000,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d": 39.997/1000,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb": 41.053/1000,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983": 46.069/1000,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340": 128.174/1000}
 
     RXNEXP_TYPE_DICT = {EXAMPLE_RXN_EXP_1_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,EXAMPLE_RXN_EXP_2_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,
         EXAMPLE_RXN_EXP_3_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,EXAMPLE_RXN_EXP_4_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,
@@ -397,3 +430,14 @@ class TargetIRIs(Enum):
     HPLC_2_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_2'
     CHEMICAL_SOLUTION_1_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_1_1'
     CHEMICAL_SOLUTION_2_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_2_1'
+
+    HPLC_DUMMAY_REPORT_FILE_SPECIES_RETENTION_TIME_IDENTIFY = {
+        'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b': 0.55,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3": 2.55,
+        CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_637759': 1.55,
+        CHEMICAL_REACTION_BASE_IRI + 'Species_placeholder_pubchemcid_640180': 4.55,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d": 5.55,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb": 6.55,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983": 7.55,
+        "http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340": 3.55
+    }

@@ -920,7 +920,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_autosampler_site_given_input_chemical(self, autosampler: AutoSampler, input_chem: InputChemical) -> AutoSamplerSite:
         for site in autosampler.hasSite:
             if site.holds.isFilledWith is not None:
-                if site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour == input_chem.thermodynamicBehaviour:
+                if site.holds.isFilledWith.refersToMaterial is None:
+                    logger.warning("ChemicalSolution exist but NO Material is specified for autosampler site <%s>." % site.instance_iri)
+                elif site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour == input_chem.thermodynamicBehaviour:
                     return site
         return None
 
@@ -932,7 +934,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         return None
 
     def sort_r2_pumps_in_vapourtec_rs400(self, rs400: VapourtecRS400) -> Dict[str, VapourtecR2Pump]:
-        return {pump.locationID:pump for pump in rs400.consistsOf if isinstance(pump, VapourtecR2Pump)}
+        dict_pumps = {pump.locationID:pump for pump in rs400.consistsOf if isinstance(pump, VapourtecR2Pump)}
+        return {key:dict_pumps[key] for key in sorted(dict_pumps)}
 
     def collect_triples_for_equip_settings(self, equip_settings: List[EquipmentSettings], configure_digital_twin: bool):
         g = Graph()
@@ -954,8 +957,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             raise Exception("Class <%s> was not found." % clz)
             # raise Exception(len(list_))
         else:
-            logger.error("Identified quantity")
-            logger.error(var[0])
+            logger.debug("Identified quantity")
+            logger.debug(var[0])
             return var[0]
 
     def get_preferred_vapourtec_rs400(self, rxnexp: ReactionExperiment) -> Tuple[VapourtecRS400, VapourtecR4Reactor, HPLC]:

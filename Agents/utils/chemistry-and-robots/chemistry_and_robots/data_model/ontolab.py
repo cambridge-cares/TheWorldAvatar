@@ -59,6 +59,9 @@ class EquipmentSettings(BaseOntology):
 
         return values
 
+    def get_parameter_settings(self) -> List[ParameterSetting]:
+        return [getattr(self, name) for name in self.__fields__ if isinstance(getattr(self, name), ParameterSetting)]
+
     def create_instance_for_kg(self, g: Graph, configure_digital_twin: bool) -> Graph:
         # check if information is complete
         if self.specifies == None:

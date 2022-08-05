@@ -2,9 +2,12 @@ from datetime import datetime
 import random
 import time
 import uuid
+from chemistry_and_robots.data_model.ontoreaction import OntoCAPE_Material
 from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
 from chemistry_and_robots.tests.conftest import TargetIRIs
 import chemistry_and_robots.tests.conftest as conftest
+from rdflib import Literal
+from rdflib import URIRef
 from rdflib import Graph
 import logging
 import filecmp
@@ -15,6 +18,7 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 import chemistry_and_robots.data_model as onto
 import chemistry_and_robots.utils.dict_and_list as dal
+import chemistry_and_robots.hardware.hplc as hplc
 
 pytest_plugins = ["docker_compose"]
 
@@ -299,6 +303,7 @@ def test_get_rxn_exp_assigned_to_r4_reactor(initialise_triples, r4_reactor_iri, 
     ],
 )
 def test_get_input_chemical_of_rxn_exp(initialise_triples, rxnexp_iri, input_chemical_iri):
+    """Also tests get_ontocape_material."""
     sparql_client = initialise_triples
     response = sparql_client.get_input_chemical_of_rxn_exp(rxnexp_iri)
     list_input_chemical = [res.instance_iri for res in response]
@@ -344,15 +349,15 @@ def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, list
 
     # Change the status to Null
     sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_NULL, 0)
-    # Now perform the same checking
+    # Now query again, should return None now
     new_rs400, new_r4_reactor, new_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
-    # Change back the status to Idle
-    sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_IDLE, 0)
     # Now perform the same checking, the returned values should be None, None
     assert None == new_rs400
     assert None == new_r4_reactor
     assert None == new_hplc
 
+    # Change back the status to Idle
+    sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_IDLE, 0)
     # Remove temp_agent that manages the digital twin
     sparql_client.performUpdate("""DELETE WHERE {<%s> <%s> ?temp_agent_1. <%s> <%s> ?temp_agent_2.}""" % (
         vapourtec_rs400, onto.ONTOLAB_ISMANAGEDBY, agilent_hplc, onto.ONTOLAB_ISMANAGEDBY
@@ -793,25 +798,30 @@ def test_update_vapourtec_autosampler_liquid_level_millilitre(initialise_triples
 
     assert all([(dct_site_loop_volume[iri] - dct_site_loop_volume_updated_again[iri]) < 0.0001 for iri in dct_site_loop_volume_updated_again])
 
-#############################################
-## sparql_client.py functions to be tested ##
-#############################################
-# def test_(initialise_triples):
-#     sparql_client = initialise_triples
-#     sparql_client = ChemistryAndRobotsSparqlClient()
-#     pass
-
-@pytest.mark.skip(reason="TODO")
-def test_create_chemical_solution_for_reaction_outlet(initialise_triples):
+@pytest.mark.parametrize(
+    "amount_of_chemical_solution",
+    [
+        (5),
+        (6),
+    ],
+)
+def test_create_chemical_solution_for_reaction_outlet(initialise_triples, amount_of_chemical_solution):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
+
     autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
     empty_site = [site.instance_iri for site in autosampler.hasSite if site.holds.isFilledWith is None][0]
     g = sparql_client.create_chemical_solution_for_reaction_outlet(
-        autosampler_site_iri=empty_site, amount_of_chemical_solution=5)
-    g.query("""""")
+        autosampler_site_iri=empty_site, amount_of_chemical_solution=amount_of_chemical_solution)
+
+    qres = g.query("""SELECT ?chemical_solution_iri WHERE {?chemical_solution_iri rdf:type <%s>.}""" % onto.ONTOLAB_CHEMICALSOLUTION)
+    assert len(qres) == 1
+    for row in qres:
+        chemical_solution_iri = row.chemical_solution_iri
     autosampler_updated = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
-    pass
+    dct_site_loop_volume = {site.instance_iri:site.holds.hasFillLevel.hasValue.hasNumericalValue for site in autosampler_updated.hasSite}
+    dct_site_chemical_solution = {site.instance_iri:site.holds.isFilledWith.instance_iri for site in autosampler_updated.hasSite if site.holds.isFilledWith is not None}
+    assert dct_site_loop_volume[empty_site] == amount_of_chemical_solution
+    assert dct_site_chemical_solution[empty_site] == chemical_solution_iri.toPython()
 
 def test_release_vapourtec_rs400_settings(initialise_triples):
     sparql_client = initialise_triples
@@ -905,31 +915,60 @@ def test_detect_new_hplc_report_from_hplc_derivation(initialise_triples):
         (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.LIST_RXN_EXP_5_OUTPUT_CHEMICAL_IRI.value),
     ],
 )
-def test_get_input_chemical_of_rxn_exp(initialise_triples, rxnexp_iri, output_chemical_iri):
+def test_get_output_chemical_of_rxn_exp(initialise_triples, rxnexp_iri, output_chemical_iri):
+    """Also tests get_ontocape_material."""
     sparql_client = initialise_triples
     response = sparql_client.get_output_chemical_of_rxn_exp(rxnexp_iri)
     list_output_chemical = [res.instance_iri for res in response]
     assert len(list_output_chemical) == len(output_chemical_iri)
     assert len(set(list_output_chemical).difference(set(output_chemical_iri))) == 0
 
-@pytest.mark.skip(reason="TODO")
-def test_get_ontocape_material(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    sparql_client.get_ontocape_material()
-    pass
-
-@pytest.mark.skip(reason="TODO")
 def test_sort_r2_pumps_in_vapourtec_rs400(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
 
-@pytest.mark.skip(reason="TODO")
-def test_get_rxn_con_or_perf_ind(initialise_triples):
+    rs400 = sparql_client.get_vapourtec_rs400(vapourtec_rs400_iri=TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    dct_pumps = sparql_client.sort_r2_pumps_in_vapourtec_rs400(rs400)
+    assert len(dct_pumps) == 4
+    assert [key for key in dct_pumps] == ["A", "B", "C", "D"]
+    assert all([dct_pumps[key].locationID == key for key in dct_pumps])
+    assert [dct_pumps[key].instance_iri for key in dct_pumps] == [TargetIRIs.VAPOURTECR2PUMP_1_DUMMY_IRI.value,
+        TargetIRIs.VAPOURTECR2PUMP_2_DUMMY_IRI.value, TargetIRIs.VAPOURTECR2PUMP_3_DUMMY_IRI.value, TargetIRIs.VAPOURTECR2PUMP_4_DUMMY_IRI.value]
+
+@pytest.mark.parametrize(
+    "rxn_exp_iri,rxn_con_list,perf_ind_list",
+    [
+        (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_1_REACTION_CONDITION_IRI_LIST.value, TargetIRIs.EXAMPLE_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_2_REACTION_CONDITION_IRI_LIST.value, TargetIRIs.EXAMPLE_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_3_REACTION_CONDITION_IRI_LIST.value, TargetIRIs.EXAMPLE_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_4_REACTION_CONDITION_IRI_LIST.value, TargetIRIs.EXAMPLE_RXN_EXP_4_PERFORMANCE_INDICATOR_IRI_LIST.value),
+        (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, TargetIRIs.EXAMPLE_RXN_EXP_5_REACTION_CONDITION_IRI_LIST.value, TargetIRIs.EXAMPLE_RXN_EXP_5_PERFORMANCE_INDICATOR_IRI_LIST.value),
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.NEW_RXN_EXP_1_REACTION_CONDITION_IRI_LIST.value, TargetIRIs.NEW_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.NEW_RXN_EXP_2_REACTION_CONDITION_IRI_LIST.value, TargetIRIs.NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.NEW_RXN_EXP_3_REACTION_CONDITION_IRI_LIST.value, TargetIRIs.NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST.value),
+    ],
+)
+def test_get_rxn_con_or_perf_ind(initialise_triples, rxn_exp_iri, rxn_con_list, perf_ind_list):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
+
+    rxn_exp = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
+
+    for clz in [onto.ONTOREACTION_RESIDENCETIME, onto.ONTOREACTION_REACTIONPRESSURE,
+        onto.ONTOREACTION_REACTIONSCALE, onto.ONTOREACTION_REACTIONTEMPERATURE, onto.ONTOREACTION_STOICHIOMETRYRATIO]:
+        positional_id_lst = TargetIRIs.RXN_EXP_REACTION_CONDITION_CLZ_POSITIONAL_ID_DICT.value[rxn_exp_iri][clz]
+        for positional_id in positional_id_lst:
+            identified_cond = sparql_client.get_rxn_con_or_perf_ind(list_=rxn_exp.hasReactionCondition, clz=clz, positionalID=positional_id)
+            assert identified_cond.instance_iri in rxn_con_list
+            assert identified_cond.positionalID == positional_id
+            assert identified_cond.clz == clz
+            if identified_cond.instance_iri in TargetIRIs.RXN_EXP_REACTION_CONDITION_POSITIONAL_ID_DICT.value[rxn_exp_iri]:
+                assert identified_cond.positionalID == TargetIRIs.RXN_EXP_REACTION_CONDITION_POSITIONAL_ID_DICT.value[rxn_exp_iri][identified_cond.instance_iri]
+
+    if perf_ind_list is not None:
+        for clz in [onto.ONTOREACTION_YIELD, onto.ONTOREACTION_RUNMATERIALCOST]:
+            identified_ind = sparql_client.get_rxn_con_or_perf_ind(list_=rxn_exp.hasPerformanceIndicator, clz=clz, positionalID=None)
+            assert identified_ind.instance_iri in perf_ind_list
+            assert identified_ind.positionalID == None
+            assert identified_ind.clz == clz
 
 def test_get_r4_reactor_rxn_exp_assigned_to(initialise_triples):
     sparql_client = initialise_triples
@@ -943,61 +982,182 @@ def test_get_r4_reactor_rxn_exp_assigned_to(initialise_triples):
     ))
     assert reactor_iri == sparql_client.get_r4_reactor_rxn_exp_assigned_to(rxn_exp_iri=rxn_exp_iri)
 
-@pytest.mark.skip(reason="TODO")
 def test_create_equip_settings_for_rs400_from_rxn_exp(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
 
-@pytest.mark.skip(reason="TODO")
+    rxn_exp = sparql_client.getReactionExperiment(TargetIRIs.NEW_RXN_EXP_1_IRI.value)[0]
+    rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    lst_reactor = sparql_client.get_r4_reactor_given_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    preferred_r4_reactor = lst_reactor[0] # Just retrieve the first reactor
+
+    lst_equip_settings = sparql_client.create_equip_settings_for_rs400_from_rxn_exp(
+        rxnexp=rxn_exp,
+        rs400=rs400,
+        preferred_r4_reactor=preferred_r4_reactor
+    )
+
+    # Generated equip settings should be generated for the reaction experiment
+    assert all([stg.wasGeneratedFor == rxn_exp.instance_iri for stg in lst_equip_settings])
+    # Generated equip settings should contain both ReactorSettings and PumpSettings
+    assert all([isinstance(stg, onto.ReactorSettings) or isinstance(stg, onto.PumpSettings) for stg in lst_equip_settings])
+    # Generated equip settings' parameter settings should all point to the reaction condition in the reaction experiment
+    all([param.hasQuantity.instance_iri in [rxn_con.instance_iri for rxn_con in rxn_exp.hasReactionCondition] for setting in lst_equip_settings for param in setting.get_parameter_settings()])
+
 def test_get_species_molar_mass_kilogrampermole(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
 
-@pytest.mark.skip(reason="TODO")
-def test_get_matching_species_from_hplc_results(initialise_triples):
+    for species_iri in TargetIRIs.SPECIES_MOLAR_MASS_DICT.value:
+        molar_mass = sparql_client.get_species_molar_mass_kilogrampermole(species_iri)
+        assert molar_mass == TargetIRIs.SPECIES_MOLAR_MASS_DICT.value[species_iri]
+
+@pytest.mark.parametrize(
+    "hplc_report_iri,local_file_path,hplc_report_extension",
+    [
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE, onto.TXTFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE, onto.XLSFILE_EXTENSION),
+    ],
+)
+def test_get_matching_species_from_hplc_results(initialise_triples, hplc_report_iri, local_file_path, hplc_report_extension):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
 
-@pytest.mark.skip(reason="TODO")
+    list_points = hplc.read_raw_hplc_report_file(
+        hplc_report_iri=hplc_report_iri,
+        file_path=local_file_path,
+        filename_extension=hplc_report_extension
+    )
+
+    # get the instance of HPLCMethod
+    hplc_method = sparql_client.get_hplc_method_given_hplc_report(hplc_report_iri)
+
+    # map them to chromatogram point (qury phase component based on hplc method, and hplc)
+    dct_points = {sparql_client.get_matching_species_from_hplc_results(pt.get(onto.ONTOHPLC_RETENTIONTIME), hplc_method):pt for pt in list_points}
+
+    assert all([dct_points[key][onto.ONTOHPLC_RETENTIONTIME].hasValue.hasNumericalValue == TargetIRIs.HPLC_DUMMAY_REPORT_FILE_SPECIES_RETENTION_TIME_IDENTIFY.value[key] for key in dct_points])
+
+
+
+#############################################
+## sparql_client.py functions to be tested ##
+#############################################
+# def test_(initialise_triples):
+#     sparql_client = initialise_triples
+#     sparql_client = ChemistryAndRobotsSparqlClient()
+#     pass
+
+
+
 def test_collect_triples_for_performance_indicators(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    pass
 
-@pytest.mark.skip(reason="TODO")
+    lst_performance_indicator = []
+    for i in range(random.randint(1, 100)):
+        lst_performance_indicator.append(
+            onto.PerformanceIndicator(
+                instance_iri="http://"+str(uuid.uuid4()),
+                clz="http://"+str(uuid.uuid4()),
+                rxn_exp_iri="http://"+str(uuid.uuid4()),
+                objPropWithExp=["http://"+str(uuid.uuid4()), "http://"+str(uuid.uuid4())],
+                hasValue=onto.OM_Measure(
+                    instance_iri="http://"+str(uuid.uuid4()),
+                    hasUnit="http://"+str(uuid.uuid4()),
+                    hasNumericalValue=random.uniform(0, 100)
+                ),
+                positionalID=random.randint(0, 100),
+                yieldLimitingSpecies="http://"+str(uuid.uuid4())
+            ))
+
+    g = Graph()
+    g = sparql_client.collect_triples_for_performance_indicators(
+        lst_performance_indicator=lst_performance_indicator, g=g)
+    for performance_indicator in lst_performance_indicator:
+        assert (URIRef(performance_indicator.instance_iri), None, None) in g
+        assert (None, None, URIRef(performance_indicator.clz)) in g
+        assert (URIRef(performance_indicator.rxn_exp_iri), None, None) in g
+        assert all([(None, URIRef(o), None) in g for o in performance_indicator.objPropWithExp])
+        assert (URIRef(performance_indicator.hasValue.instance_iri), None, None) in g
+        assert (None, None, URIRef(performance_indicator.hasValue.hasUnit)) in g
+        assert (None, None, Literal(performance_indicator.hasValue.hasNumericalValue)) in g
+        assert (None, None, Literal(performance_indicator.positionalID)) in g
+        assert (None, None, URIRef(performance_indicator.yieldLimitingSpecies)) in g
+
 def test_collect_triples_for_output_chemical_of_chem_sol(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    sparql_client.collect_triples_for_output_chemical_of_chem_sol()
-    pass
+
+    lst_phase_component = []
+    lst_phase_component_conc = []
+    for i in range(random.randint(1, 2)):
+        phase_component_conc = onto.OntoCAPE_PhaseComponentConcentration(
+            instance_iri="http://"+str(uuid.uuid4()),
+            hasValue=onto.OntoCAPE_ScalarValue(
+                instance_iri="http://"+str(uuid.uuid4()),
+                hasUnitOfMeasure="http://"+str(uuid.uuid4()),
+                numericalValue=random.uniform(0, 100)
+            )
+        )
+        lst_phase_component_conc.append(phase_component_conc)
+        lst_phase_component.append(onto.OntoCAPE_PhaseComponent(
+            instance_iri="http://"+str(uuid.uuid4()),
+            hasProperty=phase_component_conc,
+            representsOccurenceOf="http://"+str(uuid.uuid4())
+        ))
+    material_iri = "http://"+str(uuid.uuid4())
+    chemical_solution = onto.ChemicalSolution(
+        instance_iri="http://"+str(uuid.uuid4()),
+        refersToMaterial=onto.OntoCAPE_Material(
+            instance_iri=material_iri,
+            thermodynamicBehaviour=onto.OntoCAPE_SinglePhase(
+                instance_iri="http://"+str(uuid.uuid4()),
+                hasStateOfAggregation=onto.OntoCAPE_StateOfAggregation(
+                    instance_iri="http://"+str(uuid.uuid4())),
+                isComposedOfSubsystem=lst_phase_component,
+                has_composition=onto.OntoCAPE_Composition(
+                    instance_iri="http://"+str(uuid.uuid4()),
+                    comprisesDirectly=lst_phase_component_conc,
+                ),
+                representsThermodynamicBehaviorOf=material_iri
+            )
+        ),
+        fills="http://"+str(uuid.uuid4()),
+    )
+    rxn_exp_iri = "http://"+str(uuid.uuid4())
+
+    g = Graph()
+    g = sparql_client.collect_triples_for_output_chemical_of_chem_sol(
+        chemical_solution=chemical_solution,
+        rxn_exp_iri=rxn_exp_iri,
+        g=g
+    )
+
+    assert (URIRef(chemical_solution.instance_iri), URIRef(onto.ONTOCAPE_REFERSTOMATERIAL), URIRef(chemical_solution.refersToMaterial.instance_iri)) in g
+    assert (URIRef(rxn_exp_iri), URIRef(onto.ONTOREACTION_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)) in g
+    assert if_object_collected_in_graph(g, chemical_solution.refersToMaterial)
 
 @pytest.mark.skip(reason="TODO")
 def test_collect_triples_for_hplc_job(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
-
+    sparql_client.collect_triples_for_hplc_job()
     pass
 
 @pytest.mark.skip(reason="TODO")
 def test_collect_triples_for_chromatogram_point(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
-
+    sparql_client.collect_triples_for_chromatogram_point()
     pass
 
 @pytest.mark.skip(reason="TODO")
 def test_collect_triples_for_new_experiment(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
+    sparql_client.collect_triples_for_new_experiment()
     pass
 
 @pytest.mark.skip(reason="TODO")
 def test_collect_triples_for_equip_settings(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
+    sparql_client.collect_triples_for_equip_settings()
     pass
 
 @pytest.mark.skip(reason="TODO after proper representation of species density")
@@ -1017,3 +1177,34 @@ def test_get_species_eco_score(initialise_triples):
     sparql_client = initialise_triples
     sparql_client = ChemistryAndRobotsSparqlClient()
     pass
+
+def if_object_collected_in_graph(g: Graph, ontology_object: onto.BaseOntology):
+    if (URIRef(ontology_object.instance_iri), None, None) not in g:
+        print("{} not collected in graph".format(ontology_object.instance_iri))
+        return False
+    for key in ontology_object.__fields__:
+        if getattr(ontology_object, key) is not None:
+            if isinstance(getattr(ontology_object, key), onto.BaseOntology):
+                return if_object_collected_in_graph(g, getattr(ontology_object, key))
+            elif isinstance(getattr(ontology_object, key), list):
+                for item in getattr(ontology_object, key):
+                    if item is not None:
+                        if isinstance(item, onto.BaseOntology):
+                            return if_object_collected_in_graph(g, item)
+                        elif isinstance(item, str):
+                            if (None, None, URIRef(item)) not in g and (None, None, Literal(item)) not in g:
+                                print("key {} {} not collected in graph".format(key, item))
+                                return False
+                        elif isinstance(item, int) or isinstance(item, float):
+                            if (None, None, Literal(item)) not in g:
+                                print("key {} {} not collected in graph".format(key, item))
+                                return False
+            elif isinstance(getattr(ontology_object, key), str):
+                if (None, None, URIRef(getattr(ontology_object, key))) not in g and (None, None, Literal(getattr(ontology_object, key))) not in g:
+                    print("key {} {} not collected in graph".format(key, getattr(ontology_object, key)))
+                    return False
+            elif isinstance(getattr(ontology_object, key), int) or isinstance(getattr(ontology_object, key), float):
+                if (None, None, Literal(getattr(ontology_object, key))) not in g:
+                    print("key {} {} not collected in graph".format(key, getattr(ontology_object, key)))
+                    return False
+    return True
