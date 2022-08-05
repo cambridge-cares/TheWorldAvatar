@@ -9,7 +9,7 @@
     <artifactId>ogm</artifactId>
     <name>ogm</name>
 
-    <version>1.0.1</version>
+    <version>1.1.1</version>
 
     <properties>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -129,12 +129,6 @@
             <version>5.4.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.citydb</groupId>
-            <artifactId>impexp-client</artifactId>
-            <version>4.2.3</version>
-        </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>

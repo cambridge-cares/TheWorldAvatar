@@ -24,9 +24,9 @@ public class MetaModelTest {
     assertTrue(metaModel.fieldMap.containsKey(
         new FieldKey("graph3", SPARQLUtils.expandQualifiedName("dbpediao:graphtest3a"), false)));
     // test number of fields loaded is correct
-    assertEquals(20, metaModel.scalarFieldList.size());
+    assertEquals(19, metaModel.scalarFieldList.size());
     assertEquals(3, metaModel.vectorFieldList.size());
-    assertEquals(23, metaModel.fieldMap.size());
+    assertEquals(22, metaModel.fieldMap.size());
   }
 
 }
