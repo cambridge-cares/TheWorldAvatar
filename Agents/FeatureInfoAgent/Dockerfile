@@ -13,7 +13,7 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
-WORKDIR /root/src
+WORKDIR /root/code
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
 
 #==================================================================================================
@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y nano
 
 WORKDIR /app
 
-COPY --from=builder /root/src/output/feature-info-agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
-COPY --from=builder /root/src/feature-info.properties /root/feature-info.properties
+COPY --from=builder /root/code/output/feature-info-agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/code/feature-info.properties /root/feature-info.properties
 COPY docker/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 
 # Start the Tomcat server
