@@ -2,7 +2,7 @@ from datetime import datetime
 import random
 import time
 import uuid
-from chemistry_and_robots.data_model.ontoreaction import OntoCAPE_Material
+
 from chemistry_and_robots.kg_operations.sparql_client import ChemistryAndRobotsSparqlClient
 from chemistry_and_robots.tests.conftest import TargetIRIs
 import chemistry_and_robots.tests.conftest as conftest
@@ -25,6 +25,9 @@ pytest_plugins = ["docker_compose"]
 # ----------------------------------------------------------------------------------
 # Test cases for sparql_client 
 # ----------------------------------------------------------------------------------
+# collect_triples_for_equip_settings and collect_triples_for_new_experiment are
+# tested in integration test of agents
+
 def test_amount_of_triples_none_zero(initialise_triples):
     sparql_client = initialise_triples
     assert sparql_client.getAmountOfTriples() != 0
@@ -187,9 +190,27 @@ def test_get_rdf_type_of_rxn_exp(initialise_triples, rxnexp_iri, expected_rxn_ty
         (TargetIRIs.LIST_EXAMPLE_RXN_EXP.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
             TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
             TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
-        # TODO (TargetIRIs.NEW_RXN_EXP_1_IRI.value, []),isVariationOf
-        # TODO (TargetIRIs.NEW_RXN_EXP_2_IRI.value, []),isVariationOf
-        # TODO (TargetIRIs.NEW_RXN_EXP_3_IRI.value, []),isVariationOf
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        ([TargetIRIs.NEW_RXN_EXP_1_IRI.value], TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        ([TargetIRIs.NEW_RXN_EXP_2_IRI.value], TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        ([TargetIRIs.NEW_RXN_EXP_3_IRI.value], TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
+        (TargetIRIs.LIST_NEW_RXN_EXP.value, TargetIRIs.RXNEXP_TYPE_DICT.value, TargetIRIs.RXNEXP_REACTION_CONDITION_DICT.value,
+            TargetIRIs.RXNEXP_PERFORMANCE_INDICATOR_DICT.value, TargetIRIs.RXNEXP_INPUT_CHEMICAL_DICT.value, TargetIRIs.RXNEXP_OUTPUT_CHEMICAL_DICT.value,
+            TargetIRIs.RXNEXP_REACTOR_ASSIGNED_DICT.value, TargetIRIs.RXNEXP_CHEMICAL_REACTION_IRI_DICT.value),
     ],
 )
 def test_getReactionExperiment(initialise_triples, rxnexp_iris, rxn_type, rxnexp_condition, rxnexp_perfind, input_chem, output_chem, reactor_assigned, chem_rxn):
@@ -200,13 +221,19 @@ def test_getReactionExperiment(initialise_triples, rxnexp_iris, rxn_type, rxnexp
     for exp in rxn_exp_list:
         assert exp.clz == rxn_type.get(exp.instance_iri)
         assert len(exp.hasReactionCondition) == len(rxnexp_condition.get(exp.instance_iri))
-        assert len(exp.hasPerformanceIndicator) == len(rxnexp_perfind.get(exp.instance_iri))
+        if exp.hasPerformanceIndicator is not None:
+            assert len(exp.hasPerformanceIndicator) == len(rxnexp_perfind.get(exp.instance_iri))
+            assert all(pre in [pi.instance_iri for pi in exp.hasPerformanceIndicator] for pre in rxnexp_perfind.get(exp.instance_iri))
+        else:
+            assert rxnexp_perfind.get(exp.instance_iri) is None
         assert len(exp.hasInputChemical) == len(input_chem.get(exp.instance_iri))
-        assert len(exp.hasOutputChemical) == len(output_chem.get(exp.instance_iri))
+        if exp.hasOutputChemical is not None:
+            assert len(exp.hasOutputChemical) == len(output_chem.get(exp.instance_iri))
+            assert all(out in [oc.instance_iri for oc in exp.hasOutputChemical] for out in output_chem.get(exp.instance_iri))
+        else:
+            assert output_chem.get(exp.instance_iri) is None
         assert all(con in [c.instance_iri for c in exp.hasReactionCondition] for con in rxnexp_condition.get(exp.instance_iri))
-        assert all(pre in [pi.instance_iri for pi in exp.hasPerformanceIndicator] for pre in rxnexp_perfind.get(exp.instance_iri))
         assert all(inp in [ic.instance_iri for ic in exp.hasInputChemical] for inp in input_chem.get(exp.instance_iri))
-        assert all(out in [oc.instance_iri for oc in exp.hasOutputChemical] for out in output_chem.get(exp.instance_iri))
         assert exp.isAssignedTo == reactor_assigned.get(exp.instance_iri)
         assert exp.isOccurenceOf.instance_iri == chem_rxn.get(exp.instance_iri)
 
@@ -1034,18 +1061,6 @@ def test_get_matching_species_from_hplc_results(initialise_triples, hplc_report_
 
     assert all([dct_points[key][onto.ONTOHPLC_RETENTIONTIME].hasValue.hasNumericalValue == TargetIRIs.HPLC_DUMMAY_REPORT_FILE_SPECIES_RETENTION_TIME_IDENTIFY.value[key] for key in dct_points])
 
-
-
-#############################################
-## sparql_client.py functions to be tested ##
-#############################################
-# def test_(initialise_triples):
-#     sparql_client = initialise_triples
-#     sparql_client = ChemistryAndRobotsSparqlClient()
-#     pass
-
-
-
 def test_collect_triples_for_performance_indicators(initialise_triples):
     sparql_client = initialise_triples
 
@@ -1085,7 +1100,7 @@ def test_collect_triples_for_output_chemical_of_chem_sol(initialise_triples):
 
     lst_phase_component = []
     lst_phase_component_conc = []
-    for i in range(random.randint(1, 2)):
+    for i in range(random.randint(1, 100)):
         phase_component_conc = onto.OntoCAPE_PhaseComponentConcentration(
             instance_iri="http://"+str(uuid.uuid4()),
             hasValue=onto.OntoCAPE_ScalarValue(
@@ -1132,33 +1147,80 @@ def test_collect_triples_for_output_chemical_of_chem_sol(initialise_triples):
     assert (URIRef(rxn_exp_iri), URIRef(onto.ONTOREACTION_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)) in g
     assert if_object_collected_in_graph(g, chemical_solution.refersToMaterial)
 
-@pytest.mark.skip(reason="TODO")
 def test_collect_triples_for_hplc_job(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    sparql_client.collect_triples_for_hplc_job()
-    pass
 
-@pytest.mark.skip(reason="TODO")
+    g = Graph()
+    rxn_exp_iri = "http://"+str(uuid.uuid4())
+    chemical_solution_iri = "http://"+str(uuid.uuid4())
+    hplc_digital_twin = "http://"+str(uuid.uuid4())
+    hplc_report_iri = "http://"+str(uuid.uuid4())
+    hplc_method_iri = "http://"+str(uuid.uuid4())
+
+    g = sparql_client.collect_triples_for_hplc_job(
+        rxn_exp_iri=rxn_exp_iri, chemical_solution_iri=chemical_solution_iri,
+        hplc_digital_twin=hplc_digital_twin, hplc_report_iri=hplc_report_iri,
+        hplc_method_iri=hplc_method_iri, g=g
+    )
+
+    qres = g.query("""SELECT ?hplc_job_iri WHERE {?hplc_job_iri rdf:type <%s>.}""" % onto.ONTOHPLC_HPLCJOB)
+    assert len(qres) == 1
+    for row in qres:
+        hplc_job_iri = row.hplc_job_iri
+    assert (URIRef(hplc_digital_twin), URIRef(onto.ONTOHPLC_HASJOB), URIRef(hplc_job_iri)) in g
+    assert (URIRef(hplc_job_iri), URIRef(onto.ONTOHPLC_CHARACTERISES), URIRef(rxn_exp_iri)) in g
+    assert (URIRef(hplc_job_iri), URIRef(onto.ONTOHPLC_USESMETHOD), URIRef(hplc_method_iri)) in g
+    assert (URIRef(hplc_job_iri), URIRef(onto.ONTOHPLC_HASREPORT), URIRef(hplc_report_iri)) in g
+    assert (URIRef(hplc_report_iri), URIRef(onto.ONTOHPLC_GENERATEDFOR), URIRef(chemical_solution_iri)) in g
+
 def test_collect_triples_for_chromatogram_point(initialise_triples):
     sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    sparql_client.collect_triples_for_chromatogram_point()
-    pass
 
-@pytest.mark.skip(reason="TODO")
-def test_collect_triples_for_new_experiment(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    sparql_client.collect_triples_for_new_experiment()
-    pass
+    lst_chromatogram_point = []
+    for i in range(random.randint(1, 100)):
+        lst_chromatogram_point.append(
+            onto.ChromatogramPoint(
+                instance_iri="http://"+str(uuid.uuid4()),
+                indicatesComponent=onto.OntoCAPE_PhaseComponent(
+                    instance_iri="http://"+str(uuid.uuid4()),
+                    hasProperty=onto.OntoCAPE_PhaseComponentConcentration(
+                        instance_iri="http://"+str(uuid.uuid4()),
+                        hasValue=onto.OntoCAPE_ScalarValue(
+                            instance_iri="http://"+str(uuid.uuid4()),
+                            hasUnitOfMeasure="http://"+str(uuid.uuid4()),
+                            numericalValue=random.uniform(0, 1)
+                        ),
+                    ),
+                    representsOccurenceOf="http://"+str(uuid.uuid4())
+                ),
+                hasPeakArea=onto.PeakArea(
+                    instance_iri="http://"+str(uuid.uuid4()),
+                    hasValue=onto.OM_Measure(
+                        instance_iri="http://"+str(uuid.uuid4()),
+                        hasUnit="http://"+str(uuid.uuid4()),
+                        hasNumericalValue=random.uniform(1, 100)
+                    )
+                ),
+                atRetentionTime=onto.RetentionTime(
+                    instance_iri="http://"+str(uuid.uuid4()),
+                    hasValue=onto.OM_Measure(
+                        instance_iri="http://"+str(uuid.uuid4()),
+                        hasUnit="http://"+str(uuid.uuid4()),
+                        hasNumericalValue=random.uniform(1, 100)
+                    ),
+                )
+            )
+        )
 
-@pytest.mark.skip(reason="TODO")
-def test_collect_triples_for_equip_settings(initialise_triples):
-    sparql_client = initialise_triples
-    sparql_client = ChemistryAndRobotsSparqlClient()
-    sparql_client.collect_triples_for_equip_settings()
-    pass
+    hplc_report_iri="http://"+str(uuid.uuid4())
+    g = Graph()
+    g = sparql_client.collect_triples_for_chromatogram_point(
+        chrom_pts=lst_chromatogram_point, hplc_report_iri=hplc_report_iri, g=g
+    )
+
+    for pt in lst_chromatogram_point:
+        assert (URIRef(hplc_report_iri), URIRef(onto.ONTOHPLC_RECORDS), URIRef(pt.instance_iri)) in g
+        assert if_object_collected_in_graph(g, pt)
 
 @pytest.mark.skip(reason="TODO after proper representation of species density")
 def test_get_species_density(initialise_triples):

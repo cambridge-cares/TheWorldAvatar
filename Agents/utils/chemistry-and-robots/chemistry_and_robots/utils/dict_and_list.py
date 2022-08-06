@@ -53,6 +53,8 @@ def check_if_key_in_list_of_dict(list_of_dict: List[dict], key: str):
 def check_if_two_lists_equal(list_a: list, list_b: list) -> bool:
     if list_a is None and list_b is None:
         return True
+    if list_a is None or list_b is None:
+        return False
     if len(list_a) != len(list_b):
         return False
     return list_a.sort() == list_b.sort()
