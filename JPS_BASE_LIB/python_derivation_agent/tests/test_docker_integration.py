@@ -1,9 +1,21 @@
-from builtins import max as builtins_max
-from builtins import min as builtins_min
 import requests
 import pytest
-import random
 import time
+
+from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCE
+from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_LISTOFPOINTS
+from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_MAXVALUE
+from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_MINVALUE
+from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATION
+
+from tests.conftest import create_rng_agent
+from tests.conftest import create_min_agent
+from tests.conftest import create_max_agent
+from tests.conftest import create_diff_agent
+from tests.conftest import RNGAGENT_ENV
+from tests.conftest import MINAGENT_ENV
+from tests.conftest import MAXAGENT_ENV
+from tests.conftest import DIFFAGENT_ENV
 
 import tests.utils as utils
 
@@ -28,8 +40,11 @@ pytest_plugins = ["docker_compose"]
         (False, False, False, False),
     ],
 )
-def test_docker_integration(initialise_clients, rng, max, min, diff):
-    sparql_client, derivation_client, update_endpoint = initialise_clients
+def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
+    ###################################################
+    ## I. Get pytest fixture and register all agents ##
+    ###################################################
+    sparql_client, derivation_client, update_endpoint = initialise_clients_and_agents
 
     logger.info(f"==================== Test case [{rng}-{max}-{min}-{diff}] start ====================")
 
@@ -38,43 +53,71 @@ def test_docker_integration(initialise_clients, rng, max, min, diff):
         rng_derivation [{rng}], max_derivation [{max}], min_derivation [{min}], diff_derivation [{diff}]."""
     )
 
-    ################################################################
-    ## I. Upload all initial triples prepared in resources folder ##
-    ################################################################
-    all_instances = utils.initialise_triples_assert_pure_inputs(
-        sparql_client=sparql_client,
-        derivation_client=derivation_client
-    )
+    ###########################################################################################
+    ## II. Upload all initial triples prepared in resources folder and register agents in KG ##
+    ###########################################################################################
+    try:
+        all_instances = utils.initialise_triples_assert_pure_inputs(
+            sparql_client=sparql_client,
+            derivation_client=derivation_client,
+            delete_all_triples=True
+        )
+    except Exception as e:
+        logger.error(f"Failed to initialise triples: {e}")
+        raise e
 
     logger.info("Uploading prepared triples finished.")
 
-    ###############################################################
-    ## II. Initialise derivations that generates new information ##
-    ###############################################################
-    all_instances = execute_test_generate_new_info(
-        all_instances=all_instances,
-        sparql_client=sparql_client,
-        derivation_client=derivation_client,
-        rng=rng, max=max, min=min, diff=diff
-    )
+    # Initialise derivation agents
+    # NOTE register_agent_in_kg is not done by agents in docker due to delay between spinning up docker containers and the blazegraph becoming reachable
+    # register_agent_in_kg for each agent is automatically called when instantiating rng_agent, min_agent, max_agent, diff_agent (as register_agent=True)
+    rng_agent = create_rng_agent(env_file=RNGAGENT_ENV, register_agent=True)
+    min_agent = create_min_agent(env_file=MINAGENT_ENV, register_agent=True)
+    max_agent = create_max_agent(env_file=MAXAGENT_ENV, register_agent=True)
+    diff_agent = create_diff_agent(env_file=DIFFAGENT_ENV, register_agent=True)
+
+    logger.info("Initialising derivation agents finished.")
+
+    ################################################################
+    ## III. Initialise derivations that generates new information ##
+    ################################################################
+    try:
+        all_instances = execute_test_generate_new_info(
+            all_instances=all_instances,
+            sparql_client=sparql_client,
+            derivation_client=derivation_client,
+            rng_agent=rng_agent, min_agent=min_agent, max_agent=max_agent, diff_agent=diff_agent,
+            rng=rng, max=max, min=min, diff=diff
+        )
+    except Exception as e:
+        logger.error(f"Failed to execute test generate new info: {e}")
+        raise e
 
     logger.info("New information generation finished.")
 
-    #####################################################################
-    ## III. Update one of the pure inputs to make derivations outdated ##
-    #####################################################################
-    execute_update_pure_input(sparql_client=sparql_client, derivation_client=derivation_client)
+    ####################################################################
+    ## IV. Update one of the pure inputs to make derivations outdated ##
+    ####################################################################
+    try:
+        execute_update_pure_input(sparql_client=sparql_client, derivation_client=derivation_client)
+    except Exception as e:
+        logger.error(f"Failed to execute update pure input: {e}")
+        raise e
 
     logger.info("Pure input modification finished, the derivations are now outdated.")
 
-    ##############################################
-    ## IV. Request for an update of derivations ##
-    ##############################################
-    execute_update_derivation(
-        all_instances=all_instances,
-        sparql_client=sparql_client,
-        update_endpoint=update_endpoint
-    )
+    #############################################
+    ## V. Request for an update of derivations ##
+    #############################################
+    try:
+        execute_update_derivation(
+            all_instances=all_instances,
+            sparql_client=sparql_client,
+            update_endpoint=update_endpoint
+        )
+    except Exception as e:
+        logger.error(f"Failed to execute update derivation: {e}")
+        raise e
 
     logger.info("All existing information update finished.")
     logger.info(f"==================== Test case [{rng}-{max}-{min}-{diff}] end ====================")
@@ -141,37 +184,55 @@ def assert_all_information_are_up_to_date(all_instances, sparql_client, before_i
     logger.debug("All information in the knowledge graph are correct and up-to-date.")
 
 
-def initialise_derivations(all_instances, sparql_client, derivation_client, rng: bool, max: bool, min: bool, diff: bool):
+def initialise_derivations(
+    all_instances, sparql_client, derivation_client,
+    rng_agent, min_agent, max_agent, diff_agent,
+    rng: bool, max: bool, min: bool, diff: bool
+):
     pure_inputs = [all_instances.IRI_UPPER_LIMIT, all_instances.IRI_LOWER_LIMIT, all_instances.IRI_NUM_OF_PTS]
     max_deriv_inputs = []
     min_deriv_inputs = []
     diff_deriv_inputs = []
 
     if rng:
-        new_points = []
-        for i in range(all_instances.VAL_NUM_OF_PTS):
-            new_points.append(random.randint(all_instances.VAL_LOWER_LIMIT, all_instances.VAL_UPPER_LIMIT))
-        all_instances.IRI_LST_PTS, pt_iris = sparql_client.createListOfPoints(new_points)
+        rng_derivation = derivation_client.createSyncDerivationForNewInfo(
+            rng_agent.agentIRI, pure_inputs, ONTODERIVATION_DERIVATION
+        )
+
+        all_instances.DERIV_RNG = rng_derivation.getIri()
+        logger.info("Created RNG derivation <" + all_instances.DERIV_RNG + ">")
+
+        listOfRandomPoints_iris = rng_derivation.getBelongsToIris(RANDOM_EXAMPLE_LISTOFPOINTS)
+        if len(listOfRandomPoints_iris) != 1:
+            raise Exception("RNG derivation should have exactly one listOfPoints as output, but got " + listOfRandomPoints_iris)
+
+        all_instances.IRI_LST_PTS = listOfRandomPoints_iris[0]
+        logger.info("Created ListOfRandomPoints instance <" + all_instances.IRI_LST_PTS + ">")
+        dct_of_pts = sparql_client.getPointsInList(all_instances.IRI_LST_PTS)
+        if len(dct_of_pts) != all_instances.VAL_NUM_OF_PTS:
+            raise Exception("ListOfRandomPoints should have " + str(all_instances.VAL_NUM_OF_PTS) + " points, but got " + str(dct_of_pts))
+        logger.info("Generated ListOfRandomPoints: " + str(dct_of_pts))
+
         max_deriv_inputs.append(all_instances.IRI_LST_PTS)
         min_deriv_inputs.append(all_instances.IRI_LST_PTS)
 
-        all_instances.DERIV_RNG = derivation_client.createDerivation(
-            [all_instances.IRI_LST_PTS] + pt_iris,
-            all_instances.RNGAGENT_SERVICE,
-            pure_inputs
-        )
-        derivation_client.updateTimestamp(all_instances.DERIV_RNG)
-
-        # create maxvalue, minvalue
+        # create maxvalue, minvalue via derivations
         if max:
-            all_instances.VAL_MAX = builtins_max(new_points)
-            all_instances.IRI_MAX = sparql_client.createMaxValue(all_instances.VAL_MAX)
-            diff_deriv_inputs.append(all_instances.IRI_MAX)
-
-            all_instances.DERIV_MAX = derivation_client.createDerivation(
-                [all_instances.IRI_MAX], all_instances.MAXAGENT_SERVICE, max_deriv_inputs
+            max_derivation = derivation_client.createSyncDerivationForNewInfo(
+                max_agent.agentIRI, max_deriv_inputs, ONTODERIVATION_DERIVATION
             )
-            derivation_client.updateTimestamp(all_instances.DERIV_MAX)
+            all_instances.DERIV_MAX = max_derivation.getIri()
+            logger.info("Created MaxValue derivation <" + all_instances.DERIV_MAX + ">")
+
+            maxValue_iris = max_derivation.getBelongsToIris(RANDOM_EXAMPLE_MAXVALUE)
+            if len(maxValue_iris) != 1:
+                raise Exception("MaxValue derivation should have exactly one maxValue as output, but got " + maxValue_iris)
+            all_instances.IRI_MAX = maxValue_iris[0]
+            all_instances.VAL_MAX = sparql_client.getValue(all_instances.IRI_MAX)
+            logger.info("Created MaxValue instance <" + all_instances.IRI_MAX + ">")
+            logger.info("MaxValue instance value is " + str(all_instances.VAL_MAX))
+
+            diff_deriv_inputs.append(all_instances.IRI_MAX)
         else:
             all_instances.DERIV_MAX = derivation_client.createAsyncDerivationForNewInfo(
                 all_instances.MAXAGENT_SERVICE, max_deriv_inputs
@@ -179,14 +240,21 @@ def initialise_derivations(all_instances, sparql_client, derivation_client, rng:
             diff_deriv_inputs.append(all_instances.DERIV_MAX)
 
         if min:
-            all_instances.VAL_MIN = builtins_min(new_points)
-            all_instances.IRI_MIN = sparql_client.createMinValue(all_instances.VAL_MIN)
-            diff_deriv_inputs.append(all_instances.IRI_MIN)
-
-            all_instances.DERIV_MIN = derivation_client.createDerivation(
-                [all_instances.IRI_MIN], all_instances.MINAGENT_SERVICE, min_deriv_inputs
+            min_derivation = derivation_client.createSyncDerivationForNewInfo(
+                min_agent.agentIRI, min_deriv_inputs, ONTODERIVATION_DERIVATION
             )
-            derivation_client.updateTimestamp(all_instances.DERIV_MIN)
+            all_instances.DERIV_MIN = min_derivation.getIri()
+            logger.info("Created MinValue derivation <" + all_instances.DERIV_MIN + ">")
+
+            minValue_iris = min_derivation.getBelongsToIris(RANDOM_EXAMPLE_MINVALUE)
+            if len(minValue_iris) != 1:
+                raise Exception("MinValue derivation should have exactly one minValue as output, but got " + minValue_iris)
+            all_instances.IRI_MIN = minValue_iris[0]
+            all_instances.VAL_MIN = sparql_client.getValue(all_instances.IRI_MIN)
+            logger.info("Created MinValue instance <" + all_instances.IRI_MIN + ">")
+            logger.info("MinValue instance value is " + str(all_instances.VAL_MIN))
+
+            diff_deriv_inputs.append(all_instances.IRI_MIN)
         else:
             all_instances.DERIV_MIN = derivation_client.createAsyncDerivationForNewInfo(
                 all_instances.MINAGENT_SERVICE, min_deriv_inputs
@@ -194,15 +262,20 @@ def initialise_derivations(all_instances, sparql_client, derivation_client, rng:
             diff_deriv_inputs.append(all_instances.DERIV_MIN)
 
         if diff:
-            # create difference
-            all_instances.VAL_DIFF = all_instances.VAL_MAX - all_instances.VAL_MIN
-            all_instances.IRI_DIFF = sparql_client.createDiffValue(all_instances.VAL_DIFF)
-
-            all_instances.DERIV_DIFF = derivation_client.createDerivation(
-                [all_instances.IRI_DIFF], all_instances.DIFFAGENT_SERVICE,
-                [all_instances.IRI_MAX, all_instances.IRI_MIN]
+            # create difference via difference derivation
+            diff_derivation = derivation_client.createSyncDerivationForNewInfo(
+                diff_agent.agentIRI, diff_deriv_inputs, ONTODERIVATION_DERIVATION
             )
-            derivation_client.updateTimestamp(all_instances.DERIV_DIFF)
+            all_instances.DERIV_DIFF = diff_derivation.getIri()
+            logger.info("Created Difference derivation <" + all_instances.DERIV_DIFF + ">")
+
+            diff_iris = diff_derivation.getBelongsToIris(RANDOM_EXAMPLE_DIFFERENCE)
+            if len(diff_iris) != 1:
+                raise Exception("Difference derivation should have exactly one difference as output, but got " + diff_iris)
+            all_instances.IRI_DIFF = diff_iris[0]
+            all_instances.VAL_DIFF = sparql_client.getValue(all_instances.IRI_DIFF)
+            logger.info("Created Difference instance <" + all_instances.IRI_DIFF + ">")
+            logger.info("Difference instance value is " + str(all_instances.VAL_DIFF))
         else:
             all_instances.DERIV_DIFF = derivation_client.createAsyncDerivationForNewInfo(
                 all_instances.DIFFAGENT_SERVICE, diff_deriv_inputs
@@ -228,12 +301,17 @@ def initialise_derivations(all_instances, sparql_client, derivation_client, rng:
     return all_instances
 
 
-def execute_test_generate_new_info(all_instances, sparql_client, derivation_client, rng: bool, max: bool, min: bool, diff: bool):
+def execute_test_generate_new_info(
+    all_instances, sparql_client, derivation_client,
+    rng_agent, min_agent, max_agent, diff_agent,
+    rng: bool, max: bool, min: bool, diff: bool
+):
     # initialise all derivations first
     all_instances = initialise_derivations(
         all_instances=all_instances,
         sparql_client=sparql_client,
         derivation_client=derivation_client,
+        rng_agent=rng_agent, min_agent=min_agent, max_agent=max_agent, diff_agent=diff_agent,
         rng=rng, max=max, min=min, diff=diff
     )
 
