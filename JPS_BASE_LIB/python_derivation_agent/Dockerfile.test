@@ -32,13 +32,13 @@ COPY README.md ./pytemp/
 RUN cd ./pytemp && python -m pip install -e .
 
 
-# Re-install the version of JPS_BASE_LIB that is been developing
-# (this will be required if the new features are not merged back to main)
-RUN jpsrm uninstall JpsBaseLib
-RUN mkdir /jpstemp
-COPY /_temp/jps-base-lib.jar ./jpstemp/jps-base-lib.jar
-COPY /_temp/lib ./jpstemp/lib
-RUN jpsrm install JpsBaseLib ./jpstemp/
+# # Re-install the version of JPS_BASE_LIB that is been developing
+# # (this will be required if the new features are not merged back to main)
+# RUN jpsrm uninstall JpsBaseLib
+# RUN mkdir /jpstemp
+# COPY /_temp/jps-base-lib.jar ./jpstemp/jps-base-lib.jar
+# COPY /_temp/lib ./jpstemp/lib
+# RUN jpsrm install JpsBaseLib ./jpstemp/
 
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app
