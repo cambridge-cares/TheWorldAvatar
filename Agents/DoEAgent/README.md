@@ -62,7 +62,7 @@ and the response is the IRI of an instance of `OntoDoE:NewExperiment` indicating
 ### Asynchronous derivation operation
 In the latest iteration, DoE Agent works with the derivation framework in both asychronous and synchronous mode. However, as the intention is to provide asynchronous derivation operation, we focus on the async side in this document. Once the DoE Agent is deployed, it periodically (every 120 seconds, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI` in `TheWorldAvatar/Agents/DoEAgent/agent.doe.env.example`) and acts based on the status associated with that derivation.
 
-A set of dockerised integration tests `TheWorldAvatar/Agents/DoEAgent/doeagent/tests` is provided as examples to demonstrate the operations. It operates on the triple store specified in the `TheWorldAvatar/Agents/DoEAgent/doeagent/tests/agent.doe.env.test` when the docker stack is spun up. Therefore, it can be used to test if the DoE Agent deployed is functional as expected. 
+A set of dockerised integration tests `TheWorldAvatar/Agents/DoEAgent/doeagent/tests` is provided as examples to demonstrate the operations. It operates on the triple store specified in the `TheWorldAvatar/Agents/DoEAgent/doeagent/tests/agent.doe.env.test` when the docker stack is spun up. Therefore, it can be used to test if the DoE Agent deployed is functional as expected.
 
 Once the test is executed, it first DELETES ALL TRIPLES in the specified SPARQL endpoint (as the endpoint is specifically for testing purpose, one do not need to worry about if any valuable got deleted), it then SPARQL update all triples stated in below ttl files to the same endpoint (`/path/to/chemistry_and_robots/resources/` varies depend on where the `chemistry_and_robots` package is installed):
 ```
@@ -145,3 +145,47 @@ Another dockerised integration test is provided in the similar setting, except t
 cd /your_absolute_path_to/TheWorldAvatar/Agents/DoEAgent
 pytest -s doeagent/tests/test_example_doe.py --reruns 5 --reruns-delay 5
 ```
+
+## Upload docker image to GitHub
+
+Developers who add new features to the `DoEAgent` handle the distribution of the docker image on GitHub. If you want to add new features that suit your project and release the docker image independently, i.e. become a developer/maintainer, please contact the repository's administrator to indicate your interest.
+
+The release procedure is currently semi-automated and requires a few items:
+
+- Your GitHub account and password ([personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token))
+- The version number x.x.x for the release
+- Clone of `TheWorldAvatar` repository on your local machine
+- Docker-desktop is installed and running on your local machine
+
+### Stable version release
+
+The release process can be started by using the commands below. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!) **NOTE: the release process is only tested in WSL2 environment.**
+
+`(Linux)`
+```sh
+$ cd /<absolute_path_to>/TheWorldAvatar/Agents/DoEAgent
+$ ./upload_docker_image_to_github.sh -v x.x.x
+```
+
+Please follow the instructions presented in the console once the process has begun. If everything goes well, the change performed automatically during the release process should be commited, i.e., in python script `Agents/DoEAgent/docker-compose.github.yml`
+```
+image: ghcr.io/cambridge-cares/doe_agent:x.x.x
+```
+
+**NOTE: the visibility of the uploaded docker image is set as private by default, developer who uploaded the image need to change the package visibility to public manually after the upload.**
+
+### Snapshot version release
+
+If you would like to release the package in SNAPSHOT version, below commands can be used intead:
+
+`(Linux)`
+```sh
+$ cd /<absolute_path_to>/TheWorldAvatar/Agents/DoEAgent
+$ ./upload_docker_image_to_github.sh -v x.x.x-SNAPSHOT
+```
+
+Please follow the instructions presented in the console once the process has begun. If everything goes well, commit the change in version number following the same procedure as in the stable version release.
+
+# Author
+
+Jiaru Bai (jb2197@cam.ac.uk)
