@@ -46,7 +46,7 @@ To spin up the stack (with default settings) please follow the instructions belo
         docker service ls --filter name=<STACK NAME>-nginx
         ```
     * The Geoserver GUI should be available at http://localhost:3838/geoserver/. Log in using the username `admin` and the password specified in the `geoserver_pasword` file.
-    * The Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. Enter `<STACK NAME>-postgis:5432` as the `Server` and the value from the `postgis_pasword` file as the `Password`.
+    * The Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. Enter `<STACK NAME>-postgis:5432` as the `Server` and the value from the `postgis_pasword` file as the `Password`. The `Database` slot can be left blank if you don't know what it should be.
     * The Ontop GUI should be available at http://localhost:3838/ontop/ui.
     * The Blazegraph Workbench should be available at http://localhost:3838/blazegraph/ui.
 ## Debugging the Stack Manager in VSCode

@@ -1633,7 +1633,7 @@ public class ModelContextTest {
     context.pushChanges(testModel);
     Mockito.verify(context, Mockito.times(1)).update(deletions.toString());
 
-    Mockito.doReturn(new JSONArray().put(new JSONObject().put("count", "26"))).when(context).query(Mockito.contains("SELECT (COUNT(*) AS ?count) WHERE { ?a ?b ?c }"));
+    Mockito.doReturn(new JSONArray().put(new JSONObject().put("count", "25"))).when(context).query(Mockito.contains("SELECT (COUNT(*) AS ?count) WHERE { ?a ?b ?c }"));
     assertEquals(metaModel.scalarFieldList.size() + (metaModel.vectorFieldList.size() - 1) * 3, countTriples(context));
   }
 
@@ -1823,7 +1823,7 @@ public class ModelContextTest {
     Mockito.verify(context, Mockito.times(1)).update(Mockito.contains("INSERT DATA"));
     Mockito.verify(context, Mockito.never()).query(Mockito.contains("DELETE"));
 
-    Mockito.doReturn(new JSONArray().put(new JSONObject().put("count", "26"))).when(context).query(Mockito.contains("SELECT (COUNT(*) AS ?count) WHERE { ?a ?b ?c }"));
+    Mockito.doReturn(new JSONArray().put(new JSONObject().put("count", "25"))).when(context).query(Mockito.contains("SELECT (COUNT(*) AS ?count) WHERE { ?a ?b ?c }"));
     assertEquals(metaModel.scalarFieldList.size() + (metaModel.vectorFieldList.size() - 1) * 3, countTriples(context));
 
   }
@@ -2271,8 +2271,6 @@ public class ModelContextTest {
                     .put("isblank","false").put("value", "https://eg/examplenamespace/randomuris/1402202751").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull")
                     .put("isblank","true").put("value", "f43b45e47362f4e6e44bf62478b597b6").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop")
-                    .put("isblank","true").put("value", "43b6bcab4c10dcdc83428db841d08f72").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull")
                     .put("isblank","true").put("value", "e478f5f6d6f8fcea89cd1db9e16e1c25").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"));
 
@@ -2333,8 +2331,6 @@ public class ModelContextTest {
                     .put("isblank","false").put("value", "https://eg/examplenamespace/randomuris/1905807410").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull")
                     .put("isblank","true").put("value", "44c7dd444cd430d7e07cfee72d8a7fd1").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop")
-                    .put("isblank","true").put("value", "94cd358a2d2f0e6aae8b6fb60033b893").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull")
                     .put("isblank","true").put("value", "6153ef31a84619132f8191795213f661").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"));
 
@@ -2399,8 +2395,6 @@ public class ModelContextTest {
                     .put("isblank","false").put("value", "https://eg/examplenamespace/randomuris/-727373186").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull")
                     .put("isblank","true").put("value", "44c7dd444cd430d7e07cfee72d8a7fd1").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop")
-                    .put("isblank","true").put("value", "94cd358a2d2f0e6aae8b6fb60033b893").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull")
                     .put("isblank","true").put("value", "6153ef31a84619132f8191795213f661").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"));
 
@@ -2434,18 +2428,23 @@ public class ModelContextTest {
   }
   public JSONArray createResponseForTestPullScalars_2(){
     JSONArray jsonArray = new JSONArray()
-            .put(new JSONObject().put("value6", "8054a516eb0379af364ca07a3760e132").put("value5","https://eg/examplenamespace/4771c262-0f35-32c8-8865-a04b1a6c2e5d")
-                    .put("value8", "4bfab0f0f8e58a85686560be3882a8be").put("value7", "fa00cebb2454bfc15e0c920d8e0e374c").put("value2", "7c86355ade39e976269d9c2ac529a6d3")
-                    .put("value1", "-355989640").put("value4", "https://eg/examplenamespace/randomuris/1402202751").put("value3", "0.8330913489710237")
-                    .put("datatype1", "http://www.w3.org/2001/XMLSchema#int").put("value9", "7c6244ed15fce769ae0377b20eba0849").put("datatype0", "http://www.w3.org/2001/XMLSchema#string")
-                    .put("datatype3", "http://www.w3.org/2001/XMLSchema#double").put("value19", "5c1833d952d595b71461c4e2742f52bc").put("value18", "634e25607bb6e671ca0b39c3b13a60f7")
-                    .put("value15", "87542be53d21b81e41a899eb6e741c3b").put("value14", "9e3915fadc00646ba1566ed23f8e2a2b").put("value17", "12f21ce1ddf2f64db529f9c0a83ae843")
-                    .put("value16", "3f323345081eaf2cc1e37bbc854658db").put("value11", "d09395becdab11b4f2652ebd7e9613ec").put("value10", "fbfe8ac83e80eb5db7ecdf7664214938")
-                    .put("value13", "ac9355a9a7ae457b7c89f8bd9a1424e7").put("value12", "https://eg/examplenamespace/randomuris/151766778").put("isblank18", "true")
-                    .put("isblank17", "true").put("isblank19", "true").put("isblank0", "false").put("isblank1", "false").put("isblank4", "false").put("isblank5", "false")
-                    .put("isblank2", "true").put("isblank3", "false").put("isblank8", "true").put("isblank9", "true").put("isblank6", "true").put("isblank7", "true")
-                    .put("isblank10", "true").put("value0", "randomString-287790814").put("isblank12", "false").put("isblank11", "true").put("isblank14", "true").put("isblank13", "true")
-                    .put("isblank16", "true").put("isblank15", "true"));
+            .put(new JSONObject().put("value5","https://eg/examplenamespace/4771c262-0f35-32c8-8865-a04b1a6c2e5d")
+                    .put("value7", "4bfab0f0f8e58a85686560be3882a8be").put("value6", "fa00cebb2454bfc15e0c920d8e0e374c")
+                    .put("value2", "7c86355ade39e976269d9c2ac529a6d3").put("value1", "-355989640")
+                    .put("value4", "https://eg/examplenamespace/randomuris/1402202751").put("value3", "0.8330913489710237")
+                    .put("datatype1", "http://www.w3.org/2001/XMLSchema#int").put("value8", "7c6244ed15fce769ae0377b20eba0849")
+                    .put("datatype0", "http://www.w3.org/2001/XMLSchema#string").put("datatype3", "http://www.w3.org/2001/XMLSchema#double")
+                    .put("value18", "5c1833d952d595b71461c4e2742f52bc").put("value17", "634e25607bb6e671ca0b39c3b13a60f7")
+                    .put("value14", "87542be53d21b81e41a899eb6e741c3b").put("value13", "9e3915fadc00646ba1566ed23f8e2a2b")
+                    .put("value16", "12f21ce1ddf2f64db529f9c0a83ae843").put("value15", "3f323345081eaf2cc1e37bbc854658db")
+                    .put("value10", "d09395becdab11b4f2652ebd7e9613ec").put("value9", "fbfe8ac83e80eb5db7ecdf7664214938")
+                    .put("value12", "ac9355a9a7ae457b7c89f8bd9a1424e7").put("value11", "https://eg/examplenamespace/randomuris/151766778")
+                    .put("isblank17", "true").put("isblank16", "true").put("isblank18", "true")
+                    .put("isblank0", "false").put("isblank1", "false").put("isblank4", "false")
+                    .put("isblank5", "false").put("isblank2", "true").put("isblank3", "false")
+                    .put("isblank7", "true").put("isblank8", "true").put("isblank6", "true")
+                    .put("isblank9", "true").put("value0", "randomString-287790814").put("isblank11", "false")
+                    .put("isblank10", "true").put("isblank13", "true").put("isblank12", "true").put("isblank15", "true").put("isblank14", "true"));
     return jsonArray;
   }
 
@@ -2498,8 +2497,6 @@ public class ModelContextTest {
                     .put("model", "https://eg/examplenamespace/0ed64570-dc61-3703-9f4c-f8975b068b75").put("value", "https://eg/examplenamespace/randomuris/-727373186").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/0ed64570-dc61-3703-9f4c-f8975b068b75").put("value", "dd455da4f9fe3084fd9c977f11b49f9e").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("model", "https://eg/examplenamespace/0ed64570-dc61-3703-9f4c-f8975b068b75").put("value", "89c2d0c84e62e53ffbb33a0bce8d4ecd").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/0ed64570-dc61-3703-9f4c-f8975b068b75").put("value", "288736b0cd3e71ab313b46bb8db01b28").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -2534,8 +2531,6 @@ public class ModelContextTest {
                     .put("model", "https://eg/examplenamespace/1d680cfb-9097-3a7e-96d3-ffa7c6cf6aea").put("value", "https://eg/examplenamespace/randomuris/750723155").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/1d680cfb-9097-3a7e-96d3-ffa7c6cf6aea").put("value", "7c90fab79f30df42fa8d4eddc60ff60f").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("model", "https://eg/examplenamespace/1d680cfb-9097-3a7e-96d3-ffa7c6cf6aea").put("value", "c3eba5230307614e4db0095dbda24759").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/1d680cfb-9097-3a7e-96d3-ffa7c6cf6aea").put("value", "b3819113e4964e62c92ed85fc76adf56").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -2570,8 +2565,6 @@ public class ModelContextTest {
                     .put("model", "https://eg/examplenamespace/4771c262-0f35-32c8-8865-a04b1a6c2e5d").put("value", "https://eg/examplenamespace/randomuris/1905807410").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/4771c262-0f35-32c8-8865-a04b1a6c2e5d").put("value", "7c90fab79f30df42fa8d4eddc60ff60f").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("model", "https://eg/examplenamespace/4771c262-0f35-32c8-8865-a04b1a6c2e5d").put("value", "c3eba5230307614e4db0095dbda24759").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/4771c262-0f35-32c8-8865-a04b1a6c2e5d").put("value", "b3819113e4964e62c92ed85fc76adf56").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -2606,8 +2599,6 @@ public class ModelContextTest {
                     .put("model", "https://eg/examplenamespace/868aa231-a97d-36d8-990d-b6b1863345d1").put("value", "https://eg/examplenamespace/randomuris/-1794331249").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/868aa231-a97d-36d8-990d-b6b1863345d1").put("value", "ab3769efa9e87aed22461b0b74133d18").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("model", "https://eg/examplenamespace/868aa231-a97d-36d8-990d-b6b1863345d1").put("value", "56ae3173539ac9a18c95c288100488a7").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/868aa231-a97d-36d8-990d-b6b1863345d1").put("value", "8f51f8313e98005b95123c1697782bd0").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -2642,8 +2633,6 @@ public class ModelContextTest {
                     .put("model", "https://eg/examplenamespace/8e92cd4c-6c42-37b4-ac42-393ef3c08cda").put("value", "https://eg/examplenamespace/randomuris/-169596869").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/8e92cd4c-6c42-37b4-ac42-393ef3c08cda").put("value", "dd9d63edf33708bfad584408eeba1d94").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("model", "https://eg/examplenamespace/8e92cd4c-6c42-37b4-ac42-393ef3c08cda").put("value", "b7d102321c74a69f8e30d5a42db0993e").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("model", "https://eg/examplenamespace/8e92cd4c-6c42-37b4-ac42-393ef3c08cda").put("value", "0d997bfc24dbbe0b07d8eeb3dec1c2f9").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -2754,8 +2743,6 @@ public class ModelContextTest {
                     .put("value", "https://eg/examplenamespace/randomuris/-727373186").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("value", "dd455da4f9fe3084fd9c977f11b49f9e").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("value", "89c2d0c84e62e53ffbb33a0bce8d4ecd").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("value", "288736b0cd3e71ab313b46bb8db01b28").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -2808,8 +2795,6 @@ public class ModelContextTest {
                     .put("value", "https://eg/examplenamespace/randomuris/-1766726353").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("value", "dd455da4f9fe3084fd9c977f11b49f9e").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("value", "89c2d0c84e62e53ffbb33a0bce8d4ecd").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("value", "288736b0cd3e71ab313b46bb8db01b28").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -2862,8 +2847,6 @@ public class ModelContextTest {
                     .put("value", "https://eg/examplenamespace/randomuris/750723155").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("value", "7c90fab79f30df42fa8d4eddc60ff60f").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("value", "c3eba5230307614e4db0095dbda24759").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("value", "b3819113e4964e62c92ed85fc76adf56").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -2915,8 +2898,6 @@ public class ModelContextTest {
                     .put("value", "https://eg/examplenamespace/randomuris/-169596869").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("value", "dd9d63edf33708bfad584408eeba1d94").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("value", "b7d102321c74a69f8e30d5a42db0993e").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("value", "0d997bfc24dbbe0b07d8eeb3dec1c2f9").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -2968,8 +2949,6 @@ public class ModelContextTest {
                     .put("value", "https://eg/examplenamespace/randomuris/1905807410").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("value", "7c90fab79f30df42fa8d4eddc60ff60f").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("value", "c3eba5230307614e4db0095dbda24759").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("value", "b3819113e4964e62c92ed85fc76adf56").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -3021,8 +3000,6 @@ public class ModelContextTest {
                     .put("value", "https://eg/examplenamespace/randomuris/-1794331249").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("value", "ab3769efa9e87aed22461b0b74133d18").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("value", "56ae3173539ac9a18c95c288100488a7").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("value", "8f51f8313e98005b95123c1697782bd0").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")
@@ -3074,8 +3051,6 @@ public class ModelContextTest {
                     .put("value", "https://eg/examplenamespace/randomuris/1836043328").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://dbpedia.org/ontology/uripropnull").put("isblank", "true")
                     .put("value", "ab3769efa9e87aed22461b0b74133d18").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
-            .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#geometryprop").put("isblank", "true")
-                    .put("value", "56ae3173539ac9a18c95c288100488a7").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringpropnull").put("isblank", "true")
                     .put("value", "8f51f8313e98005b95123c1697782bd0").put("graph", "http://localhost:9999/blazegraph/namespace/test/sparql/testmodels"))
             .put(new JSONObject().put("predicate", "http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#stringprop").put("datatype","http://www.w3.org/2001/XMLSchema#string").put("isblank", "false")

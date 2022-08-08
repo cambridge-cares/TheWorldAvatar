@@ -34,7 +34,7 @@ networks:
   stack:
     name: ${STACK_NAME}
     driver: overlay
-    external: true
+    attachable: true
 
 secrets:
   postgis_password:

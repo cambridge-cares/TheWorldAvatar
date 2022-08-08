@@ -10,9 +10,10 @@ from tests.conftest import AllInstances
 # Utility functions
 # ----------------------------------------------------------------------------------
 
-def initialise_triples_assert_pure_inputs(sparql_client, derivation_client) -> AllInstances:
+def initialise_triples_assert_pure_inputs(sparql_client, derivation_client, delete_all_triples=True) -> AllInstances:
     # Delete all triples before initialising prepared triples
-    sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+    if delete_all_triples:
+        sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
     pathlist = Path(RESOURCE_DIR).glob('**/*.ttl')
     for path in pathlist:
         sparql_client.uploadOntology(str(path))
