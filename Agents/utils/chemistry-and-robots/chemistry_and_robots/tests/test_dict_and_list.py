@@ -1,6 +1,6 @@
 import pytest
 
-from chemistry_and_robots.utils import dict_and_list as dal
+from chemistry_and_robots.kg_operations import dict_and_list as dal
 
 @pytest.mark.parametrize(
     "list_of_dict,key,value,expected_list_of_dict",

@@ -18,7 +18,7 @@ from pyderivationagent.data_model import *
 from chemistry_and_robots.data_model import *
 from chemistry_and_robots.hardware import hplc
 
-from chemistry_and_robots.utils import dict_and_list as dal
+from chemistry_and_robots.kg_operations import dict_and_list as dal
 
 import logging
 logger = logging.getLogger('chemistry_and_robots_sparql_client')

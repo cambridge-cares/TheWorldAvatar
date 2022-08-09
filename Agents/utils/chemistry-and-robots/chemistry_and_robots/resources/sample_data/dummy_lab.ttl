@@ -69,12 +69,12 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 ##################
 ## HPLC - Dummy ##
 ##################
-:HPLC_Dummy # TODO
+:HPLC_Dummy
     a ontohplc:HighPerformanceLiquidChromatography;
     dbo:manufacturer :HPLC_Manufacturer;
     ontolab:isContainedIn :Laboratory_Dummy;
     ontolab:hasPowerSupply :HPLC_Dummy_PowerSupply;
-    ontohplc:localReportDirectory "/home/jb2197/CHEM32/**/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether its windows or linux machine
+    ontohplc:localReportDirectory "/home/user/CHEM32/**/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether its windows or linux machine
     ontohplc:reportExtension <http://dbpedia.org/resource/Microsoft_Excel>;
     ontohplc:hasJob :HPLCJob_Dummy;
     ontohplc:hasPastReport :HPLCReport_Dummy;
@@ -374,8 +374,6 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     rdfs:comment "HPLCMethod records the operation details of an HPLC job, e.g. HPLC analysis was performed using a XXX system equipped with a XXX pump, XXX column and XXX variable wavelength detector (VWD)... https://doi.org/10.1002/cmtd.202000044"^^xsd:string;
 .
 
-## Internal Standard instances TODO: move these triples to rxn_data.ttl
-# note that this should also be added to the ChemicalReaction and also the AutoSampler solution part
 SinglePhase:PhaseComponent_InternalStandard
     rdf:type ontohplc:InternalStandard;
     OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;

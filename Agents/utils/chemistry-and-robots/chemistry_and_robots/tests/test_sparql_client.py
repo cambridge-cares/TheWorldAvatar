@@ -17,7 +17,7 @@ import os
 logging.getLogger("py4j").setLevel(logging.INFO)
 
 import chemistry_and_robots.data_model as onto
-import chemistry_and_robots.utils.dict_and_list as dal
+import chemistry_and_robots.kg_operations.dict_and_list as dal
 import chemistry_and_robots.hardware.hplc as hplc
 
 pytest_plugins = ["docker_compose"]

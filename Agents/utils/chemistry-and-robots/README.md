@@ -48,7 +48,7 @@ This package provides ontological data models from five main ontologies, namely:
  - `OntoVapourtec`: ontology for vapourtec flow chemistry hardware
  - `OntoHPLC`: ontology for HPLC analysis equipment
 
-All of the concepts are directly or indirectly inherited from the `BaseOntology` class which itself is inherited from `pydantic.BaseModel`. The design of these data model classes serve as a persistence layer between the agent operations in chemistry-and-robots and the data stored in the knowledge graph. Additionally, all TBox IRIs involved in the chemistry-and-robots as part of The World Avatar project are provided in the `chemistry_and_robots.data_model.iris.py`. Developer can import this module to make use of the concepts and relationships.
+All of the concepts are directly or indirectly inherited from the `BaseOntology` class which itself is inherited from `pydantic.BaseModel`. The design of these data model classes serve as a persistence layer between the agent operations in chemistry_and_robots and the data stored in the knowledge graph. Additionally, all TBox IRIs involved in the chemistry_and_robots as part of The World Avatar project are provided in the `chemistry_and_robots.data_model.iris.py`. Developer can import this module to make use of the concepts and relationships.
 
 ## SPARQL client
 A SPARQL client class `chemistry_and_robots.kg_operations.sparql_client.ChemistryAndRobotsSparqlClient` is provided as part of this package. It provides a few SPARQL query and update functions that are helpful in handling data instantiated using the above ontology data models. These functions have been used to develope a few python agents, for more details, please refer to: [`DoEAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DoEAgent), [`VapourtecExecutionAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VapourtecExecutionAgent), [`HPLCPostProAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCPostProAgent), [`VapourtecAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VapourtecAgent), and [`HPLCAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCAgent).
@@ -58,7 +58,7 @@ Unit and integration tests are written for this package. The tests should pass i
 
 `(Linux)`
 ```sh
-cd /<your_absolute_path_to>/TheWorldAvatar/Agents/utils/chemistry-and-robots
+cd /<your_absolute_path_to>/TheWorldAvatar/Agents/utils/chemistry_and_robots
 pytest -s --docker-compose=./chemistry_and_robots/tests/docker-compose.yml --reruns 5 --reruns-delay 5
 ```
 
@@ -82,27 +82,27 @@ WARNING: at the moment, releasing package from Windows OS has an issue that the 
 `(Windows)`
 
 ```cmd
-$ cd \<absolute_path_to>\TheWorldAvatar\Agents\utils\chemistry-and-robots
+$ cd \<absolute_path_to>\TheWorldAvatar\Agents\utils\chemistry_and_robots
 $ release_chemistry_and_robots_to_pypi.sh -v x.x.x
 ```
 
 `(Linux)`
 ```sh
-$ cd /<absolute_path_to>/TheWorldAvatar/Agents/utils/chemistry-and-robots
+$ cd /<absolute_path_to>/TheWorldAvatar/Agents/utils/chemistry_and_robots
 $ ./release_chemistry_and_robots_to_pypi.sh -v x.x.x
 ```
 
-Please follow the instructions presented in the console once the process has begun. If everything goes well, change the version number in `Agents/utils/chemistry-and-robots/release_chemistry_and_robots_to_pypi.sh` to the one you used for the script release.
+Please follow the instructions presented in the console once the process has begun. If everything goes well, change the version number in `Agents/utils/chemistry_and_robots/release_chemistry_and_robots_to_pypi.sh` to the one you used for the script release.
 ```sh
 echo "./release_chemistry_and_robots_to_pypi.sh -v 0.0.1   - release version 0.0.1"
 ```
 
-The changes mentioned above should then be committed with the changes performed automatically during the release process, specifically in python script `Agents/utils/chemistry-and-robots/chemistry_and_robots/__init__.py`
+The changes mentioned above should then be committed with the changes performed automatically during the release process, specifically in python script `Agents/utils/chemistry_and_robots/chemistry_and_robots/__init__.py`
 ```
 __version__ = "0.0.1"
 ```
 
-and `Agents/utils/chemistry-and-robots/setup.py`
+and `Agents/utils/chemistry_and_robots/setup.py`
 ```
 version='0.0.1',
 ```
@@ -116,7 +116,7 @@ For development version release, you may do it in your feature branch. The devel
 
 `(Linux)`
 ```sh
-$ cd /<absolute_path_to>/TheWorldAvatar/Agents/utils/chemistry-and-robots
+$ cd /<absolute_path_to>/TheWorldAvatar/Agents/utils/chemistry_and_robots
 $ ./release_chemistry_and_robots_to_pypi.sh -d x.x.xa
 ```
 
