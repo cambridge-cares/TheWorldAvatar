@@ -55,6 +55,9 @@ public class Lookups {
         FILES.put("https://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation", "ReportingStation");
         FILES.put("https://www.theworldavatar.com/kg/ontoems/ReportingStation", "ReportingStation");
 
+        // CReDo Sites
+        FILES.put("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#Site", "credo");
+
         // Units
         UNITS.put("http://www.ontology-of-units-of-measure.org/resource/om-2/degree", "\\u00B0");
         UNITS.put("http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius", "\\u2103");

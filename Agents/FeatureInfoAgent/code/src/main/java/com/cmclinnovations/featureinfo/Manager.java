@@ -106,14 +106,17 @@ public class Manager {
      */
     public Manager(String iri, String endpoint, ServletContext context) {
         this.iri = iri;
-        this.endpoint = endpoint;
 
         if(endpoint == null || endpoint.isEmpty()) {
             // Get the blazegraph endpoint from the stack config
-            endpoint = Config.bg_url;
+            this.endpoint = Config.bg_url;
+            System.out.println("No endpoint set, using the stack's Blazegraph one.");
+            System.out.println("Blazegraph endpoint is: " + endpoint);
+        } else {
+            this.endpoint = endpoint;
         }
 
-        this.rsClient = new RemoteStoreClient(endpoint);
+        this.rsClient = new RemoteStoreClient(this.endpoint);
         this.context = context;
     }
 
@@ -321,7 +324,10 @@ public class Manager {
 
         // No specific query class, try looking for a pre-written sparql file
         if(queryHandler == null) {
+            boolean done = false;
+
             for(String className : classes) {
+                if(done) continue;
 
                 String query = null;
                 if(Lookups.FILES.containsKey(className)) {
@@ -342,12 +348,14 @@ public class Manager {
 
                         // Inject ontop endpoint
                         if(query.contains("[ONTOP]")) {
-                            String ontopEndpoint = Config.ot_url;
+                            String ontopEndpoint = "<" + Config.ot_url + ">";
                             query = query.replaceAll(Pattern.quote("[ONTOP]"), ontopEndpoint);
+                            System.out.println("Ontop endpoint is: " + ontopEndpoint);
                         }
 
                         // Build handler to run query
-                        this.queryHandler = new WrittenQuery(fixedIRI, this.endpoint, query);
+                        this.queryHandler = new WrittenQuery(fixedIRI, this.endpoint, this.rsClient, query);
+                        done = true;
                     }
                 } catch(Exception excep) {
                     // Ignore, file may be missing
@@ -481,15 +489,29 @@ public class Manager {
         return result;
     }
 
-    /**
+       /**
      * Run a query to determine the feature's class within the KG.
      */
     protected String[] getFeatureClasses() throws IOException {
+        String[] classes = getFeatureClasses("get-class.sparql");
+
+        if(classes.length == 0) {
+            return getFeatureClasses("get-class-credo.sparql");
+        }
+        return classes;
+    }
+
+    /**
+     * Run a query to determine the feature's class within the KG.
+     */
+    protected String[] getFeatureClasses(String queryFile) throws IOException {
+        if(queryFile == null) queryFile = "get-class.sparql";
+
         // Get query to determine class of feature
         String query = null;
 
         if(context != null) {
-            try (InputStream inStream = this.context.getResourceAsStream("/WEB-INF/queries/get-class.sparql")) {
+            try (InputStream inStream = this.context.getResourceAsStream("/WEB-INF/queries/" + queryFile)) {
                 query = IOUtils.toString(inStream, StandardCharsets.UTF_8);
             }
         } else {
@@ -502,7 +524,15 @@ public class Manager {
         String fixedIRI = iri;
         if(!fixedIRI.startsWith("<")) fixedIRI = "<" + fixedIRI;
         if(!fixedIRI.endsWith(">")) fixedIRI += ">";
+        
+        // Inject feature IRI
         query = query.replaceAll(Pattern.quote("[IRI]"), fixedIRI);
+
+        // Inject ontop endpoint
+        if(query.contains("[ONTOP]")) {
+            String ontopEndpoint = "<" + Config.ot_url + ">";
+            query = query.replaceAll(Pattern.quote("[ONTOP]"), ontopEndpoint);
+        }
 
         // Run query
         this.rsClient.setQuery(query);
@@ -515,11 +545,9 @@ public class Manager {
         for(int i = 0; i < jsonResult.length(); i++) {
             JSONObject entry = jsonResult.optJSONObject(i);
             String clazz = entry.optString("class");
-
-            // Store class name that should match query file
             classes[i] = clazz;
         }
-        
+
         return classes;
     }
 

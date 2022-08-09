@@ -37,10 +37,10 @@ public abstract class AbstractQuery {
      * @param iri Feature IRI
      * @param endpoint  KG endpoint
      */
-    public AbstractQuery(String iri, String endpoint) {
+    public AbstractQuery(String iri, String endpoint, RemoteStoreClient kgClient) {
         this.iri = iri;
         this.endpoint = endpoint;
-        this.kgClient = new RemoteStoreClient(endpoint);
+        this.kgClient = kgClient;
     }
 
     /**

@@ -116,7 +116,7 @@ public class FeatureInfoAgent extends JPSAgent {
                     // Get and return all available information
                     Manager grabber = new Manager(
                         requestParams.getString("iri"),
-                        requestParams.getString("endpoint"),
+                        requestParams.optString("endpoint", null),
                         this.getServletContext()
                     );
                     grabber.readProperties();
@@ -157,12 +157,6 @@ public class FeatureInfoAgent extends JPSAgent {
         if (requestParams.isNull("iri")) {
             LOGGER.error("Could not find the 'iri' field.");
             throw new BadRequestException("Request does not have required 'iri' field.");
-        }
-
-        // Check that there's an endpoint
-        if (requestParams.isNull("endpoint")) {
-            LOGGER.error("Could not find the 'endpoint' field.");
-            throw new BadRequestException("Request does not have required 'endpoint' field.");
         }
 
         return true;

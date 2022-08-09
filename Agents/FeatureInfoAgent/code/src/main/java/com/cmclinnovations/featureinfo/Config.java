@@ -10,7 +10,7 @@ import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 /**
  * Copied from some other agent, needs refactoring
  */
-public class Config extends ContainerClient {
+public class Config {
 
     private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
@@ -26,26 +26,22 @@ public class Config extends ContainerClient {
 	
     private static boolean initialised = false;
 
-	public  void initProperties() {
-
+    static {
 		if (!initialised) {
-			try {
+            ContainerClient client = new ContainerClient();
 
-				blazegraphEndpointConfig = this.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
-				Config.bg_url = blazegraphEndpointConfig.getUrl("kg");
-				Config.bg_user = blazegraphEndpointConfig.getUsername();
-				Config.bg_password = blazegraphEndpointConfig.getPassword();
+            blazegraphEndpointConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
+            Config.bg_url = blazegraphEndpointConfig.getUrl("kb");
+            Config.bg_user = blazegraphEndpointConfig.getUsername();
+            Config.bg_password = blazegraphEndpointConfig.getPassword();
 
-                ontopEndpointConfig = this.readEndpointConfig("ontop", OntopEndpointConfig.class);
-				Config.ot_url = ontopEndpointConfig.getUrl();
-				Config.ot_user = ontopEndpointConfig.getUsername();
-				Config.ot_password = ontopEndpointConfig.getPassword();
+            ontopEndpointConfig = client.readEndpointConfig("ontop", OntopEndpointConfig.class);
+            Config.ot_url = ontopEndpointConfig.getUrl();
+            Config.ot_user = ontopEndpointConfig.getUsername();
+            Config.ot_password = ontopEndpointConfig.getPassword();
 
-				initialised = true;
+            initialised = true;
                 
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage());
-			}
 		}
 	}
 }

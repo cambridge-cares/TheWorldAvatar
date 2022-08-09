@@ -37,7 +37,7 @@ public class ManagerTest {
         // Initialise MANAGER with sample data (take from TheWorldAvatar.com/blazegraph)
         MANAGER = new Manager(
             "http://theworldavatar.com/ontology/ontocredo/ontoaw.owl#assetAAWAAB",
-            "http://lee:3838/blazegraph/namespace/???/sparql"
+            "http://localhost:3838/blazegraph/namespace/kb/sparql"
         );
 
         try {

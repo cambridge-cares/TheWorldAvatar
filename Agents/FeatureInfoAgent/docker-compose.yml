@@ -10,6 +10,6 @@ services:
       PROPERTIES_FILE: "/root/feature-info.properties"
     ports:
       - "55050:8080" 
-    #configs:
-      #- blazegraph
-      #- ontop
+    configs:
+      - blazegraph
+      - ontop
