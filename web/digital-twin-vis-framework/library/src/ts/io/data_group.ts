@@ -84,15 +84,23 @@ class DataGroup {
             node["source"] = source.id;
 
             let layer = null;
+            let layerID = this.id + "." + node["id"];
+
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
-                    let layerID = this.id + "." + node["id"];
                     layer = new MapBoxLayer(layerID, node["name"], source);
 
                     // Register this layer to this connected stack
                     Manager.STACK_LAYERS[stack].push(layerID);
                 break;
     
+                case MapProvider.CESIUM:
+                    layer = new CesiumLayer(layerID, node["name"], source);
+
+                    // Register this layer to this connected stack
+                    Manager.STACK_LAYERS[stack].push(layerID);
+                break;
+
                 default:
                     throw new Error("Unknown map provider specified!");
                 break;

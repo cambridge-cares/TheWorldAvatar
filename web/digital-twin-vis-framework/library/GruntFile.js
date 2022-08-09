@@ -4,7 +4,11 @@ module.exports = function (grunt) {
         concat: {
             dist: {
                 src: [
-                    "./output/ts/**/*.js"
+                    "./output/ts/io/*.js",
+                    "./output/ts/*.js",
+                    "./output/ts/ui/*.js",
+                    "./output/ts/mapbox/*.js",
+                    "./output/ts/cesium/*.js"
                 ],
                 dest: "./output/dtvf.temp.js"
             }

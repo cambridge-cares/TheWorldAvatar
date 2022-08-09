@@ -36,8 +36,18 @@ class TreeHandler {
             let hidden = allLayers.filter(layer => !visible.includes(layer));
 
             // Update visibility
-            visible.forEach(layer => MapBoxUtils.toggleLayer(layer, true));
-            hidden.forEach(layer => MapBoxUtils.toggleLayer(layer, false));
+            switch(Manager.PROVIDER) {
+                case MapProvider.MAPBOX:
+                    visible.forEach(layer => MapBoxUtils.toggleLayer(layer, true));
+                    hidden.forEach(layer => MapBoxUtils.toggleLayer(layer, false));
+                break;
+
+                case MapProvider.CESIUM:
+                    visible.forEach(layer => CesiumUtils.toggleLayer(layer, true));
+                    hidden.forEach(layer => CesiumUtils.toggleLayer(layer, false));
+                break;
+            }
+          
         });
     }
 
@@ -76,6 +86,7 @@ class TreeHandler {
         $("#treeview").hummingbird("expandAll");
 
         this.registerEvents(dataStore);
+        console.log("Finished rebuilding layer tree.");
     }
 
 
@@ -113,7 +124,6 @@ class TreeHandler {
 
             // Are ALL layers here marked as un-treeable?
             let allHidden = true;
-
             layers.forEach(layer => {
                 if(!layer.definition.hasOwnProperty("treeable") || layer.definition["treeable"] === true) {
                     allHidden = false;
@@ -145,8 +155,19 @@ class TreeHandler {
             groupHTML += layerHTML;
 
             // Store if this needs to be prechecked
-            if(value[0] instanceof MapBoxLayer && (<MapBoxLayer> value[0]).isVisible()) {
-                preCheck.push(dataID);
+            switch(Manager.PROVIDER) {
+                case MapProvider.MAPBOX:
+                    if(value[0] instanceof MapBoxLayer && (<MapBoxLayer> value[0]).isVisible()) {
+                        preCheck.push(dataID);
+                    }
+                break;
+
+                case MapProvider.CESIUM:
+                    console.log("cesium provider");
+
+                    // Cesium layers always visible by default
+                    preCheck.push(dataID);
+                break;
             }
         }
 

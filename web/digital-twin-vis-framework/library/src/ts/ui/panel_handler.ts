@@ -123,8 +123,8 @@ class PanelHandler {
 			leftButton.style.visibility = "hidden";
 
 			// Stop keyboard events
-			MapHandler.MAP["keyboard"].disable();
-			MapHandler.MAP.resize();
+			// MapHandler.MAP["keyboard"].disable();
+			// MapHandler.MAP.resize();
 
 		} else if(sidePanel.classList.contains("large")) {
 			// Make small
@@ -137,8 +137,8 @@ class PanelHandler {
 			leftButton.style.visibility = "visible";
 
 			// Allow keyboard events
-			MapHandler.MAP["keyboard"].enable();
-			MapHandler.MAP.resize();
+			// MapHandler.MAP["keyboard"].enable();
+			// MapHandler.MAP.resize();
 		}
 	}
 

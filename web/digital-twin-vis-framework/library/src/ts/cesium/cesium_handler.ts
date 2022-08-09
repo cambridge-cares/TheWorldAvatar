@@ -2,12 +2,17 @@
  * Concrete implementation of the MapHandler class that handles
  * a single MapBox map instance.
  */
-class MapHandler_MapBox extends MapHandler {
+class MapHandler_Cesium extends MapHandler {
 
     /**
      * MapBox popup element.
      */
     public static POPUP;
+
+    /**
+     * Map of data source keyed by layer name.
+     */
+    public static DATA_SOURCES = {};
 
     /**
      * Constructor.
@@ -20,48 +25,69 @@ class MapHandler_MapBox extends MapHandler {
      * Initialise and store a new map object.
      */
     public initialiseMap(mapOptions: Object) {
-        // Set the mapbox api key
-        // @ts-ignore
-        mapboxgl.accessToken = MapHandler.MAP_API;
-
-        // Check the options for required parameters, provide defaults if missing
-        let newOptions = (mapOptions !== null) ? mapOptions : {};
-        if(!newOptions["container"]) newOptions["container"] = "map"
-        if(!newOptions["center"]) newOptions["center"] = [-0.1280432939529419, 51.50805967151767];
-        if(!newOptions["zoom"]) newOptions["zoom"] = 16;
-        if(!newOptions["style"]) newOptions["style"] = "mapbox://styles/mapbox/light-v10";
-
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
-            // Create new map (note the settings used here may be overriden when the map is loaded with data).
+            // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
             // @ts-ignore
-            MapHandler.MAP = new mapboxgl.Map(newOptions);
-            MapHandler.MAP_OPTIONS = newOptions;
+            MapHandler.MAP = new Cesium.Viewer('map', {
+                timeline: false,
+                animation: false,
+                baseLayerPicker: false, 
+                homeButton: false, 
+                infoBox: false, 
+                navigationHelpButton: false,
+                projectionPicker: false,
+                fullscreenButton: false,
+                geocoder: false,
 
-            // Setup mouse interactions
-            MapHandler.MAP.on("click", (event) => this.handleClick(event, null));
-            MapHandler.MAP.on("mousemove", (event) => this.handleMouse(event));
+                // @ts-ignore
+                imageryProvider: new Cesium.MapboxStyleImageryProvider({
+                    styleId: mapOptions["style"],
+                    accessToken: MapHandler.MAP_API
+                })
+            }); 
 
-            // Create popup
-             // @ts-ignore
-            MapHandler_MapBox.POPUP = new mapboxgl.Popup({
-                closeButton: false,
-                closeOnClick: false,
-                maxWidth: "400px"
+            // Override default zoom level
+            console.log("---");
+            console.log(MapHandler.MAP.scene.screenSpaceCameraController);
+            console.log("---");
+            
+            let controller = MapHandler.MAP.scene.screenSpaceCameraController;
+            // @ts-ignore
+            controller.tiltEventTypes = [Cesium.CameraEventType.RIGHT_DRAG];
+            // @ts-ignore
+            controller.zoomEventTypes = controller.zoomEventTypes.filter(item => item !== Cesium.CameraEventType.RIGHT_DRAG);
+
+            console.log("---");
+            console.log(MapHandler.MAP.scene.screenSpaceCameraController);
+            console.log("---");
+
+            MapHandler.MAP.camera.setView({
+                // @ts-ignore
+                destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
+                orientation: {
+                    // @ts-ignore
+                    heading: Cesium.Math.toRadians(mapOptions["heading"]),
+                    // @ts-ignore
+                    pitch: Cesium.Math.toRadians(mapOptions["pitch"]),
+                    // @ts-ignore
+                    roll: Cesium.Math.toRadians(mapOptions["roll"])
+                }
             });
+
         }  else {
-            // Reinitialise state of existing map
-            MapHandler.MAP.setStyle(newOptions["style"]);
-            delete newOptions["style"];
-            delete newOptions["container"];
-
-            MapHandler.MAP.jumpTo(newOptions);
+            MapHandler.MAP.camera.setView({
+                // @ts-ignore
+                destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
+                orientation: {
+                    // @ts-ignore
+                    heading: Cesium.Math.toRadians(mapOptions["heading"]),
+                    // @ts-ignore
+                    pitch: Cesium.Math.toRadians(mapOptions["pitch"]),
+                    // @ts-ignore
+                    roll: Cesium.Math.toRadians(mapOptions["roll"])
+                }
+            });
         }
-
-        // Store terrain URL
-        if(mapOptions["style"].includes("light")) window.terrain = "light";
-        if(mapOptions["style"].includes("dark")) window.terrain = "dark";
-        if(mapOptions["style"].includes("outdoors")) window.terrain = "outdoors";
-        if(mapOptions["style"].includes("satellite")) window.terrain = "satellite";
     }
 
     /**
@@ -245,6 +271,7 @@ class MapHandler_MapBox extends MapHandler {
                 this.plotLayer(rootGroup, layer);
             });
         });
+        console.log("Finished adding data to map");
     }
 
     /**
@@ -271,29 +298,7 @@ class MapHandler_MapBox extends MapHandler {
      * @param source data source.
      */
     private addSource(source: DataSource) {
-        // @ts-ignore
-        let collision = MapHandler.MAP.getSource(source.id);
-
-        if(collision === null || collision === undefined) {
-            // Clone the original source definition
-            let options = {...source.definition};
-
-            // Remove properties not expected by MapBox
-            if(options["id"]) delete options["id"];
-            if(options["metaFiles"]) delete options["metaFiles"];
-            if(options["timeseriesFiles"]) delete options["timeseriesFiles"];
-
-            // Add attributions if missing
-            if(source.type !== "video" && source.type !== "image") {
-                if(!options["attribution"]) {
-                    options["attribution"] = "CMCL Innovations";
-                }
-            }
-
-            // Add to the map
-            MapHandler.MAP.addSource(source.id, options);
-            console.info("Added source to MapBox map: " + source.id);
-        }
+       // No used in Cesium implementation
     }
 
     /**
@@ -302,46 +307,109 @@ class MapHandler_MapBox extends MapHandler {
      * @param layer layer to add.
      */
     private addLayer(layer: DataLayer) {
-        let collision = MapHandler.MAP.getLayer(layer.id);
+        // TODO - Check for a collision
 
-        if(collision === null || collision === undefined) {
-            // Clone the original layer definition
-            let options = {...layer.definition};
 
-            // Add attributions if missing
-            if(!options["metadata"]) {
-                options["metadata"] = {};
+        let source = layer.source;
+
+        switch(source.type.toLowerCase()) {
+
+            // Individual KML files
+            case "kml": {
+                let locations = source.definition["data"];
+
+                if(Array.isArray(locations)) {
+                    locations.forEach(location => {
+                        this.addKMLFile(location, layer.id);
+                    });
+                } else {
+                    let kmlSource = this.addKMLFile(locations, layer.id);
+                    MapHandler.MAP.zoomTo(kmlSource);
+                }
             }
-            if(!options["metadata"]["attribution"]) {
-                options["metadata"]["attribution"] = "CMCL Innovations";
+            break;
+
+            // 3D tiles
+            case "tile":
+            case "tiles": {
+                let locations = source.definition["data"];
+                let centers = source.definition["center"];
+
+                if(Array.isArray(locations) && Array.isArray(centers)) {
+
+                    for(let i = 0; i < locations.length; i++) {
+                        this.addTileset(locations[i], centers[i], layer.id);
+                    }
+                } else {
+                    this.addTileset(locations, centers, layer.id);
+                }
             }
+            break;
 
-            // Remove 'clickable' if specified
-            if(options["clickable"]) {
-                options["metadata"]["clickable"] = options["clickable"]
-                delete options["clickable"]
-            } else {
-                options["metadata"]["clickable"] = true
+
+            default: {
+                console.warn("Unknown source type '" + source.type + "', skipping data.");
             }
-
-            // Remove 'treeable' if specified
-            if(options["treeable"]) {
-                options["metadata"]["treeable"] = options["treeable"]
-                delete options["treeable"]
-            } else {
-                options["metadata"]["treeable"] = true
-            }
-
-            // Update to unique ID
-            options["id"] = layer.id;
-
-            // Remove fields not required by MapBox
-            delete options["name"];
-
-            // Add to the map
-            MapHandler.MAP.addLayer(options);
-            console.info("Added layer to MapBox map '" + layer.id + "'.");
+            break;
         }
+
+    }
+
+    /**
+     * Adds an individual KML file to the map.
+     * 
+     * @param fileLocation location of KML file. 
+     * @param layerID ID of layer upon the map.
+     */
+    private addKMLFile(fileLocation: string, layerID: string) {
+        // @ts-ignore
+        let sourceKML = Cesium.KmlDataSource.load(fileLocation);
+
+        // TODO: Investigate if camera and canvas options are actually required here.
+        MapHandler.MAP.dataSources.add(
+            sourceKML,
+            {
+                camera: MapHandler.MAP.camera,
+                canvas: MapHandler.MAP.canvas
+            }
+        );
+        console.info("Added KML source to map with layer ID: "+ layerID);
+
+        // Cache knowledge of this source, keyed by layer id
+        if(MapHandler_Cesium.DATA_SOURCES[layerID] === null || MapHandler_Cesium.DATA_SOURCES[layerID] === undefined) {
+            MapHandler_Cesium.DATA_SOURCES[layerID] = [];
+        }
+        MapHandler_Cesium.DATA_SOURCES[layerID].push(sourceKML);
+    }
+
+    /**
+     * Adds a 3D tileset to the map.
+     * 
+     * @param fileLocation location of tileset JSON file. 
+     * @param position x,y,z position of tileset center (in degrees).
+     * @param layerID ID of layer upon the map.
+     */
+    private addTileset(fileLocation: string, position: number[], layerID: string) {
+        // @ts-ignore
+        let centerCartesian = Cesium.Cartesian3.fromDegrees(position[0], position[1], position[2]);
+        // @ts-ignore
+        let centerTransform = Cesium.Transforms.eastNorthUpToFixedFrame(centerCartesian);
+
+        // @ts-ignore
+        let tileset = new Cesium.Cesium3DTileset({
+            url: fileLocation,
+            modelMatrix: centerTransform
+        });
+
+        // Add the tileset to the map
+        MapHandler.MAP.scene.primitives.add(tileset);
+        console.info("Added tileset source to map with layer ID: "+ layerID);
+
+        // Cache knowledge of this source, keyed by layer id
+        if(MapHandler_Cesium.DATA_SOURCES[layerID] === null || MapHandler_Cesium.DATA_SOURCES[layerID] === undefined) {
+            MapHandler_Cesium.DATA_SOURCES[layerID] = [];
+        }
+        MapHandler_Cesium.DATA_SOURCES[layerID].push(tileset);
     }
 
     /**

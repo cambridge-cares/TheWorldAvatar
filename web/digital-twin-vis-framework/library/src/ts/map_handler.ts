@@ -54,10 +54,3 @@ abstract class MapHandler {
      */
     public abstract plotLayer(group: DataGroup, layer: DataLayer);
 }
-
-/**
- * Possible map providing libraries.
- */
-enum MapProvider {
-    MAPBOX
-}
