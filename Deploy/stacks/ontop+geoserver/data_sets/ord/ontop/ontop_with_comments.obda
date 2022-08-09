@@ -33,14 +33,34 @@ target exp:RxnExp_{"Reaction ID"} rdf:type OntoRxn:ReactionExperiment ;
               OntoRxn:hasInputChemical exp:InputChemical_{"ReactionInput_ID"} .
               exp:InputChemical_{"ReactionInput_ID"} rdf:type OntoRxn:InputChemical ;
               OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_{"ReactionInput_ID"} .
+              # Phase definition
+              SinglePhase:Phase_{"ReactionInput_ID"} rdf:type OntoCAPEPha:SinglePhase;
+              OntoCAPEMat:representsThermodynamicBehavior exp:InputChemical_{"ReactionInput_ID"};
+              #OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+              OntoCAPEPha:has_composition SinglePhase:Composition_{"ReactionInput_ID"};
+              OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_{"Compound_ID"} .
+              # Composition definition
+              SinglePhase:Composition_{"ReactionInput_ID"} rdf:type OntoCAPEPha:Composition;
+              OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_{"Compound_ID"}_Property.
 # define the SQL query
-source    SELECT "Reaction"."ID" AS "Reaction ID", "ReactionIdentifier"."value"AS "Reaction identifier", "Reaction_inputs_ReactionInput"."ReactionInput_ID" AS "ReactionInput_ID"
+source     SELECT "Reaction"."ID" AS "Reaction ID", "ReactionIdentifier"."value", 
+          "Reaction_inputs_ReactionInput"."ReactionInput_ID" as "ReactionInput_ID",
+          "ReactionInput"."addition_order", "ReactionInput_components_Compound"."Compound_ID" as "Compound_ID",
+          "Compound"."reaction_role", "Compound"."is_limiting"
           FROM "Reaction"
           INNER JOIN "Reaction_identifiers_ReactionIdentifier"
           ON "Reaction"."ID"= "Reaction_identifiers_ReactionIdentifier"."Reaction_ID"
           INNER JOIN "ReactionIdentifier"
           ON  "Reaction_identifiers_ReactionIdentifier"."ReactionIdentifier_ID"= "ReactionIdentifier"."ID"
           INNER JOIN "Reaction_inputs_ReactionInput"
-          ON "Reaction"."ID"= "Reaction_inputs_ReactionInput"."Reaction_ID";
+          ON "Reaction"."ID"= "Reaction_inputs_ReactionInput"."Reaction_ID"
+          INNER JOIN "ReactionInput"
+          ON "ReactionInput"."ID"= "Reaction_inputs_ReactionInput"."ReactionInput_ID"
+          INNER JOIN "ReactionInput_components_Compound"
+          ON "Reaction_inputs_ReactionInput"."ID"= "ReactionInput_components_Compound"."ReactionInput_ID"
+          INNER JOIN "Compound"
+          ON "Compound"."ID"= "ReactionInput_components_Compound"."Compound_ID"
+          INNER JOIN "Compound_amount_Amount"
+          ON "Compound_amount_Amount"."Compound_ID"= "ReactionInput_components_Compound"."ID"
 ]]
 
