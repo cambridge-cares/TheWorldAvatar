@@ -66,8 +66,8 @@ class HPLCAgent(DerivationAgent):
                 self.hplc_digital_twin, start_timestamp, end_timestamp
             )
 
-        # NOTE here we initialise a new g=Graph() to prevent the variable somehow saved in memory of
-        # NOTE g in collect_triples_for_hplc_job got used, i.e. previous collected triples not removed
+        # NOTE to avoid the variable mysteriously stored in memory of g in collect_triples_for_hplc_job from being used
+        # NOTE i.e., earlier collected triples not being erased, we initialise a new g=Graph() here
         g = Graph()
         g = self.sparql_client.collect_triples_for_hplc_job(
             rxn_exp_iri, chemical_solution_iri,
