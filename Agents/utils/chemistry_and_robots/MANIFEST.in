@@ -1,0 +1,3 @@
+recursive-include chemistry_and_robots *.ttl
+include chemistry_and_robots/resources/sample_data/raw_hplc_report_txt.txt
+include chemistry_and_robots/resources/sample_data/raw_hplc_report_xls.xls
