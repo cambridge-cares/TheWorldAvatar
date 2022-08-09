@@ -66,8 +66,8 @@ class HPLCAgent(DerivationAgent):
                 self.hplc_digital_twin, start_timestamp, end_timestamp
             )
 
-        # NOTE here we initialise a new g=Graph() to prevent the variable somehow saved in memory of
-        # NOTE g in collect_triples_for_hplc_job got used, i.e. previous collected triples not removed
+        # NOTE to avoid the variable mysteriously stored in memory of g in collect_triples_for_hplc_job from being used
+        # NOTE i.e., earlier collected triples not being erased, we initialise a new g=Graph() here
         g = Graph()
         g = self.sparql_client.collect_triples_for_hplc_job(
             rxn_exp_iri, chemical_solution_iri,
@@ -168,6 +168,5 @@ def default():
         Instructional message at the app root.
     """
     msg  = "This is an asynchronous agent that capable of monitoring the HPLC local report folder and upload any new generated reports to the KG file server.<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/HPLCAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/HPLCAgent#readme, before merging back to main branch
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HPLCAgent#readme<BR>"
     return msg

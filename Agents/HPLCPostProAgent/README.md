@@ -2,7 +2,7 @@
 The folder contains the source, resource, and Docker setup files for the DoE Agent, following the suggestions on a template provide as `TheWorldAvatar/JPS_BASE_LIB/python_derivation_agent/README.md`.
 
 ## Purpose
-The PostProc Agent is designed to automate the post-processing of the results collected from the HPLC analysis for the automated flow chemistry experiment. It does so by querying the information about the generated HPLC report, the reaction experiment, and the digital twin of the hardware that was used to conduct the experiment, calculating the interested performance indicators, and finally populating the processed results back to the knowledge graph.
+The HPLC PostPro Agent is designed to automate the post-processing of the results collected from the HPLC analysis for the automated flow chemistry experiment. It does so by querying the information about the generated HPLC report, the reaction experiment, and the digital twin of the hardware that was used to conduct the experiment, calculating the interested performance indicators, and finally populating the processed results back to the knowledge graph.
 
 ## Building the Docker image
 Requirements:
@@ -14,7 +14,7 @@ Requirements:
     cd /your_absolute_path_to/TheWorldAvatar/JPS_BASE_LIB
     mvn clean install -DskipTests
     ```
-    Developers then need to copy the `jps-base-lib.jar` file and folder `lib/` generated in folder `TheWorldAvatar/JPS_BASE_LIB/target/` and paste them in the `TheWorldAvatar/Agents/PostProcAgent/`. The update of the `JpsBaseLib` package in `py4jps` is taken care of by below lines of code in the Dockerfile:
+    Developers then need to copy the `jps-base-lib.jar` file and folder `lib/` generated in folder `TheWorldAvatar/JPS_BASE_LIB/target/` and paste them in the `TheWorldAvatar/Agents/HPLCPostProAgent/`. The update of the `JpsBaseLib` package in `py4jps` is taken care of by below lines of code in the Dockerfile:
     ```
     # Re-install the version of JPS_BASE_LIB that is been developing
     # (sinse the newly added code is not in the release version of py4jps)
@@ -26,13 +26,13 @@ Requirements:
     RUN jpsrm install JpsBaseLib ./jpstemp/
     ```
     At the moment, above lines are commented out in the Dockerfile. One may bring them back if a specific version of `jps-base-lib` is required and provided.
-* Example of configurations for the agent are provided in `TheWorldAvatar/Agents/HPLCPostProAgent/agent.postproc.env.example` file. The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` for triple store, and `FILESERVER_URL` for the file server. The credentials for knowledge graph endpoints, i.e. triple store and file server, should be provided in the same file using `KG_USERNAME`, `KG_PASSWORD`, `FILE_SERVER_USERNAME`, `FILE_SERVER_PASSWORD`. To avoid commit these information to git at deployment, developer may make a copy of this example file as `agent.postproc.env`. As `*.env` entry already exist in `.gitignore`, this new created file will be omitted. Any credentials encoded are safe. The OntoAgent:Service IRI of the agent is specified using `ONTOAGENT_SERVICE_IRI`. The periodically time interval to monitor asynchronous derivation is specified by `DERIVATION_PERIODIC_TIMESCALE`. One may also provide `DERIVATION_INSTANCE_BASE_URL` to be used by DerivationClient when creating derivations related instances. `ONTOAGENT_OPERATION_HTTP_URL` can be used to specify the URL of the agent that listens the request for updating synchronous derivations, however, given the nature of the post processing Agent, this is NOT RECOMMENDED. Developers needs to ensure that this file is correctly updated before building the Docker Image.
+* Example of configurations for the agent are provided in `TheWorldAvatar/Agents/HPLCPostProAgent/agent.hplc.postpro.env.example` file. The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` for triple store, and `FILESERVER_URL` for the file server. The credentials for knowledge graph endpoints, i.e. triple store and file server, should be provided in the same file using `KG_USERNAME`, `KG_PASSWORD`, `FILE_SERVER_USERNAME`, `FILE_SERVER_PASSWORD`. To avoid commit these information to git at deployment, developer may make a copy of this example file as `agent.hplc.postpro.env`. As `*.env` entry already exist in `.gitignore`, this new created file will be omitted. Any credentials encoded are safe. The OntoAgent:Service IRI of the agent is specified using `ONTOAGENT_SERVICE_IRI`. The periodically time interval to monitor asynchronous derivation is specified by `DERIVATION_PERIODIC_TIMESCALE`. One may also provide `DERIVATION_INSTANCE_BASE_URL` to be used by DerivationClient when creating derivations related instances. `ONTOAGENT_OPERATION_HTTP_URL` can be used to specify the URL of the agent that listens the request for updating synchronous derivations, however, given the nature of the post processing Agent, this is NOT RECOMMENDED. Developers needs to ensure that this file is correctly updated before building the Docker Image.
 
 Once the requirements have been addressed, the Image can be build via docker container, one example of which is:
 
 `(Linux)`
 ```sh
-cd /your_absolute_path_to/TheWorldAvatar/Agents/PostProcAgent/
+cd /your_absolute_path_to/TheWorldAvatar/Agents/HPLCPostProAgent/
 docker-compose -f "docker-compose.test.yml" up -d --build
 ```
 Or, simply right click `docker-compose.test.yml` file and select `Compose Up` option in Visual Studio Code.
@@ -41,16 +41,16 @@ For proper deployment, one may need to make a copy of `docker-compose.test.yml` 
 
 ## How to use it
 ### HTTP servlet
-As the agent adopts `pyderivationagent`, the agent serving HTTP requests to handle synchronous derivations in an automated fashion, nonetheless, as the intention of PostProc Agent is asynchronous operation, it is (strongly) discouraged to invoke it via HTTP request by ONESELF, in the situation that synchronous derivation been created for HPLCPostPro agent, all operations will be handled by the derivation framework ON ITS OWN. An HTTP servlet provided in this agent is its instructional page `http://localhost:7000/` (the address depends on where you deploy the container), i.e. you will see a message when accessing the above address if the agent is deployed successfully:
+As the agent adopts `pyderivationagent`, the agent serving HTTP requests to handle synchronous derivations in an automated fashion, nonetheless, as the intention of HPLCPostPro Agent is asynchronous operation, it is (strongly) discouraged to invoke it via HTTP request by ONESELF, in the situation that synchronous derivation been created for HPLCPostPro agent, all operations will be handled by the derivation framework ON ITS OWN. An HTTP servlet provided in this agent is its instructional page `http://localhost:7000/` (the address depends on where you deploy the container), i.e. you will see a message when accessing the above address if the agent is deployed successfully:
 ```
 This is an asynchronous agent that capable of post-processing experiment raw data generated from lab equipment.
 For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/HPLCPostProAgent#readme
 ```
 
 ### Asynchronous derivation operation
-As intended, HPLCPostPro Agent works with the derivation framework in asychronous mode. Once the HPLCPostPro Agent is deployed, it periodically (every 120 seconds, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI` in `TheWorldAvatar/Agents/HPLCPostProAgent/agent.postproc.env.example`) and acts based on the status associated with that derivation.
+As intended, HPLCPostPro Agent works with the derivation framework in asychronous mode. Once the HPLCPostPro Agent is deployed, it periodically (every 120 seconds, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI` in `TheWorldAvatar/Agents/HPLCPostProAgent/agent.hplc.postpro.env.example`) and acts based on the status associated with that derivation.
 
-A set of dockerised integration tests `TheWorldAvatar/Agents/HPLCPostProAgent/hplcpostproagent/tests` is provided as examples to demonstrate the operations. It operates on the triple store specified in the `TheWorldAvatar/Agents/HPLCPostProAgent/hplcpostproagent/tests/agent.postproc.env.test` when the docker stack is spun up. Therefore, it can be used to test if the HPLCPostPro Agent deployed is functional as expected. **NOTE: spinning up the containers in this image requires access to the docker.cmclinnovations.com registry from the machine the test is run on. For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry**
+A set of dockerised integration tests `TheWorldAvatar/Agents/HPLCPostProAgent/hplcpostproagent/tests` is provided as examples to demonstrate the operations. It operates on the triple store specified in the `TheWorldAvatar/Agents/HPLCPostProAgent/hplcpostproagent/tests/agent.hplc.postpro.env.test` when the docker stack is spun up. Therefore, it can be used to test if the HPLCPostPro Agent deployed is functional as expected. **NOTE: spinning up the containers in this image requires access to the docker.cmclinnovations.com registry from the machine the test is run on. For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry**
 
 Also note that below two lines in `TheWorldAvatar/Agents/HPLCPostProAgent/docker-compose.test.yml` were commented out:
 ```yml
@@ -178,6 +178,46 @@ Once the update is done, the script pulls the data back and conducts a few check
 ```
 
 If you would like to contribute to new features for the HPLCPostPro Agent, you may use the same integration test to make sure the new features added do NOT break the original function.
+
+## Upload docker image to GitHub
+
+Developers who add new features to the `HPLCPostProAgent` handle the distribution of the docker image on GitHub. If you want to add new features that suit your project and release the docker image independently, i.e. become a developer/maintainer, please contact the repository's administrator to indicate your interest.
+
+The release procedure is currently semi-automated and requires a few items:
+
+- Your GitHub account and password ([personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token))
+- The version number x.x.x for the release
+- Clone of `TheWorldAvatar` repository on your local machine
+- Docker-desktop is installed and running on your local machine
+
+### Stable version release
+
+The release process can be started by using the commands below. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!) **NOTE: the release process is only tested in WSL2 environment.**
+
+`(Linux)`
+```sh
+$ cd /<absolute_path_to>/TheWorldAvatar/Agents/HPLCPostProAgent
+$ ./upload_docker_image_to_github.sh -v x.x.x
+```
+
+Please follow the instructions presented in the console once the process has begun. If everything goes well, the change performed automatically during the release process should be commited, i.e., in python script `Agents/HPLCPostProAgent/docker-compose.github.yml`
+```
+image: ghcr.io/cambridge-cares/hplc_postpro_agent:x.x.x
+```
+
+**NOTE: the visibility of the uploaded docker image is set as private by default, developer who uploaded the image need to change the package visibility to public manually after the upload.**
+
+### Snapshot version release
+
+If you would like to release the package in SNAPSHOT version, below commands can be used intead:
+
+`(Linux)`
+```sh
+$ cd /<absolute_path_to>/TheWorldAvatar/Agents/HPLCPostProAgent
+$ ./upload_docker_image_to_github.sh -v x.x.x-SNAPSHOT
+```
+
+Please follow the instructions presented in the console once the process has begun. If everything goes well, commit the change in version number following the same procedure as in the stable version release.
 
 # Authors #
 

@@ -24,21 +24,6 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
-# TODO - delete this once new version of pyderivationagent is released
-# TODO - update requirements.txt to use new version of pyderivationagent
-# RUN python -m pip install git+https://github.com/cambridge-cares/TheWorldAvatar@161-dev-pyderivationagent-modifications#subdirectory=JPS_BASE_LIB/python_derivation_agent
-RUN python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pyderivationagent==1.1.0b0
-RUN python -m pip install git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots
-
-
-# # Re-install the version of JPS_BASE_LIB that is been developing
-# # (this will be required if the new features are not merged back to main)
-# RUN jpsrm uninstall JpsBaseLib
-# RUN mkdir /jpstemp
-# COPY /_temp/jps-base-lib.jar ./jpstemp/jps-base-lib.jar
-# COPY /_temp/lib ./jpstemp/lib
-# RUN jpsrm install JpsBaseLib ./jpstemp/
-
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app
 ADD doeagent /app/doeagent

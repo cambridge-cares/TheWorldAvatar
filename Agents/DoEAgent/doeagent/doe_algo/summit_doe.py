@@ -151,49 +151,15 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
             # Add created instance to list
             list_con.append(con)
 
-        # # Prepare a list of empty PerformanceIndicator, by empty here means the OM_Measure is initialised as None
-        # list_perf = []
-        # # Iterate over PerformanceIndicator in parent ReactionExperiment to populate the empty PerformanceIndicator in ReactionVariation that to be computed
-        # for first_rxn_exp_perf in first_rxn_exp.hasPerformanceIndicator:
-        #     # Create instance for PerformanceIndicator
-        #     perf = PerformanceIndicator(
-        #         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-        #         namespace_for_init=getNameSpace(first_rxn_exp_perf.instance_iri),
-        #         clz=first_rxn_exp_perf.clz,
-        #         objPropWithExp=first_rxn_exp_perf.objPropWithExp,
-        #         hasValue=None,
-        #         positionalID=first_rxn_exp_perf.positionalID
-        #     )
-
-        #     # Add created instance to list
-        #     list_perf.append(perf)
-
-        # # TODO revisit this design when closing the loop
-        # # Generate all the rest PerformanceIndicator placeholders that not presented in the first_rxn_exp
-        # lst_other_perf = [p for p in AVAILABLE_PERFORMANCE_INDICATOR_LIST if p not in [pi.clz for pi in first_rxn_exp.hasPerformanceIndicator]]
-        # for o_p in lst_other_perf:
-        #     perf = PerformanceIndicator(
-        #         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-        #         namespace_for_init=getNameSpace(first_rxn_exp.instance_iri),
-        #         clz=o_p,
-        #         objPropWithExp=OBJECT_RELATIONSHIP_PERFORMANCE_INDICATOR_RXN_EXP_DICT[o_p],
-        #         hasValue=None,
-        #         positionalID=None
-        #     )
-        #     # Add created instance to list
-        #     list_perf.append(perf)
-
         # Populate the information to create instance of ReactionVariation
         # TODO add support for creating instance of ReactionExperiment (given no prior experiment data/history)
         rxnvar = ReactionVariation(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=getNameSpace(first_rxn_exp.instance_iri),
             hasReactionCondition=list_con,
-            # hasPerformanceIndicator=list_perf,
             hasPerformanceIndicator=None,
-            hasInputChemical=first_rxn_exp.hasInputChemical, # TODO revisit this design when testing
+            hasInputChemical=first_rxn_exp.hasInputChemical,
             # NOTE here the OutputChemical is set to be None as the OutputChemical will need to be generated after the physical experimentation
-            # TODO revisit this design when testing
             hasOutputChemical=None,
             isVariationOf=first_rxn_exp
         )

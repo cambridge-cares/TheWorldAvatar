@@ -57,7 +57,6 @@ def calculate_yield(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReac
 def calculate_conversion(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
     """This method calculates the reaction conversion based on the non-catalyst yield limiting reactant (the one with the lowest run concentration)."""
     # NOTE here the conversion is calculated based on the yield limiting species
-    # TODO further improvement maybe provided as to calculate conversion for all reactant, or specific reactant that upon request
     yield_limiting_species = retrieve_yield_limiting_species(hypo_reactor)
     _species_in_end_stream = [species for species in hypo_end_stream.component if species.species_iri == yield_limiting_species.species_iri][0]
 

@@ -39,9 +39,9 @@ site-packages/
 *.pkl
 *.egg-info/
 .venv
-venv/
+*venv/
 .env
-env/
+*env/
 
 # JavaScript:
 node_modules/

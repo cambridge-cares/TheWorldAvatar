@@ -15,7 +15,6 @@ logging.getLogger("numba").setLevel(logging.WARNING)
 
 
 class DoEAgent(DerivationAgent):
-    # TODO consider making __init__ of DerivationAgent to accept **kwargs
     def __init__(self,
         **kwargs
     ):

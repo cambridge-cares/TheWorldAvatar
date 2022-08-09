@@ -100,8 +100,8 @@ class VapourtecAgent(DerivationAgent):
         autosampler = self.sparql_client.get_autosampler_from_vapourtec_rs400(vapourtec_rs400)
 
         # Call function to create a list of ontolab.EquipmentSettings instances
-        # TODO [before deployment, double check] Also generate settings for AutoSampler (collection bits)?
-        # TODO [before deployment, double check] add support for pressure settings
+        # TODO [when run in loop, double check] Also generate settings for AutoSampler (collection bits)?
+        # TODO [when run in loop, double check] add support for pressure settings
         list_equip_settings = self.sparql_client.create_equip_settings_for_rs400_from_rxn_exp(
             rxn_exp_instance, vapourtec_rs400, vapourtec_r4_reactor)
 
@@ -116,10 +116,10 @@ class VapourtecAgent(DerivationAgent):
         equip_settings_graph_for_derivation = self.sparql_client.collect_triples_for_equip_settings(list_equip_settings, False)
         derivation_outputs.addGraph(equip_settings_graph_for_derivation)
 
-        # TODO [before deployment, double check] refine the way of getting the autosampler site for collecting reaction outlet stream
-        # TODO [before deployment, double check] get settings for AutoSampler? collection site and collection volume?
+        # TODO [when run in loop, double check] refine the way of getting the autosampler site for collecting reaction outlet stream
+        # TODO [when run in loop, double check] get settings for AutoSampler? collection site and collection volume?
         _autosampler_site_for_collection = [site.instance_iri for site in autosampler.hasSite if site.holds.isFilledWith is None and site.holds.hasFillLevel.hasValue.hasNumericalValue == 0][0]
-        # TODO [before deployment, double check] 1.5 is only as placeholder for testing, get this information from AutoSampler
+        # TODO [when run in loop, double check] 1.5 is only as placeholder for testing, get this information from AutoSampler
         _autosampler_collection_amount = 1.5
 
         # Generate the execution CSV file
@@ -159,11 +159,11 @@ class VapourtecAgent(DerivationAgent):
         self.sparql_client.release_vapourtec_rs400_settings(vapourtec_rs400.instance_iri)
 
     def send_fcexp_csv_for_execution(self, run_csv_file_container_path: str, list_equip_settings: List[EquipmentSettings]):
-        # TODO [before deployment, double check] should we load experiment file to check if the files are generated correctly for dry_run?
-        # TODO [before deployment, double check] consider if we need to distinguish between actual execution and dry-run on per-reaction-basis
+        # TODO [when run in loop, double check] should we load experiment file to check if the files are generated correctly for dry_run?
+        # TODO [when run in loop, double check] consider if we need to distinguish between actual execution and dry-run on per-reaction-basis
         if not self.dry_run:
             print("#######################")
-            # TODO [before deployment, double check] should we load experiment everytime before we add and run new experiment?
+            # TODO [when run in loop, double check] should we load experiment everytime before we add and run new experiment?
             template_fcexp_filepath = os.path.join(self.fcexp_file_host_folder, self.fcexp_template_filename)
             FlowCommander.LoadExperiment(self.fc, template_fcexp_filepath) # e.g. "D:\Vapourtec\ReactionCont.fcexp"
             self.logger.info("FlowCommander instance loaded experiment file: %s" % (template_fcexp_filepath))
@@ -179,13 +179,13 @@ class VapourtecAgent(DerivationAgent):
             # Update autosampler liquid amount immediately after send the experiment for execution
             # Construct a dict of {"autosampler_site_iri": sampler_loop_volume * 1.2}
             # NOTE here "*1.2" is to reflect the default setting in vapourtec which takes 20% more liquid compared to the sample loop volume settings
-            # TODO [before deployment, double check] double check how was the sample loop volume calculated
-            # TODO [before deployment, double check] the implementation here actually only updates the autosampler site pumped by reference_pump
+            # TODO [when run in loop, double check] double check if the sample loop volume can be setup for all rxn using the same .fcexp file
+            # TODO [when run in loop, double check] the implementation here actually only updates the autosampler site pumped by reference_pump
             dct_site_loop_volume = {s.pumpsLiquidFrom.instance_iri:s.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue*1.2 for s in [
                 setting for setting in list_equip_settings if setting.clz == ONTOVAPOURTEC_PUMPSETTINGS and setting.hasSampleLoopVolumeSetting]}
             self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_site_loop_volume, True)
 
-            # TODO [before deployment, double check] send warnings if the liquid level of any vials is lower than the warning level
+            # TODO [when run in loop, double check] send warnings if the liquid level of any vials is lower than the warning level
 
     def monitor_vapourtec_rs400_state(self):
         print("=======================")
@@ -244,6 +244,5 @@ def default():
         Instructional message at the app root.
     """
     msg  = "This is an asynchronous agent that capable of monitoring the state of VapourtecRS400 module and keeping its digital twin in sync with its physical counterpart.<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/VapourtecAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/VapourtecAgent#readme, before merging back to develop branch
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VapourtecAgent#readme<BR>"
     return msg
