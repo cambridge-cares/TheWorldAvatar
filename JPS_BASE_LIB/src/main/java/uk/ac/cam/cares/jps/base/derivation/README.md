@@ -1,7 +1,7 @@
 # Namespace
 The namespaces used in this document:
 ```
-: https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+: https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#
 msm : http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#
 time : http://www.w3.org/2006/time#
 rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#

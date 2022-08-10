@@ -21,7 +21,7 @@ def initialise_triples(generate_random_download_path, sparql_client, derivation_
         os.mkdir(cf.DOWNLOADED_DIR)
 
 	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
-    for f in ['ontoagent/Service__DoE.ttl', 'sample_data/doe.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_lab.ttl']:
+    for f in ['sample_data/doe.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_lab.ttl']:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
         filePath = generate_random_download_path("ttl")
