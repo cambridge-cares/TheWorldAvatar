@@ -101,7 +101,7 @@ public class HistoricalAQMeshAgentXLSXConnector {
      * @param readingType Specifies the type of readings (GAS or PARTICLE)
      * @return Readings in a JSON Array with a JSON object for each measurement time
      */
-    private JSONArray retrieveReadings(String filePath, int numOfKeys) throws IOException, JSONException {
+    public JSONArray retrieveReadings(String filePath, int numOfKeys) throws IOException, JSONException {
     	try  
     	{  
     	
