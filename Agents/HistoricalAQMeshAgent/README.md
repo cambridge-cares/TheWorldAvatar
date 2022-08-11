@@ -10,11 +10,11 @@ from the JPS base lib to interact with both the KG and database.
 This agent is designed to work with Excel 2007 or later versions. Some pre-processing might be required in order to ensure
 that the excel files are compatible with the agent. 
 
-Firstly, The AQMesh data must be split into two files, one for gas data and one for particle and general data. Some examples 
+Firstly, The AQMesh data must be split into two files, one for gas data and one for particle and general data. Some example excel files 
 can be found in the `config` folder.
 
 Secondly, the keys for each column in the excel files must correspond with the keys found in the gas.properties, particle.properties 
-and general.properties files. These files can be found in the `mapping` folder that can be found in the `config` folder.
+and general.properties files. These properties files can be found in the `mapping` folder under the `config` folder.
 
 Lastly, the timestamps in the excel files must be in UTC timezone. The agent will then convert the timestamps to a local 
 date time with offset.
@@ -33,9 +33,10 @@ The following shows a single JSON object example for particle readings:
 ![Shows part of the response body of a successful gas readings request.](docs/img/example_particle_readings_2.png "Particle readings sensors")
 
 ## Usage 
-This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. 
-Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client which maintains both instances in a 
-knowledge graph and a Postgres database to store the data, these will be required to be set-up before.  
+This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as 
+a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series
+client which maintains both instances in a knowledge graph and a Postgres database to store the data, these will be required to be 
+set-up beforehand.  
 
 The [next section](#requirements) will explain the requirements to run the agent.
 
@@ -49,7 +50,7 @@ to explain the set-up of a knowledge graph triple store or Postgres database.
 ### Property files
 For running the agent, three property files are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
-- One [property file for the time-series client](#time-series-client-properties) defining how ot access the database and SPARQL endpoint.
+- One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
 - One [property file for the excel file connector](#excel-connector-properties) defining the number of columns/keys for the gas readings excel file and for the particle and general readings excel file..
 
 #### Agent properties
@@ -112,13 +113,13 @@ but there needs to be a 1-1 mapping, i.e. no IRI can be used for multiple JSON k
 To ensure that the same IRIs are used for each JSON key, the mapping files are saved back after each run (only really 
 necessary when some of them are automatically generated). Note, that if you change any mapping in preceding runs, they 
 will be seen as new time-series, which can result in inconsistencies in both the KG and database. To retrieve the
-mapping files from the docker container, you have to type in the following line into the command line:
+mapping files from a running docker container, you have to type in the following into the command line:
 
 ```
-docker cp <Container ID>://root/mappings/<name of properties file> <destination filepath on your machine>
+docker cp <Docker container ID>://root/mappings/<name of properties file> <destination filepath on your machine>
 ```
 
-For example, to copy the gas.properties mapping file from the docker container, the following line have to be entered into the command line:
+For example, to retrieve the gas.properties mapping file from the docker container, the following line have to be entered into the command line:
 
 ```
 docker cp 7956ce42351d://root/mappings/gas.properties C:\Users\USER01\Desktop\gas.properties
