@@ -16,6 +16,8 @@ can be found in the `config` folder.
 Secondly, the keys for each column in the excel files must correspond with the keys found in the gas.properties, particle.properties 
 and general.properties files. These properties files can be found in the `mapping` folder under the `config` folder.
 
+Thirdly, the keys that contains "location_number", "owner_number", "_serial_number" must have text/String values.
+
 Lastly, the timestamps in the excel files must be in UTC timezone. The agent will then convert the timestamps to a local 
 date time with offset.
 
