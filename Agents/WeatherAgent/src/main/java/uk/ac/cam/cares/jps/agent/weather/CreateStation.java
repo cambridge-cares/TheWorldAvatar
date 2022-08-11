@@ -1,28 +1,30 @@
 package uk.ac.cam.cares.jps.agent.weather;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Instant;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.ws.rs.BadRequestException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
+import org.springframework.core.io.ClassPathResource;
 
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
+
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * This servlet should be called using the AgentCaller class with executeGet
- * input to the CreateStation servlet: JSONObject with the key "latlon", the value need to be in the format of "lat#lon"
- * e.g. {"latlon":"0.0#1.0"}. This is the format required by Blazegraph
- * will give the IRI of the created station in the response
- * e.g. {"station: "http://station1"}
+ * 
  * @author Kok Foong Lee
  *
  */
 @WebServlet(urlPatterns = {"/CreateStation"})
-public class CreateStation extends JPSAgent {
+public class CreateStation extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -31,39 +33,49 @@ public class CreateStation extends JPSAgent {
     
     private WeatherQueryClient weatherClient = null;
 
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
-    	JSONObject response = new JSONObject();
-    	
-    	if (validateInput(requestParams)) {
-    		String latlon = requestParams.getString("latlon");
-    		
-    		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-    		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-    		
-    		// replaced with mock client in the junit tests
-    		if (weatherClient == null ) {
-    			weatherClient = new WeatherQueryClient(storeClient, tsClient);
-    		}
-    		
-    		String station = weatherClient.createStation(latlon);
-    		response.put("station", station);
-    		LOGGER.info("Created weather station <" + station + "> at the given coordinates: " + latlon);
-    	}
-        return response;
-    }
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		new Config().initProperties();
+		LOGGER.info("Received POST request to create a new weather station");
+        LOGGER.info("Received request: " + req);
 
-    @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        try {
-        	String[] latlon = requestParams.getString("latlon").split("#");
-        	Double.parseDouble(latlon[0]); Double.parseDouble(latlon[1]);
-        	return true;
-        } catch (Exception e) {
-        	LOGGER.error(e.getMessage());
-        	throw new BadRequestException(e);
-        }
-    }
+		
+		double lat;
+		double lon;
+		try {
+			lat = Double.parseDouble(req.getParameter("lat"));
+			lon = Double.parseDouble(req.getParameter("lon"));
+		} catch (Exception e) {
+			LOGGER.error("Error parsing input, make sure lat and lon are specified as parameters");
+			LOGGER.error(e.getMessage());
+			throw new RuntimeException(e);
+		}
+
+		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+		
+		// replaced with mock client in the junit tests
+		if (weatherClient == null ) {
+			weatherClient = new WeatherQueryClient(storeClient, tsClient);
+		}
+
+		WeatherPostGISClient postgisClient = new WeatherPostGISClient();
+		if (!postgisClient.checkTableExists(Config.LAYERNAME)) {
+			// add ontop mapping file
+			Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
+			new OntopClient().updateOBDA(obda_file);
+
+			String station = weatherClient.createStation(lat,lon,req.getParameter("name"));
+			resp.getWriter().write("Created weather station <" + station + ">");
+		} else {
+			// table exists, check table contents for an equivalent point
+			if (!postgisClient.checkPointExists(lat, lon)) {
+				String station = weatherClient.createStation(lat,lon,req.getParameter("name"));
+				resp.getWriter().write("Created weather station <" + station + ">");
+			} else {
+				LOGGER.info("There is already a station at the given coordinates");
+			}
+		}
+	}
     
     /**
      * this setter is created purely for the purpose of junit testing where 
