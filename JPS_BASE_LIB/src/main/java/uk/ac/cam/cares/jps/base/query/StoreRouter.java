@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,8 +17,8 @@ import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import uk.ac.cam.cares.jps.base.cache.LRUCache;
 import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -35,7 +36,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
  *
  */
 public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
-	private static Logger LOGGER = LogManager.getLogger(StoreRouter.class);
+	public static final Logger LOGGER = LogManager.getLogger(StoreRouter.class);
 	public static final String FILE="file://";
 	public static final String HTTP="http://";
 	public static final String HTTPS="https://";
@@ -66,6 +67,10 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	public static String storeRouterEndpoint;
 	public static final String STOREROUTER_ENDPOINT_NAME = "STOREROUTER_ENDPOINT";
 	
+	private static final int CACHE_SIZE = 100;
+	private static final int QUERY_INDEX = 0;
+	private static final int UPDATE_INDEX = 1;
+	
 	static{
 		storeRouterEndpoint = System.getenv(STOREROUTER_ENDPOINT_NAME);
 		if(storeRouterEndpoint == null) {
@@ -86,18 +91,9 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	
 	static StoreRouter storeRouter = null;
 		
-	/**
-	 * Set STOREROUTER_ENDPOINT
-	 * @param endpoint
-	 */
-	public static void setRouterEndpoint(String endpoint) {
-		//TODO constructor
-		if (storeRouter == null) {
-			storeRouter = new StoreRouter();
-		}
-		STOREROUTER_ENDPOINT = endpoint;
+	private StoreRouter() {
+		super(new LRUCache<String,List<String>>(CACHE_SIZE));
 	}
-	
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
 	 * provided as the input. For query and/or update operations, it
@@ -127,32 +123,33 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		
 		if (targetResourceID != null && !targetResourceID.isEmpty()) {
 			
-			//TODO constructor
-			if (storeRouter == null) {
-				storeRouter = new StoreRouter();
+			synchronized(StoreRouter.class) {
+				if (storeRouter == null) {
+					storeRouter = new StoreRouter();
+				}
 			}
-		
+			
 			if (isFileBasedTargetResourceID(targetResourceID)) {
 			  
-				//TODO get
 				String relativePath = getPathComponent(targetResourceID);
-				String rootPath = getPathComponent(storeRouter.getLocalFilePath(storeRouterEndpoint, TOMCAT_ROOT_LABEL));
+				String rootPath = getPathComponent(storeRouter.getLocalFilePath(TOMCAT_ROOT_LABEL));
 				String filePath =  joinPaths(rootPath, relativePath);
 				LOGGER.info("File based resource. file path="+filePath);
 				
 				kbClient = new FileBasedStoreClient(filePath);	
 			}else if(isRemoteTargetResourceID(targetResourceID)){
 				
+				//Get
+				
 				String targetResourceLabel = getLabelFromTargetResourceID(targetResourceID);
 				LOGGER.info("Remote store. targetResourceLabel="+targetResourceLabel);
 				
+				List<String> endpoints = storeRouter.get(targetResourceLabel);
 				if (isQueryOperation) {
-					//TODO get
-					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
+					queryIRI = endpoints.get(QUERY_INDEX);
 				}
 				if (isUpdateOperation) {
-					//TODO get
-					updateIRI = storeRouter.getUpdateIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
+					updateIRI = endpoints.get(UPDATE_INDEX);
 				}
 				if (queryIRI != null && !queryIRI.isEmpty()) {
 					kbClient = new RemoteStoreClient(queryIRI);
@@ -178,6 +175,24 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		}
 		
 		return kbClient;
+	}
+	
+	@Override
+	public StoreClientInterface getRouterStoreClient() {
+		return new RemoteStoreClient(storeRouterEndpoint);
+	}
+	
+	@Override
+	public List<String> getFromStore(String targetResourceLabel, StoreClientInterface storeClient){
+		
+		String queryIRI = storeRouter.getQueryIRI(targetResourceLabel);
+		String updateIRI = storeRouter.getUpdateIRI(targetResourceLabel);
+		
+		List<String> endpoints = new ArrayList<String>();
+		endpoints.add(QUERY_INDEX,queryIRI);
+		endpoints.add(UPDATE_INDEX,updateIRI);
+		
+		return endpoints;
 	}
 	
 	/**
@@ -276,11 +291,10 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	/**
 	 * Retrieve file path of the target resource/owl file.
 	 * 
-	 * @param kgrouterEndpoint
 	 * @param targetResourceName
 	 * @return
 	 */
-	private String getLocalFilePath(String kgrouterEndpoint, String targetResourceName) {
+	private String getLocalFilePath(String targetResourceName) {
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -290,9 +304,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addVar( QUESTION_MARK.concat(FILE_PATH) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_FILE_PATH), QUESTION_MARK.concat(FILE_PATH) );
-		//TODO getStoreClient
-		//TODO getFromStore
-		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
+		StoreClientInterface rKBClient = getRouterStoreClient();
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
 		JSONArray jsonArray = new JSONArray(json);
@@ -309,12 +321,11 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	/**
 	 * Retrieves the query IRI of the target repository/namespace. 
 	 * 
-	 * @param kgrouterEndpoint
 	 * @param targetResourceName
 	 * @return
 	 * @throws Exception
 	 */
-	private String getQueryIRI(String kgrouterEndpoint, String targetResourceName){
+	private String getQueryIRI(String targetResourceName){
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -324,9 +335,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addVar( QUESTION_MARK.concat(QUERY_ENDPOINT) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) );
-		//TODO getStoreClient
-		//TODO getFromStore
-		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
+		StoreClientInterface rKBClient = getRouterStoreClient();
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
 		JSONArray jsonArray = new JSONArray(json);
@@ -343,12 +352,11 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	/**
 	 * Retrieves the update IRI of the target repository/namespace. 
 	 * 
-	 * @param kgrouterEndpoint
 	 * @param targetResourceName
 	 * @return
 	 * @throws Exception
 	 */
-	private String getUpdateIRI(String kgrouterEndpoint, String targetResourceName){
+	private String getUpdateIRI(String targetResourceName){
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -358,9 +366,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addVar( QUESTION_MARK.concat(UPDATE_ENDPOINT) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_UPDATE_ENDPOINT), QUESTION_MARK.concat(UPDATE_ENDPOINT) );
-		//TODO getStoreClient
-		//TODO getFromStore
-		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
+		StoreClientInterface rKBClient = getRouterStoreClient();
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
 		JSONArray jsonArray = new JSONArray(json);
