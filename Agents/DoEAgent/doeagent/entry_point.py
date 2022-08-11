@@ -1,5 +1,7 @@
 from pyderivationagent.conf import config_derivation_agent
-from doeagent.agent import *
+
+from doeagent.agent import DoEAgent
+from doeagent.agent import default
 
 import logging
 
@@ -18,10 +20,12 @@ def create_app():
         kg_user=agent_config.KG_USERNAME,
         kg_password=agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=agent_config.REGISTER_AGENT,
         logger_name="prod"
     )
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
-    agent.start_monitoring_derivations()
+    agent.start_all_periodical_job()
+
     return agent.app
