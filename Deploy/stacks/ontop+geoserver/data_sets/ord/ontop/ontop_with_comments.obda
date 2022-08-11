@@ -2,6 +2,7 @@
 :		http://example.org/crops/
 os:           http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#
 op:           http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#
+kb:           http://www.theworldavatar.com/kb/ontospecies/
 gc:           http://purl.org/gc/
 ex:		http://example.org/
 sio:          http://semanticscience.org/resource/
@@ -36,17 +37,33 @@ target exp:RxnExp_{"Reaction ID"} rdf:type OntoRxn:ReactionExperiment ;
               # Phase definition
               SinglePhase:Phase_{"ReactionInput_ID"} rdf:type OntoCAPEPha:SinglePhase;
               OntoCAPEMat:representsThermodynamicBehavior exp:InputChemical_{"ReactionInput_ID"};
-              #OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+              OntoCAPEPha:hasStateOfAggregation {"ReactionInput_key"};
               OntoCAPEPha:has_composition SinglePhase:Composition_{"ReactionInput_ID"};
               OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_{"Compound_ID"} .
               # Composition definition
               SinglePhase:Composition_{"ReactionInput_ID"} rdf:type OntoCAPEPha:Composition;
               OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_{"Compound_ID"}_Property.
+              # Phase Component
+              SinglePhase:PhaseComponent_{"Compound_ID"} rdf:type OntoCAPEPha:PhaseComponent ;
+              OntoCAPEPha:representsOccurenceOf {"Identifier"} .
+              #OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Mole ;
+              #OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Volume .
+              # Phase Component Property
+              #SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Mole rdf:type OntoCAPEPha:Mole;
+              #OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Mole .
+              #SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Volume rdf:type OntoCAPEPha:Volume;
+              #OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Volume .
+              # Scalar value
+              # SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Mole rdf:type OntoCAPEUpp:ScalarValue;
+              # OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+              # OntoCAPEUpp:numericalValue "0.5"^^xsd:double.
 # define the SQL query
 source     SELECT "Reaction"."ID" AS "Reaction ID", "ReactionIdentifier"."value", 
-          "Reaction_inputs_ReactionInput"."ReactionInput_ID" as "ReactionInput_ID",
-          "ReactionInput"."addition_order", "ReactionInput_components_Compound"."Compound_ID" as "Compound_ID",
-          "Compound"."reaction_role", "Compound"."is_limiting"
+          "Reaction_inputs_ReactionInput"."ID" as "ReactionInput_ID",
+          "Reaction_inputs_ReactionInput"."key_or_index" as "ReactionInput_key",
+          "ReactionInput"."addition_order", "ReactionInput_components_Compound"."ID" as "Compound_ID",
+          "Compound"."reaction_role", "Compound"."is_limiting",
+          "CompoundIdentifier"."value" as "Identifier"
           FROM "Reaction"
           INNER JOIN "Reaction_identifiers_ReactionIdentifier"
           ON "Reaction"."ID"= "Reaction_identifiers_ReactionIdentifier"."Reaction_ID"
@@ -60,7 +77,10 @@ source     SELECT "Reaction"."ID" AS "Reaction ID", "ReactionIdentifier"."value"
           ON "Reaction_inputs_ReactionInput"."ID"= "ReactionInput_components_Compound"."ReactionInput_ID"
           INNER JOIN "Compound"
           ON "Compound"."ID"= "ReactionInput_components_Compound"."Compound_ID"
-          INNER JOIN "Compound_amount_Amount"
-          ON "Compound_amount_Amount"."Compound_ID"= "ReactionInput_components_Compound"."ID"
+          INNER JOIN "Compound_identifiers_CompoundIdentifier"
+          ON "ReactionInput_components_Compound"."ID"= "Compound_identifiers_CompoundIdentifier"."Compound_ID"
+          INNER JOIN "CompoundIdentifier"
+          ON "CompoundIdentifier"."ID"= "Compound_identifiers_CompoundIdentifier"."CompoundIdentifier_ID"
+          WHERE "CompoundIdentifier"."type" = 'SMILES'
 ]]
 
