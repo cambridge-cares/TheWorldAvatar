@@ -178,12 +178,12 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	}
 	
 	@Override
-	public StoreClientInterface getRouterStoreClient() {
+	protected StoreClientInterface getRouterStoreClient() {
 		return new RemoteStoreClient(storeRouterEndpoint);
 	}
 	
 	@Override
-	public List<String> getFromStore(String targetResourceLabel, StoreClientInterface storeClient){
+	protected List<String> getFromStore(String targetResourceLabel, StoreClientInterface storeClient){
 		
 		String queryIRI = storeRouter.getQueryIRI(targetResourceLabel);
 		String updateIRI = storeRouter.getUpdateIRI(targetResourceLabel);

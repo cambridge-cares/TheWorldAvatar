@@ -87,7 +87,7 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * 
 	 * @return storeClient
 	 */
-	abstract public StoreClientInterface getRouterStoreClient();
+	abstract protected StoreClientInterface getRouterStoreClient();
 	
 	/**
 	 * Extending class to implement logic for getting value(s) from triple store
@@ -97,5 +97,5 @@ public abstract class AbstractCachedRouter<K, V> {
 	 * 
 	 * @return value
 	 */
-	abstract public V getFromStore(K key, StoreClientInterface storeClient);	
+	abstract protected V getFromStore(K key, StoreClientInterface storeClient);	
 }
