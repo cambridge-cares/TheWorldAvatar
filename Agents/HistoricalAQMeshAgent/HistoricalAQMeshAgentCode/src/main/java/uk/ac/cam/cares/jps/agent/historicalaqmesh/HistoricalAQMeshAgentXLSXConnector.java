@@ -152,9 +152,14 @@ public class HistoricalAQMeshAgentXLSXConnector {
 			Object value2_2;
 			try {
 				value2 = cell.getNumericCellValue(); 
-			readingsPer5Minutes.put(keyCell.getStringCellValue(), value2);
+				 Double value2_3 = value2 * 1.000;
+                 int value=value2_3.intValue();
+			readingsPer5Minutes.put(keyCell.getStringCellValue(), value);
 			} catch (NullPointerException e) {
 				value2_2 = JSONObject.NULL;
+				readingsPer5Minutes.put(keyCell.getStringCellValue(), value2_2);
+			} catch (IllegalStateException e) {
+				value2_2 = cell.getStringCellValue();
 				readingsPer5Minutes.put(keyCell.getStringCellValue(), value2_2);
 			}
 			break; 
@@ -193,6 +198,7 @@ public class HistoricalAQMeshAgentXLSXConnector {
 				readingsPer5Minutes.put(keyCell.getStringCellValue(), value5_2);
 			}
 			break;
+			
 			
 			case "stringSerialNumber":    //field that represents sensor serial number
 				System.out.println(keyCell.getStringCellValue());
@@ -245,12 +251,17 @@ public class HistoricalAQMeshAgentXLSXConnector {
         else if (jsonKey.contains("noise")) {
             return "Double";
         }
+        else if (jsonKey.contains("pod_serial_number") || jsonKey.contains("owner_number") || jsonKey.contains("location_number") || jsonKey.contains("_serial_number")) {
+            return "Integer";
+        }
+        /*
         else if (jsonKey.contains("aux2_sensor_serial_number") || jsonKey.contains("uart_sensor_serial_number") || jsonKey.contains("aux1_sensor_serial_number") || jsonKey.contains("h2s_sensor_serial_number")) {
             return "stringSerialNumber";
         }
         else if (jsonKey.contains("pod_serial_number") || jsonKey.contains("owner_number") || jsonKey.contains("location_number") || jsonKey.contains("_serial_number")) {
             return "getStringConvertToInteger";
         }
+        */
         // Sensor readings and corresponding offset and slope are floating point numbers
         else if (jsonKey.contains("prescale") || jsonKey.contains("slope") || jsonKey.contains("offset")) {
             return "Double";
