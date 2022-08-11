@@ -14,8 +14,6 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
     private final Map<String, String> layerCreationOptions = new HashMap<>();
     @JsonProperty
     private final Map<String, String> outputDatasetOpenOptions = new HashMap<>();
-    @JsonProperty
-    private String sql;
 
     public Ogr2OgrOptions addDatasetCreationOption(String name, String value) {
         datasetCreationOptions.put(name, value);
@@ -37,10 +35,6 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
         if (null != layerName) {
             allArgs.add("-nln");
             allArgs.add(layerName);
-        }
-        if (null != sql) {
-            allArgs.add("-sql");
-            allArgs.add(sql);
         }
         datasetCreationOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-dsco", name, value));
         layerCreationOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-lco", name, value));
