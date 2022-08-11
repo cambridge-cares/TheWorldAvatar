@@ -112,7 +112,7 @@ public class HistoricalAQMeshAgentXLSXConnector {
 			int a = sheet.getLastRowNum();
 			int b = numOfKeys;
 			readings = new JSONArray();
-			for (int i = 1 ; i <= a-1; i++) {
+			for (int i = 1 ; i <= a; i++) {
 			Row row=sheet.getRow(i); //returns the logical row
 			readingsPer5Minutes = new JSONObject();
 			for (int j = 0; j < b; j++) {

@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jooq.exception.DataAccessException;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
@@ -12,10 +13,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.text.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,7 +75,7 @@ public class HistoricalAQMeshAgent {
                 mappingFolder = System.getenv(prop.getProperty("aqmesh.mappingfolder"));
                 }
                 catch (NullPointerException e) {
-                	throw new IOException ("The key thingsboard.mappingfolder cannot be found in the properties file.");
+                	throw new IOException ("The key aqmesh.mappingfolder cannot be found in the properties file.");
                 }
             if (mappingFolder == null) {
                 throw new InvalidPropertiesFormatException("The properties file does not contain the key aqmesh.mappingfolder " +
@@ -138,8 +142,14 @@ public class HistoricalAQMeshAgent {
                 // Get the classes (datatype) corresponding to each JSON key needed for initialization
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
+                try {
                 tsClient.initTimeSeries(iris, classes, timeUnit);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+            } catch (Exception e) {
+            	throw new JPSRuntimeException("Could not initialize timeseries!");
+            } finally {
+            	tsClient.disconnectRDB();
+            }
             }
         }
     }
@@ -165,6 +175,8 @@ public class HistoricalAQMeshAgent {
         		else {
         			throw e;
         		}        		
+        	} finally {
+        		tsClient.disconnectRDB();
         	}
         }
         return true;
@@ -194,8 +206,14 @@ public class HistoricalAQMeshAgent {
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
-                    tsClient.addTimeSeriesData(ts);
-                    LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                	try {
+                        tsClient.addTimeSeriesData(ts);
+                        LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                    } catch (Exception e) {
+                    	throw new JPSRuntimeException("Could not add timeseries data!");
+                    } finally {
+                    	tsClient.disconnectRDB();
+                    }
                 }
             }
         }
@@ -329,11 +347,14 @@ public class HistoricalAQMeshAgent {
      * @return The resulting datetime object.
      */
     private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
+    	
         // Convert first to a local time
+        
         LocalDateTime localTime = LocalDateTime.parse(timestamp);
         
         // Then add the zone id
-        return OffsetDateTime.of(localTime, HistoricalAQMeshAgent.ZONE_OFFSET).minusHours(8);
+  
+        return OffsetDateTime.of(localTime, HistoricalAQMeshAgent.ZONE_OFFSET);
     }
 
     /**

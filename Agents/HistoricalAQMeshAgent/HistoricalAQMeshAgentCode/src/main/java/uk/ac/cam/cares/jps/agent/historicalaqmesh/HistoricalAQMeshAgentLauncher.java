@@ -38,10 +38,10 @@ public class HistoricalAQMeshAgentLauncher extends JPSAgent {
      * Logging / error messages
      */
     private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.";
-    private static final String AGENT_ERROR_MSG = "The AQMesh input agent could not be constructed!";
+    private static final String AGENT_ERROR_MSG = "The Historical AQMesh agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
-    private static final String CONNECTOR_ERROR_MSG = "Could not construct the AQMesh API connector needed to interact with the API!";
+    private static final String CONNECTOR_ERROR_MSG = "Could not construct the AQMesh XLSX connector needed to interact with the Excel file!";
     private static final String GET_READINGS_ERROR_MSG = "One or both readings could not be retrieved, this might have created a mismatch" +
             " in the pointers if one readings was successful and needs to be fixed!";
     private static final String ONE_READING_EMPTY_ERROR_MSG = "One of the readings (gas or particle) is empty, that means there is " +
@@ -130,8 +130,9 @@ public class HistoricalAQMeshAgentLauncher extends JPSAgent {
         LOGGER.info("Input agent object initialized.");
 
         // Create and set the time series client
+        TimeSeriesClient<OffsetDateTime> tsClient;
         try {
-            TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
+            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
             agent.setTsClient(tsClient);
         } catch (IOException | JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
