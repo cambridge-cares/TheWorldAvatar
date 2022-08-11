@@ -36,7 +36,9 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
  *
  */
 public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
+	
 	public static final Logger LOGGER = LogManager.getLogger(StoreRouter.class);
+	
 	public static final String FILE="file://";
 	public static final String HTTP="http://";
 	public static final String HTTPS="https://";
@@ -64,13 +66,18 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
 	
-	public static String storeRouterEndpoint;
+	/**
+	 * List of file extensions for file based resources
+	 * ".owl",".rdf",".nt"
+	 */
+	public static final List<String> FILE_EXTENSIONS = Arrays.asList(".owl",".rdf",".nt"); //File extensions
+	
+	/*
+	 * Static initialisation of the store router endpoint from environment variable 
+	 * or, if one does not exist, from the jps.properties file. 
+	 */
 	public static final String STOREROUTER_ENDPOINT_NAME = "STOREROUTER_ENDPOINT";
-	
-	private static final int CACHE_SIZE = 100;
-	private static final int QUERY_INDEX = 0;
-	private static final int UPDATE_INDEX = 1;
-	
+	public static String storeRouterEndpoint;
 	static{
 		storeRouterEndpoint = System.getenv(STOREROUTER_ENDPOINT_NAME);
 		if(storeRouterEndpoint == null) {
@@ -82,18 +89,21 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		}
 		LOGGER.info("STOREROUTER_ENDPOINT set to "+storeRouterEndpoint);		
 	}
-	
-	/**
-	 * List of file extensions for file based resources
-	 * ".owl",".rdf",".nt"
+		
+	/*
+	 * LRU Cache configuration:
+	 * key=label, value=[queryEndpoint, updateEndpoint] 
 	 */
-	public static final List<String> fileExtensions = Arrays.asList(".owl",".rdf",".nt"); //File extensions
+	private static final int CACHE_SIZE = 100;
+	private static final int QUERY_INDEX = 0;
+	private static final int UPDATE_INDEX = 1;
 	
-	static StoreRouter storeRouter = null;
+	private static StoreRouter storeRouter = null;
 		
 	private StoreRouter() {
 		super(new LRUCache<String,List<String>>(CACHE_SIZE));
 	}
+	
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
 	 * provided as the input. For query and/or update operations, it
@@ -138,13 +148,12 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				
 				kbClient = new FileBasedStoreClient(filePath);	
 			}else if(isRemoteTargetResourceID(targetResourceID)){
-				
-				//Get
-				
+
 				String targetResourceLabel = getLabelFromTargetResourceID(targetResourceID);
 				LOGGER.info("Remote store. targetResourceLabel="+targetResourceLabel);
 				
 				List<String> endpoints = storeRouter.get(targetResourceLabel);
+
 				if (isQueryOperation) {
 					queryIRI = endpoints.get(QUERY_INDEX);
 				}
@@ -225,7 +234,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 */
 	public static boolean isFileBasedTargetResourceID(String targetResourceID) {
 		//check for valid file extension
-		if( fileExtensions.stream().anyMatch(targetResourceID.trim()::endsWith)) {
+		if( FILE_EXTENSIONS.stream().anyMatch(targetResourceID.trim()::endsWith)) {
 			
 			String path = null;
 			try {
