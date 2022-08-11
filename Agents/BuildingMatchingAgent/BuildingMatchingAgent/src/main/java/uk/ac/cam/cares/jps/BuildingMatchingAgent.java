@@ -20,7 +20,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
-import java.lang.reflect.Field;
 import java.util.*;
 
 @WebServlet(urlPatterns = {BuildingMatchingAgent.URI_LISTEN})
@@ -202,13 +201,13 @@ public class BuildingMatchingAgent extends JPSAgent {
 
     private static SelectBuilder obeQueryBuilder() throws ParseException {
         WhereBuilder inner_where = new WhereBuilder()
-                .addPrefix("dabgeo", dabgeoUri).addPrefix("obe", obeUri)
+                .addPrefix("dabgeo", dabgeoUri).addPrefix(KEY_OBE, obeUri)
                 .addWhere(QM+BLDG, "a", "dabgeo:Building")
                 .addFilter("EXISTS { "+QM+BLDG+"^obe:isIn "+QM+FLAT+" }")
                 .addWhere(QM+FLAT, "obe:hasIdentifier", QM+uprn);
 
         WhereBuilder where = new WhereBuilder()
-                .addPrefix("dabgeo", dabgeoUri).addPrefix("obe", obeUri)
+                .addPrefix("dabgeo", dabgeoUri).addPrefix(KEY_OBE, obeUri)
                 .addWhere(QM+BLDG, "a", "dabgeo:Building")
                 .addFilter("NOT EXISTS {"+QM+BLDG+" ^obe:isIn "+QM+FLAT+" }")
                 .addWhere(QM+BLDG, "obe:hasIdentifier", QM+uprn)
