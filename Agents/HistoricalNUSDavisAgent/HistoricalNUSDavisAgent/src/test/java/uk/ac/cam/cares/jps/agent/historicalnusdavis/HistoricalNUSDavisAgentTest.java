@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.nusDavisWeatherStation;
+package uk.ac.cam.cares.jps.agent.historicalnusdavis;
 
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 import org.json.JSONArray;
@@ -23,12 +23,12 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 
-public class NUSDavisWeatherStationInputAgentTest {
+public class HistoricalNUSDavisAgentTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
     // The default instance used in the tests
-    private NUSDavisWeatherStationInputAgent testAgent;
+    private HistoricalNUSDavisAgent testAgent;
     // The mocking instance for the time series client
     @SuppressWarnings("unchecked")
     private final TimeSeriesClient<OffsetDateTime> mockTSClient = (TimeSeriesClient<OffsetDateTime>) Mockito.mock(TimeSeriesClient.class);
@@ -39,7 +39,7 @@ public class NUSDavisWeatherStationInputAgentTest {
 
     private final String[] keys = {"temp_in","dew_point","heat_index","wind_chill","bar","hum_in","solar_rad", "rain_day_mm" ,"wind_dir"};
     // Default list of timestamps
-    private final String[] timestamps = {"1558729481","1558829481","1558929481","1559029481"};
+    private final String[] timestamps = {"2021-07-11T16:10:00", "2021-07-11T16:15:00", "2021-07-11T16:20:00", "2021-07-11T16:25:00"};
 
     private ArrayList<Double> weatherValues;
     // Readings used by several tests
@@ -65,7 +65,7 @@ public class NUSDavisWeatherStationInputAgentTest {
         // To mock the environment variable, a try catch need to be used
         try {
             SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                testAgent = new NUSDavisWeatherStationInputAgent(propertiesFile);
+                testAgent = new HistoricalNUSDavisAgent(propertiesFile);
             });
         }
         // There should not be any exception thrown as the agent is initiated correctly
@@ -91,7 +91,7 @@ public class NUSDavisWeatherStationInputAgentTest {
 
         for(int i=0; i<timestamps.length;i++) {
             JSONObject measurements = new JSONObject();
-            measurements.put(NUSDavisWeatherStationInputAgent.timestampKey,Integer.parseInt(timestamps[i]) );
+            measurements.put(HistoricalNUSDavisAgent.timestampKey,timestamps[i] );
             for(String key: keys) {
                 if(key.contains("wind_dir")|| key.contains("solar_rad") || key.contains("hum_in")) {
                     measurements.put(key, ivalue);
@@ -115,7 +115,7 @@ public class NUSDavisWeatherStationInputAgentTest {
         // Run constructor on an empty file should give an exception
         writePropertyFile(propertiesFile, new ArrayList<>());
         try {
-            new NUSDavisWeatherStationInputAgent(propertiesFile);
+            new HistoricalNUSDavisAgent(propertiesFile);
             Assert.fail();
         }
         catch (IOException e) {
@@ -127,7 +127,7 @@ public class NUSDavisWeatherStationInputAgentTest {
         writePropertyFile(propertiesFile, Collections.singletonList("nusDavisWeatherStation.mappingfolder=" + folderName));
         // Run constructor that should give an exception
         try {
-            new NUSDavisWeatherStationInputAgent(propertiesFile);
+            new HistoricalNUSDavisAgent(propertiesFile);
             Assert.fail();
         }
         catch (InvalidPropertiesFormatException e) {
@@ -145,7 +145,7 @@ public class NUSDavisWeatherStationInputAgentTest {
         // Run constructor that should give an exception
         try {
             SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                new NUSDavisWeatherStationInputAgent(propertiesFile);
+                new HistoricalNUSDavisAgent(propertiesFile);
                 Assert.fail();
             });
         }
@@ -174,7 +174,7 @@ public class NUSDavisWeatherStationInputAgentTest {
         long secondMappingFileSize = Files.size(Paths.get(secondMappingFile));
         try {
             SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                NUSDavisWeatherStationInputAgent agent = new NUSDavisWeatherStationInputAgent(propertiesFile);
+                HistoricalNUSDavisAgent agent = new HistoricalNUSDavisAgent(propertiesFile);
                 // Assert that the mappings were set
                 Assert.assertEquals(2, agent.getNumberOfTimeSeries());
             });
@@ -199,7 +199,7 @@ public class NUSDavisWeatherStationInputAgentTest {
     @Test
     public void testGetClassFromJSONKey() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make private method accessible
-        Method getClassFromJSONKey =NUSDavisWeatherStationInputAgent.class.getDeclaredMethod("getClassFromJSONKey", String.class);
+        Method getClassFromJSONKey =HistoricalNUSDavisAgent.class.getDeclaredMethod("getClassFromJSONKey", String.class);
         getClassFromJSONKey.setAccessible(true);
 
         // keys should return double class
@@ -210,7 +210,7 @@ public class NUSDavisWeatherStationInputAgentTest {
         Assert.assertEquals(Double.class, getClassFromJSONKey.invoke(testAgent, "rain_rate_mm"));
         Assert.assertEquals(Double.class, getClassFromJSONKey.invoke(testAgent, "wind_chill"));
 
-        Assert.assertEquals(String.class, getClassFromJSONKey.invoke(testAgent,NUSDavisWeatherStationInputAgent.timestampKey));
+        Assert.assertEquals(String.class, getClassFromJSONKey.invoke(testAgent,HistoricalNUSDavisAgent.timestampKey));
 
         Assert.assertEquals(Integer.class, getClassFromJSONKey.invoke(testAgent,"uv"));
         Assert.assertEquals(Integer.class, getClassFromJSONKey.invoke(testAgent, "hum_out"));
@@ -221,7 +221,7 @@ public class NUSDavisWeatherStationInputAgentTest {
     @Test
     public void testTimeSeriesExistAllIRIsTrue() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make method accessible
-        Method timeSeriesExist = NUSDavisWeatherStationInputAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
+        Method timeSeriesExist = HistoricalNUSDavisAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
         timeSeriesExist.setAccessible(true);
         // Set the mock to return true for any IRI
         Mockito.when(mockTSClient.checkDataHasTimeSeries(Mockito.anyString())).thenReturn(true);
@@ -238,7 +238,7 @@ public class NUSDavisWeatherStationInputAgentTest {
     @Test
     public void testTimeSeriesExistAllOneIRIFalse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make method accessible
-        Method timeSeriesExist = NUSDavisWeatherStationInputAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
+        Method timeSeriesExist = HistoricalNUSDavisAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
         timeSeriesExist.setAccessible(true);
         // Set the mock to return false on second IRI
         Mockito.when(mockTSClient.checkDataHasTimeSeries(iris.get(0))).thenReturn(true);
@@ -250,7 +250,7 @@ public class NUSDavisWeatherStationInputAgentTest {
     @Test
     public void testTimeSeriesExistAllIRIFalse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make method accessible
-        Method timeSeriesExist = NUSDavisWeatherStationInputAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
+        Method timeSeriesExist = HistoricalNUSDavisAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
         timeSeriesExist.setAccessible(true);
         // Set the mock to return false for any IRI
         Mockito.when(mockTSClient.checkDataHasTimeSeries(Mockito.anyString())).thenReturn(false);
@@ -383,76 +383,11 @@ public class NUSDavisWeatherStationInputAgentTest {
     }
 
     @Test
-    public void testUpdateDataPrune() {
-
-        JSONArray getSensor=weatherDataReadings.getJSONArray("sensors");
-        JSONObject objSensor=getSensor.getJSONObject(0);
-        JSONArray getData=objSensor.getJSONArray("data");
-
-        Long timestamp =getData.getJSONObject(0).getLong(NUSDavisWeatherStationInputAgent.timestampKey);
-        Date date = new java.util.Date(timestamp*1000);
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String maxTime = sdf.format(date);
-
-        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(OffsetDateTime.parse(maxTime+"+00:00"));
-        // Run the update
-        testAgent.updateData(weatherDataReadings);
-        // Capture the arguments that the add data method was called with
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<TimeSeries<OffsetDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
-        // Ensure that the update was called for each time series
-        int num=testAgent.getNumberOfTimeSeries();
-
-        Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries())).addTimeSeriesData(timeSeriesArgument.capture());
-        // Ensure that the timeseries objects have the correct structure
-        int numIRIs = 0;
-        for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
-
-            numIRIs = numIRIs + ts.getDataIRIs().size();
-        }
-        // Number of unique keys in both readings should match the number of IRIs
-
-
-        JSONArray getSensor1=weatherDataReadings.getJSONArray("sensors");
-        JSONObject objSensor1=getSensor1.getJSONObject(0);
-        JSONArray getData1=objSensor1.getJSONArray("data");
-        JSONObject objData1=getData1.getJSONObject(0);
-
-        Set<String> uniqueKeys = new HashSet<>(objData1.keySet());
-
-        Assert.assertEquals(uniqueKeys.size()-1 , numIRIs);
-    }
-
-    @Test
-    public void testUpdateDataPruneAll() {
-        // Use a max time that is past max time of readings
-        JSONArray getSensor=weatherDataReadings.getJSONArray("sensors");
-        JSONObject objSensor=getSensor.getJSONObject(0);
-        JSONArray getData=objSensor.getJSONArray("data");
-        JSONObject objData=getData.getJSONObject(getData.length()-1);
-
-        Long timestamp = objData.getLong(NUSDavisWeatherStationInputAgent.timestampKey);
-        Date date = new java.util.Date(timestamp*1000);
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String maxTime = sdf.format(date);
-
-
-        OffsetDateTime endTime = OffsetDateTime.parse(maxTime+"+00:00");
-        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(endTime.plusDays(1));
-        // Run the update
-        testAgent.updateData(weatherDataReadings);
-        // Ensure that the update is never called
-        Mockito.verify(mockTSClient, Mockito.never()).addTimeSeriesData(Mockito.any());
-    }
-
-    @Test
     public void testJsonObjectToMapEmptyReadings() throws NoSuchMethodException, InvocationTargetException,
             IllegalAccessException {
         JSONObject readings = new JSONObject();
         // Make method accessible
-        Method jsonObjectToMap = NUSDavisWeatherStationInputAgent.class.getDeclaredMethod("jsonObjectToMap", JSONObject.class);
+        Method jsonObjectToMap = HistoricalNUSDavisAgent.class.getDeclaredMethod("jsonObjectToMap", JSONObject.class);
         jsonObjectToMap.setAccessible(true);
         try {
             @SuppressWarnings("unchecked")
@@ -467,7 +402,7 @@ public class NUSDavisWeatherStationInputAgentTest {
     @Test
     public void testJsonObjectToMap() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make method accessible
-        Method jsonObjectToMap = NUSDavisWeatherStationInputAgent.class.getDeclaredMethod("jsonObjectToMap", JSONObject.class);
+        Method jsonObjectToMap = HistoricalNUSDavisAgent.class.getDeclaredMethod("jsonObjectToMap", JSONObject.class);
         jsonObjectToMap.setAccessible(true);
         // Transform the readings
         @SuppressWarnings("unchecked")
@@ -485,7 +420,7 @@ public class NUSDavisWeatherStationInputAgentTest {
             String key = it.next();
             Assert.assertTrue(readings.containsKey(key));
         }
-        Assert.assertTrue(readings.containsKey(NUSDavisWeatherStationInputAgent.timestampKey));
+        Assert.assertTrue(readings.containsKey(HistoricalNUSDavisAgent.timestampKey));
     }
 
 
@@ -516,7 +451,7 @@ public class NUSDavisWeatherStationInputAgentTest {
         //Mock environment variable TEST_MAPPINGS to be equivalent to the file path for the mapping folder
         try {
             SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                NUSDavisWeatherStationInputAgent agent = new NUSDavisWeatherStationInputAgent(propertiesFile);
+                HistoricalNUSDavisAgent agent = new HistoricalNUSDavisAgent(propertiesFile);
 
                 String[] Timestamps = {"2021-07-11T16:10:00", "2021-07-11T16:15:00",
                         "2021-07-11T16:20:00", "2021-07-11T16:25:00"};
@@ -524,7 +459,7 @@ public class NUSDavisWeatherStationInputAgentTest {
                 Map<String, List<?>> weatherReadings = new HashMap<>();
 
                 // Make method accessible
-                Method convertReadingsToTimeSeries = NUSDavisWeatherStationInputAgent.class.getDeclaredMethod("convertReadingsToTimeSeries", Map.class, Map.class);
+                Method convertReadingsToTimeSeries = HistoricalNUSDavisAgent.class.getDeclaredMethod("convertReadingsToTimeSeries", Map.class, Map.class);
                 convertReadingsToTimeSeries.setAccessible(true);
 
                 // Use readings only consisting of times, should give an error as keys are not covered
@@ -532,7 +467,7 @@ public class NUSDavisWeatherStationInputAgentTest {
                     // Create the readings //
 
 
-                    timeStampReadings.put(NUSDavisWeatherStationInputAgent.timestampKey, Arrays.asList(Timestamps));
+                    timeStampReadings.put(HistoricalNUSDavisAgent.timestampKey, Arrays.asList(Timestamps));
                     convertReadingsToTimeSeries.invoke(agent, weatherReadings, timeStampReadings);
                     Assert.fail();
                 }
@@ -556,13 +491,13 @@ public class NUSDavisWeatherStationInputAgentTest {
                 // Check content of the time series
                 for(Object obj: timeSeries) {
                     TimeSeries<?> currentTimeSeries = (TimeSeries<?>) obj;
-                    if(currentTimeSeries.getTimes().size() == timeStampReadings.get(NUSDavisWeatherStationInputAgent.timestampKey).size()) {
+                    if(currentTimeSeries.getTimes().size() == timeStampReadings.get(HistoricalNUSDavisAgent.timestampKey).size()) {
                         // Number of IRIs should match the number of keys
                         Assert.assertEquals(generalKeys.length, currentTimeSeries.getDataIRIs().size());
                         for(String iri: currentTimeSeries.getDataIRIs()) {
                             List<?> values = currentTimeSeries.getValues(iri);
                             // The size of value should match the number of time stamps
-                            Assert.assertEquals(timeStampReadings.get(NUSDavisWeatherStationInputAgent.timestampKey).size(), values.size());
+                            Assert.assertEquals(timeStampReadings.get(HistoricalNUSDavisAgent.timestampKey).size(), values.size());
                             Assert.assertEquals(Double.class, values.get(0).getClass());
                             // Check values
                             Assert.assertEquals(weatherDataReadings.get(generalKeys[0]), values);
@@ -580,65 +515,21 @@ public class NUSDavisWeatherStationInputAgentTest {
     @Test
     public void testConvertStringToOffsetDateTime() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make method accessible
-        Method convertStringToOffsetDateTime = NUSDavisWeatherStationInputAgent.class.getDeclaredMethod("convertStringToOffsetDateTime", String.class);
+        Method convertStringToOffsetDateTime = HistoricalNUSDavisAgent.class.getDeclaredMethod("convertStringToOffsetDateTime", String.class);
         convertStringToOffsetDateTime.setAccessible(true);
         // Test with a valid string
-        Long ts_01 = 1234560000000L;
-        Date date = new java.util.Date(ts_01);
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Object ts01 = sdf.format(date);
-        OffsetDateTime time = (OffsetDateTime) convertStringToOffsetDateTime.invoke(testAgent, ts01.toString());
-        Assert.assertEquals(2009, time.getYear());
-        Assert.assertEquals(2, time.getMonth().getValue());
-        Assert.assertEquals(13, time.getDayOfMonth());
-        Assert.assertEquals(21, time.getHour());
-        Assert.assertEquals(20, time.getMinute());
+        String ts = "2021-07-11T16:10:00";
+        
+        
+        OffsetDateTime time = (OffsetDateTime) convertStringToOffsetDateTime.invoke(testAgent, ts);
+        Assert.assertEquals(2021, time.getYear());
+        Assert.assertEquals(7, time.getMonth().getValue());
+        Assert.assertEquals(11, time.getDayOfMonth());
+        Assert.assertEquals(16, time.getHour());
+        Assert.assertEquals(10, time.getMinute());
         Assert.assertEquals(0, time.getOffset().getTotalSeconds());
         Assert.assertEquals(ZoneOffset.UTC, time.getOffset());
     }
 
-    @Test
-    public void testPruneTimeSeries() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        // Initialize time series
-        List<String> iris = Arrays.asList("data_int","data_str");
-        List<Integer> intValues = new ArrayList<>();
-        List<String> stringValues = new ArrayList<>();
-        String[] timestamps = {"2022-07-11T16:10:00+00:00", "2022-07-11T16:15:00+00:00",
-                "2022-07-11T16:20:00+00:00", "2022-07-11T16:25:00+00:00"};
 
-        List<OffsetDateTime> times = new ArrayList<>();
-        for (int i = 0; i < timestamps.length; i++) {
-            times.add(OffsetDateTime.parse(timestamps[i]));
-            intValues.add(i);
-            stringValues.add(String.valueOf(i));
-        }
-        List<List<?>> values = Arrays.asList(intValues, stringValues);
-        TimeSeries<OffsetDateTime> timeSeries = new TimeSeries<>(times, iris, values);
-        // Make method accessible
-        Method pruneTimeSeries = NUSDavisWeatherStationInputAgent.class.getDeclaredMethod("pruneTimeSeries", TimeSeries.class, OffsetDateTime.class);
-        pruneTimeSeries.setAccessible(true);
-
-        // Maximum time lies before the smallest time in the time series -> no pruning
-        TimeSeries<?> prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, OffsetDateTime.parse("2022-07-11T15:00:00+00:00"));
-        Assert.assertEquals(times.size(), prunedTimeSeries.getTimes().size());
-        for (String iri: iris) {
-            Assert.assertEquals(timeSeries.getValues(iri), prunedTimeSeries.getValues(iri));
-        }
-
-        // Maximum time lies within the time series -> pruning
-        prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, OffsetDateTime.parse("2022-07-11T16:16:00+00:00"));
-        Assert.assertEquals(2, prunedTimeSeries.getTimes().size());
-        for (String iri: iris) {
-            Assert.assertEquals(timeSeries.getValues(iri).subList(2, times.size()), prunedTimeSeries.getValues(iri));
-        }
-
-        // Maximum time lies after time series -> prune all
-        prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, OffsetDateTime.parse("2022-07-11T16:30:00+00:00"));
-        Assert.assertEquals(0, prunedTimeSeries.getTimes().size());
-        for (String iri: iris) {
-            Assert.assertEquals(new ArrayList<>(), prunedTimeSeries.getValues(iri));
-        }
-
-    }
 }

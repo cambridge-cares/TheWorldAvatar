@@ -31,10 +31,10 @@ COPY ./config/agent.properties /root/agent.properties
 ENV HISTORICALDAVIS_AGENTPROPERTIES="/root/agent.properties"
 
 # Copy in the properties file
-COPY ./config/api.properties /root/api.properties
+COPY ./config/xlsxconnector.properties /root/xlsxconnector.properties
 
 # Set the required environment variable
-ENV HISTORICALDAVIS_APIPROPERTIES="/root/api.properties"
+ENV HISTORICALDAVIS_CONNECTORPROPERTIES="/root/xlsxconnector.properties"
 
 # Copy in the properties file
 COPY ./config/client.properties /root/client.properties

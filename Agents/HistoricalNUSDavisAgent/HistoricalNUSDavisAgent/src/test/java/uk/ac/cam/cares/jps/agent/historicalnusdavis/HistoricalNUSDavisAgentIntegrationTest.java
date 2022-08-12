@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.nusDavisWeatherStation;
+package uk.ac.cam.cares.jps.agent.historicalnusdavis;
 
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 import org.json.JSONArray;
@@ -27,7 +27,7 @@ import java.util.*;
 @Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 @Testcontainers
-public class NUSDavisWeatherStationInputAgentIntegrationTest {
+public class HistoricalNUSDavisAgentIntegrationTest {
     // Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
     // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
@@ -42,7 +42,7 @@ public class NUSDavisWeatherStationInputAgentIntegrationTest {
     public TemporaryFolder folder = new TemporaryFolder();
 
     // NUSDavisWeatherStation Input Agent
-    private NUSDavisWeatherStationInputAgent agent;
+    private HistoricalNUSDavisAgent agent;
     // Time series client for connection with KG and database
     private TimeSeriesClient<OffsetDateTime> tsClient;
 
@@ -56,7 +56,7 @@ public class NUSDavisWeatherStationInputAgentIntegrationTest {
     private ArrayList<String> IRIs;
 
     // Default list of timestamps
-    private final String[] timestamps = {"1558729481","1558829481","1558929481","1559029481"};
+    private final String[] timestamps = {"2021-07-11T16:10:00", "2021-07-11T16:15:00", "2021-07-11T16:20:00", "2021-07-11T16:25:00"};
 
 
     // Values created as example readings
@@ -95,7 +95,7 @@ public class NUSDavisWeatherStationInputAgentIntegrationTest {
         writePropertyFile(propertiesFile, Collections.singletonList("nusDavisWeatherStation.mappingfolder=TEST_MAPPINGS"));
         try {
             SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                agent = new NUSDavisWeatherStationInputAgent(propertiesFile);
+                agent = new HistoricalNUSDavisAgent(propertiesFile);
             });
         }
         catch (Exception e) {
@@ -137,12 +137,12 @@ public class NUSDavisWeatherStationInputAgentIntegrationTest {
 
         for(int i=0; i<timestamps.length;i++) {
             JSONObject measurements = new JSONObject();
-            measurements.put(NUSDavisWeatherStationInputAgent.timestampKey,Long.parseLong(timestamps[i]) );
+            measurements.put(HistoricalNUSDavisAgent.timestampKey,timestamps[i] );
             for(String key: keys) {
                 measurements.put(key, value);
             }
             data.put(measurements);
-            weatherValues.add((5.0 * (value - 32.0)) / 9.0);
+            weatherValues.add(value);
             value++;
         }
         jsObj1.put("data",data);
@@ -240,19 +240,11 @@ public class NUSDavisWeatherStationInputAgentIntegrationTest {
         for (String iri: IRIs) {
             Assert.assertEquals(weatherValues, ts.getValues(iri));
         }
-        for (int i=0;i< timestamps.length;++i){
-
-            Long timestamp = Long.parseLong(timestamps[i]);
-            Date date = new java.util.Date(timestamp*1000);
-            SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String dateTime = sdf.format(date);
-            timestamps[i]=dateTime;
-        }
+        
         // Assert timestamps
-        Assert.assertTrue(OffsetDateTime.of(LocalDateTime.parse(timestamps[0]), NUSDavisWeatherStationInputAgent.ZONE_OFFSET)
+        Assert.assertTrue(OffsetDateTime.of(LocalDateTime.parse(timestamps[0]), HistoricalNUSDavisAgent.ZONE_OFFSET)
                 .isEqual(tsClient.getMinTime(IRIs.get(0))));
-        Assert.assertTrue(OffsetDateTime.of(LocalDateTime.parse(timestamps[timestamps.length-1]), NUSDavisWeatherStationInputAgent.ZONE_OFFSET)
+        Assert.assertTrue(OffsetDateTime.of(LocalDateTime.parse(timestamps[timestamps.length-1]), HistoricalNUSDavisAgent.ZONE_OFFSET)
                 .isEqual(tsClient.getMaxTime(IRIs.get(0))));
     }
 
@@ -267,46 +259,6 @@ public class NUSDavisWeatherStationInputAgentIntegrationTest {
         catch(Exception e){
             Assert.assertTrue(e.getCause().getMessage().contains("Readings can not be empty!"));
         }
-    }
-
-    @Test
-    public void testUpdateTimeSeriesWithPruning() {
-        insertTimeSeries();
-        // Add data for weather readings up to last reading
-        List<OffsetDateTime> times = new ArrayList<>();
-        for (int i=0;i< timestamps.length;++i){
-            Long timestamp = Long.parseLong(timestamps[i]);
-            Date date = new java.util.Date(timestamp*1000);
-            SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String dateTime = sdf.format(date);
-            timestamps[i]=dateTime;
-        }
-        for(int i = 0; i < timestamps.length ; i++) {
-            if (i < (timestamps.length-1)) {
-                times.add(OffsetDateTime.of(LocalDateTime.parse(timestamps[i]), NUSDavisWeatherStationInputAgent.ZONE_OFFSET));
-            }
-        }
-        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(times, IRIs,
-                Collections.nCopies(IRIs.size(), weatherValues.subList(0, weatherValues.size()-1)));
-        tsClient.addTimeSeriesData(ts);
-        // Update data through agent
-        agent.updateData(weatherDataReadings);
-        // Check that database was updated and existing data is untouched
-        ts = tsClient.getTimeSeries(IRIs);
-        JSONArray getSensor=weatherDataReadings.getJSONArray("sensors");
-        JSONObject objSensor=getSensor.getJSONObject(0);
-        JSONArray getData=objSensor.getJSONArray("data");
-        Assert.assertEquals(getData.length(),ts.getTimes().size());
-        // Check that data content is correct
-        for (String iri: IRIs) {
-            Assert.assertEquals(weatherValues, ts.getValues(iri));
-        }
-        // Assert timestamps
-        Assert.assertTrue(OffsetDateTime.of(LocalDateTime.parse(timestamps[0]), NUSDavisWeatherStationInputAgent.ZONE_OFFSET)
-                .isEqual(tsClient.getMinTime(IRIs.get(0))));
-        Assert.assertTrue(OffsetDateTime.of(LocalDateTime.parse(timestamps[timestamps.length-1]), NUSDavisWeatherStationInputAgent.ZONE_OFFSET)
-                .isEqual(tsClient.getMaxTime(IRIs.get(0))));
     }
 
     private void insertTimeSeries() {

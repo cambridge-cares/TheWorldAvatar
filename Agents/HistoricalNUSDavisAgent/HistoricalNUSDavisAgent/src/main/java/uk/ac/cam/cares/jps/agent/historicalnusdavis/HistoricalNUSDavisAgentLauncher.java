@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.HistoricalNUSDavisWeatherStation;
+package uk.ac.cam.cares.jps.agent.historicalnusdavis;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,16 +24,16 @@ import java.time.OffsetDateTime;
  * @author GMMajal
  */
 @WebServlet(urlPatterns = {"/retrieve"})
-public class HistoricalNUSDavisWeatherStationAgentLauncher extends JPSAgent {
+public class HistoricalNUSDavisAgentLauncher extends JPSAgent {
     public static final String KEY_AGENTPROPERTIES = "agentProperties";
-    public static final String KEY_APIPROPERTIES = "apiProperties";
+    public static final String KEY_APIPROPERTIES = "connectorProperties";
     public static final String KEY_CLIENTPROPERTIES = "clientProperties";
 
 
     /**
      * Logger for reporting info/errors.
      */
-    private static final Logger LOGGER = LogManager.getLogger(HistoricalNUSDavisWeatherStationAgentLauncher.class);
+    private static final Logger LOGGER = LogManager.getLogger(HistoricalNUSDavisAgentLauncher.class);
     /**
      * Logging / error messages
      */
@@ -57,8 +57,8 @@ public class HistoricalNUSDavisWeatherStationAgentLauncher extends JPSAgent {
             LOGGER.info("Passing request to NUS Davis Weather Station Input Agent..");
             String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
             String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
-            String apiProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
-            String[] args = new String[] {agentProperties,clientProperties,apiProperties};
+            String connectorProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
+            String[] args = new String[] {agentProperties,clientProperties,connectorProperties};
             jsonMessage = initializeAgent(args);
             jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
             requestParams = jsonMessage;
@@ -73,7 +73,7 @@ public class HistoricalNUSDavisWeatherStationAgentLauncher extends JPSAgent {
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         boolean validate = true;
         String agentProperties;
-        String apiProperties;
+        String connectorProperties;
         String clientProperties;
         if (requestParams.isEmpty()) {
             validate = false;
@@ -89,13 +89,13 @@ public class HistoricalNUSDavisWeatherStationAgentLauncher extends JPSAgent {
             if (validate == true) {
                 agentProperties = (requestParams.getString(KEY_AGENTPROPERTIES));
                 clientProperties =  (requestParams.getString(KEY_CLIENTPROPERTIES));
-                apiProperties = (requestParams.getString(KEY_APIPROPERTIES));
+                connectorProperties = (requestParams.getString(KEY_APIPROPERTIES));
 
                 if (System.getenv(agentProperties) == null) {
                     validate = false;
 
                 }
-                if (System.getenv(apiProperties) == null) {
+                if (System.getenv(connectorProperties) == null) {
                     validate = false;
 
                 }
@@ -127,9 +127,9 @@ public class HistoricalNUSDavisWeatherStationAgentLauncher extends JPSAgent {
         LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
 
         // Create the agent
-        HistoricalNUSDavisWeatherStationAgent agent;
+        HistoricalNUSDavisAgent agent;
         try {
-            agent = new HistoricalNUSDavisWeatherStationAgent(args[0]);
+            agent = new HistoricalNUSDavisAgent(args[0]);
         } catch (IOException e) {
             LOGGER.error(AGENT_ERROR_MSG, e);
             throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
@@ -158,34 +158,21 @@ public class HistoricalNUSDavisWeatherStationAgentLauncher extends JPSAgent {
             throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
         }
 
-        // Create the connector to interact with the CARESWeatherStation API
-        NUSDavisWeatherStationAPIConnector connector;
+        // Create the connector to interact with the excel files
+        HistoricalNUSDavisXLSXConnector connector;
         try {
-            connector = new NUSDavisWeatherStationAPIConnector(System.getenv("READINGS"), args[2]);
+            connector = new HistoricalNUSDavisXLSXConnector(System.getenv("READINGS"), args[2]);
         } catch (IOException e) {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
         }
         LOGGER.info("API connector object initialized.");
-        jsonMessage.accumulate("Result", "API connector object initialized.");
+        jsonMessage.accumulate("Result", "XLSX connector object initialized.");
 
 
         // Retrieve readings
         JSONObject weatherDataReadings;
-       // try  
-    	//{  
-    	
-    	//OPCPackage pkg = OPCPackage.open(System.getenv("READINGS"));
-    	int a ;
-    	//try (//creating Workbook instance that refers to .xlsx file  
-		//XSSFWorkbook wb = new XSSFWorkbook(pkg)) {
-			//XSSFSheet sheet = wb.getSheetAt(0);     //creating a Sheet object to retrieve object  
-			//a = sheet.getLastRowNum();
-    	//}
-			//pkg.close();
-			//int b = 18;
-			//for (int i = 1 ; i <= a; i++) {
-			//for (int j = 0; j < b; j++) {
+
         try {
          
         	weatherDataReadings = connector.getReadings();
@@ -204,7 +191,6 @@ public class HistoricalNUSDavisWeatherStationAgentLauncher extends JPSAgent {
         if(!weatherDataReadings.isEmpty()) {
             // Update the data
             agent.updateData(weatherDataReadings);
-            tsClient.disconnectRDB();
             LOGGER.info("Data updated with new readings from API.");
             jsonMessage.accumulate("Result", "Data updated with new readings from API.");
         }
@@ -213,18 +199,7 @@ public class HistoricalNUSDavisWeatherStationAgentLauncher extends JPSAgent {
             LOGGER.info("No new readings are available.");
             jsonMessage.accumulate("Result", "No new readings are available.");
         }
-	//	}
-		//	}
-		
-    	
-    	
-    	/*
-        }
-    	catch(Exception e)  
-    	{  
-    	e.printStackTrace();  
-    	}
-        */
+
         return jsonMessage;
     	
         

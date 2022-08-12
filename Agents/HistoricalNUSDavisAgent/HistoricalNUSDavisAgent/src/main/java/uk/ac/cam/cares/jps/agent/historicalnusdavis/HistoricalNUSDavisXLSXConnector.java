@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.HistoricalNUSDavisWeatherStation;
+package uk.ac.cam.cares.jps.agent.historicalnusdavis;
 
 
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +21,7 @@ import java.util.Properties;
 /**
  * Class that connects to the weather station API
  * @author  GMMajal*/
-class NUSDavisWeatherStationAPIConnector{
+class HistoricalNUSDavisXLSXConnector{
     private String dataFilePath ;
 	private String numOfKeys ;
 	JSONArray data;
@@ -30,14 +30,14 @@ class NUSDavisWeatherStationAPIConnector{
     /**
      * Logger for reporting info/errors.
      */
-    private static final Logger LOGGER = LogManager.getLogger(HistoricalNUSDavisWeatherStationAgentLauncher.class);
+    private static final Logger LOGGER = LogManager.getLogger(HistoricalNUSDavisAgentLauncher.class);
     private static final String PARTICLE_ERROR_MSG = "Particle readings could not be retrieved";
 
     /**
      * Standard constructor
      *
      */
-    public NUSDavisWeatherStationAPIConnector(String filePath, String numOfKeysFilePath) throws IOException {
+    public HistoricalNUSDavisXLSXConnector(String filePath, String numOfKeysFilePath) throws IOException {
         this.dataFilePath = filePath; 
         
         File file = new File(numOfKeysFilePath);
@@ -71,7 +71,7 @@ class NUSDavisWeatherStationAPIConnector{
     }
 
    
-    private JSONObject retrieveReadings(String filePath, int numOfKeys) throws IOException, JSONException {
+    public JSONObject retrieveReadings(String filePath, int numOfKeys) throws IOException, JSONException {
     	JSONObject k = new JSONObject();
     	JSONArray l = new JSONArray();
     	JSONObject m = new JSONObject();

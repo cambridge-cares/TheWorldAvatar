@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.HistoricalNUSDavisWeatherStation;
+package uk.ac.cam.cares.jps.agent.historicalnusdavis;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,13 +27,13 @@ import java.util.stream.Collectors;
 /**
  * Class to retrieve data from the weather station API and storing it with connection to The World Avatar (Knowledge Base).
  * @author  GMMajal*/
-public class HistoricalNUSDavisWeatherStationAgent {
+public class HistoricalNUSDavisAgent {
 
     /**
      * Logger for reporting info/errors.
      */
 
-    private static final Logger LOGGER = LogManager.getLogger(HistoricalNUSDavisWeatherStationAgentLauncher.class);
+    private static final Logger LOGGER = LogManager.getLogger(HistoricalNUSDavisAgentLauncher.class);
 
     private TimeSeriesClient<OffsetDateTime> tsClient;
     /**
@@ -58,7 +58,7 @@ public class HistoricalNUSDavisWeatherStationAgent {
      */
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
-    public HistoricalNUSDavisWeatherStationAgent(String propertiesFile) throws IOException {
+    public HistoricalNUSDavisAgent(String propertiesFile) throws IOException {
         // Set the mapping between JSON keys and IRIs
         try (InputStream input = new FileInputStream(propertiesFile)) {
             // Load properties file from specified path
@@ -116,7 +116,7 @@ public class HistoricalNUSDavisWeatherStationAgent {
         // Create a mapper for each file
         else {
             for (File mappingFile: mappingFiles) {
-                JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(HistoricalNUSDavisWeatherStationAgent.generatedIRIPrefix, mappingFile.getAbsolutePath());
+                JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(HistoricalNUSDavisAgent.generatedIRIPrefix, mappingFile.getAbsolutePath());
                 mappings.add(mapper);
                 // Save the mappings back to the file to ensure using same IRIs next time
                 mapper.saveToFile(mappingFile.getAbsolutePath());
@@ -138,8 +138,14 @@ public class HistoricalNUSDavisWeatherStationAgent {
                 // Get the classes (datatype) corresponding to each JSON key needed for initialization
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
+                try {
                 tsClient.initTimeSeries(iris, classes, timeUnit);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+            } catch (Exception e) {
+            	throw new JPSRuntimeException("Could not initialize timeseries!");
+            } finally {
+            	tsClient.disconnectRDB();
+            }
             }
         }
     }
@@ -165,6 +171,8 @@ public class HistoricalNUSDavisWeatherStationAgent {
                 else {
                     throw e;
                 }
+            } finally {
+            	tsClient.disconnectRDB();
             }
         }
         return true;
@@ -199,9 +207,16 @@ public class HistoricalNUSDavisWeatherStationAgent {
             // Update each time series
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
                 // Only update if there actually is data
-                if (!ts.getTimes().isEmpty()) {
+            	 // Only update if there actually is data
+            	if (!ts.getTimes().isEmpty()) {
+                	try {
                     tsClient.addTimeSeriesData(ts);
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                } catch (Exception e) {
+                	throw new JPSRuntimeException("Could not add timeseries data!");
+                } finally {
+                	tsClient.disconnectRDB();
+                }
                 }
             }
         }
@@ -329,7 +344,7 @@ public class HistoricalNUSDavisWeatherStationAgent {
         // Extract the timestamps by mapping the private conversion method on the list items
         // that are supposed to be string (toString() is necessary as the map contains lists of different types)
 
-        List<OffsetDateTime> weatherTimestamps = weatherReadings.get(HistoricalNUSDavisWeatherStationAgent.timestampKey).stream()
+        List<OffsetDateTime> weatherTimestamps = weatherReadings.get(HistoricalNUSDavisAgent.timestampKey).stream()
                 .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
 
         // Construct a time series object for each mapping
@@ -374,7 +389,7 @@ public class HistoricalNUSDavisWeatherStationAgent {
         LocalDateTime localTime = LocalDateTime.parse(timestamp);
        
         // Then add the zone id
-        return OffsetDateTime.of( localTime.minusHours(8), HistoricalNUSDavisWeatherStationAgent.ZONE_OFFSET);
+        return OffsetDateTime.of( localTime, HistoricalNUSDavisAgent.ZONE_OFFSET);
     }
 
     /**

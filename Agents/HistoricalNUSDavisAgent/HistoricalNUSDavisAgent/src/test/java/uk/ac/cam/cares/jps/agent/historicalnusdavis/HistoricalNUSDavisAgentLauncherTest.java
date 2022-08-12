@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.nusDavisWeatherStation;
+package uk.ac.cam.cares.jps.agent.historicalnusdavis;
 
 import com.github.stefanbirkner.systemlambda.Statement;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 
-public class NUSDavisWeatherStationInputAgentLauncherTest {
-    private static final Logger LOGGER = LogManager.getLogger(NUSDavisWeatherStationInputAgentLauncherTest.class);
+public class HistoricalNUSDavisAgentLauncherTest {
+    private static final Logger LOGGER = LogManager.getLogger(HistoricalNUSDavisAgentLauncherTest.class);
 
     // Temporary folder to place a properties file
     @Rule
@@ -47,7 +47,7 @@ public class NUSDavisWeatherStationInputAgentLauncherTest {
 
     @Test
     public void testProcessRequestParams() throws IOException {
-        NUSDavisWeatherStationInputAgentLauncher testLauncher = new NUSDavisWeatherStationInputAgentLauncher();
+        HistoricalNUSDavisAgentLauncher testLauncher = new HistoricalNUSDavisAgentLauncher();
         //test empty requestparams
         JSONObject testRequestParams = new JSONObject();
         JSONObject testMessage = testLauncher.processRequestParameters(testRequestParams);
@@ -89,7 +89,7 @@ public class NUSDavisWeatherStationInputAgentLauncherTest {
     public void testMainNoArgs() {
         String[] args = {};
         try {
-            NUSDavisWeatherStationInputAgentLauncher.initializeAgent(args);
+            HistoricalNUSDavisAgentLauncher.initializeAgent(args);
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
@@ -102,7 +102,7 @@ public class NUSDavisWeatherStationInputAgentLauncherTest {
     public void testMainInvalidAgentPropertyFile() {
         // Empty agent properties file should result in an error
         try {
-            NUSDavisWeatherStationInputAgentLauncher.initializeAgent(args);
+            HistoricalNUSDavisAgentLauncher.initializeAgent(args);
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
@@ -125,7 +125,7 @@ public class NUSDavisWeatherStationInputAgentLauncherTest {
         // Empty properties file for time series client should result in exception
         try {
             SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                NUSDavisWeatherStationInputAgentLauncher.initializeAgent(args);
+                HistoricalNUSDavisAgentLauncher.initializeAgent(args);
             });
         }
         catch (Exception e) {
@@ -138,10 +138,10 @@ public class NUSDavisWeatherStationInputAgentLauncherTest {
     public void testMainErrorWhenCreatingAPIConnector() throws IOException {
         createProperClientPropertiesFile();
         // Use a mock for the input agent
-        try(MockedConstruction<NUSDavisWeatherStationInputAgent> mockAgent = Mockito.mockConstruction(NUSDavisWeatherStationInputAgent.class)) {
+        try(MockedConstruction<HistoricalNUSDavisAgent> mockAgent = Mockito.mockConstruction(HistoricalNUSDavisAgent.class)) {
             // Empty API properties file should result in an exception
             try {
-                NUSDavisWeatherStationInputAgentLauncher.initializeAgent(args);
+                HistoricalNUSDavisAgentLauncher.initializeAgent(args);
                 Assert.fail();
             }
             catch (JPSRuntimeException e) {
@@ -160,12 +160,12 @@ public class NUSDavisWeatherStationInputAgentLauncherTest {
         createProperClientPropertiesFile();
         createProperAPIPropertiesFile();
         // Use a mock for the input agent
-        try(MockedConstruction<NUSDavisWeatherStationInputAgent> ignored = Mockito.mockConstruction(NUSDavisWeatherStationInputAgent.class)) {
+        try(MockedConstruction<HistoricalNUSDavisAgent> ignored = Mockito.mockConstruction(HistoricalNUSDavisAgent.class)) {
             // Use a mock for the connector that throws an exception when readings are requested
-            try(MockedConstruction<NUSDavisWeatherStationAPIConnector> mockConnector = Mockito.mockConstruction(NUSDavisWeatherStationAPIConnector.class,
-                    (mock, context) -> Mockito.when(mock.getWeatherReadings()).thenThrow(new JPSRuntimeException("exception")))) {
+            try(MockedConstruction<HistoricalNUSDavisXLSXConnector> mockConnector = Mockito.mockConstruction(HistoricalNUSDavisXLSXConnector.class,
+                    (mock, context) -> Mockito.when(mock.getReadings()).thenThrow(new JPSRuntimeException("exception")))) {
                 try {
-                    NUSDavisWeatherStationInputAgentLauncher.initializeAgent(args);
+                    HistoricalNUSDavisAgentLauncher.initializeAgent(args);
                     Assert.fail();
                 }
                 catch (JPSRuntimeException e) {
@@ -198,7 +198,7 @@ public class NUSDavisWeatherStationInputAgentLauncherTest {
 
         for(int i=0; i<timestamps.length;i++) {
             JSONObject measurements = new JSONObject();
-            measurements.put(NUSDavisWeatherStationInputAgent.timestampKey,timestamps[i]);
+            measurements.put(HistoricalNUSDavisAgent.timestampKey,timestamps[i]);
             for(String key: keys) {
                 measurements.put(key, value);
             }
@@ -210,13 +210,13 @@ public class NUSDavisWeatherStationInputAgentLauncherTest {
         readings.put("sensors",sensors);
 
         // Use a mock for the input agent
-        try(MockedConstruction<NUSDavisWeatherStationInputAgent> mockAgent = Mockito.mockConstruction(NUSDavisWeatherStationInputAgent.class)) {
+        try(MockedConstruction<HistoricalNUSDavisAgent> mockAgent = Mockito.mockConstruction(HistoricalNUSDavisAgent.class)) {
             // Use a mock for the connector that returns the dummy readings
-            try(MockedConstruction<NUSDavisWeatherStationAPIConnector> ignored = Mockito.mockConstruction(NUSDavisWeatherStationAPIConnector.class,
+            try(MockedConstruction<HistoricalNUSDavisXLSXConnector> ignored = Mockito.mockConstruction(HistoricalNUSDavisXLSXConnector.class,
                     (mock, context) -> {
-                        Mockito.when(mock.getWeatherReadings()).thenReturn(readings);
+                        Mockito.when(mock.getReadings()).thenReturn(readings);
                     })) {
-                NUSDavisWeatherStationInputAgentLauncher.initializeAgent(args);
+                HistoricalNUSDavisAgentLauncher.initializeAgent(args);
                 // Ensure that the update of the agent was invoked
                 Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).updateData(readings);
             }
