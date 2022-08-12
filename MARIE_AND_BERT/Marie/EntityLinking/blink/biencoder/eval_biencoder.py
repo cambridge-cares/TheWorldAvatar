@@ -16,12 +16,12 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, Tenso
 
 from pytorch_transformers.tokenization_bert import BertTokenizer
 
-from blink.biencoder.biencoder import BiEncoderRanker
-import blink.biencoder.data_process as data
-import blink.biencoder.nn_prediction as nnquery
-import blink.candidate_ranking.utils as utils
-from blink.biencoder.zeshel_utils import WORLDS, load_entity_dict_zeshel, Stats
-from blink.common.params import BlinkParser
+from Marie.EntityLinking.blink.biencoder.biencoder import BiEncoderRanker
+import Marie.EntityLinking.blink.biencoder.data_process as data
+import Marie.EntityLinking.blink.biencoder.nn_prediction as nnquery
+import Marie.EntityLinking.blink.candidate_ranking.utils as utils
+from Marie.EntityLinking.blink.biencoder.zeshel_utils import WORLDS, load_entity_dict_zeshel, Stats
+from Marie.EntityLinking.blink.common.params import BlinkParser
 
 
 def load_entity_dict(logger, params, is_zeshel):

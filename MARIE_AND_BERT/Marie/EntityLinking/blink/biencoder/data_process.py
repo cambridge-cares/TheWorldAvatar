@@ -12,8 +12,8 @@ from torch.utils.data import DataLoader, TensorDataset
 
 from pytorch_transformers.tokenization_bert import BertTokenizer
 
-from blink.biencoder.zeshel_utils import world_to_id
-from blink.common.params import ENT_START_TAG, ENT_END_TAG, ENT_TITLE_TAG
+from Marie.EntityLinking.blink.biencoder.zeshel_utils import world_to_id
+from Marie.EntityLinking.blink.common.params import ENT_START_TAG, ENT_END_TAG, ENT_TITLE_TAG
 
 
 def select_field(data, key1, key2=None):

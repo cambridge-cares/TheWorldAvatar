@@ -29,8 +29,8 @@ class TensorScore():
         _model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['acc'])
         return _model
 
-        # To process the question, use pretrained BERT to do an embedding of the question.
-        # The goal is to take the question, the embedding of eh and et as inputs, produce a float from 0 - 1 as the output
+        # To process the question, use pretrained BERT to do an embedding of the question. The goal is to take the
+        # question, the embedding of eh and et as inputs, produce a float from 0 - 1 as the output
 
     def BERT(self):
         from transformers import AutoTokenizer, TFBertModel

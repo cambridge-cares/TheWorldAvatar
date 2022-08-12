@@ -32,4 +32,6 @@ for index, row in raw_question_set.iterrows():
         tmp_series = pd.Series(tmp, index = raw_question_set.columns)
         raw_question_set = raw_question_set.append(tmp_series, ignore_index=True)
 
-print(raw_question_set)
+raw_question_set.to_csv(r'question_set_full', sep='\t')
+
+

@@ -14,7 +14,7 @@ from keras import Model, Input
 tokenizer = AutoTokenizer.from_pretrained('bert-base-cased')
 bert = TFBertModel.from_pretrained('bert-base-cased')
 
-max_len = 24
+max_len = 32
 
 input_ids = Input(shape=(max_len,), dtype=tf.int32, name="input_ids")
 input_mask = Input(shape=(max_len,), dtype=tf.int32, name="attention_mask")
@@ -38,7 +38,8 @@ def embed_sentence(sentence):
         verbose=True)
 
     embeddings = model.predict({'input_ids': x_val['input_ids'], 'attention_mask': x_val['attention_mask']})[0]
-    df = pd.DataFrame(embeddings)
+    df = pd.DataFrame(embeddings) # 768 = 24(max_len) * 32
+    print('##################### The shape of the embedding #########################')
     print(df.shape)
     return tf.convert_to_tensor(embeddings)
 
