@@ -56,7 +56,7 @@ public class HistoricalAQMeshAgentLauncher extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
     	JSONObject jsonMessage = new JSONObject();
       if (validateInput(requestParams)) {
-        	LOGGER.info("Passing request to ThingsBoard Input Agent..");
+        	LOGGER.info("Passing request to Historical AQMesh Agent..");
             String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
             String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
             String xlsxConnectorProperties = System.getenv(requestParams.getString(KEY_XLSXCONNECTORPROPERTIES));
