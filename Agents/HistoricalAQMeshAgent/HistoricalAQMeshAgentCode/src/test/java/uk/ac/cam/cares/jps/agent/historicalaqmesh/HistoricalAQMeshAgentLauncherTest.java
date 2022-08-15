@@ -24,7 +24,7 @@ public class HistoricalAQMeshAgentLauncherTest {
     // Name of the properties files
     private final String agentPropertiesFilename = "agent.properties";
     private final String clientPropertiesFilename = "client.properties";
-    private final String apiPropertiesFilename = "api.properties";
+    private final String connectorPropertiesFilename = "xlsxconnector.properties";
     // Argument array used with the main function containing all the paths to the property files as string
     private String[] args;
 
@@ -32,7 +32,7 @@ public class HistoricalAQMeshAgentLauncherTest {
     public void initializePropertyFile() throws IOException {
         File agentPropertyFile= folder.newFile(agentPropertiesFilename);
         File clientPropertyFile= folder.newFile(clientPropertiesFilename);
-        File apiPropertyFile= folder.newFile(apiPropertiesFilename);
+        File apiPropertyFile= folder.newFile(connectorPropertiesFilename);
         // Paths to the three different property files
         String agentPropertiesFile = agentPropertyFile.getCanonicalPath();
         String clientPropertiesFile = clientPropertyFile.getCanonicalPath();
@@ -49,7 +49,7 @@ public class HistoricalAQMeshAgentLauncherTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertEquals("Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.",
+            Assert.assertEquals("Need three properties files in the following order: 1) input agent 2) time series client 3) xlsx connector.",
                     e.getMessage());
         }
     }
@@ -104,7 +104,7 @@ public class HistoricalAQMeshAgentLauncherTest {
     @Test
     public void testMainErrorWhenRetrievingReadings() throws IOException {
         createProperClientPropertiesFile();
-        createProperAPIPropertiesFile();
+        createProperConnectorPropertiesFile();
         // Use a mock for the input agent
         try(MockedConstruction<HistoricalAQMeshAgent> ignored = Mockito.mockConstruction(HistoricalAQMeshAgent.class)) {
             // Use a mock for the connector that throws an exception when readings are requested
@@ -130,7 +130,7 @@ public class HistoricalAQMeshAgentLauncherTest {
     @Test
     public void testMainBothReadingsNotEmpty() throws IOException {
         createProperClientPropertiesFile();
-        createProperAPIPropertiesFile();
+        createProperConnectorPropertiesFile();
         // Create dummy readings to return
         JSONArray readings = new JSONArray();
         readings.put(new JSONObject("{'data' : 1}"));
@@ -152,7 +152,7 @@ public class HistoricalAQMeshAgentLauncherTest {
     @Test
     public void testMainOneReadingEmpty() throws IOException {
         createProperClientPropertiesFile();
-        createProperAPIPropertiesFile();
+        createProperConnectorPropertiesFile();
         // Create dummy readings to return
         JSONArray particleReadings = new JSONArray("[]");
         JSONArray gasReadings = new JSONArray();
@@ -182,7 +182,7 @@ public class HistoricalAQMeshAgentLauncherTest {
     @Test
     public void testMainBothReadingsEmpty() throws IOException {
         createProperClientPropertiesFile();
-        createProperAPIPropertiesFile();
+        createProperConnectorPropertiesFile();
         // Create dummy readings to return
         JSONArray readings = new JSONArray("[]");
         // Use a mock for the input agent
@@ -228,13 +228,12 @@ public class HistoricalAQMeshAgentLauncherTest {
         }
     }
 
-    private void createProperAPIPropertiesFile() throws IOException {
+    private void createProperConnectorPropertiesFile() throws IOException {
         // Filepath for the properties file
-        String propertiesFile = Paths.get(folder.getRoot().toString(), apiPropertiesFilename).toString();
+        String propertiesFile = Paths.get(folder.getRoot().toString(), connectorPropertiesFilename).toString();
         try (FileWriter writer = new FileWriter(propertiesFile, false)) {
-            writer.write("aqmesh.username=username\n");
-            writer.write("aqmesh.password=password\n");
-            writer.write("aqmesh.url=https://apitest.aqmeshdata.net/api/\n");
+            writer.write("numOfGasKeys=65\n");
+            writer.write("numOfParticleAndGeneralKeys=35\n");
         }
     }
 }

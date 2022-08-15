@@ -163,7 +163,10 @@ POST http://localhost:1025/historical-aqmesh-agent/retrieve
 Content-Type: application/json
 {"agentProperties":"HISTORICALAQMESH_AGENTPROPERTIES","xlsxConnectorProperties":"HISTORICALAQMESH_XLSXCONNECTORPROPERTIES","clientProperties":"HISTORICALAQMESH_CLIENTPROPERTIES"}
 ```
-
+In curl syntax
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"HISTORICALAQMESH_AGENTPROPERTIES\",\"xlsxConnectorProperties\":\"HISTORICALAQMESH_XLSXCONNECTORPROPERTIES\",\"clientProperties\":\"HISTORICALAQMESH_CLIENTPROPERTIES\"}" localhost:1025/historical-aqmesh-agent/retrieve
+```
 If the agent run successfully, you should see a JSON Object returned back that is similar to the one shown below.
 ```
 {"Result":["Data updated with new readings from API.","Timeseries Data has been updated."]}

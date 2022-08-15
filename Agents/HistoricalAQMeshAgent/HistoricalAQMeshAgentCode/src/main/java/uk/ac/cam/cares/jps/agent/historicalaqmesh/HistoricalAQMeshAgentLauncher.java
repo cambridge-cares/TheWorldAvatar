@@ -37,7 +37,7 @@ public class HistoricalAQMeshAgentLauncher extends JPSAgent {
     /**
      * Logging / error messages
      */
-    private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.";
+    private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) xlsx connector.";
     private static final String AGENT_ERROR_MSG = "The Historical AQMesh agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
@@ -188,7 +188,7 @@ public class HistoricalAQMeshAgentLauncher extends JPSAgent {
         // One reading is empty and the other is not. This is likely due to asynchronous access to the readings, which
         // sets the pointers for each reading separately (should not happen when only using the agent unless there is an API error).
         // The pointer should be reset and probably manual clean up in the database is required.
-        // Note: This is normally not a problem, but since the AQMeshInputAgent requires that all JSON keys are present in the combined
+        // Note: This is normally not a problem, but since the AQMesh Agent requires that all JSON keys are present in the combined
         // readings, having one reading empty will result in an error when calling the updateData method.
         else {
             LOGGER.error(ONE_READING_EMPTY_ERROR_MSG);

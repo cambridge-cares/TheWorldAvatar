@@ -69,7 +69,7 @@ public class HistoricalAQMeshAgentXLSXConnector {
     }
 
     /**
-     * Retrieves the latest particle readings from the AqMesh API
+     * Retrieves the particle and general readings from the excel file
      * @return Readings in a JSON Array with a JSON object for each measurement time
      */
     public JSONArray getParticleReadings() {
@@ -83,7 +83,7 @@ public class HistoricalAQMeshAgentXLSXConnector {
     }
 
     /**
-     * Retrieves the latest gas readings from the AqMesh API
+     * Retrieves the gas readings from the excel file
      * @return Readings in a JSON Array with a JSON object for each measurement time
      */
     public JSONArray getGasReadings() {
@@ -97,8 +97,8 @@ public class HistoricalAQMeshAgentXLSXConnector {
     }
 
     /**
-     * Retrieves the latest readings from the AqMesh API
-     * @param readingType Specifies the type of readings (GAS or PARTICLE)
+     * @param filePath file path of where the excel file is located
+     * @param numOfKeys The number of keys/columns in the excel file
      * @return Readings in a JSON Array with a JSON object for each measurement time
      */
     public JSONArray retrieveReadings(String filePath, int numOfKeys) throws IOException, JSONException {
@@ -187,7 +187,7 @@ public class HistoricalAQMeshAgentXLSXConnector {
 			}
 			
 			break; 
-			
+			/*
 			case "getStringConvertToInteger":
 			System.out.println(keyCell.getStringCellValue());
 			try {
@@ -210,6 +210,7 @@ public class HistoricalAQMeshAgentXLSXConnector {
 					readingsPer5Minutes.put(keyCell.getStringCellValue(), value6_2);
 				}
 				break; 
+				*/
 			}  
 			}
 			System.out.println(readingsPer5Minutes.toString());
