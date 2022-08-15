@@ -27,7 +27,7 @@ public class HistoricalNUSDavisAgentLauncherTest {
     // Name of the properties files
     private final String agentPropertiesFilename = "agent.properties";
     private final String clientPropertiesFilename = "client.properties";
-    private final String apiPropertiesFilename = "api.properties";
+    private final String connectorPropertiesFilename = "xlsxconnector.properties";
     // Argument array used with the main function containing all the paths to the property files as string
     private String[] args;
 
@@ -35,7 +35,7 @@ public class HistoricalNUSDavisAgentLauncherTest {
     public void initializePropertyFile() throws IOException {
         File agentPropertyFile= folder.newFile(agentPropertiesFilename);
         File clientPropertyFile= folder.newFile(clientPropertiesFilename);
-        File apiPropertyFile= folder.newFile(apiPropertiesFilename);
+        File apiPropertyFile= folder.newFile(connectorPropertiesFilename);
         // Paths to the three different property files
 
         String agentPropertiesFile = agentPropertyFile.getCanonicalPath();
@@ -55,7 +55,7 @@ public class HistoricalNUSDavisAgentLauncherTest {
         //test non-empty requestParams but with incorrect keys
 
         testRequestParams.put("ageProperties", "TEST_AGENTPROPERTIES");
-        testRequestParams.put("apiProperties", "TEST_APIPROPERTIES");
+        testRequestParams.put("connectorProperties", "TEST_CONNECTORPROPERTIES");
         testRequestParams.put("clientProperties", "TEST_CLIENTPROPERTIES");
 
         testMessage = testLauncher.processRequestParameters(testRequestParams);
@@ -64,7 +64,7 @@ public class HistoricalNUSDavisAgentLauncherTest {
         //test invalid environment variables in requestParams
         testRequestParams.remove("ageProperties");
         testRequestParams.put("agentProperties", "TEST_AGENTPROPERTIE");
-        testRequestParams.put("apiProperties", "TEST_APIPROPERTIES");
+        testRequestParams.put("connectorProperties", "TEST_CONNECTORPROPERTIES");
         testRequestParams.put("clientProperties", "TEST_CLIENTPROPERTIES");
 
         String folderName = "mappings";
@@ -93,7 +93,7 @@ public class HistoricalNUSDavisAgentLauncherTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertEquals("Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.",
+            Assert.assertEquals("Need three properties files in the following order: 1) input agent 2) time series client 3) xlsx connector.",
                     e.getMessage());
         }
     }
@@ -106,7 +106,7 @@ public class HistoricalNUSDavisAgentLauncherTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertEquals("The NUSDavisWeatherStation input agent could not be constructed!", e.getMessage());
+            Assert.assertEquals("The historical NUS Davis agent could not be constructed!", e.getMessage());
         }
     }
 
@@ -247,12 +247,9 @@ public class HistoricalNUSDavisAgentLauncherTest {
 
     private void createProperAPIPropertiesFile() throws IOException {
         // Filepath for the properties file
-        String propertiesFile = Paths.get(folder.getRoot().toString(), apiPropertiesFilename).toString();
+        String propertiesFile = Paths.get(folder.getRoot().toString(), connectorPropertiesFilename).toString();
         try (FileWriter writer = new FileWriter(propertiesFile, false)) {
-            writer.write("weather.api_key=16bfghijk8910111213145nni99b897r\n");
-            writer.write("weather.api_secret=abcnakau12919dskda\n");
-            writer.write("weather.api_url=http://localhost:8080/\n");
-            writer.write("weather.stationId=152368");
+            writer.write("numOfKeys=18\n");
         }
     }
 }
