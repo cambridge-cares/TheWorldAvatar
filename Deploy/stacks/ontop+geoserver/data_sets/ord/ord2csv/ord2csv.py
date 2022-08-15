@@ -5,7 +5,7 @@ from ord_schema.proto import dataset_pb2
 import os
 import wget
 import schema2labels as st
-import pandas as pd
+
 
 
 
