@@ -8,10 +8,10 @@ import ontomatch.utils.util
 
 
 
-def downloadDataKg(addr, namespace):
+def downloadDataKg(addr, endpoint_label, namespace):
     #Query str to get all related data
     # hint:Query hint:constructDistinctSPO false .
-    qstr = '''
+    qstr_base = '''
 PREFIX ns2: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
 PREFIX ns1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 PREFIX ns7: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
@@ -47,7 +47,7 @@ PREFIX j.4: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts
     }}  
    FILTER(STR(?g)="{}")}} 
     '''
-    qstrkwl = '''
+    qstr_kwl = '''
 PREFIX ns2: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
 PREFIX ns1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 PREFIX ns7: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
@@ -60,9 +60,25 @@ PREFIX j.4: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts
     }}  
    FILTER(STR(?g)="{}")}} 
     '''
-    if 'kwl' in namespace:
-        qstr = qstrkwl
-    res = querykg(SPARQL_ENDPOINTS['powerplants'], qstr.format(namespace))
+    qstr_nons =  '''
+PREFIX ns2: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+PREFIX ns1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+PREFIX ns7: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+prefix ns5: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#>
+PREFIX ns6: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#>
+PREFIX j.4: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+   select ?Subject ?Predicate ?Object WHERE    {{ 
+   ?Subject ?Predicate ?Object
+    }}  
+    '''
+    if namespace is None:
+        qstr = qstr_nons
+    elif 'kwl' in namespace:
+        qstr = qstr_kwl.format(namespace)
+    else:
+        qstr = qstr_base.format(namespace)
+
+    res = querykg(SPARQL_ENDPOINTS[endpoint_label], qstr)
     triples = res2triples(res)
     graph = rdflib.Graph()
     #rdflib
@@ -99,5 +115,5 @@ def upload2Kg(linkfilepath):
 
 
 if __name__ == '__main__':
-    #downloadDataKg('kwl.ttl',"http://kwl")
-    upload2Kg('../tmp/blackboard/linked_power_plants.ttl')
+    downloadDataKg('gppd_gbr.ttl','ukpowerplants',None)
+    #upload2Kg('../tmp/blackboard/linked_power_plants.ttl')
