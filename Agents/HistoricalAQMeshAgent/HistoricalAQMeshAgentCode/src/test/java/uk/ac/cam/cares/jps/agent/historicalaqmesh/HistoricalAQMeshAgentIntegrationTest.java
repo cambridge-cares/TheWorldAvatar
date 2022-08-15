@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This test class is to test the AQMesh input agent with a running KG and postgres database.
+ * This test class is to test the Historical AQMesh agent with a running KG and postgres database.
  */
 
 @Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +

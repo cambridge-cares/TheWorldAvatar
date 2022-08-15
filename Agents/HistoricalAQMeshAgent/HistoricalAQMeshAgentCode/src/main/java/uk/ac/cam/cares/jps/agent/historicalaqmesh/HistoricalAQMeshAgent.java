@@ -184,8 +184,8 @@ public class HistoricalAQMeshAgent {
 
     /**
      * Updates the database with new readings.
-     * @param particleReadings The particle readings received from the AQMesh API
-     * @param gasReadings The gas readings received from the AQMesh API
+     * @param particleReadings The particle readings retrieved from the excel file
+     * @param gasReadings The gas readings retrieved from the excel file
      */
     public void updateData(JSONArray particleReadings, JSONArray gasReadings) throws IllegalArgumentException {
         // Transform readings in hashmap containing a list of objects for each JSON key,

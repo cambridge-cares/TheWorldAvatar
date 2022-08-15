@@ -54,7 +54,6 @@ public class HistoricalAQMeshAgentXLSXConnector {
             Properties prop = new Properties();
             prop.load(input);
 
-            // Get username, password, auth_url, api_url and device_token from properties file
             if (prop.containsKey("numOfGasKeys")) {
                 this.numOfGasKeys = prop.getProperty("numOfGasKeys");
             } else {

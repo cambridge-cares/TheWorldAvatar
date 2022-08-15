@@ -157,7 +157,7 @@ public class HistoricalAQMeshAgentLauncher extends JPSAgent {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
         }
-        LOGGER.info("API connector object initialized.");
+        LOGGER.info("xlsx connector object initialized.");
 
         // Retrieve readings
         JSONArray particleReadings;
