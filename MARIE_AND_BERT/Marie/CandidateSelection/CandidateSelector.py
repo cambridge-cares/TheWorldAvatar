@@ -1,5 +1,6 @@
 import os
 
+import numpy as np
 from keras import Input
 from tensorflow import keras
 from transformers import TFBertModel
@@ -7,6 +8,13 @@ import tensorflow as tf
 
 from Marie.CandidateSelection.location import SCORE_MODEL_DIR
 from Marie.Util.Embedding.Embedding import Embedding
+from Marie.Util.Models.ModelBuilder import ModelBuilder
+from Marie.Util.NLP.TextProcessor import TextProcessor
+
+
+def build_scoring_model():
+    model_builder = ModelBuilder()
+    return model_builder.get_scoring_model()
 
 
 class CandidateSelector:
@@ -14,60 +22,36 @@ class CandidateSelector:
     def __init__(self):
         self.max_len = 20
         self.kg_embedding_size = 113
-
-        self.score_model_dir = SCORE_MODEL_DIR
-        self.model = self.build_model()
+        self.model = build_scoring_model()
         self.load_score_model()
-
         self.embedding_util = Embedding()
+        self.text_processor = TextProcessor()
 
     def entity2embedding(self, entity_name):
         return self.embedding_util.name2embedding(entity_name)
 
+    def entity2embedding_batch(self, entity_name_list):
+        return [self.entity2embedding(key) for key in entity_name_list]
 
     def load_score_model(self):
-        self.model.load_weights(os.path.join(self.score_model_dir, "score_model.h5"))
+        self.model.load_weights(os.path.join(SCORE_MODEL_DIR, "score_model.h5"))
 
-    def build_model(self):
-        bert = TFBertModel.from_pretrained('bert-base-cased')
-        bert.trainable = True
-        # Input 1, the attention mask
-        # Input 2, the tokenized question
+    def predict(self, head_entity, sentence, candidate_list):
+        _tokenized_sentence = self.text_processor.tokenize_sentence([sentence])
+        _head_entity_embedding = self.entity2embedding(head_entity)
+        _candidate_embedding_list = self.entity2embedding_batch(candidate_list)
+        return self.rank_candidate(head_entity_embedding=_head_entity_embedding,
+                                   tokenized_sentence=_tokenized_sentence,
+                                   candidate_embedding_list=_candidate_embedding_list
+                                   )
 
-        # input_ids = Input(shape=(self.max_len,), dtype=tf.int32, name="input_ids")
-        input_ids = Input(shape=(20,), dtype=tf.int32, name="input_ids")
-        # input_mask = Input(shape=(self.max_len,), dtype=tf.int32, name="attention_mask")
-        input_mask = Input(shape=(20,), dtype=tf.int32, name="attention_mask")
-        kg_embedding = Input(shape=(self.kg_embedding_size,), dtype=tf.float32, name="kg_embedding")
-        # What is the shape of KG embedding? # 113, currently, reduce it to 64
+    def rank_candidate(self, head_entity_embedding, tokenized_sentence, candidate_embedding_list):
+        predicted_raw = self.model.predict({'input_ids': tokenized_sentence['input_ids'],
+                                            'attention_mask': tokenized_sentence['attention_mask']}) * 100
+        y_predicted = np.argmax(predicted_raw, axis=1)
 
-        kg_reduced_layer = keras.layers.Dense(113, activation='relu', name='kg_reduced_layer')(kg_embedding)
-
-        embeddings = bert(input_ids, attention_mask=input_mask)[0]
-        embeddings = keras.layers.GlobalMaxPool1D()(embeddings)
-
-        # What is the shape of the embedding? # 768, fixed size
-        embedding_reduced_layer_0 = keras.layers.Dense(512, activation='relu')(embeddings)
-        embedding_reduced_layer_1 = keras.layers.Dense(256, activation='relu')(embedding_reduced_layer_0)
-        embedding_reduced_layer_2 = keras.layers.Dense(128, activation='relu')(embedding_reduced_layer_1)
-        embedding_reduced_layer_3 = keras.layers.Dense(113, activation='relu')(embedding_reduced_layer_2)
-
-        joined_vector = keras.layers.add([embedding_reduced_layer_3, kg_reduced_layer])  # both vectors to be 34
-        # the output is a score between 0 - 1, telling you the likeness of the question - head entity - tail entity
-
-        additional_layer_1 = keras.layers.Dense(113, activation='relu')(joined_vector)
-        additional_layer_1 = tf.keras.layers.Dropout(0.2)(additional_layer_1)
-        additional_layer_2 = keras.layers.Dense(113, activation='relu')(additional_layer_1)
-        additional_layer_2 = tf.keras.layers.Dropout(0.2)(additional_layer_2)
-        additional_layer_3 = keras.layers.Dense(113, activation='relu')(additional_layer_2)
-        additional_layer_3 = tf.keras.layers.Dropout(0.2)(additional_layer_3)
-        output = keras.layers.Dense(2, activation='softmax')(additional_layer_3)
-
-        # kg_embedding is the embedding of the head entity
-        model = tf.keras.Model(inputs=[input_ids, input_mask, kg_embedding], outputs=output)
-        # model.summary()
-        # keras.utils.plot_model(model, "Full_Model.png", show_shapes=True)
-        return model
+        print(y_predicted)
+        return y_predicted
 
 
 if __name__ == '__main__':

@@ -7,8 +7,10 @@ import csv
 import os
 import random
 from pprint import pprint
+from location import DATASET_DIR
 
-DATA_DIR = '../../../Dataset'
+ent_label_path = os.path.join(DATASET_DIR, r'PubchemMiniFull/embeddings/transe/ent_labels.tsv')
+full_entity_list = [e.strip() for e in open(ent_label_path).readlines()]
 
 # open pubchem csv and get all the relations
 
@@ -16,14 +18,13 @@ DATA_DIR = '../../../Dataset'
 
 # make 3 question template, special template for "molar weight and something"
 
-file_path = os.path.join(DATA_DIR, 'pubchem.csv')
+file_path = os.path.join(DATASET_DIR, 'pubchem.csv')
 # how much does benenze weigh?
 
 input_file = csv.DictReader(open(file_path).readlines()[0:100])
 
 species_name_mapping = {}
 entity_list = []
-
 
 for row in input_file:
     short_iupac_names = []
@@ -43,12 +44,10 @@ for row in input_file:
     name_list_for_one_species = [n for n in name_list_for_one_species if n.strip() != '']
     species_name_mapping[CID] = name_list_for_one_species
 
-
 stop_list = ['count_def_atom_stereo', 'count_undef_atom_setereo', 'count_def_bond_stereo', 'count_undef_bond_setereo']
 how_many_relations = []
 normal_relations = []
 headers = input_file.fieldnames
-
 
 counter = 0
 for head in headers:
@@ -71,12 +70,12 @@ for h_r in how_many_relations:
     for _CID in species_name_mapping:
         for name in species_name_mapping[_CID]:
 
-
             tail_entity = _CID + '_' + full_relation_label
-            entity_list.append(tail_entity)
-            q_1 = (t_1 % (h_r, name), _CID, tail_entity.replace('\n', ''))
-            q_2 = (t_2 % (h_r, name), _CID, tail_entity.replace('\n', ''))
-            all_question = all_question + [q_1, q_2]
+            if tail_entity in full_entity_list:
+                q_1 = (t_1 % (h_r, name), _CID, tail_entity.replace('\n', ''))
+                q_2 = (t_2 % (h_r, name), _CID, tail_entity.replace('\n', ''))
+                all_question = all_question + [q_1, q_2]
+                entity_list.append(tail_entity)
 
 for r in normal_relations:
     t_1 = '''what is the %s of %s'''
@@ -87,18 +86,19 @@ for r in normal_relations:
     for _CID in species_name_mapping:
         for name in species_name_mapping[_CID]:
             tail_entity = _CID + '_' + full_relation_label
-            entity_list.append(tail_entity)
-            q_1 = (t_1 % (r, name), _CID, tail_entity.replace('\n', ''))
-            q_2 = (t_2 % (name, r), _CID, tail_entity.replace('\n', ''))
-            all_question = all_question + [q_1, q_2]
+            if tail_entity in full_entity_list:
+                entity_list.append(tail_entity)
+                q_1 = (t_1 % (r, name), _CID, tail_entity.replace('\n', ''))
+                q_2 = (t_2 % (name, r), _CID, tail_entity.replace('\n', ''))
+                all_question = all_question + [q_1, q_2]
 
 import csv
+
 with open('question_set', "w", newline='') as the_file:
     csv.register_dialect("custom", delimiter=",", skipinitialspace=True)
     writer = csv.writer(the_file, dialect="custom")
     for tup in all_question:
         writer.writerow(tup)
-
 
 with open('entity_list', 'w', newline='\n') as f:
     for e in list(set(entity_list)):

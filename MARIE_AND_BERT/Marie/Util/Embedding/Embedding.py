@@ -3,12 +3,12 @@ import os
 import pandas as pd
 from Marie.Util.location import EMBEDDING_DIR
 
-
 '''
 This tool provides embedding search based on IRI of entities ... 
 '''
 
-class Embedding:
+
+class Embedding():
 
     def __init__(self):
         self.embedding_path = EMBEDDING_DIR
@@ -36,10 +36,15 @@ class Embedding:
 
     def name2embedding(self, name):
         if name not in self.ent_mapping:
+            print('==================== we have a none ========================',name)
+
             return None
         else:
             return self.ent_mapping[name]
 
+    def name2embedding_batch(self, name_list):
+
+        return pd.DataFrame([self.name2embedding(name) for name in name_list])
 
 
 if __name__ == '__main__':

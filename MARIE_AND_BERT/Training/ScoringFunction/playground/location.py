@@ -18,4 +18,3 @@ ROOT_DIR = get_parent_path(TRAINING_DIR)
 
 
 DATASET_DIR = os.path.join(ROOT_DIR, 'Dataset')
-print(DATASET_DIR)
