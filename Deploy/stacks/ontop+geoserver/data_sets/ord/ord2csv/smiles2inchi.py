@@ -1,23 +1,6 @@
-from grpc import insecure_channel
 import requests
-from chemspipy import ChemSpider
 from typing import Optional, Tuple
 import json
-
-
-def chem_spider_api():
-    #token = input('Insert your API Token Here: ')
-    token = 'iHNDqn6u0heQJBlAX2XNc1VWbT8rZZYR'
-    cs = ChemSpider(token)
-    
-    smiles = input("insert your smiles string here: ")
-    
-    print("\n" + "Your InChI is:\n" + 30*'-' + 10*" ")
-    
-    for result in cs.convert(smiles, 'SMILES', 'InChI'):
-       print(result, end = '')
-
-
 
 
 def pubchem_api(smiles: Optional[str] = None) -> Tuple[str,str]:
