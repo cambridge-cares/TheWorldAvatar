@@ -1,38 +1,21 @@
-# NUS Davis Weather Station input agent
+# Historical NUS Davis Weather Station Agent
 
-This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the NUS Davis weather station. Its only purpose is to retrieve new data (if available) from the API and download it into 
-the corresponding database, as well as, instantiating KG instances and connection when called for the first time. The 
-agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
+This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the NUS Davis weather station. It's only purpose is to retrieve 
+new/historical data from excel files and download it into the corresponding database, as well as, instantiating KG instances and connection when called for the first time. 
+The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS_BASE_LIB to interact with both the KG and database.
 
-Before explaining the usage of the agent, we will briefly summarize the weather station API that is
-contacted by one of the classes in this package to retrieve data.
+### Data retrieval and pre-processing
+This agent is designed to work with Excel 2007 or later versions. Some pre-processing might be required in order to ensure that the excel files are compatible with the agent.
 
-## Weather Station API
+Firstly, the keys for each column in the excel files must correspond with the keys found in the weather.properties file. The properties file can be found in the mapping folder under the config folder.
 
-We will here briefly describe the weather station API. The official documentation can be found [here](https://weatherlink.github.io/v2-api/) .
+Lastly, the timestamps in the excel files must be in UTC timezone. The agent will then convert the timestamps to a local date time with offset.
 
-
-### Data retrieval
-The daily weather readings are returned every 5 minutes. A new reading is made by the sensor in an interval of 5 minutes.
-
-#### The endpoint
-The actual endpoint has the following structure:
-```
-https://api.weatherlink.com/v2/current/[<stationId>]?apiKey=[<apiKey>]&t=[<timestamp>]&apiSignature=[<apiSignature>]
-```
-where `[stationId]` is the id of the weather station which is taking the physical readings.  The  
-`[apiKey]` is the key needed to access the API. `[timestamp]` refers to the timestamp at which the data is to be retrieved. 
-Finally, the option `[apiSignature]` contains the apiSignature. This signature is generated firstly by creating a string 
-made by concatenating the parameter name-value pairs in the following manner:
-api-key`[apiKey]`t`[timestamp]` (e.g. api-key982634341t1988729481). Then the aforementioned concatenated string can be used
-to generate the apiSignature by using the HMAC SHA-256 algorithm with the HMAC secret key being the `[apiSecret]`. Note that every api call
-requires a fresh timestamp. (See also the [API documentation](#Weather-Station-API)).
-The endpoint controls what type of data is retrieved its form.
 #### Example readings
 Readings are returned to the response body in form of a JSON Object which consist of key-value pair. The JSONObject has the 
-key:"sensors", which contains a JSONArray containing a JSONObject. Inside this JSONObject is a JSONArray associated with the key:"data". This JSONArray contains one JSONObject. The key value pairs within this JSONObject contain all the relevant weather readings corresponding to a particular timestamp. The key for the timestamp is `[ts]`.
-The following images are examples of what the JSONObject returned by a `[current]` data api call looks like. 
+key:"sensors", which contains a JSONArray containing a JSONObject. Inside this JSONObject is a JSONArray associated with the key:"data". This JSONArray contains several JSONObject with one JSONObject per timestamp. The key value pairs within this JSONObject contain all the relevant weather readings corresponding to a particular timestamp. The key for the timestamp is `[ts]`.
+The following images are examples of what the JSONObject looks like: 
 
 ![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading1.png "First part of the weather data reading obtained using a 'current' data api call")
 ![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading2.png "Second part of the current weather data reading obtained using a 'current' data api call")
@@ -53,7 +36,7 @@ This can be either in form of a Docker container or natively running on a machin
 For running the agent, three property files are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
-- One [property file for the weather station API](#api-properties) defining the api_key, stationId and the api_url.
+- One [property file for the excel file connector](#excel-connector-properties) defining the number of columns/keys for the data excel file.
 
 #### Agent properties
 The agent property file only needs to contain a single line:
@@ -73,16 +56,11 @@ The time-series client property file needs to contain all credentials and endpoi
 
 More information can be found in the example property file `client.properties` in the `config` folder.
 
-#### API properties
-The API properties contain the credentials to authorize access to the weather Station API (see the [API description](#Weather-Station-API)),
-as well as, the API URL and the weather station ID. It should contain the following keys:
-- `weather.api_key` the key needed to access the API.
-- `weather.api_secret` the secret needed to generate the API signature.
-- `weather.stationId` the stationId associated with the sensor.
-- `weather.api_url` the URL to use for the API. (see [Data retrieval](#data-retrieval)). This property also allows to adjust the agent, if the URL should change in the future.
+#### Excel connector properties
+The Excel connector properties contain the number of columns/keys for each of the excel files. It should contain the following keys:
+- `numOfKeys` the number of columns/keys in the data excel file.
 
-
-More information can be found in the example property file `api.properties` in the `config` folder.
+More information can be found in the example property file `xlsxconnector.properties` in the `config` folder.
 
 #### Mapping files
 What are the mapping files and why are they required? The mapping files define how data received from the API is connected
@@ -113,7 +91,18 @@ but there needs to be a 1-1 mapping, i.e. no IRI can be used for multiple JSON k
 
 To ensure that the same IRIs are used for each JSON key, the mapping files are saved back after each run (only really 
 necessary when some of them are automatically generated). Note, that if you change any mapping in preceding runs, they 
-will be seen as new time-series, which can result in inconsistencies in both the KG and database.
+will be seen as new time-series, which can result in inconsistencies in both the KG and database. To retrieve the mapping 
+files from a running docker container, you have to type in the following into the command line:
+
+```
+docker cp <Docker container ID>://root/mappings/<name of properties file> <destination filepath on your machine>
+```
+
+For example, to retrieve the weather.properties mapping file from the docker container, the following line have to be entered into the command line:
+
+```
+docker cp 7956ce42351d://root/mappings/weather.properties C:\Users\USER01\Desktop\weather.properties
+```
 
 Examples for the structure of the mapping folder and files can be found in the `mapping` folder within the `config` 
 folder.  (see 
@@ -130,7 +119,7 @@ The NUSDavisWeatherStation Agent is set up to use the Maven repository at https:
 repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-Modify `api.properties` and `client.properties` in the `config` folder accordingly. You should not modify the `agent.properties` file as the Dockerfile will set the environment variable 
+Modify `xlsxconnector.properties` and `client.properties` in the `config` folder accordingly. You should not modify the `agent.properties` file as the Dockerfile will set the environment variable 
 NUSDavisWeatherStation_AGENT_MAPPINGS to point towards the location of the mapping folder. The Dockerfile will copy all 3 properties files and mapping folder and set environment variables pointing 
 to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually.
 
@@ -142,29 +131,24 @@ Note that for building the agent in the Claudius server the following command sh
 ```
 DOCKER_BUILDKIT=1 docker build .
 ```
-The agent is reachable at "nusdavisweatherstation-agent/retrieve" on localhost port 1080.
+The agent is reachable at "historical-nusdavis-agent/retrieve" on localhost port 1026.
 
 
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1080/nusdavisweatherstation-agent/retrieve with a correct JSON Object.
+To run the agent, a POST request must be sent to http://localhost:1026/historical-nusdavis-agent/retrieve with a correct JSON Object.
 Follow the request shown below.
 
 ```
-POST http://localhost:1080/nusdavisweatherstation-agent/retrieve
+POST http://localhost:1026/historical-nusdavis-agent/retrieve
 Content-Type: application/json
-{"agentProperties":"NUSDavisWeatherStation_AGENTPROPERTIES","apiProperties":"NUSDavisWeatherStation_APIPROPERTIES","clientProperties":"NUSDavisWeatherStation_CLIENTPROPERTIES"}
+{"agentProperties":"HISTORICALDAVIS_AGENTPROPERTIES","connectorProperties":"HISTORICALDAVIS_CONNECTORPROPERTIES","clientProperties":"HISTORICALDAVIS_CLIENTPROPERTIES"}
 ```
 In curl syntax
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"NUSDavisWeatherStation_AGENTPROPERTIES\",\"apiProperties\":\"NUSDavisWeatherStation_APIPROPERTIES\",\"clientProperties\":\"NUSDavisWeatherStation_CLIENTPROPERTIES\"}" http://localhost:1080/nusdavisweatherstation-agent/retrieve
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"HISTORICALDAVIS_AGENTPROPERTIES\",\"connectorProperties\":\"HISTORICALDAVIS_CONNECTORPROPERTIES\",\"clientProperties\":\"HISTORICALDAVIS_CLIENTPROPERTIES\"}" localhost:1026/historical-nusdavis-agent/retrieve
 ```
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 ```
-{"Result":["Input agent object initialized.","Time series client object initialized.","API connector object initialized.","Retrieved 1 weather station reading.","Data updated with new readings from API.","Timeseries Data has been updated."]}
-```
-
-If the returned JSON Object is as shown below, it means that the request was written wrongly. Check whether the URL, keys and values are written correctly.
-```
-{"Result":"Request parameters are not defined correctly."}
+{"Result":["Input agent object initialized.","Time series client object initialized.","XLSX connector object initialized.","Retrieved 5 weather station reading.","Data updated with new readings from API.","Timeseries Data has been updated."]}
 ```

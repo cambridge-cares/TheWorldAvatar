@@ -19,8 +19,8 @@ import java.io.*;
 import java.util.Properties;
 
 /**
- * Class that connects to the weather station API
- * @author  GMMajal*/
+ * Class that retrieves data values frome excel files via the apache POI API
+ * @author  */
 class HistoricalNUSDavisXLSXConnector{
     private String dataFilePath ;
 	private String numOfKeys ;
@@ -31,7 +31,7 @@ class HistoricalNUSDavisXLSXConnector{
      * Logger for reporting info/errors.
      */
     private static final Logger LOGGER = LogManager.getLogger(HistoricalNUSDavisAgentLauncher.class);
-    private static final String PARTICLE_ERROR_MSG = "Particle readings could not be retrieved";
+    private static final String DATA_ERROR_MSG = "Data readings could not be retrieved";
 
     /**
      * Standard constructor
@@ -65,8 +65,8 @@ class HistoricalNUSDavisXLSXConnector{
             return retrieveReadings(dataFilePath, Integer.valueOf(numOfKeys));
         }
         catch (IOException | JSONException e) {
-            LOGGER.error(PARTICLE_ERROR_MSG, e);
-            throw new JPSRuntimeException(PARTICLE_ERROR_MSG, e);
+            LOGGER.error(DATA_ERROR_MSG, e);
+            throw new JPSRuntimeException(DATA_ERROR_MSG, e);
         }
     }
 
@@ -104,10 +104,10 @@ class HistoricalNUSDavisXLSXConnector{
 			try {
 			String value = cell.getStringCellValue();
 			dataReadings.put(keyCell.getStringCellValue(), value);
-			} catch (IllegalStateException | NullPointerException e) {
+			} catch (NullPointerException | IllegalStateException e) {
 				Object value_1 =  JSONObject.NULL;
 				dataReadings.put(keyCell.getStringCellValue(), value_1);
-			}
+			} 
 			break;  
 			
 			case "double":    //field that represents number cell type
@@ -117,10 +117,10 @@ class HistoricalNUSDavisXLSXConnector{
 			try {
 			value1 = cell.getNumericCellValue();
 			dataReadings.put(keyCell.getStringCellValue(), value1);
-			} catch (IllegalStateException | NullPointerException e) {
+			} catch (NullPointerException | IllegalStateException e) {
 				value1_2 = JSONObject.NULL;
 				dataReadings.put(keyCell.getStringCellValue(), value1_2);
-			}
+			} 
 			break; 
 			
 			case "integer":    //field that represents number cell type 
@@ -130,10 +130,10 @@ class HistoricalNUSDavisXLSXConnector{
 			try {
 				value2 = cell.getNumericCellValue(); 
 			dataReadings.put(keyCell.getStringCellValue(), value2);
-			} catch (IllegalStateException | NullPointerException e) {
+			} catch (NullPointerException | IllegalStateException e) {
 				value2_2 = JSONObject.NULL;
 				dataReadings.put(keyCell.getStringCellValue(), value2_2);
-			}
+			} 
 			break; 
 			
 			case "ts":    //field that represents number cell type  
@@ -148,19 +148,6 @@ class HistoricalNUSDavisXLSXConnector{
 			}
 			
 			break; 
-			
-			case "string":    //field that represents sensor serial number
-				
-				try {
-			    String value6 = cell.getStringCellValue(); 
-				dataReadings.put(keyCell.getStringCellValue(), (value6));
-				} catch (IllegalStateException | NullPointerException e) {
-					Object value6_2 = JSONObject.NULL ;
-					dataReadings.put(keyCell.getStringCellValue(), value6_2);
-				}
-				break; 
-				
-				
 			}
 			
 			}
@@ -174,10 +161,7 @@ class HistoricalNUSDavisXLSXConnector{
 			
 			m.put("sensors", l);
 			System.out.println("The JSONObject is" + m);
-			
-			
-			
-		
+
     	pkg.close();
     	
     	}

@@ -21,12 +21,12 @@ import java.time.OffsetDateTime;
 /**
  * Class with a main method that is the entry point of the compiled war and puts all components together to retrieve
  * data from the API and write it into the database.
- * @author GMMajal
+ * @author 
  */
 @WebServlet(urlPatterns = {"/retrieve"})
 public class HistoricalNUSDavisAgentLauncher extends JPSAgent {
     public static final String KEY_AGENTPROPERTIES = "agentProperties";
-    public static final String KEY_APIPROPERTIES = "connectorProperties";
+    public static final String KEY_CONNECTORPROPERTIES = "connectorProperties";
     public static final String KEY_CLIENTPROPERTIES = "clientProperties";
 
 
@@ -41,7 +41,7 @@ public class HistoricalNUSDavisAgentLauncher extends JPSAgent {
     private static final String AGENT_ERROR_MSG = "The NUSDavisWeatherStation input agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
-    private static final String CONNECTOR_ERROR_MSG = "Could not construct the NUS Davis weather station API connector needed to interact with the API!";
+    private static final String CONNECTOR_ERROR_MSG = "Could not construct the NUS Davis weather station xlsx connector needed to interact with the excel file!";
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
 
     @Override
@@ -57,7 +57,7 @@ public class HistoricalNUSDavisAgentLauncher extends JPSAgent {
             LOGGER.info("Passing request to NUS Davis Weather Station Input Agent..");
             String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
             String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
-            String connectorProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
+            String connectorProperties = System.getenv(requestParams.getString(KEY_CONNECTORPROPERTIES));
             String[] args = new String[] {agentProperties,clientProperties,connectorProperties};
             jsonMessage = initializeAgent(args);
             jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
@@ -84,12 +84,12 @@ public class HistoricalNUSDavisAgentLauncher extends JPSAgent {
                 validate = requestParams.has(KEY_CLIENTPROPERTIES);
             }
             if (validate == true) {
-                validate = requestParams.has(KEY_APIPROPERTIES);
+                validate = requestParams.has(KEY_CONNECTORPROPERTIES);
             }
             if (validate == true) {
                 agentProperties = (requestParams.getString(KEY_AGENTPROPERTIES));
                 clientProperties =  (requestParams.getString(KEY_CLIENTPROPERTIES));
-                connectorProperties = (requestParams.getString(KEY_APIPROPERTIES));
+                connectorProperties = (requestParams.getString(KEY_CONNECTORPROPERTIES));
 
                 if (System.getenv(agentProperties) == null) {
                     validate = false;
@@ -114,7 +114,7 @@ public class HistoricalNUSDavisAgentLauncher extends JPSAgent {
      * Main method that runs through all steps to update the data received from the CARES weather station API.
      * defined in the provided properties file.
      * @param args The command line arguments. Three properties files should be passed here in order: 1) input agent
-     *             2) time series client 3) API connector.
+     *             2) time series client 3) xlsx connector.
      */
 
     public static JSONObject initializeAgent(String[] args) {
@@ -166,7 +166,7 @@ public class HistoricalNUSDavisAgentLauncher extends JPSAgent {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
         }
-        LOGGER.info("API connector object initialized.");
+        LOGGER.info("XLSX connector object initialized.");
         jsonMessage.accumulate("Result", "XLSX connector object initialized.");
 
 

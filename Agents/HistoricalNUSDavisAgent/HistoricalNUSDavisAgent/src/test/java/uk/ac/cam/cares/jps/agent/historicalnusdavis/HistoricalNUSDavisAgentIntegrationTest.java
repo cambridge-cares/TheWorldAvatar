@@ -26,6 +26,7 @@ import java.util.*;
 
 @Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
+
 @Testcontainers
 public class HistoricalNUSDavisAgentIntegrationTest {
     // Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)

@@ -149,7 +149,7 @@ public class HistoricalNUSDavisAgentLauncherTest {
                 Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).setTsClient(Mockito.any());
                 // Ensure that the initialization was invoked once
                 Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).initializeTimeSeriesIfNotExist();
-                Assert.assertEquals("Could not construct the NUS Davis weather station API connector needed to interact with the API!", e.getMessage());
+                Assert.assertEquals("Could not construct the NUS Davis weather station xlsx connector needed to interact with the excel file!", e.getMessage());
             }
         }
 

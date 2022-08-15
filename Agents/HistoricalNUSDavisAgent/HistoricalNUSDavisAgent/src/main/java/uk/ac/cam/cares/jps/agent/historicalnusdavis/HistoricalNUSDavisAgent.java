@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 /**
  * Class to retrieve data from the weather station API and storing it with connection to The World Avatar (Knowledge Base).
- * @author  GMMajal*/
+ * @author */ 
 public class HistoricalNUSDavisAgent {
 
     /**
@@ -180,7 +180,7 @@ public class HistoricalNUSDavisAgent {
 
     /**
      * Updates the database with new readings.
-     * @param weatherReadings The readings received from the weather station API
+     * @param weatherReadings The readings received from the Excel file via the apache POI API
      */
 
     public void updateData(JSONObject weatherReadings){
@@ -283,22 +283,16 @@ public class HistoricalNUSDavisAgent {
                         } else {
                             //perform conversion to metric units where needed
                             if (key.contains("temp_in") || key.contains("temp_out") || key.contains("dew_point") || key.contains("heat_index") || key.contains("wind_chill")) {
-                                //conversion of temp from Fahrenheit to Celsius
+                                
                                 //the temp values are of type float
                                 Double temp= Double.parseDouble(value.toString());
                                
                                 value=temp;
                             } else if (key.contentEquals("bar")) {
-                                //conversion of pressure from inHg to mmHg
+                                
                                 value = ((Double) value) * 1.00;
                             } 
-                            /*
-                            else if (key.contains("wind_speed")) {
-                                //conversion of speed from miles/hour to km/h
-                                //since wind speed is provided as an Integer, it is converted back to an Integer after unit conversion
-                                value=wind_sp.intValue();
-                            }
-                            */
+                           
                         }
                         // If the key is not present yet initialize the list
                         if (!readingsMap.containsKey(key)) {
@@ -342,7 +336,6 @@ public class HistoricalNUSDavisAgent {
     private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> weatherReadings)
             throws  NoSuchElementException {
         // Extract the timestamps by mapping the private conversion method on the list items
-        // that are supposed to be string (toString() is necessary as the map contains lists of different types)
 
         List<OffsetDateTime> weatherTimestamps = weatherReadings.get(HistoricalNUSDavisAgent.timestampKey).stream()
                 .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
@@ -392,12 +385,6 @@ public class HistoricalNUSDavisAgent {
         return OffsetDateTime.of( localTime, HistoricalNUSDavisAgent.ZONE_OFFSET);
     }
 
-    /**
-     * Prunes a times series so that all timestamps and corresponding values start after the threshold.
-     * @param timeSeries The times series tp prune
-     * @param timeThreshold The threshold before which no data should occur
-     * @return The resulting datetime object.
-     */
     /**
      * Returns the class (datatype) corresponding to a JSON key. Note: rules for the mapping are hardcoded in the method.
      * @param jsonKey The JSON key as string.
