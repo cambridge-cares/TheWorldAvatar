@@ -19,13 +19,13 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * 
+ * Two mandatory parameters: lat, lon
+ * optional parameter: name
  * @author Kok Foong Lee
  *
  */
 @WebServlet(urlPatterns = {"/CreateStation"})
 public class CreateStation extends HttpServlet {
-
 	private static final long serialVersionUID = 1L;
 
 	// Logger for reporting info/errors
@@ -38,7 +38,6 @@ public class CreateStation extends HttpServlet {
 		LOGGER.info("Received POST request to create a new weather station");
         LOGGER.info("Received request: " + req);
 
-		
 		double lat;
 		double lon;
 		try {
