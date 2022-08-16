@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Ignore("Requires a sample data excel file to be in the data folder")
 public class HistoricalNUSDavisXLSXConnectorTest {
 
 	@Rule
