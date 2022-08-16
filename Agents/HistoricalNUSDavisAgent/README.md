@@ -12,6 +12,9 @@ Firstly, the keys for each column in the excel files must correspond with the ke
 
 Lastly, the timestamps in the excel files must be in UTC timezone. The agent will then convert the timestamps to a local date time with offset.
 
+This is an example of how the excel file looks like:
+![Shows the content of a compatible excel file.](docs/img/sample_excel_file.png "Contents of a compatible excel file")
+
 #### Example readings
 Readings are returned to the response body in form of a JSON Object which consist of key-value pair. The JSONObject has the 
 key:"sensors", which contains a JSONArray containing a JSONObject. Inside this JSONObject is a JSONArray associated with the key:"data". This JSONArray contains several JSONObject with one JSONObject per timestamp. The key value pairs within this JSONObject contain all the relevant weather readings corresponding to a particular timestamp. The key for the timestamp is `[ts]`.
