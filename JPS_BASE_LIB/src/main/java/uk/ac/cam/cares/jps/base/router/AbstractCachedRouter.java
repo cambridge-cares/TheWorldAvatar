@@ -39,6 +39,14 @@ public abstract class AbstractCachedRouter<K, V> {
 	}
 
 	/**
+	 * Clear cache
+	 */
+	protected void clearCache() {
+		LOGGER.info("Clearing cache!");
+		cache.clear();
+	}
+	
+	/**
 	 * Get value mapped to the specified key. If the key is not in the cache 
 	 * then get the value from the triple store and add it to the cache.
 	 * 
