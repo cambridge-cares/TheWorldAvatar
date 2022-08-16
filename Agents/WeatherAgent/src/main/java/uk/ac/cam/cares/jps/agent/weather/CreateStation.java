@@ -33,7 +33,7 @@ public class CreateStation extends HttpServlet {
     
     private WeatherQueryClient weatherClient = null;
 
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		new Config().initProperties();
 		LOGGER.info("Received POST request to create a new weather station");
         LOGGER.info("Received request: " + req);
