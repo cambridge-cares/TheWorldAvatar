@@ -24,6 +24,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.router.AbstractCachedRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 /**
  * This class is developed to work as an instance factory for StoreClient.<br>
@@ -192,16 +193,40 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	}
 	
 	@Override
-	protected List<String> getFromStore(String targetResourceLabel, StoreClientInterface storeClient){
+	public List<String> getFromStore(String targetResourceLabel, StoreClientInterface storeClient){
 		
-		String queryIRI = storeRouter.getQueryIRI(targetResourceLabel);
-		String updateIRI = storeRouter.getUpdateIRI(targetResourceLabel);
+		SelectBuilder builder = new SelectBuilder()
+				.addPrefix( RDFS_PREFIX,  RDFS )
+				.addPrefix( RDF_PREFIX,  RDF )
+				.addPrefix( ONTOKGROUTER_PREFIX,  ONTOKGROUTER )
+				.addVar( QUESTION_MARK.concat(QUERY_ENDPOINT) )
+				.addVar( QUESTION_MARK.concat(UPDATE_ENDPOINT) )
+				.addWhere( QUESTION_MARK.concat(RESOURCE), RDF_PREFIX.concat(COLON).concat(RDF_TYPE), ONTOKGROUTER_PREFIX.concat(COLON).concat(TARGET_RESOURCE) )
+			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) )
+				.addOptional(QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_UPDATE_ENDPOINT), QUESTION_MARK.concat(UPDATE_ENDPOINT))
+				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), targetResourceLabel);
 		
-		List<String> endpoints = new ArrayList<String>();
-		endpoints.add(QUERY_INDEX,queryIRI);
-		endpoints.add(UPDATE_INDEX,updateIRI);
+		JSONArray results = storeClient.executeQuery(builder.toString());
 		
-		return endpoints;
+		//TODO add logic for multiple results?
+		if(!results.isEmpty()) {
+			//Get first entry
+			JSONObject obj = results.getJSONObject(0);
+			String queryEndpoint = MiscUtil.optNullKey(obj, QUERY_ENDPOINT); 
+			String updateEndpoint = MiscUtil.optNullKey(obj, UPDATE_ENDPOINT); 
+
+			List<String> endpoints = new ArrayList<String>();
+			endpoints.add(QUERY_INDEX,queryEndpoint);
+			endpoints.add(UPDATE_INDEX,updateEndpoint);
+			
+			return endpoints;
+			
+		}else {
+			//TODO what to do with null
+			LOGGER.error("Endpoints not found for resource="+targetResourceLabel);
+			return null;
+		}
+		
 	}
 	
 	/**
@@ -304,6 +329,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * @return
 	 */
 	private String getLocalFilePath(String targetResourceName) {
+		//TODO change this
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -335,6 +361,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * @throws Exception
 	 */
 	private String getQueryIRI(String targetResourceName){
+		//TODO remove this
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -366,6 +393,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * @throws Exception
 	 */
 	private String getUpdateIRI(String targetResourceName){
+		//TODO remove this
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -395,6 +423,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * @return
 	 */
 	private WhereBuilder getCommonKGRouterWhereBuilder(){
+		//TODO remove this
 		return new WhereBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
