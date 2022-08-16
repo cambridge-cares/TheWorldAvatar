@@ -4,6 +4,11 @@
 # run whenever the Docker container is started.
 echo "Running start-up.sh script..."
 
+# Cron will not inherit environment variables unless they're
+# written to a specific file first.
+echo "Exporting environment variables to file for cron to detect..."
+printenv | grep -v "no_proxy" >> /etc/environment
+
 # Launch the terminal-update.py script in a background process.
 # This scrapes data and pushes it to the KG every 12 minutes.
 echo "Launching the terminal-update.py script in a new process..."

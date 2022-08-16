@@ -141,5 +141,6 @@
         "2",
         "1"
     ],
-    "Scan Points": 360.0033
+    "Scan Points": 360.0033,
+    "Log file name": "nbut_rigid.log"
 }

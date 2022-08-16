@@ -97,5 +97,6 @@
         "2",
         "1"
     ],
-    "Scan Points": 1.5307
+    "Scan Points": 1.5307,
+    "Log file name": "ethane_scan_rigid.g09"
 }

@@ -2,14 +2,18 @@ package uk.ac.cam.cares.jps.base.config;
 
 import java.net.URL;
 import java.nio.file.Paths;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentLocator {
 
+     /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AgentLocator.class);
+    
 	private static AgentLocator instance = null;
 	private String jpsBaseDirectory = null;
 	private String url = null;
@@ -19,7 +23,6 @@ public class AgentLocator {
 	private static String ABS_JPSDATA_WORKINGDIR = "absdir.jpsdata.workingdir";
 	private static String INVALID_PATH = "Path could not be constructed.";
 	private static String INVALID_URL = "URL could not be constructed.";
-	private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
 	private static final String[] SUBDIRECTORIES = new String[] {"WEB-INF", "bin", "build", "target"};
 
 	public static synchronized AgentLocator getSingleton() {
@@ -40,7 +43,7 @@ public class AgentLocator {
 	 */
 	private void init() {
 		jpsBaseDirectory = getCurrentJpsAppDirectory(this);
-		logger.info("JPS_BASE directory = " + jpsBaseDirectory);
+		LOGGER.info("JPS_BASE directory = " + jpsBaseDirectory);
 		url = getUrl(getProperty("host"), getProperty("port"));
 	}
 
@@ -166,7 +169,7 @@ public class AgentLocator {
 
 		try {
 			url = new URL(protocol, host, Integer.valueOf(port), path).toString();
-			logger.info("created url from properties: " + url);
+			LOGGER.info("created url from properties: " + url);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(INVALID_URL);
 		}

@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - pip:
+    - pytest
+    - -e .

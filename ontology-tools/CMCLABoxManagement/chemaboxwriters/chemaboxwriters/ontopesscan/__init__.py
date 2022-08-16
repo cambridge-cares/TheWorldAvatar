@@ -1,4 +1,3 @@
-from chemaboxwriters.ontopesscan.opsjsonstagewriter import compchem_opsjson_abox_from_string
-from chemaboxwriters.ontopesscan.csvstagewriter import pesscan_csv_abox_from_string
-from chemaboxwriters.ontopesscan.pipeline import assemble_ops_pipeline
-from chemaboxwriters.ontopesscan.writeabox import write_abox
+import pkg_resources
+
+OPS_SCHEMA = pkg_resources.resource_filename(__name__, "ops_schema.yml")

@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -38,7 +38,7 @@ import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
  *
  */
 public class JobSubmission{
-	private Logger logger = LoggerFactory.getLogger(JobSubmission.class);	
+	private Logger LOGGER = LogManager.getLogger(JobSubmission.class);	
 	private String hpcAddress;
 	private String agentClass;
 	private File workspaceDirectory;
@@ -339,7 +339,7 @@ public class JobSubmission{
      */
     public String produceStatistics(String input) throws IOException, SlurmJobException{
 		System.out.println("Received a request to send statistics.\n");
-		logger.info("Received a request to send statistics.\n");
+		LOGGER.info("Received a request to send statistics.\n");
 		return "";
     }
 	
@@ -355,7 +355,7 @@ public class JobSubmission{
      */
     public String showStatistics() throws IOException, SlurmJobException{
 		System.out.println("Received a request to show statistics.\n");
-		logger.info("Received a request to show statistics.\n");
+		LOGGER.info("Received a request to show statistics.\n");
 		return "";
     }
 	
@@ -444,18 +444,15 @@ public class JobSubmission{
 				String pwd = slurmJobProperty.getHpcServerLoginUserPassword();
 				session.setPassword(pwd);
 
+				// Note that session.setConfig("PreferredAuthentications", ...) was removed because it will cause issues
+				// when this code is executed in a container for unknown reasons
 				try {
 					// Attempt to connect to a running instance of Pageant
 					Connector con = new PageantConnector();
 					IdentityRepository irepo = new RemoteIdentityRepository(con);
 					jsch.setIdentityRepository(irepo);
-					// If successful then attempt to authenticate using a public key first,
-					// falling back to using the password if no valid key is found
-					session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
 				} catch (AgentProxyException e) {
-					// Connecting to Pageant has failed so skip trying to authenticate
-					// using a public key and just try with the password
-					session.setConfig("PreferredAuthentications", "password");
+					LOGGER.info("Failed to detect Pageant, will authenticate using password");
 				}
 
 				session.setConfig("StrictHostKeyChecking", "no");
@@ -483,7 +480,7 @@ public class JobSubmission{
 										break;
 									}
 								}catch(Exception e){
-									logger.info(e.getMessage());
+									LOGGER.info(e.getMessage());
 								}
 							}else{
 								break;
@@ -521,12 +518,12 @@ public class JobSubmission{
 	private void updateRunningJobSet(File[] jobFolders, Set<String> jobsRunning) throws IOException{
 		for(File jobFolder: jobFolders){
 			if(!(new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()))).exists()){
-				logger.info("SlurmJobAPI: job status file is not found, so the job folder with ID "+ jobFolder.getName()+" is being moved to the failed job folder.");
+				LOGGER.info("SlurmJobAPI: job status file is not found, so the job folder with ID "+ jobFolder.getName()+" is being moved to the failed job folder.");
 				System.out.println("SlurmJobAPI: job status file is not found, so the job folder with ID "+ jobFolder.getName()+" is being moved to the failed job folder.");
 				try{
 					Utils.moveToFailedJobsFolder(jobFolder, slurmJobProperty);
 				}catch(Exception e){
-					logger.info("SlurmJobAPI: failed to move the job folder with ID "+jobFolder.getName()+" to the failed job folder.");
+					LOGGER.info("SlurmJobAPI: failed to move the job folder with ID "+jobFolder.getName()+" to the failed job folder.");
 					System.out.println("SlurmJobAPI: failed to move the job folder with ID "+jobFolder.getName()+" to the failed job folder.");
 				}
 				continue;
@@ -536,7 +533,7 @@ public class JobSubmission{
 					jobsRunning.add(jobFolder.getName());
 				}
 			} catch (Exception e) {
-				logger.info("SlurmJobAPI: failed to check the status of the job with ID "+jobFolder.getName()+ " while checking if it was running.");
+				LOGGER.info("SlurmJobAPI: failed to check the status of the job with ID "+jobFolder.getName()+ " while checking if it was running.");
 				System.out.println("SlurmJobAPI: failed to check the status of the job with ID "+jobFolder.getName()+ " while checking if it was running.");
 			}
 		}
@@ -614,13 +611,13 @@ public class JobSubmission{
 			System.out.println("countNumberOfFilesInJobFolder:"+countNumberOfFilesInJobFolder);
 			System.out.println("countNumberOfFilesSetInProperties:"+countNumberOfFilesSetInProperties);
 			if(!(countNumberOfFilesSetInProperties>=3 && countNumberOfFilesSetInProperties+1==countNumberOfFilesInJobFolder)){
-				logger.info("SlurmJobAPI: all mandatory files are not found, so the job folder with ID "+ jobFolder.getName()+" is deleted.");
+				LOGGER.info("SlurmJobAPI: all mandatory files are not found, so the job folder with ID "+ jobFolder.getName()+" is deleted.");
 				System.out.println("SlurmJobAPI: all mandatory files are not found, so the job folder with ID "+ jobFolder.getName()+" is deleted.");
 				Utils.moveToFailedJobsFolder(jobFolder, slurmJobProperty);
 				return false;
 			}
 		}catch(Exception e){
-			logger.info("SlurmJobAPI: all mandatory files are not found and an attempt to move the job folder with ID "
+			LOGGER.info("SlurmJobAPI: all mandatory files are not found and an attempt to move the job folder with ID "
 					+jobFolder.getName()+" to the failed job folder is not successful.");
 			System.out.println("SlurmJobAPI: all mandatory files are not found and an attempt to move the job folder with ID "
 					+jobFolder.getName()+" to the failed job folder is not successful.");
@@ -628,7 +625,7 @@ public class JobSubmission{
 		try{
 			startJob(jobFolder.getName(), Arrays.asList(jobFolder.listFiles()));
 		}catch(Exception e){
-			logger.info("SlurmJobAPI: the Slurm Job with ID "+jobFolder.getName()+" could not be started.");
+			LOGGER.info("SlurmJobAPI: the Slurm Job with ID "+jobFolder.getName()+" could not be started.");
 			System.out.println("SlurmJobAPI: the Slurm Job with ID "+jobFolder.getName()+" could not be started.");
 			return false;
 		}
@@ -793,7 +790,7 @@ public class JobSubmission{
 			File statusFile = Utils.getStatusFile(jobFolder);
 			status = updateRunningJobsStatus(jobFolder.getName(), statusFile);
 		}catch(Exception e){
-			logger.info("SlurmJobAPI: failed to update the status of the job with ID "+jobFolder.getName()+" while checking if it was still running.");
+			LOGGER.info("SlurmJobAPI: failed to update the status of the job with ID "+jobFolder.getName()+" while checking if it was still running.");
 		}
 		return status;
 	}

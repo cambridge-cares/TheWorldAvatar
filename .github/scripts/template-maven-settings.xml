@@ -1,0 +1,40 @@
+<settings> 
+ 
+    <!-- Server credentials -->
+    <servers>
+        <server>
+			<!-- If a target repo (for uploads) is listed in your project's POM file,
+			then its ID needs to match the one listed here. -->
+            <id>repo</id>
+            <username>REPO_USERNAME</username>
+            <password>REPO_PASSWORD</password>
+        </server>
+    </servers>
+    
+	<!-- List of profiles that are active for all builds. -->
+    <activeProfiles>
+        <activeProfile>Default Profile</activeProfile>
+    </activeProfiles>	
+	
+	<!-- Profiles -->
+    <profiles>
+        <profile>
+            <id>Default Profile</id>
+            <properties></properties>
+            <repositories>
+                <repository>
+                    <id>repo</id>
+                    <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
+                    <layout>default</layout>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>                    
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+</settings>

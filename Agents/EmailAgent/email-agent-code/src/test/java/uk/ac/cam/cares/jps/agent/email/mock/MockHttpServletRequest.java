@@ -30,7 +30,13 @@ import javax.servlet.http.Part;
  * @author Michael Hillman
  */
 public class MockHttpServletRequest implements HttpServletRequest {
-
+    
+    private String requestURI;
+    
+    public MockHttpServletRequest(String requestURI) {
+        this.requestURI = requestURI;
+    }
+    
     @Override
     public String getAuthType() {
         throw new UnsupportedOperationException("Not supported yet."); 
@@ -115,7 +121,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        return requestURI;
     }
 
     @Override

@@ -1,17 +1,61 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#"
-     xml:base="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl"
+<rdf:RDF xmlns="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#"
+     xml:base="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl"
+     xmlns:OntoStation="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:terms="http://purl.org/dc/terms/"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl">
-        <owl:imports rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl"/>
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 September 2021</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ontology to describe air quality and weather stations</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6258c44570dd8dc819f9f60ff250492d5c8ca1d1</gitCommitHash>
     </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#hasCoordinates -->
+
+
+    <owl:DatatypeProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#hasCoordinates">
+        <rdfs:domain rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#Station"/>
+        <rdfs:range rdf:resource="http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
     
 
 
@@ -23,103 +67,61 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#AirQualityStation -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#AirQualityStation">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#Station"/>
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#AirQualityStation -->
+
+
+    <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#AirQualityStation">
+        <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#Station"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#NO2Concentration -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#NO2Concentration">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AirPollution"/>
-    </owl:Class>
-    
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#Station -->
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#O3Concentration -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#O3Concentration">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AirPollution"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#PM10Concentration -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#PM10Concentration">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AirPollution"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#PM2.5Concentration -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#PM2.5Concentration">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AirPollution"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#SO2Concentration -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#SO2Concentration">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AirPollution"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#Station -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#Station">
+    <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#Station">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
-                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WeatherStation -->
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#WeatherStation -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WeatherStation">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#Station"/>
+
+    <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#WeatherStation">
+        <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#Station"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl</rdfs:isDefinedBy>
     </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WindDirection -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WindDirection">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Wind"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WindSpeed -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WindSpeed">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Wind"/>
-    </owl:Class>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherPhenomenon -->
-
-    <rdf:Description rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherPhenomenon">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties"/>
-    </rdf:Description>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
 

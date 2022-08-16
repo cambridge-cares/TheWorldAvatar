@@ -4,6 +4,9 @@ import os
 import re
 from itertools import islice
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 # keys/values uploaded to the kg
 #-------------------------------------------------
@@ -64,6 +67,10 @@ CAS_MP2_ENERGY = 'CASSCF MP2 energy'
 CI_ENERGY = 'CI energy'
 TD_ENERGY = 'TD energy'
 #-------------------------------------------------
+
+
+# extra log file name key
+LOG_FILE_NAME = 'Log file name'
 
 # collate keys to be uploaded to the kg into a single list
 #-------------------------------------------------
@@ -184,15 +191,15 @@ class CcGaussianParser():
             # we need to again test for its success
             job_success = get_job_success(buffer)
             if jobs_nr == 0:
-                print('    PARSER_INFO: No valid jobs found.')
+                logger.info('    PARSER_INFO: No valid jobs found.')
             elif jobs_nr == 1:
-                print('    PARSER_INFO: Found job '+str(jobs_nr)+', job success: '+str(job_success))
+                logger.info('    PARSER_INFO: Found job '+str(jobs_nr)+', job success: '+str(job_success))
                 # if the jobs number was one, this is a non linked log
                 # so there is no need in writing it again to a temp file
                 # just add the log name as is to the final log_names list
                 if job_success: log_names.append(logFile)
             elif jobs_nr > 1:
-                print('    PARSER_INFO: Found job '+str(jobs_nr)+', job success: '+str(job_success))
+                logger.info('    PARSER_INFO: Found job '+str(jobs_nr)+', job success: '+str(job_success))
                 # this is the last job from a linked log
                 # write this job to a temp file and append its name
                 # to the log_names list
@@ -235,6 +242,7 @@ class CcGaussianParser():
         # loop thorugh each log and parse it
         for log in split_logs:
             parseddata = self.parse_log(log)
+            parseddata[LOG_FILE_NAME] = os.path.basename(logFile)
             parseddata = data_splitter(parseddata)
             for listdata in parseddata:
                 json_data = json.dumps(listdata)

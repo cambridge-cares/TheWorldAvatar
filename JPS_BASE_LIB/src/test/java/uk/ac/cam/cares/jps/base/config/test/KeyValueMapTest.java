@@ -20,7 +20,7 @@ public class KeyValueMapTest {
 		} finally {
 			Assert.assertNotNull(kvm);
 			Assert.assertEquals(kvm.getClass(), KeyValueMap.class);
-			Assert.assertEquals(kvm.getClass().getDeclaredFields().length, 7);
+			Assert.assertEquals(kvm.getClass().getDeclaredFields().length, 8);
 			Assert.assertEquals(kvm.getClass().getDeclaredMethods().length, 7);
 		}
 

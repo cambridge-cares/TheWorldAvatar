@@ -323,7 +323,7 @@ function onLayerChange(checkbox) {
 	var ids = layers[checkbox.id]["ids"];
 
 	ids.forEach((layerID) => {
-		console.log("INFO: Layer '" + layerID + "' now has visibility state: " + layers[layerName]["selected"]);
+		console.log("INFO: Layer '" + layerID + "' now has visibility state: " + layers[checkbox.id]["selected"]);
 		layerCallback(layerID, checkbox.checked);
 	});
 }

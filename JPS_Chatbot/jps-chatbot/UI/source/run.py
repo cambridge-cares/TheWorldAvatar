@@ -4,6 +4,7 @@ import sys
 
 # source_path = os.path.join(file_path, 'UI/source')
 # sys.path.insert(1, source_path)
+import time
 
 from pprint import pprint
 
@@ -15,16 +16,20 @@ from functools import lru_cache
 
 # sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
 # sys.path.append('/source')
-from UI.source.wolfram_alpha_and_google.GoogleAPI import GoogleAPI
-from UI.source.wolfram_alpha_and_google.WolframGoogle import WolframGoogle
-from UI.source.CoordinateAgent import CoordinateAgent
-from UI.source.full_test import FullTest
+if __name__ == "__main__":
+    from CoordinateAgent import CoordinateAgent
+    from full_test import FullTest
+else:
+    from .CoordinateAgent import CoordinateAgent
+    from .full_test import FullTest
 
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
 
+# Instantiate Coordinate Agent
+coordinate_agent = CoordinateAgent()
 
 @app.route('/start_test')
 def start_test():
@@ -34,8 +39,14 @@ def start_test():
 
 
 @app.route('/log')
-def get_log():
-    return send_file('question-log.txt')
+def stream():
+    def generate():
+        with open('Marie.log') as f:
+            while True:
+                yield f.read()
+                time.sleep(1)
+
+    return app.response_class(generate(), mimetype='text/plain')
 
 
 @app.route('/chemistry_chatbot/static/<path:path>')
@@ -75,31 +86,20 @@ def make_query():
     question_type = request.args.get('type')
     question = request.args.get('question')
 
+    # N.B. It's possible to have different 'type' values, but only 'worldavatar' is currently used
     try:
         if question_type == 'worldavatar':
             result = coordinate_agent.run(question)
             return json.dumps(result)
-        elif question_type == 'google':
-            question = request.args.get('question').strip()
-            r = google_api.run(question)
-            return str(r)
-
-        elif question_type == 'wolfram':
-            result = wolfram_and_google.get_result_from_wolfram(question)
-            return json.dumps(result)
-
+        else: 
+            raise ValueError("%s isn't a valid value for the 'type' parameter." % question_type)
     except:
         return 'Nothing'
 
 
 @app.route('/')
 def hello_world():
-    return render_template('index_dln22.html')
-
-
-google_api = GoogleAPI()
-coordinate_agent = CoordinateAgent(socketio)
-wolfram_and_google = WolframGoogle()
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(host='https://kg.cmclinnovations.com/', port=8080, debug=True)

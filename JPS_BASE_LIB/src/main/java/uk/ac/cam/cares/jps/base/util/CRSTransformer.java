@@ -19,8 +19,8 @@ import org.cts.op.transformation.GridBasedTransformation;
 import org.cts.op.transformation.NTv2GridShiftTransformation;
 import org.cts.registry.EPSGRegistry;
 import org.cts.registry.RegistryManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -73,7 +73,7 @@ public class CRSTransformer {
 			// registryManager.addRegistry(new Nad83Registry());
 			// registryManager.addRegistry(new WorldRegistry());
 			
-			logger = LoggerFactory.getLogger(CRSTransformer.class);
+			logger = LogManager.getLogger(CRSTransformer.class);
 		}
 
 		return cRSFactory;

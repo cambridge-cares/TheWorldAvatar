@@ -4,15 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
 
 public class PythonHelper {
 	
-	private static Logger logger = LoggerFactory.getLogger(PythonHelper.class);
+	private static Logger LOGGER = LogManager.getLogger(PythonHelper.class);
 
 	public static String processCommand(String[] cmd) throws IOException {
 		
@@ -42,7 +42,7 @@ public class PythonHelper {
 	public static String callPython(String pythonScriptName, String parameter, Object thisObject) throws IOException {
 		String path = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);
 		
-		logger.info(path, parameter);
+		LOGGER.info(path, parameter);
 		
 		String[] cmd = { "python", path, parameter };
 
@@ -52,7 +52,7 @@ public class PythonHelper {
 	public static String callPython(String pythonScriptName, String parameter1, String parameter2, Object thisObject) throws IOException {
 		String pathPythonScript = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);		
 		
-		logger.info(pathPythonScript+ parameter1+ parameter2);
+		LOGGER.info(pathPythonScript+ parameter1+ parameter2);
 		
 		String[] cmd = { "python", pathPythonScript, parameter1, parameter2 };
 		
@@ -62,7 +62,7 @@ public class PythonHelper {
 	public static String callPython(String pythonScriptName, String parameter1, String parameter2, String parameter3, String parameter4, Object thisObject) throws IOException {
 		String pathPythonScript = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);		
 		
-		logger.info(pathPythonScript+ parameter1+ parameter2+ parameter3+ parameter4);
+		LOGGER.info(pathPythonScript+ parameter1+ parameter2+ parameter3+ parameter4);
 		
 		String[] cmd = { "python", pathPythonScript, parameter1, parameter2, parameter3, parameter4 };
 		

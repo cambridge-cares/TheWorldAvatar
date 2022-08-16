@@ -3,47 +3,37 @@ package uk.ac.cam.cares.jps.base.discovery;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -52,11 +42,14 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
-
 public class AgentCaller {
 
+     /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AgentCaller.class);
+            
     private static final String JSON_PARAMETER_KEY = "query";
-    private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
     private static String hostPort = null;
 
     private static synchronized String getHostPort() {
@@ -168,7 +161,7 @@ public class AgentCaller {
         // TODO-AE refactor get hostname
         URIBuilder builder;
         try {
-            builder = new URIBuilder(createURI(path));
+            builder = new URIBuilder(Http.createURI(path));
         } catch (Exception e) {
             builder = new URIBuilder().setScheme("http").setHost(getHostPort()).setPath(path);
         }
@@ -176,7 +169,7 @@ public class AgentCaller {
     }
 
     public static String executeGetWithURL(String url) {
-        URI uri = createURI(url);
+        URI uri = Http.createURI(url);
         HttpGet request = new HttpGet(uri);
         return AgentCaller.executeGet(request);
     }
@@ -184,55 +177,29 @@ public class AgentCaller {
     public static String executeGetWithURLAndJSON(String url, String json) {
         URI uri = createURIWithURLandJSON(url, json);
         HttpGet request = new HttpGet(uri);
-        logger.info("REQUEST HERE= "+request);
+        LOGGER.info("REQUEST HERE= "+request);
         return AgentCaller.executeGet(request);
     }
 
     public static URI createURIWithURLandJSON(String url, String json) {
-        return createURI(url, JSON_PARAMETER_KEY, json);
+        return Http.createURI(url, JSON_PARAMETER_KEY, json);
     }
-
+     
+    /**
+     * @deprecated Use method in Http.
+     * @param url
+     * @param keyOrValue
+     * @return
+     */
+    @Deprecated
     public static URI createURI(String url, String... keyOrValue) {
-
-        int j = url.indexOf(':');
-        String scheme = url.substring(0, j);
-        URIBuilder builder = new URIBuilder().setScheme(scheme);
-
-        url = url.substring(j + 3);
-        j = url.indexOf('/');
-        String path = url.substring(j);
-        builder.setPath(path);
-
-        String host = url.substring(0, j);
-        j = host.indexOf(':');
-        if (j == -1) {
-            builder.setHost(host);
-        } else {
-            String[] split = host.split(":");
-            builder.setHost(split[0]);
-            int port = Integer.valueOf(split[1]);
-            builder.setPort(port);
-        }
-
-        if (!ArrayUtils.isEmpty(keyOrValue)) {
-            for (int i = 0; i < keyOrValue.length; i = i + 2) {
-                String key = keyOrValue[i];
-                String value = keyOrValue[i + 1];
-                builder.setParameter(key, value);
-            }
-        }
-
-        try {
-            return builder.build();
-        } catch (URISyntaxException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
-        }
+    	return Http.createURI(url, keyOrValue);
     }
-
+    
     public static String executeGetWithURLKey(String urlKey, MediaType type, String... keyOrValue) {
 
         String url = KeyValueManager.get(urlKey);
-        URI uri = createURI(url, keyOrValue);
+        URI uri = Http.createURI(url, keyOrValue);
         HttpGet request = new HttpGet(uri);
         if (type != null) {
             request.setHeader(HttpHeaders.ACCEPT, type.type);
@@ -335,15 +302,19 @@ public class AgentCaller {
 		if (acceptList.hasMoreElements()) {
 			accept = acceptList.nextElement();
 		}
-		logger.info("accept = " + accept);
+		LOGGER.info("accept = " + accept);
 		return accept;
 	}
+    
+    /**
+     * @deprecated Use method in Http
+     * @param response
+     * @param json
+     * @throws IOException
+     */
+    @Deprecated
     public static void writeJsonParameter(HttpServletResponse response, JSONObject json) throws IOException {
-
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        String message = json.toString();
-        out.print(message);
+    	Http.writeJsonParameter(response, json);
     }
 
     public static String executeGet(HttpGet request) {
@@ -368,25 +339,25 @@ public class AgentCaller {
                 }
                 buf.append("?").append(query);
             }
-            logger.info(buf.toString());
+            LOGGER.info(buf.toString());
             // use the next line to log the percentage encoded query component
-            //logger.info(request.toString());
+            //LOGGER.info(request.toString());
 
             httpResponse = HttpClientBuilder.create().build().execute(request);
 
             if (httpResponse.getStatusLine().getStatusCode() != 200) {
                 String body = EntityUtils.toString(httpResponse.getEntity());
-                logger.error(body);
+                LOGGER.error(body);
                 String message = "original request = " + requestAsString;
                 if (request.getURI().getQuery() != null) {
                     message += "?" + request.getURI().getQuery();
                 }
-                logger.info(message);
+                LOGGER.info(message);
                 throw new JPSRuntimeException("HTTP response with error = " + httpResponse.getStatusLine() + ", " + message);
             }
 
             String body = EntityUtils.toString(httpResponse.getEntity());
-            logger.debug(body);
+            LOGGER.debug(body);
             return body;
         } catch (Exception e) {
             throw new JPSRuntimeException(e.getMessage(), e);
@@ -396,7 +367,7 @@ public class AgentCaller {
                     httpResponse.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage(), e);
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         }
@@ -437,44 +408,45 @@ public class AgentCaller {
 	    	throw new JPSRuntimeException("IO Exception "+ url + "; try again.");
 	    }
     }
+    
+    /**
+     * @deprecated Use method in Http.
+     * @param object
+     * @param resp
+     */
+    @Deprecated
     public static void printToResponse(Object object, HttpServletResponse resp) {
-
-        if (object == null) {
-            return;
-        }
-
-        String message = serializeForResponse(object);
-        resp.setContentType("text/plain");
-        resp.setCharacterEncoding("UTF-8");
-        try {
-            resp.getWriter().print(message);
-        } catch (IOException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
-        }
+    	Http.printToResponse(object, resp);
     }
     
+    
+    /**
+     * @deprecated Use method in Http.
+     * @param object
+     * @return
+     */
+    @Deprecated
     public static String serializeForResponse(Object object) {
-        String message = null;
-        if (object instanceof String) {
-            message = (String) object;
-        } else if (object instanceof JSONObject || object instanceof JSONArray) {
-        	message = object.toString();
-        } else {
-            message = new Gson().toJson(object);
-        }
-        return message;
+    	return Http.serializeForResponse(object);
     }
-
+    
+    /**
+     * @deprecated Use method in Http.
+     * @param s
+     * @return
+     */
+    @Deprecated
     public static String encodePercentage(String s) {
-        Charset charset = Charset.forName("UTF-8");
-        List<BasicNameValuePair> params = Arrays.asList(new BasicNameValuePair("query", s));
-        String encoded = URLEncodedUtils.format(params, charset);
-        return encoded.substring(6);
+    	return Http.encodePercentage(s);
     }
-
+    
+    /**
+     * @deprecated Use method in Http.
+     * @param s
+     * @return
+     */
+    @Deprecated
     public static String decodePercentage(String s) {
-        Charset charset = Charset.forName("UTF-8");
-        List<NameValuePair> pair = URLEncodedUtils.parse("query=" + s, charset);
-        return pair.get(0).getValue();
+    	return Http.decodePercentage(s);
     }
 }

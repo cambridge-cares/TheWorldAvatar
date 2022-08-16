@@ -41,7 +41,16 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#hasElecMeters -->
 
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#hasElecMeters">
+        <rdfs:domain rdf:resource="http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#ElecMeters"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relation between a location and it&apos;s associated set of electricity meters</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -65,6 +74,18 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#hasConsumingElecMeters -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#hasConsumingElecMeters">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#ElecMeters"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The number of consuming gas meters within a set of electricity meters</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+
+
 
 
     <!-- http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#hasName -->
@@ -117,6 +138,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents a collection of Gas Meters</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl</rdfs:isDefinedBy>
     </owl:Class>
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#ElecMeters -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#ElecMeters">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents a collection of Electricity Meters</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl</rdfs:isDefinedBy>
+    </owl:Class>
+
+
+
 </rdf:RDF>
 
 

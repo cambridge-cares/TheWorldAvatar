@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.lang.reflect.Field;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +23,8 @@ import static org.mockito.Mockito.*;
  * This class provides integration tests for the TimeSeriesClient class
  */
 
-@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
-		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
+//@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
+//		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesClientIntegrationTest {
 	
@@ -41,7 +40,7 @@ public class TimeSeriesClientIntegrationTest {
 	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
 
 	// Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
-	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker_Registry
+	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 	@Container
 	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
 												 .withExposedPorts(9999);
@@ -394,7 +393,7 @@ public class TimeSeriesClientIntegrationTest {
 			tsClient.getTimeSeries(dataIRI_1);
 			Assert.fail();
 		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI_1.get(0) + " is not attached to any time series instance in the KG"));
+			Assert.assertTrue(e.getMessage().contains("<" + dataIRI_1.get(0) + "> does not have an assigned time series instance"));
 		}
 		TimeSeries<Instant> ts3 = tsClient.getTimeSeries(dataIRI_2);
 		Assert.assertEquals(ts2.getDataIRIs(), ts3.getDataIRIs());
@@ -408,7 +407,7 @@ public class TimeSeriesClientIntegrationTest {
 			tsClient.getTimeSeries(dataIRI_2);
 			Assert.fail();
 		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI_2.get(0) + " is not attached to any time series instance in the KG"));
+			Assert.assertTrue(e.getMessage().contains("<" + dataIRI_2.get(0) + "> does not have an assigned time series instance"));
 		}		
 	}
 
@@ -555,7 +554,7 @@ public class TimeSeriesClientIntegrationTest {
 				tsClient.getTimeSeries(s);
 				Assert.fail();
 			} catch (Exception e) {
-				Assert.assertTrue(e.getMessage().contains("DataIRI " + s.get(0) + " is not attached to any time series instance in the KG"));
+				Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
 			}
 		}			
 	}

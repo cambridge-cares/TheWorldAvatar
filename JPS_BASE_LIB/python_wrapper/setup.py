@@ -1,13 +1,12 @@
 from setuptools import setup, find_packages
-import os.path
 
 setup(
     name='py4jps',
-    version='1.0.0',
+    version='1.0.22',
     author='Daniel Nurkowski',
     author_email='danieln@cmclinnovations.com',
     license='MIT',
-    python_requires='>=3.5, <3.8',
+    python_requires='>=3.5',
     description="Py4jps is a thin Python wrapper for the TheWorldAvatar project.",
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/python_wrapper",
     long_description=open('README.md').read(),
@@ -25,6 +24,8 @@ setup(
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7"
+        "Programming Language :: Python :: 3.7",
+		"Programming Language :: Python :: 3.8",
+		"Programming Language :: Python :: 3.9"
     ]
 )

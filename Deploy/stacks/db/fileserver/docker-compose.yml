@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  test-file-server:
+    image: test-file-server
+    build:
+      args:
+        mvn_profile: dev-profile
+      context: .
+    container_name: file-server
+    ports:
+      - "58090:8080"
+
+    volumes:
+      - file_server:/app/fs_root
+      - external_maven_repo:/root/.m2
+
+volumes:
+  external_maven_repo:
+  file_server:

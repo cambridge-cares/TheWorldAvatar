@@ -9,4 +9,4 @@ services:
     build:
       context: .
     ports:
-      - 5009:5000
+      - 55001:5000

@@ -16,8 +16,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * This class provides integration tests for the TimeSeriesSparql class
  */
 
-@Ignore("Requires triple store endpoint set up and running (using testcontainers)\n" + 
-		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
+//@Ignore("Requires triple store endpoint set up and running (using testcontainers)\n" + 
+//		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesSparqlIntegrationTest {
 
@@ -25,7 +25,7 @@ public class TimeSeriesSparqlIntegrationTest {
 
 	// Will create a container that is shared between tests.
 	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker_Registry
+	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 	@Container
 	private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
 			.withExposedPorts(9999);

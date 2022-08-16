@@ -98,5 +98,6 @@
         "2",
         "1"
     ],
-    "Scan Points": 111.3511
+    "Scan Points": 111.3511,
+    "Log file name": "ethane_angle_rigid.log"
 }

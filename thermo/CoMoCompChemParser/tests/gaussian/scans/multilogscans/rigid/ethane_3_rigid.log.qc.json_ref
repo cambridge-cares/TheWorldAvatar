@@ -90,5 +90,6 @@
     "LUMO+2 energy": 0.17463,
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
-    "Run date": "Wed Jun 16 17:39:56 2021"
+    "Run date": "Wed Jun 16 17:39:56 2021",
+    "Log file name": "ethane_3_rigid.log"
 }

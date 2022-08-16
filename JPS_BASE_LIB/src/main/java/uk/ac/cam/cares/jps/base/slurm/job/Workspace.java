@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.google.common.io.Files;
 
@@ -19,7 +19,7 @@ import com.google.common.io.Files;
  *
  */
 public class Workspace {
-	private Logger logger = LoggerFactory.getLogger(Workspace.class); 
+	private Logger LOGGER = LogManager.getLogger(Workspace.class); 
 	public long previousTimeStamp = System.nanoTime();
 
 	/**
@@ -125,7 +125,7 @@ public class Workspace {
 			
 		}else{
 			
-			logger.error("SlurmJobAPI: The provided input file is not a file.");
+			LOGGER.error("SlurmJobAPI: The provided input file is not a file.");
 			
 			throw new SlurmJobException("SlurmJobAPI: The provided input file is not a file.");
 		}

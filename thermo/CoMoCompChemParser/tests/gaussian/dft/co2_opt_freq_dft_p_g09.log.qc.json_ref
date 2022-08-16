@@ -63,5 +63,6 @@
     "LUMO+2 energy": 0.06533,
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
-    "Run date": "Thu Jul 16 18:55:12 2020"
+    "Run date": "Thu Jul 16 18:55:12 2020",
+    "Log file name": "co2_opt_freq_dft_p_g09.log"
 }

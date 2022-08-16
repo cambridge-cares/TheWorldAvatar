@@ -37,11 +37,11 @@ Alternatively, from the command line, and in the same directory as this README, 
 docker-compose up -d
 ```
 
-The agent is reachable on localhost port 8081 by default (you can change this in docker-compose.yml).
+The agent is reachable on localhost port 58085 by default (you can change this in docker-compose.yml).
 To test it, you can you use 'curl' to send it a request on the command line (taking care to escape the ampersand in the argument list):
 
 ```
-result=$(curl -s http://localhost:8081/java_agent_eg/api/v1?a=2\&b=3) && echo $result
+result=$(curl -s http://localhost:58085/java_agent_eg/api/v1?a=2\&b=3) && echo $result
 ```
 
 Here, 'a' and 'b' are the two variables to be summed; the result is returned in a third variable, 'c', in json format:

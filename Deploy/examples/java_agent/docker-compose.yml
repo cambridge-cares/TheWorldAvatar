@@ -2,12 +2,13 @@ version: "3.8"
 
 services:
   java_agent_eg:
-    container_name: java_agent_eg
     image: java_agent_eg:1.0.0
-    build:
-      context: ./
+    build: .
+    container_name: java_agent_eg
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     ports:
-      - "8081:8080"
+      - "58085:8080"
 
     volumes:
       - external_maven_repo:/root/.m2

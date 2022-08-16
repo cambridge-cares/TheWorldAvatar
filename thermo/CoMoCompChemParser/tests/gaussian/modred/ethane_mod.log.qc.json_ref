@@ -108,5 +108,6 @@
     "ModComms": [
         "Build",
         "Freeze"
-    ]
+    ],
+    "Log file name": "ethane_mod.log"
 }

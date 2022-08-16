@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.io.*;
 import java.nio.file.Paths;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,10 @@ public class TimeSeriesSparqlTest {
 
     private MockKnowledgeBaseClient mockClient;
     private TimeSeriesSparql sparqlClient;
+    
+	// Initialise correct namespaces to use for ontology and knowledge base
+	private final String ns_ontology = "https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
+	private final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
 
     // Initialise IRIs for 2 times series: 1 with 3 associated data series and 1 with only 1 associated data series
     private final String tsIRI1 = "http://tsIRI1";
@@ -220,8 +225,8 @@ public class TimeSeriesSparqlTest {
     @Test
     public void testNamespaces() {
         // Test the value of the public namespaces for the ontology and the knowledge base
-        Assert.assertEquals("http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#", TimeSeriesSparql.ns_ontology);
-        Assert.assertEquals("http://www.theworldavatar.com/kb/ontotimeseries/", TimeSeriesSparql.ns_kb);        
+        Assert.assertEquals(ns_ontology, TimeSeriesSparql.ns_ontology);
+        Assert.assertEquals(ns_kb, TimeSeriesSparql.ns_kb);        
     }
     
     @Test
@@ -230,13 +235,13 @@ public class TimeSeriesSparqlTest {
         Field p_onto = TimeSeriesSparql.class.getDeclaredField("prefix_ontology");
         p_onto.setAccessible(true);
         Prefix onto = (Prefix) p_onto.get(null);
-        Assert.assertEquals("PREFIX ts: <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#>", 
+        Assert.assertEquals("PREFIX ts: <" + ns_ontology + ">", 
         					onto.getQueryString());
     	// Retrieve the value of the private static field 'prefix_kb' of the client
         Field p_kb = TimeSeriesSparql.class.getDeclaredField("prefix_kb");
         p_kb.setAccessible(true);
         Prefix kb = (Prefix) p_kb.get(null);
-        Assert.assertEquals("PREFIX kb: <http://www.theworldavatar.com/kb/ontotimeseries/>", 
+        Assert.assertEquals("PREFIX kb: <" + ns_kb + ">", 
         					kb.getQueryString());      
     }
     
@@ -639,6 +644,44 @@ public class TimeSeriesSparqlTest {
     	Assert.assertEquals("test_update", kbcl.getUpdateEndpoint());
 
     }
+    
+    @Test
+	public void testBulkInitTs() {
+		String tsIRI1 = "http://tsIRI1";
+		List<String> dataIRI1 = Arrays.asList("http://data1", "http://data2", "http://data3");
+		String tsIRI2 = "http://tsIRI2";
+		List<String> dataIRI2 = Collections.singletonList("http://data4");
+		String dbURL = "jdbc:postgresql:timeseries";
+		List<String> timeUnits = Arrays.asList("s", "s");
+		
+		List<String> tsList = Arrays.asList(tsIRI1, tsIRI2);
+		List<List<String>> dataIRIs = new ArrayList<>();
+		dataIRIs.add(dataIRI1); dataIRIs.add(dataIRI2);
+		
+		sparqlClient.bulkInitTS(tsList, dataIRIs, dbURL, timeUnits);
+		
+		OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
+		
+		Property hasRDB = ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasRDB");
+		Property hasTimeUnit = ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeUnit");
+		Property hasTimeSeries = ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries");
+		Resource TimeSeries = ResourceFactory.createResource(TimeSeriesSparql.ns_ontology + "TimeSeries");
+		
+		for (String dataIRI : dataIRI1) {
+			Assert.assertTrue(testKnowledgeBase.contains(ResourceFactory.createResource(dataIRI), hasTimeSeries, ResourceFactory.createResource(tsIRI1)));
+		}
+		
+		for (String dataIRI : dataIRI2) {
+			Assert.assertTrue(testKnowledgeBase.contains(ResourceFactory.createResource(dataIRI), hasTimeSeries, ResourceFactory.createResource(tsIRI2)));
+		}
+		
+		for (String tsIRI : tsList) {
+			Resource ts = ResourceFactory.createResource(tsIRI);
+			Assert.assertEquals(testKnowledgeBase.getIndividual(tsIRI).getRDFType(),TimeSeries);
+			Assert.assertTrue(testKnowledgeBase.contains(ts, hasRDB, ResourceFactory.createStringLiteral(dbURL)));
+			Assert.assertTrue(testKnowledgeBase.contains(ts, hasTimeUnit, ResourceFactory.createStringLiteral("s")));
+		}
+	}
     
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
         // Overwrite potentially existing properties file

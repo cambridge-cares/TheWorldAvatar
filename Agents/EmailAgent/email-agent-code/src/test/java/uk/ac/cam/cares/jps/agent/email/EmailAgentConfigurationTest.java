@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.agent.email;
 
 import com.github.stefanbirkner.systemlambda.SystemLambda;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_HOST;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PASS;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PORT;
@@ -19,6 +21,11 @@ import org.junit.jupiter.api.TestMethodOrder;
  */
 @TestMethodOrder(OrderAnnotation.class)
 public class EmailAgentConfigurationTest {
+
+    /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(EmailAgentConfigurationTest.class);
 
     /**
      * Attempts to read the example properties file.
@@ -41,7 +48,7 @@ public class EmailAgentConfigurationTest {
     @Test
     @Order(2)
     public void checkPropertyValues() {
-        System.out.println("INFO: Running checkPropertyValues()...");
+        LOGGER.debug("Running checkPropertyValues()...");
 
         Assertions.assertNotNull(
                 EmailAgentConfiguration.getProperty(KEY_SMTP_HOST),
@@ -65,7 +72,7 @@ public class EmailAgentConfigurationTest {
     @Test
     @Order(3)
     public void checkPropertyArrays() {
-        System.out.println("INFO: Running checkPropertyArrays()...");
+        LOGGER.debug("Running checkPropertyArrays()...");
 
         Assertions.assertTrue(
                 EmailAgentConfiguration.getPropertyAsArray(KEY_TO_ADDRESS, ",").length > 1,

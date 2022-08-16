@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -15,7 +15,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class CommandHelper {
     /* Author ZHOU XIAOCHI 2018.5.17*/
 
-    private static Logger logger = LoggerFactory.getLogger(CommandHelper.class);
+    private static Logger LOGGER = LogManager.getLogger(CommandHelper.class);
 
 
     //Since the command line commands are dependent on the OS, its imp to identify the OS.
@@ -35,26 +35,26 @@ public class CommandHelper {
 
 
     public static String executeSingleCommand(String targetFolder, String command) {
-        logger.info("In folder: " + targetFolder + " Excuted: " + command);
+        LOGGER.info("In folder: " + targetFolder + " Excuted: " + command);
 
         return getCommandResultString(getCommandProcess(targetFolder, command));
     }
 
     public static String executeCommands(String targetFolder, ArrayList<String> commands) {
-        logger.info("In folder: " + targetFolder + " Excuted: " + commands);
+        LOGGER.info("In folder: " + targetFolder + " Excuted: " + commands);
 
         String[] command = commands.toArray(new String[0]);
         String resultString = getCommandResultString(getCommandProcess(targetFolder, command));
 
 
         int min = Math.min(resultString.length(), 200);
-        logger.info("=== Result (only the first 200 characters) === :" + resultString.substring(0, min));
+        LOGGER.info("=== Result (only the first 200 characters) === :" + resultString.substring(0, min));
         return resultString;
     }
 
 	public static String executeAsyncSingleCommand(String targetFolder, String command) {
 
-		logger.info("In folder: " + targetFolder + " Excuted: " + command);
+		LOGGER.info("In folder: " + targetFolder + " Excuted: " + command);
 
         return getCommandResultString(getAsyncCommandProcess(targetFolder, command));
 	}

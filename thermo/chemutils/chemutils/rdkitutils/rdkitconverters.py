@@ -1,7 +1,7 @@
 import rdkit
 import rdkit.Chem
 import rdkit.Chem.inchi
-from chemutils.rdkitutils.rdkitmolutils import getRdkitAtomXYZbyId
+import chemutils.rdkitutils.rdkitmolutils as rdkitmolutils
 
 
 def molBlockToRdkitMol(molBlock, *args, **kwargs):
@@ -22,12 +22,13 @@ def inchiToRdkitMol(inchi, *args, **kwargs):
 def rdkitMolToInchi(rdkitMol, *args, **kwargs):
     return rdkit.Chem.inchi.MolToInchi(rdkitMol, *args, **kwargs)
 
-def rdkitMolToXYZ(rdkitMol):
+def rdkitMolToXYZ(rdkitMol, confId=0, numDigits=5):
     xyz = []
     xyz.append(str(rdkitMol.GetNumAtoms()))
     xyz.append("")
+    fspec=f".{numDigits}f"
     for atom in rdkitMol.GetAtoms():
-        atompos = getRdkitAtomXYZbyId(rdkitMol, atom.GetIdx())
-        xyzLine = f"{atom.GetSymbol()} {str(atompos[0])} {str(atompos[1])} {str(atompos[2])}"
+        atompos = rdkitmolutils.getRdkitAtomXYZbyId(rdkitMol, atom.GetIdx(), confId)
+        xyzLine = f"{atom.GetSymbol()} {atompos[0]:{fspec}} {atompos[1]:{fspec}} {atompos[2]:{fspec}}"
         xyz.append(xyzLine)
     return "\n".join(xyz)

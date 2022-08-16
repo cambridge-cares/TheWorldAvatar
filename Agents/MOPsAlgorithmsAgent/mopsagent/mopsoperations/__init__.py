@@ -1,0 +1,1 @@
+from mopsagent.kgoperations.queryKG import queryKG

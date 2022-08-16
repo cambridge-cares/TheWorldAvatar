@@ -1,0 +1,17 @@
+__pycache__/
+build/
+dist/
+*~*
+.vscode/
+*venv/
+.mypy_cache/
+coverage.xml
+.coverage
+*.gv
+*.png
+resources/
+.pytest_cache
+assets
+
+## User defined
+*.egg-info
