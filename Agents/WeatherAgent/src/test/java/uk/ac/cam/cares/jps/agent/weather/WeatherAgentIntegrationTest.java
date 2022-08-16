@@ -122,7 +122,7 @@ public class WeatherAgentIntegrationTest {
 		// delete this station
 		DeleteStation delete = new DeleteStation();
 		delete.setWeatherQueryClient(weatherClient);
-		delete.processRequestParameters(mockGetRequest);
+		// delete.processRequestParameters(mockGetRequest);
 	}
 	
 	/**

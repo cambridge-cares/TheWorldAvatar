@@ -69,9 +69,11 @@ public class CreateStation extends HttpServlet {
 			// table exists, check table contents for an equivalent point
 			if (!postgisClient.checkPointExists(lat, lon)) {
 				String station = weatherClient.createStation(lat,lon,req.getParameter("name"));
-				resp.getWriter().write("Created weather station <" + station + ">");
+				String response = "Created weather station <" + station + ">";
+				LOGGER.info(response);
+				resp.getWriter().write(response);
 			} else {
-				LOGGER.info("There is already a station at the given coordinates");
+				resp.getWriter().write("There is already a station at the given coordinates");
 			}
 		}
 	}

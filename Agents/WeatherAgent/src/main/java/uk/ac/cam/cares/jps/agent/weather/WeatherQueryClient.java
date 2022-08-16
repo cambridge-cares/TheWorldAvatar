@@ -192,13 +192,12 @@ class WeatherQueryClient {
     	
     	SelectQuery query = Queries.SELECT();
     	
-    	Variable coordinates = query.var();
     	Variable quantity = query.var();
     	Variable weatherClass = query.var();
     	Variable datavalue = query.var();
     	Variable units = query.var();
     	
-    	TriplePattern[] queryPattern = {station.isA(ReportingStation).andHas(hasObservationLocation,coordinates),
+    	TriplePattern[] queryPattern = {station.isA(ReportingStation),
     			station.has(reports,quantity),
     			quantity.isA(weatherClass).andHas(hasValue,datavalue),
     			datavalue.isA(Measure).andHas(hasUnit,units)};

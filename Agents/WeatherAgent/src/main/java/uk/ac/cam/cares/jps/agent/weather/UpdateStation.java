@@ -28,7 +28,8 @@ public class UpdateStation extends HttpServlet{
 	// for logging
 	private static final Logger LOGGER = LogManager.getLogger(UpdateStation.class);
 
-	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {    	
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {   
+		new Config().initProperties(); 	
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 		
@@ -37,20 +38,23 @@ public class UpdateStation extends HttpServlet{
 		String station = req.getParameter("iri");
 		
 		//updates station if it's more than 30 minute old
+		String response;
 		Instant currenttime = Instant.now();
 		Instant lastupdate = weatherClient.getLastUpdateTime(station);
 		if ((currenttime.getEpochSecond()-lastupdate.getEpochSecond()) > 1800) {
 			// this will ensure the servlet will always return a response even if the API call fails
 			try {
 				weatherClient.updateStation(station);
-				LOGGER.info("Updated station: <" + station + "> with latest data");
+				response = "Updated station: <" + station + "> with latest data";
 			} catch (Exception e) {
-				LOGGER.error("Weather update failed");
+				response = "Weather update failed";
+				LOGGER.error(response);
 				LOGGER.error(e.getMessage());
 				throw new RuntimeException(e);
 			}
 		} else {
-			LOGGER.info("<" + station + "> was last updated within 30 minutes ago, update request will be ignored");
-		}	
+			response = "<" + station + "> was last updated within 30 minutes ago, update request will be ignored";
+		}
+		resp.getWriter().write(response);
 	}
 }

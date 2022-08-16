@@ -36,15 +36,19 @@ public class DeleteStation extends HttpServlet{
 		String station = req.getParameter("iri");
 		WeatherPostGISClient postgisClient = new WeatherPostGISClient();
 		
+		String response;
 		try {
 			postgisClient.deleteRow(station);
 			weatherClient.deleteStation(station);
-			LOGGER.info("Deleted station: <" + station + ">");
+			response = "Deleted station: <" + station + ">";
+			LOGGER.info(response);
 		} catch (Exception e) {
-			LOGGER.error("Delete station failed");
+			response = "Delete station failed";
 			LOGGER.error(e.getMessage());
 			throw new RuntimeException(e);
 		}
+
+		resp.getWriter().write(response);
     }
 
 	/**
