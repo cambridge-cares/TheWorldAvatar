@@ -24,8 +24,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.postgis.Point;
@@ -33,12 +31,8 @@ import org.postgis.Point;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
-
-import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.VTGeometryEncoder;
 
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -56,11 +50,9 @@ class WeatherQueryClient {
 	static String ontoems = "https://www.theworldavatar.com/kg/ontoems/";
     static Prefix p_ems = SparqlBuilder.prefix("ems",iri(ontoems));
 	static Prefix p_om = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
-	private static Prefix p_geo = SparqlBuilder.prefix("geo",iri("http://www.bigdata.com/rdf/geospatial#"));
     
     // classes
 	private static Iri ReportingStation = p_ems.iri("ReportingStation");
-	private static Iri lat_lon = iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon");
     static String CloudCover = ontoems +"CloudCover"; // not in ems tbox, should be subclass of om:Ratio
     static String Rainfall = ontoems + "Rainfall";
     static String AtmosphericPressure = ontoems + "AtmosphericPressure";
@@ -104,15 +96,6 @@ class WeatherQueryClient {
     
     StoreClientInterface storeClient;
     TimeSeriesClient<Instant> tsClient;
-	
-    // SERVICE keyword is not supported by query builder
-    private static String geospatialQueryTemplate = "PREFIX geo: <http://www.bigdata.com/rdf/geospatial#>\r\n"
-    		+ "PREFIX ems: <%s>\r\n"
-    		+ "\r\n"
-    		+ "SELECT * WHERE {\r\n"
-    		+ "    SERVICE geo:search \r\n"
-    		+ "	%s\r\n"
-    		+ "}";
     		
     // constructor 1
     WeatherQueryClient(StoreClientInterface storeClient, TimeSeriesClient<Instant> tsClient) {
