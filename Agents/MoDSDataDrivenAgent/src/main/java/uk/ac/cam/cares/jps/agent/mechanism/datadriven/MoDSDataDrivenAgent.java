@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.mechanism.sensana;
+package uk.ac.cam.cares.jps.agent.mechanism.datadriven;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,12 +31,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentConfiguration;
-import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentProperty;
-import uk.ac.cam.cares.jps.agent.file_management.marshallr.sensana.MoDSFileMagtSensAna;
-import uk.ac.cam.cares.jps.agent.file_management.marshallr.sensana.SensAnaResultsProcess;
+import uk.ac.cam.cares.jps.agent.configuration.MoDSDataDrivenAgentConfiguration;
+import uk.ac.cam.cares.jps.agent.configuration.MoDSDataDrivenAgentProperty;
+import uk.ac.cam.cares.jps.agent.file_management.marshallr.datadriven.MoDSFileMagtDataDriven;
+import uk.ac.cam.cares.jps.agent.file_management.marshallr.datadriven.DataDrivenResultsProcess;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
-import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.datadriven.MoDSDataDrivenAgentException;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
@@ -51,19 +51,19 @@ import com.jcraft.jsch.SftpException;
 
 @Controller
 @WebServlet(urlPatterns = {Property.JOB_REQUEST_PATH, Property.JOB_STATISTICS_PATH})
-public class MoDSSensAnaAgent extends JPSAgent {
+public class MoDSDataDrivenAgent extends JPSAgent {
 	private static final long serialVersionUID = 2L; //TODO to modify this
-	private Logger logger = LoggerFactory.getLogger(MoDSSensAnaAgent.class);
+	private Logger logger = LoggerFactory.getLogger(MoDSDataDrivenAgent.class);
 	private File workspace;
 	private String jobFolderPath;
 	
 	public static JobSubmission jobSubmission;
-	public static ApplicationContext applicationContextMoDSSensAnaAgent;
-	public static MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
+	public static ApplicationContext applicationContextMoDSDataDrivenAgent;
+	public static MoDSDataDrivenAgentProperty modsDataDrivenAgentProperty;
 	
-	public static final String REQUEST_RECEIVED = "A request to MoDSSensAnaAgent has been received..............................";
+	public static final String REQUEST_RECEIVED = "A request to MoDSDataDrivenAgent has been received..............................";
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
-	public static final String UNKNOWN_REQUEST = "The request is unknown to MoDSSensAna Agent";
+	public static final String UNKNOWN_REQUEST = "The request is unknown to MoDSDataDriven Agent";
 	
 	/**
 	 * Receives requests that match with the URL patterns listed in the<br>
@@ -72,6 +72,10 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
+		return processRequestParameters(requestParams, path);
+	}
+
+	public JSONObject processRequestParameters(JSONObject requestParams, String path) {
 		System.out.println(REQUEST_RECEIVED);
 		if (path.equals(Property.JOB_REQUEST_PATH)) {
 			try {
@@ -81,13 +85,13 @@ public class MoDSSensAnaAgent extends JPSAgent {
 			}
 			try {
 				return setUpJob(requestParams.toString());
-			} catch (IOException | MoDSSensAnaAgentException | SlurmJobException | URISyntaxException e) {
+			} catch (IOException | MoDSDataDrivenAgentException | SlurmJobException | URISyntaxException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
 			try {
 				return produceStatistics(requestParams.toString());
-			} catch (IOException | MoDSSensAnaAgentException e) {
+			} catch (IOException | MoDSDataDrivenAgentException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else {
@@ -152,9 +156,9 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @param input the JSON string specifying the return data format, e.g., JSON.
 	 * @return the statistics in JSON format if requested.
 	 */
-	public JSONObject produceStatistics(@RequestParam String input) throws IOException, MoDSSensAnaAgentException {
-		System.out.println("Received a request to send MoDSSensAnaAgent statistics.\n");
-		logger.info("\nReceived a request to send MoDSSensAnaAgent statistics.\n");
+	public JSONObject produceStatistics(@RequestParam String input) throws IOException, MoDSDataDrivenAgentException {
+		System.out.println("Received a request to send MoDSDataDrivenAgent statistics.\n");
+		logger.info("\nReceived a request to send MoDSDataDrivenAgent statistics.\n");
 		// Initialises all properties required for this agent to set-up<br>
 		// and run jobs. It will also initialise the unique instance of<br>
 		// Job Submission class.
@@ -178,9 +182,9 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	
 	@RequestMapping(value=Property.JOB_SHOW_STATISTICS_PATH,method = RequestMethod.GET)
 	@ResponseBody
-	public String showStatistics() throws IOException, MoDSSensAnaAgentException {
-		System.out.println("Received a request to show MoDSSensAnaAgent statistics.\n");
-		logger.info("\nReceived a request to show MoDSSensAnaAgent statistics.\n");
+	public String showStatistics() throws IOException, MoDSDataDrivenAgentException {
+		System.out.println("Received a request to show MoDSDataDrivenAgent statistics.\n");
+		logger.info("\nReceived a request to show MoDSDataDrivenAgent statistics.\n");
 		initAgentProperty();
 		return jobSubmission.getStatistics();
 	}
@@ -188,14 +192,14 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	/**
 	 * Starts the asynchronous scheduler to monitor sensitivity analysis jobs.
 	 * 
-	 * @throws MoDSSensAnaAgentException
+	 * @throws MoDSDataDrivenAgentException
 	 */
 	public void init() throws ServletException {
-		logger.info("\n---------- Sensitivity Analysis Agent has started ----------");
-		System.out.println("---------- Sensitivity Analysis Agent has started ----------");
+		logger.info("\n---------- Data-Driven Model Agent has started ----------");
+		System.out.println("---------- Data-Driven Model Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
-		// initialising classes to read properties from the modssensana-agent.properties file
+		MoDSDataDrivenAgent modsDataDrivenAgent = new MoDSDataDrivenAgent();
+		// initialising classes to read properties from the modsdatadriven-agent.properties file
 		initAgentProperty();
 		// In the following method call, the parameter getAgentInitialDelay-<br>
 		// ToStartJobMonitoring refers to the delay (in seconds) before<br>
@@ -204,51 +208,51 @@ public class MoDSSensAnaAgent extends JPSAgent {
 		// the scheduler.
 		executorService.scheduleAtFixedRate(() -> {
 			try {
-				modsSensAnaAgent.monitorJobs();
+				modsDataDrivenAgent.monitorJobs();
 			} catch (SlurmJobException e) 
 			{e.printStackTrace();
 			}
 		}, 
-				modsSensAnaAgentProperty.getAgentInitialDelayToStartJobMonitoring(), 
-				modsSensAnaAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
-		logger.info("\n---------- SensAna jobs are being monitored  ----------");
-		System.out.println("---------- SensAna jobs are being monitored  ----------");
+				modsDataDrivenAgentProperty.getAgentInitialDelayToStartJobMonitoring(), 
+				modsDataDrivenAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+		logger.info("\n---------- DataDriven jobs are being monitored  ----------");
+		System.out.println("---------- DataDriven jobs are being monitored  ----------");
 	}
 	
 	/**
-	 * Initialises the unique instance of the MoDSSensAnaAgentProperty class that<br>
-	 * reads all properties of MoDSSensAnaAgent from the modssensana-agent property file.<br>
+	 * Initialises the unique instance of the MoDSDataDrivenAgentProperty class that<br>
+	 * reads all properties of MoDSDataDrivenAgent from the modsdatadriven-agent property file.<br>
 	 * 
 	 * Initialises the unique instance of the SlurmJobProperty class and<br>
-	 * sets all properties by reading them from the modssensana-agent property file<br>
-	 * through the MoDSSensAnaAgent class.
+	 * sets all properties by reading them from the modsdatadriven-agent property file<br>
+	 * through the MoDSDataDrivenAgent class.
 	 */
 	private void initAgentProperty() {
-		// initialising classes to read properties from the modssensana-agent.properties file
-		if (applicationContextMoDSSensAnaAgent == null) {
-			applicationContextMoDSSensAnaAgent = new AnnotationConfigApplicationContext(MoDSSensAnaAgentConfiguration.class);
+		// initialising classes to read properties from the modsdatadriven-agent.properties file
+		if (applicationContextMoDSDataDrivenAgent == null) {
+			applicationContextMoDSDataDrivenAgent = new AnnotationConfigApplicationContext(MoDSDataDrivenAgentConfiguration.class);
 		}
-		if (modsSensAnaAgentProperty == null) {
-			modsSensAnaAgentProperty = applicationContextMoDSSensAnaAgent.getBean(MoDSSensAnaAgentProperty.class);
+		if (modsDataDrivenAgentProperty == null) {
+			modsDataDrivenAgentProperty = applicationContextMoDSDataDrivenAgent.getBean(MoDSDataDrivenAgentProperty.class);
 		}
 		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(modsSensAnaAgentProperty.getAgentClass(), modsSensAnaAgentProperty.getHpcAddress());
-			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(modsSensAnaAgentProperty.getHpcServerLoginUserName());
-			jobSubmission.slurmJobProperty.setHpcServerLoginUserPassword(modsSensAnaAgentProperty.getHpcServerLoginUserPassword());
-			jobSubmission.slurmJobProperty.setAgentClass(modsSensAnaAgentProperty.getAgentClass());
-			jobSubmission.slurmJobProperty.setAgentCompletedJobsSpacePrefix(modsSensAnaAgentProperty.getAgentCompletedJobsSpacePrefix());
-			jobSubmission.slurmJobProperty.setAgentFailedJobsSpacePrefix(modsSensAnaAgentProperty.getAgentFailedJobsSpacePrefix());
-			jobSubmission.slurmJobProperty.setHpcAddress(modsSensAnaAgentProperty.getHpcAddress());
-			jobSubmission.slurmJobProperty.setInputFileName(modsSensAnaAgentProperty.getInputFileName());
-			jobSubmission.slurmJobProperty.setInputFileExtension(modsSensAnaAgentProperty.getInputFileExtension());
-			jobSubmission.slurmJobProperty.setOutputFileName(modsSensAnaAgentProperty.getOutputFileName());
-			jobSubmission.slurmJobProperty.setOutputFileExtension(modsSensAnaAgentProperty.getOutputFileExtension());
-			jobSubmission.slurmJobProperty.setJsonInputFileName(modsSensAnaAgentProperty.getJsonInputFileName());
-			jobSubmission.slurmJobProperty.setJsonFileExtension(modsSensAnaAgentProperty.getJsonFileExtension());
-			jobSubmission.slurmJobProperty.setSlurmScriptFileName(modsSensAnaAgentProperty.getSlurmScriptFileName());
-			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(modsSensAnaAgentProperty.getMaxNumberOfHPCJobs());
-			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(modsSensAnaAgentProperty.getAgentInitialDelayToStartJobMonitoring());
-			jobSubmission.slurmJobProperty.setAgentPeriodicActionInterval(modsSensAnaAgentProperty.getAgentPeriodicActionInterval());
+			jobSubmission = new JobSubmission(modsDataDrivenAgentProperty.getAgentClass(), modsDataDrivenAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(modsDataDrivenAgentProperty.getHpcServerLoginUserName());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserPassword(modsDataDrivenAgentProperty.getHpcServerLoginUserPassword());
+			jobSubmission.slurmJobProperty.setAgentClass(modsDataDrivenAgentProperty.getAgentClass());
+			jobSubmission.slurmJobProperty.setAgentCompletedJobsSpacePrefix(modsDataDrivenAgentProperty.getAgentCompletedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setAgentFailedJobsSpacePrefix(modsDataDrivenAgentProperty.getAgentFailedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setHpcAddress(modsDataDrivenAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setInputFileName(modsDataDrivenAgentProperty.getInputFileName());
+			jobSubmission.slurmJobProperty.setInputFileExtension(modsDataDrivenAgentProperty.getInputFileExtension());
+			jobSubmission.slurmJobProperty.setOutputFileName(modsDataDrivenAgentProperty.getOutputFileName());
+			jobSubmission.slurmJobProperty.setOutputFileExtension(modsDataDrivenAgentProperty.getOutputFileExtension());
+			jobSubmission.slurmJobProperty.setJsonInputFileName(modsDataDrivenAgentProperty.getJsonInputFileName());
+			jobSubmission.slurmJobProperty.setJsonFileExtension(modsDataDrivenAgentProperty.getJsonFileExtension());
+			jobSubmission.slurmJobProperty.setSlurmScriptFileName(modsDataDrivenAgentProperty.getSlurmScriptFileName());
+			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(modsDataDrivenAgentProperty.getMaxNumberOfHPCJobs());
+			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(modsDataDrivenAgentProperty.getAgentInitialDelayToStartJobMonitoring());
+			jobSubmission.slurmJobProperty.setAgentPeriodicActionInterval(modsDataDrivenAgentProperty.getAgentPeriodicActionInterval());
 		}
 	}
 	
@@ -259,7 +263,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 */
 	private void monitorJobs() throws SlurmJobException {
 		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(modsSensAnaAgentProperty.getAgentClass(), modsSensAnaAgentProperty.getHpcAddress());
+			jobSubmission = new JobSubmission(modsDataDrivenAgentProperty.getAgentClass(), modsDataDrivenAgentProperty.getHpcAddress());
 		}
 		jobSubmission.monitorJobs();
 		processOutputs();
@@ -294,7 +298,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 			e.printStackTrace();
 		} catch (JSchException e) {
 			e.printStackTrace();
-		} catch (MoDSSensAnaAgentException e) {
+		} catch (MoDSDataDrivenAgentException e) {
 			e.printStackTrace();
 		}
 	}
@@ -319,28 +323,28 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * 
 	 * @param jobFolder
 	 * @throws IOException
-	 * @throws MoDSSensAnaAgentException
+	 * @throws MoDSDataDrivenAgentException
 	 */
-	public void selectSensRxns(File jobFolder) throws IOException, MoDSSensAnaAgentException {
+	public void selectSensRxns(File jobFolder) throws IOException, MoDSDataDrivenAgentException {
 		File outputFile = new File(jobFolder.getAbsolutePath());
-		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(modsSensAnaAgentProperty.getOutputFileName()).concat(modsSensAnaAgentProperty.getOutputFileExtension());
-		String destDir = jobFolder.getAbsolutePath().concat(File.separator).concat(modsSensAnaAgentProperty.getOutputFileName());
+		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(modsDataDrivenAgentProperty.getOutputFileName()).concat(modsDataDrivenAgentProperty.getOutputFileExtension());
+		String destDir = jobFolder.getAbsolutePath().concat(File.separator).concat(modsDataDrivenAgentProperty.getOutputFileName());
 		Utils.unzipFile(zipFilePath, destDir);
 		
 		String jsonString = readJsonInput(new File(jobFolder.getAbsolutePath()
 				.concat(File.separator)
-				.concat(modsSensAnaAgentProperty.getJsonInputFileName())
-				.concat(modsSensAnaAgentProperty.getJsonFileExtension())));
+				.concat(modsDataDrivenAgentProperty.getJsonInputFileName())
+				.concat(modsDataDrivenAgentProperty.getJsonFileExtension())));
 		JsonNode inputNode = new ObjectMapper().readTree(jsonString);
 		
-		SensAnaResultsProcess sensAnaRePro = new SensAnaResultsProcess(modsSensAnaAgentProperty);
-		List<String> selectedRxns = sensAnaRePro.processResults(destDir, jsonString);
+		DataDrivenResultsProcess dataDrivenRePro = new DataDrivenResultsProcess(modsDataDrivenAgentProperty);
+		List<String> selectedRxns = dataDrivenRePro.processResults(destDir, jsonString);
 		
 		if (selectedRxns != null && !selectedRxns.isEmpty()) {
 			updateJsonForCalib(inputNode, selectedRxns, destDir.concat(File.separator).concat("modifiedInput.json"));
 		}
 		
-		System.out.println("Sensitivity analysis results were successfully processed.");
+		System.out.println("Data-driven model results were successfully processed.");
 	}
 	
 	/**
@@ -349,9 +353,9 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @param input
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSSensAnaAgentException
+	 * @throws MoDSDataDrivenAgentException
 	 */
-	protected String readJsonInput(File input) throws IOException, MoDSSensAnaAgentException {
+	protected String readJsonInput(File input) throws IOException, MoDSDataDrivenAgentException {
 		String jsonString = new String();
 		BufferedReader br = null;
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(input)));
@@ -369,9 +373,9 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @param selectedRxns
 	 * @param output
 	 * @throws IOException
-	 * @throws MoDSSensAnaAgentException
+	 * @throws MoDSDataDrivenAgentException
 	 */
-	protected void updateJsonForCalib(JsonNode inputNode, List<String> selectedRxns, String output) throws IOException, MoDSSensAnaAgentException {
+	protected void updateJsonForCalib(JsonNode inputNode, List<String> selectedRxns, String output) throws IOException, MoDSDataDrivenAgentException {
 		JsonNode locateNode = inputNode.path("json").path("ontokinIRI");
 		String rxns = new String();
 		for (String rxn : selectedRxns) {
@@ -418,11 +422,11 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @param jsonString
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSSensAnaAgentException
+	 * @throws MoDSDataDrivenAgentException
 	 * @throws SlurmJobException
 	 * @throws URISyntaxException
 	 */
-	public JSONObject setUpJob(String jsonString) throws IOException, MoDSSensAnaAgentException, SlurmJobException, URISyntaxException {
+	public JSONObject setUpJob(String jsonString) throws IOException, MoDSDataDrivenAgentException, SlurmJobException, URISyntaxException {
 		String message = setUpJobOnAgentMachine(jsonString);
 		JSONObject obj = new JSONObject();
 		obj.put("jobFolderPath", message);
@@ -435,15 +439,15 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @param jsonString
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSSensAnaAgentException
+	 * @throws MoDSDataDrivenAgentException
 	 * @throws SlurmJobException
 	 */
-	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSSensAnaAgentException, SlurmJobException, URISyntaxException {
+	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSDataDrivenAgentException, SlurmJobException, URISyntaxException {
 		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = getNewJobFolderName(modsSensAnaAgentProperty.getHpcAddress(), timeStamp);
+		String jobFolderName = getNewJobFolderName(modsDataDrivenAgentProperty.getHpcAddress(), timeStamp);
 		String setUpMsg = jobSubmission.setUpJob(jsonString, 
-				new File(getClass().getClassLoader().getResource(modsSensAnaAgentProperty.getSlurmScriptFileName()).toURI()), 
+				new File(getClass().getClassLoader().getResource(modsDataDrivenAgentProperty.getSlurmScriptFileName()).toURI()), 
 				getInputFile(jsonString, jobFolderName), timeStamp);
 		if (setUpMsg != null) {
 			deleteDirectory(new File(jobFolderPath));
@@ -458,10 +462,10 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @param jsonString
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSSensAnaAgentException
+	 * @throws MoDSDataDrivenAgentException
 	 */
-	private File getInputFile(String jsonString, String jobFolderName) throws IOException, MoDSSensAnaAgentException {
-		MoDSFileMagtSensAna fileMagt = new MoDSFileMagtSensAna(modsSensAnaAgentProperty);
+	private File getInputFile(String jsonString, String jobFolderName) throws IOException, MoDSDataDrivenAgentException {
+		MoDSFileMagtDataDriven fileMagt = new MoDSFileMagtDataDriven(modsDataDrivenAgentProperty);
 		
 		jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
 		
