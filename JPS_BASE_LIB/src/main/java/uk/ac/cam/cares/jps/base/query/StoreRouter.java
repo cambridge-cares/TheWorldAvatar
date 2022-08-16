@@ -155,22 +155,24 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				
 				List<String> endpoints = storeRouter.get(targetResourceLabel);
 
-				if (isQueryOperation) {
-					queryIRI = endpoints.get(QUERY_INDEX);
-				}
-				if (isUpdateOperation) {
-					updateIRI = endpoints.get(UPDATE_INDEX);
-				}
-				if (queryIRI != null && !queryIRI.isEmpty()) {
-					kbClient = new RemoteStoreClient(queryIRI);
-				}
-				if (updateIRI != null && !updateIRI.isEmpty()) {
-					if (kbClient == null) {
-						kbClient = new RemoteStoreClient();
+				if(endpoints != null) {
+					if (isQueryOperation) {
+						queryIRI = endpoints.get(QUERY_INDEX);
 					}
-					kbClient.setUpdateEndpoint(updateIRI);
+					if (isUpdateOperation) {
+						updateIRI = endpoints.get(UPDATE_INDEX);
+					}
+					if (queryIRI != null && !queryIRI.isEmpty()) {
+						kbClient = new RemoteStoreClient(queryIRI);
+					}
+					if (updateIRI != null && !updateIRI.isEmpty()) {
+						if (kbClient == null) {
+							kbClient = new RemoteStoreClient();
+						}
+						kbClient.setUpdateEndpoint(updateIRI);
+					}
 				}
-			
+				
 				if(queryIRI==null && updateIRI==null){
 					LOGGER.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceID+", label:"+targetResourceLabel);
 				}
@@ -202,7 +204,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addVar( QUESTION_MARK.concat(QUERY_ENDPOINT) )
 				.addVar( QUESTION_MARK.concat(UPDATE_ENDPOINT) )
 				.addWhere( QUESTION_MARK.concat(RESOURCE), RDF_PREFIX.concat(COLON).concat(RDF_TYPE), ONTOKGROUTER_PREFIX.concat(COLON).concat(TARGET_RESOURCE) )
-			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) )
+			    .addOptional( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) )
 				.addOptional(QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_UPDATE_ENDPOINT), QUESTION_MARK.concat(UPDATE_ENDPOINT))
 				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), targetResourceLabel);
 		
@@ -222,11 +224,9 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 			return endpoints;
 			
 		}else {
-			//TODO what to do with null
 			LOGGER.error("Endpoints not found for resource="+targetResourceLabel);
 			return null;
 		}
-		
 	}
 	
 	/**
@@ -329,20 +329,18 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * @return
 	 */
 	private String getLocalFilePath(String targetResourceName) {
-		//TODO change this
+		
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
 				.addPrefix( ONTOKGROUTER_PREFIX,  ONTOKGROUTER )
-				.addVar( QUESTION_MARK.concat(RESOURCE))
-				.addVar( QUESTION_MARK.concat(LABEL) )
 				.addVar( QUESTION_MARK.concat(FILE_PATH) )
-				.addWhere( getCommonKGRouterWhereBuilder() )
-			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_FILE_PATH), QUESTION_MARK.concat(FILE_PATH) );
-		StoreClientInterface rKBClient = getRouterStoreClient();
-		System.out.println(builder.toString());
-		String json = rKBClient.execute(builder.toString());
-		JSONArray jsonArray = new JSONArray(json);
+				.addWhere( QUESTION_MARK.concat(RESOURCE), RDF_PREFIX.concat(COLON).concat(RDF_TYPE), ONTOKGROUTER_PREFIX.concat(COLON).concat(TARGET_RESOURCE) )
+				.addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_FILE_PATH), QUESTION_MARK.concat(FILE_PATH) )
+				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), targetResourceName);
+		
+		StoreClientInterface storeClient = getRouterStoreClient();
+		JSONArray jsonArray = storeClient.executeQuery(builder.toString());
 		for (int i = 0; i<jsonArray.length(); i++){
 			JSONObject obj = jsonArray.getJSONObject(i);
 			if(obj.getString(LABEL).equals(targetResourceName)){
@@ -369,7 +367,6 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addVar( QUESTION_MARK.concat(RESOURCE))
 				.addVar( QUESTION_MARK.concat(LABEL) )
 				.addVar( QUESTION_MARK.concat(QUERY_ENDPOINT) )
-				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) );
 		StoreClientInterface rKBClient = getRouterStoreClient();
 		System.out.println(builder.toString());
