@@ -55,28 +55,23 @@ target exp:RxnExp_{"Reaction ID"} rdf:type OntoRxn:ReactionExperiment ;
               OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Volume .
               # Scalar value
               SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Mole rdf:type OntoCAPEUpp:ScalarValue;
-              OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-              OntoCAPEUpp:numericalValue "0.5"^^xsd:double.
+              OntoCAPEUpp:hasUnitOfMeasure {"Mole unit"};
+              OntoCAPEUpp:numericalValue {"Mole value"}.
 # define the SQL query
-source     SELECT "Reaction"."ID" AS "Reaction ID", "ReactionIdentifier"."value", 
+source     SELECT "Reaction"."ID" AS "Reaction ID",
           "Reaction_inputs_ReactionInput"."ID" as "ReactionInput_ID",
           "Reaction_inputs_ReactionInput"."key_or_index" as "ReactionInput_key",
-          "ReactionInput"."addition_order", "ReactionInput_components_Compound"."ID" as "Compound_ID",
-          "Compound"."reaction_role", "Compound"."is_limiting",
-          "CompoundIdentifier"."value" as "Identifier"
+          "ReactionInput_components_Compound"."ID" as "Compound_ID",
+          "CompoundIdentifier"."value" as "Identifier",
+          "Moles"."value" as "Mole value",
+          "Moles"."units" as "Mole unit" 
           FROM "Reaction"
           INNER JOIN "Reaction_identifiers_ReactionIdentifier"
           ON "Reaction"."ID"= "Reaction_identifiers_ReactionIdentifier"."Reaction_ID"
-          INNER JOIN "ReactionIdentifier"
-          ON  "Reaction_identifiers_ReactionIdentifier"."ReactionIdentifier_ID"= "ReactionIdentifier"."ID"
           INNER JOIN "Reaction_inputs_ReactionInput"
           ON "Reaction"."ID"= "Reaction_inputs_ReactionInput"."Reaction_ID"
-          INNER JOIN "ReactionInput"
-          ON "ReactionInput"."ID"= "Reaction_inputs_ReactionInput"."ReactionInput_ID"
           INNER JOIN "ReactionInput_components_Compound"
           ON "Reaction_inputs_ReactionInput"."ID"= "ReactionInput_components_Compound"."ReactionInput_ID"
-          INNER JOIN "Compound"
-          ON "Compound"."ID"= "ReactionInput_components_Compound"."Compound_ID"
           INNER JOIN "Compound_identifiers_CompoundIdentifier"
           ON "ReactionInput_components_Compound"."ID"= "Compound_identifiers_CompoundIdentifier"."Compound_ID"
           INNER JOIN "CompoundIdentifier"
@@ -86,10 +81,10 @@ source     SELECT "Reaction"."ID" AS "Reaction ID", "ReactionIdentifier"."value"
           #FULL OUTER JOIN "Amount"
           #ON "Compound_amount_Amount"."Amount_ID"= "Amount"."ID"
           # Moles
-          #FULL OUTER JOIN "Amount_moles_Moles"
-          #ON "Compound_amount_Amount"."ID"= "Amount_moles_Moles"."Amount_ID"
-          #FULL OUTER JOIN "Moles"
-          #ON "Moles"."ID"= "Amount_moles_Moles"."Moles_ID"
+          INNER JOIN "Amount_moles_Moles"
+          ON "Compound_amount_Amount"."ID"= "Amount_moles_Moles"."Amount_ID"
+          INNER JOIN "Moles"
+          ON "Moles"."ID"= "Amount_moles_Moles"."Moles_ID"
           # Volume
           #FULL OUTER JOIN "Amount_volume_Volume"
           #ON "Compound_amount_Amount"."ID"= "Amount_volume_Volume"."Amount_ID"
