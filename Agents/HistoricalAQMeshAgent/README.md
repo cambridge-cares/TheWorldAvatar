@@ -11,7 +11,7 @@ This agent is designed to work with Excel 2007 or later versions. Some pre-proce
 that the excel files are compatible with the agent. 
 
 Firstly, The AQMesh data must be split into two files, one for gas data and one for particle and general data. The gas data excel file should be named
-aqmeshGasData. The particle and general data excel file should be named aqmeshParticleAndGeneralData and they should be placed in the `config` folder.
+aqmeshGasData. The particle and general data excel file should be named aqmeshParticleAndGeneralData. Both files needs to be in the xlsx format and they should be placed in the `config` folder.
 
 Secondly, the keys for each column in the excel files must correspond with the keys found in the gas.properties, particle.properties 
 and general.properties files. These properties files can be found in the `mapping` folder under the `config` folder.
