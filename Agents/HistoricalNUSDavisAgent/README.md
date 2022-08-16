@@ -8,9 +8,11 @@ from the JPS_BASE_LIB to interact with both the KG and database.
 ### Data retrieval and pre-processing
 This agent is designed to work with Excel 2007 or later versions. Some pre-processing might be required in order to ensure that the excel files are compatible with the agent.
 
-Firstly, the keys for each column in the excel files must correspond with the keys found in the weather.properties file. The properties file can be found in the mapping folder under the config folder.
+Firstly, the keys for each column in the excel files must correspond with the keys found in the weather.properties file. The properties file can be found in the mapping folder under the `config` folder.
 
-Lastly, the timestamps in the excel files must be in UTC timezone. The agent will then convert the timestamps to a local date time with offset.
+Secondly, the timestamps in the excel files must be in UTC timezone. The agent will then convert the timestamps to a local date time with offset.
+
+Lastly, the excel file should be named "data" with a xlsx format and the file should be placed in the `config` folder.
 
 This is an example of how the excel file looks like:
 ![Shows the content of a compatible excel file.](docs/img/sample_excel_file.png "Contents of a compatible excel file")
