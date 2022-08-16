@@ -23,6 +23,7 @@ from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion as LACode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 import uuid
+from pyasyncagent.kg_operations.sparql_client import PySparqlClient
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -94,7 +95,7 @@ def createDUKESDataPropertyInstance(version):
         designcapacityArrays, builtYearArrays, ownerArrays, gpslocationArrays, regionArrays, root_uri, fileNum
 
 """Main Function: Add Triples to the named graph"""
-def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):  
+def addUKPowerPlantTriples(version, updateEndpointIRI, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):  
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
@@ -270,6 +271,9 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
                 else:
                     filepath_ = filepath + str(counter) + UNDERSCORE + plantname + '_UK' + TTL
                 storeGeneratedOWLs(graph, filepath_)
+            
+            sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+            sparql_client.uploadOntology(filepath_)
                   
         counter += 1 
     
@@ -278,5 +282,6 @@ def addUKPowerPlantTriples(version, OWLFileStoragePath, updateLocalOWLFile = Tru
     return UKElectricitySystemIRI, GBElectricitySystemIRI, NIElectricitySystemIRI
 
 if __name__ == '__main__':
-    addUKPowerPlantTriples(2019, None, True, 'default')
+    updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_powerplant/sparql"
+    addUKPowerPlantTriples(2021, updateEndpointIRI, None, True, 'default')
     print('terminated')
