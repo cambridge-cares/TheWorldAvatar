@@ -54,14 +54,18 @@ public abstract class DataSubset {
             String database);
 
     public void runSQLPostProcess(PostGISClient postGISClient, String database) {
-        if (sql.startsWith("@")) {
-            String sqlFile = sql;
-            try {
-                sql = Files.readString(Path.of(sqlFile.substring(1)));
-            } catch (IOException ex) {
-                throw new RuntimeException(
-                        "Failed to read SQL file '" + sqlFile + "' for data subset '" + getName() + "'.", ex);
+        if (null != sql) {
+
+            if (sql.startsWith("@")) {
+                String sqlFile = sql.substring(1);
+                try {
+                    sql = Files.readString(Path.of(sqlFile));
+                } catch (IOException ex) {
+                    throw new RuntimeException(
+                            "Failed to read SQL file '" + sqlFile + "' for data subset '" + getName() + "'.", ex);
+                }
             }
+
             postGISClient.executeQuery(database, sql);
         }
     }
