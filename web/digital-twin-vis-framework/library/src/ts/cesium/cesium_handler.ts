@@ -25,7 +25,16 @@ class MapHandler_Cesium extends MapHandler {
      * Initialise and store a new map object.
      */
     public initialiseMap(mapOptions: Object) {
+        MapHandler.MAP_OPTIONS = mapOptions;
+
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
+
+            // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
+            let tileURL = "https://api.mapbox.com/styles/v1/"
+                + MapHandler.MAP_USER
+                + "/cl6owj7v2000415q1oj9aq5zq/tiles/256/{z}/{x}/{y}?access_token="
+                + MapHandler.MAP_API;
+
             // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
             // @ts-ignore
             MapHandler.MAP = new Cesium.Viewer('map', {
@@ -37,29 +46,37 @@ class MapHandler_Cesium extends MapHandler {
                 navigationHelpButton: false,
                 projectionPicker: false,
                 fullscreenButton: false,
-                geocoder: false,
-
-                // @ts-ignore
-                imageryProvider: new Cesium.MapboxStyleImageryProvider({
-                    styleId: mapOptions["style"],
-                    accessToken: MapHandler.MAP_API
-                })
+                geocoder: false
             }); 
 
-            // Override default zoom level
-            console.log("---");
-            console.log(MapHandler.MAP.scene.screenSpaceCameraController);
-            console.log("---");
-            
+            // Remove any existing imagery providers and add our own
+            MapHandler.MAP.imageryLayers.removeAll(true);
+            // @ts-ignore
+            let imageryProvider = new Cesium.UrlTemplateImageryProvider({
+                url: tileURL,
+                credit: "mapbox"
+            });
+            MapHandler.MAP.scene.imageryLayers.addImageryProvider(imageryProvider);
+
+            // Override mouse controls 
             let controller = MapHandler.MAP.scene.screenSpaceCameraController;
             // @ts-ignore
             controller.tiltEventTypes = [Cesium.CameraEventType.RIGHT_DRAG];
             // @ts-ignore
             controller.zoomEventTypes = controller.zoomEventTypes.filter(item => item !== Cesium.CameraEventType.RIGHT_DRAG);
 
-            console.log("---");
-            console.log(MapHandler.MAP.scene.screenSpaceCameraController);
-            console.log("---");
+            // Dodgy, but the only way to change the zoom increment
+            controller._zoomFactor = 2;
+
+            // TEMPORARY: FOR DEVELOPMENT TESTING ONLY
+            MapHandler.MAP.scene.debugShowFramesPerSecond = true;
+
+            // Enable picking
+            // @ts-ignore
+            let handler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
+
+            // @ts-ignore
+            handler.setInputAction(event => this.handleClick(event), Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
             MapHandler.MAP.camera.setView({
                 // @ts-ignore
@@ -73,8 +90,9 @@ class MapHandler_Cesium extends MapHandler {
                     roll: Cesium.Math.toRadians(mapOptions["roll"])
                 }
             });
+            MapHandler.MAP.scene.requestRender();
 
-        }  else {
+        } else {
             MapHandler.MAP.camera.setView({
                 // @ts-ignore
                 destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
@@ -87,6 +105,7 @@ class MapHandler_Cesium extends MapHandler {
                     roll: Cesium.Math.toRadians(mapOptions["roll"])
                 }
             });
+            MapHandler.MAP.scene.requestRender();
         }
     }
 
@@ -95,47 +114,43 @@ class MapHandler_Cesium extends MapHandler {
      * 
      * @param event mouse event
      */
-    public handleClick(event, feature) {
+    public handleClick(event) {
         if(!MapHandler.ALLOW_CLICKS) return;
 
-        // Get all visible features under the mouse click
-        let features = [];
-        if(feature !== null && feature !== undefined) {
-            features.push(feature);
-        } else {
-            features = MapHandler.MAP.queryRenderedFeatures(event.point);
-        }
+        // Get the feature at the click point
+        const feature = MapHandler.MAP.scene.pick(event.position);
 
-        // Filter out non-CMCL layers
-        features = features.filter(feature => {
-            return MapBoxUtils.isCMCLLayer(feature);
-        });
+        if(feature === null || feature === undefined) {
+            // Probably a WMS feature, need to get info differently
 
-        // Filter out duplicates (MapBox can return these if a feature is split across a tile boundary)
-        features = MapBoxUtils.deduplicate(features);
+            var pickRay = MapHandler.MAP.camera.getPickRay(event.position);
+            var featuresPromise = MapHandler.MAP.imageryLayers.pickImageryLayerFeatures(pickRay, MapHandler.MAP.scene);
 
-        if(features.length > 1) {
-            // Click on overlapping, individual features/clusters
-            this.clickMultiple(features);
+            // @ts-ignore
+            if (Cesium.defined(featuresPromise)) {
+                let self = this;
 
-        } else if (features.length === 1) {
-            let feature = features[0];
-
-            let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
-            let clickable = layer.definition["clickable"];
-            if(clickable !== null && clickable === false) {
-                // No mouse interaction
-                return;
+                // @ts-ignore
+                Promise.resolve(featuresPromise).then(function(features) {
+                    if(features.length > 0) {
+                        // TODO: Stuff
+                        let feature = features[0];
+                        self.manager.showFeature(feature);
+                    }
+                });
             }
+        } else {
+            // 3D entity
+            const contentMetadata = feature?.content?.metadata;
 
-            if(MapBoxUtils.isCluster(feature)) {
-                // Clicked on a clustered feature, handle as if multiple
-                this.clickMultiple(features);
-
-            } else {
-                // Click on single feature
-                console.log(feature);
-                this.manager.showFeature(feature);
+            // @ts-ignore
+            if (Cesium.defined(contentMetadata)) {
+                // Convert to JSON for library compatability
+                let newFeature = {};
+                contentMetadata.getPropertyIds().forEach(id => {
+                    newFeature[id] = contentMetadata.getProperty(id);
+                });
+                this.manager.showFeature(newFeature);
             }
         }
     }
@@ -229,6 +244,9 @@ class MapHandler_Cesium extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
+        console.log("BUTTOCKS");
+        return;
+
         // Get a list of features under the mouse
         let features = MapHandler.MAP.queryRenderedFeatures(event.point);
         features = features.filter(feature => {
@@ -346,7 +364,24 @@ class MapHandler_Cesium extends MapHandler {
             }
             break;
 
+            // 2D data from geoserver
+            case "wms":
+            case "geoserver": {
+                let urls = source.definition["data"];
+                let layerNames = source.definition["layerName"];
+                let transparencies = source.definition["transparency"];
 
+                if(Array.isArray(urls)) {
+                    for(let i = 0; i < urls.length; i++) {
+                        this.addGeoserver(urls[i], layerNames[i], transparencies[i], layer.id);
+                    }
+                } else {
+                    this.addGeoserver(urls, layerNames, transparencies, layer.id);
+                }
+            }
+            break;
+
+            // Anything else
             default: {
                 console.warn("Unknown source type '" + source.type + "', skipping data.");
             }
@@ -410,6 +445,29 @@ class MapHandler_Cesium extends MapHandler {
             MapHandler_Cesium.DATA_SOURCES[layerID] = [];
         }
         MapHandler_Cesium.DATA_SOURCES[layerID].push(tileset);
+    }
+
+    /**
+     * 
+     * @param url 
+     * @param layerID 
+     */
+    private addGeoserver(url: string, layerName: string, transparency: boolean, layerID: string) {
+        let layers = MapHandler.MAP.imageryLayers;
+
+        // @ts-ignore
+        let provider = new Cesium.WebMapServiceImageryProvider({
+            url: url,
+            layers: layerName,
+            parameters: {
+                transparent: transparency,
+                format: "image/png"
+            },
+            credit: layerID
+        });
+
+        layers.addImageryProvider(provider);
+        // todo - request render?
     }
 
     /**

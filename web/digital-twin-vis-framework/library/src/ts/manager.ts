@@ -96,20 +96,20 @@ class Manager {
         this.panelHandler.toggleMode();
         // this.controlHandler.showInfoPanel();
 
-        // // Override CTRL+F shortcut for feature searching (BETA)
-        // let self = this;
+        // Override CTRL+F shortcut for feature searching (BETA)
+         let self = this;
         document.addEventListener("keydown", function(e){
-            // if ((e.ctrlKey || e.metaKey) && e.key === "f") {
-            //     if(self.searchUp) {
-            //         self.hideSearch();
-            //     } else {
-            //         self.showFeatureFinder();
-            //     }
-            //     e.preventDefault();
-            // }
+            if (Manager.PROVIDER === MapProvider.MAPBOX && (e.ctrlKey || e.metaKey) && e.key === "f") {
+                if(self.searchUp) {
+                    self.hideSearch();
+                } else {
+                    self.showFeatureFinder();
+                }
+                e.preventDefault();
+            }
 
             if(e.altKey && e.key === "Enter") {
-            //    self.toggleFullscreen();
+                self.toggleFullscreen();
                 console.log(MapHandler.MAP.camera.position);
                 
                 var ellipsoid = MapHandler.MAP.scene.globe.ellipsoid;
@@ -148,7 +148,11 @@ class Manager {
             this.inFullscreen = true;
         }
 
-        MapHandler.MAP.resize();
+        if(Manager.PROVIDER === MapProvider.MAPBOX) {
+            MapHandler.MAP.resize();
+        } else {
+            MapHandler.MAP.scene.requestRender();
+        }
     }
 
     /**
@@ -244,6 +248,11 @@ class Manager {
      * Fires when an individual feature is selected.
      */
     public showFeature(feature: Object) {
+        console.log(feature);
+        return;
+
+
+
         // Title
         let name = feature["properties"]["name"];
         if(name === null || name === undefined) {
