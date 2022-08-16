@@ -6,8 +6,6 @@ services:
       replicas: 1
       restart_policy:
         condition: none
-    environment:
-      - "STACK_NAME=${STACK_NAME}"
     security_opt:
       - label=disable
     volumes:
@@ -31,6 +29,9 @@ configs:
     external: true
   blazegraph:
     name: ${STACK_NAME}_blazegraph
+    external: true
+  ontop:
+    name: ${STACK_NAME}_ontop
     external: true
 
 networks:
