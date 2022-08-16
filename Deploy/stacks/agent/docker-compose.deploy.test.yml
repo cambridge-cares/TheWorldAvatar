@@ -22,7 +22,7 @@ services:
   gas-grid-agent:
     ports:
       - 41081:80
-
+      
   # JPS Chatbot
   jps-chatbot:
     ports:

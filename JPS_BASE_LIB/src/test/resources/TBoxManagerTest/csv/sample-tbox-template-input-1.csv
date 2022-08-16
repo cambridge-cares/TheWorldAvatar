@@ -1,0 +1,8 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoKin,TBox,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoKin,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
+Reaction Mechanism,Class,,,,,,"A reaction mechanism refers to a set of elementary reactions with specific rate laws, for example to model the combustion of hydrogen.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+Phase,Class,,,,,,,
+Bulk Phase,Class,Phase,IS-A,,,,,

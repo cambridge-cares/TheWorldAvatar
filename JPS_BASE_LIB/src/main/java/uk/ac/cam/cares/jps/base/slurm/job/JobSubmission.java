@@ -445,6 +445,8 @@ public class JobSubmission{
 				session.setPassword(pwd);
                                 String privateKeyFilename =slurmJobProperty.getHpcServerPrivateKey();
 
+				// Note that session.setConfig("PreferredAuthentications", ...) was removed because it will cause issues
+				// when this code is executed in a container for unknown reasons
 				try {
                                         if(!privateKeyFilename.isEmpty()){
                                             jsch.addIdentity(privateKeyFilename);
@@ -454,13 +456,8 @@ public class JobSubmission{
                                             IdentityRepository irepo = new RemoteIdentityRepository(con);
                                             jsch.setIdentityRepository(irepo);
                                         }
-					// If successful then attempt to authenticate using a public key first,
-					// falling back to using the password if no valid key is found
-					session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
 				} catch (AgentProxyException e) {
-					// Connecting to Pageant has failed so skip trying to authenticate
-					// using a public key and just try with the password
-					session.setConfig("PreferredAuthentications", "password");
+					LOGGER.info("Failed to detect Pageant, will authenticate using password");
 				}
 
 				session.setConfig("StrictHostKeyChecking", "no");

@@ -67,10 +67,12 @@ Note that installing the project for in-place development (setting the `-e` flag
 
 ```bash
 Usage:
-    csv2rdf <csvFileOrDirPath> [--outDir=<OUT_DIR>]
+    csv2rdf <csvFileOrDirPath> --csvType=<type> [--outDir=<dir>]
 
 Options:
---outDir=<OUT_DIR>   Output directory path
+--csvType=<type>  Type of the csv file.
+                  Choose between abox/tbox   [default: abox]
+--outDir=<dir>    Output directory path
 ```
 
 # Authors #

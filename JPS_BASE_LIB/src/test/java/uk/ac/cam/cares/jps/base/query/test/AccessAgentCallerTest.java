@@ -8,35 +8,59 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
 public class AccessAgentCallerTest {
 
+	@BeforeAll
+	static void setAccessAgentHostUrl(){
+		//set default accessagent_host to value in jps.properties
+		AccessAgentCaller.accessAgentHost = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
+	}
+	
 	@Test
 	public void testCreateRequestUrlCase1() throws UnsupportedEncodingException, URISyntaxException {
 			
-		String expectedPath = "/jps/kb"; //JPSConstants.ACCESS_AGENT_PATH
-		String expectedRequestUrl = "http://www.theworldavatar.com/jps/kb";
-		String expectedRequestUrlConverted = ResourcePathConverter.convert(expectedRequestUrl);
+		String expectedPath = JPSConstants.ACCESS_AGENT_PATH;
+		String expectedRequestUrl = "http://"+KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST)+expectedPath;
 		
 		String datasetUrl = null; 
-		String targetUrl = "http://www.theworldavatar.com/kb/ontokin/ABF.owl";
+		String targetUrl = "http://www.theworldavatar.com:83/kb/ontokin/ABF.owl";
 		
 		Object[] result = AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
 		assertNotNull(result);
 
 		String requestUrl = (String) result[0];
-		assertEquals(expectedRequestUrlConverted,requestUrl);
+		assertEquals(expectedRequestUrl,requestUrl);
 		URI uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
 		assertEquals(expectedPath,uri.getPath());
 		
 		JSONObject joparams = (JSONObject) result[1];
-		assertEquals("http://www.theworldavatar.com/kb/ontokin/ABF.owl",joparams.getString(JPSConstants.TARGETIRI));
+		assertEquals("http://www.theworldavatar.com:83/kb/ontokin/ABF.owl",joparams.getString(JPSConstants.TARGETIRI));
+		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
+		
+		//////////////////////
+		//targetUrl is a namespace
+		targetUrl = "teststore";
+		
+		result =  AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
+		assertNotNull(result);
+		
+		requestUrl = (String) result[0];
+		assertEquals(expectedRequestUrl,requestUrl);
+		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
+		assertEquals(expectedPath,uri.getPath());
+		
+		joparams = (JSONObject) result[1];
+		assertEquals(targetUrl,joparams.getString(JPSConstants.TARGETIRI));
 		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
 	}
 
@@ -50,19 +74,18 @@ public class AccessAgentCallerTest {
 		URI uri;
 		JSONObject joparams;
 		
-		String expectedPath = "/jps/kb"; //JPSConstants.ACCESS_AGENT_PATH
-		String expectedRequestUrl = "http://www.theworldavatar.com/jps/kb";
-		String expectedRequestUrlConverted = ResourcePathConverter.convert(expectedRequestUrl);
+		String expectedPath = JPSConstants.ACCESS_AGENT_PATH;
+		String expectedRequestUrl =  "http://"+KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST)+expectedPath;
 		
 		//////////////////////
 		//dataset, no target/graph
-		datasetUrl = "http://www.theworldavatar.com/kb/ontokin"; 
+		datasetUrl = "http://www.theworldavatar.com:83/kb/ontokin"; 
 		targetUrl = null;
 		result = AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
 		assertNotNull(result);
 
 		requestUrl = (String) result[0];
-		assertEquals(expectedRequestUrlConverted,requestUrl);
+		assertEquals(expectedRequestUrl,requestUrl);
 		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
 		assertEquals(expectedPath,uri.getPath());
 		
@@ -72,19 +95,35 @@ public class AccessAgentCallerTest {
 				
 		//////////////////////
 		//dataset with graph
-		datasetUrl = "http://www.theworldavatar.com/kb/ontokin"; 
-		targetUrl = "http://www.theworldavatar.com/kb/ontokin/ABF.owl";
+		datasetUrl = "http://www.theworldavatar.com:83/kb/ontokin"; 
+		targetUrl = "http://www.theworldavatar.com:83/kb/ontokin/ABF.owl";
 		result = AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
 		assertNotNull(result);
 		
 		requestUrl = (String) result[0];
-		assertEquals(expectedRequestUrlConverted,requestUrl);
+		assertEquals(expectedRequestUrl,requestUrl);
 		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
 		assertEquals(expectedPath,uri.getPath());
 		
 		joparams = (JSONObject) result[1];
 		assertEquals(datasetUrl,joparams.getString(JPSConstants.TARGETIRI));
 		assertEquals(targetUrl,joparams.getString(JPSConstants.TARGETGRAPH));
+		
+		//////////////////////
+		//dataset is a namespace, no target/graph
+		datasetUrl = "teststore"; 
+		targetUrl = null;
+		result = AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
+		assertNotNull(result);
+		
+		requestUrl = (String) result[0];
+		assertEquals(expectedRequestUrl,requestUrl);
+		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
+		assertEquals(expectedPath,uri.getPath());
+		
+		joparams = (JSONObject) result[1];
+		assertEquals(datasetUrl,joparams.getString(JPSConstants.TARGETIRI));
+		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
 	}
 	
 	@Test
@@ -191,19 +230,23 @@ public class AccessAgentCallerTest {
 		
 		String url;
 		String result;
-		String expected = "http://www.theworldavatar.com/jps/kb";
-		String expectedLocal = "http://localhost:8080/jps/kb";
+		String expected = "http://"+KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST)+JPSConstants.ACCESS_AGENT_PATH;
+		String expectedLocal = "http://localhost:8080"+JPSConstants.ACCESS_AGENT_PATH;
 		
-		url = "http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl%23Service";
+		url = "http://www.theworldavatar.com:83/kb/agents/Service__OpenWeatherMap.owl%23Service";
 		result = AccessAgentCaller.getBaseWorldUrl(url);
 		assertEquals(expected,result);
 	
-		url = "http://www.theworldavatar.com/kb/ontokin";
+		url = "http://www.theworldavatar.com:83/kb/ontokin";
 		result = AccessAgentCaller.getBaseWorldUrl(url);
 		assertEquals(expected,result);
 		
 		url = "http://localhost:8080/kb/ontokin";
 		result = AccessAgentCaller.getBaseWorldUrl(url);
 		assertEquals(expectedLocal,result);
+		
+		url = "ontokin";
+		result = AccessAgentCaller.getBaseWorldUrl(url);
+		assertEquals(expected,result);
 	}
 }

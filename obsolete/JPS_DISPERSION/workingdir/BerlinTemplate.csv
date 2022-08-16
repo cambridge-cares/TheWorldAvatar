@@ -1,0 +1,2 @@
+station_name,y,x,z,temperature(degree Celsius),pressure(hPa),humidity(percent),wind_speed(km/hour),wind_direction(degree),time_stamp
+Berlin-Alexanderplatz,52.5198,13.4057,36,25,1000,65,3.4,237,2020-04-28T16:25:00

@@ -31,7 +31,7 @@ public class InputAgent extends JPSAgent {
 	    
 	    RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 	    SparqlClient sparqlClient = new SparqlClient(storeClient);
-    	DerivationClient devClient = new DerivationClient(storeClient);
+		DerivationClient devClient = new DerivationClient(storeClient, InitialiseInstances.derivationInstanceBaseURL);
 		
 		if (InstancesDatabase.Input == null) { 
 			InstancesDatabase.Input = sparqlClient.getInputIRI();
@@ -50,7 +50,7 @@ public class InputAgent extends JPSAgent {
     	
     	tsClient.addTimeSeriesData(ts);
 
-    	devClient.updateTimestamp(InstancesDatabase.Input);
+    	devClient.updateTimestamps(Arrays.asList(InstancesDatabase.Input));
     	
 		return new JSONObject().put("status", "Updated <" + InstancesDatabase.Input + ">");
 	}

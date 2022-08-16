@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - pip:
+    - pytest
+    - pytest-docker-compose
+    - pytest-html
+    - -e .

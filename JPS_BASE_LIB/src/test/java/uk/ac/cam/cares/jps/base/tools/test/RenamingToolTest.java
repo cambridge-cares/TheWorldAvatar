@@ -56,6 +56,10 @@ public class RenamingToolTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 	
+	static String removeWhiteSpace(String string) {
+		return string.replaceAll("\\s+","");
+	}
+	
 	/**
 	 * Test constructor RenamingTool(String strMatch, String strTarget, String strReplacement) and setMatch method  
 	 * @throws NoSuchFieldException
@@ -404,7 +408,7 @@ public class RenamingToolTest {
 		Method method = renamingTool.getClass().getDeclaredMethod("countQuery", String.class, WhereBuilder.class);
 		method.setAccessible(true);
 		String where = (String) method.invoke(renamingTool, graph, whereInput);
-		assertEquals(expected, where);
+		assertEquals(removeWhiteSpace(expected), removeWhiteSpace(where));
 	}
 	
 	/**
