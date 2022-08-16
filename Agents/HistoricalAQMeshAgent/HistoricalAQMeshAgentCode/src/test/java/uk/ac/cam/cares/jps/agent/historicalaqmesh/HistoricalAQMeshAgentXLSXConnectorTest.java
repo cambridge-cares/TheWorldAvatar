@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+@Ignore("Requires sample data excel files for both gas and particle readings to be in the data folder")
 public class HistoricalAQMeshAgentXLSXConnectorTest {
 
 	@Rule

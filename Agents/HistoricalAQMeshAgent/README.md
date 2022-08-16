@@ -19,6 +19,13 @@ and general.properties files. These properties files can be found in the `mappin
 Lastly, the timestamps in the excel files must be in UTC timezone. The agent will then convert the timestamps to a local 
 date time with offset.
 
+The following shows the content of compatible excel file for gas readings:
+![Shows the content of a compatible gas data excel file.](docs/img/example_gas_excel_file.png "Gas data excel file")
+
+The following shows the content of compatible excel file for particle and general readings:
+![Shows the content of a compatible particle and general data excel file.](docs/img/example_particle_general_excel_file.png "Particle and general data excel file")
+
+
 #### Example readings
 Readings are retreived from the excel file in the form of a JSON array with one JSON object per timestamp. The following 
 shows a single JSON object example for gas readings:
