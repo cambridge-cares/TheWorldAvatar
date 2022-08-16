@@ -60,6 +60,12 @@ class CommonOptions<T extends CommonOptions<T>> {
     }
 
     protected List<String> appendCommonToArgs(String... args) {
+
+        // Setting this option causes GDAL to try to detect the type of the columns in
+        // CSV source files, as described here:
+        // https://gdal.org/drivers/vector/csv.html#open-options
+        inputDatasetOpenOptions.put("AUTODETECT_TYPE", "YES");
+
         List<String> allArgs = new ArrayList<>(args.length);
         Collections.addAll(allArgs, args);
 
