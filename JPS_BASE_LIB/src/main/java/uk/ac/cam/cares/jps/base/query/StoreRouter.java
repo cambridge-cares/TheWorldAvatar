@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
