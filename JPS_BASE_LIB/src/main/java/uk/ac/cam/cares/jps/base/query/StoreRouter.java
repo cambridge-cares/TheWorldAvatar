@@ -94,7 +94,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * LRU Cache configuration:
 	 * key=label, value=[queryEndpoint, updateEndpoint] 
 	 */
-	private static final int CACHE_SIZE = 100;
+	private static final int CACHE_SIZE = Integer.parseInt(KeyValueMap.getInstance().get(IKeys.STOREROUTER_CACHE_SIZE));
 	private static final int QUERY_INDEX = 0;
 	private static final int UPDATE_INDEX = 1;
 	
@@ -103,7 +103,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	private StoreRouter() {
 		super(new LRUCache<String,List<String>>(CACHE_SIZE));
 	}
-	
+		
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
 	 * provided as the input. For query and/or update operations, it
@@ -208,10 +208,10 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), targetResourceLabel);
 		
 		JSONArray results = storeClient.executeQuery(builder.toString());
-		
-		//TODO add logic for multiple results?
+	
 		if(!results.isEmpty()) {
 			//Get first entry
+			//Add logic for multiple results?
 			JSONObject obj = results.getJSONObject(0);
 			String queryEndpoint = MiscUtil.optNullKey(obj, QUERY_ENDPOINT); 
 			String updateEndpoint = MiscUtil.optNullKey(obj, UPDATE_ENDPOINT); 
