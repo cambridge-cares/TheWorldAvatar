@@ -38,11 +38,13 @@ fi
 
 case "$STACK_NAME" in
     "")
-        echo "Usage:
-    stack.sh remove (<STACK NAME> | all) [<SERVICE NAME>] [--volumes]
-    stack.sh remove all, remove all containers/services, configs and secrets from all stacks
-    stack.sh remove <STACK NAME>, remove all containers/services, configs and secrets from the named stack
-
+        echo "Usages:
+    ./stack.sh remove all [OPTIONS]             Remove all stacks
+    ./stack.sh remove STACK_NAME [OPTIONS]      Remove stack \"STACK_NAME\"
+    ./stack.sh remove STACK_NAME SERVICE_NAME   Remove service \"STACK_NAME-SERVICE_NAME\"
+    
+Options:
+    -v, --volumes       Also remove named volumes
 "
 exit;;
     "all")
