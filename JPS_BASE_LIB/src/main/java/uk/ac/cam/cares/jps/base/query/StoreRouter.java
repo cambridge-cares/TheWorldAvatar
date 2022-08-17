@@ -103,7 +103,14 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	private StoreRouter() {
 		super(new LRUCache<String,List<String>>(CACHE_SIZE));
 	}
-		
+	
+	public static synchronized StoreRouter getInstance() {
+		if (storeRouter == null) {
+			storeRouter = new StoreRouter();
+		}
+		return storeRouter;
+	}
+	
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
 	 * provided as the input. For query and/or update operations, it
@@ -133,16 +140,12 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		
 		if (targetResourceID != null && !targetResourceID.isEmpty()) {
 			
-			synchronized(StoreRouter.class) {
-				if (storeRouter == null) {
-					storeRouter = new StoreRouter();
-				}
-			}
+			getInstance();
 			
 			if (isFileBasedTargetResourceID(targetResourceID)) {
 			  
 				String relativePath = getPathComponent(targetResourceID);
-				String rootPath = getPathComponent(storeRouter.getLocalFilePath(TOMCAT_ROOT_LABEL));
+				String rootPath = getPathComponent(storeRouter.getLocalFilePath(TOMCAT_ROOT_LABEL,storeRouter.getRouterStoreClient()));
 				String filePath =  joinPaths(rootPath, relativePath);
 				LOGGER.info("File based resource. file path="+filePath);
 				
@@ -188,8 +191,11 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		return kbClient;
 	}
 	
+	/**
+	 * Get store client for ontokgrouter
+	 */
 	@Override
-	protected StoreClientInterface getRouterStoreClient() {
+	public StoreClientInterface getRouterStoreClient() {
 		return new RemoteStoreClient(storeRouterEndpoint);
 	}
 	
@@ -327,7 +333,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * @param targetResourceName
 	 * @return
 	 */
-	private String getLocalFilePath(String targetResourceName) {
+	private String getLocalFilePath(String targetResourceName, StoreClientInterface storeClient) {
 		
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
@@ -338,7 +344,6 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_FILE_PATH), QUESTION_MARK.concat(FILE_PATH) )
 				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), targetResourceName);
 		
-		StoreClientInterface storeClient = getRouterStoreClient();
 		JSONArray jsonArray = storeClient.executeQuery(builder.toString());
 		for (int i = 0; i<jsonArray.length(); i++){
 			JSONObject obj = jsonArray.getJSONObject(i);
