@@ -45,3 +45,4 @@ else
   echo "Installation dir [$install_dir] does not exist, aborting"
   exit 2
 fi
+

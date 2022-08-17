@@ -1,0 +1,9 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoKin,TBox,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoKin,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
+http://www.w3.org/2002/07/owl#versionInfo,Data Property,,,Mechanism Representation Language,String,,,http://www.w3.org/2002/07/owl
+hasAge,"Data Property, Functional Property",,,http://xmlns.com/foaf/0.1/Person,String,,test description for has Age,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+efficiency,Data Property,,,,String,,,
+efficiencyOfReaction,Data Property,efficiency,IS-A,,,,,

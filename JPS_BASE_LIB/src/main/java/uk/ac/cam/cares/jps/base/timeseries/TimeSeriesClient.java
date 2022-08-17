@@ -1,9 +1,7 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -152,10 +150,14 @@ public class TimeSeriesClient<T> {
     	}
     }
     
-    /**
+	/**
      * similar to initTimeSeries, but uploads triples in one connection
      */
-    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+	public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+		bulkInitTimeSeries(dataIRIs, dataClass, timeUnit, null);
+	} 
+
+    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit, Integer srid) {
         // create random time series IRI
     	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
     	
@@ -177,7 +179,7 @@ public class TimeSeriesClient<T> {
    	    // Step2: Try to initialise time series in relational database
    		for (int i = 0; i < dataIRIs.size(); i++) {
    			try {
-   	    		rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i));
+   	    		rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid);
    	    	} catch (JPSRuntimeException e_RdbCreate) {
    	    		// For exceptions thrown when initialising RDB elements in relational database,
    				// try to revert previous knowledge base instantiation
@@ -201,7 +203,20 @@ public class TimeSeriesClient<T> {
     public void addTimeSeriesData(TimeSeries<T> ts) {
     	// Add time series data to respective database table
     	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
-    	rdbClient.addTimeSeriesData(ts);
+		List<TimeSeries<T>> ts_list = new ArrayList<>();
+		ts_list.add(ts);
+    	rdbClient.addTimeSeriesData(ts_list);
+    }
+
+	/**
+     * Append time series data to an already instantiated time series 
+	 * (i.e. add data for several time series in a single RDB connection)
+	 * @param ts_list List of TimeSeries objects to add
+     */
+    public void bulkaddTimeSeriesData(List<TimeSeries<T>> ts_list) {
+    	// Add time series data to respective database tables
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
+    	rdbClient.addTimeSeriesData(ts_list);
     }
     
 	/**
@@ -514,12 +529,12 @@ public class TimeSeriesClient<T> {
 	 * please do not modify without consulting the visualisation team at CMCL
 	 * @param ts_list
 	 * @param id
-	 * @param units
-	 * @param table_header
+	 * @param units_map
+	 * @param table_header_map
 	 * @return
 	 */
 	public JSONArray convertToJSON(List<TimeSeries<T>> ts_list, List<Integer> id,
-			List<List<String>> units, List<List<String>> table_header) {
+			List<Map<String,String>> units_map, List<Map<String, String>> table_header_map) {
 		JSONArray ts_array = new JSONArray();
 		
 		for (int i = 0; i < ts_list.size(); i++) {
@@ -542,13 +557,21 @@ public class TimeSeriesClient<T> {
 			}
 			
 			// for table headers
-			if (table_header != null) {
-				ts_jo.put("data", table_header.get(i));
+			if (table_header_map != null) {
+				List<String> table_header = new ArrayList<>();
+				for (String dataIRI : dataIRIs) {
+					table_header.add(table_header_map.get(i).get(dataIRI));
+				}
+				ts_jo.put("data", table_header);
 			} else {
-				ts_jo.put("data", ts.getDataIRIs());
+				ts_jo.put("data", dataIRIs);
 			}
 	    	
-	    	ts_jo.put("units", units.get(i));
+			List<String> units = new ArrayList<>();
+			for (String dataIRI : dataIRIs) {
+				units.add(units_map.get(i).get(dataIRI));
+			}
+	    	ts_jo.put("units", units);
 	    	
 	    	// time column
 	    	ts_jo.put("time", ts.getTimes());
@@ -558,16 +581,23 @@ public class TimeSeriesClient<T> {
 	    	JSONArray values = new JSONArray();
 	    	JSONArray valuesClass = new JSONArray();
 	    	for (int j = 0; j < dataIRIs.size(); j++) {
-	    		List<?> valueslist = ts.getValues(dataIRIs.get(j));
-	    		values.put(valueslist);
-	    		if (valueslist.size() > 0) {
-	    			if (valueslist.get(0) instanceof Number) {
-	    				valuesClass.put(Number.class.getSimpleName());
-	    			} else {
-	    				valuesClass.put(valueslist.get(0).getClass().getSimpleName());
-	    			}
-	    		}
-	    	}
+				List<?> valueslist = ts.getValues(dataIRIs.get(j));
+				values.put(valueslist);
+				// Initialise value class (in case no class can be determined due to missing data)
+				String vClass = "Unknown";
+				for (Object value: valueslist) {
+					// Get values class from first not null value
+					if (value != null) {
+						if (value instanceof Number) {
+							vClass = Number.class.getSimpleName();
+						} else {
+							vClass = value.getClass().getSimpleName();
+						}
+						break;
+					}
+				}
+				valuesClass.put(vClass);
+			}
 	    	
 	    	ts_jo.put("values", values);
 	    	ts_jo.put("valuesClass", valuesClass);

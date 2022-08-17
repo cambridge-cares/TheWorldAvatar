@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.postgis.Point;
 import org.junit.Before;
 import org.junit.Assert;
 
@@ -22,18 +23,26 @@ public class TimeSeriesTest {
 	List<Double> data1 = new ArrayList<>();
 	List<String> data2 = new ArrayList<>();
 	List<Integer> data3 = new ArrayList<>();
+	List<Double> data4 = new ArrayList<>();
+	List<Point> data5 = new ArrayList<>();
 	List<List<?>> dataToAdd = new ArrayList<>();
 	
 	@Before
 	public void initialiseData() {
-		dataIRI.add("http://data1"); dataIRI.add("http://data2"); dataIRI.add("http://data3"); 
+		dataIRI.add("http://data1"); dataIRI.add("http://data2"); dataIRI.add("http://data3"); dataIRI.add("http://data4"); 
+		dataIRI.add("http://data5");
 		for (int i = 0; i < 10; i++) {
 			timeList.add(Instant.now().plusSeconds(i));
 			data1.add(Double.valueOf(i));
 			data2.add(String.valueOf(i));
 			data3.add(Integer.valueOf(i));
-		}		
-		dataToAdd.add(data1); dataToAdd.add(data2); dataToAdd.add(data3);
+			data4.add(Double.valueOf(i));
+
+			Point point = new Point(); point.setX(i); point.setY(i);
+			data5.add(point);
+		}
+		data4.set(3, null);
+		dataToAdd.add(data1); dataToAdd.add(data2); dataToAdd.add(data3); dataToAdd.add(data4); dataToAdd.add(data5);
 	}
 	
 	/**
@@ -100,6 +109,7 @@ public class TimeSeriesTest {
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
 		Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(0)), data1);
 		Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(0)).get(0).getClass(), Double.class);
+		Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(3)), data4);
     	Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(2)).get(0).getClass(), Double.class);
     	// Test for non-existing and non-castable data series
     	Assert.assertNull(ts.getValuesAsDouble("data0"));
@@ -144,4 +154,18 @@ public class TimeSeriesTest {
     					        e.getMessage());
     	}
     }
+
+	@Test
+	public void testGetValuesAsPoint() {
+		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
+		Assert.assertEquals(ts.getValuesAsPoint(dataIRI.get(4)), data5);
+		Assert.assertNull(ts.getValuesAsPoint("data0"));
+		try {
+    		ts.getValuesAsPoint(dataIRI.get(1));
+    	} catch (Exception e) {
+    		Assert.assertTrue(e instanceof JPSRuntimeException);
+    		Assert.assertEquals("TimeSeries: Values for provided dataIRI are not castable to \"Point\"",
+    					        e.getMessage());
+    	}
+	}
 }

@@ -1,5 +1,10 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,15 +19,18 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
+import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * Downloads high level station information from http://environment.data.gov.uk/flood-monitoring/id/stations.rdf
- * and post it to Blazegraph. The endpoint and credentials need to be saved at
- * credentials.properties
+ * Downloads high level station information from http://environment.data.gov.uk/flood-monitoring/id/stations?_view=full.rdf
+ * and post it to Blazegraph. The endpoint and credentials are specified via environment variables
  * @author Kok Foong Lee
  *
  */
@@ -51,12 +59,17 @@ public class InitialiseStations {
     }
     
     public static void main(String[] args) {
-    	Config.initProperties();
+		try {
+			Config.initProperties();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage()); // not critical for unit tests
+		}
     	
     	// if these are null, they are in deployed mode, otherwise they should
     	// be set with mocks using their respective setters
     	if (api == null) {
     		InitialiseStations.api = new APIConnector("http://environment.data.gov.uk/flood-monitoring/id/stations.rdf");
+			InitialiseStations.api.setParameter("_view", "full");
     	}
     	if (storeClient == null) {
     		InitialiseStations.storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
@@ -72,16 +85,44 @@ public class InitialiseStations {
     	initFloodStationsWithAPI(InitialiseStations.api, InitialiseStations.storeClient);
     	
     	// obtain stations added to blazegraph
-        List<String> stations = sparqlClient.getStations();
+        List<Station> stations = sparqlClient.getStationsOriginal();
         
-        // add RDF:type to each station instance
-		sparqlClient.addStationRdfType(stations);
+        // add triples for OntoEMS, also update stations objects
+		sparqlClient.addMeasuresConcepts(stations);
+		sparqlClient.addStationTypeAndCoordinates(stations);
 		
-		// add coordinates required by blazegraph geospatial support
-		sparqlClient.addBlazegraphCoordinatesAndVisID();
+		// set to false by default, download it once and save it locally
+		// takes a while to download because there is no API to download everything in 1 go
+		if (Config.DOWNLOAD_DATUM) {
+			JSONObject datumMap = sparqlClient.downloadDatum(stations);
+			File file = new File(Config.DATUM_FILE);
+			writeToFile(file, datumMap.toString(4));
+		}
+
+		// add datum triples for OntoEMS
+		// File specified by DATUM_FILE needs to exist
+		try {
+			if (Config.DATUM_FILE != null) {
+				JSONObject datum_json = new JSONObject(Files.readString(Paths.get(Config.DATUM_FILE)));
+				sparqlClient.addDatum(datum_json);
+			}
+		} catch (JSONException | IOException e) {
+			LOGGER.error("Failed to read datum file");
+			LOGGER.error(e.getMessage());
+		}
 		
-		// create a table for each measure uploaded to Blazegraph
-    	initTimeSeriesTables(sparqlClient, tsClient);
+		// instantiate connections between stations, e.g. <station1> <hasDownstreamStation> <station2>
+		if (Config.INSTANTIATE_CONNECTIONS) {
+			File connectionsFile = new File(Config.CONNECTIONS_FILE);
+			if (connectionsFile.exists()) {
+				sparqlClient.addConnections(connectionsFile);
+			} else {
+				LOGGER.warn("File containing connections between stations does not exist");
+			}
+		}
+
+		// create a table for each measure uploaded to Blazegraph and a table to record last updated date
+    	initTimeSeriesTables(tsClient, stations);
     }
     
 	/** 
@@ -118,10 +159,15 @@ public class InitialiseStations {
 	/**
 	 * create a table for each measure
 	 */
-	static void initTimeSeriesTables(FloodSparql sparqlClient, TimeSeriesClient<Instant> tsClient) {
+	static void initTimeSeriesTables(TimeSeriesClient<Instant> tsClient, List<Station> stations) {
 		LOGGER.info("Initialising time series tables");
 		
-		List<String> measures = sparqlClient.getMeasures();
+		List<String> measures = new ArrayList<>();
+		for (Station station : stations) {
+			for (Measure measure : station.getMeasures()){
+				measures.add(measure.getIri());
+			}
+		}
 		List<List<String>> ts_list = new ArrayList<>(measures.size());
 		List<List<Class<?>>> classes = new ArrayList<>(measures.size());
 		
@@ -129,8 +175,26 @@ public class InitialiseStations {
 			ts_list.add(Arrays.asList(measures.get(i)));
 			classes.add(Arrays.asList(Double.class));
 		}
+
+		// table to record last updated time
+		ts_list.add(Arrays.asList(Config.TIME_IRI));
+		classes.add(Arrays.asList(LocalDate.class));
 		
 		tsClient.bulkInitTimeSeries(ts_list, classes, null);
 		tsClient.disconnectRDB();
+	}
+
+	private static void writeToFile(File file, String output) {
+		try {
+			file.createNewFile();
+			FileOutputStream outputStream = new FileOutputStream(file);
+			byte[] strToBytes = output.getBytes();
+			outputStream.write(strToBytes);
+			outputStream.close();
+			LOGGER.info("Created " + file.getAbsolutePath());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
 	}
 }

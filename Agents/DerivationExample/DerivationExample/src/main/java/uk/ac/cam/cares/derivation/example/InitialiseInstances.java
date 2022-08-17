@@ -40,7 +40,19 @@ public class InitialiseInstances extends JPSAgent{
 	
 	private static String average_agent_iri = SparqlClient.namespace + "average_agent";
  	private static String average_agent_url = baseURL + AverageAgent.URL_AVERAGE;
-	
+
+	public static final String derivationInstanceBaseURL = "http://derivationexample.com/triplestore/repository/";
+
+	public static final String input_key = "input";
+	public static final String min_key = "min value";
+	public static final String max_key = "max value";
+	public static final String min_dev_key = "derivation of min value";
+	public static final String max_dev_key = "derivation of max value";
+	public static final String diff_key = "difference";
+	public static final String diff_dev_key = "derivation of difference";
+	public static final String avg_key = "average";
+	public static final String avg_dev_key = "derivation of average";
+
 	private static final Logger LOGGER = LogManager.getLogger(InitialiseInstances.class);
     
 	@Override
@@ -48,19 +60,20 @@ public class InitialiseInstances extends JPSAgent{
 		Config.initProperties();
     	RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
     	SparqlClient sparqlClient = new SparqlClient(storeClient);
-    	DerivationClient devClient = new DerivationClient(storeClient);
+		DerivationClient devClient = new DerivationClient(storeClient, derivationInstanceBaseURL);
     	
     	LOGGER.info("Initialising new instances, all existing instances will get deleted");
-    	sparqlClient.clearKG();
+    	
     	TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	tsClient.deleteAll();
+		sparqlClient.clearKG();
     	
     	// record the IRIs of the created instances to link them later
     	String input = sparqlClient.createInputData();
     	// attach timestamp to input
     	devClient.addTimeInstance(input);
     	// the timestamp added using addTimeInstance is 0, this will ensure that the input is current
-    	devClient.updateTimestamp(input);
+    	devClient.updateTimestamps(Arrays.asList(input));
     	createInputTimeSeries(input, tsClient);
     	LOGGER.info("Created input <" + input + ">");
     	InstancesDatabase.Input = input;
@@ -121,15 +134,15 @@ public class InitialiseInstances extends JPSAgent{
     	}
 
     	JSONObject response = new JSONObject();
-    	response.put("input", input);
-    	response.put("min value", min_property);
-    	response.put("derivation of min value", derived_minvalue);
-    	response.put("max value", max_property);
-    	response.put("derivation of max value", derived_maxvalue);
-    	response.put("difference", diff_property);
-    	response.put("derivation of difference", derived_difference);
-    	response.put("average", average);
-    	response.put("derivation of average", derived_average);
+		response.put(input_key, input);
+		response.put(min_key, min_property);
+		response.put(min_dev_key, derived_minvalue);
+		response.put(max_key, max_property);
+		response.put(max_dev_key, derived_maxvalue);
+		response.put(diff_key, diff_property);
+		response.put(diff_dev_key, derived_difference);
+		response.put(avg_key, average);
+		response.put(avg_dev_key, derived_average);
     	
     	return response;
     }

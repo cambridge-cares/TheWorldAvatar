@@ -1,2 +1,3 @@
-from chemaboxwriters.ontomops.pipeline import assemble_omops_pipeline
-from chemaboxwriters.ontomops.writeabox import write_abox
+import pkg_resources
+
+OM_SCHEMA = pkg_resources.resource_filename(__name__, "om_schema.yml")

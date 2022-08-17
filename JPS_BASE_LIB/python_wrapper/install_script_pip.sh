@@ -78,7 +78,7 @@ function create_env {
 function get_pip_path {
     if [[ $CREATE_VENV == 'y' ]]
 	then
-	    if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
+	    if [ -d "$VENV_DIR/$VENV_NAME/bin" ]; then
             PIPPATH=$VENV_DIR"/"$VENV_NAME/bin/pip3
 		else
 		    PIPPATH=$VENV_DIR"/"$VENV_NAME/Scripts/pip3
@@ -148,3 +148,4 @@ fi
 
 echo
 read -n 1 -s -r -p "Press any key to continue"
+
