@@ -42,18 +42,13 @@ public class MoDSMarshallerDataDriven extends MoDSMarshaller {
 		logger.info("Model canteraLFS was added to the MoDS job.");
 	}
 	
-	
-	//new METHOD
-	//experimentIRI is CSV now
 	@Override
-	//	public void plugInModelDataDriven(List<String> dataVar, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSDataDrivenAgentException;
-
 	public void plugInModelDataDriven(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSDataDrivenAgentException {
 		ModelSurrogateDataDriven modsSurrogate = new ModelSurrogateDataDriven(modsDataDrivenAgentProperty);
 		ExecutableModel exeModel = modsSurrogate.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		modsSurrogate.formFiles(exeModel, otherOptions);
 		modsSurrogate.setUpMoDS();
 		
-		logger.info("Model canteraLFS was added to the MoDS job.");
+		logger.info("Model DataDriven was added to the MoDS job.");
 	}
 }
