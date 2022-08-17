@@ -56,4 +56,18 @@ public class PostGISClient extends ContainerClient {
             }
         }
     }
+
+    public void executeQuery(String databaseName, String sql) {
+        try (Connection conn = getConnection(databaseName);
+                Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            if ("3D000".equals(ex.getSQLState())) {
+                // Database doesn't exist error
+            } else {
+                throw new RuntimeException("Failed to run SQL query '" + sql + "' on the server with JDBC URL '"
+                        + postgreSQLEndpoint.getJdbcURL("databaseName") + "'.", ex);
+            }
+        }
+    }
 }
