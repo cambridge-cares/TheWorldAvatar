@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.postgis.Point;
+import org.postgis.PGgeometry;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -94,6 +97,31 @@ public class TimeSeries<T> {
      */
     public List<String> getValuesAsString(String dataIRI) {
     	return values.get(dataIRI).stream().map(value -> value == null ? null : value.toString()).collect(Collectors.toList());
+    }
+
+    /*
+     * Retrieve values as PostGIS points
+     * @param dataIRI data IRI provided as string
+     */
+    public List<Point> getValuesAsPoint(String dataIRI) {
+        List<?> v = getValues(dataIRI);
+    	if (v == null) {
+    		return null;
+    	} else {
+            return v.stream().map(value -> {
+                if (value == null) {
+                    return null;
+                } else if (value.getClass() == Point.class) {
+                    // this is for manually created TimeSeries objects
+                    return (Point) value;
+                } else if (value.getClass() == PGgeometry.class){
+                    // this is for results queried from PostGIS
+                    return ((Point) ((PGgeometry) value).getGeometry());
+                } else {
+                    throw new JPSRuntimeException("TimeSeries: Values for provided dataIRI are not castable to \"Point\"");
+                }
+            }).collect(Collectors.toList());
+        }
     }
     
     /**

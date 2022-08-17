@@ -15,6 +15,8 @@ Key properties of the **`TimeSeriesClient`** class:
 Both classes support a time series to consist of several individual (but related) measures, which share the same time column. Any generic Java types (e.g. date time, integer, double etc.) are supported and a robust mapping between any dataIRI (stored in KG) and the respective values (stored in RDB) is ensured. 
 Initialising any new time series using the `TimeSeriesClient` creates all required relationships in the KG as well as corresponding table(s) in the RDB. Adding or deleting time series data only adds or deletes data points in the RDB. Deleting time series via the `TimeSeriesClient` deletes all associated relationships from the KG as well as corresponding table(s) in the RDB. Detailed descriptions of particular functions are provided in the respective docstrings. 
 
+## Note on PostGIS support
+The TimeSeriesClient supports storing and querying geometries in PostGIS by providing objects of org.postgis.Geometry. You must ensure that the PostGIS extension is enabled in PostgreSQL to use this.
 
 ## Time series instantiation
 The namespaces used in this document:  

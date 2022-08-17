@@ -28,7 +28,6 @@ PREFIXES = {
     'ems':  EMS,
     'ts':   TS,
     'kb':   KB,
-    'tsa':  TSA,
 }
 
 

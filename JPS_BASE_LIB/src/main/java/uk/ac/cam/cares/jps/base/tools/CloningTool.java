@@ -1,556 +1,316 @@
 package uk.ac.cam.cares.jps.base.tools;
 
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-
-import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.ExprFactory;
-import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.DatasetFactory;
-import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.expr.Expr;
-import org.apache.jena.sparql.expr.ExprVar;
-import org.apache.jena.update.UpdateExecutionFactory;
-import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * Cloning Tool
- * 
- * Two cloning methods are implemented: a single step cloning method suitable for cloning small 
- * stores and a method which splits a large cloning operation into multiple smaller ones. 
- * The single step clone can be used by first calling "setSingleStepClone" followed by a "clone" 
- * method, or alternatively by calling the method "singleStepClone" directly.
- * The split method is used be default, unless the total number of triples (or quads) in the store
- * is below the step size, set using "setCloneSize".  
- * Two methods: "checkNoTags" and "checkCount" are provided and can be called to check that no tags 
- * remain after cloning and that the total count remains unchanged.
- * NOTE: If the sourceKB is a remote triple store (rather than quad store) then "setTripleStore()" 
- * must be set for the tool to function.
- * 
- * @author Casper Lindberg
+ * This class implements a cloning tool. 
+ * On large stores cloning is performed step-wise with an overlap between each step.
+ * <p>
+ * <b>How it works:</b>
+ * The order of triples in a store (or the order of results returned by a SPARQL query)
+ * is not fixed. This method assumes that there is, however, some level of 
+ * ordered grouping of triples in a store. Thus, the store can be cloned by 
+ * sequentially querying for groups of N triples in store using the OFFSET and LIMIT keywords.    
+ * An overlap is applied to capture locally unordered triples at the boundary 
+ * between two successive steps. While SPARQL does offer an ORDERBY keyword, sorting triples in 
+ * a large store every step is a very slow process. This method avoids the need to explicitly sort
+ * by exploiting the (assumed) internal data structure and order of the triple store.  
+ * <p>
+ * <b>Things to note and requirements:</b>
+ * Note that cloning is a slow process and success is not guaranteed.
+ * To avoid corruption of source data, the source store is only ever queried/read-only.  
+ * The tool requires that the target store is initially empty and will otherwise fail
+ * (unless this condition is {@link uk.ac.cam.cares.jps.base.tools.CloningTool#overrideEmptyTarget() overridden}
+ * prior to starting the cloning process). <br>
+ * The algorithm will attempt to increase the overlap if the initial overlap is too small.
+ * The clone will fail and return an error after 5 failed attempts to adjust the overlap
+ * or if the final number of triples in the target store does not match the number in the source store.
+ * In case of failure, the user should clear the target store.     
+ * <p>
+ * <b>How to use the tool:</b> 
+ * The simplest way to use the cloning tool is from a {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface StoreClientInterface} object with the methods 
+ * {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface#cloneTo cloneTo} and 
+ * {@link uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface#cloneFrom cloneFrom}.
+ * <br>
+ * Alternatively, a CloningTool object can be instantiated. This allows control 
+ * over the step size, overlap and to override the requirement for an empty 
+ * target store. In this case the {@link uk.ac.cam.cares.jps.base.tools.CloningTool#clone clone}
+ * method should be used to clone from the source to the target store. 
+ *  
+ * @author csl37
  *
  */
 public class CloningTool {
 
-	String strTag = "_Tag";	//Tag ending
-	boolean splitUpdate;
-	int stepSize;
-	int countTotal;			//Total number of triple to clone
-	boolean quads = true;	//Is the source KBClient a quads store?
+	/**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(CloningTool.class);
+
+    private static final int MAX_ATTEMPTS = 5; //Maximum number of attempts to increase overlap before failing
+    
+    private final double defaultOverlapRatio = 0.1; //10% overlap by default
+    
+	private int stepSize = 500000;
+	private int overlap = (int) (stepSize*defaultOverlapRatio);
 	
-	//// SPARQL variables
+	
+	private boolean emptyTargetRequired = true; //require the target store is empty to start clone
 	
 	static ExprFactory exprFactory = new ExprFactory();
-		
-	// Count variable
-	static String varCount = "count";
-	
-	// new s
-	static Var newS = Var.alloc("newS");
-	
-	// old s, p, o
-	static Var varS = Var.alloc("s");
-	static Var varP = Var.alloc("p");
-	static Var varO = Var.alloc("o");
-	static Var varG = Var.alloc("g");
-	static ExprVar exprS = new ExprVar(varS);
-	static ExprVar exprP = new ExprVar(varP);
-	static ExprVar exprO = new ExprVar(varO);
-	static ExprVar exprG = new ExprVar(varG);
-	// STR(?s)
-	static Expr exprStrS = exprFactory.str(exprS);
-	
-	///////////////////////// Constructors
 	
 	/**
-	 * Default constructor. Cloning split over multiple operations of 1 million triples
+	 * Default constructor.
+	 * Step size is set to 500,000 triples with 10% overlap.
 	 */
-	public CloningTool(){
-		//set defaults
-		splitUpdate = true;
-		stepSize = 1000000;
-	}
+	public CloningTool(){}
 	
 	/**
-	 * Constructor to set number of triples cloned per step. Cloning is split over multiple operations. 
+	 * Constructor to set step size and overlap.
 	 * @param stepSize
+	 * @param overlap
 	 */
-	public CloningTool(int stepSize){
-		//set defaults
-		splitUpdate = true;
+	public CloningTool(int stepSize, int overlap){
 		this.stepSize = stepSize;
+		this.overlap = overlap;
+		if(!checkStepAndOverlap()) {
+			cloneFailed("overlap cannot be larger than stepsize!",0,0);
+		}
 	}
 	
-	///////////////////////// Set variables
+	/////////////////
+	//Setter methods
 	
 	/**
-	 * Set number of triples cloned per step
+	 * Set the step size with the default overlap ratio 
+	 * @param stepsize
+	 */
+	public void setStepsize(int stepSize) {
+		this.stepSize = stepSize;
+		this.overlap = (int) (stepSize*defaultOverlapRatio);
+	}
+	
+	/**
+	 * Set the step size and overlap
 	 * @param stepSize
+	 * @param overlap
 	 */
-	public void setCloneSize(int stepSize) {
+	public void setStepsizeAndOverlap(int stepSize, int overlap) {
 		this.stepSize = stepSize;
+		this.overlap = overlap;
+		if(!checkStepAndOverlap()) {
+			cloneFailed("overlap cannot be larger than stepsize!",0,0);
+		}
 	}
 	
 	/**
-	 * Perform clone as a single operation
+	 * Override the requirement for the target store to be empty
+	 * to start the clone
 	 */
-	public void setSingleStepClone() {
-		this.splitUpdate = false;
-	}
-
-	/**
-	 * Set source KBClient is a triple store 
-	 */
-	public void setTripleStore() {
-		this.quads = false;
+	public void overrideEmptyTarget() {
+		emptyTargetRequired = false;
+		LOGGER.info("Warning: overriding empty target store requirement.");
 	}
 	
-	/**
-	 * Set source KBClient is a quad store
-	 */
-	public void setQuadsStore() {
-		this.quads = true;
-	}
-	///////////////////////// Clone methods
+	/////////////////
 	
 	/**
-	 * Clone all triples/quads from source repository to target repository.
-	 * WARNING: any context will be lost in the target.
-	 * @param sourceKB
-	 * @param targetKB
-	 */  
-	public void clone(StoreClientInterface sourceKB, StoreClientInterface targetKB) {
-		clone(sourceKB, null, targetKB, null);
-	}
-	
-	/**
-	 * Clone a named graph from the source knowledge base to a named graph in the target knowledge base.
-	 * @param sourceKB
-	 * @param targetKB
-	 * @param graph
+	 * Check step size is larger than overlap
 	 */
-	public void clone(StoreClientInterface sourceKB, StoreClientInterface targetKB, String graph) {
-		clone(sourceKB, graph, targetKB, graph); 
-	}
-	
-	/**
-	 * Clone a named graph from the source knowledge base to a different named graph in the target knowledge base.
-	 * @param sourceKB
-	 * @param sourceGraph
-	 * @param targetKB
-	 * @param targetGraph
-	 */
-	public void clone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
-		
-		WhereBuilder whereCountAll = new WhereBuilder()
-				.addWhere(varS, varP, varO);		    
-	    countTotal = countTriples(sourceKB, sourceGraph, whereCountAll);
-	    
-		if(splitUpdate == false) {
-			singleStepClone(sourceKB, sourceGraph, targetKB, targetGraph);
+	public boolean checkStepAndOverlap() {
+		if(overlap >= stepSize) {
+			return false;
 		}else {
-			//perform using single step process if count <= stepsize    
-		    if(countTotal <= stepSize) {
-		    	singleStepClone(sourceKB, sourceGraph, targetKB, targetGraph);
-		    }else {
-		    	performClone(sourceKB, sourceGraph, targetKB, targetGraph);
-		    }
+			return true;
 		}
 	}
 	
 	/**
-	 * Clone graph from source knowledge base to target knowledge base in a single step.
-	 * @param sourceKB
-	 * @param targetKB
-	 * @param graph
+	 * Perform clone from source to target store
+	 * @param source store client
+	 * @param target store client
 	 */
-	public void singleStepClone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
+	public void clone(StoreClientInterface source, StoreClientInterface target) {
 		
-		//Get model using construct query
-		Query construct = buildSparqlConstruct(sourceGraph);
-		Model results = sourceKB.executeConstruct(construct);
+		int targetCount = target.getTotalNumberOfTriples();
+		final int originalTargetCount = targetCount;
 		
-		//Update target
-		UpdateRequest update = buildSparqlUpdate(targetGraph, results);
-		targetKB.executeUpdate(update);
-	}
-	
-	/**
-	 * Cloning is split into multiple smaller copying operations consisting of a number of steps.
-	 * Triples (or quads) are tagged to keep track of which have been copied. 
-	 * After cloning is complete, the tags are removed returning the source store to its original state. 
-	 * Triples (or quads) containing blank nodes are excluded from this loop and cloned separately 
-	 * in an operation to maintain consistency between blank nodes.   
-	 * @param sourceKB
-	 * @param source graph
-	 * @param targetKB
-	 * @param target graph
-	 */
-	private void performClone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
-		
-		createTag(sourceKB);
-
-		// Count triples excluding blank nodes
-		WhereBuilder whereCount = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addFilter(exprFilterOutBlanks());
-	    int count = countTriples(sourceKB, sourceGraph, whereCount);
-		int steps = count/stepSize;
-		if(count%stepSize > 0) {steps++;}
-				 
-		for(int i = 0; i<steps; i++) {
-			// Iterate tag
-			Expr exprTagN = buildExprTagN(i);
-			
-			// Tag source
-			WhereBuilder whereNotTagged = new WhereBuilder()
-					.addWhere(varS, varP, varO)
-					.addFilter(exprFilterOutBlanks())
-					.addFilter(exprNotTagged())
-					.addBind(exprFactory.iri(exprFactory.concat(exprStrS,exprTagN)), newS);
-			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereNotTagged, stepSize, quads);
-			try {
-				sourceKB.executeUpdate(tagUpdate);
-			}catch(Exception e) {
-				if (e.getCause() instanceof SQLException) {
-					throw new JPSRuntimeException("CloningTool: tagging update failed! SourceKB might not be quads. Try setTripleStore().", e);
-				}else {
-					throw e;
-				}
-			}
-			
-			// Get tagged triples 
-			WhereBuilder whereConstructTagged = new WhereBuilder()
-					.addWhere(varS, varP, varO)
-					.addFilter(exprFactory.strends(exprStrS, exprTagN));
-			Query constructQuery = buildConstruct(sourceGraph, whereConstructTagged);
-			Model triples = sourceKB.executeConstruct(constructQuery);
-
-			// Remove tag from triples going to target
-			WhereBuilder whereRemoveTag = new WhereBuilder()
-					.addWhere(varS, varP, varO)
-					.addBind(exprBindIriRemoveTag(exprTagN), newS);
-			UpdateRequest removeTagUpdate = buildTagUpdate(null, whereRemoveTag, 0, false);
-			Dataset dataset = DatasetFactory.create(triples); // put triple into the default graph of a temporary dataset
-			UpdateProcessor updateExec = UpdateExecutionFactory.create(removeTagUpdate, dataset);
-			updateExec.execute();
-		
-			// Insert triples to target
-			UpdateRequest update = buildInsert(targetGraph, dataset.getDefaultModel());
-			targetKB.executeUpdate(update);
-		}
-		
-		// Clone everything that is not tagged i.e. blank nodes
-		Expr filterTag = exprFactory.or(
-				exprNotTagged(),
-				exprFactory.isBlank(exprS));
-		WhereBuilder whereConstruct = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addFilter(filterTag);
-		Query constructQuery = buildConstruct(sourceGraph, whereConstruct);
-		Model triples = sourceKB.executeConstruct(constructQuery);
-		UpdateRequest update = buildInsert(targetGraph, triples);
-		targetKB.executeUpdate(update);
-		
-		// Remove tags from source
-		for(int i = 0; i<steps; i++) {
-			Expr exprTagN = buildExprTagN(i);
-			WhereBuilder whereTagged = new WhereBuilder()
-					.addWhere(varS, varP, varO)
-					.addFilter(exprFactory.strends(exprStrS, exprTagN))
-					.addBind(exprBindIriRemoveTag(exprTagN), newS);
-			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereTagged, stepSize, quads);
-			sourceKB.executeUpdate(tagUpdate);
-		}
-	}
-	
-	/**
-	 * Creates a tag by hashing the source KB endpoint and current date and time.
-	 * @param sourceKB
-	 */
-	private void createTag(StoreClientInterface kbClient) {
-		LocalDateTime dateTime = LocalDateTime.now();
-		String name = kbClient.getQueryEndpoint() + dateTime.toString();
-		int hash = name.hashCode();
-		if(hash < 0) {hash *= -1;};
-		strTag += String.valueOf(hash);
-	}
-	
-	//// Checks
-	
-	/**
-	 * Check the number of triples matches the total number of triples 
-	 * in the source store prior to cloning.
-	 * @param kbClient store to check
-	 * @param graph default/named graph to check
-	 */
-	public boolean checkCount(StoreClientInterface kbClient, String graph) {
-
-		WhereBuilder whereCount = new WhereBuilder()
-				.addWhere(varS, varP, varO);
-	    int count = countTriples(kbClient, graph, whereCount);
-	    
-	    return count == countTotal;
-	}
-	
-	/**
-	 * Check no tags remain in store
-	 * @param kbClient store to check
-	 * @param graph default/named graph to check
-	 */
-	public boolean checkNoTags(StoreClientInterface kbClient, String graph) {
-
-		WhereBuilder whereCount = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addFilter(exprTagged());
-	    int count = countTriples(kbClient, graph, whereCount);
-	    if(count==0) {
-	    	return true;
-	    }else {
-	    	return false;
-	    }
-	}
-	
-	//// Count
-	
-	/**
-	 * Count triples in knowledge base client matching the where statement.
-	 * @param source knowledge base client
-	 * @param graph (can be null)
-	 * @param where statement
-	 * @return
-	 */
-	private int countTriples(StoreClientInterface kbClient, String graph, WhereBuilder where) {
-		String query = countQuery(graph, where);
-		JSONArray result = kbClient.executeQuery(query);
-	    JSONObject jsonobject = result.getJSONObject(0);
-	    return jsonobject.getInt(varCount);
-	}
-	
-	/**
-	 * Build count query.
-	 * @param graph
-	 * @param whereFilter
-	 * @return
-	 */
-	private String countQuery(String graph, WhereBuilder whereFilter){
-		
-		WhereBuilder where = null;
-
-		if (graph != null) {	
-			where = new WhereBuilder();
-			// Graph
-			String graphURI = "<" + graph + ">";
-			where.addGraph(graphURI, whereFilter);
-		}else {
-			where = whereFilter;
-		}
-		
-		String query = "SELECT (COUNT(*) AS ?"+varCount+") ";
-		query += where.toString();
-		return query;
-	}
-
-	//// Sparql query/update builder	
-	
-	/**
-	 * Build construct query to get triples.
-	 * @param graph
-	 * @param where
-	 * @return
-	 */
-	private Query buildConstruct(String graph, WhereBuilder where) {
-		ConstructBuilder builder = new ConstructBuilder()
-				.addConstruct(varS, varP, varO);
-		
-		// Add where 
-		if (graph == null) {
-			//Default graph
-			builder.addWhere(where);
-		}else {	
-			//Named graph
-			String graphURI = "<" + graph + ">";
-			builder.addGraph(graphURI, where);	
-		}
-	
-		return builder.build();
-	}
-	
-	/**
-	 * Build SPARQL update to insert triples
-	 * @param graph
-	 * @param triples
-	 * @return
-	 */
-	private static UpdateRequest buildInsert(String graph, Model triples) {
-		
-		UpdateBuilder builder = new UpdateBuilder();
-				
-		// Add insert
-		if (graph == null) {
-			//Default graph
-			builder.addInsert(triples);
-		}else {	
-			//Named graph
-			String graphURI = "<" + graph + ">";
-			builder.addInsert(graphURI, triples);	
-		}
-	
-		return builder.buildRequest();
-	}
-
-	/**
-	 * Build SPARQL update to tag triples
-	 * @param graph
-	 * @param where
-	 * @param limit: number of triples to update
-	 * @return
-	 */
-	private UpdateRequest buildTagUpdate(String graph, WhereBuilder where, int limit, boolean quads) {
-		
-		// subquery selects new and old triples
-		SelectBuilder select = new SelectBuilder();
-		
-		select.addVar(varS)
-		.addVar(varP)
-		.addVar(varO)
-		.addVar(newS);
-		
-		if(limit > 0) {
-			select.setLimit(limit);
-		}
-		
-		UpdateBuilder builder = new UpdateBuilder();
-		
-		// Add select subquery and optional graph
-		if (quads == true ) {
-			if (graph == null) {
-				select.addVar(varG);
-				select.addGraph(varG, where);
-				builder.addInsert(varG, newS, varP, varO)
-					.addDelete(varG, varS, varP, varO)
-					.addSubQuery(select);
-			}else {	
-				String graphURI = "<" + graph + ">";
-				select.addGraph(graphURI, where);
-				// Graph
-				builder.addInsert(graphURI, newS, varP, varO)
-					.addDelete(graphURI, varS, varP, varO)
-					.addSubQuery(select);	
+		//Target store must be empty
+		if(emptyTargetRequired) {
+			if( targetCount > 0) {
+				cloneFailed("Target store is not empty!",targetCount,0);
 			}
 		}else {
-			select.addWhere(where);
-			builder.addInsert(newS, varP, varO)
-				.addDelete(varS, varP, varO)
-				.addSubQuery(select);
+			LOGGER.info("Target store not empty, count="+Integer.toString(originalTargetCount));
 		}
+		
+		int sourceCount = source.getTotalNumberOfTriples();		
+		int sourceBlankCount = countBlanks(source);
+		int sourceCountExBlanks = sourceCount - sourceBlankCount;
+		
+		LOGGER.info("Total source count: "+Integer.toString(sourceCount)
+				+", blanks: "+Integer.toString(sourceBlankCount));		
+		LOGGER.info("Starting clone..."
+				+"Step size: "+Integer.toString(stepSize)
+				+", overlap: "+Integer.toString(overlap));
+		
+		int attempts = 0;
+		int nExpected = 0;
+		int offset = 0;
+		while(nExpected<sourceCountExBlanks) {
+			
+			int oldnExpected = nExpected;
+			if(nExpected>0) {
+				offset = nExpected - overlap;
+			}
+			nExpected = Math.min(offset+stepSize,sourceCountExBlanks);
+
+			performCloneStep(source, target, getSparqlConstructNoBlanks(stepSize, offset));
+
+			//Overlap correction
+			targetCount = target.getTotalNumberOfTriples();			
+			if(targetCount - originalTargetCount < nExpected) {
+				adjustOverlap(targetCount - originalTargetCount, nExpected, attempts);
+				//Reset nExpected to retry step 
+				nExpected = oldnExpected;
+				attempts ++;
+			}else {
+				LOGGER.info("Cloned count: "+Integer.toString(targetCount - originalTargetCount)
+				+", expected count: "+Integer.toString(nExpected)
+				+", of "+Integer.toString(sourceCountExBlanks)
+				+" (exludes triples with blank nodes).");
+			}
+		}	
+		
+		//Clone blank nodes
+		LOGGER.info("Cloning triples with blank nodes...");
+		performCloneStep(source, target, getSparqlConstructBlanks());
+	
+		//Check target count
+		targetCount = target.getTotalNumberOfTriples();
+		if(targetCount - originalTargetCount != sourceCount) {
+			String reason = "Please clear the target store and try again. "
+					+ " Consider increasing the step size and overlap."; 
+			cloneFailed(reason, targetCount - originalTargetCount, nExpected);
+		}
+		LOGGER.info("Clone successful! Cloned "+Integer.toString(targetCount - originalTargetCount)
+		+" of "+Integer.toString(sourceCount));		
+	}
+	
+	/**
+	 * Perform a single clone step
+	 * @param source store
+	 * @param target store
+	 * @param constructQuery
+	 */
+	public void performCloneStep(StoreClientInterface source, StoreClientInterface target, String constructQuery) {
+		Model model = source.executeConstruct(constructQuery);
+		target.executeUpdate(getSparqlInsert(model));
+	}
+	
+	/**
+	 * Adjust overlap
+	 * @param targetCount
+	 * @param nExpected
+	 * @param attempts
+	 */
+	public void adjustOverlap(int targetCount, int nExpected, int attempts) {
+		
+		//Increase overlap by the larger of 10% of the step size or the size of countError
+		overlap += Math.max((int) (defaultOverlapRatio*stepSize), nExpected - targetCount);
+		
+		LOGGER.info("Cloned count: "+Integer.toString(targetCount)
+				+" does not match expected count "+Integer.toString(nExpected)
+				+". Increasing overlap to "+Integer.toString(overlap)
+				+" and retrying.");
+		
+		//fail if max attempts to correct overlap is reached
+		//or if overlap is larger than the step size
+		if(attempts>=MAX_ATTEMPTS || overlap >= stepSize) {
+			String reason = Integer.toString(attempts)
+					+" attempt(s) to increase overlap...\n" 
+					+" Please clear the target store! Consider increasing step size."; 
+			cloneFailed(reason, targetCount, nExpected);
+		}
+	}
+	
+	/**
+	 * Log clone failed error and throw JPSRuntimeException
+	 * @param reason
+	 * @param targetCount
+	 * @param nExpected
+	 */
+	public void cloneFailed(String reason, int targetCount, int nExpected) {
+		String errorMessage = "Cloning tool: clone failed...\n"
+		+"Reason: "+reason+"\n"
+		+"Parameters: stepSize="+Integer.toString(stepSize)
+		+", overlap="+Integer.toString(overlap)
+		+", target count="+Integer.toString(targetCount)
+		+", expected count="+Integer.toString(nExpected);		
+		LOGGER.error(errorMessage);
+		throw new JPSRuntimeException(errorMessage);
+	}
+		
+	///////////////
+	// SPARQL  
+	
+	/**
+	 * Get SPARQL update to insert data
+	 * @param model
+	 * @return
+	 */
+	private UpdateRequest getSparqlInsert(Model model) {
+		
+		UpdateBuilder builder = new UpdateBuilder().addInsert(model);
 		return builder.buildRequest();
 	}
-
-	//// Expressions for filters
 	
 	/**
-	 * Create full tag with counter.
-	 * @param counter i
+	 * SPARQL construct query excluding triples with blank nodes.
+	 * @param stepsize
+	 * @param offset
 	 * @return
 	 */
-	private Expr buildExprTagN(int i) {
-		return exprFactory.asExpr("_"+Integer.toString(i)+strTag);
-	}
-	
-	/**
-	 * Expression to filer out triples with blank nodes.
-	 * @return
-	 */
-	private Expr exprFilterOutBlanks() {
-		// (!isblank(?s) && (!isblank(?p) && !isblank(?o))) 
-		return exprFactory.and(exprFactory.not(exprFactory.isBlank(exprS)),
-				exprFactory.and(exprFactory.not(exprFactory.isBlank(exprP)),
-								exprFactory.not(exprFactory.isBlank(exprO))));
-	}
-	
-	/**
-	 * Expression to filter out tagged triples
-	 * @return
-	 */
-	private Expr exprNotTagged() {
-		return exprFactory.not(exprTagged());
-	}
-	
-	/**
-	 * Expression to filter tagged triples
-	 * @return
-	 */
-	private Expr exprTagged() {
-		return exprFactory.strends(exprStrS, strTag);
-	}
-	
-	/**
-	 * Bind new IRI with tag removed
-	 * @param tag expression
-	 * @return
-	 */
-	private Expr exprBindIriRemoveTag(Expr exprTagN) {
-		return exprFactory.iri(exprFactory.replace(exprStrS, exprTagN, ""));
-	}
-
-	//// SPARQL query builder for single step clone
-	
-	/**
-	 * Build sparql construct query to get triples.
-	 * @param graph/context (optional)
-	 * @return construct query
-	 */
-	private static Query buildSparqlConstruct(String graph) {
+	public String getSparqlConstructNoBlanks(int stepsize, int offset) {
 		
-		ConstructBuilder builder = new ConstructBuilder()
-				.addConstruct(varS, varP, varO);
-				
-		// Add where 
-		if (graph == null) {
-			//Default graph
-			builder.addWhere(varS, varP, varO);
-		}else {	
-			//Named graph
-			String graphURI = "<" + graph + ">";
-			builder.addGraph(graphURI, varS, varP, varO);	
-		}
-	
-		return builder.build();
+		return "CONSTRUCT {?s ?p ?o}\n"+
+		"WHERE {?s ?p ?o."
+		+ "FILTER(  !isblank(?s) && !isblank(?o) )}\n"+
+		"LIMIT "+Integer.toString(stepsize)+" OFFSET "+Integer.toString(offset);
 	}
 	
 	/**
-	 * Build sparql update to insert triples.
-	 * @param graph
-	 * @param results
-	 * @return updaterequest
+	 * SPARQL construct query return only triples with blank nodes. 
+	 * @return
 	 */
-	private static UpdateRequest buildSparqlUpdate(String graph, Model results) {
+	public String getSparqlConstructBlanks() {
 		
-		// Build update
-		UpdateBuilder builder = new UpdateBuilder();
-				
-		// Add insert
-		if (graph == null) {
-			//Default graph
-			builder.addInsert(results);
-		}else {	
-			//Named graph
-			String graphURI = "<" + graph + ">";
-			builder.addInsert(graphURI, results);	
-		}
-	
-		return builder.buildRequest();
+		return "CONSTRUCT {?s ?p ?o}\n"+
+		"WHERE {?s ?p ?o."
+		+ "FILTER(  isblank(?s) || isblank(?o) )}";
 	}
+	
+	/**
+	 * Count triples with blank nodes
+	 * @param storeClient
+	 * @return
+	 */
+	public Integer countBlanks(StoreClientInterface storeClient) {
+		String query = "SELECT (COUNT(*) AS ?triples)"
+				+"WHERE { ?s ?p ?o."
+				+ "FILTER(  isblank(?s) || isblank(?o) )}";
+    	JSONArray results = storeClient.executeQuery(query);
+    	int triples = Integer.parseInt(results.getJSONObject(0).get("triples").toString());
+    	return triples;
+	}
+	
 }

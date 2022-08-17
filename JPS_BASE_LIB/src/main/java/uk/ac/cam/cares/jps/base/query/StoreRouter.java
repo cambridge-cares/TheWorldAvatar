@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -62,8 +62,20 @@ public class StoreRouter{
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
 	
-	// get default ontokgrouter endpoint from jps.properties
-	private static String STOREROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);
+	public static String storeRouterEndpoint;
+	public static final String STOREROUTER_ENDPOINT_NAME = "STOREROUTER_ENDPOINT";
+	
+	static{
+		storeRouterEndpoint = System.getenv(STOREROUTER_ENDPOINT_NAME);
+		if(storeRouterEndpoint == null) {
+			// if endpoint is not set in the system environment  
+			// then get the default value from jps.properties
+			LOGGER.info("STOREROUTER_ENDPOINT not found in environment variables..."
+					+ " Using jps.properties.");
+			storeRouterEndpoint = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);	
+		}
+		LOGGER.info("STOREROUTER_ENDPOINT set to "+storeRouterEndpoint);		
+	}
 	
 	/**
 	 * List of file extensions for file based resources
@@ -71,18 +83,7 @@ public class StoreRouter{
 	 */
 	public static final List<String> fileExtensions = Arrays.asList(".owl",".rdf",".nt"); //File extensions
 	
-	static StoreRouter storeRouter = null;
-		
-	/**
-	 * Set STOREROUTER_ENDPOINT
-	 * @param endpoint
-	 */
-	public static void setRouterEndpoint(String endpoint) {
-		if (storeRouter == null) {
-			storeRouter = new StoreRouter();
-		}
-		STOREROUTER_ENDPOINT = endpoint;
-	}
+	static StoreRouter storeRouter = null;	
 	
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
@@ -120,7 +121,7 @@ public class StoreRouter{
 			if (isFileBasedTargetResourceID(targetResourceID)) {
 			  
 				String relativePath = getPathComponent(targetResourceID);
-				String rootPath = getPathComponent(storeRouter.getLocalFilePath(STOREROUTER_ENDPOINT, TOMCAT_ROOT_LABEL));
+				String rootPath = getPathComponent(storeRouter.getLocalFilePath(storeRouterEndpoint, TOMCAT_ROOT_LABEL));
 				String filePath =  joinPaths(rootPath, relativePath);
 				LOGGER.info("File based resource. file path="+filePath);
 				
@@ -131,10 +132,10 @@ public class StoreRouter{
 				LOGGER.info("Remote store. targetResourceLabel="+targetResourceLabel);
 				
 				if (isQueryOperation) {
-					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
+					queryIRI = storeRouter.getQueryIRI(storeRouterEndpoint, targetResourceLabel);
 				}
 				if (isUpdateOperation) {
-					updateIRI = storeRouter.getUpdateIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
+					updateIRI = storeRouter.getUpdateIRI(storeRouterEndpoint, targetResourceLabel);
 				}
 				if (queryIRI != null && !queryIRI.isEmpty()) {
 					kbClient = new RemoteStoreClient(queryIRI);
