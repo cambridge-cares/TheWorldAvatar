@@ -224,7 +224,7 @@ public final class DockerService extends AbstractService {
 
         Optional<Container> container = dockerClient.getContainer(service.getContainerName());
 
-        if (container.isEmpty()) {
+        if (container.isEmpty() || !container.get().getState().equalsIgnoreCase("running")) {
             // No container matching that config
 
             pullImage(service);
