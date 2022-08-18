@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   stack-manager:
-    image: docker.cmclinnovations.com/stack-manager:1.2.0
+    image: docker.cmclinnovations.com/stack-manager:1.3.0-281-SNAPSHOT
     volumes:
       - ./inputs/data:/inputs/data
       - ./inputs/config:/inputs/config
