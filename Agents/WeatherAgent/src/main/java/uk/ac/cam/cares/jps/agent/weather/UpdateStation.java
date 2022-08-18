@@ -17,44 +17,48 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
  * Updates the given station with latest data from the API
- * Ignores request is station was last updated 30 minutes ago
  * @author Kok Foong Lee
  *
  */
 @WebServlet(urlPatterns = {"/UpdateStation"})
 public class UpdateStation extends HttpServlet{
-
 	private static final long serialVersionUID = 1L;
 	// for logging
 	private static final Logger LOGGER = LogManager.getLogger(UpdateStation.class);
+	WeatherQueryClient weatherClient;
 
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {   
 		new Config().initProperties(); 	
-		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-		
-		WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient, tsClient);
+
+		if (weatherClient == null) {
+			RemoteStoreClient kgClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(kgClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+			RemoteStoreClient ontopClient = new RemoteStoreClient(Config.ontop_url);
+			
+			weatherClient = new WeatherQueryClient(kgClient, tsClient, ontopClient);
+		}
 		
 		String station = req.getParameter("iri");
 		
-		//updates station if it's more than 30 minute old
 		String response;
-		Instant currenttime = Instant.now();
-		Instant lastupdate = weatherClient.getLastUpdateTime(station);
-		if ((currenttime.getEpochSecond()-lastupdate.getEpochSecond()) > 1800) {
-			// this will ensure the servlet will always return a response even if the API call fails
-			try {
-				weatherClient.updateStation(station);
-				response = "Updated station: <" + station + "> with latest data";
-			} catch (Exception e) {
-				response = "Weather update failed";
-				LOGGER.error(response);
-				LOGGER.error(e.getMessage());
-				throw new RuntimeException(e);
-			}
-		} else {
-			response = "<" + station + "> was last updated within 30 minutes ago, update request will be ignored";
+		// this will ensure the servlet will always return a response even if the API call fails
+		try {
+			weatherClient.updateStation(station);
+			response = "Updated station: <" + station + "> with latest data";
+		} catch (Exception e) {
+			response = "Weather update failed";
+			LOGGER.error(response);
+			LOGGER.error(e.getMessage());
+			throw new RuntimeException(e);
 		}
 		resp.getWriter().write(response);
+	}
+
+	/**
+	 * used for junit test only
+	 * @param weatherQueryClient
+	 */
+	void setWeatherQueryClient(WeatherQueryClient weatherQueryClient) {
+		this.weatherClient = weatherQueryClient;
 	}
 }

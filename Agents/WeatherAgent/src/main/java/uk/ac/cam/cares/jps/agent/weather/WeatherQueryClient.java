@@ -94,16 +94,13 @@ class WeatherQueryClient {
     
     RemoteStoreClient kgClient;
     TimeSeriesClient<Instant> tsClient;
+	RemoteStoreClient ontopClient;
     		
     // constructor 1
-    WeatherQueryClient(RemoteStoreClient kgClient, TimeSeriesClient<Instant> tsClient) {
+    WeatherQueryClient(RemoteStoreClient kgClient, TimeSeriesClient<Instant> tsClient, RemoteStoreClient ontopClient) {
     	this.kgClient = kgClient;
     	this.tsClient = tsClient;
-    }
-    
-    // constructor 2 for situations when time series is not needed
-    WeatherQueryClient(RemoteStoreClient kgClient) {
-    	this.kgClient = kgClient;
+		this.ontopClient = ontopClient;
     }
     
     /**
@@ -259,7 +256,7 @@ class WeatherQueryClient {
 		query2.select(wkt).where(iri(station_iri).has(asWKT,wkt));
 		
 		// submit coordinate query to ontop
-		String wkt_string = new RemoteStoreClient(Config.ontop_url).executeQuery(query2.getQueryString()).getJSONObject(0).getString(wkt.getQueryString().substring(1));
+		String wkt_string = ontopClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(wkt.getQueryString().substring(1));
 		Point point;
 		try {
 			point = new Point(wkt_string);

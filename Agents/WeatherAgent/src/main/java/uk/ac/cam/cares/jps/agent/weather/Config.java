@@ -54,6 +54,7 @@ public class Config extends ContainerClient{
 
 				initialised = true;
 			} catch (Exception e) {
+				LOGGER.error("This is fine running under test mode");
 				LOGGER.error(e.getMessage());
 			}
 		}

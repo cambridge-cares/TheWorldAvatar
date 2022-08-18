@@ -22,6 +22,16 @@ public class WeatherPostGISClient {
     private DSLContext context;
 	private Table<Record> table = DSL.table(DSL.name(Config.LAYERNAME));
     private static final Logger LOGGER = LogManager.getLogger(WeatherPostGISClient.class);
+	private String dburl;
+	private String dbuser;
+	private String dbpassword;
+
+	WeatherPostGISClient(String dburl, String dbuser, String dbpassword) {
+		this.dburl = dburl;
+		this.dbuser = dbuser;
+		this.dbpassword = dbpassword;
+	}
+
     /**
 	 * Establish connection to RDB and set DSL context
 	 */
@@ -31,13 +41,13 @@ public class WeatherPostGISClient {
 				// Load required driver
 				Class.forName("org.postgresql.Driver");
 				// Connect to DB (using static connection and context properties)
-	        	this.conn = DriverManager.getConnection(Config.postGISEndpointConfig.getJdbcURL(Config.DATABASE), Config.dbuser, Config.dbpassword);
+	        	this.conn = DriverManager.getConnection(this.dburl, this.dbuser, this.dbpassword);
 	        	this.context = DSL.using(this.conn, SQLDialect.POSTGRES); 
-	        	System.out.println("Connecting successful: " + Config.postGISEndpointConfig.getJdbcURL(Config.DATABASE)); 
+	        	System.out.println("Connecting successful: " + Config.dburl); 
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			System.out.println("Connecting failed: " + Config.postGISEndpointConfig.getJdbcURL(""));
+			System.out.println("Connecting failed: " + Config.dburl);
 			throw new RuntimeException("Establishing database connection failed");
 		}
     }

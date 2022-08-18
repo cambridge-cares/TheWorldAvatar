@@ -24,17 +24,16 @@ public class DeleteStation extends HttpServlet{
 
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         new Config().initProperties();
-    
-		RemoteStoreClient kgClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(kgClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 		
 		// replaced with mock client in the junit tests
 		if (weatherClient == null) {
-			weatherClient = new WeatherQueryClient(kgClient, tsClient);
+			RemoteStoreClient kgClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(kgClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+			weatherClient = new WeatherQueryClient(kgClient, tsClient, null);
 		}
 
 		String station = req.getParameter("iri");
-		WeatherPostGISClient postgisClient = new WeatherPostGISClient();
+		WeatherPostGISClient postgisClient = new WeatherPostGISClient(Config.dburl,Config.dbuser, Config.dbpassword);
 		
 		String response;
 		try {

@@ -31,7 +31,8 @@ public class CreateStation extends HttpServlet {
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(CreateStation.class);
     
-    private WeatherQueryClient weatherClient = null;
+    private WeatherQueryClient weatherClient;
+	private WeatherPostGISClient postgisClient;
 
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		new Config().initProperties();
@@ -49,15 +50,18 @@ public class CreateStation extends HttpServlet {
 			throw new RuntimeException(e);
 		}
 
-		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-		
 		// replaced with mock client in the junit tests
 		if (weatherClient == null ) {
-			weatherClient = new WeatherQueryClient(storeClient, tsClient);
+			RemoteStoreClient kgClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(kgClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+			RemoteStoreClient ontopClient = new RemoteStoreClient(Config.ontop_url);
+			weatherClient = new WeatherQueryClient(kgClient, tsClient, ontopClient);
 		}
 
-		WeatherPostGISClient postgisClient = new WeatherPostGISClient();
+		if (postgisClient == null) {
+			postgisClient = new WeatherPostGISClient(Config.dburl,Config.dbuser, Config.dbpassword);
+		}
+
 		if (!postgisClient.checkTableExists(Config.LAYERNAME)) {
 			// add ontop mapping file
 			Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
@@ -88,4 +92,7 @@ public class CreateStation extends HttpServlet {
     	this.weatherClient = weatherClient;
     }
 
+	void setPostGISClient(WeatherPostGISClient postgisClient) {
+		this.postgisClient = postgisClient;
+	}
 }
