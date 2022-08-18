@@ -62,9 +62,6 @@ RUN mkdir /home/appuser
 RUN chown -R appuser:appuser /home/appuser
 RUN chmod -R 755 /home/appuser
 
-COPY FCRemote.dll /app/FCRemote.dll
-COPY FCRemoteCSV.dll /app/FCRemoteCSV.dll
-
 # Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the 'python_agent' module
 # Note that port 5000 is *inside the container*; this can be mapped to a port on the host when running the container on the command line or in docker-compose.yml
 USER appuser

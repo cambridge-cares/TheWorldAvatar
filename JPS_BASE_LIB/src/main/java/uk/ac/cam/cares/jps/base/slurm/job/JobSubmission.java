@@ -443,14 +443,19 @@ public class JobSubmission{
 				session = jsch.getSession(slurmJobProperty.getHpcServerLoginUserName(), getHpcAddress(), 22);
 				String pwd = slurmJobProperty.getHpcServerLoginUserPassword();
 				session.setPassword(pwd);
+                                String privateKeyFilename =slurmJobProperty.getHpcServerPrivateKey();
 
 				// Note that session.setConfig("PreferredAuthentications", ...) was removed because it will cause issues
 				// when this code is executed in a container for unknown reasons
 				try {
-					// Attempt to connect to a running instance of Pageant
-					Connector con = new PageantConnector();
-					IdentityRepository irepo = new RemoteIdentityRepository(con);
-					jsch.setIdentityRepository(irepo);
+                                        if(!privateKeyFilename.isEmpty()){
+                                            jsch.addIdentity(privateKeyFilename);
+                                        }else{
+                                            // Attempt to connect to a running instance of Pageant
+                                            Connector con = new PageantConnector();
+                                            IdentityRepository irepo = new RemoteIdentityRepository(con);
+                                            jsch.setIdentityRepository(irepo);
+                                        }
 				} catch (AgentProxyException e) {
 					LOGGER.info("Failed to detect Pageant, will authenticate using password");
 				}
@@ -1074,15 +1079,15 @@ public class JobSubmission{
 	 * Indicates if a server is online.
 	 * 
 	 * @param server refers to the server address
-	 * @param port referes to the port number
+	 * @param port refers to the port number
 	 * @return
 	 */
 	public boolean hostAvailabilityCheck(String server, int port) throws IOException {
 		boolean available = true;
-		try (final Socket dummy = new Socket(server, port)){
-		} catch (UnknownHostException | IllegalArgumentException e) {
-			available = false;
-		}
+//		try (final Socket dummy = new Socket(server, port)){
+//		} catch (UnknownHostException | IllegalArgumentException e) {
+//			available = false;
+//		}
 		return available;
 	}
 }
