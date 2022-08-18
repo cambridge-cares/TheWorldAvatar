@@ -41,7 +41,7 @@ const offset = new Cesium.HeadingPitchRange(
 
 
 // Adding KML models to the viewer
-const kmlpath = './data/sewage_geometry.kml';
+const kmlpath = './data/test_Tile_47_42_extruded.kml';
 const kmlmodel =  addKml(viewer, kmlpath);
 
 /*
@@ -74,6 +74,15 @@ checkBox.onclick = () =>{
       tileset_ceiling.show = false;
   } else {
       tileset_ceiling.show = true;
+  }
+};
+
+const checkBox = document.getElementById("solar");
+checkBox.onclick = () =>{
+  if (checkBox.checked == true) {
+
+  } else {
+
   }
 };
 

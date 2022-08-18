@@ -56,7 +56,7 @@ export function addTileset(cesiumviewer, cesiumtileset, x, y, z = 0) {
       clampToGround: true,
     })
   ).then(function (dataSources){
-        parseElements(cesiumviewer, dataSources.entities)
+        // parseElements(cesiumviewer, dataSources.entities)
     });
 }
 
