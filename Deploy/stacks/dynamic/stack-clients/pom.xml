@@ -5,7 +5,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.3.0-276-SNAPSHOT</version>
+  <version>1.2.0</version>
 
   <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>
@@ -68,19 +68,6 @@
       <groupId>it.unibz.inf.ontop</groupId>
       <artifactId>ontop-system-sql-owlapi</artifactId>
       <version>4.2.1</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>jgrapht-core</artifactId>
-          <groupId>org.javabits.jgrapht</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- used in the DerivationClient to detect circular dependencies -->
-    <dependency>
-      <groupId>org.jgrapht</groupId>
-      <artifactId>jgrapht-core</artifactId>
-      <version>1.5.1</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
