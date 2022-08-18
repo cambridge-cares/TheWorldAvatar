@@ -34,7 +34,6 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -93,18 +92,18 @@ class WeatherQueryClient {
     	put(WindDirection, unit_degree);
     }};
     
-    StoreClientInterface storeClient;
+    RemoteStoreClient kgClient;
     TimeSeriesClient<Instant> tsClient;
     		
     // constructor 1
-    WeatherQueryClient(StoreClientInterface storeClient, TimeSeriesClient<Instant> tsClient) {
-    	this.storeClient = storeClient;
+    WeatherQueryClient(RemoteStoreClient kgClient, TimeSeriesClient<Instant> tsClient) {
+    	this.kgClient = kgClient;
     	this.tsClient = tsClient;
     }
     
     // constructor 2 for situations when time series is not needed
-    WeatherQueryClient(StoreClientInterface storeClient) {
-    	this.storeClient = storeClient;
+    WeatherQueryClient(RemoteStoreClient kgClient) {
+    	this.kgClient = kgClient;
     }
     
     /**
@@ -170,7 +169,7 @@ class WeatherQueryClient {
     	modify.prefix(p_ems,p_om);
     	
     	// insert triples in the triple-store
-    	storeClient.executeUpdate(modify.getQueryString());
+    	kgClient.executeUpdate(modify.getQueryString());
     	
 		LOGGER.info("Creating time series for station");
     	// then create a table for this weather station
@@ -207,17 +206,17 @@ class WeatherQueryClient {
     	// this is the list of iris with a corresponding time series table
 		@SuppressWarnings("unchecked")
 		// substring(1) to get rid of "?"
-		List<String> datalist = storeClient.executeQuery(query.getQueryString()).toList().stream()
+		List<String> datalist = kgClient.executeQuery(query.getQueryString()).toList().stream()
 				.map(datavalueiri -> ((HashMap<String,String>) datavalueiri).get(datavalue.getQueryString().substring(1))).collect(Collectors.toList());
     	
 		// this deletes the station instance, but not the time series triples
     	ModifyQuery modify = Queries.MODIFY();
     	modify.prefix(p_ems,p_om).delete(queryPattern).where(queryPattern);
-    	storeClient.executeUpdate(modify.getQueryString());
+    	kgClient.executeUpdate(modify.getQueryString());
     	
     	// use time series client to delete time series related data
     	// get time series IRI for this data set, any data IRI will give the same time series
-    	TimeSeriesSparql tsSparql = new TimeSeriesSparql(storeClient);
+    	TimeSeriesSparql tsSparql = new TimeSeriesSparql(kgClient);
     	String timeseriesIRI = tsSparql.getTimeSeries(datalist.get(0));
 
     	// then delete all time series data in one go
@@ -235,7 +234,7 @@ class WeatherQueryClient {
 
 		query.prefix(p_ems,p_om).where(gp).select(measure);
 
-		List<String> measures = storeClient.executeQuery(query.getQueryString()).toList().stream()
+		List<String> measures = kgClient.executeQuery(query.getQueryString()).toList().stream()
 		.map(m -> ((HashMap<String,String>) m).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
 
 		if (measures.size() > 0) {
@@ -286,7 +285,7 @@ class WeatherQueryClient {
 		
 		query3.select(measure, weatherType).where(gp).prefix(p_om,p_ems);
 
-		JSONArray queryResults = storeClient.executeQuery(query3.getQueryString());
+		JSONArray queryResults = kgClient.executeQuery(query3.getQueryString());
 
 		for (int i = 0; i < queryResults.length(); i++) {
 			JSONObject queryResult = queryResults.getJSONObject(i);
@@ -315,7 +314,7 @@ class WeatherQueryClient {
     	
     	query.select(measure).where(queryPattern).prefix(p_ems,p_om);
     	
-    	List<String> datalist = storeClient.executeQuery(query.getQueryString()).toList().stream()
+    	List<String> datalist = kgClient.executeQuery(query.getQueryString()).toList().stream()
 				.map(datavalueiri -> ((HashMap<String,String>) datavalueiri).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
     	
     	Instant latestTime = tsClient.getMaxTime(datalist.get(0));
@@ -340,7 +339,7 @@ class WeatherQueryClient {
     	
     	query.select(measure).where(queryPattern).prefix(p_ems,p_om);
     	
-    	List<String> datalist = storeClient.executeQuery(query.getQueryString()).toList().stream()
+    	List<String> datalist = kgClient.executeQuery(query.getQueryString()).toList().stream()
 				.map(datavalueiri -> ((HashMap<String,String>) datavalueiri).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
     	
     	Instant latestTime = tsClient.getMaxTime(datalist.get(0));
