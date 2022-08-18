@@ -100,6 +100,9 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	
 	private static StoreRouter storeRouter = null;
 		
+	/**
+	 * StoreRouter singleton
+	 */
 	private StoreRouter() {
 		super(new LRUCache<String,List<String>>(CACHE_SIZE));
 	}
@@ -140,6 +143,7 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		
 		if (targetResourceID != null && !targetResourceID.isEmpty()) {
 			
+			//instantiate singleton if not already done so
 			getInstance();
 			
 			if (isFileBasedTargetResourceID(targetResourceID)) {

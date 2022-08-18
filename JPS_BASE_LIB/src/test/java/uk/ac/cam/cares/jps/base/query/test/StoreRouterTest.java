@@ -138,7 +138,6 @@ class StoreRouterTest {
 		Mockito.verify(spyStoreRouter, Mockito.times(1)).getRouterStoreClient();
 		Mockito.verify(spyStoreRouter, Mockito.times(1)).getFromStore(TEST_LABEL, mockStore);
 
-		//Test Exception
 		//Label does not exist
 		String label = "labeldoesnotexist";
 		assertNull(spyStoreRouter.get(label));
@@ -218,11 +217,12 @@ class StoreRouterTest {
 			mockStore = createMockStoreNoQueryNoUpdate();
 		}
 		
-		//return created mock ontokgrouter
+		//return created mock ontokgrouter storeclient
 		public MockStoreClient create() {
 			return mockStore;
 		}
 		
+		//add query endpoint
 		public mockOntokgrouter addQueryEndpoint() {
 			mockStore.addTriple(
 					"<http://www.theworldavatar.com/kb/ontokgrouter/"+TEST_LABEL+">",	
