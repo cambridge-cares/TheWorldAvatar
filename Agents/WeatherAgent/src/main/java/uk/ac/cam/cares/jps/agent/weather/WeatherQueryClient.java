@@ -66,7 +66,6 @@ class WeatherQueryClient {
     static Iri reports = p_ems.iri("reports");
     static Iri hasValue = p_om.iri("hasValue");
     private static Iri hasUnit = p_om.iri("hasUnit");
-	private static Iri hasObservationLocation = p_ems.iri("hasObservationLocation");
 	private static Iri asWKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
     
     // IRI of units used
