@@ -14,6 +14,8 @@ services:
     env_file:
       - ./vapourtecagent/tests/agent.vapourtec.env.test
     volumes:
+      - ./FCRemote.dll:/app/FCRemote.dll
+      - ./FCRemoteCSV.dll:/app/FCRemoteCSV.dll
       - type: bind
         source: ./vapourtecagent/tests/_for_docker_integration_test
         target: /app/vapourtec

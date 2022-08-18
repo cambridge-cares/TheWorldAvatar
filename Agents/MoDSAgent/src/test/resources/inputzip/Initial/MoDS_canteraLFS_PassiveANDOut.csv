@@ -1,0 +1,11 @@
+Case name,Mechanism,Fuel,Oxidizer,Phi,Temperature,UnitTemp,Pressure,UnitPres,LaminarFlameSpeed,UnitLFS,LFSErrors
+canteraLFS_case_0,mechanism_cantera_lfs.xml,DMM3,Air,0.7,408,K,1,atm,40.81,cm/s,1.39
+canteraLFS_case_1,mechanism_cantera_lfs.xml,DMM3,Air,0.8,408,K,1,atm,51.42,cm/s,1.56
+canteraLFS_case_2,mechanism_cantera_lfs.xml,DMM3,Air,0.9,408,K,1,atm,61.55,cm/s,1.83
+canteraLFS_case_3,mechanism_cantera_lfs.xml,DMM3,Air,1.0,408,K,1,atm,68.56,cm/s,2
+canteraLFS_case_4,mechanism_cantera_lfs.xml,DMM3,Air,1.1,408,K,1,atm,73.36,cm/s,2.1
+canteraLFS_case_5,mechanism_cantera_lfs.xml,DMM3,Air,1.2,408,K,1,atm,74.71,cm/s,2.13
+canteraLFS_case_6,mechanism_cantera_lfs.xml,DMM3,Air,1.3,408,K,1,atm,72.81,cm/s,2.08
+canteraLFS_case_7,mechanism_cantera_lfs.xml,DMM3,Air,1.4,408,K,1,atm,67.58,cm/s,1.95
+canteraLFS_case_8,mechanism_cantera_lfs.xml,DMM3,Air,1.5,408,K,1,atm,61.13,cm/s,2.07
+canteraLFS_case_9,mechanism_cantera_lfs.xml,DMM3,Air,1.6,408,K,1,atm,52.97,cm/s,1.81

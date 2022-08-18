@@ -56,7 +56,7 @@ cd /<your_absolute_path_to>/TheWorldAvatar/Agents/VapourtecAgent
 pytest -s --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
 ```
 
-**Note for dockerised test: FlowCommander instance needs to be opened on the host machine to allow the deployed Vapourtec Agent to update the hardware state. Otherwise the assertion that checks the `stateLastUpdatedAt` of Vapourtec will fail.**
+**Note for dockerised test: (1) Both FCRemote.dll and FCRemoteCSV.dll packages to be placed under folder `TheWorldAvatar/Agents/VapourtecAgent` -- they are required to communicate with the FlowCommander instance installed on the Windows host machine; (2) FlowCommander instance needs to be opened on the host machine to allow the deployed Vapourtec Agent to update the hardware state. Otherwise the assertion that checks the `stateLastUpdatedAt` of Vapourtec will fail.**
 
 ## Note for development
 
@@ -110,11 +110,12 @@ The deployment of Vapourtec Agent should be done on Windows host machine. It req
 - The file path to the populated environment file (on Windows) `<env_file_path>`
 - The version of agent docker image `<x.x.x>`
 - Docker-desktop is installed and running on your local machine
+- The file path to two dll packages on the host machine - FCRemote.dll (`<file_path_of_FCRemote>`) and FCRemoteCSV.dll (`<file_path_of_FCRemoteCSV>`)
 - **FlowCommander instance is installed and RUNNING on the host machine before the deployment of the agent**
 
 `(Windows)`
 ```cmd
-docker run -v "<folder_path_of_fcexp_file>:/app/vapourtec" --env-file <env_file_path> --add-host=localhost:host-gateway --name vapourtec_agent ghcr.io/cambridge-cares/vapourtec_agent:<x.x.x>
+docker run -v "<folder_path_of_fcexp_file>:/app/vapourtec" -v <file_path_of_FCRemote>:/app/FCRemote.dll -v <file_path_of_FCRemoteCSV>:/app/FCRemoteCSV.dll --env-file <env_file_path> --add-host=localhost:host-gateway --name vapourtec_agent ghcr.io/cambridge-cares/vapourtec_agent:<x.x.x>
 ```
 
 # Authors #
