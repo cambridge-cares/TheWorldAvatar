@@ -434,7 +434,7 @@ public class DockerClient extends BaseClient {
 
     public Optional<Container> getContainer(String containerName, boolean showAll) {
         try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
-            return listContainersCmd.withNameFilter(List.of(StackClient.prependStackName(containerName)))
+            return listContainersCmd.withNameFilter(List.of(containerName))
                     .withLabelFilter(StackClient.getStackNameLabelMap())
                     .withShowAll(showAll).exec()
                     .stream().findAny();
