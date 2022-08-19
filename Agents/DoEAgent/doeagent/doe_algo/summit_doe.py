@@ -76,13 +76,14 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
     # The new created ReactionVariation instances <isVariationOf> this ReactionExperiment
     # Most of the information from this ReactionExperiment will be copied to the new created ReactionVariation instance
     # NOTE the ReactionVariation MUST and ONLY <isVariationOf> instance of ReactionExperiment, otherwise it will create huge overhead in recursive querying function getReactionExperiment
-    first_rxn_exp = [rxn_exp for rxn_exp in doe.utilisesHistoricalData.refersTo if rxn_exp.clz == ONTORXN_REACTIONEXPERIMENT][0]
+    first_rxn_exp = [rxn_exp for rxn_exp in doe.utilisesHistoricalData.refersTo if rxn_exp.clz == ONTOREACTION_REACTIONEXPERIMENT][0]
 
     # Iterate over the new suggested experiments to create each of them
     # NOTE below design works for multiple (>1) experiments
     # NOTE however, for the time being, the DoE Agent will be used to generate 1 experiment to fit the derivation framework
     # NOTE i.e. len(new_exp_ds) == 1
-    for i in range(len(new_exp_ds)):
+    # NOTE here we iterate through index (instead of range(len(new_exp_ds))) to make it robust against the situation where index doesn't start from 0
+    for i in new_exp_ds.index:
         # Prepare a list of ReactionCondition
         list_con = []
         # Iterate over ReactionCondition in parent ReactionExperiment to populate the new suggested ReactionCondition in ReactionVariation
@@ -107,9 +108,21 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
             logger.debug("-------------------------------------------------------------------------------------")
             logger.debug("New suggested experiment summit DataSet:")
             logger.debug(new_exp_ds)
-            if len(var_loc) > 0:
-                logger.debug(new_exp_ds[var_loc[0]][i])
             logger.debug("-------------------------------------------------------------------------------------")
+
+            # Prepare numerical value for the OM_Measure
+            # NOTE TODO here we took a short-cut wrt decimal places, in the future, this should be connected to KG
+            _raw_numerical_value_ = first_rxn_exp_con.hasValue.hasNumericalValue if len(var_loc) < 1 else new_exp_ds[var_loc[0]][i] # an example: df['ContinuousVariable_1'][0]
+            if first_rxn_exp_con.clz == ONTOREACTION_REACTIONTEMPERATURE:
+                _demical_numerical_val = round(_raw_numerical_value_)
+            elif first_rxn_exp_con.clz == ONTOREACTION_RESIDENCETIME:
+                _demical_numerical_val = round(_raw_numerical_value_, 2)
+            elif first_rxn_exp_con.clz == ONTOREACTION_STOICHIOMETRYRATIO:
+                _demical_numerical_val = round(_raw_numerical_value_, 2)
+            elif first_rxn_exp_con.clz == ONTOREACTION_REACTIONSCALE:
+                _demical_numerical_val = round(_raw_numerical_value_, 2)
+            else:
+                _demical_numerical_val = round(_raw_numerical_value_, 2)
 
             # Create instance for OM_Measure
             om_measure = OM_Measure(
@@ -117,15 +130,18 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
                 namespace_for_init=getNameSpace(first_rxn_exp_con.hasValue.instance_iri),
                 hasUnit=first_rxn_exp_con.hasValue.hasUnit,
                 # TODO for the moment, a new om:Measure instance is always created
-                hasNumericalValue=first_rxn_exp_con.hasValue.hasNumericalValue if len(var_loc) < 1 else new_exp_ds[var_loc[0]][i] # an example: df['ContinuousVariable_1'][0]
+                hasNumericalValue=_demical_numerical_val
             )
 
             # Create instance for ReactionCondition
+            _objPropWithExp = first_rxn_exp_con.objPropWithExp
+            if ONTOREACTION_HASREACTIONCONDITION not in _objPropWithExp:
+                _objPropWithExp.append(ONTOREACTION_HASREACTIONCONDITION)
             con = ReactionCondition(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(first_rxn_exp_con.instance_iri),
                 clz=first_rxn_exp_con.clz,
-                objPropWithExp=first_rxn_exp_con.objPropWithExp,
+                objPropWithExp=_objPropWithExp,
                 hasValue=om_measure,
                 positionalID=first_rxn_exp_con.positionalID,
                 indicatesMultiplicityOf=first_rxn_exp_con.indicatesMultiplicityOf,
@@ -135,48 +151,15 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
             # Add created instance to list
             list_con.append(con)
 
-        # Prepare a list of empty PerformanceIndicator, by empty here means the OM_Measure is initialised as None
-        list_perf = []
-        # Iterate over PerformanceIndicator in parent ReactionExperiment to populate the empty PerformanceIndicator in ReactionVariation that to be computed
-        for first_rxn_exp_perf in first_rxn_exp.hasPerformanceIndicator:
-            # Create instance for PerformanceIndicator
-            perf = PerformanceIndicator(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                namespace_for_init=getNameSpace(first_rxn_exp_perf.instance_iri),
-                clz=first_rxn_exp_perf.clz,
-                objPropWithExp=first_rxn_exp_perf.objPropWithExp,
-                hasValue=None,
-                positionalID=first_rxn_exp_perf.positionalID
-            )
-
-            # Add created instance to list
-            list_perf.append(perf)
-
-        # TODO revisit this design when closing the loop
-        # Generate all the rest PerformanceIndicator placeholders that not presented in the first_rxn_exp
-        lst_other_perf = [p for p in AVAILABLE_PERFORMANCE_INDICATOR_LIST if p not in [pi.clz for pi in first_rxn_exp.hasPerformanceIndicator]]
-        for o_p in lst_other_perf:
-            perf = PerformanceIndicator(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                namespace_for_init=getNameSpace(first_rxn_exp.instance_iri),
-                clz=o_p,
-                objPropWithExp=OBJECT_RELATIONSHIP_PERFORMANCE_INDICATOR_RXN_EXP_DICT[o_p],
-                hasValue=None,
-                positionalID=None
-            )
-            # Add created instance to list
-            list_perf.append(perf)
-
         # Populate the information to create instance of ReactionVariation
         # TODO add support for creating instance of ReactionExperiment (given no prior experiment data/history)
         rxnvar = ReactionVariation(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=getNameSpace(first_rxn_exp.instance_iri),
             hasReactionCondition=list_con,
-            hasPerformanceIndicator=list_perf,
-            hasInputChemical=first_rxn_exp.hasInputChemical, # TODO revisit this design when testing
+            hasPerformanceIndicator=None,
+            hasInputChemical=first_rxn_exp.hasInputChemical,
             # NOTE here the OutputChemical is set to be None as the OutputChemical will need to be generated after the physical experimentation
-            # TODO revisit this design when testing
             hasOutputChemical=None,
             isVariationOf=first_rxn_exp
         )

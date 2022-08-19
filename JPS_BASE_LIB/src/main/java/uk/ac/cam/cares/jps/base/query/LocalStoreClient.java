@@ -11,6 +11,7 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.TxnType;
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
@@ -173,8 +175,21 @@ public class LocalStoreClient implements StoreClientInterface {
 	@Override
 	public JSONArray executeQuery(String sparql) {
 		LOGGER.info("SPARQL query with query as argument.");
-		ResultSet results = performExecuteQuery(sparql);
-		return convert(results);
+		
+		Query query = QueryFactory.create(sparql);
+		if(query.isAskType()) {
+			//
+			JSONObject obj = new JSONObject();
+			obj.put(JPSConstants.ASK_RESULT_KEY, executeAsk(sparql));
+			
+			JSONArray result = new JSONArray();
+			result.put(obj);
+			
+			return result;
+		}else {
+			ResultSet results = executeSelect(sparql);
+			return convert(results);
+		}
 	}	
 
 	/**
@@ -188,15 +203,32 @@ public class LocalStoreClient implements StoreClientInterface {
 	}
 
 	/**
-	 * Performs query execution
+	 * Performs ASK query execution
+	 * @param sparql
+	 * @return
+	 */
+	protected boolean executeAsk(String sparql) {
+		try {
+			LOGGER.info("Executing SPARQL ASK query.");
+			conn.begin( TxnType.READ );
+			QueryExecution queryExec = conn.query(sparql);	
+			return queryExec.execAsk();
+		} finally {
+			conn.end();
+		}	
+	}
+	
+	/**
+	 * Performs SELECT query execution
 	 * @param sparql
 	 */
-	protected ResultSet performExecuteQuery(String sparql) {		
+	protected ResultSet executeSelect(String sparql) {		
 		try {
 			LOGGER.info("Executing SPARQL query.");
 			conn.begin( TxnType.READ );
 			QueryExecution queryExec = conn.query(sparql);
-			ResultSet results = queryExec.execSelect();
+			ResultSet results = null;
+			results = queryExec.execSelect();
 			return results;
 		} finally {
 			conn.end();

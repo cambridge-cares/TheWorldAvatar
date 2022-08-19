@@ -1,0 +1,18 @@
+@prefix fedx: <http://rdf4j.org/config/federation#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rep: <http://www.openrdf.org/config/repository#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<#all> a rep:Repository;
+  rep:repositoryID "all";
+  rep:repositoryImpl [
+      fedx:member fedx:blazegraph, fedx:ontop;
+      rep:repositoryType "fedx:FedXRepository"
+    ];
+  rdfs:label "Federated SPARQL endpoint" .
+
+fedx:blazegraph fedx:repositoryName "blazegraph";
+  fedx:store "ResolvableRepository" .
+
+fedx:ontop fedx:repositoryName "ontop";
+  fedx:store "ResolvableRepository" .
