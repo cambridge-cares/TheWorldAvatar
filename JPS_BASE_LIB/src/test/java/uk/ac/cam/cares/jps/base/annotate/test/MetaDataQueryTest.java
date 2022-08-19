@@ -182,8 +182,8 @@ public class MetaDataQueryTest {
     @Test//This unit test is for the queryResources method that accepts eight arguments
         public void testQueryResources1(){
 
-        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
-                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
+        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/>\r\n"
+                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
                 +"OPTIONAL {?resource dcterms:format ?mediatype .}. \r\n"
@@ -218,8 +218,8 @@ public class MetaDataQueryTest {
     @Test//This unit test is for the queryResources method that accepts only three arguments
     public void testQueryResources2(){
 
-        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/> \r\n"
-                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> \r\n"
+        String sparql1="PREFIX dcterms:<http://purl.org/dc/terms/>\r\n"
+                +"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>\r\n"
                 +"SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n"
                 +"WHERE { \r\n"
                 +"OPTIONAL {?resource dcterms:format ?mediatype .}. \r\n"
