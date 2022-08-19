@@ -155,7 +155,7 @@ public class HistoricalPirmasensStationCSVConnector{
      * Count number of rows in the CSV file
      * @param filePath The file path for the CSV file
      */
-    private Integer countNumberOfRows(String filePath) throws FileNotFoundException {
+    public Integer countNumberOfRows(String filePath) throws FileNotFoundException {
     	Scanner sc;
     	Integer totalNumOfRows = 0;
     	try {
