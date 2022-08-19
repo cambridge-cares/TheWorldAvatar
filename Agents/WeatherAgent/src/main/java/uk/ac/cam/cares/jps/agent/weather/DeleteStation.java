@@ -23,6 +23,7 @@ public class DeleteStation extends HttpServlet{
 	private WeatherQueryClient weatherClient = null;
 
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		LOGGER.info("Received DELETE request");
         new Config().initProperties();
 		
 		// replaced with mock client in the junit tests

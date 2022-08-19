@@ -27,7 +27,8 @@ public class UpdateStation extends HttpServlet{
 	private static final Logger LOGGER = LogManager.getLogger(UpdateStation.class);
 	WeatherQueryClient weatherClient;
 
-	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {   
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		LOGGER.info("Received update request");   
 		new Config().initProperties(); 	
 
 		if (weatherClient == null) {
