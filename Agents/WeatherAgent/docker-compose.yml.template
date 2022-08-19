@@ -10,7 +10,7 @@ services:
         condition: none
     environment:
       - STACK_NAME=${STACK_NAME}
-      - API_KEY=21db8f6413957d7fdb6cfd98e05e03eb
+      - API_KEY=
       - LAYERNAME=weatherstations # also name of the table in PostGIS
       - DATABASE=postgres # currently ontop reads from the default database
       - GEOSERVER_WORKSPACE=weatherstations
