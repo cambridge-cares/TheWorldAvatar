@@ -432,20 +432,23 @@ public class DockerClient extends BaseClient {
         return new byte[0];
     }
 
-    public Optional<Container> getContainer(String containerName) {
+    public Optional<Container> getContainer(String containerName, boolean showAll) {
         try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
-            // Setting "showAll" to "true" ensures non-running containers are also returned
-            return listContainersCmd.withNameFilter(List.of(containerName))
-                    .withShowAll(true).exec()
+            return listContainersCmd.withNameFilter(List.of(StackClient.prependStackName(containerName)))
+                    .withLabelFilter(StackClient.getStackNameLabelMap())
+                    .withShowAll(showAll).exec()
                     .stream().findAny();
         }
     }
 
+    public Optional<Container> getContainer(String containerName) {
+        // Setting "showAll" to "true" ensures non-running containers are also returned
+        return getContainer(containerName, true);
+    }
+
     public boolean isContainerUp(String containerName) {
-        try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
-            // Don't need to filter for "running" state as this is the default setting
-            return !listContainersCmd.withNameFilter(List.of(containerName)).exec().isEmpty();
-        }
+        // Setting "showAll" to "false" ensures only running containers are returned
+        return getContainer(containerName, false).isPresent();
     }
 
     public String getContainerId(String containerName) {
