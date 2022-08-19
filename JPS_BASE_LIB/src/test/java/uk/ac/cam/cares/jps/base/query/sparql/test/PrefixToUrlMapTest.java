@@ -4,11 +4,10 @@ package uk.ac.cam.cares.jps.base.query.sparql.test;
 import org.junit.Assert;
 import org.junit.Test;
 
-import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
-public class PrefixToUrlMapTest extends TestCase {
+public class PrefixToUrlMapTest {
 	//Test getPrefixUrl()
 	@Test
 	public void testgetPrefixUrl()
@@ -70,6 +69,6 @@ public class PrefixToUrlMapTest extends TestCase {
 		String expected = "PREFIX dc:<http://purl.org/dc/elements/1.1/>\r\n"
 				+ "PREFIX wdt:<http://www.wikidata.org/prop/direct/>\r\n"
 				+ "PREFIX wd:<http://www.wikidata.org/entity/>\r\n";
-		assertEquals(expected, actual);
+		Assert.assertEquals(expected, actual);
 	}
 }
