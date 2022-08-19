@@ -2,11 +2,6 @@ package uk.ac.cam.cares.jps.agent.historicalpirmasens;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -20,7 +15,7 @@ import java.time.OffsetDateTime;
 
 /**
  * Class with a main method that is the entry point of the compiled war and puts all components together to retrieve
- * data from the API and write it into the database.
+ * data from the CSV file and write it into the database.
  * @author 
  */
 @WebServlet(urlPatterns = {"/retrieve"})
@@ -37,11 +32,11 @@ public class HistoricalPirmasensStationAgentLauncher extends JPSAgent {
     /**
      * Logging / error messages
      */
-    private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) xlsx connector.";
+    private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) csv connector.";
     private static final String AGENT_ERROR_MSG = "The historical agent could not be constructed!";
-    private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
+    private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the historical agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
-    private static final String CONNECTOR_ERROR_MSG = "Could not construct the NUS Davis weather station xlsx connector needed to interact with the excel file!";
+    private static final String CONNECTOR_ERROR_MSG = "Could not construct the historical pirmasens station csv connector needed to interact with the CSV file!";
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
 
     @Override
@@ -111,10 +106,10 @@ public class HistoricalPirmasensStationAgentLauncher extends JPSAgent {
 
     // TODO: Use proper argument parsing
     /**
-     * Main method that runs through all steps to update the data received from the CARES weather station API.
+     * Main method that runs through all steps to update the data received from the CSV file.
      * defined in the provided properties file.
      * @param args The command line arguments. Three properties files should be passed here in order: 1) input agent
-     *             2) time series client 3) xlsx connector.
+     *             2) time series client 3) csv connector.
      */
 
     public static JSONObject initializeAgent(String[] args) {
@@ -191,8 +186,8 @@ public class HistoricalPirmasensStationAgentLauncher extends JPSAgent {
         if(!weatherDataReadings.isEmpty()) {
             // Update the data
             agent.updateData(weatherDataReadings);
-            LOGGER.info("Data updated with new readings from API.");
-            jsonMessage.accumulate("Result", "Data updated with new readings from API.");
+            LOGGER.info("Data updated with new readings from the CSV file.");
+            jsonMessage.accumulate("Result", "Data updated with new readings from the CSV file.");
         }
         // If all are empty no new readings are available
         else if(weatherDataReadings.isEmpty()) {

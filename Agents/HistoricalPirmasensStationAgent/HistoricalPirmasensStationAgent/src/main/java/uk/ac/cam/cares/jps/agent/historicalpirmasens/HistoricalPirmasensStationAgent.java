@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Class to retrieve data from excel file and storing it with connection to The World Avatar (Knowledge Base).
+ * Class to retrieve data from CSV file and storing it with connection to The World Avatar (Knowledge Base).
  * @author */ 
 public class HistoricalPirmasensStationAgent {
 
@@ -46,7 +46,7 @@ public class HistoricalPirmasensStationAgent {
      */
     public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "PirmasensStation";
     /**
-     * The time unit used for all time series maintained by the nusDavisWeatherStation input agent
+     * The time unit used for all time series maintained by the Historical Pirmasens Station Agent
      */
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();
     /**
@@ -71,13 +71,13 @@ public class HistoricalPirmasensStationAgent {
             // Read the mappings folder from the properties file
             try {
                 // Read the mappings folder from the properties file
-                mappingFolder = System.getenv(prop.getProperty("nusDavisWeatherStation.mappingfolder"));
+                mappingFolder = System.getenv(prop.getProperty("pirmasensStation.mappingfolder"));
             }
             catch (NullPointerException e) {
-                throw new IOException("The key nusDavisWeatherStation.mappingfolder cannot be found in the properties file.");
+                throw new IOException("The key pirmasensStation.mappingfolder cannot be found in the properties file.");
             }
             if (mappingFolder == null) {
-                throw new InvalidPropertiesFormatException("The properties file does not contain the key nusDavisWeatherStation.mappingfolder " +
+                throw new InvalidPropertiesFormatException("The properties file does not contain the key pirmasensStation.mappingfolder " +
                         "with a path to the folder containing the required JSON key to IRI mappings.");
             }
             // Read the JSON key to IRI mappings from
@@ -128,7 +128,7 @@ public class HistoricalPirmasensStationAgent {
     }
 
     /**
-     * Initializes all time series maintained by the agent (represented by the key to IRI mappings) if they do no exist
+     * Initializes all time series maintained by the agent (represented by the key to IRI mappings) if they do not exist
      * using the time series client.
      */
     public void initializeTimeSeriesIfNotExist() {
@@ -183,9 +183,8 @@ public class HistoricalPirmasensStationAgent {
 
     /**
      * Updates the database with new readings.
-     * @param weatherReadings The readings received from the Excel file via the apache POI API
+     * @param weatherReadings The readings received from the csv file
      */
-
     public void updateData(JSONObject weatherReadings){
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Array is empty
@@ -253,49 +252,20 @@ public class HistoricalPirmasensStationAgent {
                 JSONObject currentEntry = getData.getJSONObject(i);
                 for (Iterator<String> it = currentEntry.keys(); it.hasNext(); ) {
                     String key = it.next();
-                    //exclude keys that are not needed
-                    if (!key.contains("temp_extra_1") || !key.contains("temp_extra_2") || !key.contains("temp_extra_3") || !key.contains("temp_extra_4")
-                            || !key.contains("temp_extra_5") || !key.contains("temp_extra_6") || !key.contains("temp_extra_7")
-                            || !key.contains("temp_soil_1") || !key.contains("temp_soil_2") || !key.contains("temp_soil_3") || !key.contains("temp_soil_4")
-                            || !key.contains("temp_leaf_1") || !key.contains("temp_leaf_2") || !key.contains("temp_leaf_3") || !key.contains("temp_leaf_4")
-                            || !key.contains("hum_extra_1") || !key.contains("hum_extra_2") || !key.contains("hum_extra_3") || !key.contains("hum_extra_4")
-                            || !key.contains("hum_extra_5") || !key.contains("hum_extra_6") || !key.contains("hum_extra_7") || !key.contains("et_day")
-                            || !key.contains("et_month") || !key.contains("et_year") || !key.contains("moist_soil_1") || !key.contains("moist_soil_2")
-                            || !key.contains("moist_soil_3") || !key.contains("moist_soil_4") || !key.contains("wet_leaf_1") || !key.contains("wet_leaf_2")
-                            || !key.contains("wet_leaf_3") || !key.contains("wet_leaf_4") || !key.contains("forecast_rule") || !key.contains("forecast_desc")
-                            || !key.contains("rain_rate_clicks") || !key.contains("rain_rate_in") || !key.contains("rain_storm_clicks")
-                            || !key.contains("rain_storm_in") || !key.contains("rain_storm_start_date") || !key.contains("rain_day_clicks")
-                            || !key.contains("rain_day_in") || !key.contains("rain_month_clicks") || !key.contains("rain_month_in")
-                            || !key.contains("rain_year_clicks") || !key.contains("rain_year_in") || !key.contains("forecast_rule") || !key.contains("bar_trend")
-                            || !key.contains("forecast_desc") || !key.contains("wind_gust_10_min") || !key.contains("wind_speed_10_min_avg")) {
-                        Object value = currentEntry.get(key);
-                        // Handle cases where the API returned null
-                        if (value == JSONObject.NULL) {
-                            String datatype = getClassFromJSONKey(key).getSimpleName();
-                            // If it is a number use NaN (not a number)
-                            if (datatype.equals(Double.class.getSimpleName()) ) {
-                                value = Double.NaN;
-                            }
-                            else if (datatype.equals(Integer.class.getSimpleName())) {
-                            	value = Double.NaN;
+                    Object value = currentEntry.get(key);
+                    if (value == JSONObject.NULL) {
+                    	String datatype = getClassFromJSONKey(key).getSimpleName();
+                        // If it is a number use NaN (not a number)
+                        if (datatype.equals(Double.class.getSimpleName()) ) {
+                        	value = Double.NaN;
+                        	}
+                        else if (datatype.equals(Integer.class.getSimpleName())) {
+                        	value = Double.NaN;
                             }
                             // Otherwise, use the string NA (not available)
-                            else {
-                                value = "NA";
+                        else {
+                        	value = "NA";
                             }
-                        } else {
-                            //perform conversion to metric units where needed
-                            if (key.contains("temp_in") || key.contains("temp_out") || key.contains("dew_point") || key.contains("heat_index") || key.contains("wind_chill")) {
-                                
-                                //the temp values are of type float
-                                Double temp= Double.parseDouble(value.toString());
-                               
-                                value=temp;
-                            } else if (key.contentEquals("bar")) {
-                                
-                                value = ((Double) value) * 1.00;
-                            } 
-                           
                         }
                         // If the key is not present yet initialize the list
                         if (!readingsMap.containsKey(key)) {
@@ -304,7 +274,7 @@ public class HistoricalPirmasensStationAgent {
                         readingsMap.get(key).add(value);
                     }
                 }
-            }
+            
         }catch (Exception e){
             throw new JPSRuntimeException("Readings can not be empty!", e);
         }
@@ -356,9 +326,6 @@ public class HistoricalPirmasensStationAgent {
                 if (weatherReadings.containsKey(key)) {
                     values.add(weatherReadings.get(key));
                 }
-                // Will create a problem as length of iris and values do not match when creating the time series.
-                // Could add an empty list, but the length of the list needs to match length of times. So what values to
-                // fill it with?
                 else {
                     throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
                 }
@@ -366,7 +333,6 @@ public class HistoricalPirmasensStationAgent {
 
             List<OffsetDateTime> times = weatherTimestamps;
             // Create the time series object and add it to the list
-
             TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
             timeSeries.add(currentTimeSeries);
         }
@@ -385,7 +351,6 @@ public class HistoricalPirmasensStationAgent {
         LocalDateTime localTime = LocalDateTime.parse(timestamp);
 
         // Then add the zone id
-        //return OffsetDateTime.of( localTime.minusHours(2), HistoricalPirmasensStationAgent.ZONE_OFFSET);
        return OffsetDateTime.of( localTime, zoneOffSet);
     }
 
