@@ -30,7 +30,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * Need some mock classes from the stack client before proper tests can be written
+ * Require support from the "stack" before proper tests can be written
  * @author Kok Foong Lee
  *
  */
@@ -65,7 +65,7 @@ public class WeatherAgentIntegrationTest {
 	 * @throws SQLException
 	 */
 	@BeforeEach
-	public void init() throws IOException, URISyntaxException, UnsupportedOperationException, InterruptedException, SQLException {
+	public void init() throws IOException, URISyntaxException {
 		Network network = Network.newNetwork();
 		// Start test containers
 		blazegraph.withNetwork(network);

@@ -9,8 +9,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
@@ -62,24 +65,32 @@ public class CreateStation extends HttpServlet {
 			postgisClient = new WeatherPostGISClient(Config.dburl,Config.dbuser, Config.dbpassword);
 		}
 
+		String station;
+		String response;
 		if (!postgisClient.checkTableExists(Config.LAYERNAME)) {
 			// add ontop mapping file
 			Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
 			new OntopClient().updateOBDA(obda_file);
 
-			String station = weatherClient.createStation(lat,lon,req.getParameter("name"));
-			resp.getWriter().write("Created weather station <" + station + ">");
+			station = weatherClient.createStation(lat,lon,req.getParameter("name"));
+			JSONObject response_jo = new JSONObject();
+			response_jo.put("station", station);
+			response = response_jo.toString();
 		} else {
 			// table exists, check table contents for an equivalent point
 			if (!postgisClient.checkPointExists(lat, lon)) {
-				String station = weatherClient.createStation(lat,lon,req.getParameter("name"));
-				String response = "Created weather station <" + station + ">";
-				LOGGER.info(response);
-				resp.getWriter().write(response);
+				station = weatherClient.createStation(lat,lon,req.getParameter("name"));
+				JSONObject response_jo = new JSONObject();
+				response_jo.put("station", station);
+				response = response_jo.toString();
+				resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
 			} else {
-				resp.getWriter().write("There is already a station at the given coordinates");
+				response = "There is already a station at the given coordinates";
 			}
 		}
+
+		LOGGER.info(response);
+		resp.getWriter().write(response);
 	}
     
     /**
