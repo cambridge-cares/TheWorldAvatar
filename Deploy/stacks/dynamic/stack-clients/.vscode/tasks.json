@@ -19,26 +19,16 @@
         {
             "type": "shell",
             "label": "compose-deploy-internal",
-            "command": "bash",
+            "command": "./stack.sh",
             "args": [
-                "-c",
-                "./stack.sh start ${input:stackName} ${config:debug.port}"
-            ]
-        },
-        {
-            "type": "shell",
-            "label": "compose-build-deploy",
-            "command": "sleep 1",
-            "dependsOn": [
-                "compose-build",
-                "compose-deploy-internal"
+                "start",
+                "${input:stackName}",
+                "--debug-port",
+                "${config:debug.port}"
             ],
-            "dependsOrder": "sequence",
-            "windows": {
-                "options": {
-                    "shell": {
-                        "executable": "powershell"
-                    }
+            "options": {
+                "shell": {
+                    "executable": "bash"
                 }
             }
         },
@@ -56,6 +46,15 @@
                     }
                 }
             }
+        },
+        {
+            "type": "shell",
+            "label": "compose-build-deploy",
+            "dependsOn": [
+                "compose-build",
+                "compose-deploy"
+            ],
+            "dependsOrder": "sequence"
         }
     ],
     "inputs": [
