@@ -40,11 +40,11 @@ In the same folder as this README, execute the following command
 ## Technical specifications
 The Docker container has the following access URLs
 
-1. WeatherAgent/CreateStation (HTTP PUT)
-2. WeatherAgent/UpdateStation (HTTP PUT)
-3. WeatherAgent/DeleteStation (HTTP DELETE)
+1. WeatherAgent/CreateStation (PUT)
+2. WeatherAgent/UpdateStation (PUT)
+3. WeatherAgent/DeleteStation (DELETE)
 
-### WeatherAgent/CreateStation
+### WeatherAgent/CreateStation (PUT)
 Inputs in the form of parameters:
 1) lat - latitude of station
 2) lon - longitude of station
@@ -59,7 +59,7 @@ An example request using curl:
 curl -X PUT "http://localhost:8086/WeatherAgent/CreateStation?lat=0&lon=0&name=Station+1"
 ```
 
-### WeatherAgent/UpdateStation
+### WeatherAgent/UpdateStation (PUT)
 Input in the form of parameter:
 1) iri - IRI of the station to update
 
@@ -70,7 +70,7 @@ Example request using curl:
 curl -X PUT "http://localhost:8086/WeatherAgent/UpdateStation?iri=http://station1"
 ```
 
-### WeatherAgent/DeleteStation
+### WeatherAgent/DeleteStation (DELETE)
 Input in the form of parameter:
 1) iri - IRI of the station to delete
 
