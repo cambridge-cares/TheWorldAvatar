@@ -81,6 +81,7 @@ Example request using curl:
 curl -X DELETE "http://localhost:8086/WeatherAgent/DeleteStation?iri=http://station1"
 ```
 
-
+## Ontology
+The instantiated stations follow the OntoEMS ontology. Coordinates of weather stations are stored in PostGIS and queryable via Ontop, time series data is stored in PostGIS, and the remaining triples are instantiated in the triple-store.
 
 
