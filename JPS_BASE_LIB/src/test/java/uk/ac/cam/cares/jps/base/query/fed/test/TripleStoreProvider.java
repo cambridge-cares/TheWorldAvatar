@@ -55,7 +55,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
  * extending the method {@link #init}. The test environment is created as singleton and the initialization is
  * started as soon as {@link #getInstance()} is called.
  */
-public class TripleStoreProvider extends TestCase {
+public class TripleStoreProvider {
 	
 	/**
 	 * A helper class that contains a created container and the SPARQL service URL. 
