@@ -363,6 +363,15 @@ class ReactionExperiment(BaseOntology):
             ))
         return lst_rxn_cond[0]
 
+    def get_performance_indicator(self, clz: str, positional_id: int) -> PerformanceIndicator:
+        if self.hasPerformanceIndicator is None: return None
+        lst_perf_ind = [pi for pi in self.hasPerformanceIndicator if pi.clz == clz and pi.positionalID == positional_id]
+        if len(lst_perf_ind) > 1:
+            raise Exception("PerformanceIndicator with rdf:type <%s> and positionalID <%s> is not uniquely identified: %s" % (
+                clz, str(positional_id), str(lst_perf_ind)
+            ))
+        return lst_perf_ind[0]
+
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # check if information is complete
         if self.hasReactionCondition is None:

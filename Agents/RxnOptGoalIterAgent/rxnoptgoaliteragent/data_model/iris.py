@@ -1,0 +1,28 @@
+from chemistry_and_robots.data_model.iris import *
+
+###--- IRIs for OntoGoal ---###
+ONTOGOAL = "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#"
+ONTOGOAL_GOAL = ONTOGOAL + "Goal"
+ONTOGOAL_GOALSET = ONTOGOAL + "GoalSet"
+ONTOGOAL_PLAN = ONTOGOAL + "Plan"
+ONTOGOAL_STEP = ONTOGOAL + "Step"
+ONTOGOAL_RESTRICTION = ONTOGOAL + "Restriction"
+ONTOGOAL_RESULT = ONTOGOAL + "Result"
+ONTOGOAL_CANBEPERFORMEDBY = ONTOGOAL + "canBePerformedBy"
+ONTOGOAL_DESIRES = ONTOGOAL + "desires"
+ONTOGOAL_DESIRESGREATERTHAN = ONTOGOAL + "desiresGreaterThan"
+ONTOGOAL_DESIRESLESSTHAN = ONTOGOAL + "desiresLessThan"
+ONTOGOAL_HASGOAL = ONTOGOAL + "hasGoal"
+ONTOGOAL_HASNEXTSTEP = ONTOGOAL + "hasNextStep"
+ONTOGOAL_HASPLAN = ONTOGOAL + "hasPlan"
+ONTOGOAL_HASRESTRICTION = ONTOGOAL + "hasRestriction"
+ONTOGOAL_HASRESULT = ONTOGOAL + "hasResult"
+ONTOGOAL_HASSTEP = ONTOGOAL + "hasStep"
+ONTOGOAL_REFERSTO = ONTOGOAL + "refersTo"
+ONTOGOAL_CYCLEALLOWANCE = ONTOGOAL + "cycleAllowance"
+ONTOGOAL_DEADLINE = ONTOGOAL + "deadline"
+## Specific to RxnOptGoal ##
+ONTOGOAL_RXNOPTPLAN = ONTOGOAL + "RxnOptPlan"
+ONTOGOAL_DESIGNOFEXPERIMENT = ONTOGOAL + "DesignOfExperiment"
+ONTOGOAL_RXNEXPEXECUTION = ONTOGOAL + "RxnExpExecution"
+ONTOGOAL_POSTPROCESSING = ONTOGOAL + "PostProcessing"
