@@ -1,0 +1,38 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>RxnOptGoalAgent</title>
+    </head>
+    <body>
+        <h1>RxnOptGoalAgent</h1>
+        <form action="/goal_specification" method="post">
+            <label for="firstGoal">First Goal</label>
+            <input type="text" placeholder="rxn_opt_goal" name="rxn_opt_goal"><br><br>
+            <label for="secondGoal">Second Goal</label>
+            <input type="text" placeholder="rxn_opt_goal" name="rxn_opt_goal"><br><br>
+            <label>First Goal
+                <select>
+                    <option value="" disabled selected>Select your option</option>
+                    <option value="">Yield</option>
+                    <option value="">RunMaterialCost</option>
+                    <option value="">Conversion</option>
+                    <option value="">SpaceTimeYield</option>
+                    <option value="">EnvironmentFactor</option>
+                </select>
+            </label>
+            <label>Second Goal
+                <select>
+                    <option value="" disabled selected>Select your option</option>
+                    <option value="">Yield</option>
+                    <option value="">RunMaterialCost</option>
+                    <option value="">Conversion</option>
+                    <option value="">SpaceTimeYield</option>
+                    <option value="">EnvironmentFactor</option>
+                </select>
+            </label>
+
+
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

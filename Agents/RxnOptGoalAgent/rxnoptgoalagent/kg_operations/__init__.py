@@ -1,1 +1,1 @@
-from chemistry_and_robots.kg_operations import *
+from .sparql_client import RxnOptGoalSparqlClient
