@@ -263,8 +263,8 @@ class WeatherQueryClient {
 		
 		// parse wkt literal
 		GeometryWrapper geometryWrapper= WKTDatatype.INSTANCE.parse(wkt_string);
-		double lat = geometryWrapper.getXYGeometry().getCoordinate().getX();
-		double lon = geometryWrapper.getXYGeometry().getCoordinate().getY();
+		double lat = geometryWrapper.getXYGeometry().getCoordinate().getY();
+		double lon = geometryWrapper.getXYGeometry().getCoordinate().getX();
 		
 		// the key for this map is the weather class, value is the corresponding value
 		Map<String,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(lat, lon);
