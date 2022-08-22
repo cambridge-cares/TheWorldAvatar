@@ -50,6 +50,7 @@ OM_VOLUMETRICFLOWRATE = UNITS_OF_MEASURE + 'VolumetricFlowRate'
 OM_COMMONLYHASUNIT = UNITS_OF_MEASURE + 'commonlyHasUnit'
 OM_DURATION = UNITS_OF_MEASURE + 'Duration'
 OM_QUANTITYOFDIMENSIONONE = UNITS_OF_MEASURE + 'QuantityOfDimensionOne'
+OM_PERCENT = UNITS_OF_MEASURE + 'percent'
 
 ##--- Some IRIs from OntoUoM extensions ---##
 ONTOUOM_GRAMPERMOLE = ONTOUOM + 'gramPerMole' # TODO add this to OM TBox

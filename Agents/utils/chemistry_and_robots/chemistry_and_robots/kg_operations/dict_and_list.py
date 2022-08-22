@@ -31,7 +31,7 @@ def get_the_unique_value_in_list_of_dict(list_of_dict: List[dict], key: str) -> 
 def get_value_from_list_of_dict(list_of_dict: List[dict], key: str) -> list:
     if len(list_of_dict) > 0:
         try:
-            list_of_values = [d[key] for d in list_of_dict]
+            list_of_values = [d[key] for d in list_of_dict if key in d]
         except KeyError:
             logger.error("Key '%s' is not found in the given list of dict: %s" % (key, str(list_of_dict)))
             return []

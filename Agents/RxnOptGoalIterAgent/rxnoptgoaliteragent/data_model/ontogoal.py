@@ -45,8 +45,10 @@ class Goal(dm.BaseOntology):
     def desires(self) -> dm.OM_Quantity:
         if self.desiresGreaterThan is not None:
             return self.desiresGreaterThan
-        else:
+        elif self.desiresLessThan is not None:
             return self.desiresLessThan
+        else:
+            raise ValueError(f"desiresGreaterThan and desiresLessThan cannot both be None for Goal {self.instance_iri}")
 
 class Restriction(dm.BaseOntology):
     clz: str = iris.ONTOGOAL_RESTRICTION

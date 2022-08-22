@@ -244,9 +244,37 @@ def clear_loggers():
 class IRIs(Enum):
     GOAL_ITER_BASE_IRI = 'http://www.example.com/triplestore/ontogoal/rxnopt/'
     GOALSET_1 = GOAL_ITER_BASE_IRI + 'GoalSet_1'
+
     GOAL_1 = GOAL_ITER_BASE_IRI + 'Goal_1'
+    DESIRED_QUANTITY_1 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_1'
+    DESIRED_QUANTITY_1_TYPE = ONTOREACTION_YIELD
+    DESIRED_QUANTITY_MEASURE_1 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_Measure_1'
+    DESIRED_QUANTITY_MEASURE_1_UNIT = OM_PERCENT
+    DESIRED_QUANTITY_MEASURE_1_NUMVAL = 99.9
+    RESULT_QUANTITY_1 = GOAL_ITER_BASE_IRI + 'Result_Quantity_1'
+    RESULT_QUANTITY_1_TYPE = ONTOREACTION_YIELD
+    RESULT_QUANTITY_MEASURE_1 = GOAL_ITER_BASE_IRI + 'Result_Quantity_Measure_1'
+    RESULT_QUANTITY_MEASURE_1_UNIT = OM_PERCENT
+    RESULT_QUANTITY_MEASURE_1_NUMVAL = 50.0
+
     GOAL_2 = GOAL_ITER_BASE_IRI + 'Goal_2'
+    DESIRED_QUANTITY_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_2'
+    DESIRED_QUANTITY_2_TYPE = ONTOREACTION_RUNMATERIALCOST
+    DESIRED_QUANTITY_MEASURE_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_Measure_2'
+    DESIRED_QUANTITY_MEASURE_2_UNIT = ONTOUOM_POUNDSTERLINGPERLITRE
+    DESIRED_QUANTITY_MEASURE_2_NUMVAL = 0.01
     RESTRICTION_1 = GOAL_ITER_BASE_IRI + 'Restriction_1'
+    RESTRICTION_1_CYCLEALLOWANCE = 5
+    RESTRICTION_1_DEADLINE = 4102444800.0
+
+    PLAN_STEP_AGENT_BASE_IRI = 'http://www.theworldavatar.com/resource/plans/RxnOpt/'
+    RXN_OPT_PLAN = PLAN_STEP_AGENT_BASE_IRI + 'rxnoptplan'
+    STEP_DOE = PLAN_STEP_AGENT_BASE_IRI + 'doe'
+    STEP_DOE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__DoE/Service'
+    STEP_EXE = PLAN_STEP_AGENT_BASE_IRI + 'exe'
+    STEP_EXE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__Execution/Service'
+    STEP_POSTPRO = PLAN_STEP_AGENT_BASE_IRI + 'postpro'
+    STEP_POSTPRO_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__HPLC_PostPro/Service'
 
     EXP_1_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/'
     EXP_2_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/'

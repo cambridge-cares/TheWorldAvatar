@@ -8,11 +8,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
-    # TODO: implement
     def get_goal_set_instance(self, goal_set_iri) -> GoalSet:
         goal_set_iri = trimIRI(goal_set_iri)
         query = f"""{PREFIX_RDFS}
-        SELECT ?restriction ?cycleAllowance ?deadline ?goal ?desire ?desiredQuantity ?desiredQuantityType ?desiredQuantityMeasure ?numVal ?unit ?plan ?step ?agent ?nextStep
+        SELECT ?restriction ?cycleAllowance ?deadline
+            ?goal ?desire ?desiredQuantity ?desiredQuantityType ?desiredQuantityMeasure ?numVal ?unit
+            ?plan ?step ?stepType ?agent ?nextStep
+            ?resultQuantity ?resultQuantityType ?resultQuantityMeasure ?resultNumVal ?resultUnit
+
         WHERE {{
             OPTIONAL {{
                 <{goal_set_iri}> <{ONTOGOAL_HASRESTRICTION}> ?restriction.
@@ -26,13 +29,18 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 ?desiredQuantityMeasure <{OM_HASNUMERICALVALUE}> ?numVal; <{OM_HASUNIT}> ?unit.
                 ?goal <{ONTOGOAL_HASPLAN}> ?plan.
                 ?plan <{ONTOGOAL_HASSTEP}> ?step.
-                ?step <{ONTOGOAL_CANBEPERFORMEDBY}> ?agent.
+                ?step a ?stepType; <{ONTOGOAL_CANBEPERFORMEDBY}> ?agent.
                 OPTIONAL {{?step <{ONTOGOAL_HASNEXTSTEP}> ?nextStep.}}
+
+                OPTIONAL {{
+                    ?goal <{ONTOGOAL_HASRESULT}> ?resultQuantity.
+                    ?resultQuantity a ?resultQuantityType; <{OM_HASVALUE}> ?resultQuantityMeasure.
+                    ?resultQuantityMeasure <{OM_HASNUMERICALVALUE}> ?resultNumVal; <{OM_HASUNIT}> ?resultUnit.
+                }}
             }}
         }}"""
         response = self.performQuery(query)
         logger.debug(f"Obtained response: {response} with query: {query}")
-        # return None # TODO remove this line
 
         # get restriction
         restriction_iri = dal.get_the_unique_value_in_list_of_dict(response, "restriction")
@@ -96,6 +104,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
 
                     step_instance = Step(
                         instance_iri=_step_iri,
+                        clz=dal.get_the_unique_value_in_list_of_dict(_step_info, 'stepType'),
                         canBePerformedBy=dal.get_unique_values_in_list_of_dict(_step_info, 'agent'),
                         # NOTE hasNextStep is processed after all steps are created
                     )
@@ -105,7 +114,8 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
 
                 # NOTE here we process the next steps
                 for step in _list_step:
-                    step.hasNextStep = [dict_step[next_step_iri] for next_step_iri in dict_next_steps[step.instance_iri]]
+                    _temp_step_list = [dict_step[next_step_iri] for next_step_iri in dict_next_steps[step.instance_iri]]
+                    step.hasNextStep = _temp_step_list if len(_temp_step_list) > 0 else None
 
                 _plan = Plan(
                     instance_iri=pl_iri,
@@ -113,13 +123,35 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 )
                 _list_plan.append(_plan)
 
+            # process result
+            _goal_result_info = dal.remove_unwanted_keys_from_list_of_dict(_goal_info, ['plan', 'step', 'stepType', 'agent', 'nextStep'])
+            _goal_result_info = dal.remove_duplicate_dict_from_list_of_dict(_goal_result_info)
+            logger.info(f"_goal_result_info: {_goal_result_info}")
+            _list_result_iri = dal.get_unique_values_in_list_of_dict(_goal_result_info, "resultQuantity")
+            if len(_list_result_iri) > 0:
+                _list_result_quantity = []
+                for result_iri in _list_result_iri:
+                    _result_info = dal.get_sublist_in_list_of_dict_matching_key_value(_goal_result_info, 'resultQuantity', result_iri)
+                    _result_quantity = OM_Quantity(
+                        instance_iri=dal.get_the_unique_value_in_list_of_dict(_result_info, 'resultQuantity'),
+                        clz=dal.get_the_unique_value_in_list_of_dict(_result_info, 'resultQuantityType'),
+                        hasValue=OM_Measure(
+                            instance_iri=dal.get_the_unique_value_in_list_of_dict(_result_info, 'resultQuantityMeasure'),
+                            hasUnit=dal.get_the_unique_value_in_list_of_dict(_result_info, 'resultUnit'),
+                            hasNumericalValue=dal.get_the_unique_value_in_list_of_dict(_result_info, 'resultNumVal')
+                        )
+                    )
+                    _list_result_quantity.append(_result_quantity)
+            else:
+                _list_result_quantity = None
+
             # construct goal
             goal_instance = Goal(
                 instance_iri=goal_iri,
                 hasPlan=_list_plan,
                 desiresGreaterThan=_desired_quantity if _desire == ONTOGOAL_DESIRESGREATERTHAN else None,
                 desiresLessThan=_desired_quantity if _desire == ONTOGOAL_DESIRESLESSTHAN else None,
-                # hasResult=, # TODO implement this
+                hasResult=_list_result_quantity,
             )
             list_goal.append(goal_instance)
 

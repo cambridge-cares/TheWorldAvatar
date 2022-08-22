@@ -21,6 +21,7 @@
     a ontogoal:Goal;
     ontogoal:desiresGreaterThan :Desired_Quantity_1;
     ontogoal:hasPlan rxnopt:rxnoptplan;
+    ontogoal:hasResult :Result_Quantity_1;
 .
 
 :Desired_Quantity_1
@@ -32,6 +33,17 @@
     a om:Measure;
     om:hasUnit om:percent;
     om:hasNumericalValue "99.9"^^xsd:double;
+.
+
+:Result_Quantity_1
+    a ontorxn:Yield;
+    om:hasValue :Result_Quantity_Measure_1;
+.
+
+:Result_Quantity_Measure_1
+    a om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "50.0"^^xsd:double;
 .
 
 :Goal_2
