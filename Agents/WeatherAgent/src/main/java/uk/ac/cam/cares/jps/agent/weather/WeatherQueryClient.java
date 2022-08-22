@@ -26,7 +26,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.postgis.Point;
 import org.apache.jena.geosparql.implementation.*;
 import org.apache.jena.geosparql.implementation.datatype.WKTDatatype;
 
