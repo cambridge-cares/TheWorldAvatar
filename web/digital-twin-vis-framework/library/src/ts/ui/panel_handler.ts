@@ -197,16 +197,9 @@ class PanelHandler {
         
         // Get required details
         let iri = feature["properties"]["iri"];
-        let endpoint = feature["properties"]["endpoint"];
         let stack = Manager.findStack(feature);
 
-        // TEST
-        iri = "http://environment.data.gov.uk/flood-monitoring/id/stations/3401TH";
-        endpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/flood_ontoems/sparql";
-        stack = "http://localhost:55050";
-        // TEST
-
-        if(iri === undefined || endpoint === undefined || stack === undefined) {
+        if(iri === undefined || stack === undefined) {
             console.error("Feature is missing required information to get metadata/timeseries!");
             return;
         }
@@ -214,7 +207,8 @@ class PanelHandler {
 
         // Build the request to the FeatureInfoAgent
         let agentURL = stack + "/feature-info-agent/get";
-        let params = { "iri": iri, "endpoint": endpoint };
+        console.log("Contacting: " + agentURL);
+        let params = { "iri": iri };
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(json) {
