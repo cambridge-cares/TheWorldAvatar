@@ -51,7 +51,7 @@ public class HistoricalPirmasensStationCSVConnectorTest {
     }
     
     @Test
-    public void testRetrieveReadings() throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+    public void testRetrieveReadingsSuccess() throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
     	createProperConnectorPropertiesFile();
     	Path dataFilePath = Paths.get("./testData/testData.csv");
     	connector = new HistoricalPirmasensStationCSVConnector(dataFilePath.toString(), connectorPropertiesFilePath);
@@ -60,14 +60,42 @@ public class HistoricalPirmasensStationCSVConnectorTest {
     	Assert.assertEquals(values.getJSONArray("sensors").getJSONObject(0).getJSONArray("data").length(), 48);
     }
     
-    
     @Test
-    public void testCountNumberOfRows() throws IOException {
+    public void testRetrieveReadingsFailed() throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+    	createProperConnectorPropertiesFile();
+    	Path dataFilePath = Paths.get("./testData/wrongTestData.csv");
+    	connector = new HistoricalPirmasensStationCSVConnector(dataFilePath.toString(), connectorPropertiesFilePath);
+    	try {
+    	JSONObject values = connector.retrieveReadings(dataFilePath.toString(), 12);
+    	Assert.fail();
+    	} catch (Exception e) {
+    	//two days of data = 48 readings for each hour
+    	Assert.assertEquals("There was an error while retrieving the data from the CSV file! The current row retrieved from the CSV file is PS-Innenstadt';'Gesamt-UV" , e.getMessage());
+    }
+    }
+     
+    @Test
+    public void testCountNumberOfRowsSuccess() throws IOException {
     	createProperConnectorPropertiesFile();
     	Path dataFilePath = Paths.get("./testData/testData.csv");
     	connector = new HistoricalPirmasensStationCSVConnector(dataFilePath.toString(), connectorPropertiesFilePath);
     	Integer numberOfRows = connector.countNumberOfRows(dataFilePath.toString());
     	Assert.assertEquals(numberOfRows, Integer.valueOf("25"));
+    }
+    
+    @Test
+    public void testCountNumberOfRowsFailed() throws IOException {
+    	Integer numberOfRows = 0;
+    	//test random filepaths that leads to nowhere
+    	try {
+    		Path dataFilePath = Paths.get("./test_01");
+    		createProperConnectorPropertiesFile();
+    		connector = new HistoricalPirmasensStationCSVConnector(dataFilePath.toString(), connectorPropertiesFilePath);
+    		numberOfRows = connector.countNumberOfRows(dataFilePath.toString());
+    		Assert.fail();
+    	} catch (Exception e) {
+    		Assert.assertTrue(e.getMessage().contains("No properties file found at specified filepath: "));
+    	}
     }
     
     

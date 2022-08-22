@@ -90,12 +90,13 @@ public class HistoricalPirmasensStationCSVConnector{
 		dateList = new String[totalNumOfRows]; //define the size of the date list
 		LOGGER.info("The total number of rows in the csv file is " + totalNumOfRows);
 		
-		try {
-			sc = new Scanner(new File(filePath));
-		}
-		catch (FileNotFoundException e) {
-			throw new FileNotFoundException("No file can be found at the following file path: " + filePath);
-		}
+		
+		File file = new File(filePath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("No properties file found at specified filepath: " + filePath);
+        }
+        sc = new Scanner(new File(filePath));
+		
 		//The first row is Station;Komponente;Datum;Wert01;Wert02;Wert03;Wert04;Wert05;Wert06;Wert07;Wert08;Wert09;Wert10;Wert11;Wert12;Wert13;Wert14;Wert15;Wert16;Wert17;Wert18;Wert19;Wert20;Wert21;Wert22;Wert23;Wert24;Nachweisgrenze
 		data = sc.next(); // skip the first row
 		
@@ -112,26 +113,18 @@ public class HistoricalPirmasensStationCSVConnector{
 				date = data.split(";")[2].substring(1, data.split(";")[2].length() - 1);
 				LOGGER.info("The date is " + date);
 				dateList[totalNumOfRows] = date;
-				} catch (IndexOutOfBoundsException e) {
-					throw new JPSRuntimeException("There was an error while retrieving the date from the CSV file!");
-				}
 				
-		   //retrieve the key and remove ' from the front and back
-		    try {
 				key = data.split(";")[1].substring(1, data.split(";")[1].length() - 1);
 				keys[totalNumOfRows] = key;
-				} catch (IndexOutOfBoundsException e) {
-					throw new JPSRuntimeException("There was an error while retrieving the keys from the CSV file!");
-				}
 				
-			try {
 				for (int h = 0; h < 24; h++) {
-                //collate all values as doubles in a single list
-				dataList[(totalNumOfRows * 24) + h] = Double.parseDouble(data.split(";")[h + 3]);
+	                //collate all values as doubles in a single list
+					dataList[(totalNumOfRows * 24) + h] = Double.parseDouble(data.split(";")[h + 3]);
+					}
+				} catch (IndexOutOfBoundsException e) {
+					throw new JPSRuntimeException("There was an error while retrieving the data from the CSV file! The current row retrieved from the CSV file is " +  data.toString());
 				}
-				} catch (Exception e) {
-					throw new JPSRuntimeException ("There was an error while retrieving the data values from the CSV file!");
-				}
+
 				totalNumOfRows++;
 				}
 			sc.close();
@@ -154,16 +147,18 @@ public class HistoricalPirmasensStationCSVConnector{
     /**
      * Count number of rows in the CSV file
      * @param filePath The file path for the CSV file
+     * @throws FileNotFoundException 
      */
-    public Integer countNumberOfRows(String filePath) throws FileNotFoundException {
+    public Integer countNumberOfRows(String filePath)throws IOException {
     	Scanner sc;
     	Integer totalNumOfRows = 0;
-    	try {
-			sc = new Scanner(new File(filePath));
-		}
-		catch (FileNotFoundException e) {
-			throw new FileNotFoundException("No file can be found at the following file path: " + filePath);
-		}
+    	
+    	File file = new File(filePath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("No properties file found at specified filepath: " + filePath);
+        }
+        sc = new Scanner(file);
+		
 		try {
 			LOGGER.info("Counting the number of rows in the CSV file...");
 			while (sc.hasNext()) {
