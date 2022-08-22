@@ -148,19 +148,12 @@ class Manager {
      * 
      * @returns promise object
      */
-    public loadDefinitions(endPoints: string[]) {
+    public loadDefinitions() {
         Manager.STACK_LAYERS = {};
-        endPoints.forEach(endPoint => {
-            Manager.STACK_LAYERS[endPoint] = [];
-        })
-
         let promises = [];
 
-        endPoints.forEach(endPoint => {
-            let visFile = (endPoint.endsWith("/")) ? (endPoint + "visualisation.json") : (endPoint + "/visualisation.json");
-            promises.push(Manager.DATA_STORE.loadDataGroups(endPoint, visFile));
-        });
-
+        let visFile = "./visualisation.json";
+        promises.push(Manager.DATA_STORE.loadDataGroups(visFile));
         return Promise.all(promises);
     }
 
@@ -169,20 +162,15 @@ class Manager {
      */
     public loadImagesAndLinks() {
         let promises = [];
-        let endPoints = Object.keys(Manager.STACK_LAYERS);
 
-        for(let i = 0; i < endPoints.length; i++) {
-            let endPoint = endPoints[i];
-
-            if(Manager.PROVIDER === MapProvider.MAPBOX) {
-                let iconFile = (endPoint.endsWith("/")) ? (endPoint + "icons.json") : (endPoint + "/icons.json");
-                let iconPromise = (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile);
-                promises.push(iconPromise);
-            }
-
-            let linksFile = (endPoint.endsWith("/")) ? (endPoint + "links.json") : (endPoint + "/links.json");
-            promises.push(this.panelHandler.addLinks(linksFile));
+        if(Manager.PROVIDER === MapProvider.MAPBOX) {
+            let iconFile = "./icons.json";
+            let iconPromise = (<MapHandler_MapBox> this.mapHandler).addIcons(iconFile);
+            promises.push(iconPromise);
         }
+
+        let linksFile = "./links.json"
+        promises.push(this.panelHandler.addLinks(linksFile));
 
         let promise = Promise.all(promises).catch(function(err) {
             console.warn("Loading icons and/or links has failed, these will be skipped."); 
@@ -233,6 +221,9 @@ class Manager {
      * Fires when an individual feature is selected.
      */
     public showFeature(feature: Object) {
+        console.log("Selected feature:");
+        console.log(feature);
+        
         // Title
         let name = feature["properties"]["name"];
         if(name === null || name === undefined) {

@@ -90,6 +90,9 @@ class DataGroup {
                     layer = new MapBoxLayer(layerID, node["name"], source);
 
                     // Register this layer to this connected stack
+                    if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+                        Manager.STACK_LAYERS[stack] = [];
+                    }
                     Manager.STACK_LAYERS[stack].push(layerID);
                 break;
     
