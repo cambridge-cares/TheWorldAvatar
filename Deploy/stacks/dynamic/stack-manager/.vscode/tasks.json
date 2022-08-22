@@ -25,10 +25,10 @@
                 "${input:stackName}",
                 "${input:external.port}",
                 "--debug-port",
-                "${config:debug.port}"
+                "${input:debug.port}"
             ],
-                "options": {
-                    "shell": {
+            "options": {
+                "shell": {
                     "executable": "bash"
                 }
             }
@@ -72,6 +72,16 @@
             "command": "shellCommand.execute",
             "args": {
                 "command": "bash ./stack.sh ports 5 3838 4000"
+            }
+        },
+        {
+            "id": "debug.port",
+            "type": "command",
+            // Get the last debug port from the cache file
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "bash ./stack.sh ports read",
+                "useFirstResult": true
             }
         }
     ]

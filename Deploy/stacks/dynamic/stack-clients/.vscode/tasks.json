@@ -24,7 +24,7 @@
                 "start",
                 "${input:stackName}",
                 "--debug-port",
-                "${config:debug.port}"
+                "${input:debug.port}"
             ],
             "options": {
                 "shell": {
@@ -63,6 +63,16 @@
             "type": "promptString",
             "description": "Name your stack.",
             "default": "TEST-STACK"
+        },
+        {
+            "id": "debug.port",
+            "type": "command",
+            // Get the last debug port from the cache file
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "bash ./stack.sh ports read",
+                "useFirstResult": true
+            }
         }
     ]
 }
