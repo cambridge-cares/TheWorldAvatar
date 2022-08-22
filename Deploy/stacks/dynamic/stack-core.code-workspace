@@ -26,7 +26,8 @@
 			"vscjava.vscode-java-pack",
 			"ms-vscode-remote.remote-containers",
 			"redhat.vscode-yaml",
-			"sonarsource.sonarlint-vscode"
+			"sonarsource.sonarlint-vscode",
+			"augustocdias.tasks-shell-input"
 		]
 	}
 }

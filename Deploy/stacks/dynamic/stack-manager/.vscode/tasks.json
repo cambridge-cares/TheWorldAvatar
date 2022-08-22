@@ -67,9 +67,12 @@
         },
         {
             "id": "external.port",
-            "type": "promptString",
-            "description": "External port number.",
-            "default": "3838"
+            "type": "command",
+            // always require selection
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "bash ./stack.sh ports 5 3838 4000"
+            }
         }
     ]
 }
