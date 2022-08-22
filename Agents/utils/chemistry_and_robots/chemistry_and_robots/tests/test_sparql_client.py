@@ -23,7 +23,7 @@ import chemistry_and_robots.hardware.hplc as hplc
 pytest_plugins = ["docker_compose"]
 
 # ----------------------------------------------------------------------------------
-# Test cases for sparql_client 
+# Test cases for sparql_client
 # ----------------------------------------------------------------------------------
 # collect_triples_for_equip_settings and collect_triples_for_new_experiment are
 # tested in integration test of agents

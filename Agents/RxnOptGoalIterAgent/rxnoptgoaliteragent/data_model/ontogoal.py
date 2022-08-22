@@ -9,8 +9,8 @@ from rxnoptgoaliteragent.data_model import iris as iris
 
 class Step(dm.BaseOntology):
     clz: str = iris.ONTOGOAL_STEP
-    canBePerformedBy: str = None
-    hasNextStep: Optional[Step]
+    canBePerformedBy: List[str]
+    hasNextStep: Optional[List[Step]]
 
 
 class Plan(dm.BaseOntology):

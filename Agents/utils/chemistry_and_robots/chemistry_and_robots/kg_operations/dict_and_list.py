@@ -22,6 +22,12 @@ def get_sublist_in_list_of_dict_matching_key_value(list_of_dict: List[Dict], key
 def get_unique_values_in_list_of_dict(list_of_dict: List[dict], key: str) -> list:
     return list(set(get_value_from_list_of_dict(list_of_dict, key)))
 
+def get_the_unique_value_in_list_of_dict(list_of_dict: List[dict], key: str) -> Any:
+    list_unique_value = list(set(get_value_from_list_of_dict(list_of_dict, key)))
+    if len(list_unique_value) != 1:
+        raise Exception(f"""Exactly one {key} is expected, but found: {list_unique_value}""")
+    return list_unique_value[0]
+
 def get_value_from_list_of_dict(list_of_dict: List[dict], key: str) -> list:
     if len(list_of_dict) > 0:
         try:
@@ -40,6 +46,9 @@ def keep_wanted_keys_from_list_of_dict(list_of_dict: List[dict], wanted_keys: Li
     for one_dict in list_of_dict:
         return_list.append({key:one_dict[key] for key in wanted_keys})
     return return_list
+
+def remove_unwanted_keys_from_list_of_dict(list_of_dict: List[dict], unwanted_keys: List[str]) -> list:
+    return [_d for _d in [{key:d[key] for key in d if key not in unwanted_keys} for d in list_of_dict] if _d != {}]
 
 def remove_duplicate_dict_from_list_of_dict(list_of_dict: List[dict]) -> list:
     return [dict(t) for t in {tuple(sorted(d.items())) for d in list_of_dict}]
