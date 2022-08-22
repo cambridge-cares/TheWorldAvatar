@@ -8,19 +8,20 @@ setup(
     license='MIT',
     python_requires='>=3.5',
     description="vtexeagent is capable of executing reaction experiment on Vapourtec flow chemistry setup as part of The World Avatar project.",
-    # url="https://github.com/cambridge-cares/TheWorldAvatar/tree/134-dev-lab-equipment-digital-twin/Agents/ExecutionAgent",
-    # long_description=open('README.md').read(),
-    # long_description_content_type="text/markdown",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ExecutionAgent",
+    long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
     packages=find_packages(exclude=['tests','tests.*']),
-    install_requires=[
-        'pyderivationagent>=1.1.0', 'pandas', 'pydantic==1.9.0',
+    install_requires=['pyderivationagent>=1.1.0', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.0.0'
         # 'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@develop#subdirectory=Agents/utils/python-utils'
     ],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",
             "pytest>=6.2.3",
+            "pytest-docker-compose>=3.2.1",
+            "pytest-rerunfailures>=10.2"
         ],
     },
-    # include_package_data= True
+    include_package_data= True
 )
