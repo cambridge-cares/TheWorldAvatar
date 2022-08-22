@@ -327,6 +327,8 @@ public class DockerClient extends BaseClient {
         TarArchiveEntry entry = new TarArchiveEntry(filePath);
         entry.setSize(fileContent.length);
         entry.setMode(0755);
+        // Set the files' user and group to the default ones in that container
+        entry.setIds(1000, 1000);
         tar.putArchiveEntry(entry);
         tar.write(fileContent);
         tar.closeArchiveEntry();
