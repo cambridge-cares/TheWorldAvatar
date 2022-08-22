@@ -87,7 +87,7 @@ following form:
 ```
 [prefix]/[key]_[UUID]
 ```
-where the `[prefix]` is hardcoded into the `NUSDavisWeatherStationInputAgent` class in a public, static field called `generatedIRIPrefix`
+where the `[prefix]` is hardcoded into the `HistoricalNUSDavisAgent` class in a public, static field called `generatedIRIPrefix`
 which is based on the time-series client namespace, `[key]` is the JSON key the URI is generated for, and `[UUID]` is a 
 randomly generated UUID.
 
