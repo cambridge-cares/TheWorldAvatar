@@ -193,13 +193,12 @@ public class HistoricalPirmasensStationCSVConnector{
     	String day;
     	for (int j = 0 ; j <numOfDates; j++) {
     		String dateReference = dateList[j];
+    		year = dateReference.substring(0, 4);
+    		month = dateReference.substring(4, 6);
+    		day = dateReference.substring(6, dateReference.length());
     		
-    		try {
-    			year = dateReference.substring(0, 4);
-    			month = dateReference.substring(4, 6);
-    			day = dateReference.substring(6, 8);
-    			} catch (IndexOutOfBoundsException e) {
-    				throw new IndexOutOfBoundsException ("Ecountered an error while parsing the date!");
+    		if (day.length() != 2) {
+    				throw new JPSRuntimeException ("Ecountered an error while parsing the date " + dateReference);
     				}
     		for (int h = 00; h < 24; h++) {
     			if (h < 10) {
@@ -209,17 +208,13 @@ public class HistoricalPirmasensStationCSVConnector{
 					}
 					dataReadings = new JSONObject();
 					dataReadings.put("ts", dateInString);
-					try {
-						for (int k = 0; k < numOfKeys; k++) {
-							String keyReference = keyList[k * numOfDates];
-							Double valueAsDouble = dataList[h + (k * numOfDates * 24) + (j * 24)];
-							dataReadings.put(keyReference, valueAsDouble);
-							LOGGER.info(dataReadings.toString());
-							}
-						dataJSONArray.put(dataReadings);
-						} catch (Exception e) {
-							throw new JPSRuntimeException("Encountered an error while sorting the keys and values into a JSONArray");
-							}
+					for (int k = 0; k < numOfKeys; k++) {
+						String keyReference = keyList[k * numOfDates];
+						Double valueAsDouble = dataList[h + (k * numOfDates * 24) + (j * 24)];
+						dataReadings.put(keyReference, valueAsDouble);
+						LOGGER.info(dataReadings.toString());
+						}
+					dataJSONArray.put(dataReadings);
 					}
     		}
     	return dataJSONArray;

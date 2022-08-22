@@ -52,7 +52,13 @@ public class HistoricalPirmasensStationCSVConnectorTest {
     
     @Test
     public void testRetrieveReadingsSuccess() throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+    	
     	createProperConnectorPropertiesFile();
+    	
+    	//Modified raw data where keys such as Gesamt-UV Strahlung, Relative Feuchte, eBC_PM2_5,
+    	//Windgeschwindigkeit-rohwert and Windrichtung-rohwert were changed to:
+    	//Gesamt_UV_Strahlung, Relative_Feuchte, eBC_PM2-5, Windgeschwindigkeit_rohwert, Windrichtung_rohwert
+    	
     	Path dataFilePath = Paths.get("./testData/testData.csv");
     	connector = new HistoricalPirmasensStationCSVConnector(dataFilePath.toString(), connectorPropertiesFilePath);
     	JSONObject values = connector.retrieveReadings(dataFilePath.toString(), 12);
@@ -63,16 +69,36 @@ public class HistoricalPirmasensStationCSVConnectorTest {
     @Test
     public void testRetrieveReadingsFailed() throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
     	createProperConnectorPropertiesFile();
+    	// original raw data without any modifications
     	Path dataFilePath = Paths.get("./testData/wrongTestData.csv");
     	connector = new HistoricalPirmasensStationCSVConnector(dataFilePath.toString(), connectorPropertiesFilePath);
     	try {
     	JSONObject values = connector.retrieveReadings(dataFilePath.toString(), 12);
     	Assert.fail();
     	} catch (Exception e) {
-    	//two days of data = 48 readings for each hour
     	Assert.assertEquals("There was an error while retrieving the data from the CSV file! The current row retrieved from the CSV file is PS-Innenstadt';'Gesamt-UV" , e.getMessage());
     }
+    	//date is in yyyy-mm-dd format instead of yyyymmdd
+    	dataFilePath = Paths.get("./testData/wrongDateFormatTestData.csv");
+    	connector = new HistoricalPirmasensStationCSVConnector(dataFilePath.toString(), connectorPropertiesFilePath);
+    	try {
+        	JSONObject values = connector.retrieveReadings(dataFilePath.toString(), 1);
+        	Assert.fail();
+        	} catch (Exception e) {
+        	Assert.assertEquals("Ecountered an error while parsing the date 2022-07-07" , e.getMessage());
+        }
+    	// There are only 2 readings provided for the date 20220707
+    	dataFilePath = Paths.get("./testData/wrongNumOfReadingsTestData.csv");
+    	connector = new HistoricalPirmasensStationCSVConnector(dataFilePath.toString(), connectorPropertiesFilePath);
+    	try {
+        	JSONObject values = connector.retrieveReadings(dataFilePath.toString(), 1);
+        	Assert.fail();
+        	} catch (Exception e) {
+        	Assert.assertEquals("There was an error while retrieving the data from the CSV file! The current row retrieved from the CSV file is PS_Innenstadt';'Gesamt_UV_Strahlung';'20220707';0.21651599;0.09434250" , e.getMessage());
+        }
+    	    	
     }
+    
      
     @Test
     public void testCountNumberOfRowsSuccess() throws IOException {
