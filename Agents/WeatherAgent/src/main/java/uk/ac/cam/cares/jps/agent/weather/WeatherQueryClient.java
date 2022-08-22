@@ -249,7 +249,6 @@ class WeatherQueryClient {
     /**
      * updates weather station with the latest data
      * @param station_iri
-     * @throws SQLException
      */
     void updateStation(String station_iri) {
 		// get the coordinates of this station
