@@ -73,7 +73,7 @@ class RxnOptGoalIterAgent(DerivationAgent):
             new_rxn_exp = self.sparql_client.detect_postpro_derivation_result(postpro_derivation_iri)
 
         # Add the Result instances to the derivation_outputs
-        list_desires = [goal.desires.instance_iri for goal in goal_set_instance.hasGoal]
+        list_desires = [goal.desires().instance_iri for goal in goal_set_instance.hasGoal]
         list_results = []
         for desire in list_desires:
             result_iri = initialiseInstanceIRI(getNameSpace(goal_set_iri), ONTOGOAL_RESULT)

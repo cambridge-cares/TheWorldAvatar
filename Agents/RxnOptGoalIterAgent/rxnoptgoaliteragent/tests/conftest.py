@@ -194,6 +194,7 @@ def initialise_test_triples(initialise_triple_store):
         # Clear triple store before any usage
         sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
+        # TODO delete this bit
         # # Upload all relevant example triples provided in the test_triples folder
         # pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl') # goal_iter.ttl and plan_step_agent.ttl
         # for path in pathlist:
@@ -206,7 +207,7 @@ def initialise_test_triples(initialise_triple_store):
 
         initialise_triples(sparql_client, derivation_client)
 
-        yield sparql_client #, derivation_client
+        yield sparql_client #, derivation_client # TODO delete this bit
 
         # Clear logger at the end of the test
         clear_loggers()

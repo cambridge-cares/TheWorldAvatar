@@ -2012,6 +2012,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             return response[0]['hplc_report']
 
     def check_if_triple_exist(self, s, p, o) -> bool:
-        query = """ASK {<%s> <%s> <%s>.}""" % (trimIRI(s), trimIRI(p), trimIRI(o))
+        lst = [s, p, o]
+        for i in range(len(lst)):
+            lst[i] = f"?_{str(i)}" if lst[i] is None else f"<{trimIRI(lst[i])}>"
+        query = f"""ASK {{{lst[0]} {lst[1]} {lst[2]}.}}"""
         response = self.performQuery(query)
         return response[0]['ASK']
