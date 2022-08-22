@@ -27,6 +27,8 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.postgis.Point;
+import org.apache.jena.geosparql.implementation.*;
+import org.apache.jena.geosparql.implementation.datatype.WKTDatatype;
 
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
@@ -66,6 +68,7 @@ class WeatherQueryClient {
     static Iri hasValue = p_om.iri("hasValue");
     private static Iri hasUnit = p_om.iri("hasUnit");
 	private static Iri asWKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
+	private static Iri hasGeometry = iri("http://www.opengis.net/ont/geosparql#hasGeometry");
     
     // IRI of units used
     private static Iri unit_mm = p_om.iri("millimetre");
@@ -119,6 +122,7 @@ class WeatherQueryClient {
 		geometry.put("type","Point");
 		geometry.put("coordinates", new JSONArray().put(lon).put(lat));
 		properties.put("iri", station_iri);
+		properties.put("geom_iri", station_iri + "/geometry");
 		properties.put("type", "weather");
 		if (name != null) {
 			properties.put("name", name);
@@ -253,20 +257,18 @@ class WeatherQueryClient {
 		// build coordinate query
 		SelectQuery query2 = Queries.SELECT();
 		Variable wkt = query2.var();
-		query2.select(wkt).where(iri(station_iri).has(asWKT,wkt));
+		query2.select(wkt).where(iri(station_iri).has(PropertyPaths.path(hasGeometry, asWKT),wkt));
 		
 		// submit coordinate query to ontop
 		String wkt_string = ontopClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(wkt.getQueryString().substring(1));
-		Point point;
-		try {
-			point = new Point(wkt_string);
-		} catch (SQLException e) {
-			LOGGER.error("Error parsing queried wkt literal");
-			throw new RuntimeException(e);
-		}
+		
+		// parse wkt literal
+		GeometryWrapper geometryWrapper= WKTDatatype.INSTANCE.parse(wkt_string);
+		double lat = geometryWrapper.getXYGeometry().getCoordinate().getX();
+		double lon = geometryWrapper.getXYGeometry().getCoordinate().getY();
 		
 		// the key for this map is the weather class, value is the corresponding value
-		Map<String,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(point.getY(), point.getX());
+		Map<String,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(lat, lon);
 	    
 		// to construct time series object
 		List<String> datavalue_list = new ArrayList<>();

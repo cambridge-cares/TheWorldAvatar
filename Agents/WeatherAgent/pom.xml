@@ -182,5 +182,12 @@
             <version>3.5.7</version>
             <scope>test</scope>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-geosparql -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-geosparql</artifactId>
+            <version>4.5.0</version>
+        </dependency>
     </dependencies>
 </project>
