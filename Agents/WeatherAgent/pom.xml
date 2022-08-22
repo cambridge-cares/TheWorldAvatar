@@ -183,7 +183,7 @@
             <scope>test</scope>
         </dependency>
         
-        <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-geosparql -->
+        <!-- used to parse geosparql wkt literal -->
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-geosparql</artifactId>
