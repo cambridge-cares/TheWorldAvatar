@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 import torch.nn.functional as F
-
+from Training.Embedding.playground.location import
 
 def _init_ent_embedding(dim=20, num=200):
     ent_embedding = nn.Embedding(embedding_dim=dim, num_embeddings=num)
@@ -17,6 +17,28 @@ def _init_rel_embedding(dim=20, num=21):
     rel_embedding = nn.Embedding(embedding_dim=dim, num_embeddings=num)
     rel_embedding.weight.data.uniform_(-1, 1)
     return rel_embedding
+
+# TODO: make the data builder based on the entity and rel mapping
+# This serves as the standard template for dataset processing
+class Dataset(torch.utils.data.Dataset):
+
+    # the dataset takes a subset of the dataset (train, val) as the input.
+    # in this case, each data unit contains a head, a rel, a tail
+    # the output is the
+    def __init__(self, df):
+
+    def get_entity_list(self):
+
+
+    def get_batch_triple(self, idx):
+
+    def create_neg_triple(self, idx):
+
+
+    def __getitem__(self, idx):
+        pass
+
+
 
 
 class TransE(nn.Module):
@@ -72,3 +94,5 @@ class TransE(nn.Module):
         :return: dissimilarity score for given triplets
         """
         return self._distance(triplets)
+
+

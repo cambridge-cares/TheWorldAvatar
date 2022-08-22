@@ -16,5 +16,6 @@ PARENT_DIR = get_parent_path(this_dir)
 TRAINING_DIR = get_parent_path(get_parent_path(this_dir))
 ROOT_DIR = get_parent_path(TRAINING_DIR)
 
+PLAYGROUND_DIR = this_dir
 
 DATASET_DIR = os.path.join(ROOT_DIR, 'Dataset')

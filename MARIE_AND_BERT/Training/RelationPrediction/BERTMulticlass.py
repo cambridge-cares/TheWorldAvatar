@@ -61,7 +61,7 @@ attention_mask = x_train['attention_mask']
 from keras.optimizers import Adam
 from keras.losses import CategoricalCrossentropy
 from keras.metrics import CategoricalAccuracy
-from keras.layers import Input, Dense
+from keras.layers import Input, Dense, concatenate
 
 import tensorflow as tf
 
@@ -69,7 +69,7 @@ number_of_labels = 19
 
 input_ids = Input(shape=(max_len,), dtype=tf.int32, name="input_ids")
 input_mask = Input(shape=(max_len,), dtype=tf.int32, name="attention_mask")
-
+xxx = Input(shape=(max_len,), dtype=tf.int32, name='xxx')
 
 
 embeddings = bert(input_ids,attention_mask = input_mask)[0]
@@ -77,9 +77,19 @@ out = tf.keras.layers.GlobalMaxPool1D()(embeddings)
 out = Dense(128, activation='relu')(out)
 out = tf.keras.layers.Dropout(0.1)(out)
 out = Dense(32,activation = 'relu')(out)
+
+xxx_layer = Dense(16, activation='relu')(xxx)
+
+
+out = concatenate([out, xxx_layer])
+
 y = Dense(number_of_labels,activation = 'sigmoid')(out)
-model = tf.keras.Model(inputs=[input_ids, input_mask], outputs=y)
+# model = tf.keras.Model(inputs=[input_ids, input_mask], outputs=y)
+model = tf.keras.Model(inputs=[input_ids, input_mask, xxx], outputs=y)
 model.layers[2].trainable = True
+print(model.layers[2])
+
+model.summary()
 
 optimizer = Adam(
     learning_rate=5e-05, # this learning rate is for bert model , taken from huggingface website
@@ -96,13 +106,13 @@ model.compile(
     metrics = metric)
 
 train_history = model.fit(
-    x ={'input_ids':x_train['input_ids'],'attention_mask':x_train['attention_mask']} ,
+    x ={'input_ids':x_train['input_ids'],'attention_mask':x_train['attention_mask'], 'xxx':x_train['input_ids']} ,
     y = y_train,
     validation_data = (
-    {'input_ids':x_test['input_ids'],'attention_mask':x_test['attention_mask']}, y_test
+    {'input_ids':x_test['input_ids'],'attention_mask':x_test['attention_mask'], 'xxx':x_test['input_ids']}, y_test
     ),
-  epochs=1,
-    batch_size=128
+  epochs=10,
+    batch_size=32
 )
 
 model.save('./model')
