@@ -1,12 +1,12 @@
 # Historical Pirmasens Station Agent
 
 This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the Pirmasens weather station. It's only purpose is to retrieve 
-new/historical data from excel files and download it into the corresponding database, as well as, instantiating KG instances and connection when called for the first time. 
+new/historical data from csv files and download it into the corresponding database, as well as, instantiating KG instances and connection when called for the first time. 
 The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS_BASE_LIB to interact with both the KG and database.
 
 ### Data retrieval and pre-processing
-This agent is designed to work with csv files. Some pre-processing might be required in order to ensure that the excel files are compatible with the agent.
+This agent is designed to work with csv files. Some pre-processing might be required in order to ensure that the csv files are compatible with the agent.
 Do note that the keys in the csv file must correspond with the keys found in the weather.properties file. An example properties file can be found in the `mapping` folder within the `config` folder.
 
 #### Example readings
@@ -60,7 +60,7 @@ More information can be found in the example property file `client.properties` i
 
 #### csv connector properties
 The csv connector properties contain the number of keys for the csv file. It should contain the following keys:
-- `numOfKeys` the number of columns/keys in the data excel file.
+- `numOfKeys` the number of columns/keys in the data csv file.
 
 More information can be found in the example property file `csvconnector.properties` in the `config` folder.
 
