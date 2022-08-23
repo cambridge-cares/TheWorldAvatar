@@ -39,7 +39,7 @@ For running the agent, three property files and one csv file are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
 - One [property file for the csv file connector](#csv-connector-properties) defining the number of keys for the csv file.
-- One csv file with the name "data.csv" placed under the `config` folder. An example csv file "testData.csv" can be found in the `testData` folder.
+- One csv file with the name "data.csv" placed under the `config` folder. An example csv file "testData.csv" can be found in the `testData` folder at HistoricalPirmasensStationAgent\testData\testData.csv.
 
 #### Agent properties
 The agent property file only needs to contain a single line:
@@ -127,6 +127,8 @@ which must have a 'scope' that [allows you to publish and install packages](http
 Modify `csvconnector.properties` and `client.properties` in the `config` folder accordingly. You should not modify the `agent.properties` file as the Dockerfile will set the environment variable 
 PIRMASENS_AGENT_MAPPINGS to point towards the location of the mapping folder. The Dockerfile will copy all 3 properties files and mapping folder and set environment variables pointing 
 to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually.
+
+One csv file with the name "data.csv" needs to be placed under the `config` folder. An example csv file "testData.csv" can be found in the `testData` folder at HistoricalPirmasensStationAgent\testData\testData.csv.
 
 To build and start the agent, open up the command prompt in the same directory as this README, run
 ```
