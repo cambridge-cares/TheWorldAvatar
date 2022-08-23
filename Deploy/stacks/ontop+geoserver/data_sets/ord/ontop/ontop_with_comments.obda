@@ -37,7 +37,7 @@ target exp:RxnExp_{"Reaction ID"} rdf:type OntoRxn:ReactionExperiment ;
               # Phase definition
               SinglePhase:Phase_{"ReactionInput_ID"} rdf:type OntoCAPEPha:SinglePhase;
               OntoCAPEMat:representsThermodynamicBehavior exp:InputChemical_{"ReactionInput_ID"};
-              OntoCAPEPha:hasStateOfAggregation {"ReactionInput_key"};
+              OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:Liquid;
               OntoCAPEPha:has_composition SinglePhase:Composition_{"ReactionInput_ID"};
               OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_{"Compound_ID"} .
               # Composition definition
@@ -85,11 +85,6 @@ source     SELECT "Reaction"."ID" AS "Reaction ID",
           ON "Compound_amount_Amount"."ID"= "Amount_moles_Moles"."Amount_ID"
           INNER JOIN "Moles"
           ON "Moles"."ID"= "Amount_moles_Moles"."Moles_ID"
-          # Volume
-          #FULL OUTER JOIN "Amount_volume_Volume"
-          #ON "Compound_amount_Amount"."ID"= "Amount_volume_Volume"."Amount_ID"
-          #FULL OUTER JOIN "Volume"
-          #ON "Volume"."ID"= "Amount_volume_Volume"."Volume_ID"
           WHERE "CompoundIdentifier"."type" = 'SMILES'
 ]]
 [MappingDeclaration] @collection [[
@@ -102,7 +97,7 @@ target exp:RxnExp_{"Reaction ID"} rdf:type OntoRxn:ReactionExperiment ;
               # Phase definition
               SinglePhase:Phase_{"ReactionInput_ID"} rdf:type OntoCAPEPha:SinglePhase;
               OntoCAPEMat:representsThermodynamicBehavior exp:InputChemical_{"ReactionInput_ID"};
-              OntoCAPEPha:hasStateOfAggregation {"ReactionInput_key"};
+              OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:Liquid;
               OntoCAPEPha:has_composition SinglePhase:Composition_{"ReactionInput_ID"};
               OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_{"Compound_ID"} .
               # Composition definition
