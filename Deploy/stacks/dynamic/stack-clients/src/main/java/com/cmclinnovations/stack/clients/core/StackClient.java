@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import com.cmclinnovations.stack.clients.core.datasets.Dataset;
+import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class StackClient {
@@ -68,6 +69,9 @@ public final class StackClient {
 
         try {
             Dataset dataset = objectMapper.readValue(configFile.toFile(), Dataset.class);
+            if (null == dataset.getName()) {
+                dataset.setName(FileUtils.getFileNameWithoutExtension(configFile));
+            }
             dataset.loadData();
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
