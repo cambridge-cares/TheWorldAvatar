@@ -34,11 +34,12 @@ It is required to have access to a knowledge graph SPARQL endpoint and Postgres 
 
 This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
 
-### Property files
-For running the agent, three property files are required:
+### Property and csv files
+For running the agent, three property files and one csv file are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
 - One [property file for the csv file connector](#csv-connector-properties) defining the number of keys for the csv file.
+- One csv file with the name "data.csv" placed under the `config` folder. An example csv file "testData.csv" can be found in the `testData` folder.
 
 #### Agent properties
 The agent property file only needs to contain a single line:
