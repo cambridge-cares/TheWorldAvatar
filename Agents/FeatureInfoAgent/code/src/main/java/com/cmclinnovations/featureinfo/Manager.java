@@ -150,12 +150,9 @@ public class Manager {
             if (metadata.get("Forecast") != null)
                 iris.addAll(metadata.get("Forecast"));
 
-            System.out.println("Measurement IRIs are...");
-            iris.forEach(iri -> System.out.println(iri));
 
             // Get the timeseries data objects (keyed by IRI)
             Map<String, TimeSeries<Instant>> tsObjects = getTimeseriesObjects(iris);
-            System.out.println("Got timeseries instances: " + tsObjects.size());
 
             timeJSON = getTimeseriesJSON(metadata, tsObjects);
             LOGGER.info("Got the observed and forecast timeseries (if present).");

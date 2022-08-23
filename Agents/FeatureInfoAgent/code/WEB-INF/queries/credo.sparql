@@ -3,8 +3,8 @@ prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-select ?propertyLabel ?value
+select ?label ?value
 { SERVICE [ONTOP] {[IRI] ?hasProperty ?property. ?property ?hasValue ?value.}
   ?hasValue rdfs:subPropertyOf* credo:hasValue;
-            rdfs:label ?propertyLabel.
+            rdfs:label ?label.
   ?hasProperty rdfs:subPropertyOf* credo:hasProperty}
