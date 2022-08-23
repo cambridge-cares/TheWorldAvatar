@@ -29,6 +29,14 @@ configs:
   ontop:
     name: ${STACK_NAME}_ontop
     external: true
+  postgis:
+    name: ${STACK_NAME}_postgis
+    external: true
+
+secrets:
+  postgis_password:
+    name: ${STACK_NAME}_postgis_password
+    external: true
 
 networks:
   stack:

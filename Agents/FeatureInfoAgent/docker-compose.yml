@@ -9,7 +9,10 @@ services:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       PROPERTIES_FILE: "/root/feature-info.properties"
     ports:
-      - "55050:8080" 
+      - "55050:8080"
     configs:
       - blazegraph
       - ontop
+      - postgis
+    secrets:
+      - postgis_password
