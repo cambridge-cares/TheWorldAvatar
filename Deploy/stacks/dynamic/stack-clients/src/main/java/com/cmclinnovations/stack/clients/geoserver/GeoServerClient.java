@@ -20,11 +20,10 @@ import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
-import it.geosolutions.geoserver.rest.GeoServerRESTPublisher.ParameterConfigure;
-import it.geosolutions.geoserver.rest.GeoServerRESTPublisher.ParameterUpdate;
 import it.geosolutions.geoserver.rest.Util;
-import it.geosolutions.geoserver.rest.decoder.RESTCoverageStore;
+import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
+import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
@@ -143,7 +142,8 @@ public class GeoServerClient extends ContainerClient {
         }
     }
 
-    public void createGeoTiffLayer(String workspaceName, String name, String database, String schema) {
+    public void createGeoTiffLayer(String workspaceName, String name, String database, String schema,
+            GeoServerRasterSettings geoServerSettings) {
 
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
             logger.info("GeoServer coveragestore '{}' already exists.", name);
@@ -167,13 +167,14 @@ public class GeoServerClient extends ContainerClient {
             datastoreProperties.putIfAbsent("preparedStatements", "true");
             StringWriter stringWriter = new StringWriter();
 
+            Path geotiffDir = Path.of(StackClient.GEOTIFFS_DIR, name);
             try {
                 datastoreProperties.store(stringWriter, "");
 
                 sendFilesContent(containerId, Map.of("datastore.properties", stringWriter.toString().getBytes(),
                         "indexer.properties",
                         "Schema=location:String,*the_geom:Polygon\nPropertyCollectors=".getBytes()),
-                        Path.of(StackClient.GEOTIFFS_DIR, name).toString());
+                        geotiffDir.toString());
             } catch (IOException ex) {
                 throw new RuntimeException(
                         "The 'datastore.properties' and 'indexer.properties' files for the GeoServer coverage datastore '"
@@ -181,25 +182,20 @@ public class GeoServerClient extends ContainerClient {
                         ex);
             }
             try {
-                RESTCoverageStore externaMosaicDatastore = manager.getPublisher().createExternaMosaicDatastore(
+                GSImageMosaicEncoder encoder = geoServerSettings.getDataStoreSettings();
+                encoder.setAllowMultithreading(true);
+                GSLayerEncoder layerEncoder = geoServerSettings.getLayerSettings();
+
+                if (manager.getPublisher().publishExternalMosaic(
                         workspaceName, name,
-                        Path.of(StackClient.GEOTIFFS_DIR, name).toFile(),
-                        ParameterConfigure.ALL, ParameterUpdate.OVERWRITE);
-                externaMosaicDatastore.hashCode();
-                // GSImageMosaicEncoder encoder = new GSImageMosaicEncoder();
-                // encoder.setName(name);
-                // encoder.setAllowMultithreading(true);
-                // // coverageManager.create(workspace.getName(), name,
-                // // Path.of(StackClient.GEOTIFFS_DIR, name).toString(),
-                // // ConfigureCoveragesOption.NONE);
-                // if (coverageManager.harvestExternal(workspaceName, name, "imagemosaic",
-                // Path.of(StackClient.GEOTIFFS_DIR, name).toString())) {
-                // logger.info("GeoServer datastore '{}' created.", name);
-                // } else {
-                // throw new RuntimeException(
-                // "GeoServer coverage datastore '" + name + "' does not exist and could not be
-                // created.");
-                // }
+                        geotiffDir.toFile(),
+                        encoder, layerEncoder)) {
+                    logger.info("GeoServer coverage (datastore and layer) '{}' created.", name);
+                } else {
+                    throw new RuntimeException(
+                            "GeoServer coverage datastore and/or layer '" + name
+                                    + "' does not exist and could not be created.");
+                }
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(
                         "GeoServer coverage datastore '" + name + "' does not exist and could not be created.", ex);
