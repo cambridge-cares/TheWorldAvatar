@@ -37,11 +37,12 @@ It is required to have access to a knowledge graph SPARQL endpoint and Postgres 
 
 This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
 
-### Property files
-For running the agent, three property files are required:
+### Property and xlsx files
+For running the agent, three property files and one xlsx file are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
 - One [property file for the excel file connector](#excel-connector-properties) defining the number of columns/keys for the data excel file.
+- One xlsx file containing the weather readings with the name "data.xlsx" in the `config` folder. An example xlsx file can be found at HistoricalNUSDavisAgent\data\data.xlsx.
 
 #### Agent properties
 The agent property file only needs to contain a single line:
@@ -127,6 +128,8 @@ which must have a 'scope' that [allows you to publish and install packages](http
 Modify `xlsxconnector.properties` and `client.properties` in the `config` folder accordingly. You should not modify the `agent.properties` file as the Dockerfile will set the environment variable 
 NUSDavisWeatherStation_AGENT_MAPPINGS to point towards the location of the mapping folder. The Dockerfile will copy all 3 properties files and mapping folder and set environment variables pointing 
 to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually.
+
+One xlsx file containing the weather readings with the name "data.xlsx" needs to be included in the `config` folder. An example xlsx file can be found at HistoricalNUSDavisAgent\data\data.xlsx.
 
 To build and start the agent, open up the command prompt in the same directory as this README, run
 ```

@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Ignore("Requires a sample data excel file to be in the data folder")
+
 public class HistoricalNUSDavisXLSXConnectorTest {
 
 	@Rule
@@ -69,9 +70,6 @@ public class HistoricalNUSDavisXLSXConnectorTest {
     	connector = new HistoricalNUSDavisXLSXConnector(dataFilePath.toString(), connectorPropertiesFilePath);
     	JSONObject values = connector.retrieveReadings(dataFilePath.toString(), 18);
     	Assert.assertEquals(values.getJSONArray("sensors").getJSONObject(0).getJSONArray("data").length(), 3);
-
-        // No specific key should return the string class
-       // Assert.assertEquals("ts", retrieveReadings.invoke(connector, gasDataFilePath.toString(), 65));
     }
     
     private void createProperConnectorPropertiesFile() throws IOException {
