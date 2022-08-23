@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.historicalaqmesh;
 
 import org.json.JSONArray;
+
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import java.io.*;
@@ -8,7 +9,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-@Ignore("Requires sample data excel files for both gas and particle readings to be in the data folder")
+
+
+@Ignore("Requires sample data excel files in xlsx format for both gas and particle readings to be in the data folder")
+
 public class HistoricalAQMeshAgentXLSXConnectorTest {
 
 	@Rule
@@ -104,8 +108,7 @@ public class HistoricalAQMeshAgentXLSXConnectorTest {
     	values = connector.retrieveReadings(particleDataFilePath.toString(), 35);
     	Assert.assertEquals(values.length(), 3);
     	Assert.assertEquals(values.getJSONObject(0).length(), 35);
-        // No specific key should return the string class
-       // Assert.assertEquals("ts", retrieveReadings.invoke(connector, gasDataFilePath.toString(), 65));
+ 
     }
     
     private void createProperConnectorPropertiesFile() throws IOException {

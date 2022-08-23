@@ -54,11 +54,13 @@ or need to be accessible from the host machine via a fixed URL.
 This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README
 to explain the set-up of a knowledge graph triple store or Postgres database.
 
-### Property files
-For running the agent, three property files are required:
+### Property and xlsx files
+For running the agent, three property files and two xlsx files are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
 - One [property file for the excel file connector](#excel-connector-properties) defining the number of columns/keys for the gas readings excel file and for the particle and general readings excel file..
+- One xlsx file for gas readings with the name "aqmeshGasData.xlsx" needs to be included in the `config` folder.
+- One xlsx file for particle and general readings with the name "aqmeshParticleAndGeneralData.xlsx" needs to be included in the `config` folder.
 
 #### Agent properties
 The agent property file only needs to contain a single line:
@@ -152,6 +154,8 @@ which must have a 'scope' that [allows you to publish and install packages](http
 Modify `api.properties` and `client.properties` in the `config` folder accordingly. You should not modify the `agent.properties` file as the Dockerfile will set the environment variable 
 HISTORICALAQMESH_AGENT_MAPPINGS to point towards the location of the mapping folder. The Dockerfile will copy all 3 properties files and mapping folder and set environment variables pointing 
 to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually.
+
+The two xlsx files `aqmeshGasData.xlsx` containing gas readings and `aqmeshParticleAndGeneralData.xlsx` containing particle and general readings have to be included in the `config` folder.
 
 To build and start the agent, open up the command prompt in the same directory as this README, run
 ```
