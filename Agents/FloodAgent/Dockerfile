@@ -13,7 +13,7 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # only download dependencies
-COPY FloodAgent/pom.xml /root/pom.xml
+COPY ./pom.xml /root/pom.xml
 WORKDIR /root/
 RUN mvn clean dependency:resolve
 
@@ -26,7 +26,8 @@ FROM maven:3.8.6-openjdk-11-slim as builder
 # copy downloaded maven dependencies
 COPY --from=retriever /root/.m2 /root/.m2
 # copy Java source files
-ADD ./FloodAgent /root/FloodAgent
+ADD ./src /root/FloodAgent/src
+ADD ./pom.xml /root/FloodAgent/pom.xml
 
 # Build app
 WORKDIR /root/FloodAgent
