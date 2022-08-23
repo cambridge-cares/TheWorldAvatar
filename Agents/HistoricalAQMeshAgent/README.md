@@ -59,8 +59,8 @@ For running the agent, three property files and two xlsx files are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
 - One [property file for the excel file connector](#excel-connector-properties) defining the number of columns/keys for the gas readings excel file and for the particle and general readings excel file..
-- One xlsx file for gas readings with the name "aqmeshGasData.xlsx" needs to be included in the `config` folder.
-- One xlsx file for particle and general readings with the name "aqmeshParticleAndGeneralData.xlsx" needs to be included in the `config` folder.
+- One xlsx file for gas readings with the name "aqmeshGasData.xlsx" needs to be included in the `config` folder. An example xlsx file can be found at HistoricalAQMeshAgentCode\data\aqmeshGasData.xlsx.
+- One xlsx file for particle and general readings with the name "aqmeshParticleAndGeneralData.xlsx" needs to be included in the `config` folder. An example xlsx file can be found at HistoricalAQMeshAgentCode\data\aqmeshParticleAndGeneralData.xlsx.
 
 #### Agent properties
 The agent property file only needs to contain a single line:
@@ -155,7 +155,7 @@ Modify `api.properties` and `client.properties` in the `config` folder according
 HISTORICALAQMESH_AGENT_MAPPINGS to point towards the location of the mapping folder. The Dockerfile will copy all 3 properties files and mapping folder and set environment variables pointing 
 to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually.
 
-The two xlsx files `aqmeshGasData.xlsx` containing gas readings and `aqmeshParticleAndGeneralData.xlsx` containing particle and general readings have to be included in the `config` folder.
+The two xlsx files `aqmeshGasData.xlsx` containing gas readings and `aqmeshParticleAndGeneralData.xlsx` containing particle and general readings have to be included in the `config` folder. Example xlsx files can be found in the `data` folder.
 
 To build and start the agent, open up the command prompt in the same directory as this README, run
 ```
