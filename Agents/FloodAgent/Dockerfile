@@ -3,8 +3,8 @@
 FROM maven:3.8.6-openjdk-11-slim as retriever
 
 # Copy in Maven settings templates and credentials 
-COPY .m2 /root/.m2
-COPY ./credentials /root/credentials
+COPY ./docker/.m2 /root/.m2
+COPY ./docker/credentials /root/credentials
 
 # Populate settings templates with credentials, repo name
 WORKDIR /root/.m2
