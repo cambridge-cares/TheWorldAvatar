@@ -41,16 +41,11 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  * clients, to grab info for an individual feature.
  */
 public class Manager {
-    
+
     /**
      * Logger for reporting info/errors.
      */
     private static final Logger LOGGER = LogManager.getLogger(Manager.class);
-
-    /**
-     * Configuration when interacting with TheStack
-     */
-    private static final Config STACK_CONFIG = new Config();
 
     /**
      * Feature IRI.
@@ -85,29 +80,29 @@ public class Manager {
     /**
      * 
      */
-    private TimeSeriesClient<Instant> tsClient; 
-    
+    private TimeSeriesClient<Instant> tsClient;
+
     /**
      * Initialise a new InfoGrabber instance.
      * 
-     * @param iri Feature IRI.
+     * @param iri      Feature IRI.
      * @param endpoint KG endpoint for feature.
      */
     public Manager(String iri, String endpoint) {
-       this(iri, endpoint, null);
+        this(iri, endpoint, null);
     }
 
-      /**
+    /**
      * Initialise a new InfoGrabber instance.
      * 
-     * @param iri Feature IRI.
+     * @param iri      Feature IRI.
      * @param endpoint KG endpoint for feature.
-     * @param context servlet context for deployment
+     * @param context  servlet context for deployment
      */
     public Manager(String iri, String endpoint, ServletContext context) {
         this.iri = iri;
 
-        if(endpoint == null || endpoint.isEmpty()) {
+        if (endpoint == null || endpoint.isEmpty()) {
             // Get the blazegraph endpoint from the stack config
             this.endpoint = Config.bg_url;
             System.out.println("No endpoint set, using the stack's Blazegraph one.");
@@ -124,36 +119,13 @@ public class Manager {
      * 
      */
     public void readProperties() throws Exception {
-        String filePath = System.getenv("PROPERTIES_FILE");
-        if(filePath == null) filePath = "feature-info.properties";
-
-        try (InputStream inStream = new FileInputStream(filePath)) {
-            this.properties = new Properties();
-            this.properties.load(inStream);
-
-
-            if(this.properties.getProperty("timeseries_url") == null) {
-                throw new IllegalStateException("Cannot find required 'timeseries_url' key in properties!");
-            }
-            if(this.properties.getProperty("timeseries_user") == null) {
-                throw new IllegalStateException("Cannot find required 'timeseries_user' key in properties!");
-            }
-            if(this.properties.getProperty("timeseries_pass") == null) {
-                throw new IllegalStateException("Cannot find required 'timeseries_pass' key in properties!");
-            }
-
-            // Initialise timeseries client
-            this.tsClient = new TimeSeriesClient<Instant>(
+        // Initialise timeseries client
+        this.tsClient = new TimeSeriesClient<Instant>(
                 this.rsClient,
                 Instant.class,
-                this.properties.get("timeseries_url").toString(),
-                this.properties.get("timeseries_user").toString(),
-                this.properties.get("timeseries_pass").toString()
-            );
-
-
-            LOGGER.info("Read properties file.");
-        } 
+                Config.pg_url,
+                Config.pg_user,
+                Config.pg_password);
     }
 
     /**
@@ -173,9 +145,10 @@ public class Manager {
         JSONArray timeJSON = null;
         try {
             List<String> iris = new ArrayList<>();
-            if(metadata.get("Measurement") != null) iris.addAll(metadata.get("Measurement"));
-            if(metadata.get("Forecast") != null) iris.addAll(metadata.get("Forecast"));
-
+            if (metadata.get("Measurement") != null)
+                iris.addAll(metadata.get("Measurement"));
+            if (metadata.get("Forecast") != null)
+                iris.addAll(metadata.get("Forecast"));
 
             System.out.println("Measurement IRIs are...");
             iris.forEach(iri -> System.out.println(iri));
@@ -187,7 +160,7 @@ public class Manager {
             timeJSON = getTimeseriesJSON(metadata, tsObjects);
             LOGGER.info("Got the observed and forecast timeseries (if present).");
 
-        } catch(Exception excep) {
+        } catch (Exception excep) {
             LOGGER.error(excep);
         }
 
@@ -211,31 +184,32 @@ public class Manager {
         // Group the metadata
         HashMap<String, List<String>> metadata = new LinkedHashMap<>();
 
-        for(int i = 0; i < rawResult.length(); i++) {
+        for (int i = 0; i < rawResult.length(); i++) {
             JSONObject entry = (JSONObject) rawResult.get(i);
 
             entry.keySet().forEach(key -> {
                 String fixedKey = key.replaceAll(Pattern.quote("_"), " ");
-                if(!metadata.containsKey(fixedKey)) metadata.put(fixedKey, new ArrayList<>());
+                if (!metadata.containsKey(fixedKey))
+                    metadata.put(fixedKey, new ArrayList<>());
 
                 String value = entry.optString(key);
-                if(value == null) {
+                if (value == null) {
                     System.out.println("Null value for key: " + key);
 
                 } else {
 
                     // Misc fudging
-                    if(fixedKey.equals("Location") && value.contains("#")) {
+                    if (fixedKey.equals("Location") && value.contains("#")) {
                         String[] parts = value.split(Pattern.quote("#"));
                         value = parts[1] + ", " + parts[0];
                     }
-                    if(fixedKey.equals("Elevation")) {
+                    if (fixedKey.equals("Elevation")) {
                         value = value + "m";
                     }
-                    if(fixedKey.endsWith(" Unit")) {
+                    if (fixedKey.endsWith(" Unit")) {
                         value = Lookups.UNITS.get(value);
                     }
-                    if(fixedKey.endsWith(" Quantities")) {
+                    if (fixedKey.endsWith(" Quantities")) {
                         String[] parts = value.split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
                         value = String.join(" ", parts);
                     }
@@ -255,12 +229,13 @@ public class Manager {
         // Convert to JSON
         JSONObject metaJSON = new JSONObject();
 
-        for(String key : metaMap.keySet()) {
-            if(Lookups.HIDDEN_META.contains(key.toLowerCase())) continue;
+        for (String key : metaMap.keySet()) {
+            if (Lookups.HIDDEN_META.contains(key.toLowerCase()))
+                continue;
 
             // If there exists a capitalised version of this key, skip this one
             String upper = key.substring(0, 1).toUpperCase() + key.substring(1);
-            if(!upper.equals(key) && metaMap.containsKey(upper)) {
+            if (!upper.equals(key) && metaMap.containsKey(upper)) {
                 System.out.println("Map contains " + key + " and " + upper + ", skipping former");
                 continue;
             }
@@ -268,9 +243,9 @@ public class Manager {
             List<String> values = metaMap.get(key);
             Set<String> uniques = new LinkedHashSet<>(values);
 
-            if(uniques.size() == 1) {
+            if (uniques.size() == 1) {
                 String value = values.get(0);
-                if(value != null && !value.isEmpty()) {
+                if (value != null && !value.isEmpty()) {
                     metaJSON.put(key, values.get(0));
                 }
             } else {
@@ -280,8 +255,8 @@ public class Manager {
             }
         }
 
-         LOGGER.info("Converted metadata to JSON.");
-         return metaJSON;
+        LOGGER.info("Converted metadata to JSON.");
+        return metaJSON;
     }
 
     /**
@@ -291,7 +266,7 @@ public class Manager {
      * @throws IOException
      */
     protected String getQueryFile(String className) throws IOException {
-        if(context != null) {
+        if (context != null) {
             String fileName = "/WEB-INF/queries/" + className + ".sparql";
             System.out.println(fileName);
             try (InputStream inStream = context.getResourceAsStream(fileName)) {
@@ -304,7 +279,6 @@ public class Manager {
         }
     }
 
-
     /**
      * 
      * @throws Exception
@@ -314,40 +288,43 @@ public class Manager {
         String[] classes;
         try {
             classes = getFeatureClasses();
-            if(classes == null || classes.length == 0) {
+            if (classes == null || classes.length == 0) {
                 throw new Exception("Classes were null or not present!");
             }
-        } catch(Exception excep) {
+        } catch (Exception excep) {
             LOGGER.error(excep);
             throw excep;
         }
 
         // No specific query class, try looking for a pre-written sparql file
-        if(queryHandler == null) {
+        if (queryHandler == null) {
             boolean done = false;
 
-            for(String className : classes) {
-                if(done) continue;
+            for (String className : classes) {
+                if (done)
+                    continue;
 
                 String query = null;
-                if(Lookups.FILES.containsKey(className)) {
+                if (Lookups.FILES.containsKey(className)) {
                     query = getQueryFile(Lookups.FILES.get(className));
                 } else {
                     query = "";
                 }
 
                 try {
-                    if(!query.isBlank()) {
+                    if (!query.isBlank()) {
                         // Sanitise IRI
                         String fixedIRI = this.iri;
-                        if(!fixedIRI.startsWith("<")) fixedIRI = "<" + fixedIRI;
-                        if(!fixedIRI.endsWith(">")) fixedIRI += ">";
+                        if (!fixedIRI.startsWith("<"))
+                            fixedIRI = "<" + fixedIRI;
+                        if (!fixedIRI.endsWith(">"))
+                            fixedIRI += ">";
 
                         // Inject feature IRI
                         query = query.replaceAll(Pattern.quote("[IRI]"), fixedIRI);
 
                         // Inject ontop endpoint
-                        if(query.contains("[ONTOP]")) {
+                        if (query.contains("[ONTOP]")) {
                             String ontopEndpoint = "<" + Config.ot_url + ">";
                             query = query.replaceAll(Pattern.quote("[ONTOP]"), ontopEndpoint);
                             System.out.println("Ontop endpoint is: " + ontopEndpoint);
@@ -357,7 +334,7 @@ public class Manager {
                         this.queryHandler = new WrittenQuery(fixedIRI, this.endpoint, this.rsClient, query);
                         done = true;
                     }
-                } catch(Exception excep) {
+                } catch (Exception excep) {
                     // Ignore, file may be missing
                     System.out.println(excep);
                 }
@@ -365,14 +342,15 @@ public class Manager {
         }
 
         // If still no handler, bug out
-        if(queryHandler == null) {
+        if (queryHandler == null) {
             throw new Exception("No preset query handlers for this type of feature!");
         }
         return this.queryHandler;
     }
 
     /**
-     * Given a list of measurement or forecast IRIs, this method uses the TimeseriesClient to 
+     * Given a list of measurement or forecast IRIs, this method uses the
+     * TimeseriesClient to
      * query, populate, and return TimeSeries<Instant> instances.
      * 
      * @param iris measurement and/or forecast IRIs.
@@ -385,11 +363,11 @@ public class Manager {
         iris.forEach(iri -> {
             try {
                 TimeSeries<Instant> data = this.getTimeseriesObject(iri);
-                if(!data.getTimes().isEmpty()) {
+                if (!data.getTimes().isEmpty()) {
                     // Skip instantiated timeseries with no data
                     timeseries.put(iri, data);
                 }
-            } catch(Exception excep) {
+            } catch (Exception excep) {
                 // May not be instantiated, skip
                 LOGGER.warn("Could not get timeseries instance for IRI: " + iri);
             }
@@ -403,8 +381,9 @@ public class Manager {
      * @param iris
      * @return
      */
-    protected JSONArray getTimeseriesJSON(Map<String, List<String>> metadata, Map<String, TimeSeries<Instant>> timeseries) {
-        if(timeseries.isEmpty()) {
+    protected JSONArray getTimeseriesJSON(Map<String, List<String>> metadata,
+            Map<String, TimeSeries<Instant>> timeseries) {
+        if (timeseries.isEmpty()) {
             return new JSONArray();
         }
 
@@ -421,24 +400,24 @@ public class Manager {
         timeseries.keySet().forEach(iri -> {
             // Very dodgy way of handling this (worry about later)
 
-            if(iri.contains("Measure")) {
+            if (iri.contains("Measure")) {
                 int index = metadata.get("Measurement").indexOf(iri);
                 String unit = metadata.get("Measurement Unit").get(index);
                 units.put(iri, unit);
 
-                if(unit != null && unit.contains(";")) {
+                if (unit != null && unit.contains(";")) {
                     System.out.println(unit);
                 }
-               
+
                 String quantity = metadata.get("Measured Quantities").get(index);
                 headers.put(iri, quantity);
 
-            } else if(iri.contains("Forecast")) {
+            } else if (iri.contains("Forecast")) {
                 int index = metadata.get("Forecast").indexOf(iri);
                 String unit = metadata.get("Forecast Symbol").get(index);
                 units.put(iri, unit);
 
-                if(unit != null && unit.contains(";")) {
+                if (unit != null && unit.contains(";")) {
                     System.out.println(unit);
                 }
 
@@ -450,13 +429,12 @@ public class Manager {
 
         try {
             JSONArray timeseriesJSON = tsClient.convertToJSON(
-                new ArrayList<>(Arrays.asList(combined)), 
-                Collections.nCopies(timeseries.size(), 1),
-                new ArrayList<>(Arrays.asList(units)), 
-                new ArrayList<>(Arrays.asList(headers))
-            );
+                    new ArrayList<>(Arrays.asList(combined)),
+                    Collections.nCopies(timeseries.size(), 1),
+                    new ArrayList<>(Arrays.asList(units)),
+                    new ArrayList<>(Arrays.asList(headers)));
             return timeseriesJSON;
-        } catch(Exception excep) {
+        } catch (Exception excep) {
             excep.printStackTrace(System.out);
         }
 
@@ -476,26 +454,25 @@ public class Manager {
 
         // Fix the IRIs because the timeseries client is shit
         String fixedIRI = iri;
-        if(iri.startsWith("<") && iri.endsWith(">")) {
+        if (iri.startsWith("<") && iri.endsWith(">")) {
             fixedIRI = iri.substring(1, iri.length() - 1);
-        } 
+        }
 
         TimeSeries<Instant> result = this.tsClient.getTimeSeriesWithinBounds(
-            new ArrayList<>(Arrays.asList(fixedIRI)),
-            lowerBound,
-            upperBound
-        );
-        
+                new ArrayList<>(Arrays.asList(fixedIRI)),
+                lowerBound,
+                upperBound);
+
         return result;
     }
 
-       /**
+    /**
      * Run a query to determine the feature's class within the KG.
      */
     protected String[] getFeatureClasses() throws IOException {
         String[] classes = getFeatureClasses("get-class.sparql");
 
-        if(classes.length == 0) {
+        if (classes.length == 0) {
             return getFeatureClasses("get-class-credo.sparql");
         }
         return classes;
@@ -505,12 +482,13 @@ public class Manager {
      * Run a query to determine the feature's class within the KG.
      */
     protected String[] getFeatureClasses(String queryFile) throws IOException {
-        if(queryFile == null) queryFile = "get-class.sparql";
+        if (queryFile == null)
+            queryFile = "get-class.sparql";
 
         // Get query to determine class of feature
         String query = null;
 
-        if(context != null) {
+        if (context != null) {
             try (InputStream inStream = this.context.getResourceAsStream("/WEB-INF/queries/" + queryFile)) {
                 query = IOUtils.toString(inStream, StandardCharsets.UTF_8);
             }
@@ -519,17 +497,20 @@ public class Manager {
         }
 
         // Bug out or Inject IRI
-        if(query == null) return null;
+        if (query == null)
+            return null;
 
         String fixedIRI = iri;
-        if(!fixedIRI.startsWith("<")) fixedIRI = "<" + fixedIRI;
-        if(!fixedIRI.endsWith(">")) fixedIRI += ">";
-        
+        if (!fixedIRI.startsWith("<"))
+            fixedIRI = "<" + fixedIRI;
+        if (!fixedIRI.endsWith(">"))
+            fixedIRI += ">";
+
         // Inject feature IRI
         query = query.replaceAll(Pattern.quote("[IRI]"), fixedIRI);
 
         // Inject ontop endpoint
-        if(query.contains("[ONTOP]")) {
+        if (query.contains("[ONTOP]")) {
             String ontopEndpoint = "<" + Config.ot_url + ">";
             query = query.replaceAll(Pattern.quote("[ONTOP]"), ontopEndpoint);
         }
@@ -542,7 +523,7 @@ public class Manager {
         JSONArray jsonResult = new JSONArray(rawResult);
         String[] classes = new String[jsonResult.length()];
 
-        for(int i = 0; i < jsonResult.length(); i++) {
+        for (int i = 0; i < jsonResult.length(); i++) {
             JSONObject entry = jsonResult.optJSONObject(i);
             String clazz = entry.optString("class");
             classes[i] = clazz;
