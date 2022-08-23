@@ -14,12 +14,13 @@ from pyscipopt import Model
 import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
-import SMRSitePreSelection.DiscommissioningCost as DCost
+import SMRSitePreSelection.DecommissioningCost as DCost
 from SMRSitePreSelection.populationDensityCalculator import populationDensityCalculator
 from math import pi
 from sklearn.cluster import DBSCAN
 import numpy as np
 from shapely.geometry import MultiPoint
+from UK_Digital_Twin_Package import generatorCluster as genCluster
 
 class SitePreSelection(object):
 
@@ -40,7 +41,7 @@ class SitePreSelection(object):
             replaceRenewableGenerator:bool,
             clusterFlag:bool,
             maxmumSMRUnitAtOneSite:int,
-            DiscommissioningCostEstimatedLevel:int = 1 ## the number 0 indicates the using the minimum decommissioning cost, while 1 for middle and 2 for high
+            DecommissioningCostEstimatedLevel:int = 1 ## the number 0 indicates the using the minimum decommissioning cost, while 1 for middle and 2 for high
         ):
         ##-- Model Parameters --##  
         self.generatorToBeReplacedList = generatorToBeReplacedList
@@ -60,10 +61,10 @@ class SitePreSelection(object):
         self.replaceRenewableGenerator = replaceRenewableGenerator
         self.clusterFlag = clusterFlag
 
-        if DiscommissioningCostEstimatedLevel in [0,1,2]:
-            self.DcLevel = DiscommissioningCostEstimatedLevel
+        if DecommissioningCostEstimatedLevel in [0,1,2]:
+            self.DcLevel = DecommissioningCostEstimatedLevel
         else:
-            raiseExceptions("Discommissioning Cost Estimated Level must be 0 for minimum cost, 1 for middle and 2 for high.")
+            raiseExceptions("Decommissioning Cost Estimated Level must be 0 for minimum cost, 1 for middle and 2 for high.")
         
         self.totalRenewableCapacity = 0
         for gen in self.generatorToBeReplacedList: 
@@ -125,7 +126,7 @@ class SitePreSelection(object):
                             replacedCapacity += float(gen["Capacity"]) * self.varSets[bvname]
             replacedCapacity += self.totalRenewableCapacity * float(self.backUpCapRatio) * (1 - 1.08 ** (-1 * self.carbonTax))
 
-            print("The carbonTax is: ", self.carbonTax, "and the backup ratio is: ", round(float(self.backUpCapRatio) * (1 - 1.08 ** (-1 * self.carbonTax), 4)))
+            print("The carbonTax is: ", self.carbonTax, "and the backup ratio is: ", round(float(self.backUpCapRatio) * (1 - 1.08 ** (-1 * self.carbonTax)), 4))
         else:
             print('===This is a pure replacement scenario===')
             for s in range(len(self.generatorToBeReplacedList)):
@@ -146,7 +147,7 @@ class SitePreSelection(object):
 
         ##-- Formulate the objective function --##
         totalSMRCapitalCost = 0
-        totalDiscommissioningCost = 0
+        totalDecommissioningCost = 0
         totalProtentialCarbonCost = 0
         totalLifeMonetaryCost = 0
         
@@ -157,12 +158,22 @@ class SitePreSelection(object):
             existingGenFuelType = self.generatorToBeReplacedList[s]["fuelOrGenType"]
             annualOperatingHours = self.generatorToBeReplacedList[s]["annualOperatingHours"]
             CO2EmissionFactor = self.generatorToBeReplacedList[s]["CO2EmissionFactor"]
+           
             carbonCost = 0
 
-            if existingGenFuelType in DCost.DiscommissioningCost.keys():
-                dc = DCost.DiscommissioningCost[existingGenFuelType][self.DcLevel]
-            elif existingGenFuelType is None:
+            if existingGenFuelType in DCost.DecommissioningCost.keys():
+                dc = DCost.DecommissioningCost[existingGenFuelType][self.DcLevel]
+            elif not self.replaceRenewableGenerator and existingGenFuelType is 'SMR':
                 dc = 0
+            elif self.replaceRenewableGenerator and existingGenFuelType is 'SMR':
+                sumOfdcCapaMultipled = 0
+                if 'beClusteredGenerators' in self.generatorToBeReplacedList[s].keys():
+                    beClusteredGenerators = self.generatorToBeReplacedList[s]['beClusteredGenerators']
+                    for gen in beClusteredGenerators:
+                        if gen['fuelOrGenType'] in DCost.DecommissioningCost.keys():
+                            sumOfdcCapaMultipled += float(DCost.DecommissioningCost[gen['fuelOrGenType']][self.DcLevel]) * float(gen['Capacity'])
+                        else:
+                            raise Exception("Cannot find the decommissioning cost for", existingGenFuelType)
             else:
                 raise Exception("Cannot find the decommissioning cost for", existingGenFuelType)
             
@@ -177,17 +188,22 @@ class SitePreSelection(object):
                 bv = self.varSets[bvname]
                 ## totalSMRCapitalCost += int(i) * bv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L))) 
                 if i == 0:
+                    ## half backup and half replacement: carbon emitted power plant
                     if not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator and not ('Solar' in existingGenFuelType or 'Wind' in existingGenFuelType or existingGenFuelType is None):
-                        totalDiscommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-                    elif not self.pureBackUpAllGenerator and self.replaceRenewableGenerator:
-                        totalDiscommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
-                    totalProtentialCarbonCost += bv * carbonCost * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                        totalDecommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                    ## pure replacement: for non-clustered power plant
+                    elif not self.pureBackUpAllGenerator and self.replaceRenewableGenerator and existingGenFuelType is not 'SMR':
+                        totalDecommissioningCost += (1-bv) * existingGenCap * dc * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                    ## pure replacement: for clustered power plant
+                    elif self.replaceRenewableGenerator and existingGenFuelType is 'SMR': 
+                        totalDecommissioningCost += (1-bv) * sumOfdcCapaMultipled * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
+                    if not self.pureBackUpAllGenerator:     
+                        totalProtentialCarbonCost += bv * carbonCost * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
                 else: 
                     rs =  (self.r0/1000) * ((i * self.Cap_SMR)**(0.5))
-                    ##rs =  (self.r0/1000) * (i * self.Cap_SMR)
-                    print("Performing the population density calculation for:", self.generatorToBeReplacedList[s])
+                    ## print("Performing the population density calculation for:", self.generatorToBeReplacedList[s])
                     print("The count of the generator is:", count)
-                    print('i is:', i)
+                    print("i is:", i)
                     population = populationDensityCalculator(self.generatorToBeReplacedList[s]["LatLon"], rs, self.geospatialQueryEndpointLabel)
                     totalLifeMonetaryCost += bv * population * self.FP * self.Hu * self.D / (1 - ((1 + self.D)**(-1 * self.L)))
                     totalSMRCapitalCost += int(i) * bv * self.Cost_SMR * self.D / (1 - ((1 + self.D)**(-1 * self.L))) 
@@ -195,19 +211,21 @@ class SitePreSelection(object):
                     count += 1
 
         ##-- Set up the objective function --##
-        self.model.setObjective(totalSMRCapitalCost + totalDiscommissioningCost + totalProtentialCarbonCost + totalLifeMonetaryCost, "minimize")
-        #self.model.setObjective(totalSMRCapitalCost + totalDiscommissioningCost + totalProtentialCarbonCost, "minimize")
-
+        self.model.setObjective(totalSMRCapitalCost + totalDecommissioningCost + totalProtentialCarbonCost + totalLifeMonetaryCost, "minimize")
+        
         ##-- Set up optimisation method --##
         self.model.optimize()
 
-##TODO: How to fomulate the results and the new clustered site needs to be connected to a bus
         ##-- Results post processing --##
         print("Optimal value:", self.model.getObjVal())
         totalSMR = 0
         self.solarAndWindSiteSelected = []
         self.clusteredSiteSelected = []
         self.otherSiteSelected = []
+        selectedbvNames = []
+        numOfReplaced = 0
+        numOfBackup = 0
+        numOfPlacedAtClusteredSite = 0
         for s in range(len(self.binaryVarNameList)):
             bvList = self.binaryVarNameList[s]
             numOfSMR = 0
@@ -215,27 +233,37 @@ class SitePreSelection(object):
                 print((self.varSets[bvname].name), " = ", (self.model.getVal(self.varSets[bvname])))
                 totalSMR += self.model.getVal(self.varSets[bvname]) * bvList.index(bvname)
                 numOfSMR += self.model.getVal(self.varSets[bvname]) * bvList.index(bvname)
+                if int(self.model.getVal(self.varSets[bvname])) > 0:
+                    selectedbvNames.append(bvname)
             if numOfSMR >= 1:
                 self.generatorToBeReplacedList[s].update({"numberOfSMR": numOfSMR})
                 if bvList in self.solarOrWindbinaryVarNameList:
-                    self.solarAndWindSiteSelected.append(self.generatorToBeReplacedList[s]) 
+                    self.solarAndWindSiteSelected.append(self.generatorToBeReplacedList[s])                     
+                    numOfBackup += 1
                 elif bvList in self.newClusteredSiteVarNameList:
-                    self.clusteredSiteSelected.append(self.generatorToBeReplacedList[s]) 
+                    self.clusteredSiteSelected.append(self.generatorToBeReplacedList[s])                    
+                    numOfPlacedAtClusteredSite += 1
                 else:
-                    self.otherSiteSelected.append(self.generatorToBeReplacedList[s]) 
+                    self.otherSiteSelected.append(self.generatorToBeReplacedList[s])                    
+                    numOfReplaced += 1
 
         totalSMRCapa = totalSMR * self.Cap_SMR
-        ## print(self.siteSelected, len(self.siteSelected))
         capa = 0
-        for gen in self.otherSiteSelected:
+        for gen in self.otherSiteSelected: ## to be replaced capacity
             capa += float(gen["Capacity"])
-        capa +=  self.totalRenewableCapacity * float(self.backUpCapRatio) * (1 - 1.08 ** (-1 * self.carbonTax))
+
+        if not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator: 
+            capa += self.totalRenewableCapacity * float(self.backUpCapRatio) * (1 - 1.08 ** (-1 * self.carbonTax)) ## to be back up
 
         print("The number of generator to be replaced and backup is: ", len(self.solarAndWindSiteSelected + self.otherSiteSelected))
-        print('Replaced and backup capacity: ', capa)
-        print('The totalSMR is: ', totalSMR, 'totalSMRCapa: ', totalSMRCapa)
-        return
+        print("Total replaced and backup capacity: ", capa)
+        print("The total number of SMR is: ", totalSMR, "total SMR Capacity: ", totalSMRCapa)
 
+        print(selectedbvNames, numOfReplaced, numOfBackup, numOfPlacedAtClusteredSite)
+
+        return selectedbvNames
+
+    """The generator cluster function"""
     def siteCluster(self):
         genNotCluster = []  
         toBeCluster = [] 
@@ -273,6 +301,7 @@ class SitePreSelection(object):
 
         outliers = []
         beClastered = [ [] for i in range(max(label) + 1) ]
+        beClasteredGenerator = [ [] for i in range(max(label) + 1) ]
         capacityForEachCluster = [ 0 for i in range(max(label) + 1) ]
         centriodList = []
 
@@ -284,6 +313,8 @@ class SitePreSelection(object):
                 outliers.append(toBeCluster[i])
             else: 
                 beClastered[int(clusteringlabel)].append((l[1], l[0]))
+                originalGenerator = toBeCluster[i]
+                beClasteredGenerator[int(clusteringlabel)].append(originalGenerator)
                 capacityForEachCluster[int(clusteringlabel)] += float(toBeCluster[i]['Capacity'])
 
         ## Record the number of non-clustered and outliers
@@ -303,6 +334,7 @@ class SitePreSelection(object):
         clusteredSite = []
         for centroid in centriodList:
             n = centriodList.index(centroid)
+            beclusteredgens = beClasteredGenerator[n]
             gen = {'PowerGenerator': None, 
                     'Bus': None, 
                     'Capacity': capacityForEachCluster[n], 
@@ -310,12 +342,13 @@ class SitePreSelection(object):
                     'fuelOrGenType': 'SMR', 
                     'annualOperatingHours': 0, 
                     'CO2EmissionFactor': 0.0, 
-                    'place': None}
+                    'place': None,
+                    'beClusteredGenerators': beclusteredgens}
             clusteredSite.append(gen)
 
         self.generatorToBeReplacedList = genNotCluster + clusteredSite
 
-        print(self.generatorToBeReplacedList , len(self.generatorToBeReplacedList))
+        ## print(self.generatorToBeReplacedList, len(self.generatorToBeReplacedList))
         return
         
 if __name__ == '__main__': 

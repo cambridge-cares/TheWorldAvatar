@@ -51,6 +51,7 @@ from pypower.idx_bus import BUS_I, PD, QD, VM, VA, GS, BUS_TYPE, PV, PQ, REF
 from pypower.idx_brch import PF, PT, QF, QT, F_BUS, TAP, SHIFT, T_BUS, BR_R, BR_X, BR_STATUS
 from pypower.idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 import matplotlib.pyplot as plt
+from UK_Digital_Twin_Package import generatorCluster as genCluster
 
 ## create configuration objects
 SLASH = '/'
@@ -89,6 +90,7 @@ class OptimalPowerFlowAnalysis:
         DiscommissioningCostEstimatedLevel:int,
         pureBackUpAllGenerator:bool,
         replaceRenewableGenerator:bool,
+        clusterFlag:bool,
         queryEndpointLabel:str, geospatialQueryEndpointLabel:str, endPointURL:str, endPointUser:str = None, endPointPassWord:str = None,
         OWLFileStoragePath = None, updateLocalPowerPlantOWLFileFlag:bool = True
         ):
@@ -172,6 +174,11 @@ class OptimalPowerFlowAnalysis:
             self.replaceRenewableGenerator = False
             print("!!!WARNING: As pureBackUpAllGenerator has been set to be True, the replaceRenewableGenerator flag is forced to alter to False!!!")
 
+        if type(clusterFlag) is not bool:
+            raiseExceptions("clusterFlag has to be a bool number")
+        else:
+            self.clusterFlag = clusterFlag
+
             
         self.retrofitGenerator = retrofitGenerator # GeneratorIRI, location, capacity
         self.retrofitGenerationFuelOrGenType = retrofitGenerationTechTypeOrGenerationTechnology    
@@ -213,48 +220,54 @@ class OptimalPowerFlowAnalysis:
                 for iri in self.retrofitGenerationFuelOrGenType:
                     parse(iri, rule='IRI')
                 retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryEndpointLabel)
-            ##FIXME: testing, only limits 5 returns form the query results
             self.retrofitListBeforeSelection = retrofitListBeforeSelection
             retrofitListBeforeSelection_ = retrofitListBeforeSelection.copy()
 
             print("===The number of the generator that goes to the site selection method is:===", len(retrofitListBeforeSelection))
-
-            # totalCapa = 0
-            # for gen in retrofitListBeforeSelection:
-            #     totalCapa += float(gen["Capacity"])
-
-            # print('The total capa of Solar is: ', totalCapa)
-
+    
             ## Perform site pre-selection analysis
             siteSelector = sp.SitePreSelection(self.geospatialQueryEndpointLabel, retrofitListBeforeSelection, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost, \
                 self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.backUpCapacityRatio, \
-                self.bankRate, self.CarbonTax, self.pureBackUpAllGenerator, self.replaceRenewableGenerator, self.maxmumSMRUnitAtOneSite, self.DiscommissioningCostEstimatedLevel)
+                self.bankRate, self.CarbonTax, self.pureBackUpAllGenerator, self.replaceRenewableGenerator, self.clusterFlag, self.maxmumSMRUnitAtOneSite, self.DiscommissioningCostEstimatedLevel)
             siteSelector.SMRSitePreSelector()
     
-            self.solarAndWindSiteSelected = siteSelector.solarAndWindSiteSelected
-            self.otherSiteSelected = siteSelector.otherSiteSelected
-            self.allSelectedSite = siteSelector.solarAndWindSiteSelected + siteSelector.otherSiteSelected
+            self.solarAndWindSiteSelected = siteSelector.solarAndWindSiteSelected ## solar and wind original sites
+            self.clusteredSiteSelected = siteSelector.clusteredSiteSelected ## the new site after clustred and selected
+            self.otherSiteSelected = siteSelector.otherSiteSelected ## the sites are selected to be replaced
+            self.allSelectedSite = siteSelector.solarAndWindSiteSelected + siteSelector.otherSiteSelected + self.clusteredSiteSelected
 
-            siteToBeReplacedOrBackUp_copy = []
-            for item in siteSelector.solarAndWindSiteSelected + siteSelector.otherSiteSelected:
-                item_ = item.copy()
-                siteToBeReplacedOrBackUp_copy.append(item_)
+            ## create an instance of class generatorCluster
+            gc = genCluster.generatorCluster()
+           
+            ## pass the arrguments to the cluster method closestBus
+            self.otherSiteSelected  = gc.closestBus(self.busNodeList, self.otherSiteSelected, [], "BusLatLon", "BusNodeIRI", "LatLon")
 
-            for site in siteToBeReplacedOrBackUp_copy:
-                retrofitListBeforeSelection_.remove(site)
+            for gen in self.otherSiteSelected :
+                gen['Bus'] = gen['BusNodeIRI']
+                del gen['BusNodeIRI']
+                del gen['BusLatLon']
+            
+            # siteToBeReplacedOrBackUp_copy = []
+            # for item in siteSelector.otherSiteSelected:
+            # #for item in siteSelector.solarAndWindSiteSelected + siteSelector.otherSiteSelected:
+            #     item_ = item.copy()
+            #     siteToBeReplacedOrBackUp_copy.append(item_)
 
-            self.siteNotSelected = retrofitListBeforeSelection_ ## those not to be replaced generator will keep running or shut down
+            # for site in siteToBeReplacedOrBackUp_copy:
+            #     retrofitListBeforeSelection_.remove(site)
+
+            ##self.siteNotSelected = retrofitListBeforeSelection_ ## those not to be replaced generator will keep running or shut down
         else:
             self.solarAndWindSiteSelected = []
             self.otherSiteSelected = []
             self.allSelectedSite = []
-            self.siteNotSelected = []
+            ##self.siteNotSelected = []
 
         print("The carbon tax is £/tCO2", self.CarbonTax)
         print("The total number of generator is", len(self.generatorNodeList))
         print("The total number of protential sites is", len(self.retrofitListBeforeSelection))
         print("The total number of sites to be replcced by SMR is", len(self.allSelectedSite))
-        print("The total number of sites not to be replaced (shut-down)", len(self.siteNotSelected))
+        ##print("The total number of sites not to be replaced (shut-down)", len(self.siteNotSelected))
         return 
 
     """This method is called to initialize the model entities objects: model input"""
@@ -312,21 +325,19 @@ class OptimalPowerFlowAnalysis:
         ###=== Initialisation of the Generator Model Entities ===###
         capa_demand_ratio = model_EGenABoxGeneration.demandAndCapacityRatioCalculator(self.generatorNodeList, self.topologyNodeIRI, self.startTime_of_EnergyConsumption)
         ## remove the shut down generator from the generatorNodeList
-        print('The total number of generators:', len(self.generatorNodeList))
+        print('The total number of existing generators:', len(self.generatorNodeList))
         generatorNodeListNonDeleted = self.generatorNodeList.copy()
 
-        if self.pureBackUpAllGenerator:
+        ## Delete the replaced sites from the original generatorNodeList
+        if self.pureBackUpAllGenerator: ## purely back up all generators
             pass
-            # for egen in generatorNodeListNonDeleted:
-            #     if egen[0] in [gen["PowerGenerator"] for gen in self.retrofitListBeforeSelection]:
-            #         self.generatorNodeList.remove(egen)
-        elif not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator:
+        elif not self.pureBackUpAllGenerator and not self.replaceRenewableGenerator: ## half replace and half back up
             for egen in generatorNodeListNonDeleted:
                 if egen[0] in [gen["PowerGenerator"] for gen in self.otherSiteSelected]:
                     self.generatorNodeList.remove(egen)
-        else:
+        else: ## purely replace
             for egen in generatorNodeListNonDeleted:
-                if egen[0] in [gen["PowerGenerator"] for gen in (self.allSelectedSite)]:
+                if egen[0] in [gen["PowerGenerator"] for gen in (self.solarAndWindSiteSelected + self.otherSiteSelected)]:
                     self.generatorNodeList.remove(egen)
 
         print("The number of the existing power plant is", len(self.generatorNodeList))
@@ -341,6 +352,7 @@ class OptimalPowerFlowAnalysis:
         
         ### Initialisation of the SMR Generator Model Entities ###
         if self.withRetrofit is True:
+            ## extract the emssion factor
             for i in range(len(modelFactorArrays)):
                 if str(self.newGeneratorType) in modelFactorArrays[i]:
                     factorArray = modelFactorArrays[i]
@@ -348,7 +360,7 @@ class OptimalPowerFlowAnalysis:
             if not 'factorArray' in locals():
                 raiseExceptions("The given generator type which used to retrofit the existing genenrators cannot be found in the factor list, please check the generator type.")
 
-            if self.pureBackUpAllGenerator or self.replaceRenewableGenerator:
+            if self.pureBackUpAllGenerator or self.replaceRenewableGenerator: ## pure backup or pure replacement
                 for egen_re in (self.allSelectedSite):
                     if self.pureBackUpAllGenerator:
                         objectName = UK_PG.UKEGenModel.EGenBackUpKey + str(self.allSelectedSite.index(egen_re)) ## egen_toBeRetrofitted model python object name 
@@ -362,8 +374,8 @@ class OptimalPowerFlowAnalysis:
                     ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, capa_demand_ratio, self.renewableEnergyOutputRatio)
                     self.GeneratorToBeAllRetrofittedOrAllBackUpObjectList.append(objectName)
                     #self.GeneratorObjectList.append(objectName)
-            else:
-                for egen_re in self.otherSiteSelected:
+            else: ## half replacement and half backup
+                for egen_re in self.otherSiteSelected + self.clusteredSiteSelected:
                     objectName = UK_PG.UKEGenModel.EGenRetrofitKey + str(self.otherSiteSelected.index(egen_re)) ## egen_toBeRetrofitted model python object name 
                     newGeneratorNodeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RealizationAspectKey + str(uuid.uuid4()) 
                     uk_egen_re_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), newGeneratorNodeIRI, 0, str(self.newGeneratorType), str(egen_re["PowerGenerator"]), self.CarbonTax, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
@@ -448,7 +460,7 @@ class OptimalPowerFlowAnalysis:
                 ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(index_gen)), key)
             index_gen += 1
 
-        if self.pureBackUpAllGenerator or self.replaceRenewableGenerator:
+        if self.pureBackUpAllGenerator or self.replaceRenewableGenerator: ## pure backup and pure replacement
             index_regen = 0
             while index_gen < self.numOfExistAndRetrofittedGenerators and self.withRetrofit is True:
                 for key in UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS:
@@ -459,7 +471,7 @@ class OptimalPowerFlowAnalysis:
                         ppc["gen"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + str(index_regen)), key)
                 index_gen += 1
                 index_regen += 1
-        else:
+        else: ## half backup and half replacement
             index_regen = 0
             while index_gen < (len(self.GeneratorObjectList) + len(self.GeneratorToBeRetrofittedObjectList)) and self.withRetrofit is True:
                 for key in UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS:
@@ -492,7 +504,7 @@ class OptimalPowerFlowAnalysis:
                     ppc["gencost"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(index_gen)), key)
             index_gen += 1
 
-        if self.pureBackUpAllGenerator or self.replaceRenewableGenerator:
+        if self.pureBackUpAllGenerator or self.replaceRenewableGenerator: ## pure backup or pure replacement
             index_regen = 0
             while index_gen < self.numOfExistAndRetrofittedGenerators and self.withRetrofit is True:
                 for key in UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS:
@@ -513,7 +525,7 @@ class OptimalPowerFlowAnalysis:
                             ppc["gencost"][index_gen][index] = getattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + str(index_regen)), key)
                 index_gen += 1
                 index_regen += 1
-        else:
+        else: ## half replacement and half backup
             index_regen = 0
             while index_gen < (len(self.GeneratorObjectList) + len(self.GeneratorToBeRetrofittedObjectList)) and self.withRetrofit is True:
                 for key in UK_PG.UKEGenModel_CostFunc.INPUT_VARIABLE_KEYS:
@@ -669,7 +681,7 @@ class OptimalPowerFlowAnalysis:
                 setattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenKey + str(index_gen)), key, generatorPostResult[index_gen][index])        
             index_gen += 1
 
-        if self.pureBackUpAllGenerator or self.replaceRenewableGenerator:
+        if self.pureBackUpAllGenerator or self.replaceRenewableGenerator: ## pure backup or pure replacement
             index_regen = 0
             while index_gen < self.numOfExistAndRetrofittedGenerators and self.withRetrofit is True:
                 for key in UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS:
@@ -680,7 +692,7 @@ class OptimalPowerFlowAnalysis:
                         setattr(self.ObjectSet.get(UK_PG.UKEGenModel.EGenRetrofitKey + str(index_regen)), key, generatorPostResult[index_gen][index])        
                 index_regen += 1
                 index_gen += 1 
-        else:
+        else: ## half replacement and half backup
             index_regen = 0
             while index_gen < (len(self.GeneratorObjectList) + len(self.GeneratorToBeRetrofittedObjectList)) and self.withRetrofit is True:
                 for key in UK_PG.UKEGenModel.OUTPUT_VARIABLE_KEYS:
@@ -713,6 +725,7 @@ class OptimalPowerFlowAnalysis:
         BranchModelKGInstanceCreator(self.ObjectSet, self.BranchObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
             self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath)
         ##FIXME: self.GeneratorToBeRetrofittedObjectList, self.GeneratorToBeBackUpObjectList, self.GeneratorToBeAllRetrofittedOrAllBackUpObjectList 
+        ##FIXME: modify the clustered generator instances
         GeneratorModelKGInstanceCreator(self.ObjectSet, self.GeneratorObjectList, self.GeneratorToBeRetrofittedObjectList, self.OPFOrPF, self.newGeneratorType, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
         self.timeStamp, self.agentIRI, self.derivationClient, self.endPointURL, self.OWLFileStoragePath)  
         return 
@@ -800,22 +813,26 @@ if __name__ == '__main__':
     loadAllocatorName = "regionalDemandLoad"
     EBusModelVariableInitialisationMethodName= "defaultInitialisation"
     ELineInitialisationMethodName = "defaultBranchInitialiser"
-    CarbonTax = 2000
+    CarbonTax = 1000
     piecewiseOrPolynomial = 2
     pointsOfPiecewiseOrcostFuncOrder = 2
     baseMVA = 150
     withRetrofit = True
     retrofitGenerator = []
-    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"]
-    # ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Solar", 
+    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Solar", "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal"]
     # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
+    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Solar", 
     # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
-    ##retrofitGenerationTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear"]
+
+    ##retrofitGenerationTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear",
+    #  "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
+    # "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal",]
     newGeneratorType = "SMR"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
 
     pureBackUpAllGenerator = False
     replaceRenewableGenerator = False
+    clusterFlag = True
 
     discountRate = 0.02
     bankRate = 0.0125
@@ -834,7 +851,7 @@ if __name__ == '__main__':
     testOPF1 = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, AgentIRI, "2017-01-31", slackBusNodeIRI, loadAllocatorName, EBusModelVariableInitialisationMethodName, ELineInitialisationMethodName,
         CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, 
         projectLifeSpan, SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, backUpCapacityRatio, renewableEnergyOutputRatio,
-        DiscommissioningCostEstimatedLevel, pureBackUpAllGenerator, replaceRenewableGenerator, queryEndpointLabel, geospatialQueryEndpointLabel, updateEndPointURL)
+        DiscommissioningCostEstimatedLevel, pureBackUpAllGenerator, replaceRenewableGenerator, clusterFlag,queryEndpointLabel, geospatialQueryEndpointLabel, updateEndPointURL)
     
     testOPF1.retrofitGeneratorInstanceFinder()
     testOPF1.ModelPythonObjectInputInitialiser()
@@ -1005,7 +1022,6 @@ if __name__ == '__main__':
    
     print("Total capacity being replaced: ", totalCapacityBeingReplaced)
     print("Total capacity being back up: ", totalCapacityBeingBackup)
-    print("Total number of SMR: ", len(retrofitResults))
 
     # for gen in testOPF1.GeneratorObjectList:
     #     i = testOPF1.GeneratorObjectList.index(gen)

@@ -333,22 +333,22 @@ def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClu
         i += 1
     
     res_queryPowerPlantAttributes = list(query_topo.queryPowerPlantAttributes(endpoint_label))
-    # create an instance of class generatorCluster
+    ## create an instance of class generatorCluster
     gc = genCluster.generatorCluster()
-    # get the cluster method via getattr function 
+    ## get the cluster method via getattr function 
     genClusterMethod = getattr(gc, generatorClusterFunctionName)
-    # pass the arrguments to the cluster method
+    ## pass the arrguments to the cluster method
     bus_generator_assignment_list = genClusterMethod(busInfoList, res_queryPowerPlantAttributes, aggregatedBusList)
     
-    # check if the allocator method is applicable
+    ## check if the allocator method is applicable
     while bus_generator_assignment_list == None:
         generatorClusterFunctionName = str(input('The current generator cluster is not applicable. Please choose another cluster: '))
-        # get the load allocation method via getattr function 
+        ## get the load allocation method via getattr function 
         genClusterMethod = getattr(gc, generatorClusterFunctionName)
-        # pass the arrguments to the cluster method
+        ## pass the arrguments to the cluster method
         bus_generator_assignment_list = genClusterMethod(busInfoList, res_queryPowerPlantAttributes, aggregatedBusList)    
 
-    for busGen in bus_generator_assignment_list: # Bus_node, EBus, Bus_lat_lon[], Bus_LACode; PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology
+    for busGen in bus_generator_assignment_list: ## Bus_node, EBus, Bus_lat_lon[], Bus_LACode; PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology
         ## Link the generator_node, EGen_node and their PowerGenerator of the power plant
         graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(busGen['PowerGenerator'])))
         graph.add((URIRef(busGen['PowerGenerator']), URIRef(meta_model_topology.hasOutput.iri), URIRef(busGen['Bus_node'])))

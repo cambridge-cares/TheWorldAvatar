@@ -216,8 +216,9 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
         ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
 
         ?PowerPlant ontoenergysystem:hasRelevantPlace/owl:sameAs ?place .
-        } LIMIT 5
+        } LIMIT 20
         """% (topologyNodeIRI, topologyNodeIRI, type, type)
+        ## FIXME: delete this query limitation
         
         queryStr_totalGeneration = """
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
