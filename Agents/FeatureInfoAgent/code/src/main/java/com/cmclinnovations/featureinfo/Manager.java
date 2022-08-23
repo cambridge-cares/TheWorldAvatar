@@ -184,39 +184,22 @@ public class Manager {
         // Group the metadata
         HashMap<String, List<String>> metadata = new LinkedHashMap<>();
 
+        // Iterate through rows
         for (int i = 0; i < rawResult.length(); i++) {
-            JSONObject entry = (JSONObject) rawResult.get(i);
+            JSONObject row = (JSONObject) rawResult.get(i);
 
-            entry.keySet().forEach(key -> {
-                String fixedKey = key.replaceAll(Pattern.quote("_"), " ");
-                if (!metadata.containsKey(fixedKey))
-                    metadata.put(fixedKey, new ArrayList<>());
+            // Property name
+            String property = row.optString("label");
+            if(property == null) continue;
 
-                String value = entry.optString(key);
-                if (value == null) {
-                    System.out.println("Null value for key: " + key);
+            // Property value
+            String value = row.optString("value");
+            if(value == null) value = "Unknown";
 
-                } else {
-
-                    // Misc fudging
-                    if (fixedKey.equals("Location") && value.contains("#")) {
-                        String[] parts = value.split(Pattern.quote("#"));
-                        value = parts[1] + ", " + parts[0];
-                    }
-                    if (fixedKey.equals("Elevation")) {
-                        value = value + "m";
-                    }
-                    if (fixedKey.endsWith(" Unit")) {
-                        value = Lookups.UNITS.get(value);
-                    }
-                    if (fixedKey.endsWith(" Quantities")) {
-                        String[] parts = value.split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
-                        value = String.join(" ", parts);
-                    }
-
-                    metadata.get(fixedKey).add(value);
-                }
-            });
+            if (!metadata.containsKey(property)) {
+                metadata.put(property, new ArrayList<>());
+            }
+            metadata.get(property).add(value);
         }
         return metadata;
     }
@@ -482,8 +465,7 @@ public class Manager {
      * Run a query to determine the feature's class within the KG.
      */
     protected String[] getFeatureClasses(String queryFile) throws IOException {
-        if (queryFile == null)
-            queryFile = "get-class.sparql";
+        if (queryFile == null) queryFile = "get-class.sparql";
 
         // Get query to determine class of feature
         String query = null;
@@ -493,7 +475,7 @@ public class Manager {
                 query = IOUtils.toString(inStream, StandardCharsets.UTF_8);
             }
         } else {
-            query = Files.readString(Paths.get("WEB-INF/queries/get-class.sparql"));
+            query = Files.readString(Paths.get("WEB-INF/queries/" + queryFile));
         }
 
         // Bug out or Inject IRI
