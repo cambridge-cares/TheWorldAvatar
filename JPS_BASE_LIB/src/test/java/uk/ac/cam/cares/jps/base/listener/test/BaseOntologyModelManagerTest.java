@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.listener.test;
 
+import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.QuerySolution;
@@ -53,6 +54,10 @@ public class BaseOntologyModelManagerTest {
     @Test
     public void testSaveToOwl() throws Exception {
 
+    	// (Re)set default readhook. OntDocumentManager is a singleton and is modified by
+    	// uk.ac.cam.cares.jps.base.query.fed.test causing this test to fail.
+    	OntDocumentManager.getInstance().setReadHook(new OntDocumentManager.DefaultReadHook());
+    	
         // Create a test model that should be written to a file
         OntModel testModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
         // The model contains a single triple
