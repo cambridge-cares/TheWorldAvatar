@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.sparql.expr.Expr;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
@@ -206,6 +208,9 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	@Override
 	public List<String> getFromStore(String targetResourceLabel, StoreClientInterface storeClient){
 		
+		ExprFactory exprFactory = new ExprFactory();
+		Expr exprRegex = exprFactory.regex(exprFactory.str( QUESTION_MARK.concat(LABEL)), targetResourceLabel, "");
+		
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -215,7 +220,8 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addWhere( QUESTION_MARK.concat(RESOURCE), RDF_PREFIX.concat(COLON).concat(RDF_TYPE), ONTOKGROUTER_PREFIX.concat(COLON).concat(TARGET_RESOURCE) )
 			    .addOptional( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) )
 				.addOptional(QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_UPDATE_ENDPOINT), QUESTION_MARK.concat(UPDATE_ENDPOINT))
-				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), targetResourceLabel);
+				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), QUESTION_MARK.concat(LABEL))
+				.addFilter(exprRegex);
 		
 		JSONArray results = storeClient.executeQuery(builder.toString());
 	
@@ -339,6 +345,9 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 */
 	private String getLocalFilePath(String targetResourceName, StoreClientInterface storeClient) {
 		
+		ExprFactory exprFactory = new ExprFactory();
+		Expr exprRegex = exprFactory.regex(exprFactory.str( QUESTION_MARK.concat(LABEL)), targetResourceName, "");
+		
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -346,7 +355,8 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				.addVar( QUESTION_MARK.concat(FILE_PATH) )
 				.addWhere( QUESTION_MARK.concat(RESOURCE), RDF_PREFIX.concat(COLON).concat(RDF_TYPE), ONTOKGROUTER_PREFIX.concat(COLON).concat(TARGET_RESOURCE) )
 				.addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_FILE_PATH), QUESTION_MARK.concat(FILE_PATH) )
-				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), targetResourceName);
+				.addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), QUESTION_MARK.concat(LABEL))
+				.addFilter(exprRegex);
 		
 		JSONArray jsonArray = storeClient.executeQuery(builder.toString());
 		for (int i = 0; i<jsonArray.length(); i++){
