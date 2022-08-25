@@ -27,6 +27,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -43,6 +44,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  * @author Kok Foong Lee
  *
  */
+@Disabled
 public class testInitialiseStations {
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(testInitialiseStations.class);
@@ -105,7 +107,8 @@ public class testInitialiseStations {
      	InputStream is = getClass().getClassLoader().getResourceAsStream("stations.rdf");
 		StringEntity entity = new StringEntity(IOUtils.toString(is,StandardCharsets.UTF_8),ContentType.create("application/rdf+xml"));
 		api = mock(APIConnector.class);
-		when(api.getData()).thenReturn(entity);
+		CloseableHttpClient httpCLient = HttpClients.createDefault();
+		when(api.getData(httpCLient)).thenReturn(entity);
 	}
 	
 	@Test
@@ -132,7 +135,7 @@ public class testInitialiseStations {
 	}
 	
 	@Test
-	public void testMain() {
+	public void testMain() throws IOException, URISyntaxException {
 		// set clients that connect to test containers
 		InitialiseStations.setAPIConnector(api);
 		InitialiseStations.setSparqlClient(sparqlClient);
