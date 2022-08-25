@@ -1,4 +1,5 @@
-import {Cartesian3} from "cesium";
+import {Cartesian3, ColorMaterialProperty} from "cesium";
+import {hierarchy} from "../../../../JPS/WebContent/javascript/d3.v4";
 
 var Cesium = require("cesium/Cesium");
 /**
@@ -183,4 +184,34 @@ function parseElements(cesiumviewer, entities) {
 
     // console.dir("point:" + pointCount);
     // console.dir("line:" + lineCount);
+}
+
+export function getRoof (cesiumviewer, entities, isSolar) {
+    var id = entities.id.id; //depends on construction of kml in exporter
+
+    if(id.includes("Roof")){
+        var roofGeo =  entities.id.polygon.hierarchy;
+
+        if(isSolar){
+            addTexture(roofGeo, id);
+        }else{
+            removeTexture(roofGeo, id);
+        }
+    }
+}
+
+var changeMap = new Map();
+function addTexture(polygon, id){
+    // console.dir(polygon.material);
+    if(! changeMap.has(id)){
+        changeMap.set(id, polygon.material);
+    }
+    polygon.material = './data/solarpanel.png';
+}
+
+function removeTexture(polygon, id){
+    if(changeMap.has(id)){
+        polygon.material = changeMap.get(id);
+        changeMap.delete(id);
+    }
 }

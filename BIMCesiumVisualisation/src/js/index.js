@@ -8,7 +8,7 @@ import {
   addKml,
   addWMSLayer,
   addWMTSLayer,
-  computeCircle
+  computeCircle, getRoof
 } from './functions/cesium_data_handler.js';
 import {addDiv, addCloseButton, createMetadataHtml} from './functions/html-elements.js';
 
@@ -41,7 +41,7 @@ const offset = new Cesium.HeadingPitchRange(
 
 
 // Adding KML models to the viewer
-const kmlpath = './data/test_Tile_47_42_extruded.kml';
+const kmlpath = './data/test_Tile_46_42_extruded.kml';
 const kmlmodel =  addKml(viewer, kmlpath);
 
 /*
@@ -68,21 +68,22 @@ const metadataBox = addDiv("biminfobox");
 const closeElement = addCloseButton("close");
 
 // Hides the ceiling and roof when checked
-const checkBox = document.getElementById("toggleFeature");
-checkBox.onclick = () =>{
-  if (checkBox.checked == true) {
+const checkBox1 = document.getElementById("toggleFeature");
+checkBox1.onclick = () =>{
+  if (checkBox1.checked == true) {
       tileset_ceiling.show = false;
   } else {
       tileset_ceiling.show = true;
   }
 };
 
-const checkBox = document.getElementById("solar");
-checkBox.onclick = () =>{
-  if (checkBox.checked == true) {
-
+const checkBox2 = document.getElementById("solar");
+var isSolar = false;
+checkBox2.onclick = () =>{
+  if (checkBox2.checked == true) {
+    isSolar = true;
   } else {
-
+    isSolar = false;
   }
 };
 
@@ -138,4 +139,10 @@ handler.setInputAction(function (movement) {
     handler.setInputAction(function (movement) {
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
   }
+
+    handler.setInputAction(function (movement) {
+      getRoof(viewer, pickedFeature, isSolar);
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
 }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
