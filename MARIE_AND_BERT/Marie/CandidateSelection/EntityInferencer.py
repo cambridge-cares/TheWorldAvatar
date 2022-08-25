@@ -32,4 +32,4 @@ class EntityInferencer:
 if __name__ == '__main__':
     seed = sys.argv[1:]
     my_entity_inferencer = EntityInferencer()
-    my_entity_inferencer.infer_entity(None, None)
+    my_entity_inferencer.infer_entity(0, 1)

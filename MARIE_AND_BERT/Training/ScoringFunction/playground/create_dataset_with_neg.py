@@ -26,12 +26,15 @@ for index, row in raw_question_set.iterrows():
     e_h = row['head']
     e_t = row['tail']
     label = 0
-    fake_candidates = [f_c for f_c in random.sample(entity_list, 2) if f_c != e_t]
+    fake_candidates = random.sample([f_c for f_c in entity_list if f_c != e_t and f_c.startswith(e_h + '_')], 2)
+    # fake_candidates = [f_c for f_c in entity_list if f_c != e_t and f_c.startswith(e_h + '_')]
     for f_c in fake_candidates:
         tmp = [q, e_h, f_c, label]
         tmp_series = pd.Series(tmp, index = raw_question_set.columns)
         raw_question_set = raw_question_set.append(tmp_series, ignore_index=True)
 
+
+raw_question_set = raw_question_set.reset_index(drop=True)
 raw_question_set.to_csv(r'question_set_full', sep='\t')
 
 

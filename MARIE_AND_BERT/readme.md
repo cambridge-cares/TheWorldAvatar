@@ -56,6 +56,11 @@ individual performance evaluation of the model trained.
 
 The same as other code, the code for the training has development-level testing.
 
+### Environment
+
+``Python 3.7 + tensorflow 2.1.0 + cuda 10.1 + CuDnn 7.6``
+
+
 ## After-test model deployment
 
 All the models are deployed to our ``Maven repository`` via script. The next section will explain when should the model

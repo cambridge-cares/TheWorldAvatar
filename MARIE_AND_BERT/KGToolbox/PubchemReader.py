@@ -3,17 +3,16 @@ The PubchemReader will read the pubchem data in csv form and convert it to a for
 is compatible with the KG embedding library (tsv), where each line represents a triple
 """
 import csv
-import math
+import os
 import random
-import pandas as pd
-import numpy as np
+from Marie.Util.location import DATA_DIR
 
 
 class PubchemReader:
 
     def __init__(self):
-        self.output_path = r'../Dataset/PubChem2000/pubchem-train.txt'
-        self.pubchem_dir = r'../Dataset/pubchem.csv'
+        self.output_path = os.path.join(DATA_DIR, r'pubchem_mini-train.txt')
+        self.pubchem_dir = os.path.join(DATA_DIR, r'pubchem.csv')
         self.line_template = '%s\t%s\t%s\n'
 
         with open(self.output_path, 'w') as f:
