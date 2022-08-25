@@ -42,26 +42,10 @@ WORKDIR /app
 # copy compiled jar from previous step
 COPY --from=builder /root/FloodAgent/target/*.jar /app
 COPY --from=builder /root/FloodAgent/target/lib /app/lib
+COPY --from=builder /root/FloodAgent/target/classes/ontop.obda /app/classes/ontop.obda
 
-#==================================================================================================
+COPY docker/entrypoint.sh /entrypoint.sh
+# Port for Java debugging
+EXPOSE 5005
 
-# default configuration that runs the scheduled updater
-# to be executed at CMCL
-# docker build --target default -t [TAGNAME] .
-#==================================================================================================
-FROM app as update
-WORKDIR /app
-# Run the jar to start the agent
-ENTRYPOINT java -jar FloodAgent-1.0.0-SNAPSHOT.jar 
-
-#==================================================================================================
-
-# only writes output files (to be executed on DAFNI)
-# docker build --target write-only -t [TAGNAME] .
-#==================================================================================================
-FROM app as write-only
-WORKDIR /app
-# Run the jar to start the agent
-ENTRYPOINT java -cp FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.LaunchWriterOnly
-
-#==================================================================================================
+ENTRYPOINT ["/entrypoint.sh"]
