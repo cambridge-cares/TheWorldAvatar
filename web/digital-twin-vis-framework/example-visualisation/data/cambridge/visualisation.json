@@ -1,5 +1,6 @@
 {
 	"name": "Cambridge",
+    "stack": "http://localhost:1234/example-cambridge-stack",
     "mapOptions": {
         "center": [0.12187957763671875, 52.2040299172616],
         "zoom": 12,

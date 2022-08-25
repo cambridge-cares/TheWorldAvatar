@@ -4,14 +4,14 @@
       {
         "type": "Feature",
         "properties": {
-            "name": "Area of Interest: Cambridge",
+            "name": "Area of Interest: India",
             "desc": "Zoom in to view sample data."
         },
         "geometry": {
           "type": "Point",
           "coordinates": [
-            0.12174010276794434,
-            52.205308771956
+            78.046875,
+            21.53484700204879
           ]
         }
       }

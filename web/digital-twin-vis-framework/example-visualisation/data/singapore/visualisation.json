@@ -1,5 +1,6 @@
 {
 	"name": "Singapore",
+    "stack": "http://localhost:1234/example-singapore-stack",
     "mapOptions": {
         "center": [103.79109, 1.36295],
         "zoom": 12,
@@ -21,7 +22,6 @@
 			"name": "Area of Interest", 
             "source": "area-of-interest",
             "type": "circle",
-            "clickable": false,
             "treeable": false,
             "maxzoom": 8,
             "layout": {
