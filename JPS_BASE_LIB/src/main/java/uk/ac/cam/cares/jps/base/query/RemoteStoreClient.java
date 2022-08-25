@@ -355,7 +355,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         try {
             RemoteEndpointDriver.register();
             // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
+            conn = DriverManager.getConnection(getConnectionUrl(), getUser(), getPassword());
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 //			System.out.println(query);
             return stmt.executeUpdate(query);
@@ -427,7 +427,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     /**
      * Excute sparql query
      *
-     * @param sparql
+     * @param query
      * @return JSONArray as String
      */
     @Override
@@ -474,7 +474,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         try {
             RemoteEndpointDriver.register();
             // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
+            conn = DriverManager.getConnection(getConnectionUrl(), getUser(), getPassword());
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 //			System.out.println(query);
             java.sql.ResultSet rs = stmt.executeQuery(query);
@@ -541,6 +541,16 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         return builder.build();
     }
 
+    public Connection getConnection(){
+        Connection conn;
+        try {
+            RemoteEndpointDriver.register();
+            conn = DriverManager.getConnection(getConnectionUrl(), getUser(), getPassword());
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
+        return conn;
+    }
     /**
      * Generates the URL of the remote data repository's EndPoint, which<br>
      * might require authentication either to perform a data retrieval or<br>
@@ -551,31 +561,29 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     public String getConnectionUrl() {
         StringBuilder sb = new StringBuilder();
         boolean queryFlag = false;
-        boolean updateFlag = false;
-        sb.append(JenaDriver.DRIVER_PREFIX);
-        sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
-        if (this.queryEndpoint != null) {
-            queryFlag = true;
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
-        }
-        if (this.updateEndpoint != null) {
-            updateFlag = true;
-            if (queryFlag) {
-                sb.append("&");
+
+        if ((this.queryEndpoint != null && (this.queryEndpoint.contains(HTTP_PROTOCOL) || this.queryEndpoint.contains(HTTPS_PROTOCOL)))) {
+            sb.append(JenaDriver.DRIVER_PREFIX);
+            sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
+            if (this.queryEndpoint != null) {
+                queryFlag = true;
+                sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
             }
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
-        }
-        if (this.userName != null) {
-            if (queryFlag || updateFlag) {
-                sb.append("&");
+            if (this.updateEndpoint != null) {
+                if (queryFlag) {
+                    sb.append("&");
+                }
+                sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
             }
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_USERNAME, this.userName));
         }
-        if (this.password != null) {
-            if (queryFlag || updateFlag) {
-                sb.append("&");
-            }
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_PASSWORD, this.password));
+        else if (this.queryEndpoint != null && this.userName != null && this.password != null) {
+            if(this.queryEndpoint.contains("jdbc:postgresql:"))
+                sb.append(this.queryEndpoint);
+            else
+                sb.append("jdbc:postgresql:" + this.queryEndpoint);
+        }
+        else if(this.queryEndpoint!=null && (this.userName==null || this.password==null)){
+            LOGGER.info("Missing username and/or password to establish connection");
         }
         return sb.toString();
     }
@@ -822,7 +830,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * Get rdf content from store. Performs a construct query on the store and
      * returns the model as a string.
      *
-     * @param graphName (if any)
+     * @param resourceUrl (if any)
      * @param accept
      * @return String
      */
