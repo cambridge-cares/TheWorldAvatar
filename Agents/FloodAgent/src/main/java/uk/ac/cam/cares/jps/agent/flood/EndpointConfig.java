@@ -17,7 +17,7 @@ public class EndpointConfig {
         ContainerClient containerClient = new ContainerClient();
         PostGISEndpointConfig postGISEndpointConfig = containerClient.readEndpointConfig("postgis",
                     PostGISEndpointConfig.class);
-        this.dburl = postGISEndpointConfig.getJdbcURL(Config.DATABASE);
+        this.dburl = postGISEndpointConfig.getJdbcURL(EnvConfig.DATABASE);
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
 

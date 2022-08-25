@@ -143,7 +143,7 @@ public class UpdateStations {
 	 */
 	static List<Map<String,?>> processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
 		LOGGER.info("Processing data from API");
-		File readingsFile = Paths.get(Config.READINGS_DIR, "readings.json").toFile();
+		File readingsFile = Paths.get(EnvConfig.READINGS_DIR, "readings.json").toFile();
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpEntity response = api.getData(httpClient);
 		// write data to file (easier to debug)
@@ -299,7 +299,7 @@ public class UpdateStations {
 	static void addUpdateDate(LocalDate date) {
 		List<List<?>> values = new ArrayList<>();
 		values.add(Arrays.asList(date));
-		TimeSeries<Instant> ts = new TimeSeries<Instant>(Arrays.asList(date.atStartOfDay(ZoneOffset.UTC).toInstant()), Arrays.asList(Config.TIME_IRI), values);
+		TimeSeries<Instant> ts = new TimeSeries<>(Arrays.asList(date.atStartOfDay(ZoneOffset.UTC).toInstant()), Arrays.asList(EnvConfig.TIME_IRI), values);
 		tsClient.addTimeSeriesData(ts);
 	}
 

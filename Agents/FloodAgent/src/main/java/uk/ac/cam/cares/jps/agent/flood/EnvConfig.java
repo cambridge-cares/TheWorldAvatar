@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.agent.flood;
 /**
  * Configs set via environment variables
  */
-public class Config {	
+public class EnvConfig {	
 	public static final String OUTPUT_DIR = System.getenv("OUTPUT_DIR");
 
 	// set true to download datum information for each station, only need to do once to download the file
@@ -27,7 +27,7 @@ public class Config {
 	
 	public static final String ONTOP_FILE = System.getenv("ONTOP_FILE");
 
-	private Config() {
+	private EnvConfig() {
 		throw new IllegalStateException();
 	}
 }

@@ -93,25 +93,25 @@ public class InitialiseStations {
 
 		LOGGER.info("Creating layer in Geoserver");
 		GeoServerClient geoserverclient = new GeoServerClient();
-		geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
-		geoserverclient.createPostGISLayer(null, Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.LAYERNAME, new GeoServerVectorSettings());
+		geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+		geoserverclient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.LAYERNAME, new GeoServerVectorSettings());
 		
-		Path obdaFile = Path.of(Config.ONTOP_FILE);
+		Path obdaFile = Path.of(EnvConfig.ONTOP_FILE);
 		new OntopClient().updateOBDA(obdaFile);
 		
 		// set to false by default, download it once and save it locally
 		// takes a while to download because there is no API to download everything in 1 go
-		if (Config.DOWNLOAD_DATUM) {
+		if (EnvConfig.DOWNLOAD_DATUM) {
 			JSONObject datumMap = sparqlClient.downloadDatum(stations);
-			File file = new File(Config.DATUM_FILE);
+			File file = new File(EnvConfig.DATUM_FILE);
 			writeToFile(file, datumMap.toString(4));
 		}
 
 		// add datum triples for OntoEMS
 		// File specified by DATUM_FILE needs to exist
 		try {
-			if (Config.DATUM_FILE != null) {
-				JSONObject datumJson = new JSONObject(Files.readString(Paths.get(Config.DATUM_FILE)));
+			if (EnvConfig.DATUM_FILE != null) {
+				JSONObject datumJson = new JSONObject(Files.readString(Paths.get(EnvConfig.DATUM_FILE)));
 				sparqlClient.addDatum(datumJson);
 			}
 		} catch (JSONException | IOException e) {
@@ -120,8 +120,8 @@ public class InitialiseStations {
 		}
 		
 		// instantiate connections between stations, e.g. <station1> <hasDownstreamStation> <station2>
-		if (Config.INSTANTIATE_CONNECTIONS) {
-			File connectionsFile = new File(Config.CONNECTIONS_FILE);
+		if (EnvConfig.INSTANTIATE_CONNECTIONS) {
+			File connectionsFile = new File(EnvConfig.CONNECTIONS_FILE);
 			if (connectionsFile.exists()) {
 				sparqlClient.addConnections(connectionsFile);
 			} else {
@@ -182,7 +182,7 @@ public class InitialiseStations {
 		}
 
 		// table to record last updated time
-		tsList.add(Arrays.asList(Config.TIME_IRI));
+		tsList.add(Arrays.asList(EnvConfig.TIME_IRI));
 		classes.add(Arrays.asList(LocalDate.class));
 		
 		tsClient.bulkInitTimeSeries(tsList, classes, null);

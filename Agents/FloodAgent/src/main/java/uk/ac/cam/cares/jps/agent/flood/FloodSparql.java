@@ -277,7 +277,7 @@ public class FloodSparql {
 
 		LOGGER.info("Uploading GeoJSON to PostGIS");
 		GDALClient gdalclient = new GDALClient();
-		gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, Config.LAYERNAME, geojson.toString(), new Ogr2OgrOptions(), true);
+		gdalclient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.LAYERNAME, geojson.toString(), new Ogr2OgrOptions(), true);
 	}
 	
 	/**
@@ -552,9 +552,9 @@ public class FloodSparql {
 	}
 
 	LocalDate getLatestUpdate(TimeSeriesClient<Instant> tsClient) {
-		TimeSeries<Instant> ts = tsClient.getLatestData(Config.TIME_IRI);
+		TimeSeries<Instant> ts = tsClient.getLatestData(EnvConfig.TIME_IRI);
 		try {
-			return LocalDate.parse(ts.getValuesAsString(Config.TIME_IRI).get(0));
+			return LocalDate.parse(ts.getValuesAsString(EnvConfig.TIME_IRI).get(0));
 		} catch (IndexOutOfBoundsException e) {
 			LOGGER.error(e.getMessage());
 			throw new RuntimeException(e);
@@ -567,9 +567,9 @@ public class FloodSparql {
 	 * @return
 	 */
 	boolean checkUpdateDateExists(TimeSeriesClient<Instant> tsClient, LocalDate date) {
-		TimeSeries<Instant> ts = tsClient.getLatestData(Config.TIME_IRI);
-		if (ts.getValues(Config.TIME_IRI).size() > 0) {
-			LocalDate latestDate = LocalDate.parse(ts.getValuesAsString(Config.TIME_IRI).get(0));
+		TimeSeries<Instant> ts = tsClient.getLatestData(EnvConfig.TIME_IRI);
+		if (ts.getValues(EnvConfig.TIME_IRI).size() > 0) {
+			LocalDate latestDate = LocalDate.parse(ts.getValuesAsString(EnvConfig.TIME_IRI).get(0));
 			if(date.equals(latestDate)) {
 				return true;
 			} else {
@@ -855,7 +855,7 @@ public class FloodSparql {
 		try {
 			httpclient.execute(postRequest);
 		} finally {
-			// httpclient.close();
+			httpclient.close();
 		}
 	}
 
@@ -980,7 +980,7 @@ public class FloodSparql {
 			// query latest value
 			TimeSeries<Instant> ts = tsClient.getLatestData(measureIri);
 			List<Double> values = ts.getValuesAsDouble(measureIri);
-			if (values.size() > 0) {
+			if (!values.isEmpty()) {
 				double latestValue = values.get(values.size()-1);
 				measureRangesToDelete.add(measureIri);
 
@@ -995,7 +995,7 @@ public class FloodSparql {
 			}
 		}
 		// delete old ranges
-		vp = new ValuesPattern(measure, measureRangesToDelete.stream().map(s -> iri(s)).collect(Collectors.toList()));
+		vp = new ValuesPattern(measure, measureRangesToDelete.stream().map(Rdf::iri).collect(Collectors.toList()));
 		modify.delete(measure.has(hasCurrentRange, oldrange)).where(measure.has(hasCurrentRange, oldrange), vp);
 
 		modify.prefix(preEms);
