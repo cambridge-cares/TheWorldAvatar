@@ -15,12 +15,8 @@ public class APIConnector {
     private URIBuilder builder;
     private static final Logger LOGGER = LogManager.getLogger(APIConnector.class);	
 	
-	public APIConnector(String url) {
-		try {
-			this.builder = new URIBuilder(url);
-		} catch (URISyntaxException e) {
-			LOGGER.error(e.getMessage());
-		}
+	public APIConnector(String url) throws URISyntaxException {
+		this.builder = new URIBuilder(url);
 	}
 	
 	public void setParameter(String param, String value) {
