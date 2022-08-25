@@ -5,7 +5,7 @@
 The purpose of the AccessAgent is to handle HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph. 
 The agent will also perform requests to "get" and "insert" entire graphs. This agent extends the JPSAgent framework and can be called using methods in the AccessAgentCaller class in jps_base_lib or by extending the JPSAgent class.
 
-## The AccessAgent dev stack
+## Deploying a local AccessAgent: the AccessAgent dev stack
 
 The access-agent-dev-stack contains the Access Agent (on port 48888) and a Blazegraph (on port 48889). The purpose of the Blazegraph is to store routing information used by the access agent in your dev environment. 
 Routing information is stored in the default "kb" namespace and the access agent is configured to use this is as the STOREROUTER_ENDPOINT.
@@ -16,7 +16,7 @@ From the command line, in the access-agent-dev-stack directory, run:
 ```
 docker-compose up -d --no-build
 ```
-Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry. Note: Credentials are required to pull from the CMCL registry. 
+Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry. (Note: Credentials are required to pull from the CMCL registry. See https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry)
 
 ### Uploading routing information to the dev stack
 
@@ -56,7 +56,7 @@ When building a new version of the access agent remember:
 3. Also, please update the access agent image version in the dev stack to match the new version you are about to build and publish (../access-agent-dev-stack/docker-compose.yml)
 
 ### Building
-To build the Access Agent image, in docker-build directory run:
+To build the Access Agent image, in the docker-build directory run:
 ```
 docker-compose build
 ```
