@@ -35,6 +35,7 @@ import org.postgis.Geometry;
 import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
  * This class uses the jooq library to interact with a relational database.
@@ -73,6 +74,7 @@ public class TimeSeriesRDBClient<T> {
 		MIN
 	}
 
+	public RemoteStoreClient storeClient;
     /**
      * Standard constructor
      * @param timeClass class of the timestamps of the time series
@@ -135,8 +137,8 @@ public class TimeSeriesRDBClient<T> {
 	        } else {
 	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ");
 	        }
+			storeClient = new RemoteStoreClient(this.rdbURL, this.rdbUser, this.rdbPassword);
 		}
-
 	}
 
 	/**
@@ -358,7 +360,7 @@ public class TimeSeriesRDBClient<T> {
 	 */
 	public TimeSeries<T> getLatestData(String dataIRI) {
 		connect();
-		
+
 		try {
 			Table<?> tsTable = getTimeseriesTable(dataIRI);
 			String columnName = getColumnName(dataIRI);
@@ -366,11 +368,11 @@ public class TimeSeriesRDBClient<T> {
 			Field<Object> dataField = DSL.field(DSL.name(columnName));
 
 			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable).where(dataField.isNotNull())
-			.orderBy(timeColumn.desc()).limit(1).fetch();
-			
+					.orderBy(timeColumn.desc()).limit(1).fetch();
+
 			List<T> timeValues = queryResult.getValues(timeColumn);
 			List<?> dataValues = queryResult.getValues(dataField);
-			
+
 			return new TimeSeries<T>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -393,7 +395,7 @@ public class TimeSeriesRDBClient<T> {
 
 			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable).where(dataField.isNotNull())
 			.orderBy(timeColumn.asc()).limit(1).fetch();
-			
+
 			List<T> timeValues = queryResult.getValues(timeColumn);
 			List<?> dataValues = queryResult.getValues(dataField);
 			
@@ -646,9 +648,9 @@ public class TimeSeriesRDBClient<T> {
 				// Load required driver
 				Class.forName("org.postgresql.Driver");
 				// Connect to DB (using static connection and context properties)
-	        	this.conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
-	        	this.context = DSL.using(this.conn, dialect); 
-	        	System.out.println("Connecting successful: " + this.rdbURL); 
+	        	this.conn = storeClient.getConnection();
+				this.context = DSL.using(this.conn, dialect);
+				System.out.println("Connecting successful: " + this.rdbURL);
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -902,7 +904,7 @@ public class TimeSeriesRDBClient<T> {
 	private String getColumnName(String dataIRI) {
 		try {
 			// Look for the entry dataIRI in dbTable
-			Table<?> table = DSL.table(DSL.name(dbTableName));		
+			Table<?> table = DSL.table(DSL.name(dbTableName));
 			List<String> queryResult = context.select(columnNameColumn).from(table).where(dataIRIcolumn.eq(dataIRI)).fetch(columnNameColumn);
 			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 			return queryResult.get(0);
@@ -946,7 +948,7 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * check if a row exists to prevent duplicate rows with the same time value
-	 * @param tsTable
+	 * @param tsTableName
 	 * @param time
 	 * @return
 	 */
