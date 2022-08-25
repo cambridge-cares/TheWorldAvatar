@@ -87,6 +87,17 @@ checkBox2.onclick = () =>{
   }
 };
 
+const checkBox3 = document.getElementById("customsolar");
+var drawSolar = false;
+var arrayOfCartesian = [];
+checkBox3.onclick = () =>{
+  if (checkBox3.checked == true) {
+    drawSolar = true;
+  } else {
+    drawSolar = false;
+  }
+};
+
 // Append html elements to viewer
 viewer.container.appendChild(promptOverlay);
 viewer.container.appendChild(metadataBox);
@@ -141,8 +152,43 @@ handler.setInputAction(function (movement) {
   }
 
     handler.setInputAction(function (movement) {
-      getRoof(viewer, pickedFeature, isSolar);
+
+      if(drawSolar){
+
+        // Find a way to get the position.
+        var position = viewer.scene.pickPosition(movement.position);
+        console.log(position);
+        // var cartographic = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
+        // console.log(cartographic);
+        arrayOfCartesian.push( position );
+      } else {
+        arrayOfCartesian = [];
+        getRoof(viewer, pickedFeature, isSolar);
+      }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
+
+      handler.setInputAction(function (movement) {
+        if(drawSolar) {
+          // var getSelectorLocation = new Cesium.CallbackProperty(function () {
+          //   return Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(arrayOfCartesian);
+          // }, false);
+          console.log(arrayOfCartesian);
+          viewer.entities.add({
+            polygon: {
+              hierarchy: arrayOfCartesian,
+              perPositionHeight: true,
+              material: new Cesium.ImageMaterialProperty({
+                image : './data/solarpanel.png',
+                color: Cesium.Color.WHITE.withAlpha(1)
+            }),
+            }
+          });
+        }
+      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+
 }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+
 

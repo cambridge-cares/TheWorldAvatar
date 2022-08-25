@@ -190,8 +190,8 @@ export function getRoof (cesiumviewer, entities, isSolar) {
     var id = entities.id.id; //depends on construction of kml in exporter
 
     if(id.includes("Roof")){
-        var roofGeo =  entities.id.polygon.hierarchy;
-
+        var roofGeo =  entities.id.polygon;
+        // console.dir(roofGeo.hierarchy.valueOf());
         if(isSolar){
             addTexture(roofGeo, id);
         }else{
@@ -202,7 +202,8 @@ export function getRoof (cesiumviewer, entities, isSolar) {
 
 var changeMap = new Map();
 function addTexture(polygon, id){
-    // console.dir(polygon.material);
+
+
     if(! changeMap.has(id)){
         changeMap.set(id, polygon.material);
     }
@@ -215,3 +216,5 @@ function removeTexture(polygon, id){
         changeMap.delete(id);
     }
 }
+
+
