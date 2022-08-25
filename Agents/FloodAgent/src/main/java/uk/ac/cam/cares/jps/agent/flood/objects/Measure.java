@@ -13,19 +13,22 @@ public class Measure {
     private String trend;
     private String range;
 
-    private static Map<String,String> rangeDisplayTextMap = new HashMap<>() {{
-        put("https://www.theworldavatar.com/kg/ontoems/LowRange","Low");
-        put("https://www.theworldavatar.com/kg/ontoems/HighRange","High");
-        put("https://www.theworldavatar.com/kg/ontoems/NormalRange","Normal");
-        put("https://www.theworldavatar.com/kg/ontoems/UnavailableRange","Unavailable");
-    }};
+    private static Map<String,String> rangeDisplayTextMap = new HashMap<>();
 
-    private static Map<String,String> trendDisplayTextMap = new HashMap<>() {{
-        put("https://www.theworldavatar.com/kg/ontoems/Steady","Steady");
-        put("https://www.theworldavatar.com/kg/ontoems/Rising","Rising");
-        put("https://www.theworldavatar.com/kg/ontoems/Falling","Falling");
-        put("https://www.theworldavatar.com/kg/ontoems/UnavailableTrend","Unavailable");
-    }};
+    static {
+        rangeDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/LowRange","Low");
+        rangeDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/HighRange","High");
+        rangeDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/NormalRange","Normal");
+        rangeDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/UnavailableRange","Unavailable");
+    }
+
+    private static Map<String,String> trendDisplayTextMap = new HashMap<>(); 
+    static {
+        trendDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/Steady","Steady");
+        trendDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/Rising","Rising");
+        trendDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/Falling","Falling");
+        trendDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/UnavailableTrend","Unavailable");
+    };
 
     public Measure(String iri) {
         this.iri = iri;

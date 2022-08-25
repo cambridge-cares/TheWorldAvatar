@@ -8,6 +8,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +32,7 @@ public class Station {
     private String town;
     private String dateOpened;
     private Map<String, String> displayProperties;
-    private List<TimeSeries<Instant>> ts_list;
+    private List<TimeSeries<Instant>> tsList;
 	private List<Measure> measures;
 
 	private Station downstream;
@@ -42,16 +44,15 @@ public class Station {
 	private Double downstageLower = null;
 
     // icons to use
-    static Map<String, String> icons = new HashMap<String, String>() {
-		private static final long serialVersionUID = 1L;
-		{
-			put("Water Level", "ea-water-level");
-			put("Flow", "ea-flow");
-			put("Rainfall", "ea-rainfall");
-			put("Wind", "ea-wind");
-			put("Temperature", "ea-temperature");
-		}
-	};
+    static Map<String, String> icons = new HashMap<>();
+	private static final String WATER_LEVEL = "Water Level";
+	static {
+		icons.put(WATER_LEVEL, "ea-water-level");
+		icons.put("Flow", "ea-flow");
+		icons.put("Rainfall", "ea-rainfall");
+		icons.put("Wind", "ea-wind");
+		icons.put("Temperature", "ea-temperature");
+	}
     
     public Station(String iri) {
     	this.iri = iri;
@@ -61,8 +62,8 @@ public class Station {
     	this.catchment = "";
     	this.town = "";
     	this.dateOpened = "";
-    	this.displayProperties = new HashMap<String, String>();
-    	this.ts_list = new ArrayList<>();
+    	this.displayProperties = new HashMap<>();
+    	this.tsList = new ArrayList<>();
     	this.measures = new ArrayList<>();
     }
     
@@ -173,26 +174,26 @@ public class Station {
     }
     
     public void addTimeseries(TimeSeries<Instant> ts) {
-    	this.ts_list.add(ts);
+    	this.tsList.add(ts);
     }
     
     public List<TimeSeries<Instant>> getTimeSeriesList() {
-    	return this.ts_list;
+    	return this.tsList;
     }
     
     // combine time series list into a single time series object
     // time series client is needed to query if value needed is from the day before
     public TimeSeries<Instant> getCombinedTimeSeries(TimeSeriesClient<Instant> tsClient) {
-    	if (this.ts_list.size() > 1) {
+    	if (this.tsList.size() > 1) {
     		// this will sort in ascending order
-    		List<TimeSeries<Instant>> ts_sorted = this.ts_list.stream().sorted(Comparator.comparing(ts -> ts.getTimes().size())).collect(Collectors.toList());
-    		List<Instant> longestTimeList = ts_sorted.get(ts_sorted.size()-1).getTimes();
+    		List<TimeSeries<Instant>> tsSorted = this.tsList.stream().sorted(Comparator.comparing(ts -> ts.getTimes().size())).collect(Collectors.toList());
+    		List<Instant> longestTimeList = tsSorted.get(tsSorted.size()-1).getTimes();
     		
     		List<List<?>> valuesList = new ArrayList<>();
     		List<String> dataIRIs = new ArrayList<>();
     		
-    		for (int i = 0; i < ts_sorted.size() ; i++) {
-    			TimeSeries<Instant> ts = ts_sorted.get(i);
+    		for (int i = 0; i < tsSorted.size() ; i++) {
+    			TimeSeries<Instant> ts = tsSorted.get(i);
     			List<Double> values = new ArrayList<>();
     			// each time series has one column
     			String dataIRI = ts.getDataIRIs().get(0);
@@ -202,7 +203,7 @@ public class Station {
     			if (ts.getTimes().get(0).isAfter(longestTimeList.get(0))) {
     				TimeSeries<Instant> extraInfo = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRI), longestTimeList.get(0).minus(1, ChronoUnit.DAYS), longestTimeList.get(0));
     				
-    				if (extraInfo.getTimes().size() == 0) {
+    				if (extraInfo.getTimes().isEmpty()) {
     					// could potentially implement a while loop here
     					LOGGER.warn("getCombinedTimeSeries: no extra data obtained");
     					valueBefore = 0.0;
@@ -222,7 +223,13 @@ public class Station {
     				
     				} else {
     					// this gives the element right after the time point
-    					Instant t1 = ts.getTimes().stream().filter(t -> t.isAfter(time)).findFirst().get();
+    					Instant t1;
+						Optional<Instant> optionalTime = ts.getTimes().stream().filter(t -> t.isAfter(time)).findFirst();
+						if (optionalTime.isPresent()) {
+							t1 = optionalTime.get();
+						} else {
+							throw new NoSuchElementException("Error in getCombinedTimeSeries");
+						}
     					index = ts.getTimes().indexOf(t1) - 1;
     				}
     				
@@ -239,20 +246,20 @@ public class Station {
     		
     		return new TimeSeries<>(longestTimeList, dataIRIs, valuesList);
     	} else {
-    		return this.ts_list.get(0);
+    		return this.tsList.get(0);
     	}
     }
     
     // some stations measure more than 1 property, at the moment icon is only determined from one of them
     public String getIconImage() {
-		if (measures.size() > 0) {
+		if (!measures.isEmpty()) {
 			if (icons.containsKey(this.measures.get(0).getParameterName())) {
 				return icons.get(this.measures.get(0).getParameterName());
 			} else {
-				return "ea-water-level";
+				return icons.get(WATER_LEVEL);
 			}
 		} else {
-			return "ea-water-level";
+			return icons.get(WATER_LEVEL);
 		}
     }
     
@@ -261,9 +268,8 @@ public class Station {
      * @return
      */
     public String getDescription() {
-    	String description = "The Environmental Agency stations primarily measure river properties such as water level and flowrate. "
-    			+ "Some stations measure rainfall, wind and temperature.";	
-    	return description;
+    	return "The Environmental Agency stations primarily measure river properties such as water level and flowrate. "
+		+ "Some stations measure rainfall, wind and temperature.";
     }
 
 	public void setStageUpper(double stageUpper) {
