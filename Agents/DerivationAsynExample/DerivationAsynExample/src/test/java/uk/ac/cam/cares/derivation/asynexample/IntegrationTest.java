@@ -3,6 +3,8 @@ package uk.ac.cam.cares.derivation.asynexample;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -54,6 +56,7 @@ public class IntegrationTest extends TestCase {
     static MaxValueAgent maxValueAgent;
     static MinValueAgent minValueAgent;
     static DifferenceAgent differenceAgent;
+    static DiffReverseAgent diffReverseAgent;
 
     // timestamps
     static long currentTimestamp_rng_derivation;
@@ -121,6 +124,7 @@ public class IntegrationTest extends TestCase {
         maxValueAgent = new MaxValueAgent(storeClient, Config.derivationInstanceBaseURL);
         minValueAgent = new MinValueAgent(storeClient, Config.derivationInstanceBaseURL);
         differenceAgent = new DifferenceAgent(storeClient, Config.derivationInstanceBaseURL);
+        diffReverseAgent = new DiffReverseAgent(storeClient, Config.derivationInstanceBaseURL);
     }
 
     @AfterAll
@@ -130,6 +134,7 @@ public class IntegrationTest extends TestCase {
         maxValueAgent.destroy();
         minValueAgent.destroy();
         differenceAgent.destroy();
+        diffReverseAgent.destroy();
 
         // close containers after all tests
         if (blazegraph.isRunning()) {
@@ -202,6 +207,7 @@ public class IntegrationTest extends TestCase {
     @Order(2)
     public void testInitialiseAgents() throws ServletException {
         // now initialise all agents
+        // except for the diffReverseAgent, which will be used individually in testMultipleAsyncDerivations
         rngAgent.init();
         maxValueAgent.init();
         minValueAgent.init();
@@ -331,5 +337,62 @@ public class IntegrationTest extends TestCase {
         // test if the value is the same as the difference value
         int difference = sparqlClient.getValue(sparqlClient.getMaxValueIRI()) - sparqlClient.getValue(sparqlClient.getMinValueIRI());
         Assert.assertEquals(difference, sparqlClient.getValue(sparqlClient.getDifferenceIRI()));
+    }
+
+    @Test
+    @Timeout(value = 300, unit = TimeUnit.SECONDS)
+    @Order(9)
+    public void testMultipleAsyncDerivations() throws InterruptedException {
+        String maxvalue_instance = sparqlClient.getMaxValueIRI();
+        String minvalue_instance = sparqlClient.getMinValueIRI();
+
+        // create two derivations, and call monitorAsyncDerivations with the periodicalTimescale of (Config.delayAgentDiffReverse - 1)
+        // so that this makes sure that only one derivation will be updated after the call
+        String diff_dev_1 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        String diff_dev_2 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, Config.delayAgentDiffReverse - 1);
+        // now check only one derivation is "Finished"
+        Map<String, StatusType> diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
+        Assert.assertEquals(2, diffReverseDerivations.size());
+        Assert.assertEquals(1, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.FINISHED));
+        Assert.assertEquals(0, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
+        Assert.assertEquals(1, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.REQUESTED));
+
+        // call monitorAsyncDerivations again
+        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, Config.delayAgentDiffReverse - 1);
+        // now check that one derivation should be up-to-date and the other one is "Finished"
+        diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
+        Assert.assertEquals(2, diffReverseDerivations.size());
+        Assert.assertEquals(1, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.FINISHED));
+        Assert.assertEquals(1, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
+        Assert.assertEquals(0, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.REQUESTED));
+
+        // call monitorAsyncDerivations again
+        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, Config.delayAgentDiffReverse - 1);
+        // now check that both derivations should be up-to-date
+        diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
+        Assert.assertEquals(2, diffReverseDerivations.size());
+        Assert.assertEquals(2, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
+
+        // create three more derivations, and call monitorAsyncDerivations with the periodicalTimescale of (5 * Config.delayAgentDiffReverse)
+        // so that this makes sure that all derivations will be updated after the call
+        String diff_dev_3 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        String diff_dev_4 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        String diff_dev_5 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        diffReverseAgent.monitorAsyncDerivations(Config.agentIriDiffReverse, 5 * Config.delayAgentDiffReverse);
+        // now check that all derivations should be up-to-date
+        diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
+        Assert.assertEquals(5, diffReverseDerivations.size());
+        Assert.assertEquals(5, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
+
+        // also all values should be the same and they are the difference of min and max
+        Map<String, Integer> diffReverseValues = sparqlClient.getDiffReverseValues();
+        Assert.assertEquals(5, diffReverseValues.size());
+        int difference = sparqlClient.getValue(sparqlClient.getDifferenceIRI());
+        diffReverseValues.values().stream().forEach(val -> Assert.assertEquals(0, val + difference));
+    }
+
+    public int countNumberOfDerivationsGivenStatusType(Map<String, StatusType> derivationsAndStatusType, StatusType statusType) {
+        return (int) derivationsAndStatusType.values().stream().filter(status -> status.equals(statusType)).count();
     }
 }
