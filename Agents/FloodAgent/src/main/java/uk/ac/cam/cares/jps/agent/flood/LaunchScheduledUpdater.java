@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.flood;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,16 +18,13 @@ public class LaunchScheduledUpdater {
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(LaunchScheduledUpdater.class);
     
-    private final static ScheduledExecutorService scheduler = Executors
+    private static final ScheduledExecutorService scheduler = Executors
     		.newScheduledThreadPool(1);
-    
-    private static RemoteStoreClient storeClient;
-    private static FloodSparql sparqlClient;
     		
-    public static void main(String[] args) {
-    	Config.initProperties();
-    	storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-        sparqlClient = new FloodSparql(storeClient);
+    public static void main(String[] args) throws IOException, URISyntaxException {
+    	EndpointConfig endpointConfig = new EndpointConfig();
+    	RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(),endpointConfig.getKgurl());
+        FloodSparql sparqlClient = new FloodSparql(storeClient);
         
         // initialise stations in blazegraph and time series in postgres
         if (!sparqlClient.areStationsInitialised()) {
@@ -45,12 +44,12 @@ public class LaunchScheduledUpdater {
             	// date to query
                 LocalDate yesterday = LocalDate.now().minusDays(1);
 
-            	LOGGER.info("Calling UpdateStations with " + yesterday.toString());
+            	LOGGER.info(String.format("Calling UpdateStations with %s", yesterday.toString()));
             	String[] input = new String[1];
             	input[0] = yesterday.toString();
             	UpdateStations.main(input);
                 
-                LOGGER.info("Next update will be at " + nextUpdate);
+                LOGGER.info(String.format("Next update will be at %s", nextUpdate));
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());
             }

@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
@@ -44,6 +46,8 @@ public class UpdateStations {
     
     // err msg
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
+	// json key
+	private static final String ITEMS = "items";
 	
     // will be replaced with mocks in junit tests
     private static APIConnector api = null;
@@ -62,7 +66,7 @@ public class UpdateStations {
     }
     
 	public static void main(String[] args) {
-		Config.initProperties();
+		EndpointConfig endpointConfig = new EndpointConfig();
 		LocalDate date;
 		
 		// input validation
@@ -85,29 +89,29 @@ public class UpdateStations {
     	UpdateStations.api.setParameter("date", date.toString());
     	
     	if (sparqlClient == null) {
-    		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
+    		RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
     		UpdateStations.sparqlClient = new FloodSparql(storeClient);
     	}
     	if (tsClient == null) {
-    		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
-    		UpdateStations.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+    		RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+    		UpdateStations.tsClient = new TimeSeriesClient<>(storeClient, Instant.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
     	}
     	
-		LOGGER.info("Updating data for " + date);
+		LOGGER.info("Updating data for {}", date);
 		
-		List<Map<String,?>> processed_data;
+		List<Map<String,?>> processedData;
 		try {            
 			// process data into tables before upload
-			processed_data = processAPIResponse(api);
+			processedData = processAPIResponse(api);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(e);
 		}
 
 		// upload to postgres
-		uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
+		uploadDataToRDB(tsClient, sparqlClient, processedData);
 
-		List<String> measureIRIs = new ArrayList<>(processed_data.get(0).keySet());
+		List<String> measureIRIs = new ArrayList<>(processedData.get(0).keySet());
 		
 		// checks final value and marks it as normal/high/low
 		List<Measure> stageScaleMeasureList = sparqlClient.addRangeForStageScale(tsClient, measureIRIs);
@@ -139,28 +143,26 @@ public class UpdateStations {
 	 */
 	static List<Map<String,?>> processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
 		LOGGER.info("Processing data from API");
-		HttpEntity response = api.getData();
-
-		// write data to file (easier to debug)
-		if (Config.READINGS_DIR == null) {
-			Config.READINGS_DIR = System.getProperty("user.home");
-		}
 		File readingsFile = Paths.get(Config.READINGS_DIR, "readings.json").toFile();
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpEntity response = api.getData(httpClient);
+		// write data to file (easier to debug)
 		FileOutputStream outputStream = new FileOutputStream(readingsFile);
 		response.writeTo(outputStream);
+		httpClient.close();
 
 		// read data from downloaded file
 		FileInputStream inputStream = new FileInputStream(readingsFile);
 		JSONTokener tokener = new JSONTokener(inputStream);
-		JSONObject response_jo = new JSONObject(tokener);
-        JSONArray readings = response_jo.getJSONArray("items");
+		JSONObject responseJo = new JSONObject(tokener);
+        JSONArray readings = responseJo.getJSONArray(ITEMS);
         
         // collect data belonging to the same URL into lists
         // this reduces the number of uploads required
-        Map<String, List<Instant>> datatime_map = new HashMap<>();
-        Map<String, List<Double>> datavalue_map = new HashMap<>();
+        Map<String, List<Instant>> datatimeMap = new HashMap<>();
+        Map<String, List<Double>> datavalueMap = new HashMap<>();
         String dataIRI = null;
-        int num_fail = 0;
+        int numFail = 0;
         for (int i = 0; i < readings.length(); i++) {
         	try {
 	        	dataIRI = readings.getJSONObject(i).getString("measure");
@@ -173,7 +175,7 @@ public class UpdateStations {
 	        	} catch (Exception e) {
 	        		// some data points have 2 values, not sure why
 	        		// in this case we take the average
-	        		value = readings.getJSONObject(i).getJSONArray("value").toList().stream().mapToDouble(x -> (double) x).average().getAsDouble();
+	        		value = readings.getJSONObject(i).getJSONArray("value").toList().stream().mapToDouble(double.class::cast).average().getAsDouble();
 	        		LOGGER.info("More than 1 value is given for a data point");
 	        		LOGGER.info(readings.getJSONObject(i));
 	        		LOGGER.info("Taking the average");
@@ -181,44 +183,44 @@ public class UpdateStations {
 	        	
 	        	Instant timestamp = Instant.parse(readings.getJSONObject(i).getString("dateTime"));
 	        	
-	        	if (datatime_map.containsKey(dataIRI)) {
+	        	if (datatimeMap.containsKey(dataIRI)) {
 	        		// add timestamp to the list
-	        		datatime_map.get(dataIRI).add(timestamp);
-	        		datavalue_map.get(dataIRI).add(value);
+	        		datatimeMap.get(dataIRI).add(timestamp);
+	        		datavalueMap.get(dataIRI).add(value);
 	        	} else {
 	        		// instantiate new lists and add them to the map
 	        		List<Instant> times = new ArrayList<>();
 	        		List<Double> values = new ArrayList<>();
 	        		times.add(timestamp);
 	        		values.add(value);
-	        		datatime_map.put(dataIRI, times);
-	        		datavalue_map.put(dataIRI, values);
+	        		datatimeMap.put(dataIRI, times);
+	        		datavalueMap.put(dataIRI, values);
 	        	}
         	} catch (Exception e) {
-        		num_fail += 1;
+        		numFail += 1;
         		LOGGER.warn(readings.getJSONObject(i));
         		LOGGER.warn(e.getMessage());
         	}
         }
         
-        List<Map<String,?>> processed_data = new ArrayList<>();
-        processed_data.add(datatime_map);
-        processed_data.add(datavalue_map);
+        List<Map<String,?>> processedData = new ArrayList<>();
+        processedData.add(datatimeMap);
+        processedData.add(datavalueMap);
         
-        LOGGER.info("Received a total of " + Integer.toString(readings.length())+ " readings");
-        LOGGER.info("Organised into " + Integer.toString(datatime_map.size()) + " groups");
-        LOGGER.info("Failed to process " + Integer.toString(num_fail)+ " readings");
+        LOGGER.info("Received a total of {} readings", readings.length());
+        LOGGER.info("Organised into {} groups", datatimeMap.size());
+        LOGGER.info("Failed to process {} readings", numFail);
         
-        return processed_data;
+        return processedData;
 	}
 	
 	@SuppressWarnings("unchecked")
-	static void uploadDataToRDB(LocalDate date, TimeSeriesClient<Instant> tsClient, FloodSparql sparqlClient,
-			List<Map<String,?>> processed_data) {
-		Map<String, List<Instant>> datatime_map = (Map<String, List<Instant>>) processed_data.get(0);
-		Map<String, List<Double>> datavalue_map = (Map<String, List<Double>>) processed_data.get(1);
-        Iterator<String> iter = datatime_map.keySet().iterator();
-        int num_failures = 0;
+	static void uploadDataToRDB(TimeSeriesClient<Instant> tsClient, FloodSparql sparqlClient,
+			List<Map<String,?>> processedData) {
+		Map<String, List<Instant>> datatimeMap = (Map<String, List<Instant>>) processedData.get(0);
+		Map<String, List<Double>> datavalueMap = (Map<String, List<Double>>) processedData.get(1);
+        Iterator<String> iter = datatimeMap.keySet().iterator();
+        int numFailures = 0;
         
         LOGGER.info("Uploading data to postgres");
         while (iter.hasNext()) {
@@ -226,16 +228,17 @@ public class UpdateStations {
         	
         	// try to initialise table if it does not exist
         	if (!tsClient.checkDataHasTimeSeries(dataIRI)) {
-        		LOGGER.info(dataIRI + " is not present in the initial rdf data");
-    			LOGGER.info("Attempting to initialise <" + dataIRI + ">");
+        		LOGGER.info("{} is not present in the initial rdf data", dataIRI);
+    			LOGGER.info("Attempting to initialise <{}>", dataIRI);
     			
 				try {
 					// Obtain station name for this measure
-					HttpEntity response = new APIConnector(dataIRI).getData();
-					JSONObject response_jo = new JSONObject(EntityUtils.toString(response));
+					CloseableHttpClient httpClient = HttpClients.createDefault();
+					HttpEntity response = new APIConnector(dataIRI).getData(httpClient);
+					JSONObject responseJo = new JSONObject(EntityUtils.toString(response));
 					
 					// get the station that measures this quantity
-					JSONObject items = response_jo.getJSONObject("items");
+					JSONObject items = responseJo.getJSONObject(ITEMS);
 					String station = items.getString("station");
 					String unit = items.getString("unitName");
 					String parameterName = items.getString("parameterName");
@@ -243,16 +246,16 @@ public class UpdateStations {
 					
 					// check if station exists, if not, instantiate
 					if (!sparqlClient.checkStationExists(station)) {
-						HttpEntity newstation = new APIConnector(station).getData();
-						JSONObject newstation_jo = new JSONObject(EntityUtils.toString(newstation));
-						if (newstation_jo.getJSONObject("items").has("lat")) {
-							LOGGER.info("Instantiating a new station " + station);
-							sparqlClient.postToRemoteStore(new APIConnector(station+".rdf").getData());
+						HttpEntity newstation = new APIConnector(station).getData(httpClient);
+						JSONObject newstationJo = new JSONObject(EntityUtils.toString(newstation));
+						if (newstationJo.getJSONObject(ITEMS).has("lat")) {
+							LOGGER.info("Instantiating a new station {}", station);
+							sparqlClient.postToRemoteStore(new APIConnector(station+".rdf").getData(httpClient));
 
 							// add approripate rdf type and blazegraph coordinates
 							Station stationObject = new Station(station);
-							stationObject.setLat(newstation_jo.getJSONObject("items").getDouble("lat"));
-							stationObject.setLon(newstation_jo.getJSONObject("items").getDouble("lon"));
+							stationObject.setLat(newstationJo.getJSONObject(ITEMS).getDouble("lat"));
+							stationObject.setLon(newstationJo.getJSONObject(ITEMS).getDouble("lon"));
 							Measure measure = new Measure(dataIRI);
 							measure.setParameterName(parameterName);
 							stationObject.addMeasure(measure);
@@ -268,9 +271,9 @@ public class UpdateStations {
 					
 					LOGGER.info("Created new table successfully");
 				} catch (Exception e1) {
-					num_failures += 1;
+					numFailures += 1;
 					LOGGER.error(e1.getMessage());
-					LOGGER.error("Failed to initialise <" + dataIRI + ">");
+					LOGGER.error("Failed to initialise <{}>", dataIRI);
 					continue;
 				} 
         	}
@@ -278,18 +281,18 @@ public class UpdateStations {
         	try {
     			// create time series object to upload to the client
                 List<List<?>> values = new ArrayList<>();
-                values.add(datavalue_map.get(dataIRI));
-                TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
+                values.add(datavalueMap.get(dataIRI));
+                TimeSeries<Instant> ts = new TimeSeries<>(datatimeMap.get(dataIRI), Arrays.asList(dataIRI), values);
                 tsClient.addTimeSeriesData(ts);
-                LOGGER.debug("Uploaded data for " + dataIRI);
+                LOGGER.debug("Uploaded data for {}", dataIRI);
         	} catch (Exception e) {
-        		num_failures += 1;
+        		numFailures += 1;
         	    LOGGER.error(e.getMessage());
-        	    LOGGER.error("Failed to upload time series for " + dataIRI);
+        	    LOGGER.error("Failed to upload time series for {}", dataIRI);
         	}
         }
         
-        LOGGER.info("Failed to add " + Integer.toString(num_failures) + " data set out of the processed data");
+        LOGGER.info("Failed to add {} data set out of the processed data", numFailures);
         tsClient.disconnectRDB();
 	}
 
@@ -305,7 +308,7 @@ public class UpdateStations {
 
 		List<String> emptyMeasures = new ArrayList<>();
 		for (String measure : measures) {
-			if(tsClient.getLatestData(measure).getTimes().size() < 1) {
+			if(tsClient.getLatestData(measure).getTimes().isEmpty()) {
 				tsClient.deleteIndividualTimeSeries(measure);
 				emptyMeasures.add(measure);
 			}

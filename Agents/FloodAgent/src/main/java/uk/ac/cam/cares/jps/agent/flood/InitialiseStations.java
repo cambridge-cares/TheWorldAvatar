@@ -2,18 +2,18 @@ package uk.ac.cam.cares.jps.agent.flood;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -21,6 +21,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
@@ -58,12 +62,8 @@ public class InitialiseStations {
     	InitialiseStations.storeClient = storeClient;
     }
     
-    public static void main(String[] args) {
-		try {
-			Config.initProperties();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage()); // not critical for unit tests
-		}
+    public static void main(String[] args) throws IOException, URISyntaxException {
+		EndpointConfig endpointConfig = new EndpointConfig();
     	
     	// if these are null, they are in deployed mode, otherwise they should
     	// be set with mocks using their respective setters
@@ -72,13 +72,13 @@ public class InitialiseStations {
 			InitialiseStations.api.setParameter("_view", "full");
     	}
     	if (storeClient == null) {
-    		InitialiseStations.storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
+    		InitialiseStations.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(),endpointConfig.getKgurl(), endpointConfig.getKguser(), endpointConfig.getKgpassword());
     	}
     	if (sparqlClient == null) {
     		InitialiseStations.sparqlClient = new FloodSparql(storeClient);
     	}
     	if (tsClient == null) {
-    		InitialiseStations.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+    		InitialiseStations.tsClient = new TimeSeriesClient<>(storeClient, Instant.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
     	}
     	
     	// this retrieves the high level information and uploads it to Blazegraph
@@ -90,6 +90,14 @@ public class InitialiseStations {
         // add triples for OntoEMS, also update stations objects
 		sparqlClient.addMeasuresConcepts(stations);
 		sparqlClient.addStationTypeAndCoordinates(stations);
+
+		LOGGER.info("Creating layer in Geoserver");
+		GeoServerClient geoserverclient = new GeoServerClient();
+		geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
+		geoserverclient.createPostGISLayer(null, Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.LAYERNAME, new GeoServerVectorSettings());
+		
+		Path obdaFile = Path.of(Config.ONTOP_FILE);
+		new OntopClient().updateOBDA(obdaFile);
 		
 		// set to false by default, download it once and save it locally
 		// takes a while to download because there is no API to download everything in 1 go
@@ -103,8 +111,8 @@ public class InitialiseStations {
 		// File specified by DATUM_FILE needs to exist
 		try {
 			if (Config.DATUM_FILE != null) {
-				JSONObject datum_json = new JSONObject(Files.readString(Paths.get(Config.DATUM_FILE)));
-				sparqlClient.addDatum(datum_json);
+				JSONObject datumJson = new JSONObject(Files.readString(Paths.get(Config.DATUM_FILE)));
+				sparqlClient.addDatum(datumJson);
 			}
 		} catch (JSONException | IOException e) {
 			LOGGER.error("Failed to read datum file");
@@ -129,30 +137,27 @@ public class InitialiseStations {
 	 * gets RDF data from the gov API and upload data as it is to Blazegraph
 	 * The RDF data contains high level information for each station, e.g. 
 	 * its location, what it measures
+	 * @throws IOException
 	 */
-	static void initFloodStationsWithAPI(APIConnector api, RemoteStoreClient storeClient) {
+	static void initFloodStationsWithAPI(APIConnector api, RemoteStoreClient storeClient) throws URISyntaxException, IOException {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
 		try {
 			// get rdf data from gov website
-			HttpEntity response_entity = api.getData();
-			
-	        // use Blazegraph's REST API to upload RDF data to a SPARQL endpoint
+			HttpEntity responseEntity = api.getData(httpClient);
+
+			// use Blazegraph's REST API to upload RDF data to a SPARQL endpoint
 	        LOGGER.info("Posting data to Blazegraph");
 	        
-	        // tried a few methods to add credentials, this seems to be the only way that works
-	        // i.e. setting it manually in the header
-	        String auth = storeClient.getUser() + ":" + storeClient.getPassword();
-	        String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes()); 
-	        HttpPost postRequest = new HttpPost(storeClient.getUpdateEndpoint());
-	        postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
-	        
+	        HttpPost postRequest = new HttpPost(storeClient.getUpdateEndpoint());	        
 	        // add contents downloaded from the API to the post request 
-	        postRequest.setEntity(response_entity);
+	        postRequest.setEntity(responseEntity);
 	        // then send the post request
-	        CloseableHttpClient httpclient = HttpClients.createDefault();
-	        httpclient.execute(postRequest);
+	        httpClient.execute(postRequest);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(e);
+		} finally {
+			httpClient.close();
 		}
 	}
 	
@@ -168,30 +173,33 @@ public class InitialiseStations {
 				measures.add(measure.getIri());
 			}
 		}
-		List<List<String>> ts_list = new ArrayList<>(measures.size());
+		List<List<String>> tsList = new ArrayList<>(measures.size());
 		List<List<Class<?>>> classes = new ArrayList<>(measures.size());
 		
 		for (int i = 0; i < measures.size(); i++) {
-			ts_list.add(Arrays.asList(measures.get(i)));
+			tsList.add(Arrays.asList(measures.get(i)));
 			classes.add(Arrays.asList(Double.class));
 		}
 
 		// table to record last updated time
-		ts_list.add(Arrays.asList(Config.TIME_IRI));
+		tsList.add(Arrays.asList(Config.TIME_IRI));
 		classes.add(Arrays.asList(LocalDate.class));
 		
-		tsClient.bulkInitTimeSeries(ts_list, classes, null);
+		tsClient.bulkInitTimeSeries(tsList, classes, null);
 		tsClient.disconnectRDB();
 	}
 
 	private static void writeToFile(File file, String output) {
 		try {
-			file.createNewFile();
-			FileOutputStream outputStream = new FileOutputStream(file);
-			byte[] strToBytes = output.getBytes();
-			outputStream.write(strToBytes);
-			outputStream.close();
-			LOGGER.info("Created " + file.getAbsolutePath());
+            if(file.createNewFile()) {
+				FileOutputStream outputStream = new FileOutputStream(file);
+				byte[] strToBytes = output.getBytes();
+				outputStream.write(strToBytes);
+				outputStream.close();
+				LOGGER.info("Created {}", file.getAbsolutePath());
+			} else {
+				LOGGER.error("File not created {}", file);
+			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(e);

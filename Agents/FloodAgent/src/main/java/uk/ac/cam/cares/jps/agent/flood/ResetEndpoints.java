@@ -11,16 +11,15 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  *
  */
 public class ResetEndpoints {
-
 	/**
 	 * no input required
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Config.initProperties();
-		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+		EndpointConfig endpointConfig = new EndpointConfig();
+		RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
 		TimeSeriesClient<Instant> tsClient = 
-				new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+				new TimeSeriesClient<>(storeClient, Instant.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
 		storeClient.executeUpdate("drop all");
 		tsClient.deleteAll();
 		tsClient.disconnectRDB();
