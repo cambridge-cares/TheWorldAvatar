@@ -66,6 +66,7 @@ public class Dataset {
             dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).forEach(
                     subset -> {
                         subset.loadData(gdalClient, fullDatasetDirStr, database);
+                        subset.runSQLPostProcess(postGISClient, database);
                         subset.createLayer(geoServerClient, fullDatasetDirStr, workspaceName, database);
                     });
 
