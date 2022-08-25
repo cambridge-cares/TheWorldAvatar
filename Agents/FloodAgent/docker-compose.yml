@@ -10,7 +10,6 @@ services:
       - postgis_password
       - geoserver_password
     environment:
-      OUTPUT_DIR: "/~/"
       DOWNLOAD_DATUM: "false"
       DATUM_FILE: "/datum.json"
       INSTANTIATE_CONNECTIONS: "true"
