@@ -28,7 +28,7 @@ public class Measure {
         trendDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/Rising","Rising");
         trendDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/Falling","Falling");
         trendDisplayTextMap.put("https://www.theworldavatar.com/kg/ontoems/UnavailableTrend","Unavailable");
-    };
+    }
 
     public Measure(String iri) {
         this.iri = iri;
