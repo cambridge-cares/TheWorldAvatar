@@ -1,5 +1,5 @@
 # Flood Agent
-This agent downloads data from https://environment.data.gov.uk/flood-monitoring/doc/reference and stores them in Blazegraph (station info) and PostgreSQL (time series data). After updating the databases, the code writes a time series json file for visualisation (in addition to a geojson file containing locations of the stations that is written once).
+This agent downloads data from https://environment.data.gov.uk/flood-monitoring/doc/reference and stores them in Blazegraph (station info) and PostgreSQL (time series data).
 
 ## Building and running
 This section specifies the minimum requirement to build the docker image. 
@@ -85,6 +85,3 @@ Run the `ResetEndpoints` class to reset both the Blazegraph and Postgres databas
 ```
 java -cp FloodAgent-2.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.ResetEndpoints
 ```
-
-## Outputs
-The `WriteOutput` takes in a date in its input, e.g. `2021-09-30`, and writes out a JSON file containing the time series, and a GeoJSON file containing the station locations for visualisation.
