@@ -6,7 +6,6 @@ import org.apache.jena.graph.NodeFactory;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.ogm.models.FieldInterface;
 import uk.ac.cam.cares.ogm.models.ModelContext;
-import uk.ac.cam.cares.ogm.models.geo.GeometryType;
 
 import java.io.InvalidClassException;
 import java.math.BigInteger;
@@ -72,22 +71,6 @@ public class FieldInterfaceTest{
     this.testScalarInterface("modelProp", TestModel::setModelProp, TestModel::getModelProp,
         "http://example.com/testmodel", "", dataModel, secondModel,
         NodeFactory.createURI("http://example.com/model2"), "http://example.com/model2");
-  }
-
-  @Test
-  public void testDatatypeModelInterface() throws InvalidClassException, NoSuchFieldException, NoSuchMethodException {
-    // Data to write
-    GeometryType dataGeometryType = new GeometryType(
-        "1.0#1.0#3.0#1.0#2.0#3.0#2.0#2.0#3.0#2.0#1.0#3.0#1.0#1.0#1.0",
-        "http://localhost/blazegraph/literals/POLYGON-3-15");
-    GeometryType secondGeometryType = new GeometryType(
-        "1.0#1.0#3.0#1.0#2.0#3.0#2.0#2.0#3.0#2.0#1.0#3.0#1.0#1.0#1.0#1.0#1.0#3.0",
-        "http://localhost/blazegraph/literals/POLYGON-3-18");
-    this.testScalarInterface("geometryProp", TestModel::setGeometryProp, TestModel::getGeometryProp,
-        "1.0#1.0#3.0#1.0#2.0#3.0#2.0#2.0#3.0#2.0#1.0#3.0#1.0#1.0#1.0",
-        "http://localhost/blazegraph/literals/POLYGON-3-15",
-        dataGeometryType, secondGeometryType, secondGeometryType.getNode(),
-        "\"1.0#1.0#3.0#1.0#2.0#3.0#2.0#2.0#3.0#2.0#1.0#3.0#1.0#1.0#1.0#1.0#1.0#3.0\"^^http://localhost/blazegraph/literals/POLYGON-3-18");
   }
 
   @Test

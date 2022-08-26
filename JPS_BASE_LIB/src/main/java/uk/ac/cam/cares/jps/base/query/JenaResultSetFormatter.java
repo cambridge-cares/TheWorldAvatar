@@ -75,10 +75,21 @@ public class JenaResultSetFormatter {
 	 * @return
 	 */
 	public static JSONObject convertToSimplifiedList(String resultJSONW3CStandard) {
+		JSONArray joarray = convertToSimplifiedJsonArray(resultJSONW3CStandard);
 		JSONObject result = new JSONObject();
-		
-		JSONArray joarray = new JSONArray();
 		result.put("results", joarray);
+		return result;
+	}
+	
+	/**
+	 * Returns the result rows as JSON Array in the same format as {@link #convertToSimplifiedList(String)} but without the leading results JSON object, 
+	 * i.e. [ ... ] instead of { "results": [ ... ] }  
+	 * 
+	 * @param resultJSONW3CStandard a query result string according the official W3C JSON format as described in https://www.w3.org/TR/rdf-sparql-json-res/
+	 * @return
+	 */
+	public static JSONArray convertToSimplifiedJsonArray(String resultJSONW3CStandard) {
+		JSONArray joarray = new JSONArray();
 		
 		JSONObject jo = new JSONObject(resultJSONW3CStandard);
 		JSONArray array = jo.getJSONObject("results").getJSONArray("bindings");
@@ -94,7 +105,7 @@ public class JenaResultSetFormatter {
 			joarray.put(simplifiedRow);
 		}
 	
-		return result;
+		return joarray;
 	}
 	
 	/**
@@ -125,7 +136,6 @@ public class JenaResultSetFormatter {
 		return result;
 	}
 	
-	
 	public static List<String[]> convertToListofStringArraysWithKeys(String resultJSONW3CStandard, String[] keys) {
 		
 		List<String[]> result = new ArrayList<String[]>();		
@@ -143,6 +153,7 @@ public class JenaResultSetFormatter {
 		
 		return result;
 	}
+	
 	public static String[] getKeys(String resultJSONW3CStandard) {
 		
 		// "head": { "vars": [ "generation" , "emission" , "emissionvalue" , "emissionvaluenum" ] }

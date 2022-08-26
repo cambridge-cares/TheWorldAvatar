@@ -1,14 +1,21 @@
+import shutil
 from flask import Flask
 from testcontainers.core.container import DockerContainer
 
+from typing import get_type_hints
 from pathlib import Path
 import logging
 import pytest
+import random
+import uuid
 import time
 import os
 
 from pyderivationagent.agent import FlaskConfig
 from pyderivationagent.conf import config_derivation_agent
+from pyderivationagent.conf import config_generic
+from pyderivationagent.conf import AgentConfig
+from pyderivationagent.conf import Config
 
 from tests.agents.sparql_client_for_test import PySparqlClientForTest
 from tests.agents.agents_for_test import RNGAgent
@@ -30,6 +37,7 @@ ENV_FILES_DIR = os.path.join(THIS_DIR,'env_files')
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
+TEMP_ENV_FILE_DIR = os.path.join(THIS_DIR,'_temp_env_file')
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
@@ -85,6 +93,20 @@ class AllInstances():
     DERIV_DIFF: str = None
 
 
+class Config4Test1(Config):
+    STR_1: str
+    INT_1: int
+    BOOL_1_1: bool
+    BOOL_1_2: bool
+
+
+class Config4Test2(Config4Test1):
+    STR_2: str
+    INT_2: int
+    BOOL_2_1: bool
+    BOOL_2_2: bool
+
+
 # ----------------------------------------------------------------------------------
 # Pytest session related functions
 # ----------------------------------------------------------------------------------
@@ -95,6 +117,8 @@ def pytest_sessionstart(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
+    if os.path.exists(TEMP_ENV_FILE_DIR):
+        shutil.rmtree(TEMP_ENV_FILE_DIR)
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
@@ -102,6 +126,8 @@ def pytest_sessionfinish(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
+    if os.path.exists(TEMP_ENV_FILE_DIR):
+        shutil.rmtree(TEMP_ENV_FILE_DIR)
 
 
 # ----------------------------------------------------------------------------------
@@ -148,7 +174,7 @@ def get_service_auth():
 
 # NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
 @pytest.fixture(scope="module")
-def initialise_clients(get_service_url, get_service_auth):
+def initialise_clients_and_agents(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
     sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
@@ -167,6 +193,9 @@ def initialise_clients(get_service_url, get_service_auth):
         sparql_client.kg_client,
         DERIVATION_INSTANCE_BASE_URL
     )
+
+    # Delete all triples before anything
+    sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
     yield sparql_client, derivation_client, update_endpoint
 
@@ -203,11 +232,14 @@ def initialise_agent(initialise_triple_store):
             DERIVATION_INSTANCE_BASE_URL
         )
 
+        # Delete all triples before registering agents
+        sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+
         # Initialise derivation agents with temporary docker container endpoint
-        rng_agent = create_rng_agent(RNGAGENT_ENV, endpoint)
-        min_agent = create_min_agent(MINAGENT_ENV, endpoint)
-        max_agent = create_max_agent(MAXAGENT_ENV, endpoint)
-        diff_agent = create_diff_agent(DIFFAGENT_ENV, endpoint)
+        rng_agent = create_rng_agent(RNGAGENT_ENV, endpoint, True)
+        min_agent = create_min_agent(MINAGENT_ENV, endpoint, True)
+        max_agent = create_max_agent(MAXAGENT_ENV, endpoint, True)
+        diff_agent = create_diff_agent(DIFFAGENT_ENV, endpoint, True)
 
         yield sparql_client, derivation_client, rng_agent, min_agent, max_agent, diff_agent
 
@@ -222,10 +254,48 @@ def initialise_agent(initialise_triple_store):
 
 
 # ----------------------------------------------------------------------------------
+# Function-scoped test fixtures
+# ----------------------------------------------------------------------------------
+
+@pytest.fixture(scope="function")
+def generate_random_conf():
+    def _generate_random_conf(cls: Config):
+        conf_test_dct = {}
+        for field in cls.all_annotations():
+            var_type = get_type_hints(cls)[field]
+            if var_type == bool:
+                conf_test_dct[field] = bool(random.getrandbits(1))
+            elif var_type == str:
+                conf_test_dct[field] = str(uuid.uuid4())
+            elif var_type == int:
+                conf_test_dct[field] = random.randint(0, 100)
+            else:
+                raise ValueError('Unsupported type: {}'.format(var_type))
+        return conf_test_dct
+    return _generate_random_conf
+
+
+@pytest.fixture(scope="function")
+def generate_random_env_file(generate_random_conf):
+    def _generate_random_env_file(cls: Config):
+        if not os.path.exists(TEMP_ENV_FILE_DIR):
+            os.makedirs(TEMP_ENV_FILE_DIR)
+
+        conf_test_dct = generate_random_conf(cls)
+        env_file_path = os.path.join(TEMP_ENV_FILE_DIR, str(uuid.uuid4()) + ".env.test")
+        env_file = open(env_file_path, "x")
+        env_content = "\n".join(["{}={}".format(k, v) for k, v in conf_test_dct.items()])
+        env_file.write(env_content)
+        env_file.close()
+        return env_file_path, conf_test_dct
+    return _generate_random_env_file
+
+
+# ----------------------------------------------------------------------------------
 # Agents create functions
 # ----------------------------------------------------------------------------------
 
-def create_rng_agent(env_file: str = None, sparql_endpoint: str = None):
+def create_rng_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -236,11 +306,12 @@ def create_rng_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
 
-def create_max_agent(env_file: str = None, sparql_endpoint: str = None):
+def create_max_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -251,11 +322,12 @@ def create_max_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
 
-def create_min_agent(env_file: str = None, sparql_endpoint: str = None):
+def create_min_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -266,11 +338,12 @@ def create_min_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
 
-def create_diff_agent(env_file: str = None, sparql_endpoint: str = None):
+def create_diff_agent(env_file: str = None, sparql_endpoint: str = None, register_agent: bool = None):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
@@ -281,6 +354,7 @@ def create_diff_agent(env_file: str = None, sparql_endpoint: str = None):
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__)
     )
 
@@ -294,7 +368,9 @@ def create_update_endpoint(env_file: str = None, sparql_endpoint: str = None):
         agent_iri=endpoint_config.ONTOAGENT_SERVICE_IRI, # just placeholder value, not used by anything
         time_interval=endpoint_config.DERIVATION_PERIODIC_TIMESCALE, # just placeholder value, not used by anything
         derivation_instance_base_url=endpoint_config.DERIVATION_INSTANCE_BASE_URL, # just placeholder value, not used by anything
-        kg_url=sparql_endpoint if sparql_endpoint is not None else endpoint_config.SPARQL_QUERY_ENDPOINT
+        kg_url=sparql_endpoint if sparql_endpoint is not None else endpoint_config.SPARQL_QUERY_ENDPOINT,
+        agent_endpoint=None, # not a real derivation agent should should not be provided agent_endpoint for sync derivations
+        register_agent=False # the default value is True, so here we set it to False as we don't want to register the endpoint
     )
 
 
