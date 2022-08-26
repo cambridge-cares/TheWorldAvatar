@@ -36,7 +36,7 @@ The access agent is accessible on localhost:48888 (or host.docker.internal:48888
 
 The AccessAgent is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. Both methods take two arguments: the targetResourceID and the SPARQL query/update.
 
-There are two ways to call your local access agent:
+There are three ways to call your local access agent:
 1. Set url.accessagent.host in the jps.properties file in jps_base_lib.
 2. Set the ACCESSAGENT_HOST environment variable. This is recommended if running your code from a docker container and can be done in the docker-compose file.
 3. Alternatively, a full URL containing the correct host:port can be supplied as the targetResourceID e.g.
