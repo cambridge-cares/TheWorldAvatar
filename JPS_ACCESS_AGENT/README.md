@@ -32,18 +32,18 @@ Note:
 
 ### Calling the Access Agent in your dev environment 
 
-The access agent is accessible on localhost:48888 (or host.docker.internal:48888 from a Docker container on Windows. On Linux/Windows the container name and port can be used i.e. access-agent:8080 as long as the container is on the same Docker network as the access-agent container.).
+The access agent is accessible on localhost:48888 (or host.docker.internal:48888 from a Docker container running on Windows/Mac. On Linux/Windows the container name and port can be used i.e. access-agent:8080 as long as the container is on the same Docker network as the access-agent container.).
 
 The AccessAgent is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. Both methods take two arguments: the targetResourceID and the SPARQL query/update.
 
 There are two ways to call your local access agent:
-1. Set the ACCESSAGENT_HOST environment variable to localhost:48888 (or host.docker.internal:48888 or  access-agent:48888). This can be done in the docker-compose file. Then, only the label needs to be supplied as the targetResourceID
-2. Alternatively, a full URL containing the correct host:port can be supplied as the targetResourceID e.g.
+1. Set url.accessagent.host in the jps.properties file in jps_base_lib.
+2. Set the ACCESSAGENT_HOST environment variable. This is recommended if running your code from a docker container and can be done in the docker-compose file.
+3. Alternatively, a full URL containing the correct host:port can be supplied as the targetResourceID e.g.
 ```
 http://localhost:48888/label or http://host.docker.internal:48888/label
 ```
 where the label corresponds to the label uploaded to the router.
-
 
 ## Building the Access Agent
 
