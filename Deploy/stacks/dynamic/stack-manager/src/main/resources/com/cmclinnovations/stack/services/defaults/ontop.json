@@ -1,0 +1,41 @@
+{
+    "type": "ontop",
+    "ServiceSpec": {
+        "Name": "ontop",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ontop/ontop-endpoint:4.2.1",
+                "Env": [
+                    "ONTOP_MAPPING_FILE=/ontop.obda",
+                    "ONTOP_DB_NAME=postgres",
+                    "ONTOP_DEV_MODE=true"
+                ],
+                "Command": [
+                    "tail",
+                    "-f",
+                    "/dev/null"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "sparql": {
+            "url": "http://localhost:8080/sparql",
+            "externalPath": "/ontop/sparql"
+        },
+        "ui": {
+            "url": "http://localhost:8080/",
+            "externalPath": "/ontop/ui"
+        }
+    }
+}
