@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 
 public class PostGISClient extends ContainerClient {
@@ -12,7 +13,7 @@ public class PostGISClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     public PostGISClient() {
-        postgreSQLEndpoint = readEndpointConfig("postgis", PostGISEndpointConfig.class);
+        postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
     }
 
     private Connection getDefaultConnection() throws SQLException {
@@ -52,6 +53,20 @@ public class PostGISClient extends ContainerClient {
             } else {
                 throw new RuntimeException("Failed to drop database '" + databaseName
                         + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL("postgres") + "'.", ex);
+            }
+        }
+    }
+
+    public void executeQuery(String databaseName, String sql) {
+        try (Connection conn = getConnection(databaseName);
+                Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            if ("3D000".equals(ex.getSQLState())) {
+                // Database doesn't exist error
+            } else {
+                throw new RuntimeException("Failed to run SQL query '" + sql + "' on the server with JDBC URL '"
+                        + postgreSQLEndpoint.getJdbcURL("databaseName") + "'.", ex);
             }
         }
     }

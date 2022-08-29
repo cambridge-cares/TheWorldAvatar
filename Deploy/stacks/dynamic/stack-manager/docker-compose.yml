@@ -1,14 +1,7 @@
 version: '3.8'
 services:
   stack-manager:
-    image: docker.cmclinnovations.com/stack-manager:1.0-SNAPSHOT
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: none
-    environment:
-      - "STACK_NAME=${STACK_NAME}"
+    image: docker.cmclinnovations.com/stack-manager:1.2.0
     volumes:
       - ./inputs/data:/inputs/data
       - ./inputs/config:/inputs/config
@@ -16,15 +9,6 @@ services:
       # Ensure all secret files are mapped to the /run/secrets/ directory
       # and are read only inside the container (add ":ro" on the end)
       - ./inputs/secrets:/run/secrets:ro
-      - scratch:/stack_scratch
-    networks:
-      - stack
-
-volumes:
-  scratch:
-    name: ${STACK_NAME}_scratch
-    labels:
-      - com.docker.stack.namespace:${STACK_NAME}
 
 networks:
   stack:

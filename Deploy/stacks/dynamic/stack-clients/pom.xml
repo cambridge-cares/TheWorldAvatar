@@ -5,10 +5,16 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.2.0</version>
 
   <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>
+
+  <parent>
+    <groupId>uk.ac.cam.cares.jps</groupId>
+    <artifactId>jps-parent-pom</artifactId>
+    <version>2.0.0</version>
+  </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -55,7 +61,7 @@
     <dependency>
       <groupId>com.github.odiszapc</groupId>
       <artifactId>nginxparser</artifactId>
-      <version>0.9.3</version>
+      <version>0.9.6</version>
     </dependency>
 
     <dependency>

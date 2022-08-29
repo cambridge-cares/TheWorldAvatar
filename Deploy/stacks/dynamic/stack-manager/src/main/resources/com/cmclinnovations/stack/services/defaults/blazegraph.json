@@ -1,4 +1,5 @@
 {
+    "type": "blazegraph",
     "ServiceSpec": {
         "Name": "blazegraph",
         "TaskTemplate": {

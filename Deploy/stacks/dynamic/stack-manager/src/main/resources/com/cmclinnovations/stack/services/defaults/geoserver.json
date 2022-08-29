@@ -5,6 +5,10 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "docker.cmclinnovations.com/geoserver:2.20.4",
+                "Env": [
+                    "GEOSERVER_CSRF_WHITELIST=localhost",
+                    "PLUGIN_DYNAMIC_URLS=http://sourceforge.net/projects/geoserver/files/GeoServer/2.20.4/extensions/geoserver-2.20.4-vectortiles-plugin.zip"
+                ],
                 "Mounts": [
                     {
                         "Type": "volume",
@@ -57,16 +61,6 @@
                     }
                 ]
             }
-        },
-        "EndpointSpec": {
-            "Ports": [
-                {
-                    "Name": "web",
-                    "Protocol": "tcp",
-                    "TargetPort": "8080",
-                    "PublishedPort": "3839"
-                }
-            ]
         }
     },
     "endpoints": {

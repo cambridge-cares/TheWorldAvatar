@@ -6,12 +6,29 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Debug DataUploader",
+            "name": "Debug",
             "request": "attach",
             "hostName": "localhost",
-            "port": "5007",
-            "preLaunchTask": "compose-stack-deploy-dev",
-            "projectName": "stack-data-uploader"
+            "port": "${config:debug.port}",
+            "preLaunchTask": "compose-deploy",
+            "projectName": "${workspaceFolderBasename}"
+        },
+        {
+            "type": "java",
+            "name": "Build and Debug",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "${config:debug.port}",
+            "preLaunchTask": "compose-build-deploy",
+            "projectName": "${workspaceFolderBasename}"
+        },
+        {
+            "type": "java",
+            "name": "Reattach and Debug",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "${config:debug.port}",
+            "projectName": "${workspaceFolderBasename}"
         }
     ]
 }

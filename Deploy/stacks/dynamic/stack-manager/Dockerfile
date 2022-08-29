@@ -1,6 +1,6 @@
-# First stage: download the Java dependencies (allows them to be cached if unchanged)
+# First stage: download the Java dependencies and build
 #==================================================================================================
-FROM maven:3.8.3-adoptopenjdk-11 as retriever
+FROM maven:3.8.3-adoptopenjdk-11 as builder
 
 # Copy in Maven settings templates and credentials 
 COPY docker/credentials /root/credentials
@@ -12,26 +12,26 @@ WORKDIR /root/.m2
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
-# Copy in Java source and build jar
+# Copy in Java source and build
 WORKDIR /root/code
 
+# Copy just the pom.xml file
 COPY pom.xml ./pom.xml
+
+# Retrieve all of the dependencies 
 RUN mvn clean dependency:resolve
 
-#==================================================================================================
-
-# Second stage: build war file
-#==================================================================================================
-
-FROM retriever as builder
-
+# Copy in the code
 COPY src ./src/
 
-RUN mvn package
+# Ensure that the latest versions of SNAPSHOT dependencies are always used
+ARG CACHEBUST=1
+
+RUN mvn package --update-snapshots
 
 #==================================================================================================
 
-# Third stage: copy the downloaded dependency into a new image and build into an app
+# Second stage: copy the output into a clean image
 #==================================================================================================
 FROM adoptopenjdk/openjdk11:jre-11.0.13_8 as agent
 
@@ -43,6 +43,7 @@ WORKDIR /app
 # Copy the downloaded dependencies from the builder
 COPY --from=builder /root/code/target/lib /app/lib
 
+# Port for Java debugging
 EXPOSE 5005
 
 # Run the entrypoint script

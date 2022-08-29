@@ -3,7 +3,7 @@ version: "3.8"
 services:
  # This file is provided in order to build a 'write-only' version of the image and upload it to the github Docker registry
   river-data-getter:
-    image: ghcr.io/cambridge-cares/river-data-getter:1.0.1
+    image: ghcr.io/cambridge-cares/river-data-getter:1.1
     build:
       context: .
       labels:

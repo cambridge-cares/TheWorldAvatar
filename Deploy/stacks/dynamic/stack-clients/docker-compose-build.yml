@@ -1,5 +1,4 @@
 version: '3.8'
 services:
   stack-client:
-    image: docker.cmclinnovations.com/stack-client:1.0-SNAPSHOT
     build: .

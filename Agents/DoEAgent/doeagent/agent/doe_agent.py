@@ -9,14 +9,30 @@ from doeagent.kg_operations import *
 from doeagent.data_model import *
 from doeagent.doe_algo import *
 
+# Disable excessive debug logging from numba module
+import logging
+logging.getLogger("numba").setLevel(logging.WARNING)
+
 
 class DoEAgent(DerivationAgent):
-    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
-        # Create sparql_client
-        self.sparql_client = ChemistryAndRobotsSparqlClient(
-            self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword
-        )
+    def __init__(self,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
 
+        # Initialise the sparql_client
+        self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
+
+    def agent_input_concepts(self) -> list:
+        return [ONTODOE_DESIGNOFEXPERIMENT]
+
+    def agent_output_concepts(self) -> list:
+         return [ONTOREACTION_REACTIONEXPERIMENT]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
+
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance
         try:
             doe_instance = self.sparql_client.get_doe_instance(derivation_inputs.getIris(ONTODOE_DESIGNOFEXPERIMENT)[0])
@@ -56,6 +72,5 @@ def default():
         Instructional message at the app root.
     """
     msg  = "This is an asynchronous agent that capable of conducting Design Of Experiment (DoE).<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/133-dev-design-of-experiment/Agents/DoEAgent#readme<BR>"
-    # TODO change above line to https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/DoEAgent#readme, before merging back to develop branch
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DoEAgent#readme<BR>"
     return msg

@@ -177,6 +177,11 @@ public class Derivation {
 		return new JSONObject(belongsToMap);
 	}
 
+	public List<String> getBelongsToIris(String rdfType) {
+		return this.getEntities().stream().filter(e -> e.getRdfType().equals(rdfType)).map(e -> e.getIri())
+				.collect(Collectors.toList());
+	}
+
 	public JSONObject getDownstreamDerivationMap() {
 		Map<String, List<String>> downstreamDerivationMap = new HashMap<>();
 		this.getEntities().stream().filter(e -> e.isInputToDerivation()).forEach(e -> {

@@ -5,6 +5,7 @@ import com.cmclinnovations.stack.services.config.ServiceConfig;
 import java.nio.file.Path;
 import java.util.Map;
 
+import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 public final class PostGISService extends ContainerService {
@@ -26,7 +27,8 @@ public final class PostGISService extends ContainerService {
         setEnvironmentVariableIfAbsent("POSTGRES_PASSWORD_FILE", DEFAULT_PASSWORD_FILE);
         setEnvironmentVariableIfAbsent("PGPASSFILE", PGPASS_FILE.toString());
 
-        endpointConfig = new PostGISEndpointConfig("postgis", getHostName(), DEFAULT_PORT,
+        endpointConfig = new PostGISEndpointConfig(
+                EndpointNames.POSTGIS, getHostName(), DEFAULT_PORT,
                 getEnvironmentVariable("POSTGRES_USER"), getEnvironmentVariable("POSTGRES_PASSWORD_FILE"));
     }
 
