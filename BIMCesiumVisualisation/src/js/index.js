@@ -182,6 +182,7 @@ handler.setInputAction(function (movement) {
                 image : './data/solarpanel.png',
                 color: Cesium.Color.WHITE.withAlpha(1)
             }),
+              zindex : 1
             }
           });
         }
