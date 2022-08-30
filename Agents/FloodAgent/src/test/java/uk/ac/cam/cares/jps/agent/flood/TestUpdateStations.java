@@ -36,7 +36,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 @Disabled
-public class testUpdateStations {
+public class TestUpdateStations {
 	@Container
 	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
 													 .withExposedPorts(9999);
