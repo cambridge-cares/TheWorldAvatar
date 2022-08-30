@@ -10,7 +10,7 @@ import java.util.Set;
  * Misc hardcoded lookups
  */
 public class Lookups {
-    
+
     /**
      * Map of class IRIs to query files
      */
@@ -20,27 +20,25 @@ public class Lookups {
      * Keys not to show in output meta JSON
      */
     public static Set<String> HIDDEN_META = new HashSet<>(Arrays.asList(
-        "measurement",
-        "id",
-        "report",
-        "forecast",
-        "measurement unit",
-        "forecast unit",
-        "measurement parameter",
-        "measurement qualifier",
-        "quantity",
-        "quantity1",
-        "quantity2",
-        "symbol",
-        "measurement symbol",
-        "forecast symbol",
-        "unit",
-        "measured quantities",
-        "forecast quantities",
-        "forecast created",
-        "quantity forecasted",
-        "quantity measured"
-    ));
+            "measurement",
+            "report",
+            "forecast",
+            "measurement unit",
+            "forecast unit",
+            "measurement parameter",
+            "measurement qualifier",
+            "quantity",
+            "quantity1",
+            "quantity2",
+            "symbol",
+            "measurement symbol",
+            "forecast symbol",
+            "unit",
+            "measured quantities",
+            "forecast quantities",
+            "forecast created",
+            "quantity forecasted",
+            "quantity measured"));
 
     /**
      * Units IRIs to labels.
