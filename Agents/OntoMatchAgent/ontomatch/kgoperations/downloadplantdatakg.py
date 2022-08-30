@@ -73,7 +73,7 @@ PREFIX j.4: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts
     '''
     if namespace is None:
         qstr = qstr_nons
-    elif 'kwl' in namespace:
+    elif 'kwl' in namespace or 'dukes' in namespace:
         qstr = qstr_kwl.format(namespace)
     else:
         qstr = qstr_base.format(namespace)
@@ -115,5 +115,6 @@ def upload2Kg(linkfilepath):
 
 
 if __name__ == '__main__':
-    downloadDataKg('gppd_gbr.ttl','ukpowerplants',None)
+    #downloadDataKg('gppd_gbr.ttl','ukpowerplants',None)
+    downloadDataKg('gppd_gbr.ttl','powerplants','http://dukes')
     #upload2Kg('../tmp/blackboard/linked_power_plants.ttl')
