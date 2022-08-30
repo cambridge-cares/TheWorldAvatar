@@ -14,10 +14,14 @@ def ord2csv():
    # Datafile name
    pb = 'ord_dataset-fc83743b978f4deea7d6856deacbfe53.pb.gz'
    # If the file does not exist in the directory, download it
-   if (not os.path.isfile(pb)):
+   if (not os.path.isfile("./inputs/"+pb)):
       # Download dataset from ord-data
       url = "https://github.com/open-reaction-database/ord-data/blob/main/data/fc/"+pb+"?raw=true"
-      pb = wget.download(url)
+      pb = wget.download(url=url, out="./inputs/")
+      print(pb)
+   else:
+      pb = './inputs/'+pb
+
    
    
    # Load the data; message_helpers is part of the ORD schema
