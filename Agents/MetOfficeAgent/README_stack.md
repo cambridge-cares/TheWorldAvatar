@@ -60,6 +60,22 @@ After installation of all required packages (incl. `py4jps`), the `JpsBaseLib` r
     jpsrm install StackClients <path to tmp_stack> --jar <name of .jar file>
     ```
 
+# Spinning up the Stack remotely via SSH
+
+To spin up the stack remotely via SSH, VSCode's in-built SSH support can be used. Simply follow the steps provided here to use [VSCode via SSH] to log in to a remote machine (e.g. Virtual machine running on Digital Ocean) an start developing there. Regular log in relies on username and password. To avoid recurring prompts to provide credentials, one can [Create SSH key] and [Upload SSH key] to the remote machine to allow for automatic authentification.
+
+Once logged in, a remote copy of The World Avatar repository can be cloned using the following commands:
+
+```bash
+$ git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
+$ cd <REPO NAME>
+$ git checkout dev-MetOfficeAgent-withinStack
+$ git pull
+```
+
+Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
+
+
 # How to use the Agent
 
 The `MetOffice` agent can be deployed as locally running web agent or using the provided dockerized version.
@@ -161,3 +177,7 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2022
 [py4jps]: https://pypi.org/project/py4jps/#description
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
+[VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
+[Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
+[Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
+[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
