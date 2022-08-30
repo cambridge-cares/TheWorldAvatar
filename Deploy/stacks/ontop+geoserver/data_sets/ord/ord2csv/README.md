@@ -22,3 +22,6 @@ Install the Google API Python Client from PyPi using the following command:
 ## Important Protocol Buffer (ProtoBuf) Documentation Links
 ### Message
 ### Descriptor
+
+## Running the docker command
+    $ docker run -it -v $(pwd)/results:/results -v $(pwd)/inputs:/inputs ord2csv

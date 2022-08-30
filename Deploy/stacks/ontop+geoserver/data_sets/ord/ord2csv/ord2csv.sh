@@ -1,10 +1,10 @@
 #!/bin/bash
-
+RESULTS=./results
 
 # cleaning target directories
 echo "1.------------------------"
 echo "Cleaning the old csv files"
-rm -r results/*
+rm -r $RESULTS/*
 
 # running the code
 echo "2.------------------------"
