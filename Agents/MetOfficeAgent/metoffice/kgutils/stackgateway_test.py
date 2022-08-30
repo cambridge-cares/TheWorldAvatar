@@ -2,14 +2,17 @@
 
 from py4jps.resources import StackClients
 
-stackclientsGw = StackClients()
-stackclientsGw.launchGateway()
+stackClientsGw = StackClients()
+stackClientsGw.launchGateway()
 
 # Create module view to postgis client
 # TODO: create view to all clients instead
-stackclients_view = stackclientsGw.createModuleView()
-stackclientsGw.importPackages(stackclients_view,"com.cmclinnovations.stack.clients.postgis.*")
+stackClientsView = stackClientsGw.createModuleView()
+stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
+stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
 
 # Testing that JAVA methods can successfully be called
-stackclients_view.PostGISClient().toString()
-
+containerClient = stackClientsView.ContainerClient()
+bg = stackClientsView.BlazegraphEndpointConfig("","","","","")
+bg.getClass()
+containerClient.readEndpointConfig("blazegraph", bg.getClass())
