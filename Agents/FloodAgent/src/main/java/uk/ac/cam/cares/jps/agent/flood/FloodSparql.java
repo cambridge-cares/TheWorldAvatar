@@ -95,7 +95,6 @@ public class FloodSparql {
 	private static final Iri UNAVAILABLE_TREND = P_EMS.iri("UnavailableTrend");
 
     // properties
-	private static final Iri HAS_OBSERVATION_LOCATION = P_EMS.iri("hasObservationLocation");
 	private static final Iri HAS_OBSERVATION_ELEVATION = P_EMS.iri("hasObservationElevation");
 	private static final Iri HAS_CURRENT_RANGE = P_EMS.iri("hasCurrentRange");
 	private static final Iri HAS_CURRENT_TREND = P_EMS.iri("hasCurrentTrend");
@@ -359,30 +358,6 @@ public class FloodSparql {
 		}
 		modify.prefix(P_EMS,P_OM);
 		storeClient.executeUpdate(modify.getQueryString());
-	}
-
-	/**
-	 * returns all the measures in the endpoint, each station may measure 1-4 quantities
-	 * ignores stations without coordinates
-	 * @return
-	 */
-	List<String> getMeasures() {
-        SelectQuery query = Queries.SELECT();
-		
-		Variable measure = query.var();
-		Variable station = query.var();
-		Variable coord = query.var();
-				
-		GraphPattern queryPattern = station.has(HAS_OBSERVATION_LOCATION, coord)
-		.andHas(PropertyPaths.path(REPORTS,HAS_VALUE), measure); 
-		
-		query.select(measure).where(queryPattern).prefix(P_EMS,P_OM);
-		
-	    @SuppressWarnings("unchecked")
-		List<String> measureList = storeClient.executeQuery(query.getQueryString()).toList().stream()
-	    .map(datairi -> ((HashMap<String,String>) datairi).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
-	    
-	    return measureList;
 	}
 	
 	/**

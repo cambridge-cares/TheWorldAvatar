@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.nio.charset.UnsupportedCharsetException;
 import java.time.Instant;
-import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -20,8 +18,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +30,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
-import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -117,29 +112,6 @@ public class TestInitialiseStations {
         
         // length is the number of triples uploaded to blazegraph
         Assertions.assertTrue(storeClient.executeQuery(query.getQueryString()).length() > 1);
-	}
-	
-	@Test
-	public void testInitTimeSeriesTables() throws UnsupportedCharsetException, IOException, URISyntaxException {
-		InitialiseStations.initFloodStationsWithAPI(api,storeClient);
-		List<Station> stations = sparqlClient.getStationsOriginal();
-		InitialiseStations.initTimeSeriesTables(tsClient, stations);
-        List<String> measures = sparqlClient.getMeasures();
-		
-		for (String measure : measures) {
-			Assertions.assertTrue(tsClient.checkDataHasTimeSeries(measure));
-		}
-	}
-	
-	@Test
-	public void testMain() throws IOException, URISyntaxException {
-		// set clients that connect to test containers
-		InitialiseStations.setAPIConnector(api);
-		InitialiseStations.setSparqlClient(sparqlClient);
-		InitialiseStations.setStoreClient(storeClient);
-		InitialiseStations.setTsClient(tsClient);
-		
-		InitialiseStations.main(new String[0]);
 	}
 	
 	@AfterEach
