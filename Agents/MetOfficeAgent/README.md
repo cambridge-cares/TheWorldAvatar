@@ -1,14 +1,16 @@
 # Description
 
-The `MetOffice` agent is an input and output agent which queries data from the MetOffice API, also known as [DataPoint], and instantiates it according to the [OntoEMS] ontology in the [TheWorldAvatar] knowledge graph.
+The `MetOffice` agent is an input (and output) agent which queries data from the MetOffice API, also known as [DataPoint], and instantiates it according to the [OntoEMS] ontology in the [TheWorldAvatar] knowledge graph.
 
-# Installation
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+It is designed to interact with the stack spun up by the stack manager.
+
+## Setup
+This section specifies the minimum requirement to build the docker image. 
 
 ## Requirements
 
-- You need Python >3.7 to run the `MetOffice` agent. You can install Python by going to the official Python [download page]
-- You also need to install a [Java Runtime Environment version >=8]
+- You need Python >3.7 to run the `MetOffice` agent
+- You also need to install a [Java Runtime Environment version >=11]
 
 ## 1. Virtual environment setup
 
@@ -29,12 +31,8 @@ The above commands will create and activate the virtual environment `metoff_venv
 This type of installation is only for the developers. To install `MetOffice`  directly from its repository you need to first clone the [TheWorldAvatar] project. Then simply navigate to the *TheWorldAvatar\Agents\MetOfficeAgent* directory and execute the following commands:
 ```bash
 # build and install
+(metoff_venv) $ python -m pip install --upgrade pip
 (metoff_venv) $ python -m pip install .
-(metoff_venv) $ python -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
-
-# or build for in-place development
-(metoff_venv) $ python -m pip install -e .
-(metoff_venv) $ python -m pip install -r dev_requirements.txt
 (metoff_venv) $ python -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 ```
 
@@ -42,25 +40,54 @@ Alternatively, use the provided `install_script_pip.sh` convenience scripts, tha
 ```bash
 # create the environment and install the project
 $ install_script_pip.sh -v -i
-# create the environment and install the project for in-place development
-$ install_script_pip.sh -v -i -e
 ```
-Note that installing the project for in-place development (setting the `-e` flag) also installs the required python packages for development and testing. 
 
-## Notes on testing
 
-Please note that some of the tests use the `testcontainers` library and, hence, require Docker to be installed. Furthermore, access to the `docker.cmclinnovations.com registry` is required from the machine the test is run on to pull docker images. You can request login details by emailing `support<at>cmclinnovations.com` with the subject 'Docker registry access'.
-Furthermore, there are two integration tests which require a (local) Blazegraph and PostgreSQL RDB reachable at the endpoints specified in the [properties file]. Those tests are ignored by default and need to be actively activated if needed.
+## 3. Updating and adding py4jps resources
 
-To test the code, simply run the following commands:
+After installation of all required packages (incl. `py4jps`), the `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and summarized below:
+
+- Build latest versions of [JPS_BASE_LIB] and [Stack-Clients] from the respective branches using Maven (potentially include -DksipTests flag):
+    ```
+    $ mvn clean package
+    ```
+- Copy the project main `.jar` file and the entire `lib` folder into temporary directories, e.g., `tmp_base_lib` and `tmp_stack`
+- Update `JpsBaseLib` resource
+    ```
+    jpsrm uninstall JpsBaseLib
+    jpsrm install JpsBaseLib <path to tmp_base_lib> --jar <name of .jar file>
+    ```
+- Install `StackClients` resource
+    ```
+    jpsrm install StackClients <path to tmp_stack> --jar <name of .jar file>
+    ```
+
+
+## Accessing Github's Container registry
+
+While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
+```
+  $ docker login ghcr.io -u <github_username>
+  $ <github_personal_access_token>
+```
+
+
+
+# Spinning up the Stack remotely via SSH
+
+To spin up the stack remotely via SSH, VSCode's in-built SSH support can be used. Simply follow the steps provided here to use [VSCode via SSH] to log in to a remote machine (e.g. Virtual machine running on Digital Ocean) an start developing there. Regular log in relies on username and password. To avoid recurring prompts to provide credentials, one can [Create SSH key] and [Upload SSH key] to the remote machine to allow for automatic authentification.
+
+Once logged in, a remote copy of The World Avatar repository can be cloned using the following commands:
 
 ```bash
-# Run all tests
-(metoff_venv) $ pytest
-
-# Run selected tests, e.g. test_datainstantiation.py
-(metoff_venv) $ pytest test_datainstantiation.py
+$ git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
+$ cd <REPO NAME>
+$ git checkout dev-MetOfficeAgent-withinStack
+$ git pull
 ```
+
+Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
+
 
 # How to use the Agent
 
@@ -151,13 +178,26 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2022
 
 
 <!-- Links -->
+<!-- websites -->
+[allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
+[Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [DataPoint]: https://www.metoffice.gov.uk/services/data/datapoint/about
-[OntoEMS]: http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl
-[download page]: https://www.python.org/getit/
-[Java Runtime Environment version >=8]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
-[virtual environment]: https://docs.python.org/3/tutorial/venv.html
-[TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
-[properties file]: resources\metoffice.properties
+[Container registry on Github]: ghcr.io
 [http://localhost:5000/]: http://localhost:5000/
-[resources]: resources
+[Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
+[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
+[OntoEMS]: http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl
+[personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+[py4jps]: https://pypi.org/project/py4jps/#description
+[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
+[TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
+[Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
+[virtual environment]: https://docs.python.org/3/tutorial/venv.html
+[VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
+
+<!-- files -->
+[docker compose]: docker-compose.yml
 [example retrieve all request]: resources\HTTPRequest_retrieve_all.http
+[properties file]: resources\metoffice.properties
+[resources]: resources
