@@ -36,12 +36,6 @@ This type of installation is only for the developers. To install `MetOffice`  di
 (metoff_venv) $ python -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 ```
 
-Alternatively, use the provided `install_script_pip.sh` convenience scripts, that can create the virtual environment and install the `MetOffice` agent in one go:
-```bash
-# create the environment and install the project
-$ install_script_pip.sh -v -i
-```
-
 
 ## 3. Updating and adding py4jps resources
 
