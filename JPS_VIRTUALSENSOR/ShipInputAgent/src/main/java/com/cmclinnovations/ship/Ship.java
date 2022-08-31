@@ -1,7 +1,8 @@
 package com.cmclinnovations.ship;
 
 import java.time.Instant;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import org.json.JSONObject;
 import org.postgis.Point;
@@ -19,16 +20,15 @@ public class Ship {
 
     // raw data
     public Ship(JSONObject json) {
+        // this is specific to data from an API
         this.mmsi = json.getInt("MMSI");
         this.speed = json.getInt("SPEED");
         this.course = json.getInt("COURSE");
         this.lat = json.getDouble("LAT");
         this.lon = json.getDouble("LON");
+        this.timestamp = LocalDateTime.parse(json.getString("TIMESTAMP")).toInstant(ZoneOffset.UTC);
     }
 
-    public void setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
-    }
     public Instant getTimestamp() {
         return this.timestamp;
     }

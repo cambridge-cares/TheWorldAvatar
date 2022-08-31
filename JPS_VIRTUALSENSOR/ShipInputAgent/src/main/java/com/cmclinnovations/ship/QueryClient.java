@@ -33,7 +33,7 @@ import org.postgis.Point;
  */
 public class QueryClient {
     private StoreClientInterface storeClient;
-    private TimeSeriesClient<Instant> tsClient;
+    private TimeSeriesClient<Long> tsClient;
 
     String prefix = "http://www.theworldavatar.com/dispersion/";
     Prefix p_disp = SparqlBuilder.prefix("disp",iri(prefix));
@@ -55,7 +55,7 @@ public class QueryClient {
     Iri hasValue = p_om.iri("hasValue");
     Iri hasNumericalValue = p_om.iri("hasNumericalValue");
 
-    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Instant> tsClient) {
+    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient) {
         this.storeClient = storeClient;
         this.tsClient = tsClient;
     }
@@ -150,7 +150,7 @@ public class QueryClient {
 
                 dataIRIs.add(dataWithTimeSeries);
                 dataClasses.add(classes);
-                timeUnit.add("Instant");
+                timeUnit.add("Unix timestamp");
             }
             modify.prefix(p_om,p_disp);
             storeClient.executeUpdate(modify.getQueryString());
@@ -219,10 +219,10 @@ public class QueryClient {
         }
 
         // generate 1 time series object for each ship and upload to rdb
-        Iterator<Ship> ship_iterator = shipToMeasureIRIMap.keySet().iterator();
+        Iterator<Ship> shipIterator = shipToMeasureIRIMap.keySet().iterator();
 
-        while(ship_iterator.hasNext()) {
-            Ship ship = ship_iterator.next();
+        while(shipIterator.hasNext()) {
+            Ship ship = shipIterator.next();
             List<String> dataIRIs = shipToMeasureIRIMap.get(ship);
 
             // order of dataIRIs is course, speed, location, as defined in the previous loop
@@ -231,9 +231,9 @@ public class QueryClient {
             values.add(Arrays.asList(ship.getSpeed()));
             values.add(Arrays.asList(ship.getLocation()));
 
-            List<Instant> time = Arrays.asList(ship.getTimestamp());
+            List<Long> time = Arrays.asList(ship.getTimestamp().getEpochSecond());
 
-            TimeSeries<Instant> ts = new TimeSeries<Instant>(time,dataIRIs,values);
+            TimeSeries<Long> ts = new TimeSeries<>(time,dataIRIs,values);
             tsClient.addTimeSeriesData(ts);
         }
     }
