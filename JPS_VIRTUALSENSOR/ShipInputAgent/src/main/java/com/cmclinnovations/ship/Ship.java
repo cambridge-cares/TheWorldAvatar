@@ -1,5 +1,6 @@
 package com.cmclinnovations.ship;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -19,14 +20,14 @@ public class Ship {
     public Ship() {}
 
     // raw data
-    public Ship(JSONObject json) {
+    public Ship(JSONObject json, int timeOffset) {
         // this is specific to data from an API
         this.mmsi = json.getInt("MMSI");
         this.speed = json.getInt("SPEED");
         this.course = json.getInt("COURSE");
         this.lat = json.getDouble("LAT");
         this.lon = json.getDouble("LON");
-        this.timestamp = LocalDateTime.parse(json.getString("TIMESTAMP")).toInstant(ZoneOffset.UTC);
+        this.timestamp = LocalDateTime.parse(json.getString("TIMESTAMP")).toInstant(ZoneOffset.UTC).plus(Duration.ofHours(timeOffset));
     }
 
     public Instant getTimestamp() {

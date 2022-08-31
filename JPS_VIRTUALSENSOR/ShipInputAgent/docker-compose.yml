@@ -12,6 +12,8 @@ services:
       - STACK_NAME=${STACK_NAME}
       - DATABASE=postgres # currently ontop reads from the default database
       - DATA_DIR=/data
+      - LAST_READ_FILE=/misc/last_read_file
+      - TIME_OFFSET_FILE=/misc/time_offset_file
     configs:
       - postgis
       - blazegraph
@@ -21,6 +23,7 @@ services:
       - "8082:8080"
     volumes:
       - logs:/root/.jps
+      - misc:/misc
       - ./data:/data
     networks:
       - stack
@@ -28,3 +31,5 @@ services:
 volumes:
   logs:
     name: "logs"
+  misc:
+    name: "misc"
