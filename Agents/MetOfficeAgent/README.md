@@ -7,6 +7,34 @@ It is designed to interact with the stack spun up by the stack manager.
 # Setup
 This section specifies the minimum requirement to build the docker image. 
 
+## Prerequisites
+Retrieve data from the MetOffice DataPoint API requires registration for the [DataPoint] platform. Before building and deploying the Docker image, several key properties need to be set in the [docker compose file]:
+
+The environment variables used by the agent container:
+1) STACK_NAME
+2) API_KEY (MetOffice DataPoint API key)
+3) LAYERNAME
+4) DATABASE
+5) GEOSERVER_WORKSPACE
+
+## Spinning up the stack
+Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there:
+```bash
+./stack.sh start <STACK NAME> 
+```
+
+## Deploying the agent to the stack
+This agent requires []JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps`), its `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [stack.sh] script and [Dockerfile].
+
+Simply execute the following command in the same folder as this `README`:
+```bash
+# Deploy the agent incl. building latest py4jps resources
+./stack.sh start <STACK NAME> -update_resources
+# Deploying the agent without building latest py4jps resources
+./stack.sh start <STACK NAME>
+```
+
+
 
 ## Accessing Github's Container registry
 
@@ -36,17 +64,6 @@ Once the repository clone is obtained, please follow these instructions to [spin
 # How to use the Agent
 
 The `MetOffice` agent can be deployed as locally running web agent or using the provided dockerized version.
-
-## Prerequisites
-
-Before starting the Flask web app or building the Docker image, several key properties need to be set in the [properties file]:
-- `api.key` API key to retrieve data from the MetOffice DataPoint API. Requires registration for the [DataPoint] platform
-
-Further credentials and endpoints are needed for the TimeSeries client to access the knowledge graph and the Postgres database:
-- `db.user` the username to access the Postgres database
-- `db.password` the password to access the Postgres database
-- `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
-- `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
 
 
 ## Web agent usage
@@ -141,7 +158,8 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2022
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 
 <!-- files -->
-[docker compose]: docker-compose.yml
+[Dockerfile]: Dockerfile
+[docker compose file]: docker-compose.yml
 [example retrieve all request]: resources\HTTPRequest_retrieve_all.http
-[properties file]: resources\metoffice.properties
 [resources]: resources
+[stack.sh]: stack.sh
