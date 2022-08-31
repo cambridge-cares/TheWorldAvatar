@@ -32,12 +32,12 @@ public class ShipInputAgent extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LOGGER.info("Received POST request to update ship data");
         
-        Config.initURLs();
-        RemoteStoreClient storeClient = new RemoteStoreClient(Config.KG_URL, Config.KG_URL);
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class, Config.POSTGRES_URL, Config.POSTGRES_USER, Config.POSTGRES_PASSWORD);
+        EndpointConfig endpointConfig = new EndpointConfig(); 
+        RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         QueryClient client = new QueryClient(storeClient, tsClient);
 
-        File dataDir = new File(Config.DATA_DIR);
+        File dataDir = new File(EnvConfig.DATA_DIR);
         File[] dataFiles = dataDir.listFiles();
 
         for (File dataFile : dataFiles) {
