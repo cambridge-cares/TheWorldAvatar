@@ -5,9 +5,9 @@
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cmclinnovations</groupId>
-    <artifactId>ShipDataUploader</artifactId>
+    <artifactId>ShipInputAgent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     
     <!-- Parent POM -->
     <parent>
@@ -43,91 +43,39 @@
 
     <build>
         <plugins>
-            <!-- Compile and build with Java 11 -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
-            
-            <!-- Used to execute unit tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
                 <version>2.22.0</version>
-            </plugin>
-            
-            <!-- Downloads and extracts ZIP archives from Maven repository -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <!-- Version, configuration, and executions should be pulled from the 
-                parent POM unless overridden here. -->
-                <executions>          
-                    <!-- copies all dependencies into a folder called lib -->
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeScope>runtime</includeScope>
-                            <useRepositoryLayout>true</useRepositoryLayout>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                    
-                    <!-- Downloads the Log4J2 config that will be used at runtime -->
-                    <execution>
-                        <id>download-runtime-log-config</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>   
-                                    <groupId>uk.ac.cam.cares.jps</groupId>
-                                    <artifactId>${log.artifact}</artifactId>
-                                    <version>1.0.0-SNAPSHOT</version>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${basedir}/src/main/resources</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            
-            <!-- Maven plugin for packaging -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <classpathLayoutType>repository</classpathLayoutType>
-                            <addClasspath>true</addClasspath>
-                            <useUniqueVersions>false</useUniqueVersions>
-                            <!-- To use the dependencies copied in separate folder -->
-                            <classpathPrefix>lib</classpathPrefix>
-                            <!-- java -jar [jarname] will launch this class by default -->
-                            <!-- use java -jar -cp [jarname] [classname] to launch other classes manually -->
-                            <mainClass>com.cmclinnovations.ship.ShipDataUploader</mainClass>
-                        </manifest>
-                    </archive>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-        </plugins>
+
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+				<webResources>
+					<resource>
+                        <directory>${basedir}/WEB-INF</directory>
+                        <targetPath>WEB-INF</targetPath>
+                    </resource>
+				</webResources>
+				</configuration>
+			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+		</plugins>
     </build>
 
 	<dependencies>
@@ -135,6 +83,11 @@
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
 			<version>1.15.0-dev-timeseries-ontop-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 
 		<!-- Testing, versions pulled from parent -->

@@ -32,6 +32,7 @@ WORKDIR /root/code
 
 COPY pom.xml ./
 COPY src ./src/
+COPY WEB-INF ./WEB-INF/
 
 RUN mvn package -DskipTests -U
 
@@ -39,13 +40,12 @@ RUN mvn package -DskipTests -U
 
 # Third stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM adoptopenjdk/openjdk11:jre-11.0.13_8 as app
+FROM tomcat:9 as agent
 
 WORKDIR /app
 
-# copy compiled jar from previous step
-COPY --from=builder /root/code/target/*.jar /app
-COPY --from=builder /root/code/target/lib /app/lib
+# Copy the compiled jar from the builder
+COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]

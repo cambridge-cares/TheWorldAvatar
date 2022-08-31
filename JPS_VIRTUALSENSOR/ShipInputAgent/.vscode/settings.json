@@ -1,4 +1,4 @@
 {
 	"debug.port": 15008,
-	"java.configuration.updateBuildConfiguration": "automatic"
+	"java.configuration.updateBuildConfiguration": "interactive"
 }
