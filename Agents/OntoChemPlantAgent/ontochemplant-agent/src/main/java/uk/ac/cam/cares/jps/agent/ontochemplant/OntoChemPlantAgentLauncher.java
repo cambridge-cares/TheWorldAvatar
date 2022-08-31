@@ -17,8 +17,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 @WebServlet(urlPatterns = {OntoChemPlantAgentLauncher.URL_PATH})
 public class OntoChemPlantAgentLauncher extends JPSAgent {
 
-	protected static final String URL_PATH = "/query";
-	protected static final String IRI = "iris";
+	public static final String URL_PATH = "/query";
+	public static final String IRI = "iris";
 	
 	private static final String WRONG_INPUT_MSG = "Input parameters are incorrect.";
 	private static final String NO_INPUT_MSG = "No input values found.";

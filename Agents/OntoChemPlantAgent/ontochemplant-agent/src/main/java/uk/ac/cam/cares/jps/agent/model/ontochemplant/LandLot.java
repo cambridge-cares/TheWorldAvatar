@@ -8,7 +8,7 @@ import java.net.URI;
 
 public class LandLot extends OntoChemPlantModel {
 
-    @Getter @Setter @FieldAnnotation(value = "http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasLandlotNumber") protected String LandLotNumber;
+    @Getter @Setter @FieldAnnotation("http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasLandlotNumber") protected String LandLotNumber;
     @Getter @Setter @FieldAnnotation("http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasLotArea") protected URI LotArea;
 
 }

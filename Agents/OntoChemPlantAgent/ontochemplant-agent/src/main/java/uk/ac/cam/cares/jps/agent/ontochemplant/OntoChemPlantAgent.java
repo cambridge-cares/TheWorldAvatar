@@ -11,6 +11,7 @@ import uk.ac.cam.cares.jps.agent.model.ontochemplant.Building;
 import uk.ac.cam.cares.jps.agent.model.ontochemplant.CityObject;
 import uk.ac.cam.cares.jps.agent.model.ontochemplant.OntoChemPlantModel;
 import uk.ac.cam.cares.jps.agent.model.ontochemplant.PlantItem;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
  * This agent queries the knowledge graph for information on various structures on Jurong Island, and interacts with the 
@@ -34,6 +35,7 @@ public class OntoChemPlantAgent {
 	private static final String CITY_OBJECT = "cityobject";
 	private static final String BUILDING = "building";
 	private static final String CITY_FURNITURE = "cityfurniture";
+	private static final String ERROR = "Selected object is neither a building nor a plant item.";
 
 	public static JSONObject createOntoChemPlantModel(JSONObject input) throws SQLException {
 		
@@ -66,7 +68,7 @@ public class OntoChemPlantAgent {
           result.put(PlantItemList);
           final_results.put("chemplant", PlantItemList);
 
-        } else {
+        } else if (cityObject.getObjectClassId().intValue() == 26){
         	
           String buildingIri = cityObjectIri.replace(CITY_OBJECT, BUILDING);
           OntoChemPlantModel ocp_model = context.createHollowModel(OntoChemPlantModel.class, buildingIri);
@@ -81,6 +83,11 @@ public class OntoChemPlantAgent {
           final_results.put("chemplant", BuildingList);
 
         }
+
+		else {
+			throw new JPSRuntimeException(ERROR);
+		}
 		return final_results;
+
 	}
 }
