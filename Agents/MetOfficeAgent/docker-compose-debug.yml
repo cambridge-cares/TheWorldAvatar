@@ -2,8 +2,10 @@ version: '3.8'
 services:
   metofficeagent:
     environment:
-      - JPDA_ADDRESS=0.0.0.0:5005
-      - JPDA_TRANSPORT=dt_socket
-      - DEBUG=ON
+      - FLASK_APP=metoffice.flaskapp.wsgi.py
+      - FLASK_ENV=development
     ports:
-      - "${DEBUG_PORT}:5005"
+      - "5678:5678" # "${DEBUG_PORT}:5005"
+    volumes:
+      - ./metoffice:/app/metoffice      
+      - ./output:/app/output

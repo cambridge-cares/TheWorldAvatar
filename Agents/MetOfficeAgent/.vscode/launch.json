@@ -2,40 +2,47 @@
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    //                          and https://code.visualstudio.com/docs/python/debugging
+    //                          and https://code.visualstudio.com/docs/containers/debug-python
     "version": "0.2.0",
     "configurations": [      
-
         {
-            "name": "Python: Current File",
+            "name": "Debug (Python Remote Attach)",
             "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: Flask App",
-            "type": "python",
-            "request": "launch",
-            "module": "flask",
-            "env": {
-                "FLASK_APP": "metoffice.flaskapp.wsgi.py",
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "0"
+            "request": "attach",
+            "preLaunchTask": "compose-deploy",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
             },
-            "args": [
-                "run",
-                "--no-debugger",
-                "--no-reload"
-            ],
-            "jinja": true
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/metoffice/flaskapp/",
+                    "remoteRoot": "/app/metoffice/flaskapp/"
+                }
+            ]
         },
         {
-            "name": "Python: Remote Attach",
+            "name": "Build and Debug (Python Remote Attach)",
+            "type": "python",
+            "request": "attach",
+            "preLaunchTask": "compose-build-deploy",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/metoffice/flaskapp/",
+                    "remoteRoot": "/app/metoffice/flaskapp/"
+                }
+            ]
+        },
+        {
+            "name": "Reattach and Debug (Python Remote Attach)",
             "type": "python",
             "request": "attach",
             "connect": {
-                "host": "127.0.0.1",
+                "host": "localhost",
                 "port": 5678
             },
             "pathMappings": [
