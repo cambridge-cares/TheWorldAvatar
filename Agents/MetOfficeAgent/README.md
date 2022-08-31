@@ -4,57 +4,8 @@ The `MetOffice` agent is an input (and output) agent which queries data from the
 
 It is designed to interact with the stack spun up by the stack manager.
 
-## Setup
+# Setup
 This section specifies the minimum requirement to build the docker image. 
-
-## Requirements
-
-- You need Python >3.7 to run the `MetOffice` agent
-- You also need to install a [Java Runtime Environment version >=11]
-
-## 1. Virtual environment setup
-
-It is highly recommended to use a [virtual environment] for the `MetOffice` agent installation. The virtual environment can be created as follows:
-
-`(Windows)`
-
-```cmd
-$ python -m venv metoff_venv
-$ metoff_venv\Scripts\activate.bat
-(metoff_venv) $
-```
-
-The above commands will create and activate the virtual environment `metoff_venv` in the current directory.
-
-## 2. Installation from the version-controlled source (for developers)
-
-This type of installation is only for the developers. To install `MetOffice`  directly from its repository you need to first clone the [TheWorldAvatar] project. Then simply navigate to the *TheWorldAvatar\Agents\MetOfficeAgent* directory and execute the following commands:
-```bash
-# build and install
-(metoff_venv) $ python -m pip install --upgrade pip
-(metoff_venv) $ python -m pip install .
-(metoff_venv) $ python -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
-```
-
-
-## 3. Updating and adding py4jps resources
-
-After installation of all required packages (incl. `py4jps`), the `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and summarized below:
-
-- Build latest versions of [JPS_BASE_LIB] and [Stack-Clients] from the respective branches using Maven (potentially include -DksipTests flag):
-    ```
-    $ mvn clean package
-    ```
-- Copy the project main `.jar` file and the entire `lib` folder into temporary directories, e.g., `tmp_base_lib` and `tmp_stack`
-- Update `JpsBaseLib` resource
-    ```
-    jpsrm uninstall JpsBaseLib
-    jpsrm install JpsBaseLib <path to tmp_base_lib> --jar <name of .jar file>
-    ```
-- Install `StackClients` resource
-    ```
-    jpsrm install StackClients <path to tmp_stack> --jar <name of .jar file>
-    ```
 
 
 ## Accessing Github's Container registry
@@ -66,8 +17,7 @@ While building the Docker image of the agent, it also gets pushed to the [Contai
 ```
 
 
-
-# Spinning up the Stack remotely via SSH
+## Spinning up the Stack remotely via SSH
 
 To spin up the stack remotely via SSH, VSCode's in-built SSH support can be used. Simply follow the steps provided here to use [VSCode via SSH] to log in to a remote machine (e.g. Virtual machine running on Digital Ocean) an start developing there. Regular log in relies on username and password. To avoid recurring prompts to provide credentials, one can [Create SSH key] and [Upload SSH key] to the remote machine to allow for automatic authentification.
 

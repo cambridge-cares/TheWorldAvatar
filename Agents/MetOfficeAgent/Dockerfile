@@ -17,6 +17,10 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
+# Copy resources required to update py4jps later
+COPY ./tmp_base ./tmp_base
+COPY ./tmp_stack ./tmp_stack
+
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
@@ -28,6 +32,11 @@ RUN python -m pip install --upgrade pip
 RUN pip install -e .
 # Installation of agentlogging currently suspended due to performance issues
 #RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
+
+# Update py4jps resources
+RUN jpsrm uninstall JpsBaseLib
+RUN jpsrm install JpsBaseLib ../tmp_base --jar jps-base-lib.jar
+RUN jpsrm install StackClients ../tmp_stack --jar stack-clients-1.2.0.jar
 
 # Expose port
 EXPOSE 5000

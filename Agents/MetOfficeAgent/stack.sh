@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Build latest versions of JPS_BASE_LIB and STACK_CLIENTS
+./build_py4jps_resources.sh
+
 COMMAND=$1
 shift
 
