@@ -5,30 +5,31 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
-public class ValuesPattern implements GraphPattern {
-	List<?> values;
+public class ValuesPattern<T> implements GraphPattern {
+	List<T> values;
 	Variable variable;
+	Class<T> valuesClass;
 	
-    public ValuesPattern(Variable variable, List<?> values) {
+    public ValuesPattern(Variable variable, List<T> values, Class<T> valuesClass) {
     	this.values = values;
     	this.variable = variable;
+		this.valuesClass = valuesClass;
     }
 	
 	@Override
 	public String getQueryString() {
-		String queryString = "VALUES " + variable.getQueryString() + " {";
-		for (Object value : values) {
-			try {
-				queryString += ((Iri) value).getQueryString() + " ";
-			} catch (ClassCastException e) { // for literals
-                if (value instanceof Number) {
-                    queryString += String.valueOf(value) + " ";
-                } else {
-                    queryString += "\"" + value.toString() + "\" ";
-                }
+		StringBuilder bld = new StringBuilder();
+		bld.append(String.format("VALUES %s {", variable.getQueryString()));
+		for (T value : values) {
+			if (valuesClass == Iri.class) {
+				bld.append(((Iri) value).getQueryString() + " ");
+			} else if (Number.class.isAssignableFrom(valuesClass)) { 
+				bld.append(String.valueOf(value) + " ");
+			} else if (valuesClass == String.class) {
+				bld.append("\"" + value.toString() + "\" ");
 			}
 		}
-		queryString += "}";
-		return queryString;
+		bld.append("}");
+		return bld.toString();
 	}
 }
