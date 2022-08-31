@@ -1,0 +1,135 @@
+package uk.ac.cam.cares.jps.agent.historicalhouse45utilitiesagent;
+
+import org.jooq.exception.DataAccessException;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class DateTSClientDecorator {
+
+    /**
+     * Logger for reporting info/errors.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(HistoricalHouse45UtilitiesAgent.class);
+    private static int[] dateArrays = null;
+    private static String dateKey;
+    private TimeSeriesClient<LocalDate> tsClient;
+    public final String timeUnit = LocalDate.class.getSimpleName(); // The time unit used by the Excel Workbook
+
+    /**
+     * Standard constructor
+     */
+    public DateTSClientDecorator(String dateKey) {
+        this.dateKey = dateKey;
+    }
+    public DateTSClientDecorator(String dateKey, int[] dateArrays) {
+        this.dateKey = dateKey;
+        this.dateArrays=dateArrays;
+    }
+    /**
+     * Setter for the time series client.
+     *
+     * @param tsClient The time series client to use.
+     */
+    public void setTsClient(TimeSeriesClient<LocalDate> tsClient) {
+        this.tsClient = tsClient;
+    }
+
+    /**
+     * Initializes all time series if they do not exist using the time series client.
+     *
+     * @param excelReadings Excel readings parsed from the Excel Workbook
+     * @param iriMappings   Mappings between measures' names and their corresponding data IRI.
+     */
+    public void initializeTimeSeriesIfNotExist(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) {
+        List<String> excelHeaders = new ArrayList<>(iriMappings.keySet());
+        List<String> iris = new ArrayList<>(iriMappings.values());
+        // If IRIs do not have a time series linked, initialize the corresponding time series
+        if (!timeSeriesExist(iris)) {
+            // Get the classes (datatype) corresponding to each measure's name needed for initialization
+            // excelReadings.get(header) returns array list, so add get method to get the value
+            List<Class<?>> classes = excelHeaders.stream()
+                    .map(header -> excelReadings.get(header).get(0).getClass())
+                    .collect(Collectors.toList());
+            tsClient.initTimeSeries(iris, classes, this.timeUnit);
+            LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+        }
+    }
+
+    /**
+     * Checks if a time series exists in the central RDB lookup table using the time series client.
+     * This is achieved through ensuring that all the IRIs are linked and initialised to a time series.
+     *
+     * @param iris A list of string containing IRIs that should be attached to the same time series.
+     * @return True if all IRIs have a time series attached, false otherwise.
+     */
+    private boolean timeSeriesExist(List<String> iris) {
+        // If any of the IRIs does not have a time series the time series does not exist
+        for (String iri : iris) {
+            try {
+                if (!tsClient.checkDataHasTimeSeries(iri)) {
+                    return false;
+                }
+                // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
+            } catch (DataAccessException e) {
+                if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
+                    return false;
+                } else {
+                    throw e;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Updates the database with new readings.
+     *
+     * @param excelReadings Excel readings parsed from the Excel Workbook
+     * @param iriMappings   Mappings between measures' names and their corresponding data IRI.
+     */
+    public void updateData(Map<String, List<?>> excelReadings, Map<String, String> iriMappings) {
+        TimeSeries<LocalDate> timeSeries;
+        timeSeries = convertReadingsToTimeSeries(excelReadings, iriMappings);
+
+        // Update each time series
+        tsClient.addTimeSeriesData(timeSeries);
+        LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", timeSeries.getDataIRIs())));
+    }
+
+    /**
+     * Converts the readings in the form of hash maps to time series format for use with the time series client.
+     *
+     * @param readings    Readings stored in a hash map.
+     * @param iriMappings Data IRI mappings to their measures' names.
+     * @return A time series object.
+     */
+    private TimeSeries<LocalDate> convertReadingsToTimeSeries(Map<String, List<?>> readings, Map<String, String> iriMappings) {
+        List<String> dataKeys = new ArrayList<>(iriMappings.keySet());
+        List<String> iris = new ArrayList<>(iriMappings.values());
+        List<LocalDate> dateItems = new ArrayList<>();
+
+        if (this.dateArrays == null) {
+            List<LocalDateTime> dateValues = (List<LocalDateTime>) readings.get(this.dateKey);
+            for (LocalDateTime dates : dateValues) {
+                dateItems.add(dates.toLocalDate());
+            }
+        } else {
+            dateItems = (List<LocalDate>) readings.get(this.dateKey);
+        }
+
+        List<List<?>> dataValues = new ArrayList<>();
+        for (String key : dataKeys) {
+            dataValues.add(readings.get(key));
+        }
+        // Create the time series object
+        return new TimeSeries<>(dateItems, iris, dataValues);
+    }
+}
