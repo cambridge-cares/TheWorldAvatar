@@ -91,6 +91,10 @@ public class RemoteStoreClient implements StoreClientInterface {
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
 
+    //Connection and Statement objects
+    Connection conn;
+    Statement stmt;
+
     private String queryEndpoint;
     private String updateEndpoint;
     private String query;
@@ -340,14 +344,8 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public int executeUpdate(String query) {
-        Connection conn = null;
-        Statement stmt = null;
         try {
-            RemoteEndpointDriver.register();
-            // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl(), getUser(), getPassword());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-//			System.out.println(query);
+            connect();
             return stmt.executeUpdate(query);
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
@@ -456,15 +454,9 @@ public class RemoteStoreClient implements StoreClientInterface {
      */
     @Override
     public JSONArray executeQuery(String query) {
-        JSONArray results = new JSONArray();
-        Connection conn = null;
-        Statement stmt = null;
+        JSONArray results;
         try {
-            RemoteEndpointDriver.register();
-            // System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl(), getUser(), getPassword());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-//			System.out.println(query);
+            connect();
             java.sql.ResultSet rs = stmt.executeQuery(query);
             results = convert(rs);
         } catch (SQLException e) {
@@ -522,15 +514,16 @@ public class RemoteStoreClient implements StoreClientInterface {
         return builder.build();
     }
 
-    public Connection getConnection(){
-        Connection conn;
+    protected void connect(){
         try {
-            RemoteEndpointDriver.register();
-            conn = DriverManager.getConnection(getConnectionUrl(), getUser(), getPassword());
+            if (this.conn == null || this.conn.isClosed()) {
+                RemoteEndpointDriver.register();
+                conn = DriverManager.getConnection(getConnectionUrl());
+                stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            }
         } catch (SQLException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
-        return conn;
     }
     /**
      * Generates the URL of the remote data repository's EndPoint, which<br>
@@ -542,29 +535,31 @@ public class RemoteStoreClient implements StoreClientInterface {
     public String getConnectionUrl() {
         StringBuilder sb = new StringBuilder();
         boolean queryFlag = false;
-
-        if ((this.queryEndpoint != null && (this.queryEndpoint.contains(HTTP_PROTOCOL) || this.queryEndpoint.contains(HTTPS_PROTOCOL)))) {
-            sb.append(JenaDriver.DRIVER_PREFIX);
-            sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
-            if (this.queryEndpoint != null) {
-                queryFlag = true;
-                sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
-            }
-            if (this.updateEndpoint != null) {
-                if (queryFlag) {
-                    sb.append("&");
-                }
-                sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
-            }
+        boolean updateFlag = false;
+        sb.append(JenaDriver.DRIVER_PREFIX);
+        sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
+        if (this.queryEndpoint != null) {
+            queryFlag = true;
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
         }
-        else if (this.queryEndpoint != null && this.userName != null && this.password != null) {
-            if(this.queryEndpoint.contains("jdbc:postgresql:"))
-                sb.append(this.queryEndpoint);
-            else
-                sb.append("jdbc:postgresql:" + this.queryEndpoint);
+        if (this.updateEndpoint != null) {
+            updateFlag = true;
+            if (queryFlag) {
+                sb.append("&");
+            }
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
         }
-        else if(this.queryEndpoint!=null && (this.userName==null || this.password==null)){
-            LOGGER.info("Missing username and/or password to establish connection");
+        if (this.userName != null) {
+            if (queryFlag || updateFlag) {
+                sb.append("&");
+            }
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_USERNAME, this.userName));
+        }
+        if (this.password != null) {
+            if (queryFlag || updateFlag) {
+                sb.append("&");
+            }
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_PASSWORD, this.password));
         }
         return sb.toString();
     }
