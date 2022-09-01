@@ -3,9 +3,11 @@ package uk.ac.cam.cares.jps.base.query.sparql.test;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 
-public class PrefixToUrlMapTest{
+import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
+import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
+
+public class PrefixToUrlMapTest {
 	//Test getPrefixUrl()
 	@Test
 	public void testgetPrefixUrl()
@@ -57,8 +59,16 @@ public class PrefixToUrlMapTest{
 		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("dbpediao").contains(":<"));
 		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("dbpediao").contains(">"));
 		//Test whether getPrefixForSPARQL method is able to build the string correctly		
-		Assert.assertEquals("PREFIX dbpediao:<http://dbpedia.org/ontology/> \r\n",PrefixToUrlMap.getPrefixForSPARQL("dbpediao")); 
+		Assert.assertEquals("PREFIX dbpediao:<http://dbpedia.org/ontology/>\r\n",PrefixToUrlMap.getPrefixForSPARQL("dbpediao")); 
 		
 	}
 
+	@Test
+	public void testGetPrefixesForSPARQL() {
+		String actual = PrefixToUrlMap.getPrefixesForSPARQL(Prefixes.DC, Prefixes.WIKIDATAT, Prefixes.WIKIDATA);
+		String expected = "PREFIX dc:<http://purl.org/dc/elements/1.1/>\r\n"
+				+ "PREFIX wdt:<http://www.wikidata.org/prop/direct/>\r\n"
+				+ "PREFIX wd:<http://www.wikidata.org/entity/>\r\n";
+		Assert.assertEquals(expected, actual);
+	}
 }

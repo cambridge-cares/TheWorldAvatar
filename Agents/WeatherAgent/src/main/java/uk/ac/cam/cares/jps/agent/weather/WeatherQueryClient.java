@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.weather;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -23,12 +24,18 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.apache.jena.geosparql.implementation.*;
+import org.apache.jena.geosparql.implementation.datatype.WKTDatatype;
 
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import com.cmclinnovations.stack.clients.gdal.GDALClient;
+import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
@@ -43,11 +50,9 @@ class WeatherQueryClient {
 	static String ontoems = "https://www.theworldavatar.com/kg/ontoems/";
     static Prefix p_ems = SparqlBuilder.prefix("ems",iri(ontoems));
 	static Prefix p_om = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
-	private static Prefix p_geo = SparqlBuilder.prefix("geo",iri("http://www.bigdata.com/rdf/geospatial#"));
     
     // classes
 	private static Iri ReportingStation = p_ems.iri("ReportingStation");
-	private static Iri lat_lon = iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon");
     static String CloudCover = ontoems +"CloudCover"; // not in ems tbox, should be subclass of om:Ratio
     static String Rainfall = ontoems + "Rainfall";
     static String AtmosphericPressure = ontoems + "AtmosphericPressure";
@@ -61,7 +66,8 @@ class WeatherQueryClient {
     static Iri reports = p_ems.iri("reports");
     static Iri hasValue = p_om.iri("hasValue");
     private static Iri hasUnit = p_om.iri("hasUnit");
-	private static Iri hasObservationLocation = p_ems.iri("hasObservationLocation");
+	private static Iri asWKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
+	private static Iri hasGeometry = iri("http://www.opengis.net/ont/geosparql#hasGeometry");
     
     // IRI of units used
     private static Iri unit_mm = p_om.iri("millimetre");
@@ -88,27 +94,15 @@ class WeatherQueryClient {
     	put(WindDirection, unit_degree);
     }};
     
-    StoreClientInterface storeClient;
+    RemoteStoreClient kgClient;
     TimeSeriesClient<Instant> tsClient;
-	
-    // SERVICE keyword is not supported by query builder
-    private static String geospatialQueryTemplate = "PREFIX geo: <http://www.bigdata.com/rdf/geospatial#>\r\n"
-    		+ "PREFIX ems: <%s>\r\n"
-    		+ "\r\n"
-    		+ "SELECT * WHERE {\r\n"
-    		+ "    SERVICE geo:search \r\n"
-    		+ "	%s\r\n"
-    		+ "}";
+	RemoteStoreClient ontopClient;
     		
     // constructor 1
-    WeatherQueryClient(StoreClientInterface storeClient, TimeSeriesClient<Instant> tsClient) {
-    	this.storeClient = storeClient;
+    WeatherQueryClient(RemoteStoreClient kgClient, TimeSeriesClient<Instant> tsClient, RemoteStoreClient ontopClient) {
+    	this.kgClient = kgClient;
     	this.tsClient = tsClient;
-    }
-    
-    // constructor 2 for situations when time series is not needed
-    WeatherQueryClient(StoreClientInterface storeClient) {
-    	this.storeClient = storeClient;
+		this.ontopClient = ontopClient;
     }
     
     /**
@@ -117,14 +111,41 @@ class WeatherQueryClient {
      * @param lon
      * @return
      */
-    String createStation(String latlon) {
-    	ModifyQuery modify = Queries.MODIFY();
-    	String station_name = "weatherstation_" + UUID.randomUUID();
-    	Iri station = p_ems.iri(station_name);
+    String createStation(double lat, double lon, String name) {
+		String station_iri = ontoems + "weatherstation_" + UUID.randomUUID();
+
+		// create geojson object for PostGIS
+		JSONObject geojson = new JSONObject();
+		JSONObject geometry = new JSONObject();
+		JSONObject properties = new JSONObject();
+		geometry.put("type","Point");
+		geometry.put("coordinates", new JSONArray().put(lon).put(lat));
+		properties.put("iri", station_iri);
+		properties.put("geom_iri", station_iri + "/geometry");
+		properties.put("type", "weather");
+		if (name != null) {
+			properties.put("name", name);
+		} else {
+			properties.put("name", String.format("Weather Station at (%f, %f)", lat, lon));
+		}
+		
+		geojson.put("type","Feature").put("properties",properties).put("geometry",geometry);
+
+		LOGGER.info("Uploading GeoJSON to PostGIS");
+		GDALClient gdalclient = new GDALClient();
+		gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, Config.LAYERNAME, geojson.toString(), new Ogr2OgrOptions(), true);
+
+		LOGGER.info("Creating layer in Geoserver");
+		GeoServerClient geoserverclient = new GeoServerClient();
+		geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
+		geoserverclient.createPostGISLayer(null, Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.LAYERNAME, new GeoServerVectorSettings());
+
+		LOGGER.info("Instantiating weather station in triple-store");
+		ModifyQuery modify = Queries.MODIFY();
     	
-    	// coordinates
-    	StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon, lat_lon);
-    	modify.insert(station.isA(ReportingStation).andHas(hasObservationLocation,coordinatesLiteral));
+    	Iri station = iri(station_iri);
+
+    	modify.insert(station.isA(ReportingStation));
     	
     	List<String> datalist_for_timeseries = new ArrayList<>();
     	List<Class<?>> classlist_for_timeseries = new ArrayList<>();
@@ -148,15 +169,16 @@ class WeatherQueryClient {
     	modify.prefix(p_ems,p_om);
     	
     	// insert triples in the triple-store
-    	storeClient.executeUpdate(modify.getQueryString());
+    	kgClient.executeUpdate(modify.getQueryString());
     	
+		LOGGER.info("Creating time series for station");
     	// then create a table for this weather station
     	tsClient.initTimeSeries(datalist_for_timeseries, classlist_for_timeseries, null);
     	
     	// populate with current weather data
-    	updateStation(ontoems+station_name);
+    	updateStation(station_iri);
     	
-    	return ontoems+station_name;
+    	return station_iri;
     }
     
     /**
@@ -168,13 +190,12 @@ class WeatherQueryClient {
     	
     	SelectQuery query = Queries.SELECT();
     	
-    	Variable coordinates = query.var();
     	Variable quantity = query.var();
     	Variable weatherClass = query.var();
     	Variable datavalue = query.var();
     	Variable units = query.var();
     	
-    	TriplePattern[] queryPattern = {station.isA(ReportingStation).andHas(hasObservationLocation,coordinates),
+    	TriplePattern[] queryPattern = {station.isA(ReportingStation),
     			station.has(reports,quantity),
     			quantity.isA(weatherClass).andHas(hasValue,datavalue),
     			datavalue.isA(Measure).andHas(hasUnit,units)};
@@ -185,17 +206,17 @@ class WeatherQueryClient {
     	// this is the list of iris with a corresponding time series table
 		@SuppressWarnings("unchecked")
 		// substring(1) to get rid of "?"
-		List<String> datalist = storeClient.executeQuery(query.getQueryString()).toList().stream()
+		List<String> datalist = kgClient.executeQuery(query.getQueryString()).toList().stream()
 				.map(datavalueiri -> ((HashMap<String,String>) datavalueiri).get(datavalue.getQueryString().substring(1))).collect(Collectors.toList());
     	
 		// this deletes the station instance, but not the time series triples
     	ModifyQuery modify = Queries.MODIFY();
     	modify.prefix(p_ems,p_om).delete(queryPattern).where(queryPattern);
-    	storeClient.executeUpdate(modify.getQueryString());
+    	kgClient.executeUpdate(modify.getQueryString());
     	
     	// use time series client to delete time series related data
     	// get time series IRI for this data set, any data IRI will give the same time series
-    	TimeSeriesSparql tsSparql = new TimeSeriesSparql(storeClient);
+    	TimeSeriesSparql tsSparql = new TimeSeriesSparql(kgClient);
     	String timeseriesIRI = tsSparql.getTimeSeries(datalist.get(0));
 
     	// then delete all time series data in one go
@@ -213,7 +234,7 @@ class WeatherQueryClient {
 
 		query.prefix(p_ems,p_om).where(gp).select(measure);
 
-		List<String> measures = storeClient.executeQuery(query.getQueryString()).toList().stream()
+		List<String> measures = kgClient.executeQuery(query.getQueryString()).toList().stream()
 		.map(m -> ((HashMap<String,String>) m).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
 
 		if (measures.size() > 0) {
@@ -230,19 +251,22 @@ class WeatherQueryClient {
      * @param station_iri
      */
     void updateStation(String station_iri) {
-		// will be replaced by postgis
 		// get the coordinates of this station
 		// build coordinate query
 		SelectQuery query2 = Queries.SELECT();
-		Variable coord = query2.var();
-		query2.select(coord).where(iri(station_iri).has(hasObservationLocation,coord)).prefix(p_ems);
+		Variable wkt = query2.var();
+		query2.select(wkt).where(iri(station_iri).has(PropertyPaths.path(hasGeometry, asWKT),wkt));
 		
-		// submit coordinate query
-		String coordinates = storeClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(coord.getQueryString().substring(1));
-		String[] latlon = coordinates.split("#");
+		// submit coordinate query to ontop
+		String wkt_string = ontopClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(wkt.getQueryString().substring(1));
+		
+		// parse wkt literal
+		GeometryWrapper geometryWrapper= WKTDatatype.INSTANCE.parse(wkt_string);
+		double lat = geometryWrapper.getXYGeometry().getCoordinate().getY();
+		double lon = geometryWrapper.getXYGeometry().getCoordinate().getX();
 		
 		// the key for this map is the weather class, value is the corresponding value
-		Map<String,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(Double.parseDouble(latlon[0]), Double.parseDouble(latlon[1]));
+		Map<String,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(lat, lon);
 	    
 		// to construct time series object
 		List<String> datavalue_list = new ArrayList<>();
@@ -258,7 +282,7 @@ class WeatherQueryClient {
 		
 		query3.select(measure, weatherType).where(gp).prefix(p_om,p_ems);
 
-		JSONArray queryResults = storeClient.executeQuery(query3.getQueryString());
+		JSONArray queryResults = kgClient.executeQuery(query3.getQueryString());
 
 		for (int i = 0; i < queryResults.length(); i++) {
 			JSONObject queryResult = queryResults.getJSONObject(i);
@@ -287,7 +311,7 @@ class WeatherQueryClient {
     	
     	query.select(measure).where(queryPattern).prefix(p_ems,p_om);
     	
-    	List<String> datalist = storeClient.executeQuery(query.getQueryString()).toList().stream()
+    	List<String> datalist = kgClient.executeQuery(query.getQueryString()).toList().stream()
 				.map(datavalueiri -> ((HashMap<String,String>) datavalueiri).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
     	
     	Instant latestTime = tsClient.getMaxTime(datalist.get(0));
@@ -312,7 +336,7 @@ class WeatherQueryClient {
     	
     	query.select(measure).where(queryPattern).prefix(p_ems,p_om);
     	
-    	List<String> datalist = storeClient.executeQuery(query.getQueryString()).toList().stream()
+    	List<String> datalist = kgClient.executeQuery(query.getQueryString()).toList().stream()
 				.map(datavalueiri -> ((HashMap<String,String>) datavalueiri).get(measure.getQueryString().substring(1))).collect(Collectors.toList());
     	
     	Instant latestTime = tsClient.getMaxTime(datalist.get(0));
@@ -320,60 +344,5 @@ class WeatherQueryClient {
     	TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(datalist, queryEarliestTime, latestTime);
     	
     	return ts;
-	}
-
-	/**
-	 * Returns list of stations that are located within the given radius (in km)
-	 * centre needs to be in the format "<lat>#<lon>", e.g. "50.1#1.0"
-	 * query string is partially hardcoded (geospatialQueryTemplate)
-	 * @param latlon
-	 * @param radius (in km)
-	 */
-	List<String> getStationsInCircle(String centre, double radius) {
-		String varKey = "station";
-		Variable station = SparqlBuilder.var(varKey);
-		
-		// construct query triples using blazegraph's magic predicates
-		GraphPattern queryPattern = GraphPatterns.and(station.has(p_geo.iri("search"), "inCircle")
-				.andHas(p_geo.iri("searchDatatype"),lat_lon)
-				.andHas(p_geo.iri("predicate"), hasObservationLocation)
-				.andHas(p_geo.iri("spatialCircleCenter"), centre)
-				.andHas(p_geo.iri("spatialCircleRadius"), radius));
-		
-		
-		String query = String.format(geospatialQueryTemplate, ontoems, queryPattern.getQueryString());
-		
-		List<String> queryResult = storeClient.executeQuery(query).toList().stream()
-				.map(station_iri -> ((HashMap<String,String>) station_iri).get(varKey))
-				.collect(Collectors.toList());
-		
-		return queryResult;
-	}
-	
-	/**
-	 * Returns list of stations that are located within the given bounds
-	 * both southwest and northeast need to be in the format "<lat>#<lon>", e.g. "50.1#1.0"
-	 * query string is partially hardcoded (geospatialQueryTemplate)
-	 * @param southwest
-	 * @param northeast
-	 */
-	List<String> getStationsInRectangle(String southwest, String northeast) {
-		String varKey = "station";
-		Variable station = SparqlBuilder.var(varKey);
-		
-		// construct query triples using blazegraph's magic predicates
-		GraphPattern queryPattern = GraphPatterns.and(station.has(p_geo.iri("search"), "inRectangle")
-				.andHas(p_geo.iri("searchDatatype"),lat_lon)
-				.andHas(p_geo.iri("predicate"), hasObservationLocation)
-				.andHas(p_geo.iri("spatialRectangleSouthWest"), southwest)
-				.andHas(p_geo.iri("spatialRectangleNorthEast"), northeast));
-				
-		String query = String.format(geospatialQueryTemplate, ontoems, queryPattern.getQueryString());
-		
-		List<String> queryResult = storeClient.executeQuery(query).toList().stream()
-				.map(station_iri -> ((HashMap<String,String>) station_iri).get(varKey))
-				.collect(Collectors.toList());
-		
-		return queryResult;
 	}
 }
