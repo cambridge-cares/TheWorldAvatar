@@ -36,15 +36,11 @@ RUN mvn package -DskipTests
 
 #==================================================================================================
 
-# third stage stage: copy the downloaded dependency into a new image and build into an app
+# third stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
 FROM tomcat:9.0 as agent
 
-WORKDIR /app
-
-# Remove version suffix when copying the war to simplify the entrypoint script
 COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
+COPY ./docker/entrypoint.sh entrypoint.sh
 
-# Run the entrypoint script
-ENTRYPOINT ["catalina.sh", "jpda", "run"]
-#==================================================================================================
+ENTRYPOINT ["./entrypoint.sh"]
