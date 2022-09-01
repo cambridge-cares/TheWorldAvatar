@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:nodeID="service">
+	<rdf:type rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+	<endpoint xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.theworldavatar.com/blazegraph/namespace/sgbiodieselplants/sparql"/>
+	<supportedLanguage xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#SPARQL10Query"/>
+	<supportedLanguage xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#SPARQL11Query"/>
+	<supportedLanguage xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#SPARQL11Update"/>
+	<feature xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#BasicFederatedQuery"/>
+	<feature xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#UnionDefaultGraph"/>
+	<feature xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.bigdata.com/rdf#/features/KB/Mode/Quads"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/RDF_XML"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N-Triples"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/Turtle"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N3"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://sw.deri.org/2008/07/n-quads/#n-quads"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_XML"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_JSON"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_CSV"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_TSV"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/RDF_XML"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N-Triples"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/Turtle"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N3"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_XML"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_JSON"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_CSV"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_TSV"/>
+	<entailmentRegime xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/entailment/Simple"/>
+	<defaultDataset xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:nodeID="defaultDataset"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultDataset">
+	<rdf:type rdf:resource="http://www.w3.org/ns/sparql-service-description#Dataset"/>
+	<rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+	<title xmlns="http://purl.org/dc/terms/">sgbiodieselplants</title>
+	<Namespace xmlns="http://www.bigdata.com/rdf#/features/KB/">sgbiodieselplants</Namespace>
+	<sparqlEndpoint xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/blazegraph/namespace/sgbiodieselplants/sparql/sgbiodieselplants/sparql"/>
+	<uriRegexPattern xmlns="http://rdfs.org/ns/void#">^.*</uriRegexPattern>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl"/>
+	<defaultGraph xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:nodeID="defaultGraph"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<rdf:type rdf:resource="http://www.w3.org/ns/sparql-service-description#Graph"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2067</triples>
+	<entities xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">689</entities>
+	<properties xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#int">37</properties>
+	<classes xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#int">52</classes>
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1874"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1874">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1076</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1875"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1875">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">109</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1876"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1876">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#hasInput"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">107</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1877"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1877">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">102</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1878"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1878">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">100</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1879"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1879">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#hasConnector"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">61</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1880"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1880">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">54</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1881"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1881">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#refersToAxis"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">48</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1882"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1882">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">48</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1883"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1883">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isConnectedTo"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">42</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1884"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1884">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#hasOutput"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">36</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1885"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1885">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#isConnectedTo"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">32</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1886"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1886">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#imports"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">32</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1887"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1887">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#hasIRI"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1888"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1888">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#isCostOfPlantItem"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">24</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1889"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1889">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasGISCoordinateSystem"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">24</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1890"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1890">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_x"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">24</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1891"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1891">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_y"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">24</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1892"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1892">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#realizes"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">24</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1893"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1893">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasElectricalRepresentation"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">12</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1894"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1894">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#hasHeatDuty"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">9</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1895"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1895">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">7</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1896"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1896">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#refersToGeneralizedAmount"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1897"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1897">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#refersToMaterial"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1898"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1898">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_pressure"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1899"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1899">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_temperature"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1900"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1900">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#intrinsicCharacteristics"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1901"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1901">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1902"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1902">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasOutletPressure"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">3</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1903"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1903">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasPumpHead"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1904"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1904">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#hasChemicalReactionNetwork"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1905"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1905">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#hasVapourRatio"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1906"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1906">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasURLPath"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1907"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1907">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isModeledBy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1908"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1908">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasAddress"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1909"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1909">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasOwner"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1910"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1910">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasPressureDrop"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1911"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1911">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">553</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1912"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1912">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#Connector"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">74</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1913"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1913">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">74</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1914"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1914">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">58</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1915"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1915">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">48</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1916"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1916">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">48</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1917"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1917">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">26</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1918"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1918">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#EquipmentCosts"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">24</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1919"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1919">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">24</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1920"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1920">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">14</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1921"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1921">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MassTransferCoefficient"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">9</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1922"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1922">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">9</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1923"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1923">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Apparatus"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">7</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1924"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1924">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">7</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1925"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1925">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#TrayColumn"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">6</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1926"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1926">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#Vessel"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">6</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1927"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1927">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1928"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1928">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1929"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1929">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1930"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1930">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1931"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1931">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Pressure"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1932"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1932">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1933"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1933">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1934"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1934">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#Column"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1935"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1935">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#StirredTank"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1936"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1936">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Pump"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1937"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1937">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Utility"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1938"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1938">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStep"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">3</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1939"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1939">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1940"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1940">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Valve"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1941"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1941">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1942"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1942">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Mixing"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1943"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1943">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#PressureChangeOfLiquid"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1944"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1944">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Reaction"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1945"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1945">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ReactionNetwork"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1946"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1946">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Distilling"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1947"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1947">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Flashing"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1948"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1948">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#FlashVaporRatio"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1949"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1949">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1950"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1950">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/TradingSystem/TradingSystem.owl#EmissionTradingScheme"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1951"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1951">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1952"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1952">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/Service.owl#QueryService"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1953"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1953">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1954"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1954">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#InternalRateofReturn"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1955"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1955">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#PayBackTime"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1956"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1956">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Owner"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1957"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1957">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1958"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1958">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#NamedIndvidual"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1959"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1959">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Splitting"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1960"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1960">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Extracting"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1961"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1961">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#CoreProduct"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g1phb47gx1962"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g1phb47gx1962">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+</rdf:RDF>
