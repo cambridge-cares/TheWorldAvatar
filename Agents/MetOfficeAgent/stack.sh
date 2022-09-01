@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # Build latest versions of JPS_BASE_LIB and STACK_CLIENTS if 
-# "-update_resources" flag is provided
-if [[ $* == *"-update_resources"* ]]
+# "-update_resources" flag is provided as FIRST flag
+if [[ $1 == *"-update_resources"* ]]
 then
     ./build_py4jps_resources.sh
+    shift
 fi
 
 COMMAND=$1

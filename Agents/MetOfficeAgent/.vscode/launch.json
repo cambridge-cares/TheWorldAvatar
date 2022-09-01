@@ -11,7 +11,8 @@
             "request": "attach",
             "preLaunchTask": "compose-deploy",
             "connect": {
-                "host": "localhost",
+                "host": "127.0.0.1",
+                //"${config:debug.port}"
                 "port": 5678
             },
             "pathMappings": [
@@ -21,36 +22,36 @@
                 }
             ]
         },
-        {
-            "name": "Build and Debug (Python Remote Attach)",
-            "type": "python",
-            "request": "attach",
-            "preLaunchTask": "compose-build-deploy",
-            "connect": {
-                "host": "localhost",
-                "port": 5678
-            },
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/metoffice/flaskapp/",
-                    "remoteRoot": "/app/metoffice/flaskapp/"
-                }
-            ]
-        },
-        {
-            "name": "Reattach and Debug (Python Remote Attach)",
-            "type": "python",
-            "request": "attach",
-            "connect": {
-                "host": "localhost",
-                "port": 5678
-            },
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/metoffice/flaskapp/",
-                    "remoteRoot": "/app/metoffice/flaskapp/"
-                }
-            ]
-        }
+        // {
+        //     "name": "Build and Debug (Python Remote Attach)",
+        //     "type": "python",
+        //     "request": "attach",
+        //     "preLaunchTask": "compose-build-deploy",
+        //     "connect": {
+        //         "host": "localhost",
+        //         "port": 5678
+        //     },
+        //     "pathMappings": [
+        //         {
+        //             "localRoot": "${workspaceFolder}/metoffice/flaskapp/",
+        //             "remoteRoot": "/app/metoffice/flaskapp/"
+        //         }
+        //     ]
+        // },
+        // {
+        //     "name": "Reattach and Debug (Python Remote Attach)",
+        //     "type": "python",
+        //     "request": "attach",
+        //     "connect": {
+        //         "host": "localhost",
+        //         "port": 5678
+        //     },
+        //     "pathMappings": [
+        //         {
+        //             "localRoot": "${workspaceFolder}/metoffice/flaskapp/",
+        //             "remoteRoot": "/app/metoffice/flaskapp/"
+        //         }
+        //     ]
+        // }
     ]
 }

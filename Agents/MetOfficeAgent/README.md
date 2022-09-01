@@ -28,8 +28,8 @@ This agent requires []JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps
 
 Simply execute the following command in the same folder as this `README`:
 ```bash
-# Deploy the agent incl. building latest py4jps resources
-./stack.sh start <STACK NAME> -update_resources
+# Deploy the agent incl. building latest py4jps resources (please note that "-update_resources" flag needs to be provided as first argument)
+./stack.sh start -update_resources <STACK NAME>
 # Deploying the agent without building latest py4jps resources
 ./stack.sh start <STACK NAME>
 ```
