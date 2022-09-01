@@ -68,7 +68,7 @@ public class QueryClient {
 
         Variable mmsi = query.var();
         Variable mmsiValue = query.var();
-        ValuesPattern<Integer> vp = new ValuesPattern<>(mmsiValue, ships.stream().map(s -> s.getMmsi()).collect(Collectors.toList()), Integer.class);
+        ValuesPattern<Integer> vp = new ValuesPattern<>(mmsiValue, ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
 
         GraphPattern gp = mmsi.isA(MMSI).andHas(PropertyPaths.path(HAS_VALUE,HAS_NUMERICALVALUE),mmsiValue);
 
@@ -164,7 +164,7 @@ public class QueryClient {
 
         Variable ship = query.var();
         Variable mmsiValue = query.var();
-        ValuesPattern<Integer> vp = new ValuesPattern<>(mmsiValue, ships.stream().map(s -> s.getMmsi()).collect(Collectors.toList()), Integer.class);
+        ValuesPattern<Integer> vp = new ValuesPattern<>(mmsiValue, ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
         GraphPattern gp = ship.has(PropertyPaths.path(HAS_MMSI,HAS_VALUE,HAS_NUMERICALVALUE), mmsiValue);
 
         query.prefix(P_OM,P_DISP).where(gp,vp);

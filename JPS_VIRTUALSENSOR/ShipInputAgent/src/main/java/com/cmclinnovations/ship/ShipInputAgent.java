@@ -45,60 +45,69 @@ public class ShipInputAgent extends HttpServlet {
         File dataDir = new File(EnvConfig.DATA_DIR);
 
         // turn into integer list to facilitate sorting
-        List<Integer> fileNamesAsInt = Arrays.asList(dataDir.listFiles()).stream().map(f -> Integer.parseInt(FilenameUtils.removeExtension(f.getName()))).collect(Collectors.toList());
-
-        Collections.sort(fileNamesAsInt);
-
-        // record last used file in a folder that is a docker volume
-        File lastReadFile = new File(EnvConfig.LAST_READ_FILE);
-        File timeOffsetFile = new File(EnvConfig.TIME_OFFSET_FILE);
-
-        int lastUsedFileInt = 0;
-        int timeOffset = 0;
-
-        if (lastReadFile.exists()) {
-            // read from file
-            try {
-                lastUsedFileInt = Integer.parseInt(new String(Files.readAllBytes(lastReadFile.toPath())));
-            } catch (NumberFormatException | IOException e) {
-                LOGGER.error(e.getMessage());
-            }
-        } else {
-            // first time creating the file
-            updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(0)));
+        List<Integer> fileNamesAsInt = null;
+        // catch NumberFormatException here because it is recommended to not throw this in a servlet
+        try {
+            fileNamesAsInt = Arrays.asList(dataDir.listFiles()).stream().map(f -> Integer.parseInt(FilenameUtils.removeExtension(f.getName()))).collect(Collectors.toList());
+        } catch (NumberFormatException e) {
+            LOGGER.error(e.getMessage());
         }
 
-        if (timeOffsetFile.exists()) {
-            // read from file
-            try {
-                timeOffset = Integer.parseInt(new String(Files.readAllBytes(timeOffsetFile.toPath())));
-            } catch (NumberFormatException | IOException e) {
-                LOGGER.error(e.getMessage());
-            }
-        } else {
-            // write the first file
-            updateFile(timeOffsetFile, String.valueOf(0));
-        }
+        if (fileNamesAsInt != null) {
+            Collections.sort(fileNamesAsInt);
 
-        File dataFile = null;
-
-        if (lastUsedFileInt != 0) {
-            int index = fileNamesAsInt.indexOf(lastUsedFileInt);
-            if (index != fileNamesAsInt.size() - 1) {
-                dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(index+1) + JSON_EXT).toFile();
-                updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(index+1)));
+            // record last used file in a folder that is a docker volume
+            File lastReadFile = new File(EnvConfig.LAST_READ_FILE);
+            File timeOffsetFile = new File(EnvConfig.TIME_OFFSET_FILE);
+    
+            Integer lastUsedFileInt = null;
+            Integer timeOffset = null;
+    
+            if (lastReadFile.exists()) {
+                // read from file
+                // catch NumberFormatException here because it is recommended to not throw this in a servlet
+                try {
+                    lastUsedFileInt = Integer.parseInt(new String(Files.readAllBytes(lastReadFile.toPath())));
+                } catch (NumberFormatException | IOException e) {
+                    LOGGER.error(e.getMessage());
+                }
             } else {
-                // increment timeOffset and start a new cycle
-                timeOffset += fileNamesAsInt.size();
-                updateFile(timeOffsetFile, String.valueOf(timeOffset));
+                // first time creating the file
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(0)));
+            }
+    
+            if (timeOffsetFile.exists()) {
+                // read from file
+                try {
+                    timeOffset = Integer.parseInt(new String(Files.readAllBytes(timeOffsetFile.toPath())));
+                } catch (NumberFormatException | IOException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            } else {
+                // write the first file
+                updateFile(timeOffsetFile, String.valueOf(0));
+                timeOffset = 0;
+            }
+    
+            File dataFile;
+    
+            // should only be null in the first POST call
+            if (lastUsedFileInt != null) {
+                int index = fileNamesAsInt.indexOf(lastUsedFileInt);
+                if (index != fileNamesAsInt.size() - 1) {
+                    dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(index+1) + JSON_EXT).toFile();
+                    updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(index+1)));
+                } else {
+                    // increment timeOffset and start a new cycle
+                    timeOffset += fileNamesAsInt.size();
+                    updateFile(timeOffsetFile, String.valueOf(timeOffset));
+                    updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(0)));
+                    dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + JSON_EXT).toFile();
+                }
+            } else {
                 dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + JSON_EXT).toFile();
             }
-        } else {
-            dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + JSON_EXT).toFile();
-        }
-
-        if (dataFile != null) {
+    
             FileInputStream inputStream = new FileInputStream(dataFile);
 
             JSONTokener tokener = new JSONTokener(inputStream);
@@ -128,7 +137,6 @@ public class ShipInputAgent extends HttpServlet {
 
     void updateFile(File file, String fileContent) {
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            // add three days + 1 hour = 73 hours
             outputStream.write(fileContent.getBytes());
         } catch (Exception e){
             LOGGER.error(e.getMessage());
