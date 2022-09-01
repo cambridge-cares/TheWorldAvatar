@@ -5,7 +5,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.2.0</version>
+  <version>1.3.0-300-whitespace-problem-in-mapping-SNAPSHOT</version>
 
   <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>
