@@ -1,0 +1,36 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "forestry",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "Tabular",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "tabular"
+        },
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "forestry",
+            "subdirectory": "vector",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "forestry_colour",
+                    "sql": "SELECT forestry.ogc_fid, objectid_1, category, forestry.ift_ioa, area_ha, wkb_geometry, colour\nFROM forestry, forestry_colours\nWHERE forestry.ift_ioa = forestry_colours.ift_ioa\n",
+                    "escapeSql": false,
+                    "keyColumn": "ift_ioa"
+                },
+                "defaultStyle": "cmcl:forestry"
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "forestry",
+            "file": "forestry.sld"
+        }
+    ]
+}
