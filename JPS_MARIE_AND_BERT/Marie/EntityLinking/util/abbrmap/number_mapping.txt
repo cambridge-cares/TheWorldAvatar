@@ -1,0 +1,30 @@
+zero@0
+one@1|1st__first|I
+two@2|2nd__second|II
+three@3|3rd__third|III
+four@4|4th__fourth|IV
+five@5|5th__fifth|V
+six@6|6th__sixth|VI
+seven@7|7th__seventh|VII
+eight@8|8th__eighth|VIII
+nine@9|9th__ninth|IX
+ten@10|10th__tenth|
+eleven@11|11th__eleventh|XI
+twelve@12|12th__twelfth|XII
+thirteen@13|13th__thirteenth|XIII
+fourteen@14|14th__fourteenth|XIV
+fifteen@15|15th__fifteenth|XV
+sixteen@16|16th__sixteenth|XVI
+seventeen@17|17th__seventeenth|XVII
+eighteen@18|18th__eighteenth|XVIII
+nineteen@19|19th__nineteenth|XIX
+twenty@20|20th__twentieth|XX
+twenty one@21|21st__twenty first|XXI
+twenty two@22|22nd__twenty second|XXII
+twenty three@23|23rd__twenty third|XXIII
+twenty four@24|24th__twenty fourth|XXIV
+twenty five@25|25th__twenty fifth|XXV
+twenty six@26|26th__twenty sixth|XXVI
+twenty seven@27|27th__twenty seventh|XXVII
+twenty eight@28|28th__twenty eighth|XXVIII
+twenty nine@29|29th__twenty ninth|XXIX
