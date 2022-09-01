@@ -3,6 +3,7 @@ import pickle
 import time
 from random import random, choice, sample
 
+import numpy as np
 import pandas as pd
 import torch
 from transformers import BertTokenizer
@@ -13,7 +14,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 
 
 class Dataset(torch.utils.data.Dataset):
-    def __init__(self, df):
+    def __init__(self, df, negative_rate=20):
         # TODO: load the entity2idx, rel2idx
         # entity2idx, from name to index
         # rel2idx, from name to index
@@ -24,6 +25,8 @@ class Dataset(torch.utils.data.Dataset):
         self.df_pos = df[df['score'] == 1]
         self.df_neg = df[df['score'] == 0]
         self.max_length = 12
+        self.neg_sample_num = negative_rate
+
         e2i_path = open(os.path.join(DATA_DIR, 'entity2idx.pkl'), 'rb')
         self.entity2idx = pickle.load(e2i_path)
         r2i_path = open(os.path.join(DATA_DIR, 'relation2idx.pkl'), 'rb')
@@ -45,11 +48,9 @@ class Dataset(torch.utils.data.Dataset):
         for entity in self.all_tails:
             head = entity.split('_')[0]
             valid_tails = [head + '_' + r for r in self.all_relations]
-            clean_subset = valid_tails
+            clean_subset = [c_t for c_t in valid_tails if c_t != entity]
             fake_entity_mapping[entity] = clean_subset
-        print('writing the file')
-        with open('fake_entity_mapping.pickle', 'wb') as handle:
-            pickle.dump(fake_entity_mapping, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
         return fake_entity_mapping
 
     def __len__(self):
@@ -61,11 +62,37 @@ class Dataset(torch.utils.data.Dataset):
                           return_tensors="pt") for text in df_subset]
 
     def get_embedding(self, row):
-        tokenized_question = self.tokenize_question(row['question'])[0]
-        e_t = self.entity2idx[row['tail'].tolist()[0]]
-        e_h = self.entity2idx[row['head'].tolist()[0]]
+        tokenized_question_pos = self.tokenize_question(row['question'])[0]
+        a_m_batch = torch.cat(self.neg_sample_num * [tokenized_question_pos['attention_mask']])
+        i_i_batch = torch.cat(self.neg_sample_num * [tokenized_question_pos['input_ids']])
 
-        return tokenized_question, e_h, e_t
+        q_batch = {'attention_mask': a_m_batch,
+                   'input_ids': i_i_batch}
+
+        e_t_pos = self.entity2idx[row['tail'].tolist()[0]]
+        e_h_pos = self.entity2idx[row['head'].tolist()[0]]
+
+        # collection of all positive tail labels
+        all_fake_e_t_neg_labels = self.fake_entity_mapping[row['tail'].tolist()[0]]
+
+        # ============================================================================
+        # Get the negative indices
+        e_t_neg = torch.LongTensor(sample([self.entity2idx[e_t_l] for e_t_l in all_fake_e_t_neg_labels
+                                           if 'type' not in e_t_l], self.neg_sample_num))
+
+        # ====================== repeat the tensors to match pos-neg sizes ===========
+        # repeat the tensors, for the positive sample to match the negative sample
+
+        e_h_pos = torch.LongTensor([e_h_pos]).repeat(self.neg_sample_num)
+        e_t_pos = torch.LongTensor([e_t_pos]).repeat(self.neg_sample_num)
+
+        # create the negative sample by replace the tail
+
+        # the thing self.neg_num times
+
+        # return tokenized_question, e_h, e_t
+        return {'question': q_batch, 'e_h': e_h_pos, 'e_t': e_t_pos}, \
+               {'question': q_batch, 'e_h': e_h_pos, 'e_t': e_t_neg}
 
     def __getitem__(self, idx):
         # TODO: return positive_set, negative_set, each contains (e_h, e_t, tokenized question)
@@ -73,11 +100,29 @@ class Dataset(torch.utils.data.Dataset):
         START_TIME = time.time()
         row_pos = self.df_pos.iloc[[idx]]
         # TODO: replace the motherfucking tail or head
-        tokenized_question_pos, e_h_pos, e_t_pos = self.get_embedding(row_pos)
-        start_time_2 = time.time()
-        fake_entity = choice(self.fake_entity_mapping[row_pos['tail'].tolist()[0]])
-        fake_dict = choice(({'e_t': fake_entity}, {'e_h': fake_entity}))
-        row_neg = self.df_pos.iloc[[idx]].replace(fake_dict)
-        tokenized_question_neg, e_h_neg, e_t_neg = self.get_embedding(row_neg)
-        return {'question': tokenized_question_pos, 'e_h': e_h_pos, 'e_t': e_t_pos}, \
-               {'question': tokenized_question_neg, 'e_h': e_h_neg, 'e_t': e_t_neg}
+        # we need more neg samples, say, 20
+
+        pos_set, neg_set = self.get_embedding(row_pos)
+
+        # start_time_2 = time.time()
+        # fake_entity = choice(self.fake_entity_mapping[row_pos['tail'].tolist()[0]])
+        # fake_dict = choice(({'e_t': fake_entity}, {'e_h': fake_entity}))
+        # row_neg = self.df_pos.iloc[[idx]].replace(fake_dict)
+        # tokenized_question_neg, e_h_neg, e_t_neg = self.get_embedding(row_neg, positive=False)
+        # return {'question': tokenized_question_pos, 'e_h': e_h_pos, 'e_t': e_t_pos}, \
+        #        {'question': tokenized_question_neg, 'e_h': e_h_neg, 'e_t': e_t_neg}
+        return pos_set, neg_set
+
+
+if __name__ == '__main__':
+    batch_size = 6
+    df_path = os.path.join(DATA_DIR, 'question_set_full')
+    df = pd.read_csv(df_path, sep='\t')
+    df = df.sample(frac=0.1)
+    df_train, df_test = np.split(df.sample(frac=1, random_state=42), [int(.8 * len(df))])
+
+    train_set = Dataset(df_train)
+    test_set = Dataset(df_test)
+    train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+    test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=batch_size, shuffle=True)
+

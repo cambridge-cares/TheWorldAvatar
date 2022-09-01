@@ -14,14 +14,11 @@ class Dataset(torch.utils.data.Dataset):
 
     def __init__(self, df):
         # TODO: make sure the
-
         e2i_path = open(os.path.join(DATA_DIR, 'entity2idx.pkl'), 'rb')
         self.entity2idx = pickle.load(e2i_path)
-
         r2i_path = open(os.path.join(DATA_DIR, 'relation2idx.pkl'), 'rb')
         self.relation2idx = pickle.load(r2i_path)
         self.df = df
-
         self.ent_num = len(self.entity2idx.keys())
         self.rel_num = len(self.relation2idx.keys())
 
@@ -50,5 +47,4 @@ class Dataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         START_TIME = time.time()
         positive_set, negative_set = self.triplet2idx(self.df[idx])
-        print(f'The process took {time.time() - START_TIME}')
         return positive_set, negative_set

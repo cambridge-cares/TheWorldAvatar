@@ -109,7 +109,7 @@ class Trainer():
             f.close()
 
     def save_model(self):
-        torch.save(self.model.state_dict(), 'model')
+        torch.save(self.model.state_dict(), '../../../Training/Embedding/playground/model')
         self.export_embeddings()
         print(f'saving the model and the embeddings')
 
