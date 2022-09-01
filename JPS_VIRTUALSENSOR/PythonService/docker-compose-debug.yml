@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  python-service:
+    build:
+      target: debug
+    ports:
+      - 5678:5678
