@@ -88,8 +88,10 @@ public class ShipInputAgent extends HttpServlet {
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(index+1)));
             } else {
                 // increment timeOffset and start a new cycle
-                updateFile(timeOffsetFile, String.valueOf(timeOffset + 73));
-                updateFile(lastReadFile, String.valueOf(0));
+                timeOffset += fileNamesAsInt.size();
+                updateFile(timeOffsetFile, String.valueOf(timeOffset));
+                updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(0)));
+                dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + ".json").toFile();
             }
         } else {
             dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + ".json").toFile();
