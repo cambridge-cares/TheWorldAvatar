@@ -36,6 +36,7 @@ final class SQLPPMappingImplementation implements SQLPPMapping {
     private static final Pattern TARGET_LINES_PATTERN = Pattern.compile("([,;\\.])[\\t ]*\\r?\\n+[\\t ]+");
     // Matches two newline characters seperated whitespace
     private static final Pattern WHITESPACE_BETWEEN_MAPPINGS_PATTERN = Pattern.compile("(\\r?\\n)+\\s+\\r?\\n");
+    
     private final Map<String, String> prefixMap = new HashMap<>();
     private final Map<String, SQLPPTriplesMap> triplesMap = new HashMap<>();
 
