@@ -31,6 +31,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 @WebServlet(urlPatterns = {"/update"})
 public class ShipInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ShipInputAgent.class);
+    private static final String JSON_EXT = ".json";
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -84,17 +85,17 @@ public class ShipInputAgent extends HttpServlet {
         if (lastUsedFileInt != 0) {
             int index = fileNamesAsInt.indexOf(lastUsedFileInt);
             if (index != fileNamesAsInt.size() - 1) {
-                dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(index+1) + ".json").toFile();
+                dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(index+1) + JSON_EXT).toFile();
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(index+1)));
             } else {
                 // increment timeOffset and start a new cycle
                 timeOffset += fileNamesAsInt.size();
                 updateFile(timeOffsetFile, String.valueOf(timeOffset));
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(0)));
-                dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + ".json").toFile();
+                dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + JSON_EXT).toFile();
             }
         } else {
-            dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + ".json").toFile();
+            dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + JSON_EXT).toFile();
         }
 
         if (dataFile != null) {
