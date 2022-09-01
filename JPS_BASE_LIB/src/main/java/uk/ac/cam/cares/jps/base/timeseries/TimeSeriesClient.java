@@ -1,12 +1,16 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -24,6 +28,10 @@ public class TimeSeriesClient<T> {
 	// Associated RDB and RDF/SPARQL clients
 	private TimeSeriesRDBClient<T> rdbClient;
 	private TimeSeriesSparql rdfClient;
+	private RDBStoreClient rdbStoreClient;
+	private String rdbURL;
+	private String rdbUser;
+	private String rdbPassword;
 	// Exception prefix
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 	
@@ -38,12 +46,10 @@ public class TimeSeriesClient<T> {
     public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String rdbURL, String user, String password) {
     	// Initialise Sparql client with pre-defined kbClient
     	this.rdfClient = new TimeSeriesSparql(kbClient);
-    	// Initialise RDB client according to properties file
-    	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
-    	// Set RDB credentials
-    	this.rdbClient.setRdbURL(rdbURL);
-    	this.rdbClient.setRdbUser(user);
-    	this.rdbClient.setRdbPassword(password);
+		//Initialise RDBStore Client
+		this.rdbStoreClient = new RDBStoreClient(rdbURL, user, password);
+    	// Initialise RDB client
+		this.rdbClient = new TimeSeriesRDBClient<>(timeClass, rdbStoreClient);
     }
 	
 	/**
@@ -55,11 +61,13 @@ public class TimeSeriesClient<T> {
     public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String filepath) throws IOException {
     	// Initialise Sparql client with pre-defined kbClient
     	this.rdfClient = new TimeSeriesSparql(kbClient);
-    	// Initialise RDB client according to properties file
-    	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
-   		loadRdbConfigs(filepath);
+		//Initialise RDBStore Client
+		loadRdbConfigs(filepath);
+		rdbStoreClient = new RDBStoreClient(rdbURL, rdbUser, rdbPassword);
+    	// Initialise RDB client
+    	this.rdbClient = new TimeSeriesRDBClient<>(timeClass, rdbStoreClient);
     }
-    
+
     /**
      * Constructor with both RDB and Sparql clients to be created according to properties file
      * @param timeClass class type for the time values (to initialise RDB table)
@@ -70,19 +78,49 @@ public class TimeSeriesClient<T> {
     	RemoteStoreClient kbClient = new RemoteStoreClient();
     	this.rdfClient = new TimeSeriesSparql(kbClient);
     	loadSparqlConfigs(filepath);
-    	// Initialise RDB client according to properties file
-    	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
-    	loadRdbConfigs(filepath);
+		//Initialise RDBStore Client
+		loadRdbConfigs(filepath);
+		this.rdbStoreClient = new RDBStoreClient(rdbURL, rdbUser, rdbPassword);
+		// Initialise RDB client
+    	this.rdbClient = new TimeSeriesRDBClient<>(timeClass, rdbStoreClient);
     }
     
     /**
-     * Load properties for RDB client
+     * Load properties for RDBStore client
      * @param filepath absolute path to properties file with respective information
      */
     private void loadRdbConfigs(String filepath) throws IOException {
-    	rdbClient.loadRdbConfigs(filepath);
+		File file = new File(filepath);
+		if (!file.exists()) {
+			throw new JPSRuntimeException(exceptionPrefix + "No properties file found at specified filepath: " + filepath);
+		}
+
+		// Try-with-resource to ensure closure of input stream
+		try (InputStream input = new FileInputStream(file)) {
+
+			// Load properties file from specified path
+			Properties prop = new Properties();
+			prop.load(input);
+
+			// Get the property values and assign
+			if (prop.containsKey("db.url")) {
+				rdbURL = prop.getProperty("db.url");
+			} else {
+				throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.url=<rdb_url>\" ");
+			}
+			if (prop.containsKey("db.user")) {
+				rdbUser =  prop.getProperty("db.user");
+			} else {
+				throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.user=<rdb_username>\" ");
+			}
+			if (prop.containsKey("db.password")) {
+				rdbPassword = prop.getProperty("db.password");
+			} else {
+				throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ");
+			}
+		}
     }
-    
+
     /**
      * Load properties for RDF/SPARQL client
      * @param filepath absolute path to properties file with respective information
@@ -105,11 +143,11 @@ public class TimeSeriesClient<T> {
 	 * @param user username to access relational database
 	 * @param password password to access relational database 
 	*/
-    public void setRDBClient(String rdbURL, String user, String password) {    	
-    	this.rdbClient.setRdbURL(rdbURL);
-    	this.rdbClient.setRdbUser(user);
-    	this.rdbClient.setRdbPassword(password);
-    }
+//    public void setRDBClient(String rdbURL, String user, String password) {
+//    	this.rdbClient.setRdbURL(rdbURL);
+//    	this.rdbClient.setRdbUser(user);
+//    	this.rdbClient.setRdbPassword(password);
+//    }
 
     /**
      * Initialise time series in triple store and relational database
@@ -126,7 +164,7 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
    		try {
-   			rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
+   			rdfClient.initTS(tsIRI, dataIRIs, rdbStoreClient.getRdbURL(), timeUnit);
 		}
 		catch (Exception e_RdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
@@ -170,7 +208,7 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
    		try {
-   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbClient.getRdbURL(), timeUnit);
+   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbStoreClient.getRdbURL(), timeUnit);
 		}
 		catch (Exception e_RdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
@@ -310,7 +348,7 @@ public class TimeSeriesClient<T> {
     		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
     		//		a different exception depending on what the problem was, and how it should be handled
 			try {
-				rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
+				rdfClient.initTS(tsIRI, dataIRIs, rdbStoreClient.getRdbURL(), timeUnit);
 			} catch (Exception e_RdfCreate) {
 				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
 						" , as database related deletion failed but KG triples were deleted.");
