@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,11 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Properties;
-import java.io.File;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +29,7 @@ import org.postgis.Geometry;
 import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.query.RDBStoreClient;
 
 /**
  * This class uses the jooq library to interact with a relational database.
@@ -48,11 +42,9 @@ public class TimeSeriesRDBClient<T> {
      * Logger for error output.
      */
     private static final Logger LOGGER = LogManager.getLogger(TimeSeriesRDBClient.class);
-	// URL and credentials for the relational database
-	private String rdbURL = null; 
-	private String rdbUser = null;
-	private String rdbPassword = null;
-	// RDB connection properties and jooq configuration 
+	//RDB Store Client for establishing connection
+	private RDBStoreClient rdbStoreClient;
+	// RDB connection properties and jooq configuration
 	private Connection conn = null;
 	private DSLContext context;
 	// Time series column field (for RDB)
@@ -74,72 +66,15 @@ public class TimeSeriesRDBClient<T> {
 		MIN
 	}
 
-	public RemoteStoreClient storeClient;
     /**
      * Standard constructor
      * @param timeClass class of the timestamps of the time series
+	 * @param rdbStoreClient instance of RDBStoreClient
      */
-    public TimeSeriesRDBClient(Class<T> timeClass) {
+    public TimeSeriesRDBClient(Class<T> timeClass, RDBStoreClient rdbStoreClient) {
     	timeColumn = DSL.field(DSL.name("time"), timeClass);
+		this.rdbStoreClient = rdbStoreClient;
     }
-    
-    /**
-     * Get and set methods for private relational database properties (e.g. PostgreSQL)
-     */
-	public void setRdbURL(String rdbURL) {
-		this.rdbURL = rdbURL;
-	}
-	public String getRdbURL() {
-		return rdbURL;
-	}
-	public void setRdbUser(String user) {
-		this.rdbUser = user;
-	}
-	public String getRdbUser() {
-		return rdbUser;
-	}
-	public void setRdbPassword(String password) {
-		this.rdbPassword = password;
-	}
-	
-	/**
-	 * Load RDB URL, username and password from properties file ("timeseries.properties") at specified path
-	 * @param filepath absolute path to timeseries properties file
-	 */
-	protected void loadRdbConfigs(String filepath) throws IOException {
-		
-		// Check whether properties file exists at specified location
-		File file = new File(filepath);		
-		if (!file.exists()) {
-			throw new JPSRuntimeException(exceptionPrefix + "No properties file found at specified filepath: " + filepath);
-		}
-		
-		// Try-with-resource to ensure closure of input stream
-		try (InputStream input = new FileInputStream(file)) {
-		
-			// Load properties file from specified path
-	        Properties prop = new Properties();
-	        prop.load(input);
-	
-	        // Get the property values and assign
-	        if (prop.containsKey("db.url")) {
-	        	setRdbURL(prop.getProperty("db.url"));
-	        } else {
-	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.url=<rdb_url>\" ");
-	        }
-	        if (prop.containsKey("db.user")) {
-	        	setRdbUser(prop.getProperty("db.user"));
-	        } else {
-	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.user=<rdb_username>\" ");
-	        }
-	        if (prop.containsKey("db.password")) {
-	        	setRdbPassword(prop.getProperty("db.password"));
-	        } else {
-	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ");
-	        }
-			storeClient = new RemoteStoreClient(this.rdbURL, this.rdbUser, this.rdbPassword);
-		}
-	}
 
 	/**
 	 * Initialise RDB table for particular time series and add respective entries to central lookup table
@@ -648,13 +583,13 @@ public class TimeSeriesRDBClient<T> {
 				// Load required driver
 				Class.forName("org.postgresql.Driver");
 				// Connect to DB (using static connection and context properties)
-	        	this.conn = storeClient.getConnection();
+	        	this.conn = rdbStoreClient.getConnection();
 				this.context = DSL.using(this.conn, dialect);
-				System.out.println("Connecting successful: " + this.rdbURL);
+				System.out.println("Connecting successful: " + rdbStoreClient.getRdbURL());
 			}
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			System.out.println("Connecting failed: " + this.rdbURL);
+			System.out.println("Connecting failed: " + rdbStoreClient.getRdbURL());
 			throw new JPSRuntimeException(exceptionPrefix + "Establishing database connection failed");
 		}
     }
