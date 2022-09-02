@@ -1,11 +1,11 @@
 version: '3.8'
 services:
-  metofficeagent:
-    environment:
-      - FLASK_APP=metoffice.flaskapp.wsgi.py
-      - FLASK_ENV=development
+  metoffice_agent:
+    image: docker.cmclinnovations.com/metoffice_agent_debug:1.0.0-SNAPSHOT
+    build:
+      context: .
+      target: debug
     ports:
-      - "5678:5678" # "${DEBUG_PORT}:5005"
+      - "${DEBUG_PORT}:5678"
     volumes:
-      - ./metoffice:/app/metoffice      
-      - ./output:/app/output
+      - ./metoffice:/app/metoffice

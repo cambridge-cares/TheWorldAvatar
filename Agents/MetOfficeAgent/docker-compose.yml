@@ -1,33 +1,15 @@
 version: "3.8"
 
 services:
-  metofficeagent:
-    image: ghcr.io/cambridge-cares/metofficeagent:1.0.0-SNAPSHOT
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: none
-    environment:
-      - STACK_NAME=${STACK_NAME}
-      - API_KEY=
-      - LAYERNAME=metoffice # also name of the table in PostGIS
-      - DATABASE=postgres   # currently ontop reads from the default database
-      - GEOSERVER_WORKSPACE=metoffice
-    configs:
-      - postgis
-      - blazegraph
-      - geoserver
-      - ontop
-    secrets:
-      - postgis_password
-      - geoserver_password
+  metoffice_agent:
+    image: docker.cmclinnovations.com/metoffice_agent:1.0.0-SNAPSHOT
     ports:
       - "5000:5000"
     volumes:
-      - logs:/root/.jps
-    networks:
-      - stack
-volumes:
-  logs:
-    name: "logs"
+      # Link container output directory to local directory to access output files
+      - ./output:/app/output
+    configs:
+      - postgis
+      - blazegraph
+    secrets:
+      - postgis_password
