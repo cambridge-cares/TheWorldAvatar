@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 24 Aug 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 24 Aug 2022                            #
+################################################
 
 # This module extracts all building triples from specified namespace and 
 # calls the UPRN agent on individual buildings to add UPRN information in

@@ -1,7 +1,7 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 25 Aug 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 25 Aug 2022                            #
+################################################
 
 # This module retrieves the old UPRNs (i.e. instantiated using static data in
 # FME workflow) with new UPRNs (i.e. instantiated using the UPRN agent) and
