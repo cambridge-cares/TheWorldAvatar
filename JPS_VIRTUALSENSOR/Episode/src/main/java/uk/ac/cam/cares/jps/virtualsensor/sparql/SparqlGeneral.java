@@ -13,6 +13,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.EndpointConfig;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
@@ -23,7 +24,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
  */
 
 public class SparqlGeneral {
-	private static String endpoint = System.getenv("KG_ENDPOINT");
+	private static String endpoint;
 	
 	private static Iri numericalValue = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	private static Iri hasValue = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
@@ -31,6 +32,10 @@ public class SparqlGeneral {
 	private static Iri hasUnitOfMeasure = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
 	
 	public static void performUpdate(ModifyQuery query) {
+		if (endpoint == null) {
+			EndpointConfig endpointConfig = new EndpointConfig();
+			endpoint = endpointConfig.getKgurl();
+		}
 		RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setUpdateEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());
@@ -38,6 +43,10 @@ public class SparqlGeneral {
     }
 	
 	public static void performUpdate(String query) {
+		if (endpoint == null) {
+			EndpointConfig endpointConfig = new EndpointConfig();
+			endpoint = endpointConfig.getKgurl();
+		}
 		RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setUpdateEndpoint(endpoint);
         kbClient.setQuery(query);
@@ -45,6 +54,10 @@ public class SparqlGeneral {
     }
 	
 	public static JSONArray performQuery(SelectQuery query) {
+		if (endpoint == null) {
+			EndpointConfig endpointConfig = new EndpointConfig();
+			endpoint = endpointConfig.getKgurl();
+		}
 		RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setQueryEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());
@@ -54,6 +67,10 @@ public class SparqlGeneral {
     }
 	
 	public static JSONArray performQuery(String query) {
+		if (endpoint == null) {
+			EndpointConfig endpointConfig = new EndpointConfig();
+			endpoint = endpointConfig.getKgurl();
+		}
 		RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setQueryEndpoint(endpoint);
         kbClient.setQuery(query);

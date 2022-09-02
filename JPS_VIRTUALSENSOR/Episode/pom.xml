@@ -120,5 +120,12 @@
             <artifactId>log4j-web</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- for interacting with the stack -->
+        <dependency>
+            <groupId>com.cmclinnovations</groupId>
+            <artifactId>stack-clients</artifactId>
+            <version>1.2.0</version>
+        </dependency>
 	</dependencies>	
 </project>

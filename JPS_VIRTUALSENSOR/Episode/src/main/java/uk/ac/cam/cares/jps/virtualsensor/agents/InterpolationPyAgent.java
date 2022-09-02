@@ -13,7 +13,6 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
 
 /**
  * Temporary interpolation agent that calls a python script instead of matlab
@@ -31,7 +30,7 @@ public class InterpolationPyAgent extends JPSAgent {
         if (validateInput(requestParams)) {
 	        Path pyWorkingDir = Paths.get(AgentLocator.getCurrentJpsAppDirectory(this),"python","interpolation");
 	        ArrayList<String> args = new ArrayList<String>();
-			args.add(SensorVenv.pyexe.toString());
+			// args.add(SensorVenv.pyexe.toString());
 			args.add("interpolation.py");
 			args.add(requestParams.getString("filepath"));
 			args.add(String.valueOf(requestParams.getDouble("x")));

@@ -47,6 +47,7 @@ WORKDIR /app
 
 # Copy the compiled jar from the builder
 COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
+COPY ./docker/entrypoint.sh entrypoint.sh
 
 # Run the state updater code
-ENTRYPOINT ["catalina.sh", "run"]
+ENTRYPOINT ["/entrypoint.sh"]
