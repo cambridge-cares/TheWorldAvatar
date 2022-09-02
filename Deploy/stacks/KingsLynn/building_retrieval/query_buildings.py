@@ -1,15 +1,27 @@
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 02 Sep 2022                            #
+################################################
+
+# This module retrieves building geometries from the KG and creates .geojson files
+# for visualisation. Primarily to check whether buildings with and without UPRN
+# data added by the agent differ in some relevant aspect which justifies missing
+# UPRN information
+
 from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 import pyproj
 
 import geojson_formatter
 
 # Specify (local) Blazegraph properties
-server = "localhost"
-port = "9999"
-namespace = "kings-lynn"
+query_endpoint = 'http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql'
+graph_prefix='http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/'
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 2
+n = 10
+
+# Specify whether UPRN info shall be missing or not
+missing_uprn = True
 
 # Specify output coordinate reference system (CRS)
 # Our Mapbox plotting framework uses EPSG:4326 (https://epsg.io/4326)
@@ -18,7 +30,8 @@ target_crs = 'urn:ogc:def:crs:EPSG::4326'
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
     'ocgl': 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#',
-    'xsd': 'http://www.w3.org/2001/XMLSchema#'
+    'xsd': 'http://www.w3.org/2001/XMLSchema#',
+    'osid': 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#'
 }
 
 
@@ -51,7 +64,7 @@ def create_sparql_prefix(abbreviation):
     return 'PREFIX ' + abbreviation + ': ' + iri + ' '
 
 
-def get_buildings(number=None):
+def get_buildings(number=None, uprns=None, graph=graph_prefix):
     """
         Create SPARQL query to retrieve buildings and associated (surface) geometries
 
@@ -64,25 +77,36 @@ def get_buildings(number=None):
 
     # Create subquery to limit number of buildings for which to retrieve surface geometries
     if number:
-        subquery = '''{ SELECT distinct ?bldg \
-                        WHERE { ?surf ocgl:cityObjectId ?bldg ; \
-                                      ocgl:GeometryType ?geom . } \
-                        LIMIT %i \
-                        }''' % number
+        limit = f'LIMIT {number}'
     else:
-        subquery = ''
+        limit = ''
+    
+    # Create subquery for UPRNs
+    if isinstance(uprns, bool):
+        if uprns:
+            subquery='?cityobj ^osid:intersectsFeature ?uprn '
+        else:
+            subquery='FILTER NOT EXISTS { ?cityobj ^osid:intersectsFeature/osid:hasValue ?uprn }'
+    else:
+        subquery=''
 
     # Construct query
     # Consider only surface polygons with provided geometries/polygons (some only refer to "told blank nodes")
     query = create_sparql_prefix('ocgl') + \
             create_sparql_prefix('xsd') + \
-            '''SELECT ?bldg ?surf ?geom \
-               WHERE { ?surf ocgl:cityObjectId ?bldg ; \
-       		                 ocgl:GeometryType ?geom . \
-       		   FILTER (!isBlank(?geom)) ''' + \
-            subquery + \
-       		'''} \
-       		   ORDER BY ?bldg'''
+            create_sparql_prefix('osid') + \
+            f'''SELECT ?bldg ?cityobj ?surf ?geom ?uprn \
+               WHERE {{ \
+                  GRAPH <{graph}building/> \
+                    {{ ?bldg ocgl:objectClassId 26 . \
+                       BIND(IRI(REPLACE(str(?bldg), "building", "cityobject")) AS ?cityobj) \
+                    }} \
+                    ?bldg ocgl:lod0FootprintId ?surf . \
+                    ?surf ^ocgl:parentId/ocgl:GeometryType ?geom . ''' + \
+                    subquery + \
+               '''} \
+               ORDER BY ?bldg ''' + \
+            limit
 
     return query
 
@@ -182,12 +206,10 @@ def get_coordinates(polygon_data, input_crs, target_crs):
 
 if __name__ == '__main__':
 
-    # Construct full SPARQL endpoint URL
-    query_endpoint = "http://" + server + ':' + port + '/blazegraph/namespace/' + namespace + "/sparql"
-
     # Retrieve SPARQL results from Blazegraph
     try:
-        kg_buildings = execute_query(get_buildings(n), query_endpoint)
+        kg_buildings = execute_query(get_buildings(n, missing_uprn, graph_prefix), 
+                                     query_endpoint)
         kg_crs = execute_query(get_crs(), query_endpoint)
     except SPARQLExceptions.EndPointNotFound as e:
         print('\nERROR: SPARQL query endpoint not found! Please ensure correct namespace and reachable triple store.\n')
@@ -201,9 +223,9 @@ if __name__ == '__main__':
         raise Exception('No CRS could be retrieved from specified triple store namespace.')
 
     # Unpack buildings SPARQL results into dictionary in format {surface_IRI: [building_IRI, polygon_data]}
-    surfaces = {}
+    footprints = {}
     for s in kg_buildings["results"]["bindings"]:
-        surfaces[s['surf']['value']] = [s['bldg']['value'], s["geom"]["value"]]
+        footprints[s['surf']['value']] = [s['bldg']['value'], s["geom"]["value"]]
 
     # Initialise pyproj CRS objects
     crs_in = pyproj.CRS.from_string(crs)
@@ -213,17 +235,17 @@ if __name__ == '__main__':
     output = geojson_formatter.start_output(target_crs)
 
     # Iterate through all geospatial features
-    features = list(surfaces.keys())
+    features = list(footprints.keys())
     total_features = len(features)
     for i in range(total_features):
 
         # Extract and transform coordinates from String polygon returned by SPARQL query
         feature = str(features[i])
-        coords, zmax = get_coordinates(surfaces[feature][1], crs_in, crs_out)
+        coords, zmax = get_coordinates(footprints[feature][1], crs_in, crs_out)
 
         # Specify feature properties to consider (beyond coordinates)
         props = {
-            'building': surfaces[feature][0],
+            'building': footprints[feature][0],
             'max_height': round(zmax, 3)
         }
 
@@ -239,6 +261,7 @@ if __name__ == '__main__':
     output += geojson_formatter.end_output()
 
     # Write output to file
-    file_name = 'Buildings_.geojson'
+    postfix = 'with_UPRNs' if missing_uprn else 'without_UPRNs'
+    file_name = f'outputs/Buildings_{postfix}.geojson'
     with open(file_name, 'w') as f:
         f.write(output)

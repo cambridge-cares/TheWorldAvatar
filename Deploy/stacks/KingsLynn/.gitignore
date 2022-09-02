@@ -56,3 +56,7 @@ dist/
 
 # Windows-specific files:
 Thumbs.db
+
+# Directories
+outputs/*
+!.gitkeep

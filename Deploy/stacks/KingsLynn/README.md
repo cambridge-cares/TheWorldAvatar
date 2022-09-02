@@ -21,7 +21,7 @@ The above commands will create and activate the virtual environment `venv` in th
 
 > The following steps refer to commit `2b5869650c39d8c754edfec98b6cde431a14fb06` on `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent`
 
-The scripts within the `UPRN Agent` subdirectory help to run the UPRN Agent from `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent` in batches of individual buildings. This workaround is necessary to avoid heap space issues when processing ~38,000 buildings in King's Lynn at once. Furthermore, a script is provided to verifying whether all relevant UPRN information has been added "correctly" to the KG.
+The scripts within the `uprn_agent` subdirectory help to run the UPRN Agent from `https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent` in batches of individual buildings. This workaround is necessary to avoid heap space issues when processing ~38,000 buildings in King's Lynn at once. Furthermore, a script is provided to verifying whether all relevant UPRN information has been added "correctly" to the KG.
 
 ### _run_uprn_agent_in_chunks.py_
 Requirements:
@@ -40,4 +40,8 @@ Requirements:
 
 ### _compare_uprns.py_
 
-Assess the added UPRN information via the agent with static data once added from Ordnance Survey using FME
+Assess the added UPRN information via the agent with static data once added from Ordnance Survey using FME.
+
+## Using the Building Retrieval scripts
+
+The `query_buildings.py` script is used to retrieve building footprints for buildings with vs. without instantiated UPRN information to analyse potential structural differences between respective buildings. Primary focus is to understand whether the non-retrieval of UPRN information using the UPRN agent seems legit or rather erroneous. The script creates .geojson files to be overlayed with other maps in QGIS / FEM Data Inspector to visually analyse potential structural differences.
