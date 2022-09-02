@@ -104,7 +104,8 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumeUtilities">
         <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#UtilitiesConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an utilities consuming facility and utilities</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
@@ -114,6 +115,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#hasArea">
         <rdfs:domain rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and its area</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -124,6 +126,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#hasDevice">
         <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
         <rdfs:range rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a building and its installed device</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -305,7 +308,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#AnnualOilConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#OilConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Annual Oil Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -315,7 +317,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#AnnualWaterConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#WaterConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Annual Water Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -325,7 +326,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#DailyOilConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#OilConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daily Oil Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -335,7 +335,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#DailyWaterConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#WaterConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daily Water Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -345,7 +344,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#HourlyOilConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#OilConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hourly Oil Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -355,7 +353,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#HourlyWaterConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#WaterConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hourly Water Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -365,7 +362,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#MonthlyOilConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#OilConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monthly Oil Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -375,7 +371,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#MonthlyWaterConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#WaterConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monthly Water Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -386,7 +381,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#OilConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#UtilitiesConsumption"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#Volume"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of oil consumed</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of oil consumed by an oil consuming facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -395,7 +390,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#UtilitiesConsumption -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#UtilitiesConsumption">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of utilities consumed</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of utilities consumed by an utilites consuming facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUbemMp.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -415,7 +410,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#WaterConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#UtilitiesConsumption"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#Volume"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of water consumed</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of water consumed by an water consuming facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -425,7 +420,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#AnnualElectricityConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ElectricityConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Annual Electricity Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -435,7 +429,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#AnnualElectricitySupply">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ElectricitySupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Annual Electricity Supply</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -445,7 +438,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#AnnualGridConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#GridConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Annual Grid Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -455,7 +447,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#AnnualHeatSupply">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HeatSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Annual Heat Supply</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -465,7 +456,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#AnnualThermalConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ThermalConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Annual Thermal Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -485,7 +475,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#DailyElectricityConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ElectricityConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daily Electricity Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -495,7 +484,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#DailyElectricitySupply">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ElectricitySupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daily Electricity Supply</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -505,7 +493,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#DailyGridConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#GridConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daily Grid Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -515,7 +502,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#DailyHeatSupply">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HeatSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daily Heat Supply</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -525,7 +511,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#DailyThermalConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ThermalConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daily Thermal Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -606,7 +591,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HeatSupply">
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Amount of heat energy produced</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of heat energy produced</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -616,7 +601,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HourlyElectricityConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ElectricityConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hourly Electricity Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -626,7 +610,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HourlyElectricitySupply">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ElectricitySupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hourly Electricity Supply</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -636,7 +619,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HourlyGridConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#GridConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hourly Grid Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -646,7 +628,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HourlyHeatSupply">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HeatSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hourly Heat Supply</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -656,7 +637,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HourlyThermalConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ThermalConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hourly Thermal Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -666,7 +646,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#MonthlyElectricityConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ElectricityConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monthly Electricity Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -676,7 +655,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#MonthlyElectricitySupply">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ElectricitySupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monthly Electricity Supply</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -686,7 +664,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#MonthlyGridConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#GridConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monthly Grid Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -696,7 +673,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#MonthlyHeatSupply">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#HeatSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monthly Heat Supply</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -706,7 +682,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#MonthlyThermalConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#ThermalConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monthly Thermal Consumption</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
