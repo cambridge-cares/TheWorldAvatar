@@ -13,7 +13,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.virtualsensor.configuration.SparqlAuthentication;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
@@ -47,8 +46,6 @@ public class SparqlGeneral {
 	
 	public static JSONArray performQuery(SelectQuery query) {
 		RemoteStoreClient kbClient = new RemoteStoreClient();
-        kbClient.setUser(SparqlAuthentication.getUser());
-        kbClient.setPassword(SparqlAuthentication.getPassword());
         kbClient.setQueryEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());
         JSONArray result = null;
@@ -58,8 +55,6 @@ public class SparqlGeneral {
 	
 	public static JSONArray performQuery(String query) {
 		RemoteStoreClient kbClient = new RemoteStoreClient();
-        kbClient.setUser(SparqlAuthentication.getUser());
-        kbClient.setPassword(SparqlAuthentication.getPassword());
         kbClient.setQueryEndpoint(endpoint);
         kbClient.setQuery(query);
         JSONArray result = null;
