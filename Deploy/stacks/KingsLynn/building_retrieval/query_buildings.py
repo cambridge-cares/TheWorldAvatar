@@ -18,10 +18,10 @@ query_endpoint = 'http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql'
 graph_prefix='http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/'
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 10
+n = None
 
 # Specify whether UPRN info shall be missing or not
-missing_uprn = True
+missing_uprn = False
 
 # Specify output coordinate reference system (CRS)
 # Our Mapbox plotting framework uses EPSG:4326 (https://epsg.io/4326)
@@ -64,7 +64,7 @@ def create_sparql_prefix(abbreviation):
     return 'PREFIX ' + abbreviation + ': ' + iri + ' '
 
 
-def get_buildings(number=None, uprns=None, graph=graph_prefix):
+def get_buildings(number=None, without_uprns=None, graph=graph_prefix):
     """
         Create SPARQL query to retrieve buildings and associated (surface) geometries
 
@@ -82,11 +82,11 @@ def get_buildings(number=None, uprns=None, graph=graph_prefix):
         limit = ''
     
     # Create subquery for UPRNs
-    if isinstance(uprns, bool):
-        if uprns:
-            subquery='?cityobj ^osid:intersectsFeature ?uprn '
-        else:
+    if isinstance(without_uprns, bool):
+        if without_uprns:
             subquery='FILTER NOT EXISTS { ?cityobj ^osid:intersectsFeature/osid:hasValue ?uprn }'
+        else:
+            subquery='?cityobj ^osid:intersectsFeature ?uprn '
     else:
         subquery=''
 
@@ -261,7 +261,7 @@ if __name__ == '__main__':
     output += geojson_formatter.end_output()
 
     # Write output to file
-    postfix = 'with_UPRNs' if missing_uprn else 'without_UPRNs'
+    postfix = 'without_UPRNs' if missing_uprn else 'with_UPRNs'
     file_name = f'outputs/Buildings_{postfix}.geojson'
     with open(file_name, 'w') as f:
         f.write(output)
