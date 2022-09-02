@@ -166,8 +166,6 @@ class PanelHandler {
 		if(sidePanel.classList.contains("large")) {
 			document.getElementById("controlsParent").style.visibility = "hidden";
 		}
-
-		
 	}
 
 	/**
