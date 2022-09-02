@@ -99,12 +99,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumeUtilities -->
+    <!-- http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumesUtilities -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumeUtilities">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#UtilitiesConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an utilities consuming facility and utilities</rdfs:comment>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumesUtilities">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a facility and its consumed utilities</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -381,7 +379,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#OilConsumption">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#UtilitiesConsumption"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#Volume"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of oil consumed by an oil consuming facility</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of oil consumed by a facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -390,7 +388,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#UtilitiesConsumption -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoderivation/OntoDerivation.owl#UtilitiesConsumption">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of utilities consumed by an utilites consuming facility</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of utilities consumed by a facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoubemmp/OntoUbemMp.owl</rdfs:isDefinedBy>
     </owl:Class>
     
