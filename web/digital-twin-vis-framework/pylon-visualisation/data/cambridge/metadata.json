@@ -1,0 +1,63 @@
+{
+    "uid": "629f62de41253d134572114c",
+    "index": 0,
+    "guid": "b46a3583-a932-4a60-b2ef-d5c6c3f6e4a0",
+    "isActive": false,
+    "balance": "$1,264.89",
+    "picture": "http://placehold.it/32x32",
+    "age": 30,
+    "eyeColor": "brown",
+    "name": "Burnett Fletcher",
+    "gender": "male",
+    "company": "LIQUIDOC",
+    "email": "burnettfletcher@liquidoc.com",
+    "phone": "+1 (880) 528-2894",
+    "address": "770 McKibben Street, Wanship, Indiana, 1281",
+    "about": "",
+    "registered": "2016-07-06T03:07:31 -01:00",
+    "latitude": -63.102628,
+    "longitude": 16.236457,
+    "tags": [
+      "voluptate",
+      "nulla",
+      "deserunt",
+      "elit",
+      "amet",
+      "officia",
+      "deserunt"
+    ],
+    "friends": [
+      {
+        "id": 0,
+        "name": "Thelma Long"
+      },
+      {
+        "id": 1,
+        "name": "Kirsten Barrett"
+      },
+      {
+        "id": 2,
+        "name": "Velazquez Tanner"
+      }
+    ],
+    "greeting": "Hello, Burnett Fletcher! You have 8 unread messages. Hello, Burnett Fletcher! You have 8 unread messages.",
+    "favoriteFruit": "banana",
+    "Auid": "629f62de41253d134572114c",
+    "Aindex": 0,
+    "Aguid": "b46a3583-a932-4a60-b2ef-d5c6c3f6e4a0",
+    "AisActive": false,
+    "Abalance": "$1,264.89",
+    "Apicture": "http://placehold.it/32x32",
+    "Aage": 30,
+    "AeyeColor": "brown",
+    "Aname": "Burnett Fletcher",
+    "Agender": "male",
+    "Acompany": "LIQUIDOC",
+    "Aemail": "burnettfletcher@liquidoc.com",
+    "Aphone": "+1 (880) 528-2894",
+    "Aaddress": "770 McKibben Street, Wanship, Indiana, 1281",
+    "Aabout": "",
+    "Aregistered": "2016-07-06T03:07:31 -01:00",
+    "Alatitude": -63.102628,
+    "Alongitude": 16.236457
+  }

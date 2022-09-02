@@ -32,7 +32,3 @@ get_executables
 
 # Read in the stack name as the first argument
 export STACK_NAME="$1"
-
-if (( $# >= 1 )); then
-    shift
-fi

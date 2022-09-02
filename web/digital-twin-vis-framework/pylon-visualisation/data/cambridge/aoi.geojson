@@ -1,0 +1,19 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+            "name": "Area of Interest: Cambridge",
+            "desc": "Zoom in to view sample data."
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.12174010276794434,
+            52.205308771956
+          ]
+        }
+      }
+    ]
+  }

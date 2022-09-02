@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+          "name": "Area of Interest: UKPN",
+          "desc": "Zoom in to view sample data."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.3,
+          51.7
+        ]
+      }
+    }
+  ]
+}

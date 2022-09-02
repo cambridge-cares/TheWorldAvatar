@@ -28,7 +28,7 @@
         {
             "type": "shell",
             "label": "compose-build-deploy",
-            "command": "sleep 1",
+            "command": "sleep 5",
             "dependsOn": [
                 "compose-build",
                 "compose-deploy-internal"
@@ -45,7 +45,7 @@
         {
             "type": "shell",
             "label": "compose-deploy",
-            "command": "sleep 1",
+            "command": "sleep 5",
             "dependsOn": [
                 "compose-deploy-internal"
             ],
