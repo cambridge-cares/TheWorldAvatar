@@ -10,7 +10,7 @@
         <sld:Rule>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
-              <ogc:PropertyName>category</ogc:PropertyName>
+              <ogc:PropertyName>CATEGORY</ogc:PropertyName>
               <ogc:Literal>Woodland</ogc:Literal>
             </ogc:PropertyIsEqualTo>
           </ogc:Filter>
@@ -25,7 +25,7 @@
         <sld:Rule>
           <ogc:Filter>
             <ogc:PropertyIsEqualTo>
-              <ogc:PropertyName>category</ogc:PropertyName>
+              <ogc:PropertyName>CATEGORY</ogc:PropertyName>
               <ogc:Literal>Non woodland</ogc:Literal>
             </ogc:PropertyIsEqualTo>
           </ogc:Filter>
