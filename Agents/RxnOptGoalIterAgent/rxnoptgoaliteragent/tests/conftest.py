@@ -1,4 +1,5 @@
 from testcontainers.core.container import DockerContainer
+from random import randint
 from pathlib import Path
 from rdflib import Graph
 from flask import Flask
@@ -16,6 +17,8 @@ from pyderivationagent.conf import config_derivation_agent
 from rxnoptgoaliteragent.kg_operations import RxnOptGoalIterSparqlClient
 from rxnoptgoaliteragent.agent import RxnOptGoalIterAgent
 from rxnoptgoaliteragent.data_model import *
+
+from chemistry_and_robots.tests.conftest import TargetIRIs
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 
@@ -37,12 +40,17 @@ DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
+FS_SERVICE = "fileserver"
+FS_ROUTE = "FileServer/"
 
 # Configuration env files
 # NOTE the triple store URL provided in the agent.*.env files are the URL to access blazegraph container WITHIN the docker stack
 ROGI_AGENT_ENV = os.path.join(THIS_DIR,'agent.goal.iter.env.test')
 
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(ROGI_AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
+
+# NOTE we use a new rxn exp instance as the basis for create_dummy_triples_for_performance_indicator
+PLACEHOLDER_NEW_EXPERIMENT_IRI = TargetIRIs.NEW_RXN_EXP_1_IRI.value
 
 
 # ----------------------------------------------------------------------------------
@@ -117,10 +125,15 @@ def initialise_clients(get_service_url, get_service_auth):
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
     sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
 
+    # Retrieve endpoint and auth for file server
+    fs_url = get_service_url(FS_SERVICE, url_route=FS_ROUTE)
+    fs_user, fs_pwd = get_service_auth(FS_SERVICE)
+
     # Create SparqlClient for testing
     sparql_client = RxnOptGoalIterSparqlClient(
         sparql_endpoint, sparql_endpoint,
-        kg_user=sparql_user, kg_password=sparql_pwd
+        kg_user=sparql_user, kg_password=sparql_pwd,
+        fs_url=fs_url, fs_user=fs_user, fs_pwd=fs_pwd
     )
 
     # Clear triple store before any usage
@@ -194,11 +207,6 @@ def initialise_test_triples(initialise_triple_store):
         # Clear triple store before any usage
         sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
-        # TODO delete this bit
-        # # Upload all relevant example triples provided in the test_triples folder
-        # pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl') # goal_iter.ttl and plan_step_agent.ttl
-        # for path in pathlist:
-        #     sparql_client.uploadOntology(str(path))
         # Create DerivationClient for creating derivation instances
         derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
             sparql_client.kg_client,
@@ -207,7 +215,7 @@ def initialise_test_triples(initialise_triple_store):
 
         initialise_triples(sparql_client, derivation_client)
 
-        yield sparql_client #, derivation_client # TODO delete this bit
+        yield sparql_client, derivation_client
 
         # Clear logger at the end of the test
         clear_loggers()
@@ -297,7 +305,7 @@ def initialise_triples(sparql_client, derivation_client):
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
 	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
-    for f in ['sample_data/rxn_data.ttl', 'sample_data/dummy_lab.ttl']:
+    for f in ['sample_data/rxn_data.ttl', 'sample_data/new_exp_data.ttl', 'sample_data/dummy_lab.ttl']:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
         sparql_client.uploadGraph(g)
@@ -318,3 +326,54 @@ def get_timestamp(derivation_iri: str, sparql_client):
         derivation_iri, TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION)
     # the queried results must be converted to int, otherwise it will not be comparable
     return int(sparql_client.performQuery(query_timestamp)[0]['time'])
+
+def get_postpro_derivation(goal_set_iri: str, sparql_client):
+    query = f"""SELECT DISTINCT ?postpro_derivation
+                WHERE {{
+                    <{trimIRI(goal_set_iri)}> <{ONTOGOAL_HASGOAL}>/<{ONTOGOAL_HASPLAN}>/<{ONTOGOAL_HASSTEP}> ?step.
+                    ?step a <{ONTOGOAL_POSTPROCESSING}>; <{ONTOGOAL_CANBEPERFORMEDBY}> ?agent.
+                    ?postpro_derivation <{ONTODERIVATION_ISDERIVEDUSING}> ?agent.
+                }}"""
+    response = sparql_client.performQuery(query)
+    if len(response) == 0:
+        return None
+    elif len(response) > 1:
+        raise Exception(f'More than one postpro derivation found for unit test: {response}')
+    else:
+        return response[0]['postpro_derivation']
+
+def create_dummy_triples_for_performance_indicator(goal_set_instance: GoalSet, postpro_derivation_iri: str, sparql_client):
+    g = Graph()
+    # create placeholder performance indicator instance as output for postpro derivation
+    for goal in goal_set_instance.hasGoal:
+        perf_ind = PerformanceIndicator(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            clz=goal.desires().clz,
+            namespace_for_init=getNameSpace(goal_set_instance.instance_iri),
+            rxn_exp_iri=PLACEHOLDER_NEW_EXPERIMENT_IRI,
+            objPropWithExp=[ONTOREACTION_HASPERFORMANCEINDICATOR],
+            hasValue=OM_Measure(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(goal_set_instance.instance_iri),
+                hasUnit=f"http://{str(uuid.uuid4())}",
+                hasNumericalValue=randint(1, 100)
+            ),
+            yieldLimitingSpecies=None
+        )
+        g = perf_ind.create_instance_for_kg(g)
+        g.add((URIRef(perf_ind.instance_iri), URIRef(ONTODERIVATION_BELONGSTO), URIRef(postpro_derivation_iri)))
+    sparql_client.uploadGraph(g)
+    return g
+
+def get_result_from_rogi_derivation(rogi_derivation_iri: str, sparql_client) -> List[Result]:
+    rogi_derivation_iri = trimIRI(rogi_derivation_iri)
+    query = f"""SELECT DISTINCT ?result ?quantity
+                WHERE {{
+                    ?result <{ONTODERIVATION_BELONGSTO}> <{rogi_derivation_iri}>; a <{ONTOGOAL_RESULT}>; <{ONTOGOAL_REFERSTO}> ?quantity.
+                }}"""
+    response = sparql_client.performQuery(query)
+    if len(response) == 0:
+        print(f'No result found for RxnOptGoalIter derivation <{rogi_derivation_iri}> yet')
+        return None
+    else:
+        return [Result(instance_iri=res['result'], refersTo=res['quantity']) for res in response]

@@ -63,7 +63,7 @@ class GoalSet(dm.BaseOntology):
 
     def get_goal_given_desired_quantity(self, desired_quantity: str) -> Optional[Goal]:
         for goal in self.hasGoal:
-            if goal.desires.instance_iri == desired_quantity:
+            if goal.desires().instance_iri == desired_quantity:
                 return goal
         return None
 

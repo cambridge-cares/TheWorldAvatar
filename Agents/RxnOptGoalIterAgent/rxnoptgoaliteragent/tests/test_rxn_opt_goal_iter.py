@@ -1,23 +1,27 @@
+from rdflib import URIRef
+from rdflib import Literal
 import pytest
 import time
 
+import chemistry_and_robots.kg_operations.dict_and_list as dal
 import rxnoptgoaliteragent.tests.conftest as cf
 
-
+import logging
+logging.getLogger("chemistry_and_robots_sparql_client").setLevel(logging.INFO)
 # ----------------------------------------------------------------------------------
 # Test cases for RxnOptGoalIterAgent
 # ----------------------------------------------------------------------------------
 
 @pytest.mark.parametrize(
-    "goal_set_iri,derivation_inputs,local_agent_test",
+    "goal_set_iri,lst_existing_result_quantity,derivation_inputs,local_agent_test",
     [
-        (cf.IRIs.GOALSET_1.value, cf.IRIs.DERIVATION_INPUTS.value, True), # local agent instance test
-        (cf.IRIs.GOALSET_1.value, cf.IRIs.DERIVATION_INPUTS.value, False), # deployed docker agent test
+        (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS.value, True), # local agent instance test
+        # (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS.value, False), # deployed docker agent test
     ],
 )
-def _test_(
+def test_rogi_agent(
     initialise_clients, create_rogi_agent,
-    derivation_inputs, local_agent_test
+    goal_set_iri, lst_existing_result_quantity, derivation_inputs, local_agent_test
 ):
     sparql_client, derivation_client = initialise_clients
 
@@ -25,45 +29,51 @@ def _test_(
     cf.initialise_triples(sparql_client, derivation_client)
 
     # Create agent instance, register agent in KG
-    doe_agent = create_rogi_agent(register_agent=True, random_agent_iri=local_agent_test)
+    rogi_agent = create_rogi_agent(register_agent=True, random_agent_iri=local_agent_test)
 
     # Start the scheduler to monitor derivations if it's local agent test
     if local_agent_test:
-        doe_agent._start_monitoring_derivations()
-# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    # # Assert that there's currently no new experiment associated with the DoE instance
-    # old_doe_instance = sparql_client.get_doe_instance(doe_iri)
-    # assert old_doe_instance.proposesNewExperiment is None
+        rogi_agent._start_monitoring_derivations()
 
-    # # Create derivation instance for new information, the timestamp of this derivation is 0
-    # derivation_iri = derivation_client.createAsyncDerivationForNewInfo(doe_agent.agentIRI, derivation_inputs)
-    # print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
+    # Get the goal set instance
+    goal_set_instance = sparql_client.get_goal_set_instance(goal_set_iri)
 
-    # # Query timestamp of the derivation for every 20 seconds until it's updated
-    # currentTimestamp_derivation = 0
-    # while currentTimestamp_derivation == 0:
-    #     time.sleep(20)
-    #     currentTimestamp_derivation = utils.get_timestamp(derivation_iri, sparql_client)
+    # Create derivation instance for new information, the timestamp of this derivation is 0
+    derivation_iri = derivation_client.createAsyncDerivationForNewInfo(rogi_agent.agentIRI, derivation_inputs)
+    print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
 
-    # # Query the iri of the new proposed NewExperiment
-    # new_doe_instance = sparql_client.get_doe_instance(doe_iri)
-    # assert new_doe_instance.proposesNewExperiment is not None
-    # new_exp_instance = new_doe_instance.proposesNewExperiment
-    # new_exp_iri = new_exp_instance.instance_iri
-    # print(f"New experiment suggested successfully, suggested experiment instance: {new_exp_iri}")
+    # Wait until the postpro derivation is created
+    postpro_derivation_iri = None
+    while not postpro_derivation_iri:
+        time.sleep(10)
+        postpro_derivation_iri = cf.get_postpro_derivation(goal_set_iri, sparql_client)
 
-    # # Check if all the suggested conditions are within the DoE range
-    # for design_variable in new_doe_instance.hasDomain.hasDesignVariable:
-    #     if isinstance(design_variable, utils.cf.ContinuousVariable):
-    #         rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersTo, design_variable.positionalID)
-    #         assert rxn_cond.hasValue.hasNumericalValue <= design_variable.upperLimit
-    #         assert design_variable.lowerLimit <= rxn_cond.hasValue.hasNumericalValue
-    #     else:
-    #         # TODO add checks for CategoricalVariable
-    #         pass
-    # print("All check passed.")
+    # Create dummy triples that mimic the output of the postpro derivation
+    # This function also uploads dummy triples to KG, later these will be picked up by ROGI agent
+    g = cf.create_dummy_triples_for_performance_indicator(goal_set_instance, postpro_derivation_iri, sparql_client)
 
-    # # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)
-    # if local_agent_test:
-    #     doe_agent.scheduler.shutdown()
+    # Query timestamp of the derivation for every 20 seconds until it's updated
+    currentTimestamp_derivation = 0
+    while currentTimestamp_derivation == 0:
+        time.sleep(20)
+        currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
 
+    # Query the output triples about OntoGoal:Result of the derivation
+    lst_new_result = cf.get_result_from_rogi_derivation(derivation_iri)
+    lst_new_result_quantity = [r.refersTo for r in lst_new_result]
+    # Query the new goal set instance, the each new result should be connected to corresponding goal
+    new_goal_set_instance = sparql_client.get_goal_set_instance(goal_set_iri)
+    # new_goal_set_instance = cf.GoalSet()
+    lst_new_goal_result_quantity = [res.instance_iri for goal in new_goal_set_instance.hasGoal for res in goal.hasResult if res.instance_iri not in lst_existing_result_quantity]
+    assert len(lst_new_result_quantity) == len(lst_new_goal_result_quantity)
+    assert dal.check_if_two_lists_equal(lst_new_result_quantity, lst_new_goal_result_quantity)
+    for goal in new_goal_set_instance.hasGoal:
+        for result in goal.hasResult:
+            if result.instance_iri not in lst_existing_result_quantity:
+                assert (URIRef(result.instance_iri), URIRef(cf.OM_HASVALUE), URIRef(result.hasValue.instance_iri)) in g
+                assert (URIRef(result.hasValue.instance_iri), URIRef(cf.OM_HASUNIT), URIRef(result.hasValue.hasUnit)) in g
+                assert (URIRef(result.hasValue.instance_iri), URIRef(cf.OM_HASNUMERICALVALUE), Literal(result.hasValue.hasNumericalValue)) in g
+
+    # Shutdown the scheduler to clean up if it's local agent test (as the rogi_agent scheduler must have started)
+    if local_agent_test:
+        rogi_agent.scheduler.shutdown()

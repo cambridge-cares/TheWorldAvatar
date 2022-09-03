@@ -1,14 +1,18 @@
+from rdflib import URIRef
+from rdflib import Graph
 import pytest
-import time
+import uuid
 
 import rxnoptgoaliteragent.tests.conftest as cf
+
+import chemistry_and_robots.tests.conftest as car_cf
 
 # ----------------------------------------------------------------------------------
 # Test cases for sparql_client
 # ----------------------------------------------------------------------------------
 
 def test_get_goal_set_instance(initialise_test_triples):
-    sparql_client = initialise_test_triples
+    sparql_client, derivation_client = initialise_test_triples
     goal_set = sparql_client.get_goal_set_instance(cf.IRIs.GOALSET_1.value)
     assert goal_set.instance_iri == cf.IRIs.GOALSET_1.value
 
@@ -96,3 +100,42 @@ def test_get_goal_set_instance(initialise_test_triples):
     assert goal_1.hasResult[0].hasValue.hasUnit == cf.IRIs.RESULT_QUANTITY_MEASURE_1_UNIT.value
     assert goal_1.hasResult[0].hasValue.hasNumericalValue == cf.IRIs.RESULT_QUANTITY_MEASURE_1_NUMVAL.value
     assert goal_2.hasResult is None
+
+@pytest.mark.parametrize(
+    "list_perf_ind_iri,rxn_exp_iri",
+    [
+        (car_cf.TargetIRIs.EXAMPLE_RXN_EXP_1_PERFORMANCE_INDICATOR_IRI_LIST.value, car_cf.TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value),
+        (car_cf.TargetIRIs.EXAMPLE_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST.value, car_cf.TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value),
+    ],
+)
+def test_detect_postpro_derivation_result(initialise_test_triples, list_perf_ind_iri, rxn_exp_iri):
+    sparql_client, derivation_client = initialise_test_triples
+    agent_iri = f'http://{str(uuid.uuid4())}'
+    inputs_iri = [f'http://{str(uuid.uuid4())}', f'http://{str(uuid.uuid4())}']
+    postpro_derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agent_iri, inputs_iri)
+    interested_performance_indicators = [cf.ONTOREACTION_YIELD, cf.ONTOREACTION_RUNMATERIALCOST]
+
+    # test 1 - no result
+    # no result should be returned as the postpro derivation is created for new info
+    new_rxn_exp = sparql_client.detect_postpro_derivation_result(postpro_derivation_iri, interested_performance_indicators)
+    assert new_rxn_exp is None
+
+    # test 2 - result
+    # connect the postpro derivation to the existing rxn exp
+    # in theory the agent should compute new performance indicator, but for unit test we just use the existing ones
+    g = Graph()
+    for perf_ind_iri in list_perf_ind_iri:
+        g.add((URIRef(perf_ind_iri), URIRef(cf.ONTODERIVATION_BELONGSTO), URIRef(postpro_derivation_iri)))
+    sparql_client.uploadGraph(g)
+    # query again
+    new_rxn_exp = sparql_client.detect_postpro_derivation_result(postpro_derivation_iri, interested_performance_indicators)
+    # check if the queried reaction experiment is correct
+    assert new_rxn_exp.instance_iri == rxn_exp_iri
+
+@pytest.mark.skip(reason="TODO - redesign the way to handle DoE boundaries")
+def test_generate_doe_instance_from_goal(initialise_test_triples):
+    sparql_client, derivation_client = initialise_test_triples
+    # def generate_doe_instance_from_goal(
+    #     self, goal_set: GoalSet, rxn_exp_as_beliefs: List[ReactionExperiment]
+    # ) -> DesignOfExperiment:
+    pass

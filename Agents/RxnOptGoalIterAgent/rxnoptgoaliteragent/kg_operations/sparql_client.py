@@ -169,16 +169,18 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
         # process design variables
         list_design_variables = []
         # NOTE here we take the reaction confition from the first reaction experiment as design variables
+        # TODO [must] how to decide which one to optimise?
         for rxn_cond in rxn_exp_as_beliefs[0].hasReactionCondition:
             design_var = ContinuousVariable(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
-                # TODO: think about how to pass upper and lower limits information to this agent
-                # upperLimit=,
-                # lowerLimit=,
+                # TODO: [must] think about how to pass upper and lower limits information to this agent
+                upperLimit=10, # TODO [must] get this from KG
+                lowerLimit=1, # TODO [must] get this from KG
                 positionalID=rxn_cond.positionalID,
                 refersTo=rxn_cond.clz,
             )
+            list_design_variables.append(design_var)
 
         # process system responses
         list_system_responses = []
@@ -193,11 +195,12 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             )
             list_system_responses.append(sys_res)
 
+        logger.info(f"Reaction experiments as beliefs:{[rxn.instance_iri for rxn in rxn_exp_as_beliefs]}")
         # construct design of experiment instance
         doe_instance = DesignOfExperiment(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=getNameSpace(goal_set.instance_iri),
-            # TODO add support for Strategy defined by user
+            # TODO [nice-to-have] add support for Strategy defined by user
             # NOTE at the moment, we use TSEMO and its default parameters
             usesStrategy=TSEMO(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
@@ -209,8 +212,12 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 hasDesignVariable=list_design_variables,
             ),
             hasSystemResponse=list_system_responses,
-            # NOTE in utilisesHistoricalData, the default value 1 is used for numOfNewExp
-            utilisesHistoricalData=rxn_exp_as_beliefs,
+            utilisesHistoricalData=HistoricalData(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(goal_set.instance_iri),
+                refersTo=rxn_exp_as_beliefs,
+                # NOTE in utilisesHistoricalData, the default value 1 is used for numOfNewExp
+            ),
         )
 
         return doe_instance
@@ -221,7 +228,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
         postpro_derivation_iri = trimIRI(postpro_derivation_iri)
         interested_performance_indicators = trimIRI(interested_performance_indicators)
         query = f"""
-            SELECT ?rxn_exp
+            SELECT DISTINCT ?rxn_exp
             WHERE {{
                 VALUES ?performance_indicator_type {{ <{'> <'.join(interested_performance_indicators)}> }}
                 ?performance_indicator <{ONTODERIVATION_BELONGSTO}> <{postpro_derivation_iri}>; a ?performance_indicator_type.
@@ -229,11 +236,14 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 ?rxn_exp ?has_performance_indicator ?performance_indicator; a ?rxn_rdfType.
             }}"""
         response = self.performQuery(query)
-        if len(response) != 1:
+        if len(response) == 0:
+            logger.info(f'No reaction experiment found for postpro derivation <{postpro_derivation_iri}> yet')
+            return None
+        if len(response) > 1:
             raise Exception(f"""Exactly one OntoReaction:ReactionExperiment or OntoReaction:ReactionVariation 
-            is expected to be connected to {postpro_derivation_iri}, but found: {response}""")
+            is expected to be connected to <{postpro_derivation_iri}>, but found: {response}""")
         rxn_exp_instance = self.getReactionExperiment(response[0]['rxn_exp'])
         if len(rxn_exp_instance) != 1:
             raise Exception(f"""Exactly one OntoReaction:ReactionExperiment or OntoReaction:ReactionVariation 
-            is expected to be identified by {response[0]['rxn_exp']}, but found: {rxn_exp_instance}""")
+            is expected to be identified by <{response[0]['rxn_exp']}>, but found: {rxn_exp_instance}""")
         return rxn_exp_instance[0]

@@ -50,36 +50,42 @@ class RxnOptGoalIterAgent(DerivationAgent):
         self.derivationClient.updateTimestamp(doe_instance.instance_iri)
 
         # Get plan and steps
-        # TODO: implement a more generic way of processing plan and step, here we took a shortcut that only works for all goals have the same plan and step
+        # TODO: [next iteration] implement a more generic way of processing plan and step, here we took a shortcut that only works for all goals have the same plan and step
         plan = goal_set_instance.hasGoal[0].hasPlan[0]
         doe_step = plan.get_step(ONTOGOAL_DESIGNOFEXPERIMENT)
         exe_step = plan.get_step(ONTOGOAL_RXNEXPEXECUTION)
         postpro_step = plan.get_step(ONTOGOAL_POSTPROCESSING)
 
         # Create derivation instance for new information, the timestamp of this derivation is 0
-        doe_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(doe_step.canBePerformedBy, doe_instance.instance_iri)
+        # TODO: [next iteration] implement a more generic way of deciding the agent to perform the derivation, here we took a shortcut to use the first agent (Step.canBePerformedBy[0])
+        doe_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(doe_step.canBePerformedBy[0], [doe_instance.instance_iri])
         self.logger.info(f"Initialised successfully, created asynchronous doe derivation instance: {doe_derivation_iri}")
-        exe_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(exe_step.canBePerformedBy, [doe_derivation_iri])
+        exe_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(exe_step.canBePerformedBy[0], [doe_derivation_iri])
         self.logger.info(f"Initialised successfully, created asynchronous exe derivation instance: {exe_derivation_iri}")
-        postpro_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(postpro_step.canBePerformedBy, [exe_derivation_iri])
+        postpro_derivation_iri = self.derivationClient.createAsyncDerivationForNewInfo(postpro_step.canBePerformedBy[0], [exe_derivation_iri])
         self.logger.info(f"Initialised successfully, created asynchronous postproc derivation instance: {postpro_derivation_iri}")
 
 
         # IV. Create derivation outputs after experiment is finished
         # Monitor the status of the postpro_derivation_iri, until it produced outputs
-        new_rxn_exp = self.sparql_client.detect_postpro_derivation_result(postpro_derivation_iri)
+        interested_performance_indicators = [goal.desires().clz for goal in goal_set_instance.hasGoal]
+        new_rxn_exp = self.sparql_client.detect_postpro_derivation_result(postpro_derivation_iri, interested_performance_indicators)
         while not new_rxn_exp:
-            time.sleep(60)
-            new_rxn_exp = self.sparql_client.detect_postpro_derivation_result(postpro_derivation_iri)
+            time.sleep(30)
+            try:
+                new_rxn_exp = self.sparql_client.detect_postpro_derivation_result(postpro_derivation_iri, interested_performance_indicators)
+            except Exception as e:
+                self.logger.error(f"Error in detecting postpro derivation result: {e}")
+                new_rxn_exp = None
 
         # Add the Result instances to the derivation_outputs
-        list_desires = [goal.desires().instance_iri for goal in goal_set_instance.hasGoal]
+        dct_desires_iri_clz = {goal.desires().instance_iri:goal.desires().clz for goal in goal_set_instance.hasGoal}
         list_results = []
-        for desire in list_desires:
+        for desire_iri in dct_desires_iri_clz:
             result_iri = initialiseInstanceIRI(getNameSpace(goal_set_iri), ONTOGOAL_RESULT)
             derivation_outputs.createNewEntity(result_iri, ONTOGOAL_RESULT)
-            _goal = goal_set_instance.get_goal_given_desired_quantity(desire).instance_iri
-            _quantity = new_rxn_exp.get_performance_indicator(desire, None).instance_iri
+            _goal = goal_set_instance.get_goal_given_desired_quantity(desire_iri).instance_iri
+            _quantity = new_rxn_exp.get_performance_indicator(dct_desires_iri_clz[desire_iri], None).instance_iri
             derivation_outputs.addTriple(_goal, ONTOGOAL_HASRESULT, _quantity)
             derivation_outputs.addTriple(result_iri, ONTOGOAL_REFERSTO, _quantity)
             list_results.append(result_iri)
