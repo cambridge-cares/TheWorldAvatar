@@ -1,5 +1,7 @@
 from hplcpostproagent.hypo_rxn.hypo_rxn import *
 
+import chemistry_and_robots.kg_operations.unit_conversion as unit_conv
+
 TIME_TEMPERATURE_ECO_SCORE_FACTOR = 0.002
 AMBIENT_TEMPERATURE_DEGREECELSIUS = 25
 ECO_SCORE_BASE_VALUE = 100
@@ -44,12 +46,12 @@ def calculate_yield(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReac
     yield_limiting_species = retrieve_yield_limiting_species(hypo_reactor)
     target_product_species = retrieve_product_species(hypo_end_stream)
 
-    yield_limiting_conc = utils.unit_conversion_return_value_dq(yield_limiting_species.run_conc, utils.UNIFIED_CONCENTRATION_UNIT)
-    prod_run_conc = utils.unit_conversion_return_value_dq(target_product_species.run_conc, utils.UNIFIED_CONCENTRATION_UNIT)
+    yield_limiting_conc = unit_conv.unit_conversion_return_value_dq(yield_limiting_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
+    prod_run_conc = unit_conv.unit_conversion_return_value_dq(target_product_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
 
     _yield = round(prod_run_conc / yield_limiting_conc, 4) # Round the decimal place
 
-    pi_yield = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _yield, OM_ONE)
+    pi_yield = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _yield, unit_conv.UNIFIED_YIELD_UNIT)
     pi_yield.yieldLimitingSpecies = yield_limiting_species.species_iri # Also set the yieldLimitingSpecies
 
     return pi_yield
@@ -60,12 +62,12 @@ def calculate_conversion(rxn_exp_instance: ReactionExperiment, hypo_reactor: Hyp
     yield_limiting_species = retrieve_yield_limiting_species(hypo_reactor)
     _species_in_end_stream = [species for species in hypo_end_stream.component if species.species_iri == yield_limiting_species.species_iri][0]
 
-    yield_limiting_conc = utils.unit_conversion_return_value_dq(yield_limiting_species.run_conc, utils.UNIFIED_CONCENTRATION_UNIT)
-    unreacted_conc = utils.unit_conversion_return_value_dq(_species_in_end_stream.run_conc, utils.UNIFIED_CONCENTRATION_UNIT)
+    yield_limiting_conc = unit_conv.unit_conversion_return_value_dq(yield_limiting_species.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
+    unreacted_conc = unit_conv.unit_conversion_return_value_dq(_species_in_end_stream.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
 
     _conversion = round(1 - unreacted_conc / yield_limiting_conc, 4) # Round the decimal place
 
-    pi_conversion = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _conversion, OM_ONE)
+    pi_conversion = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _conversion, unit_conv.UNIFIED_CONVERSION_UNIT)
     pi_conversion.yieldLimitingSpecies = yield_limiting_species.species_iri # Also set the yieldLimitingSpecies
 
     return pi_conversion
@@ -74,26 +76,26 @@ def calculate_space_time_yield(rxn_exp_instance: ReactionExperiment, hypo_reacto
     """This method calculates the reaction space time yield, which commonly has (kg per litre per minute) as its unit."""
     target_product_species = retrieve_product_species(hypo_end_stream)
 
-    prod_run_mass = utils.unit_conversion_return_value_dq(target_product_species._run_mass, utils.UNIFIED_MASS_UNIT)
-    residence_time = utils.unit_conversion_return_value_dq(hypo_reactor.residence_time, utils.UNIFIED_TIME_UNIT)
-    reactor_volume = utils.unit_conversion_return_value_dq(hypo_reactor.reactor_volume, utils.UNIFIED_VOLUME_UNIT)
+    prod_run_mass = unit_conv.unit_conversion_return_value_dq(target_product_species._run_mass, unit_conv.UNIFIED_MASS_UNIT)
+    residence_time = unit_conv.unit_conversion_return_value_dq(hypo_reactor.residence_time, unit_conv.UNIFIED_TIME_UNIT)
+    reactor_volume = unit_conv.unit_conversion_return_value_dq(hypo_reactor.reactor_volume, unit_conv.UNIFIED_VOLUME_UNIT)
 
     _sty = round(prod_run_mass / residence_time / reactor_volume, 2) # Round the decimal place
 
-    pi_sty = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _sty, utils.UNIFIED_SPACETIMEYIELD_UNIT)
+    pi_sty = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _sty, unit_conv.UNIFIED_SPACETIMEYIELD_UNIT)
 
     return pi_sty
 
 def calculate_eco_score(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
     """This method calculates the reaction eco score."""
-    residence_time = utils.unit_conversion_return_value_dq(hypo_reactor.residence_time, utils.UNIFIED_TIME_UNIT)
-    reactor_temperature = utils.unit_conversion_return_value_dq(hypo_reactor.reactor_temperature, OM_DEGREECELSIUS)
+    residence_time = unit_conv.unit_conversion_return_value_dq(hypo_reactor.residence_time, unit_conv.UNIFIED_TIME_UNIT)
+    reactor_temperature = unit_conv.unit_conversion_return_value_dq(hypo_reactor.reactor_temperature, OM_DEGREECELSIUS)
     time_temperature_eco_score = TIME_TEMPERATURE_ECO_SCORE_FACTOR * residence_time * (
         (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) * (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) / abs(reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS))
     total_run_eco_score = retrieve_total_run_eco_score(hypo_reactor)
     _eco_score = round(ECO_SCORE_BASE_VALUE - time_temperature_eco_score - total_run_eco_score, 2) # Round the decimal place
 
-    pi_eco_score = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _eco_score, utils.UNIFIED_ECOSCORE_UNIT)
+    pi_eco_score = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _eco_score, unit_conv.UNIFIED_ECOSCORE_UNIT)
 
     return pi_eco_score
 
@@ -104,12 +106,12 @@ def calculate_enviromental_factor(rxn_exp_instance: ReactionExperiment, hypo_rea
     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
     reactant_and_solvent = all_reactant + all_solvent
 
-    total_reac_n_solvent_run_mass = sum([utils.unit_conversion_return_value_dq(s._run_mass, utils.UNIFIED_MASS_UNIT) for s in reactant_and_solvent])
-    prod_run_mass = utils.unit_conversion_return_value_dq(target_product_species._run_mass, utils.UNIFIED_MASS_UNIT)
+    total_reac_n_solvent_run_mass = sum([unit_conv.unit_conversion_return_value_dq(s._run_mass, unit_conv.UNIFIED_MASS_UNIT) for s in reactant_and_solvent])
+    prod_run_mass = unit_conv.unit_conversion_return_value_dq(target_product_species._run_mass, unit_conv.UNIFIED_MASS_UNIT)
 
     _e_factor = round(prod_run_mass / (total_reac_n_solvent_run_mass - prod_run_mass), 2) # Round the decimal place
 
-    pi_e_factor = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _e_factor, utils.UNIFIED_ENVIRONMENTFACTOR_UNIT)
+    pi_e_factor = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _e_factor, unit_conv.UNIFIED_ENVIRONMENTFACTOR_UNIT)
 
     return pi_e_factor
 
@@ -122,7 +124,7 @@ def calculate_run_material_cost(rxn_exp_instance: ReactionExperiment, hypo_react
     # NOTE therefore the unit conversion is omitted
     _run_material_cost = round(sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_and_solvent]), 2) # Round the decimal place
 
-    pi_run_material_cost = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _run_material_cost, utils.UNIFIED_RUN_MATERIAL_COST_UNIT)
+    pi_run_material_cost = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _run_material_cost, unit_conv.UNIFIED_RUN_MATERIAL_COST_UNIT)
 
     return pi_run_material_cost
 
@@ -182,7 +184,7 @@ def retrieve_yield_limiting_species(hypo_reactor: HypoReactor) -> HypoStreamSpec
     all_inlet_stream = hypo_reactor.inlet_run_stream
     all_reactant_species = {r.species_iri:r for reac in all_inlet_stream for r in reac.solute if r._is_reactant}
     all_reactant_conc = {all_reactant_species[s].species_iri:all_reactant_species[s].run_conc for s in all_reactant_species}
-    yield_limiting_conc = min([utils.unit_conversion_return_value_dq(all_reactant_conc[dq], utils.UNIFIED_CONCENTRATION_UNIT) for dq in all_reactant_conc])
+    yield_limiting_conc = min([unit_conv.unit_conversion_return_value_dq(all_reactant_conc[dq], unit_conv.UNIFIED_CONCENTRATION_UNIT) for dq in all_reactant_conc])
     yield_limiting_species_lst = [species for species in all_reactant_conc if all_reactant_conc[species].hasNumericalValue == yield_limiting_conc]
     if len(yield_limiting_species_lst) > 1:
         raise NotImplementedError("Processing multiple yield limiting species in the reactor input streams is NOT yet supported, the HypoReactor: %s" % (
@@ -208,5 +210,5 @@ def retrieve_total_run_eco_score(hypo_reactor: HypoReactor):
     all_solute = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute]
     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
     all_species = all_solute + all_solvent
-    total_run_eco_score = sum([utils.unit_conversion_return_value_dq(s.def_eco_score, utils.UNIFIED_ECOSCORE_UNIT) for s in all_species])
+    total_run_eco_score = sum([unit_conv.unit_conversion_return_value_dq(s.def_eco_score, unit_conv.UNIFIED_ECOSCORE_UNIT) for s in all_species])
     return total_run_eco_score

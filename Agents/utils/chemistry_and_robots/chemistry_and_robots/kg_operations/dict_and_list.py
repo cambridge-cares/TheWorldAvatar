@@ -2,6 +2,7 @@
 ## Some utility functions handling the list and dict ##
 #######################################################
 from typing import Any, Dict, List
+from collections.abc import Mapping
 
 import logging
 logger = logging.getLogger('chemistry_and_robots_dict_and_list')
@@ -67,3 +68,11 @@ def check_if_two_lists_equal(list_a: list, list_b: list) -> bool:
     if len(list_a) != len(list_b):
         return False
     return list_a.sort() == list_b.sort()
+
+# see https://stackoverflow.com/a/63543967
+def deep_update(d1, d2):
+    if all((isinstance(d, Mapping) for d in (d1, d2))):
+        for k, v in d2.items():
+            d1[k] = deep_update(d1.get(k), v)
+        return d1
+    return d2
