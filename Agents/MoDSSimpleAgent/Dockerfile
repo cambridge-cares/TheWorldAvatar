@@ -55,5 +55,8 @@ ENV PATH="${MODS_BIN_DIR}:${PATH}"
 
 ARG CMCL_LICENSE_PATH=6200@host.docker.internal
 ENV CMCL_LICENSE_PATH="${CMCL_LICENSE_PATH}"
+ENV JAVA_OPTS=${JAVA_OPTS}
 
-ENTRYPOINT ["java","-jar","app.jar"]
+COPY ./entrypoint.sh ./entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
