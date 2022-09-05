@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   metoffice_agent:
-    image: docker.cmclinnovations.com/metoffice_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/metoffice_agent:1.0.0-SNAPSHOT
     ports:
       - "5000:5000"
     volumes:
