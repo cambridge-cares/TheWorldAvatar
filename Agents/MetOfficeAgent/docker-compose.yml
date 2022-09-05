@@ -3,13 +3,27 @@ version: "3.8"
 services:
   metoffice_agent:
     image: ghcr.io/cambridge-cares/metoffice_agent:1.0.0-SNAPSHOT
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - API_KEY=
+      - LAYERNAME=metoffice # also name of the table in PostGIS
+      - DATABASE=postgres   # currently ontop reads from the default database
+      - GEOSERVER_WORKSPACE=metoffice
     ports:
       - "5000:5000"
     volumes:
       # Link container output directory to local directory to access output files
       - ./output:/app/output
+      - logs:/root/.jps
     configs:
-      - postgis
       - blazegraph
+      - geoserver
+      - ontop
+      - postgis
     secrets:
+      - geoserver_password
       - postgis_password
+
+volumes:
+  logs:
+    name: "logs"

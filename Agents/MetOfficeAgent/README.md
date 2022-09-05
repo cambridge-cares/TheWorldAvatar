@@ -5,28 +5,46 @@ The `MetOffice` agent is an input (and output) agent which queries data from the
 It is designed to interact with the stack spun up by the stack manager.
 
 # Setup
+
 This section specifies the minimum requirement to build the docker image. 
 
 ## Prerequisites
-Retrieve data from the MetOffice DataPoint API requires registration for the [DataPoint] platform. Before building and deploying the Docker image, several key properties need to be set in the [docker compose file]:
 
-The environment variables used by the agent container:
+Retrieving data from the MetOffice DataPoint API requires registration for the [DataPoint] platform. Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file]:
+
+### **1) The environment variables used by the agent container**
+
 1) STACK_NAME
 2) API_KEY (MetOffice DataPoint API key)
 3) LAYERNAME
 4) DATABASE
 5) GEOSERVER_WORKSPACE
 
+### **2) Accessing Github's Container registry**
+
+While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
+```
+  $ docker login ghcr.io -u <github_username>
+  $ <github_personal_access_token>
+```
+
+### **3) VS Code specifics**
+
+In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
+
 ## Spinning up the stack
-Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there:
+
+Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a bash terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link).
+
 ```bash
 ./stack.sh start <STACK NAME> 
 ```
 
 ## Deploying the agent to the stack
-This agent requires []JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps`), its `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [stack.sh] script and [Dockerfile].
 
-Simply execute the following command in the same folder as this `README`:
+This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps`), its `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [stack.sh] script and [Dockerfile].
+
+Simply execute the following command in the same folder as this `README` to build and spin up the production version of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
 # Deploy the agent incl. building latest py4jps resources (please note that "-update_resources" flag needs to be provided as first argument)
 ./stack.sh start -update_resources <STACK NAME>
@@ -34,14 +52,29 @@ Simply execute the following command in the same folder as this `README`:
 ./stack.sh start <STACK NAME>
 ```
 
+The debug version will run when built and launched through the provided VSCode's `launch.json` configurations:
+> Build and Debug
+
+> Debug
+
+> Reattach
+
+> ...
 
 
-## Accessing Github's Container registry
+## Managing the stack
 
-While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
-```
-  $ docker login ghcr.io -u <github_username>
-  $ <github_personal_access_token>
+There are several [Common stack scripts] provided to manage the stack:
+
+```bash
+# Start the stack (please note that this might take some time)
+bash ./stack.sh start <STACK NAME>
+
+# Stop the stack
+bash ./stack.sh stop <STACK NAME>
+
+#Remove stack services
+bash ./stack.sh remove <STACK_NAME> -v
 ```
 
 
@@ -60,58 +93,9 @@ $ git pull
 
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
-
 # How to use the Agent
 
-The `MetOffice` agent can be deployed as locally running web agent or using the provided dockerized version.
-
-
-## Web agent usage
-
-In order to deploy the `MetOffice` as a web agent, simply start a server with the following app entry point:
-
-`(Windows)`
-```cmd
-(metoff_venv) $ set FLASK_APP=metoffice\flaskapp\wsgi.py & flask run
-```
-
-## Dockerized agent usage
-
-The provided `docker-compose` file contains instructions to create Docker images for both the Debugging and Production stage. The debugging image allows for hot-reloading code changes by mounting the `metoffice` folder containing the source code as external volume.
-
-```bash
-# Build debugging image and spin up container
-docker-compose -f "docker-compose.yml" up -d --build metoffice_agent_debug
-
-# Build production image and spin up container
-docker-compose -f "docker-compose.yml" up -d --build metoffice_agent_production
-```
-
-While the production image starts the agent immediately after the container has started, the debugging image awaits for the external debugger to connect before starting the agent. Using `VS Code`, this can be achieved by using the `launch.json` settings below:
-
-```
-    {
-        "name": "Python: Remote Attach",
-        "type": "python",
-        "request": "attach",
-        "connect": {
-            "host": "127.0.0.1",
-            "port": 5678
-        },
-        "pathMappings": [
-            {
-                "localRoot": "${workspaceFolder}/metoffice/flaskapp/",
-                "remoteRoot": "/app/metoffice/flaskapp/"
-            }
-        ]
-    }
-```
-
-A database connection issue has been observed when using the dockerised agent with locally running Postgres RDB. Therefore, a `docker-compose_stack.yml` file is provided to spin up a stack with a Blazegraph and a PostgreSQL within the same network as the agent container. For the agent to access the Blazegraph, the hostname is `blazegraph` (specified in the compose file), port number = 9999. The `sparql.query.endpoint` and `sparql.query.endpoint` to enter in the `metoffice.properties` will be in the form of `http://blazegraph:9999/blazegraph/namespace/[NAME OF NAMESPACE]/sparql`. The Blazegraph namespace must have geospatial enabled. The hostname for the PostgreSQL container is `postgres`, accessible via the default port 5432. The field to enter for `db.url` will be in the form `jdbc:postgresql://postgres/[NAME OF DATABASE]`.
-Both the Blazegraph namespace and the PostgreSQL database need to be (manually) created after spinning up the Docker step, but before sending the first update request to the dockerised agent.
-
-Both PostgreSQL and Blazegraph use volumes to ensure data persistence and the respective data can be found under `\\wsl$\docker-desktop-data\version-pack-data\community\docker` in the local file system (Windows) - simply paste this path into the file explorer to inspect the respective location..
-
+The provided `docker-compose` file contains instructions to create Docker images for both the Debugging and Production stage. The debugging image allows for hot-reloading code changes by mounting the `metoffice` folder containing the source code as external volume. While the production image starts the agent immediately after the container has started, the debugging image awaits for the external debugger to connect before starting the agent. 
 
 ## Provided functionality
 
@@ -141,6 +125,7 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2022
 <!-- Links -->
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
+[Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [DataPoint]: https://www.metoffice.gov.uk/services/data/datapoint/about
 [Container registry on Github]: ghcr.io
