@@ -1,1 +1,2 @@
-from .sparql_client import RxnOptGoalSparqlClient
+# from .sparql_client import RxnOptGoalSparqlClient
+from rxnoptgoaliteragent.kg_operations.sparql_client import RxnOptGoalIterSparqlClient

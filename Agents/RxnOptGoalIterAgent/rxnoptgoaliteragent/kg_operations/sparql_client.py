@@ -247,3 +247,61 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             raise Exception(f"""Exactly one OntoReaction:ReactionExperiment or OntoReaction:ReactionVariation 
             is expected to be identified by <{response[0]['rxn_exp']}>, but found: {rxn_exp_instance}""")
         return rxn_exp_instance[0]
+
+    # TODO add unit test
+    def get_goal_plan(self, goal_plan_iri_or_list: str or list) -> List[Plan]:
+        goal_plan_iri_or_list = trimIRI(goal_plan_iri_or_list)
+        if not isinstance(goal_plan_iri_or_list, list):
+            goal_plan_iri_or_list = [goal_plan_iri_or_list]
+        query = f"""
+        SELECT ?plan ?step ?stepType ?agent ?nextStep
+        WHERE {{
+            VALUES ?plan {{ <{'> <'.join(goal_plan_iri_or_list)}> }}
+            ?plan <{ONTOGOAL_HASSTEP}> ?step.
+            ?step a ?stepType; <{ONTOGOAL_CANBEPERFORMEDBY}> ?agent.
+            OPTIONAL {{?step <{ONTOGOAL_HASNEXTSTEP}> ?nextStep.}}
+        }}"""
+        response = self.performQuery(query)
+        logger.debug(f"Obtained response: {response} with query: {query}")
+
+        # create placeholder dict for steps
+        dict_step = {} # format: {'step_iri': Step}
+        dict_next_steps = {} # format: {'step_iri': ['next_step_iri_1', 'next_step_iri_2']}
+
+        # NOTE that _list_plan_iri is different from goal_plan_iri_or_list
+        # as not all plans in goal_plan_iri_or_list may be presented in the KG
+        _list_plan_iri = dal.get_unique_values_in_list_of_dict(response, "plan")
+        _list_plan = []
+        for pl_iri in _list_plan_iri:
+            _plan_info = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'plan', pl_iri)
+            _plan_info = dal.remove_duplicate_dict_from_list_of_dict(_plan_info)
+
+            # process step
+            _list_step_iri = dal.get_unique_values_in_list_of_dict(_plan_info, "step")
+            _list_step = []
+            for _step_iri in _list_step_iri:
+                _step_info = dal.get_sublist_in_list_of_dict_matching_key_value(_plan_info, 'step', _step_iri)
+                _step_info = dal.remove_duplicate_dict_from_list_of_dict(_step_info)
+
+                step_instance = Step(
+                    instance_iri=_step_iri,
+                    clz=dal.get_the_unique_value_in_list_of_dict(_step_info, 'stepType'),
+                    canBePerformedBy=dal.get_unique_values_in_list_of_dict(_step_info, 'agent'),
+                    # NOTE hasNextStep is processed after all steps are created
+                )
+                _list_step.append(step_instance)
+                dict_step[_step_iri] = step_instance
+                dict_next_steps[_step_iri] = dal.get_unique_values_in_list_of_dict(_step_info, 'nextStep')
+
+            # NOTE here we process the next steps
+            for step in _list_step:
+                _temp_step_list = [dict_step[next_step_iri] for next_step_iri in dict_next_steps[step.instance_iri]]
+                step.hasNextStep = _temp_step_list if len(_temp_step_list) > 0 else None
+
+            _plan = Plan(
+                instance_iri=pl_iri,
+                hasStep=_list_step,
+            )
+            _list_plan.append(_plan)
+
+        return _list_plan

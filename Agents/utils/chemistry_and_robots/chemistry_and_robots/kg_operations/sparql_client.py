@@ -26,6 +26,36 @@ logging.getLogger('py4j').setLevel(logging.INFO)
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
+    # TODO add unit test
+    def get_all_rxn_exp_given_chem_rxn(self, chem_rxn_iri: str):
+        chem_rxn_iri = trimIRI(chem_rxn_iri)
+        query = f"""SELECT DISTINCT ?rxn_exp
+                    WHERE {{
+                        ?rxn_exp <{ONTOREACTION_ISVARIATIONOF}>*/<{ONTOREACTION_ISOCCURENCEOF}> <{chem_rxn_iri}>.
+                    }}
+                """
+        response = self.performQuery(query)
+        return [list(res.values())[0] for res in response]
+
+    # TODO add unit test
+    def get_all_rxn_exp_with_target_perfind_given_chem_rxn(self, chem_rxn_iri: str, target_perfind_iri_or_lst: Union[str, list]):
+        chem_rxn_iri = trimIRI(chem_rxn_iri)
+        if not isinstance(target_perfind_iri_or_lst, list):
+            target_perfind_iri_or_lst = [target_perfind_iri_or_lst]
+        target_perfind_iri_or_lst = trimIRI(target_perfind_iri_or_lst)
+        # TODO think about if we would like to force all rxn_exp to have all target_perfind_iri_or_lst?
+        # or it's fine if the rxn_exp only has some of the target_perfind_iri_or_lst (current implementation)?
+        query = f"""SELECT DISTINCT ?rxn_exp
+                    WHERE {{
+                        ?rxn_exp <{ONTOREACTION_ISVARIATIONOF}>*/<{ONTOREACTION_ISOCCURENCEOF}> <{chem_rxn_iri}>.
+                        VALUES ?target_perfind {{ <{'> <'.join(target_perfind_iri_or_lst)}> }}
+                        ?rxn_exp ?has_perf_ind ?perf_ind.
+                        ?perf_ind a ?target_perfind.
+                    }}
+                """
+        response = self.performQuery(query)
+        return [list(res.values())[0] for res in response]
+
     def collect_triples_for_new_experiment(self, doe: DesignOfExperiment, newExp: List[ReactionExperiment]) -> Graph:
         """
             This method is used to collect the suggested new experiments as triples.

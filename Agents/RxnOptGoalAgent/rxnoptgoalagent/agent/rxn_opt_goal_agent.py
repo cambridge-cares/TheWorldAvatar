@@ -5,13 +5,19 @@ from flask import request
 from flask import render_template
 from urllib.parse import unquote
 from urllib.parse import urlparse
+from rdflib import Graph, URIRef, Literal
+from datetime import datetime
 import json
 import time
 import os
 
 import agentlogging
 
-from rxnoptgoalagent.kg_operations import RxnOptGoalSparqlClient
+from rxnoptgoalagent.kg_operations import RxnOptGoalIterSparqlClient
+from rxnoptgoalagent.data_model import *
+
+# TODO find a better place to put this
+AVAILABLE_RXN_OPT_PLAN_LIST = ['http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan']
 
 
 class FlaskConfig(object):
@@ -84,14 +90,15 @@ class RxnOptGoalAgent(ABC):
         self.fs_user = fs_user
         self.fs_password = fs_password
 
-        # initialise the RxnOptGoalSparqlClient
-        self.sparql_client = RxnOptGoalSparqlClient(
+        # initialise the RxnOptGoalIterSparqlClient
+        self.sparql_client = RxnOptGoalIterSparqlClient(
             query_endpoint=self.kg_url, update_endpoint=self.kg_update_url,
             kg_user=self.kg_user, kg_password=self.kg_password,
             fs_url=self.fs_url, fs_user=self.fs_user, fs_pwd=self.fs_password
         )
 
         # initialise the derivation_client with SPARQL Query and Update endpoint
+        self.derivation_instance_base_url = derivation_instance_base_url
         if kg_user is None:
             self.store_client = self.sparql_client.jpsBaseLib_view.RemoteStoreClient(
                 self.kg_url, self.kg_update_url)
@@ -116,6 +123,7 @@ class RxnOptGoalAgent(ABC):
         self.app.add_url_rule(url_pattern, url_pattern_name, self.handle_rxn_opt_goal_request, methods=['POST'])
         self.logger.info(f"The endpoint to handle goal request is added as: {url_pattern}")
 
+        # TODO think about if we need the registeration of the goal agent
         # # register the agent to the KG if required
         # self.register_agent = register_agent
         # try:
@@ -128,6 +136,7 @@ class RxnOptGoalAgent(ABC):
 
         self.logger.info(f"RxnOptGoalAgent initialised with IRI: {self.goal_agent_iri}")
 
+
     def default(self):
         """Instruction for the RxnOptGoalAgent usage."""
         msg = "Welcome to the RxnOptGoalAgent!<BR>"
@@ -135,12 +144,129 @@ class RxnOptGoalAgent(ABC):
         msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/160-dev-rxn-opt-goal-agent/Agents/RxnOptGoalAgent#readme<BR>"    
         return msg
 
+
     def goal_page(self):
-        return render_template('rxn_opt_goal.html')
+        return render_template(
+            'rxn_opt_goal.html',
+            # TODO [nice-to-have] specify the limits of the goal, e.g. yield within 0-100%
+            # TODO [nice-to-have] put the unit as symbol in the dropdown list, e.g. %, g/mol, kg, etc.
+            goal_spec_from_flask={
+                perf_iri: {
+                    'iri': perf_iri,
+                    'display': getShortName(perf_iri),
+                    'units': [{
+                        'iri': u, 'display': getShortName(u)
+                    } for u in AVAILABLE_PERFORMANCE_INDICATOR_UNIT_DICT[perf_iri]]
+                } for perf_iri in AVAILABLE_PERFORMANCE_INDICATOR_LIST
+            },
+            desires_type=[{'iri': des, 'display': getShortName(des)} for des in [ONTOGOAL_DESIRESGREATERTHAN, ONTOGOAL_DESIRESLESSTHAN]],
+            # TODO [next iteration] where do we encode a list of available rxnoptplan?
+            # TODO [next iteration] how to specify resource limitations (digital twin of hardware)?
+            rxn_opt_goal_plan=[{'iri': plan, 'display': plan} for plan in AVAILABLE_RXN_OPT_PLAN_LIST],
+        )
+
 
     def handle_rxn_opt_goal_request(self):
         """
         This function is called when a goal request is received.
         """
-        self.logger.info(f"Received a goal request: {request.url}")
-        return "OK"
+        self.logger.info(f"Received a goal request with parameters: {request.form}")
+
+        # Parse request form parameters to construct goal related instances
+        chem_rxn_iri = request.form['chem_rxn']
+
+        rxn_opt_goal_plan = self.sparql_client.get_goal_plan(request.form['rxn_opt_goal_plan'])
+
+        first_goal_desires = request.form['first_goal_desires']
+        first_goal_desires_quantity = OM_Quantity(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=self.derivation_instance_base_url,
+            clz=request.form['first_goal_clz'],
+            hasValue=OM_Measure(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=self.derivation_instance_base_url,
+                hasUnit=request.form['first_goal_unit'],
+                hasNumericalValue=request.form['first_goal_num_val']
+            )
+        )
+        first_goal = Goal(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=self.derivation_instance_base_url,
+            hasPlan=rxn_opt_goal_plan,
+            desiresGreaterThan=first_goal_desires_quantity if first_goal_desires == ONTOGOAL_DESIRESGREATERTHAN else None,
+            desiresLessThan=first_goal_desires_quantity if first_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
+        )
+
+        second_goal_desires = request.form['second_goal_desires']
+        second_goal_desires_quantity = OM_Quantity(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=self.derivation_instance_base_url,
+            clz=request.form['second_goal_clz'],
+            hasValue=OM_Measure(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=self.derivation_instance_base_url,
+                hasUnit=request.form['second_goal_unit'],
+                hasNumericalValue=request.form['second_goal_num_val']
+            )
+        )
+        second_goal = Goal(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=self.derivation_instance_base_url,
+            hasPlan=rxn_opt_goal_plan,
+            desiresGreaterThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESGREATERTHAN else None,
+            desiresLessThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
+        )
+
+        restriction = Restriction(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=self.derivation_instance_base_url,
+            cycleAllowance=request.form['cycleAllowance'],
+            deadline=datetime.timestamp(datetime.fromisoformat(request.form['deadline']))
+        )
+
+        # TODO doe boundaries? this should be design together with the ROGI agent
+
+        # Now we need to construct a GoalSet object with above information
+        goal_list = [first_goal, second_goal]
+        goal_set_instance = GoalSet(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=self.derivation_instance_base_url,
+            hasGoal=goal_list,
+            hasRestriction=restriction
+        )
+
+        # Upload the goal set instance to KG, also add timestamp to the goal set instance
+        g = Graph()
+        g = goal_set_instance.create_instance_for_kg(g)
+        self.sparql_client.uploadGraph(g)
+        self.derivation_client.addTimeInstance(goal_set_instance.instance_iri)
+        self.derivation_client.updateTimestamp(goal_set_instance.instance_iri)
+
+        # Query the KG to get all previous ReactionExperiment with specific PerformanceIndicator for the requested ChemicalReaction
+        lst_rxn_exp = self.sparql_client.get_all_rxn_exp_with_target_perfind_given_chem_rxn(
+            chem_rxn_iri,
+            [goal.desires().clz for goal in goal_list]
+        )
+
+        # Construct the list for derivation inputs
+        derivation_inputs = [goal_set_instance.instance_iri] + lst_rxn_exp
+
+        # Create a RxnOptGoalIter (ROGI) derivation for new info
+        rogi_derivation = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_agent_iri, derivation_inputs)
+
+        # # TODO
+        # # Add a periodical job to monitor the goal iterations for the created ROGI derivation
+        # self.scheduler.add_job(
+        #     id=f'monitor_goal_{getShortName(rogi_derivation)}',
+        #     func=self.monitor_goal_iterations,
+        #     trigger='interval', seconds=self.goal_monitor_time_interval
+        # )
+        # self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
+        return f"Created a RxnOptGoalIter (ROGI) Derivation {rogi_derivation}"
+
+    def monitor_goal_iterations(self):
+        """
+        This function is called by the scheduler to monitor the goal iterations.
+        """
+        self.logger.info("Monitoring the goal iterations...")
+        # TODO implement

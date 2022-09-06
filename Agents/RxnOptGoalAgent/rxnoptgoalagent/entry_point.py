@@ -6,9 +6,11 @@ import logging
 # Avoid unnecessary logging information from py4j package
 logging.getLogger("py4j").setLevel(logging.INFO)
 
+from flask import Flask
+import os
 
 def create_app():
-    rxn_opt_goal_agent_config = config_rxn_opt_goal_agent()
+    rxn_opt_goal_agent_config = config_rxn_opt_goal_agent('./tests/env_files/agent.goal.env.test')
 
     agent = RxnOptGoalAgent(
         goal_agent_iri=rxn_opt_goal_agent_config.GOAL_ONTOAGENT_SERVICE_IRI,
@@ -23,7 +25,12 @@ def create_app():
         fs_user=rxn_opt_goal_agent_config.FILE_SERVER_USERNAME,
         fs_password=rxn_opt_goal_agent_config.FILE_SERVER_PASSWORD,
         # register_agent=rxn_opt_goal_agent_config.REGISTER_AGENT,
-        logger_name="dev"
+        logger_name="dev",
+        app=Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "templates")),
     )
 
     return agent.app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(debug=True)
