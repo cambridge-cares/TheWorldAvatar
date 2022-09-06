@@ -5,6 +5,7 @@ public class EnvConfig {
     public static final String DATA_DIR = System.getenv("DATA_DIR");
     public static final String LAST_READ_FILE = System.getenv("LAST_READ_FILE");
     public static final String TIME_OFFSET_FILE = System.getenv("TIME_OFFSET_FILE");
+    public static final String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
 
     private EnvConfig() {
         throw new IllegalStateException();

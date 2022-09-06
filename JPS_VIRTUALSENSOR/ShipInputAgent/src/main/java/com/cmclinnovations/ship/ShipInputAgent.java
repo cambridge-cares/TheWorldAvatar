@@ -21,6 +21,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
+
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,6 +137,10 @@ public class ShipInputAgent extends HttpServlet {
 
             // add a row in RDB time series data
             client.updateTimeSeriesData(ships);
+
+            // calculate average timestep for ship layer name
+            long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
+            createGeoServerLayer(averageTimestamp);
         }
     }
 
@@ -141,5 +150,30 @@ public class ShipInputAgent extends HttpServlet {
         } catch (Exception e){
             LOGGER.error(e.getMessage());
         }
+    }
+
+    void createGeoServerLayer(long averageTimestamp) {
+        // build sql query to get points within 30 minutes of average timestamp
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT timeseries.value as geom, \"dbTable\".\"dataIRI\" as iri ");
+        sb.append("FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries ");
+        sb.append(String.format("WHERE \"dbTable\".type='geometry' and timeseries.time > %d and timeseries.time < %d", averageTimestamp-1800, averageTimestamp+1800));
+        String sqlQuery = sb.toString();
+
+        GeoServerClient geoserverClient = new GeoServerClient();
+        geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+        String layerName = "ships_" + averageTimestamp;
+
+        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+
+        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+        virtualTable.setSql(sqlQuery);
+        virtualTable.setEscapeSql(true);
+        virtualTable.setName("shipVirtualTable");
+        virtualTable.addVirtualTableGeometry("geom", "Point", "4326"); // geom needs to match the sql query
+        LOGGER.info(virtualTable.getName());
+        geoServerVectorSettings.setVirtualTable(virtualTable);
+
+        geoserverClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName, geoServerVectorSettings);
     }
 }

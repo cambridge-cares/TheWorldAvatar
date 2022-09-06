@@ -14,11 +14,14 @@ services:
       - DATA_DIR=/data
       - LAST_READ_FILE=/misc/last_read_file
       - TIME_OFFSET_FILE=/misc/time_offset_file
+      - GEOSERVER_WORKSPACE=dispersion
     configs:
       - postgis
       - blazegraph
+      - geoserver
     secrets:
       - postgis_password
+      - geoserver_password
     ports:
       - "8082:8080"
     volumes:
