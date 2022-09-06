@@ -34,37 +34,7 @@ In order to avoid potential launching issues using the provided `tasks.json` she
 
 ## Spinning up the stack
 
-Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a bash terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link).
-
-```bash
-./stack.sh start <STACK NAME> 
-```
-
-## Deploying the agent to the stack
-
-This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps`), its `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [stack.sh] script and [Dockerfile].
-
-Simply execute the following command in the same folder as this `README` to build and spin up the production version of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
-```bash
-# Deploy the agent incl. building latest py4jps resources (please note that "-update_resources" flag needs to be provided as first argument)
-./stack.sh start -update_resources <STACK NAME>
-# Deploying the agent without building latest py4jps resources
-./stack.sh start <STACK NAME>
-```
-
-The debug version will run when built and launched through the provided VSCode's `launch.json` configurations:
-> Build and Debug
-
-> Debug
-
-> Reattach
-
-> ...
-
-
-## Managing the stack
-
-There are several [Common stack scripts] provided to manage the stack:
+Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a bash terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
 
 ```bash
 # Start the stack (please note that this might take some time)
@@ -73,10 +43,29 @@ bash ./stack.sh start <STACK NAME>
 # Stop the stack
 bash ./stack.sh stop <STACK NAME>
 
-#Remove stack services
+# Remove stack services (incl. volumes)
 bash ./stack.sh remove <STACK_NAME> -v
 ```
 
+## Deploying the agent to the stack
+
+This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps`), its `JpsBaseLib` resource might need to get updated and the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [stack.sh] script and [Dockerfile].
+
+Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
+```bash
+# Deploy the agent incl. building latest py4jps resources (please note that "-update_resources" flag needs to be provided as first argument)
+./stack.sh start -update_resources <STACK NAME>
+# Deploying the agent without building latest py4jps resources
+./stack.sh start <STACK NAME>
+```
+
+The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
+> **Build and Debug**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
+
+> **Debug**: Pull Debug Docker image from ghcr.io and deploy as new container (requires deletion of existing `.vscode/port.txt` to ensure mapping to same port)
+
+> **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
+`bash ./stack.sh start TEST-STACK --debug-port <PORT from .vscode/port.txt>`
 
 ## Spinning up the Stack remotely via SSH
 
