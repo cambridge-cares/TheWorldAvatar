@@ -82,7 +82,6 @@ public final class StackClient {
                 // node. Throw an exception if the referenced Dataset doesn't exist.
                 graph.vertexSet().forEach(parentDataset -> parentDataset.getExternalDatasets()
                         .forEach(referencedDatasetName -> graph.vertexSet().stream()
-                                .filter(Predicate.not(Dataset::isSkip))
                                 .filter(dataset -> dataset.getName().equals(referencedDatasetName))
                                 .findFirst().ifPresentOrElse(
                                         childDataset -> graph.addEdge(parentDataset, childDataset),
