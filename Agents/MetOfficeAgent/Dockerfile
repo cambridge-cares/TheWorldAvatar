@@ -50,7 +50,7 @@ RUN pip install debugpy
 
 # Set flask app and development environment to allow for hot-reloading
 ENV FLASK_APP=app/metoffice/flaskapp/wsgi.py
-ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
 
 # Launch application in container
 WORKDIR /app/metoffice/flaskapp/

@@ -53,9 +53,9 @@ This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]
 
 Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
-# Deploy the agent incl. building latest py4jps resources (please note that "-update_resources" flag needs to be provided as first argument)
-./stack.sh -update_resources start <STACK NAME>
-# Deploying the agent without building latest py4jps resources
+# Compiling latest py4jps resources (JPS_BASE_LIB, Stack_Clients)
+build_py4jps_resources.sh
+# Deploying the agent
 ./stack.sh start <STACK NAME>
 ```
 
@@ -66,6 +66,8 @@ The *debug version* will run when built and launched through the provided VS Cod
 
 > **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
 `bash ./stack.sh start TEST-STACK --debug-port <PORT from .vscode/port.txt>`
+
+> **Update JPSRM and Build and Debug**: Updated py4jps resources and builds the Debug Docker image (incl. pushing to ghcr.io) and deploys it as new container (incl. creation of new `.vscode/port.txt` file)
 
 ## Spinning up the Stack remotely via SSH
 

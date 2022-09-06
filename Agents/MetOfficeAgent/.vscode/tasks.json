@@ -24,26 +24,6 @@
         },
         {
             "type": "shell",
-            "label": "update-compose-build",
-            "command": "./stack.sh",
-            "args": [
-                "-update_resources",
-                "build",                
-                "--debug-port",
-                "${input:debug.port}"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "options": {
-                "shell": {
-                    "executable": "bash"
-                }
-            }
-        },
-        {
-            "type": "shell",
             "label": "compose-deploy-internal",
             "command": "./stack.sh",
             "args": [
@@ -86,10 +66,16 @@
             "type": "shell",
             "label": "update-compose-build-deploy",
             "dependsOn": [
-                "update-compose-build",
-                //"compose-deploy"
+                "update-py4jps",
+                "compose-build",
+                "compose-deploy"
             ],
             "dependsOrder": "sequence"
+        },
+        {
+            "type": "shell",
+            "label": "update-py4jps",
+            "command": "build_py4jps_resources.sh",         
         }
     ],
     "inputs": [

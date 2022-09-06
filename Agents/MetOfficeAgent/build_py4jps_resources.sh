@@ -15,7 +15,7 @@ git pull
 cd JPS_BASE_LIB
 mvn clean package -DskipTests
 # Copy required resource files
-cp ./target/jps-base-lib.jar ../../tmp_base/
+cp ./target/jps-base-lib*.jar ../../tmp_base/
 cp -r ./target/lib ../../tmp_base/
 cd ..
 
@@ -24,7 +24,7 @@ git checkout dev-MetOfficeAgent-withinStack
 git pull
 cd Deploy/stacks/dynamic/stack-clients
 mvn clean package -DskipTests
-cp ./target/stack-clients-1.2.0.jar ../../../../../tmp_stack/
+cp ./target/stack-clients*.jar ../../../../../tmp_stack/
 cp -r ./target/lib ../../../../../tmp_stack/
 cd ../../../../..
 
