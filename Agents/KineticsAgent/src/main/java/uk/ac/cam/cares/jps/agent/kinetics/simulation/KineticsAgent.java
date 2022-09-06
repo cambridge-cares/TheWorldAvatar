@@ -81,8 +81,11 @@ public class KineticsAgent extends JPSAgent {
 	public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
 	public static final String JOB_STATISTICS_PATH = "/job/statistics";
 	public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
-	
 
+    static {
+        LOGGER.info("--- LOGGING STATEMENT ---");
+        System.out.println("--- PRINT STATEMENT ---");
+    }
 	/**
 	 * Produces and returns the following statistics of Slurm jobs submitted<p>
 	 * to Kinetics Agent in JSON format:<p>
