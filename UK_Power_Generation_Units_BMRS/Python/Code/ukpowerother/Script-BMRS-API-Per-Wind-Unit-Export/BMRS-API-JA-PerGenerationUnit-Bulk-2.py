@@ -149,6 +149,6 @@ if __name__ == "__main__":
     #... so saving every month is a backup. Also the index is printed so you can use it to restart the process (with the printed index and date as your new index and startdate.
     #By default index should be left at 7 though.
     #So again, to resume the process part way through, have the first day of the next month (the one just before the autosave the autosave message) be the start day, and have the index printed with the last autosave be the starting index. 
-    get_data("Template-Powerplant-Export.xlsx", "Template-Generator-To-Powerplant-Mapping.xlsx", "2022", "04", "01", "2022", "04", "02", 7)
+    get_data("Template-Powerplant-Export.xlsx", "Template-Generator-To-Powerplant-Mapping.xlsx", "2017", "01", "01", "2022", "04", "02", 7)
 
     
