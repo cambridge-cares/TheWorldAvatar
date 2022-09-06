@@ -1,21 +1,16 @@
 package uk.ac.cam.cares.jps.editor.file;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import uk.ac.cam.cares.jps.editor.file.IFileEditor;
-import uk.ac.cam.cares.jps.editor.file.FileEditor;
-
-import org.apache.commons.io.FileUtils;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * A test created for assessing the correctness of the file editing tool.
@@ -44,7 +39,7 @@ public class FileEditorTest {
 				File editedFile = new File("data/owl-edited/0cee09a7-235b-4d73-adaf-09aeda8f50cc_34.owl");
 				try {
 					assertNotNull(editedFile);
-					boolean isTwoEqual = FileUtils.contentEquals(expectedOutputFile, editedFile);
+					boolean isTwoEqual = FileUtils.contentEqualsIgnoreEOL(expectedOutputFile, editedFile, null);
 					assertTrue(isTwoEqual);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
