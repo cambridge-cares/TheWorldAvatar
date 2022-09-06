@@ -24,6 +24,26 @@
         },
         {
             "type": "shell",
+            "label": "update-compose-build",
+            "command": "./stack.sh",
+            "args": [
+                "-update_resources",
+                "build",                
+                "--debug-port",
+                "${input:debug.port}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "options": {
+                "shell": {
+                    "executable": "bash"
+                }
+            }
+        },
+        {
+            "type": "shell",
             "label": "compose-deploy-internal",
             "command": "./stack.sh",
             "args": [
@@ -59,6 +79,15 @@
             "dependsOn": [
                 "compose-build",
                 "compose-deploy"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "type": "shell",
+            "label": "update-compose-build-deploy",
+            "dependsOn": [
+                "update-compose-build",
+                //"compose-deploy"
             ],
             "dependsOrder": "sequence"
         }
