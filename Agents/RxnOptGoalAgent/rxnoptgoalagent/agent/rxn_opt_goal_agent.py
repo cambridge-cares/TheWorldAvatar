@@ -36,6 +36,7 @@ class RxnOptGoalAgent(ABC):
         goal_agent_iri: str,
         goal_agent_endpoint: str,
         goal_monitor_time_interval: int,
+        goal_iter_agent_iri: str,
         derivation_instance_base_url: str,
         kg_url: str,
         kg_update_url: str = None,
@@ -81,6 +82,9 @@ class RxnOptGoalAgent(ABC):
         # assign IRI and HTTP URL of the agent
         self.goal_agent_iri = goal_agent_iri
         self.goal_agent_endpoint = goal_agent_endpoint
+
+        # assign IRI of goal iteration agent
+        self.goal_iter_agent_iri = goal_iter_agent_iri
 
         # assign KG related information
         self.kg_url = kg_url
@@ -270,7 +274,11 @@ class RxnOptGoalAgent(ABC):
         derivation_inputs = [goal_set_instance.instance_iri] + lst_rxn_exp
 
         # Create a RxnOptGoalIter (ROGI) derivation for new info
-        rogi_derivation = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_agent_iri, derivation_inputs)
+        # NOTE: the ROGI derivations needs to be created with the IRI of the ROGI agent
+        # which is DIFFERENT from the IRI of ROG agent (self.goal_agent_iri)
+        # TODO in this iteration, we provide the ROGI agent IRI as a parameter (self.goal_iter_agent_iri)
+        # TODO but in the future, this information should obtained by ROG agent from the KG
+        rogi_derivation = self.derivation_client.createAsyncDerivationForNewInfo(self.goal_iter_agent_iri, derivation_inputs)
 
         # # TODO
         # # Add a periodical job to monitor the goal iterations for the created ROGI derivation

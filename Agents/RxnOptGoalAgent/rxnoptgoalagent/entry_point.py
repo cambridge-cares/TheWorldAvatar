@@ -16,6 +16,7 @@ def create_app():
         goal_agent_iri=rxn_opt_goal_agent_config.GOAL_ONTOAGENT_SERVICE_IRI,
         goal_agent_endpoint=rxn_opt_goal_agent_config.GOAL_ONTOAGENT_OPERATION_HTTP_URL,
         goal_monitor_time_interval=rxn_opt_goal_agent_config.GOAL_MONITOR_PERIODIC_TIMESCALE,
+        goal_iter_agent_iri=rxn_opt_goal_agent_config.GOAL_ITER_AGENT_IRI,
         derivation_instance_base_url=rxn_opt_goal_agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=rxn_opt_goal_agent_config.SPARQL_QUERY_ENDPOINT,
         kg_update_url=rxn_opt_goal_agent_config.SPARQL_UPDATE_ENDPOINT,

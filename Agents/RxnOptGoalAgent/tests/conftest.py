@@ -1,3 +1,5 @@
+from testcontainers.core.container import DockerContainer
+from pathlib import Path
 from flask import Flask
 import logging
 import pkgutil
@@ -9,6 +11,7 @@ import uuid
 import os
 
 from pyderivationagent.conf import config_derivation_agent
+from pyderivationagent.kg_operations import PySparqlClient
 from chemistry_and_robots.kg_operations import ChemistryAndRobotsSparqlClient
 import chemistry_and_robots.kg_operations.dict_and_list as dal
 from chemistry_and_robots.data_model import *
@@ -28,7 +31,7 @@ from rxnoptgoalagent.agent import RxnOptGoalAgent
 from rxnoptgoalagent.data_model import *
 
 try:
-    from rxnoptgoaliteragent.tests.conftest import IRIs as rogi_IRIs
+    import rxnoptgoaliteragent.tests.conftest as rogi_cf
 except ImportError:
     raise ImportError("""If rxnoptgoaliteragent is not installed, then please install it first.
                       Otherwise, it's possible due to tests and tests.* are not packaged in the rxnoptgoaliteragent package.
@@ -38,6 +41,8 @@ except ImportError:
                       Then reinstall the dev version of rxnoptgoaliteragent via:
                       ``cd <path_to_twa_agents>/Agents/RxnOptGoalIterAgent && python -m pip install -e .``
                       A better way of designing tests across multiple agents will be provided in the future.""")
+
+from rxnoptgoaliteragent.agent import RxnOptGoalIterAgent
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 logging.getLogger("numba").setLevel(logging.WARNING)
@@ -79,6 +84,7 @@ HPLC_POSTPRO_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.postpro.env.test
 VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
 HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
 ROG_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.goal.env.test')
+ROGI_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.goal.iter.env.test')
 
 
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOE_AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
@@ -243,26 +249,102 @@ def initialise_clients(get_service_url, get_service_auth):
 # Module-scoped test fixtures
 # ----------------------------------------------------------------------------------
 @pytest.fixture(scope="module")
+def initialise_triple_store():
+    # NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
+    # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+    blazegraph = DockerContainer('docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
+    # the port is set as 9999 to match with the value set in the docker image
+    blazegraph.with_exposed_ports(9999)
+    yield blazegraph
+
+
+@pytest.fixture(scope="module")
+def initialise_test_triples(initialise_triple_store):
+    with initialise_triple_store as container:
+        # Wait some arbitrary time until container is reachable
+        time.sleep(8)
+
+        # Retrieve SPARQL endpoint
+        endpoint = get_endpoint(container)
+        print(f"SPARQL endpoint: {endpoint}")
+
+        # Create SparqlClient for testing
+        sparql_client = PySparqlClient(endpoint, endpoint)
+
+        # Clear triple store before any usage
+        sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+
+        # TODO delete below
+        # # Create DerivationClient for creating derivation instances
+        # derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
+        #     sparql_client.kg_client,
+        #     DERIVATION_INSTANCE_BASE_URL
+        # )
+
+        initialise_triples(sparql_client)
+
+        yield endpoint
+
+        # Clear logger at the end of the test
+        clear_loggers()
+
+
+@pytest.fixture(scope="module")
 def create_rog_agent():
     def _create_rog_agent(
+        goal_iter_agent_iri:str=None,
+        kg_url:str=None, # if none, use value in env file; else use value provided (url of KG test container)
+        kg_update_url:str=None, # if none, use value in env file; else use value provided (url of KG test container)
+        # NOTE: it is assumed that the KG test container doesn't has authentication
+        # also, we assume that we don't need file server for testing with the KG test container
     ):
         rog_agent_config = config_rxn_opt_goal_agent(ROG_AGENT_ENV)
         rog_agent = RxnOptGoalAgent(
             goal_agent_iri=rog_agent_config.GOAL_ONTOAGENT_SERVICE_IRI,
             goal_agent_endpoint=rog_agent_config.GOAL_ONTOAGENT_OPERATION_HTTP_URL,
             goal_monitor_time_interval=rog_agent_config.GOAL_MONITOR_PERIODIC_TIMESCALE,
+            goal_iter_agent_iri=rog_agent_config.GOAL_ITER_AGENT_IRI if not goal_iter_agent_iri else goal_iter_agent_iri,
             derivation_instance_base_url=rog_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=rog_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=rog_agent_config.SPARQL_UPDATE_ENDPOINT,
-            kg_user=rog_agent_config.KG_USERNAME,
-            kg_password=rog_agent_config.KG_PASSWORD,
-            fs_url=rog_agent_config.FILE_SERVER_ENDPOINT,
-            fs_user=rog_agent_config.FILE_SERVER_USERNAME,
-            fs_password=rog_agent_config.FILE_SERVER_PASSWORD,
+            kg_url=rog_agent_config.SPARQL_QUERY_ENDPOINT if not kg_url else kg_url,
+            kg_update_url=rog_agent_config.SPARQL_UPDATE_ENDPOINT if not kg_update_url else kg_update_url,
+            kg_user=rog_agent_config.KG_USERNAME if not kg_url else None,
+            kg_password=rog_agent_config.KG_PASSWORD if not kg_url else None,
+            fs_url=rog_agent_config.FILE_SERVER_ENDPOINT if not kg_url else None,
+            fs_user=rog_agent_config.FILE_SERVER_USERNAME if not kg_url else None,
+            fs_password=rog_agent_config.FILE_SERVER_PASSWORD if not kg_url else None,
             app=Flask(__name__, template_folder=HTML_TEMPLATE_DIR)
         )
         return rog_agent
     return _create_rog_agent
+
+@pytest.fixture(scope="module")
+def create_rogi_agent():
+    def _create_rogi_agent(
+        register_agent:bool=False,
+        random_agent_iri:bool=False,
+        kg_url:str=None, # if none, use value in env file; else use value provided (url of KG test container)
+        kg_update_url:str=None, # if none, use value in env file; else use value provided (url of KG test container)
+        # NOTE: it is assumed that the KG test container doesn't has authentication
+        # also, we assume that we don't need file server for testing with the KG test container
+    ):
+        rogi_agent_config = config_derivation_agent(ROGI_AGENT_ENV)
+        rogi_agent = RxnOptGoalIterAgent(
+            register_agent=rogi_agent_config.REGISTER_AGENT if not register_agent else register_agent,
+            agent_iri=rogi_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=rogi_agent_config.DERIVATION_PERIODIC_TIMESCALE,
+            derivation_instance_base_url=rogi_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=rogi_agent_config.SPARQL_QUERY_ENDPOINT if not kg_url else kg_url,
+            kg_update_url=rogi_agent_config.SPARQL_UPDATE_ENDPOINT if not kg_update_url else kg_update_url,
+            kg_user=rogi_agent_config.KG_USERNAME if not kg_url else None,
+            kg_password=rogi_agent_config.KG_PASSWORD if not kg_url else None,
+            fs_url=rogi_agent_config.FILE_SERVER_ENDPOINT if not kg_url else None,
+            fs_user=rogi_agent_config.FILE_SERVER_USERNAME if not kg_url else None,
+            fs_password=rogi_agent_config.FILE_SERVER_PASSWORD if not kg_url else None,
+            agent_endpoint=rogi_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            app=Flask(__name__),
+        )
+        return rogi_agent
+    return _create_rogi_agent
 
 @pytest.fixture(scope="module")
 def create_doe_agent():
@@ -437,12 +519,60 @@ def create_hplc_agent():
 #             file.truncate(10 ** 3)
 #     return file_path
 
+def initialise_triples(sparql_client):
+    # Delete all triples before initialising prepared triples
+    sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+
+	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
+    for f in ['sample_data/rxn_data.ttl', 'sample_data/new_exp_data.ttl', 'sample_data/dummy_lab.ttl']:
+        data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
+        g = Graph().parse(data=data)
+        sparql_client.uploadGraph(g)
+
+    # Upload all relevant example triples provided in the test_triples folder of 'rxnoptgoaliteragent' package to triple store
+    for f in ['goal_iter.ttl', 'plan_step_agent.ttl']:
+        data = pkgutil.get_data('rxnoptgoaliteragent', 'tests/test_triples/'+f).decode("utf-8")
+        g = Graph().parse(data=data)
+        sparql_client.uploadGraph(g)
+
+
+def get_endpoint(docker_container):
+    # Retrieve SPARQL endpoint for temporary testcontainer
+    # endpoint acts as both Query and Update endpoint
+    endpoint = 'http://' + docker_container.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
+               + docker_container.get_exposed_port(9999)
+    # 'kb' is default namespace in Blazegraph
+    endpoint += '/blazegraph/namespace/kb/sparql'
+    return endpoint
+
+
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
+# and https://github.com/pytest-dev/pytest/issues/5502#issuecomment-1190557648
 def clear_loggers():
     """Remove handlers from all loggers"""
     import logging
     loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
     for logger in loggers:
-        handlers = getattr(logger, 'handlers', [])
-        for handler in handlers:
+        if not hasattr(logger, "handlers"):
+            continue
+        for handler in logger.handlers[:]:
             logger.removeHandler(handler)
+
+
+# ----------------------------------------------------------------------------------
+# Sample data
+# ----------------------------------------------------------------------------------
+sample_goal_request = {
+    "chem_rxn": "https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1",
+    "cycleAllowance": 6,
+    "deadline": "2022-09-12T17:05",
+    "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Conversion",
+    "first_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresGreaterThan",
+    "first_goal_num_val": 20,
+    "first_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent",
+    "rxn_opt_goal_plan": "http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan",
+    "second_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
+    "second_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresLessThan",
+    "second_goal_num_val": 30,
+    "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent"
+}
