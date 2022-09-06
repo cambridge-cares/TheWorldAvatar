@@ -2,6 +2,7 @@ from abc import ABC
 from flask_apscheduler import APScheduler
 from flask import Flask
 from flask import request
+from flask import jsonify
 from flask import render_template
 from urllib.parse import unquote
 from urllib.parse import urlparse
@@ -28,6 +29,8 @@ class FlaskConfig(object):
 
 
 class RxnOptGoalAgent(ABC):
+    GOAL_SPECS_RESPONSE_KEY = "Created a RxnOptGoalIter (ROGI) Derivation"
+
     def __init__(
         self,
         goal_agent_iri: str,
@@ -170,23 +173,38 @@ class RxnOptGoalAgent(ABC):
         """
         This function is called when a goal request is received.
         """
-        self.logger.info(f"Received a goal request with parameters: {request.form}")
+        if request.method == 'POST':
+            parameters = request.form
+        else:
+            self.logger.error("The method is not supported.")
+            return f"The method [{request.method}] is not supported."
+
+        # Varify the parameters
+        self.logger.info(f"Received a goal request with parameters: {parameters}")
+        all_parameters = ["chem_rxn", "cycleAllowance", "deadline",
+                          "first_goal_clz", "first_goal_desires", "first_goal_num_val", "first_goal_unit",
+                          "rxn_opt_goal_plan",
+                          "second_goal_clz", "second_goal_desires", "second_goal_num_val", "second_goal_unit"]
+        if not all([p in parameters and bool(parameters[p]) for p in all_parameters]):
+            return f"""The request parameters are incomplete, required parameters: {all_parameters}.
+                    Received parameters: {parameters}.
+                    Please provided the missing fields: {[p for p in all_parameters if p not in parameters or not bool(parameters[p])]}."""
 
         # Parse request form parameters to construct goal related instances
-        chem_rxn_iri = request.form['chem_rxn']
+        chem_rxn_iri = parameters['chem_rxn']
 
-        rxn_opt_goal_plan = self.sparql_client.get_goal_plan(request.form['rxn_opt_goal_plan'])
+        rxn_opt_goal_plan = self.sparql_client.get_goal_plan(parameters['rxn_opt_goal_plan'])
 
-        first_goal_desires = request.form['first_goal_desires']
+        first_goal_desires = parameters['first_goal_desires']
         first_goal_desires_quantity = OM_Quantity(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=self.derivation_instance_base_url,
-            clz=request.form['first_goal_clz'],
+            clz=parameters['first_goal_clz'],
             hasValue=OM_Measure(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=self.derivation_instance_base_url,
-                hasUnit=request.form['first_goal_unit'],
-                hasNumericalValue=request.form['first_goal_num_val']
+                hasUnit=parameters['first_goal_unit'],
+                hasNumericalValue=parameters['first_goal_num_val']
             )
         )
         first_goal = Goal(
@@ -197,16 +215,16 @@ class RxnOptGoalAgent(ABC):
             desiresLessThan=first_goal_desires_quantity if first_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
         )
 
-        second_goal_desires = request.form['second_goal_desires']
+        second_goal_desires = parameters['second_goal_desires']
         second_goal_desires_quantity = OM_Quantity(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=self.derivation_instance_base_url,
-            clz=request.form['second_goal_clz'],
+            clz=parameters['second_goal_clz'],
             hasValue=OM_Measure(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=self.derivation_instance_base_url,
-                hasUnit=request.form['second_goal_unit'],
-                hasNumericalValue=request.form['second_goal_num_val']
+                hasUnit=parameters['second_goal_unit'],
+                hasNumericalValue=parameters['second_goal_num_val']
             )
         )
         second_goal = Goal(
@@ -220,8 +238,8 @@ class RxnOptGoalAgent(ABC):
         restriction = Restriction(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=self.derivation_instance_base_url,
-            cycleAllowance=request.form['cycleAllowance'],
-            deadline=datetime.timestamp(datetime.fromisoformat(request.form['deadline']))
+            cycleAllowance=parameters['cycleAllowance'],
+            deadline=datetime.timestamp(datetime.fromisoformat(parameters['deadline']))
         )
 
         # TODO doe boundaries? this should be design together with the ROGI agent
@@ -262,7 +280,7 @@ class RxnOptGoalAgent(ABC):
         #     trigger='interval', seconds=self.goal_monitor_time_interval
         # )
         # self.logger.info("Monitor goal iteration is scheduled with a time interval of %d seconds." % (self.goal_monitor_time_interval))
-        return f"Created a RxnOptGoalIter (ROGI) Derivation {rogi_derivation}"
+        return jsonify({self.GOAL_SPECS_RESPONSE_KEY: rogi_derivation})
 
     def monitor_goal_iterations(self):
         """

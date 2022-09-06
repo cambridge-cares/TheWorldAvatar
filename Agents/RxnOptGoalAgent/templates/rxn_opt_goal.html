@@ -65,7 +65,7 @@
 
                 <!-- rdf:type of the goal target quantity -->
                 <select name="first_goal_clz" id="first_goal_clz" class="Input">
-                    <option value="" selected="selected">Please select first goal</option>
+                    <option value="" disabled selected="selected">Please select first goal</option>
                 </select>
 
                 <!-- type of desire for the goal target quantity -->
@@ -93,7 +93,7 @@
 
                 <!-- rdf:type of the goal target quantity -->
                 <select name="second_goal_clz" id="second_goal_clz" class="Input">
-                    <option value="" selected="selected">Please select first goal first</option>
+                    <option value="" disabled selected="selected">Please select first goal first</option>
                 </select>
 
                 <!-- type of desire for the goal target quantity -->
@@ -121,7 +121,7 @@
 
                 <!-- rxn opt plan -->
                 <select name="rxn_opt_goal_plan" id="rxn_opt_goal_plan" class="Input">
-                    <option value="" selected="selected">Please select rxn opt goal plan</option>
+                    <option value="" disabled selected>Please select rxn opt goal plan</option>
                     {% for p in rxn_opt_goal_plan %}
                     <option value="{{ p.iri }}">{{ p.display }}</option>
                     {% endfor %}

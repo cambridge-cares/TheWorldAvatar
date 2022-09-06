@@ -10,6 +10,7 @@ import os
 
 from pyderivationagent.conf import config_derivation_agent
 from chemistry_and_robots.kg_operations import ChemistryAndRobotsSparqlClient
+import chemistry_and_robots.kg_operations.dict_and_list as dal
 from chemistry_and_robots.data_model import *
 
 from doeagent.agent import DoEAgent
@@ -21,6 +22,22 @@ from vapourtecagent.conf import config_vapourtec_agent
 from hplcagent.agent import HPLCAgent
 from hplcagent.conf import config_hplc_agent
 
+# RxnOptGoal Agent related imports
+from rxnoptgoalagent.conf.rxn_opt_goal_agent_conf import config_rxn_opt_goal_agent
+from rxnoptgoalagent.agent import RxnOptGoalAgent
+from rxnoptgoalagent.data_model import *
+
+try:
+    from rxnoptgoaliteragent.tests.conftest import IRIs as rogi_IRIs
+except ImportError:
+    raise ImportError("""If rxnoptgoaliteragent is not installed, then please install it first.
+                      Otherwise, it's possible due to tests and tests.* are not packaged in the rxnoptgoaliteragent package.
+                      One way to fix this is to change the following line in RxnOptGoalIterAgent/setup.py:
+                      ``packages=find_packages(exclude=['tests','tests.*']),``
+                      to: ``packages=find_packages(),``.
+                      Then reinstall the dev version of rxnoptgoaliteragent via:
+                      ``cd <path_to_twa_agents>/Agents/RxnOptGoalIterAgent && python -m pip install -e .``
+                      A better way of designing tests across multiple agents will be provided in the future.""")
 
 logging.getLogger("py4j").setLevel(logging.INFO)
 logging.getLogger("numba").setLevel(logging.WARNING)
@@ -40,6 +57,7 @@ DOWNLOADED_DIR = os.path.join(THIS_DIR,'_downloaded_files_for_test')
 HPLC_REPORT_LOCAL_TEST_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
 FCEXP_FILE_DIR = os.path.join(THIS_DIR,'_generated_vapourtec_input_file_for_test')
 DOCKER_INTEGRATION_DIR = os.path.join(THIS_DIR,'_for_docker_integration_test')
+HTML_TEMPLATE_DIR = os.path.join(os.path.dirname(THIS_DIR), 'templates')
 
 # Raw HPLC report sample data in the test_triples folder
 HPLC_REPORT_XLS_PATH_IN_FOLDER = os.path.join(TEST_TRIPLES_DIR,'raw_hplc_report_xls.xls')
@@ -60,6 +78,7 @@ VAPOURTEC_EXECUTION_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.exec
 HPLC_POSTPRO_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.postpro.env.test')
 VAPOURTEC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.vapourtec.env.test')
 HPLC_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.hplc.env.test')
+ROG_AGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.goal.env.test')
 
 
 DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOE_AGENT_ENV).DERIVATION_INSTANCE_BASE_URL
@@ -223,6 +242,28 @@ def initialise_clients(get_service_url, get_service_auth):
 # ----------------------------------------------------------------------------------
 # Module-scoped test fixtures
 # ----------------------------------------------------------------------------------
+@pytest.fixture(scope="module")
+def create_rog_agent():
+    def _create_rog_agent(
+    ):
+        rog_agent_config = config_rxn_opt_goal_agent(ROG_AGENT_ENV)
+        rog_agent = RxnOptGoalAgent(
+            goal_agent_iri=rog_agent_config.GOAL_ONTOAGENT_SERVICE_IRI,
+            goal_agent_endpoint=rog_agent_config.GOAL_ONTOAGENT_OPERATION_HTTP_URL,
+            goal_monitor_time_interval=rog_agent_config.GOAL_MONITOR_PERIODIC_TIMESCALE,
+            derivation_instance_base_url=rog_agent_config.DERIVATION_INSTANCE_BASE_URL,
+            kg_url=rog_agent_config.SPARQL_QUERY_ENDPOINT,
+            kg_update_url=rog_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_user=rog_agent_config.KG_USERNAME,
+            kg_password=rog_agent_config.KG_PASSWORD,
+            fs_url=rog_agent_config.FILE_SERVER_ENDPOINT,
+            fs_user=rog_agent_config.FILE_SERVER_USERNAME,
+            fs_password=rog_agent_config.FILE_SERVER_PASSWORD,
+            app=Flask(__name__, template_folder=HTML_TEMPLATE_DIR)
+        )
+        return rog_agent
+    return _create_rog_agent
+
 @pytest.fixture(scope="module")
 def create_doe_agent():
     def _create_doe_agent(
