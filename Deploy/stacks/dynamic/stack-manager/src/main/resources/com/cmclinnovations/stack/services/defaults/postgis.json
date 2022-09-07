@@ -4,10 +4,11 @@
         "Name": "postgis",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "postgis/postgis:14-3.2-alpine",
+                "Image": "3dcitydb/3dcitydb-pg",
                 "Env": [
                     "POSTGRES_HOST_AUTH_METHOD=scram-sha-256",
-                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256"
+                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256",
+                    "SRID=4329"
                 ],
                 "Mounts": [
                     {
