@@ -21,6 +21,11 @@ public class PostGISClient extends ContainerClient {
     }
 
     private Connection getConnection(String database) throws SQLException {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         return DriverManager.getConnection(
                 postgreSQLEndpoint.getJdbcURL(database),
                 postgreSQLEndpoint.getUsername(),
@@ -57,7 +62,7 @@ public class PostGISClient extends ContainerClient {
         }
     }
 
-    public void executeQuery(String databaseName, String sql) {
+    public void executeUpdate(String databaseName, String sql) {
         try (Connection conn = getConnection(databaseName);
                 Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
