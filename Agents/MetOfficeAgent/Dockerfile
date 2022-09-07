@@ -35,8 +35,10 @@ RUN pip install -e .
 
 # Update py4jps resources
 RUN jpsrm uninstall JpsBaseLib
-RUN jpsrm install JpsBaseLib ../tmp_base --jar jps-base-lib.jar
-RUN jpsrm install StackClients ../tmp_stack --jar stack-clients-1.2.0.jar
+RUN base_lib_jar=$(find ../tmp_base/jps-base-lib*.jar) && base_lib_jar=${base_lib_jar##*/} && \
+    jpsrm install JpsBaseLib ../tmp_base --jar $base_lib_jar
+RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
+    jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
 
 # Expose port
 EXPOSE 5000
