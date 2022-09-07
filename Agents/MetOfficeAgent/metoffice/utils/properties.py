@@ -40,14 +40,13 @@ def read_properties_file(filepath):
     props = ConfigObj(filepath)
 
     # Extract MetOffice API key
-    try:
-        DATAPOINT_API_KEY = props['api.key']
-    except KeyError:
-        #logger.error('Key "api.key" is missing in properties file: ' + filepath)
-        raise KeyError('Key "api.key" is missing in properties file: ' + filepath)
+    DATAPOINT_API_KEY = os.getenv('API_KEY')    
+    if DATAPOINT_API_KEY is None:
+        #logger.error('API_KEY is missing in environment variables')
+        raise ValueError('API_KEY is missing in environment variables')
     if DATAPOINT_API_KEY == '':
-        #logger.error('No "api.key" value has been provided in properties file: ' + filepath)
-        raise KeyError('No "api.key" value has been provided in properties file: ' + filepath)
+        #logger.error('No "API_KEY" value has been provided in environment variables')
+        raise ValueError('No "API_KEY" value has been provided in environment variables')
     
         # Extract PostgreSQL database URL
     try:
