@@ -15,12 +15,14 @@ Key properties of the **`TimeSeriesClient`** class:
 Both classes support a time series to consist of several individual (but related) measures, which share the same time column. Any generic Java types (e.g. date time, integer, double etc.) are supported and a robust mapping between any dataIRI (stored in KG) and the respective values (stored in RDB) is ensured. 
 Initialising any new time series using the `TimeSeriesClient` creates all required relationships in the KG as well as corresponding table(s) in the RDB. Adding or deleting time series data only adds or deletes data points in the RDB. Deleting time series via the `TimeSeriesClient` deletes all associated relationships from the KG as well as corresponding table(s) in the RDB. Detailed descriptions of particular functions are provided in the respective docstrings. 
 
+## Note on PostGIS support
+The TimeSeriesClient supports storing and querying geometries in PostGIS by providing objects of org.postgis.Geometry. You must ensure that the PostGIS extension is enabled in PostgreSQL to use this.
 
 ## Time series instantiation
 The namespaces used in this document:  
 (`ts` denotes the time series ontology and `kb` refers to the namespace to which the time series shall be added)
 ```
-ts  : https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
+ts  : https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
 rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
 kb  : http://www.theworldavatar.com/kb/ontotimeseries/
 ```
@@ -81,8 +83,8 @@ You can request login details by emailing `support<at>cmclinnovations.com` with 
 
 [//]: # (These are reference links used in the body)
 
-   [test repository]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/test/java/uk/ac/cam/cares/jps/base/timeseries>
-   [AQMeshInputAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Agents/AQMeshInputAgent>
-   [FloodAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Agents/FloodAgent>
-   [GasGridAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/1161-dev-gas-grid-input-agent/Agents/GasGridAgent/src/gasgridagent>
-   [TimeSeriesExample]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Agents/TimeSeriesExample>
+   [test repository]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/test/java/uk/ac/cam/cares/jps/base/timeseries>
+   [AQMeshInputAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AQMeshInputAgent>
+   [FloodAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent>
+   [GasGridAgent]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/1161-dev-gas-grid-input-agent/Agents/GasGridAgent/>
+   [TimeSeriesExample]: <https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/TimeSeriesExample>

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
@@ -107,6 +108,29 @@ public class RemoteStoreClientTest {
 		assertEquals(formInsertQuery(), kbClient.getQuery());
 	}
 	
+	@Test
+	public void testIsUpdateEndpointBlazegraphBackended() {
+		queryEndpoint = "/test/Query/Endpoint";
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
+		// should be false as no update endpoint is provided
+		assertTrue(!kbClient.isUpdateEndpointBlazegraphBackended());
+
+		updateEndpoint = UUID.randomUUID().toString() + "/blazegraph/namespace/" + UUID.randomUUID().toString()
+				+ "/sparql";
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		assertTrue(kbClient.isUpdateEndpointBlazegraphBackended());
+
+		updateEndpoint = UUID.randomUUID().toString() + "//blazegraph//namespace//" + UUID.randomUUID().toString()
+				+ "/sparql";
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		// Paths should be able to resolve "//" to "/"
+		assertTrue(kbClient.isUpdateEndpointBlazegraphBackended());
+
+		updateEndpoint = UUID.randomUUID().toString();
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		assertTrue(!kbClient.isUpdateEndpointBlazegraphBackended());
+	}
+
 	/**
 	 * Checks if the connection URL established for the query endpoint (URL)<p>
 	 * is the expected one. 
@@ -423,4 +447,49 @@ public class RemoteStoreClientTest {
 		return query;
 	}
 
+	/**
+	 * A federated query developed to execute against the endpoints of<br>
+	 * OntoSpecies and OntoCompChem Knowledge Bases to retrieve partial<br>
+	 *  details of species.
+	 *   
+	 * @return
+	 */
+	public static String formFederatedQuery2() {
+		String query ="PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> "
+				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> "
+				+ "PREFIX gc: <http://purl.org/gc/> "
+				+ "SELECT * "
+				+ "WHERE { "
+				+ "?species OntoSpecies:casRegistryID ?crid . "
+				+ "?compchemspecies ontocompchem:hasUniqueSpecies ?species . "
+				+ "?compchemspecies gc:isCalculationOn ?scfEnergy . "
+				+ "?scfEnergy a ontocompchem:ScfEnergy . "
+				+ "?scfEnergy gc:hasElectronicEnergy ?scfElectronicEnergy . "
+				+ "?scfElectronicEnergy gc:hasValue ?scfEnergyValue . "
+				+ "?compchemspecies gc:isCalculationOn ?zeroEnergy . "
+				+ "?zeroEnergy a ontocompchem:ZeroPointEnergy . "
+				+ "?zeroEnergy gc:hasElectronicEnergy ?zeroElectronicEnergy . "
+				+ "?zeroElectronicEnergy gc:hasValue ?zeroEnergyValue . "
+				+ "}";
+		
+		return query;
+	}
+
+	public static void main(String[] args){
+		RemoteStoreClient kbClient = new RemoteStoreClient();
+		List<String> endpoints = new ArrayList<>();
+		String queryEndpointOntoSpeciesKB = "http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql";
+		String queryEndpointOntoCompChemKB = "http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql";
+		endpoints.add(queryEndpointOntoSpeciesKB);
+		endpoints.add(queryEndpointOntoCompChemKB);
+		try {
+			JSONArray result = kbClient.executeFederatedQuery(endpoints, formFederatedQuery2());
+			System.out.println(result.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 }

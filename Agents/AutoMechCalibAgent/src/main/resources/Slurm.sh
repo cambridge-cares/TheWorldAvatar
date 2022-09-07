@@ -68,3 +68,4 @@ zip -r output.zip */						 # 3 - zip output files to output.zip
 cp -pr $SCRATCH_DIRECTORY/* $SLURM_SUBMIT_DIR
 cd $SLURM_SUBMIT_DIR
 rm -rf $SCRATCH_DIRECTORY || exit $?
+
