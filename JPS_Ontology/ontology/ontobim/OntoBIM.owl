@@ -1,0 +1,776 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#"
+     xml:base="http://www.theworldavatar.com/ontology/ontobim/ontoBIM"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">07 September 2022</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Building Information Modelling ontology (OntoBIM) is an ontology developed to represent the detailed information and spatial relationships of buildings and their components (walls, doors, roofs, furniture, equipment) that is available in the Industry Foundation Classes (IFC) data schema. Information about their individual characteristics such as material, readings, and dimensions is combined from IFC or other data sources.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasArea">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:range rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasModelPosition -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasModelPosition">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:range rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcObjectPlacement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumesUtilities -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#consumesUtilities">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#UtilitiesConsumption"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries -->
+
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#items_IfcRepresentation -->
+
+    <owl:ObjectProperty rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#items_IfcRepresentation">
+        <rdfs:domain rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation"/>
+        <rdfs:range rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentationItem"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/bot#adjacentZone -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/bot#adjacentZone">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
+        <owl:propertyDisjointWith rdf:resource="https://w3id.org/bot#intersectsZone"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/bot#containsZone -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/bot#containsZone">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/bot#hasBuilding -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasBuilding">
+        <rdfs:subPropertyOf rdf:resource="https://w3id.org/bot#containsZone"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Building"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/bot#hasElement -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasElement">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/bot#hasSpace -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasSpace">
+        <rdfs:subPropertyOf rdf:resource="https://w3id.org/bot#containsZone"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Storey"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Space"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/bot#hasStorey -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasStorey">
+        <rdfs:subPropertyOf rdf:resource="https://w3id.org/bot#containsZone"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Storey"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/bot#hasSubElement -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasSubElement">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Door"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/bot#intersectsZone -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/bot#intersectsZone">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasIfcId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasIfcId">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
+
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the Zone or Element of a building and its reference name that is stored as a string literal such as Basement 1, 1st Floor or Wooden Table</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#notation -->
+
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2004/02/skos/core#notation">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Area -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+    
+
+
+    <!-- http://www.purl.org/oema/infrastructure/Building -->
+
+    <owl:Class rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Door -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Door">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Floor -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Floor">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Fridge -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Fridge">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Appliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PVSuitableRoofArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#PVSuitableRoofArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TotalRoofArea"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The size of the roof of a building that is suitable for photovoltaic panel installation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Stair -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Stair">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TotalRoofArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#TotalRoofArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total size of the roof of a building</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#UtilitiesConsumption -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoubemmp/OntoUBEMMP.owl#UtilitiesConsumption"/>
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries -->
+
+    <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries"/>
+    
+
+
+    <!-- https://saref.etsi.org/core/Appliance -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Appliance">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+    </owl:Class>
+    
+
+
+    <!-- https://saref.etsi.org/core/Device -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Device">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+    </owl:Class>
+    
+
+
+    <!-- https://saref.etsi.org/core/Meter -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Meter">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+    </owl:Class>
+    
+
+
+    <!-- https://saref.etsi.org/core/Sensor -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Sensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuilding -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuilding">
+        <owl:equivalentClass rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuildingStorey -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuildingStorey">
+        <owl:equivalentClass rdf:resource="https://w3id.org/bot#Storey"/>
+        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcLocalPlacement -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcLocalPlacement">
+        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcObjectPlacement"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcObjectPlacement -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcObjectPlacement"/>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation"/>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentationItem -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentationItem"/>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeModel -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeModel">
+        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentation"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeRepresentation -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeRepresentation">
+        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcShapeModel"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSite -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSite">
+        <owl:equivalentClass rdf:resource="https://w3id.org/bot#Site"/>
+        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSolidModel -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSolidModel">
+        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcRepresentationItem"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpace -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpace">
+        <owl:equivalentClass rdf:resource="https://w3id.org/bot#Space"/>
+        <rdfs:subClassOf rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
+    </owl:Class>
+    
+
+
+    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement -->
+
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpatialStructureElement"/>
+    
+
+
+    <!-- https://w3id.org/bot#Building -->
+
+    <owl:Class rdf:about="https://w3id.org/bot#Building">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
+    </owl:Class>
+    
+
+
+    <!-- https://w3id.org/bot#Element -->
+
+    <owl:Class rdf:about="https://w3id.org/bot#Element"/>
+    
+
+
+    <!-- https://w3id.org/bot#Site -->
+
+    <owl:Class rdf:about="https://w3id.org/bot#Site">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
+    </owl:Class>
+    
+
+
+    <!-- https://w3id.org/bot#Space -->
+
+    <owl:Class rdf:about="https://w3id.org/bot#Space">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
+    </owl:Class>
+    
+
+
+    <!-- https://w3id.org/bot#Storey -->
+
+    <owl:Class rdf:about="https://w3id.org/bot#Storey">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
+    </owl:Class>
+    
+
+
+    <!-- https://w3id.org/bot#Zone -->
+
+    <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ceiling</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Door -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Door">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Door</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Floor -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Floor">
+        <rdfs:label>Floor</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Fridge -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Fridge">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fridge</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roof</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roof Area</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Stair -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Stair">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stair</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Window</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasArea -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasArea">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has area of</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has a geometric representation of</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasIfcId -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasIfcId">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has a IFC ID of</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasModelPosition -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasModelPosition">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has a model position of</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Upper interior surface component of any space in a construction, building, or infrastructure. Its IFC equivalent is IfcCoverings.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Door">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Construction for closing an opening, intended primarily for access with hinged, pivoted or sliding operation. Its IFC equivalent is IfcDoor.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Floor">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lower support component of any space in a construction, building, or infrastructure. It include a slab and flooring finish. There is no direct equivalent in the Ifc data schema. The closest concept is IfcSlab, which also encompasses roof and stair landings.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Fridge">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A commercial and home appliance that maintains a lower internal temperature relative to the room temperature.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Construction enclosing the building from above. Its IFC equivalent is IfcRoof.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#RoofArea">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The size of the roof on a building</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Stair">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Construction comprising a succession of horizontal stages (steps or landings) that make it possible to pass on foot to other levels. Its IFC equivalent is IfcStair, which is a container entity that aggregates all components - flights (IfcStairFlight) and landings (IfcSlab with type &apos;Landing&apos;).</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vertical construction usually in masonry or in concrete which bounds or subdivides a construction works and fulfills a load bearing or retaining function. Its IFC equivalent is IfcWall.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Construction for closing a vertical or near vertical opening in a wall or pitched roof that will admit light and may admit fresh air. Its IFC equivalent is IfcWindow</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasArea">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the roof of a building and the area it covers.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasGeometricRepresentation">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a component within the space or building and their geometric representation defined in the IFC data schema. The geometric representation is linked at the IfcFamily level with one instance for each design. Each duplicate element with the same design placed in the same model will refer to this IfcFamily instance, rather than individual instances of their geometry.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasIfcId">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an abstract zone or tangible element/component and their IFC ID stored in the IFC file.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#hasModelPosition">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a component within the space or building and their placement position within the model, usually in the form of coordinates defined by a native reference system in IFC.</rdfs:comment>
+    </rdf:Description>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Ceiling"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Door"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Floor"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Stair"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Window"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="https://saref.etsi.org/core/Appliance"/>
+            <rdf:Description rdf:about="https://saref.etsi.org/core/Meter"/>
+            <rdf:Description rdf:about="https://saref.etsi.org/core/Sensor"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuilding"/>
+            <rdf:Description rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcBuildingStorey"/>
+            <rdf:Description rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSite"/>
+            <rdf:Description rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/FINAL/OWL#IfcSpace"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
+            <rdf:Description rdf:about="https://w3id.org/bot#Site"/>
+            <rdf:Description rdf:about="https://w3id.org/bot#Space"/>
+            <rdf:Description rdf:about="https://w3id.org/bot#Storey"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
