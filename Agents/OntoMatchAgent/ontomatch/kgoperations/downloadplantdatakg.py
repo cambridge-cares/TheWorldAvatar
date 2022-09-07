@@ -60,16 +60,30 @@ PREFIX j.4: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts
     }}  
    FILTER(STR(?g)="{}")}} 
     '''
-    qstr_nons =  '''
-PREFIX ns2: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
-PREFIX ns1: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-PREFIX ns7: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-prefix ns5: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#>
-PREFIX ns6: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#>
-PREFIX j.4: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-   select ?Subject ?Predicate ?Object WHERE    {{ 
-   ?Subject ?Predicate ?Object
-    }}  
+    qstr_nons =   '''
+    prefix ns1: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#> 
+   prefix ns2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> 
+   prefix ns3: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> 
+  prefix ns4: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> 
+   prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+   CONSTRUCT {{ 
+   ?s a ns4:PowerPlant.
+   ?s rdfs:label ?label.
+   ?s ns2:hasRequirementsAspect [ns3:hasValue [ns3:numericalValue ?d ]].
+   ?s ns2:hasFunctionalAspect [ns4:consumesPrimaryFuel [rdfs:label ?f ]].
+   ?s ns1:isOwnedBy [ ns1:hasName ?cn ].
+   }} WHERE {{ 
+    ?s a ns4:PowerPlant.
+       ?s rdfs:label ?label.
+   ?s ns2:hasRequirementsAspect ?od.
+      ?od ns3:hasValue ?nd.
+   ?nd ns3:numericalValue ?d.
+   ?s ns2:hasFunctionalAspect ?of.
+      ?of ns4:consumesPrimaryFuel ?nf.
+   ?nf rdfs:label ?f.
+    ?s ns1:isOwnedBy ?c.
+   ?c ns1:hasName ?cn.
+   }} 
     '''
     if namespace is None:
         qstr = qstr_nons
@@ -115,6 +129,6 @@ def upload2Kg(linkfilepath):
 
 
 if __name__ == '__main__':
-    #downloadDataKg('gppd_gbr.ttl','ukpowerplants',None)
-    downloadDataKg('gppd_gbr.ttl','powerplants','http://dukes')
+    downloadDataKg('gppd_gbr_all.ttl','ukpowerplants',None)
+    #downloadDataKg('gppd_gbr.ttl','powerplants','http://dukes')
     #upload2Kg('../tmp/blackboard/linked_power_plants.ttl')

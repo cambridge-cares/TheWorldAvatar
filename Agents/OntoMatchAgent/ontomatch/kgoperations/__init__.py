@@ -14,7 +14,7 @@ class Agent():
             downloadDataKg(saveloctgt,endpoint_label,"http://Germany")
         if 'gbr' in saveloctgt.lower():
             endpoint_label = 'ukpowerplants'
-            downloadDataKg(savelocsrc,endpoint_label, None)
+            downloadDataKg(savelocsrc,'powerplants', "http://dukes")
             downloadDataKg(saveloctgt,endpoint_label,None)
 
 
