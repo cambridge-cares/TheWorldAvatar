@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,10 +22,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
+import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +48,7 @@ public class ShipInputAgent extends HttpServlet {
         EndpointConfig endpointConfig = new EndpointConfig(); 
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        QueryClient client = new QueryClient(storeClient, tsClient);
+        QueryClient queryClient = new QueryClient(storeClient, tsClient);
 
         File dataDir = new File(EnvConfig.DATA_DIR);
 
@@ -129,14 +132,26 @@ public class ShipInputAgent extends HttpServlet {
                 }
             }
 
+            if (!queryClient.initialised()) {
+                PostGISClient postGISClient = new PostGISClient();
+                Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
+                String sqlFunction = null;
+                try {
+                    sqlFunction = Files.readString(sqlFunctionFile);
+                } catch (IOException e) {
+                    LOGGER.error("Failed to read file containing custom SQL function");
+                    LOGGER.error(e.getMessage());
+                }
+                postGISClient.executeQuery(EnvConfig.DATABASE, sqlFunction);
+            }
             // initialise both triples and time series if ship is new
-            client.initialiseShipsIfNotExist(ships);
+            queryClient.initialiseShipsIfNotExist(ships);
 
             // query ship IRIs from the KG and set the IRIs in the object
-            client.setShipIRIs(ships);
+            queryClient.setShipIRIs(ships);
 
             // add a row in RDB time series data
-            client.updateTimeSeriesData(ships);
+            queryClient.updateTimeSeriesData(ships);
 
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();

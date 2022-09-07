@@ -24,7 +24,7 @@ public class ValuesPattern<T> implements GraphPattern {
 			if (valuesClass == Iri.class) {
 				bld.append(((Iri) value).getQueryString() + " ");
 			} else if (Number.class.isAssignableFrom(valuesClass)) { 
-				bld.append(String.valueOf(value) + " ");
+				bld.append(value + " ");
 			} else if (valuesClass == String.class) {
 				bld.append("\"" + value.toString() + "\" ");
 			}

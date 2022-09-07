@@ -11,6 +11,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -33,6 +34,7 @@ import org.postgis.Point;
 public class QueryClient {
     private StoreClientInterface storeClient;
     private TimeSeriesClient<Long> tsClient;
+    private DerivationClient derivationClient;
 
     static final String PREFIX = "http://www.theworldavatar.com/dispersion/";
     static final Prefix P_DISP = SparqlBuilder.prefix("disp",iri(PREFIX));
@@ -57,6 +59,24 @@ public class QueryClient {
     public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient) {
         this.storeClient = storeClient;
         this.tsClient = tsClient;
+        this.derivationClient = new DerivationClient(storeClient, PREFIX);
+    }
+
+    /**
+     * returns false if there's nothing in the KG
+     * @return
+     */
+    boolean initialised() {
+        boolean result = false;
+        SelectQuery query = Queries.SELECT();
+        Variable ship = query.var();
+        query.where(ship.isA(SHIP)).prefix(P_DISP).limit(1);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        if (!queryResult.isEmpty()) {
+            result = true;
+        }
+        return result;
     }
 
     /**
@@ -99,6 +119,8 @@ public class QueryClient {
         List<String> timeUnit = new ArrayList<>();
 
         if (!ships.isEmpty()) {
+            // ship IRI list to add derivation timestamps
+            List<String> shipIriList = new ArrayList<>();
             // triples
             ModifyQuery modify = Queries.MODIFY();
             for (Ship ship : ships) {
@@ -107,6 +129,7 @@ public class QueryClient {
 
                 String shipName = "Ship" + ship.getMmsi();
                 Iri shipIri = P_DISP.iri(shipName);
+                shipIriList.add(PREFIX + shipName);
                 modify.insert(shipIri.isA(SHIP));
 
                 // mmsi
@@ -153,6 +176,9 @@ public class QueryClient {
             }
             modify.prefix(P_OM,P_DISP);
             storeClient.executeUpdate(modify.getQueryString());
+
+            // add timestamps for derivation framework
+            derivationClient.addTimeInstance(shipIriList);
 
             // time series in rdb, 4326 is the srid
             tsClient.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit, 4326);
@@ -235,5 +261,7 @@ public class QueryClient {
             TimeSeries<Long> ts = new TimeSeries<>(time,dataIRIs,values);
             tsClient.addTimeSeriesData(ts);
         }
+
+        derivationClient.updateTimestamps(ships.stream().map(Ship::getIri).collect(Collectors.toList()));
     }
 }
