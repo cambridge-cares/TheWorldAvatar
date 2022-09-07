@@ -1,5 +1,6 @@
 package com.cmclinnovations.mods.modssimpleagent.datamodels;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;

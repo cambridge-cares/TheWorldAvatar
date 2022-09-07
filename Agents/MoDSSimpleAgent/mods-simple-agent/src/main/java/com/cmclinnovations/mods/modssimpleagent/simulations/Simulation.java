@@ -27,6 +27,7 @@ public class Simulation {
 
     public static final String DATA_ALGORITHM_NAME = "Data_Algorithm";
     public static final String DEFAULT_MOO_ALGORITHM_NAME = "MOOAlg";
+    public static final String DEFAULT_HDMR_ALGORITHM_NAME = "HDMR";
 
     public static final String DEFAULT_CASE_NAME = "Case";
     public static final String DEFAULT_CASEGROUP_NAME = "CaseGroup";
@@ -74,6 +75,10 @@ public class Simulation {
         switch (simulationType) {
             case "MOO":
                 return new MOO(request, inputFile, modsBackend);
+            case "HDMR":
+                return new HDMR(request, inputFile, modsBackend);
+            case "MOOonly":
+                return new MOOonly(request, inputFile, modsBackend);
             default:
                 throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
         }
@@ -248,6 +253,13 @@ public class Simulation {
         populateInputFile();
         generateFiles();
         modsBackend.run();
+    }
+
+    public void save() throws FileGenerationException{
+        for(Algorithm algorithm : request.getAlgorithms()) {
+            if(algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()){
+                System.out.println(modsBackend.getSimDir());
+            };}
     }
 
     public final Request getResponse() {
