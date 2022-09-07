@@ -24,7 +24,7 @@ public class PostGISClient extends ContainerClient {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to load driver for PostgreSQL", e);
         }
         return DriverManager.getConnection(
                 postgreSQLEndpoint.getJdbcURL(database),
@@ -70,7 +70,7 @@ public class PostGISClient extends ContainerClient {
             if ("3D000".equals(ex.getSQLState())) {
                 // Database doesn't exist error
             } else {
-                throw new RuntimeException("Failed to run SQL query '" + sql + "' on the server with JDBC URL '"
+                throw new RuntimeException("Failed to run SQL update '" + sql + "' on the server with JDBC URL '"
                         + postgreSQLEndpoint.getJdbcURL("databaseName") + "'.", ex);
             }
         }
