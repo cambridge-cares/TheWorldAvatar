@@ -1264,7 +1264,7 @@ def link_entity_pairs(link_file, iri_pairs):
     #BASE = namespace
 
     graph = rdflib.Graph()
-    bind_prefixes(graph)
+    #bind_prefixes(graph)
     #TODO: important modification to debug uk_digitaltwin run
     for iri_1, iri_2 in iri_pairs:
         if type(iri_2) != str:
