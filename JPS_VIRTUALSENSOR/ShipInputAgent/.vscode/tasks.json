@@ -19,26 +19,16 @@
         {
             "type": "shell",
             "label": "compose-deploy-internal",
-            "command": "bash",
+            "command": "./stack.sh",
             "args": [
-                "-c",
-                "./stack.sh start ${input:stackName} ${config:debug.port}"
-            ]
-        },
-        {
-            "type": "shell",
-            "label": "compose-build-deploy",
-            "command": "sleep 1",
-            "dependsOn": [
-                "compose-build",
-                "compose-deploy-internal"
+                "start",
+                "${input:stackName}",
+                "--debug-port",
+                "${input:debug.port}"
             ],
-            "dependsOrder": "sequence",
-            "windows": {
-                "options": {
-                    "shell": {
-                        "executable": "powershell"
-                    }
+            "options": {
+                "shell": {
+                    "executable": "bash"
                 }
             }
         },
@@ -56,6 +46,15 @@
                     }
                 }
             }
+        },
+        {
+            "type": "shell",
+            "label": "compose-build-deploy",
+            "dependsOn": [
+                "compose-build",
+                "compose-deploy"
+            ],
+            "dependsOrder": "sequence"
         }
     ],
     "inputs": [
@@ -64,6 +63,16 @@
             "type": "promptString",
             "description": "Name your stack.",
             "default": "TEST-STACK"
+        },
+        {
+            "id": "debug.port",
+            "type": "command",
+            // Get the last debug port from the cache file
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "bash ./stack.sh ports read",
+                "useFirstResult": true
+            }
         }
     ]
 }
