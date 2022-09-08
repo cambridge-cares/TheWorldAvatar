@@ -15,6 +15,9 @@ services:
       - LAST_READ_FILE=/misc/last_read_file
       - TIME_OFFSET_FILE=/misc/time_offset_file
       - GEOSERVER_WORKSPACE=dispersion
+      - EMISSIONS_AGENT_URL=http://localhost:8080/Ship/EmissionsAgent
+      - EMISSIONS_AGENT_IRI=http://theworldavatar.com/dispersion/EmissionsAgent
+      - PYTHON_SERVICE_URL=http://host.docker.internal:5000
     configs:
       - postgis
       - blazegraph

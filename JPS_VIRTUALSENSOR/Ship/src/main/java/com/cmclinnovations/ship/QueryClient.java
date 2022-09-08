@@ -1,5 +1,6 @@
 package com.cmclinnovations.ship;
 
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -11,19 +12,26 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
+import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
+import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.postgis.Point;
@@ -32,6 +40,7 @@ import org.postgis.Point;
  * sends sparql queries
  */
 public class QueryClient {
+    private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
     private StoreClientInterface storeClient;
     private TimeSeriesClient<Long> tsClient;
     private DerivationClient derivationClient;
@@ -46,12 +55,14 @@ public class QueryClient {
     private static final Iri COURSE_OVER_GROUND = P_DISP.iri("CourseOverGround");
     private static final Iri MMSI = P_DISP.iri("MMSI");
     private static final Iri LOCATION = P_DISP.iri("Location");
+    private static final Iri SHIP_TYPE = P_DISP.iri("ShipType");
     private static final Iri MEASURE = P_OM.iri("Measure");
 
     // properties
     private static final Iri HAS_MMSI = P_DISP.iri("hasMMSI");
     private static final Iri HAS_SPEED = P_DISP.iri("hasSpeed");
     private static final Iri HAS_COURSE = P_DISP.iri("hasCourse");
+    private static final Iri HAS_SHIPTYPE = P_DISP.iri("hasShipType");
     private static final Iri HAS_LOCATION = P_DISP.iri("hasLocation");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
@@ -83,7 +94,7 @@ public class QueryClient {
      * first query existing instances with MMSI values, then initialise if do not exist
      * @param ships
      */
-    void initialiseShipsIfNotExist(List<Ship> ships) {
+    List<Ship> initialiseShipsIfNotExist(List<Ship> ships) {
         SelectQuery query = Queries.SELECT();
 
         Variable mmsi = query.var();
@@ -106,6 +117,7 @@ public class QueryClient {
             }
         }
         createShip(newShipsToInitialise);
+        return newShipsToInitialise;
     }
 
     /**
@@ -129,7 +141,9 @@ public class QueryClient {
 
                 String shipName = "Ship" + ship.getMmsi();
                 Iri shipIri = P_DISP.iri(shipName);
-                shipIriList.add(PREFIX + shipName);
+                String shipIriString = PREFIX + shipName;
+                shipIriList.add(shipIriString);
+                ship.setIri(shipIriString);
                 modify.insert(shipIri.isA(SHIP));
 
                 // mmsi
@@ -139,6 +153,14 @@ public class QueryClient {
                 modify.insert(shipIri.has(HAS_MMSI,mmsiProperty));
                 modify.insert(mmsiProperty.isA(MMSI).andHas(HAS_VALUE, mmsiMeasure));
                 modify.insert(mmsiMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getMmsi()));
+
+                // ship type (integer)
+                Iri shipTypeProperty = P_DISP.iri(shipName +  "ShipType");
+                Iri shipTypeMeasure = P_DISP.iri(shipName +  "ShipTypeMeasure");
+
+                modify.insert(shipIri.has(HAS_SHIPTYPE, shipTypeProperty));
+                modify.insert(shipTypeProperty.isA(SHIP_TYPE).andHas(HAS_VALUE, shipTypeMeasure));
+                modify.insert(shipTypeMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getShipType()));
 
                 // Location time series
                 Iri locationProperty = P_DISP.iri(shipName + "Location");
@@ -263,5 +285,98 @@ public class QueryClient {
         }
 
         derivationClient.updateTimestamps(ships.stream().map(Ship::getIri).collect(Collectors.toList()));
+    }
+
+    /**
+     * adds the OntoAgent instance
+     */
+    void initialiseAgent() {
+        Iri service = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service");
+        Iri operation = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation");
+        Iri hasOperation = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasOperation");
+        Iri hasHttpUrl = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl");
+        Iri hasInput = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasInput");
+        Iri hasMandatoryPart = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasMandatoryPart");
+        Iri hasType = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasType");
+        
+        Iri operationIri = iri(PREFIX + UUID.randomUUID());
+        Iri inputIri = iri(PREFIX + UUID.randomUUID());
+        Iri partIri = iri(PREFIX + UUID.randomUUID());
+
+        ModifyQuery modify = Queries.MODIFY();
+
+        modify.insert(iri(EnvConfig.EMISSIONS_AGENT_IRI).isA(service).andHas(hasOperation, operationIri));
+		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(EnvConfig.EMISSIONS_AGENT_URL)).andHas(hasInput, inputIri));
+        modify.insert(inputIri.has(hasMandatoryPart, partIri));
+        modify.insert(partIri.has(hasType, SHIP)).prefix(P_DISP);
+
+        storeClient.executeUpdate(modify.getQueryString());
+    }
+
+    /**
+     * 
+     * @param ships
+     */
+    void createNewDerivations(List<Ship> ships) {
+        // CompletableFuture<Derivation> getAsync = null;
+
+        // for (Ship ship : ships) {
+        //     getAsync = CompletableFuture.supplyAsync(() -> {
+        //         Derivation derivation;
+        //         try {
+        //             derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+        //         } catch (IOException e) {
+        //             throw new RuntimeException("Failed to create new derivation", e);
+        //         }
+        //         return derivation;
+        //     });
+        // }
+
+        for (Ship ship : ships) {
+            try {
+                Derivation derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // if (getAsync != null) {
+        //     getAsync.join();
+        // }
+    }
+
+    /**
+     * used by Emissions agent to query a ship given an IRI
+     * @param shipIri
+     * @return
+     */
+    Ship getShip(String shipIri) {
+        // step 1: query measure IRIs for each ship and group them
+        SelectQuery query = Queries.SELECT();
+
+        Variable speed = query.var();
+        Variable shipType = query.var();
+
+        GraphPattern gp = iri(shipIri).has(PropertyPaths.path(HAS_SPEED,HAS_VALUE),speed)
+        .andHas(PropertyPaths.path(HAS_SHIPTYPE,HAS_VALUE,HAS_NUMERICALVALUE), shipType);
+
+        query.prefix(P_DISP,P_OM).where(gp);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        String speedMeasure;
+        int shipTypeInt;
+        if (queryResult.length() == 1) {
+            speedMeasure = queryResult.getJSONObject(0).getString(speed.getQueryString().substring(1));
+            shipTypeInt = queryResult.getJSONObject(0).getInt(shipType.getQueryString().substring(1));
+        } else {
+            throw new RuntimeException("Incorrect number of ships queried");
+        }
+
+        int shipSpeed = tsClient.getLatestData(speedMeasure).getValuesAsInteger(speedMeasure).get(0);
+        Ship ship = new Ship();
+        ship.setSpeed(shipSpeed);
+        ship.setShipType(shipTypeInt);
+        return ship;
     }
 }

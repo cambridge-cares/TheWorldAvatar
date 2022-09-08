@@ -13,6 +13,7 @@ public class Ship {
     private int mmsi;
     private int speed;
     private int course;
+    private int shipType;
     private double lat;
     private double lon;
     private Instant timestamp; // timestamp when data was obtained
@@ -27,6 +28,7 @@ public class Ship {
         this.course = json.getInt("COURSE");
         this.lat = json.getDouble("LAT");
         this.lon = json.getDouble("LON");
+        this.shipType = json.getInt("SHIPTYPE");
         this.timestamp = LocalDateTime.parse(json.getString("TIMESTAMP")).toInstant(ZoneOffset.UTC).plus(Duration.ofHours(timeOffset));
     }
 
@@ -83,5 +85,12 @@ public class Ship {
         point.setSrid(4326);
 
         return point;
+    }
+
+    public void setShipType(int shipType) {
+        this.shipType = shipType;
+    }
+    public int getShipType() {
+        return this.shipType;
     }
 }

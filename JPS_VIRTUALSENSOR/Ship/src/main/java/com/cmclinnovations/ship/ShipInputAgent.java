@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-@WebServlet(urlPatterns = {"/update"})
+@WebServlet(urlPatterns = {"/ShipInputAgent"})
 public class ShipInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ShipInputAgent.class);
     private static final String JSON_EXT = ".json";
@@ -92,6 +92,9 @@ public class ShipInputAgent extends HttpServlet {
                     LOGGER.error(e.getMessage());
                 }
             } else {
+                // this adds the OntoAgent triples, only do this once
+                queryClient.initialiseAgent();
+
                 // write the first file
                 updateFile(timeOffsetFile, String.valueOf(0));
                 timeOffset = 0;
@@ -142,16 +145,18 @@ public class ShipInputAgent extends HttpServlet {
                     LOGGER.error("Failed to read file containing custom SQL function");
                     LOGGER.error(e.getMessage());
                 }
-                postGISClient.executeQuery(EnvConfig.DATABASE, sqlFunction);
+                postGISClient.executeUpdate(EnvConfig.DATABASE, sqlFunction);
             }
             // initialise both triples and time series if ship is new
-            queryClient.initialiseShipsIfNotExist(ships);
+            List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
 
             // query ship IRIs from the KG and set the IRIs in the object
             queryClient.setShipIRIs(ships);
 
             // add a row in RDB time series data
             queryClient.updateTimeSeriesData(ships);
+
+            queryClient.createNewDerivations(newlyCreatedShips);
 
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
