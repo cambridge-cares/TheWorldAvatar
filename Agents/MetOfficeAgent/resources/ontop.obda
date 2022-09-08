@@ -1,0 +1,12 @@
+[PrefixDeclaration]
+geo:		http://www.opengis.net/ont/geosparql#
+xsd:		http://www.w3.org/2001/XMLSchema#
+ems:        https://www.theworldavatar.com/kg/ontoems/
+
+[MappingDeclaration] @collection [[
+mappingId   station_location
+target      <{station_iri}> a ems:Reporting Station ; ems:hasObservationLocation <{loc_iri}> .
+            <{loc_iri}> a geo:Feature ; geo:hasGeometry <{geom_iri}> . 
+            <{geom_iri}> geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral .
+source      SELECT ST_AsText(wkb_geometry) as wkt, station_iri, loc_iri, geom_iri FROM metoffice
+]] 

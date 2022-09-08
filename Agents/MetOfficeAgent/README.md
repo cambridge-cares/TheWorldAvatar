@@ -21,6 +21,7 @@ Retrieving data from the MetOffice DataPoint API requires registration for the [
 3) LAYERNAME
 4) DATABASE
 5) GEOSERVER_WORKSPACE
+6) ONTOP_FILE
 
 ### **2) Accessing Github's Container registry**
 

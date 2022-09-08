@@ -12,6 +12,7 @@ services:
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres
       - GEOSERVER_WORKSPACE=metoffice
+      - ONTOP_FILE=/resources/ontop.obda
     ports:
       - "5000:5000"
     volumes:
