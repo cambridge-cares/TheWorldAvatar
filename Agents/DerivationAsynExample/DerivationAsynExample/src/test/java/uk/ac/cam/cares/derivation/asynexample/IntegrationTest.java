@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -8,6 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.servlet.ServletException;
 
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
@@ -88,7 +90,8 @@ public class IntegrationTest extends TestCase {
                                                         .withExposedPorts(9999); // the port is set as 9999 to match with the value set in the docker image
 
     @BeforeAll
-    public static void initialise() throws NoSuchMethodException, SecurityException {
+    public static void initialise()
+            throws NoSuchMethodException, SecurityException, ClientProtocolException, IOException {
         // create the container in a clean state
         try {
             blazegraph.start();

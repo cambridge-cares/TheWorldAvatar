@@ -113,6 +113,19 @@ public class DerivationInputsTest {
 	}
 
 	@Test
+	public void testGetAllIris() {
+		JSONObject mappedInstances = new JSONObject();
+		mappedInstances.put(class1, new JSONArray(Arrays.asList(instance1_1, instance1_2)));
+		mappedInstances.put(class2, new JSONArray(Arrays.asList(instance2_1, instance2_2, instance2_3)));
+		mappedInstances.put(class3, new JSONArray(Arrays.asList(instance3_1)));
+		DerivationInputs devInputs = new DerivationInputs(mappedInstances);
+
+		Assert.assertTrue(
+				equalLists(Arrays.asList(instance1_1, instance1_2, instance2_1, instance2_2, instance2_3, instance3_1),
+						devInputs.getAllIris()));
+	}
+
+	@Test
 	public void testAddToInputs1() {
 		// initialise with constructor DerivationInputs(JSONObject mappedInputs)
 		JSONObject mappedInstances = new JSONObject();
