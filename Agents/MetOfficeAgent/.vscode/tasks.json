@@ -16,9 +16,11 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "options": {
-                "shell": {
-                    "executable": "bash"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
                 }
             }
         },
@@ -32,9 +34,11 @@
                 "--debug-port",
                 "${input:debug.port}"
             ],
-            "options": {
-                "shell": {
-                    "executable": "bash"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
                 }
             }
         },
@@ -75,7 +79,10 @@
         {
             "type": "shell",
             "label": "update-py4jps",
-            "command": "build_py4jps_resources.sh",         
+            // Linux (n/a option to be commented out):
+            "command": "bash ./build_py4jps_resources.sh",   
+            // Windows (n/a option to be commented out): 
+            // "command": "build_py4jps_resources.sh",      
         }
     ],
     "inputs": [

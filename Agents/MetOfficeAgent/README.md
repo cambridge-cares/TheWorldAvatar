@@ -86,8 +86,32 @@ $ cd <REPO NAME>
 $ git checkout dev-MetOfficeAgent-withinStack
 $ git pull
 ```
-
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
+
+Before starting development or spinning up the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). As the Docker image requires the[JPS_BASE_LIB] and [Stack-Clients] `.jar` files to be wrapped by [py4jps], they need to be copied over manually to the respective folders as specified in the [Dockerfile] or can be created remotly by running the *Update JPSRM and Build and Debug* Debug Configuration. In order to build these resources, Java and Maven need to be available on the remote machine. In order to pull TWA specific Maven packages from the [Github package repository], `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder on the remote machine (typically located at user's root directory)
+
+```bash
+# Java >= 11
+# Test installation
+java -version
+javac -verison
+# Install in case it is missing
+sudo apt install openjdk-11-jdk-headless
+
+# MAVEN 
+# Test installation
+mvn -version
+# Install in case it is missing
+sudo apt install maven
+```
+To prevent and identify potential permission issues on Linux machines, the following commands can be used to verify and manage permissions:
+
+```bash
+# Check permissions
+ls -l <REPO NAME>
+# Grant permissions
+chmod -R +rwx <REPO NAME>
+```
 
 # How to use the Agent
 
@@ -125,6 +149,7 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2022
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [DataPoint]: https://www.metoffice.gov.uk/services/data/datapoint/about
 [Container registry on Github]: ghcr.io
+[Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 [http://localhost:5000/]: http://localhost:5000/
 [Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
