@@ -18,8 +18,8 @@ Retrieving data from the MetOffice DataPoint API requires registration for the [
 
 1) STACK_NAME
 2) API_KEY (MetOffice DataPoint API key)
-3) LAYERNAME
-4) DATABASE
+3) DATABASE (database name in PostGIS)
+4) LAYERNAME (layer name in Geoserver, also the table name for geospatial features in PostGIS)
 5) GEOSERVER_WORKSPACE
 6) ONTOP_FILE
 

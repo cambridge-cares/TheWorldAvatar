@@ -22,6 +22,7 @@ from metoffice.kgutils.javagateway import stackClientsGw
 global DATAPOINT_API_KEY
 global DB_URL, DB_USER, DB_PASSWORD
 global QUERY_ENDPOINT, UPDATE_ENDPOINT
+global ONTOP_URL
 
 
 def retrieve_settings():
@@ -31,7 +32,8 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATAPOINT_API_KEY, DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
+    global DATAPOINT_API_KEY, DB_URL, DB_USER, DB_PASSWORD, \
+           QUERY_ENDPOINT, UPDATE_ENDPOINT, ONTOP_URL
 
     # Extract MetOffice API key
     DATAPOINT_API_KEY = os.getenv('API_KEY')    
@@ -48,6 +50,7 @@ def retrieve_settings():
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
+    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
 
     # Retrieve endpoint configurations from Stack clients
     containerClient = stackClientsView.ContainerClient()
@@ -57,6 +60,9 @@ def retrieve_settings():
     # PostgreSQL/PostGIS
     pg = stackClientsView.PostGISEndpointConfig("","","","","")
     pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
+    # Ontop
+    ont = stackClientsView.OntopEndpointConfig("","","","","")
+    ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
 
 
     # Extract PostgreSQL/PostGIS database URL
@@ -75,11 +81,13 @@ def retrieve_settings():
     DB_USER = pg_conf.getUsername()
     DB_PASSWORD = pg_conf.getPassword()
 
-
     # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent
     # for Blazegraph)
     QUERY_ENDPOINT = bg_conf.getUrl("kb")
     UPDATE_ENDPOINT = QUERY_ENDPOINT
+
+    # Extract ONTOP endpoint
+    ONTOP_URL = ont_conf.getURL()
 
 
 # Run when module is imported
