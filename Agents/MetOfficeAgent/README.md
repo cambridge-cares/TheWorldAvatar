@@ -2,7 +2,9 @@
 
 The `MetOffice` agent is an input (and output) agent which queries data from the MetOffice API, also known as [DataPoint], and instantiates it according to the [OntoEMS] ontology in the [TheWorldAvatar] knowledge graph.
 
-It is designed to interact with the stack spun up by the stack manager.
+It is designed to interact with the stack spun up by the stack manager. 
+
+<span style="color:red">Tests are currently still excluded and have not been updated to work with the stack architecture yet.</span>
 
 # Setup
 
@@ -10,7 +12,7 @@ This section specifies the minimum requirement to build the docker image.
 
 ## Prerequisites
 
-Retrieving data from the MetOffice DataPoint API requires registration for the [DataPoint] platform. Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file]:
+Retrieving data from the MetOffice DataPoint API requires registration for the [DataPoint] platform. Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
 
 ### **1) The environment variables used by the agent container**
 
@@ -34,7 +36,7 @@ In order to avoid potential launching issues using the provided `tasks.json` she
 
 ## Spinning up the stack
 
-Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a bash terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
+Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
 
 ```bash
 # Start the stack (please note that this might take some time)
@@ -46,6 +48,8 @@ bash ./stack.sh stop <STACK NAME>
 # Remove stack services (incl. volumes)
 bash ./stack.sh remove <STACK_NAME> -v
 ```
+
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
 
 ## Deploying the agent to the stack
 

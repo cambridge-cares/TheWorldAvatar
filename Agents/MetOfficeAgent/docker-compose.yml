@@ -5,9 +5,12 @@ services:
     image: ghcr.io/cambridge-cares/metoffice_agent:1.0.0-SNAPSHOT
     environment:
       - STACK_NAME=${STACK_NAME}
-      - API_KEY=
-      - LAYERNAME=metoffice # also name of the table in PostGIS
-      - DATABASE=postgres   # currently ontop reads from the default database
+      - API_KEY=781fcade-8eaa-44c7-84e8-014f92857aa1
+      # Layer name in geoserver, also table name in PostGIS
+      - LAYERNAME=metoffice
+      # Specify PostGIS/PostgreSQL database name
+      # (default name "postgres" required for Ontop to work)
+      - DATABASE=postgres
       - GEOSERVER_WORKSPACE=metoffice
     ports:
       - "5000:5000"

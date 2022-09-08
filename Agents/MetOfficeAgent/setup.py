@@ -13,7 +13,6 @@ setup(
     include_package_data=True,
     install_requires= [
         'apscheduler~=3.9',
-        'configobj~=5.0',
         'docopt~=0.6',
         'flask~=2.1',
         'pandas~=1.3',

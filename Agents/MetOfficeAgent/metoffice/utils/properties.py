@@ -1,16 +1,15 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 31 Mar 2022                            #
+# Date: 08 Sep 2022                            #
 ################################################
 
-# The purpose of this module is to read the properties file with relevant
-# settings (i.e. for the Time Series Client) and the MetOffice API key
+# The purpose of this module is to retrieve relevant properties and settings 
+# (i.e. for the Time Series Client) from environment variables and Stack clients
 
 import os
+import warnings
 
 #import agentlogging
-from configobj import ConfigObj
-from pathlib import Path
 
 from metoffice.kgutils.javagateway import stackClientsGw
 
@@ -37,11 +36,11 @@ def retrieve_settings():
     # Extract MetOffice API key
     DATAPOINT_API_KEY = os.getenv('API_KEY')    
     if DATAPOINT_API_KEY is None:
-        #logger.error('API_KEY is missing in environment variables')
-        raise ValueError('API_KEY is missing in environment variables')
+        #logger.error('"API_KEY" is missing in environment variables.')
+        raise ValueError('"API_KEY" is missing in environment variables.')
     if DATAPOINT_API_KEY == '':
-        #logger.error('No "API_KEY" value has been provided in environment variables')
-        raise ValueError('No "API_KEY" value has been provided in environment variables')
+        #logger.error('No "API_KEY" value has been provided in environment variables.')
+        raise ValueError('No "API_KEY" value has been provided in environment variables.')
     
 
     # Create module views to relevant Stack clients
@@ -52,65 +51,35 @@ def retrieve_settings():
 
     # Retrieve endpoint configurations from Stack clients
     containerClient = stackClientsView.ContainerClient()
+    # Blazegraph
     bg = stackClientsView.BlazegraphEndpointConfig("","","","","")
     bg_conf = containerClient.readEndpointConfig("blazegraph", bg.getClass())
-
+    # PostgreSQL/PostGIS
     pg = stackClientsView.PostGISEndpointConfig("","","","","")
     pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
 
 
-    # Extract PostgreSQL database URL
+    # Extract PostgreSQL/PostGIS database URL
     db_name = os.getenv('DATABASE')
-    #TODO: elaborate
-    # if db_name is None:
-    #     #logger.error('API_KEY is missing in environment variables')
-    #     raise ValueError('API_KEY is missing in environment variables')
-    # if db_name != '':
-    #     #logger.error('No "API_KEY" value has been provided in environment variables')
-    #     raise ValueError('No "API_KEY" value has been provided in environment variables')
+    if db_name is None:
+        #logger.error('"DATABASE" name is missing in environment variables.')
+        raise ValueError('"DATABASE" name is missing in environment variables.')
+    if db_name == '':
+        #logger.error('No "DATABASE" value has been provided in environment variables.')
+        raise ValueError('No "DATABASE" value has been provided in environment variables.')
+    if db_name != 'postgres':
+        #logger.warning(f'Provided "DATABASE" name {db_name} does not match default database name "postgres".')
+        warnings.warn(f'Provided "DATABASE" name {db_name} does not match default database name "postgres".')
     DB_URL = pg_conf.getJdbcURL(db_name)
-    # except KeyError:
-    #     #logger.error('Key "db.url" is missing in properties file: ' + filepath)
-    #     raise KeyError('Key "db.url" is missing in properties file: ' + filepath)
-    # if DB_URL == '':
-    #     #logger.error('No "db.url" value has been provided in properties file: ' + filepath)
-    #     raise KeyError('No "db.url" value has been provided in properties file: ' + filepath)
-
-    # Extract PostgreSQL database username
+    # Extract PostgreSQL database username and password
     DB_USER = pg_conf.getUsername()
-    # except KeyError:
-    #     #logger.error('Key "db.user" is missing in properties file: ' + filepath)
-    #     raise KeyError('Key "db.user" is missing in properties file: ' + filepath)
-    # if DB_USER == '':
-    #     #logger.error('No "db.user" value has been provided in properties file: ' + filepath)
-    #     raise KeyError('No "db.user" value has been provided in properties file: ' + filepath)
-
-    # Extract PostgreSQL database password
     DB_PASSWORD = pg_conf.getPassword()
-    # except KeyError:
-    #     #logger.error('Key "db.password" is missing in properties file: ' + filepath)
-    #     raise KeyError('Key "db.password" is missing in properties file: ' + filepath)
-    # if DB_PASSWORD == '':
-    #     #logger.error('No "db.password" value has been provided in properties file: ' + filepath)
-    #     raise KeyError('No "db.password" value has been provided in properties file: ' + filepath)
 
-    # Extract SPARQL Query endpoint of KG
+
+    # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent
+    # for Blazegraph)
     QUERY_ENDPOINT = bg_conf.getUrl("kb")
-    # except KeyError:
-    #     #logger.error('Key "sparql.query.endpoint" is missing in properties file: ' + filepath)
-    #     raise KeyError('Key "sparql.query.endpoint" is missing in properties file: ' + filepath)
-    # if QUERY_ENDPOINT == '':
-    #     #logger.error('No "sparql.query.endpoint" value has been provided in properties file: ' + filepath)
-    #     raise KeyError('No "sparql.query.endpoint" value has been provided in properties file: ' + filepath)
-
-    # Extract SPARQL Update endpoint of KG
-    UPDATE_ENDPOINT = bg_conf.getUrl("kb")
-    # except KeyError:
-    #     #logger.error('Key "sparql.update.endpoint" is missing in properties file: ' + filepath)
-    #     raise KeyError('Key "sparql.update.endpoint" is missing in properties file: ' + filepath)
-    # if UPDATE_ENDPOINT == '':
-    #     #logger.error('No "sparql.update.endpoint" value has been provided in properties file: ' + filepath)
-    #     raise KeyError('No "sparql.update.endpoint" value has been provided in properties file: ' + filepath)
+    UPDATE_ENDPOINT = QUERY_ENDPOINT
 
 
 # Run when module is imported
