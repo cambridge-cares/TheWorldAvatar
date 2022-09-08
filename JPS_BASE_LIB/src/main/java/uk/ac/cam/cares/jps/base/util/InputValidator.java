@@ -1,13 +1,14 @@
 package uk.ac.cam.cares.jps.base.util;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.jena.irix.IRIs;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QueryParseException;
 import org.apache.jena.riot.RiotException;
-import org.apache.jena.riot.system.IRIResolver;
 import org.apache.jena.update.UpdateException;
 import org.apache.jena.update.UpdateFactory;
 import org.json.JSONException;
@@ -19,49 +20,56 @@ public class InputValidator {
 
 	public InputValidator() {
 	}
-	/** method to check if it's a valid true or false
+
+	/**
+	 * method to check if it's a valid true or false
 	 * 
 	 * @param boolCheck
 	 * @return
 	 */
 	public static boolean checkBoolean(Object boolCheck) {
 		String checkBool = boolCheck.toString().toLowerCase();
-    	return "true".equals(checkBool) || "false".equals(checkBool);
+		return "true".equals(checkBool) || "false".equals(checkBool);
 	}
-	/** because resolveIRI, checkIRI would return false 
+
+	/**
+	 * because resolveIRI, checkIRI would return false
 	 * when IRI is valid, this is used to avoid confusion
+	 * 
 	 * @param iri
 	 * @return
 	 */
 	public static boolean checkIfValidIRI(String iriStr) {
-		boolean f = true;
+		boolean f = false;
 		try {
-			//TODO-LO: There is something wrong with IRIResolver.checkIRI, because "abcd" passes just as well as irradiation sensor IRI
-			f = IRIResolver.checkIRI(iriStr);
-			
-			}catch (RiotException ex) {
-				throw new RiotException();
-			}
-			catch (Exception ex) {
-				throw new JPSRuntimeException("");
-			}
-		return (!f& checkIfURLpattern(iriStr));
+			f = IRIs.check(iriStr);
+
+		} catch (RiotException ex) {
+			throw new RiotException();
+		} catch (Exception ex) {
+			throw new JPSRuntimeException("");
 		}
-	/** check if it fits a URL format
+		return (f && checkIfURLpattern(iriStr));
+	}
+
+	/**
+	 * check if it fits a URL format
 	 * 
 	 * @param iriStr
 	 * @return
 	 */
 	public static boolean checkIfURLpattern(String iriStr) {
 		try {
-			URL url = new URL(iriStr); 
-			url.toURI(); 
+			URL url = new URL(iriStr);
+			url.toURI();
 			return true;
-			} catch (MalformedURLException | URISyntaxException e) {
-				return false;
-				}
+		} catch (MalformedURLException | URISyntaxException e) {
+			return false;
+		}
 	}
-	/** Check if String represents a file
+
+	/**
+	 * Check if String represents a file
 	 * 
 	 * @param filePath
 	 * @return
@@ -69,10 +77,13 @@ public class InputValidator {
 	public static boolean checkIfFilePath(String filePath) {
 		File file = new File(filePath);
 		return file.isFile();
-		
+
 	}
-	/** check if file exists in computer
+
+	/**
+	 * check if file exists in computer
 	 * Can't be used if the directory is not established (aka created)
+	 * 
 	 * @param iri
 	 * @return
 	 */
@@ -80,7 +91,9 @@ public class InputValidator {
 		File file = new File(filePath);
 		return file.exists();
 	}
-	/** check if file was recently modified. 
+
+	/**
+	 * check if file was recently modified.
 	 * Second parameter should be time before simulation run
 	 * 
 	 * @param filePath location of file
@@ -89,67 +102,77 @@ public class InputValidator {
 	 */
 	public static boolean checkIfFileGotUpdated(String filePath, long timeLast) {
 		if (checkIfValidFile(filePath)) {
-			
+
 			File file = new File(filePath);
 			long timeModified = file.lastModified();
-			if (timeModified > timeLast ) {
+			if (timeModified > timeLast) {
 				return true;
-			}else return false;
-		}return false;
+			} else
+				return false;
+		}
+		return false;
 	}
-	/** checks if Integer by throwing Exception otherwise
+
+	/**
+	 * checks if Integer by throwing Exception otherwise
 	 * 
 	 * @param str
 	 * @return
 	 */
-	public static boolean checkIfInteger(String str)	 {
-	     try{
-	         Integer.parseInt(str);
-	         return true;
-	     }catch(NumberFormatException e){
-	         return false;
-	     }
-	 }
-	/** checks if JSONOBject by throwing Exception otherwise. 
+	public static boolean checkIfInteger(String str) {
+		try {
+			Integer.parseInt(str);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * checks if JSONOBject by throwing Exception otherwise.
 	 * 
 	 * @param str
 	 * @return
 	 */
 	public static boolean checkIfValidJSONObject(String str) {
 		try {
-	        new JSONObject(str);
-	    } catch (JSONException ex) {
-	            return false;
-	    }
-	    return true;
+			new JSONObject(str);
+		} catch (JSONException ex) {
+			return false;
+		}
+		return true;
 	}
-	/** checks if SPARQL Query by throwing Exception otherwise. 
+
+	/**
+	 * checks if SPARQL Query by throwing Exception otherwise.
 	 * 
 	 * @param str
 	 * @return
 	 */
 	public static boolean checkIfValidQuery(String str) {
-		try{
+		try {
 			QueryFactory.create(str);
 			return true;
-		}catch (QueryParseException e) {
+		} catch (QueryParseException e) {
 			return false;
 		}
 	}
-	/** checks if SPARQL Query by throwing Exception otherwise. 
+
+	/**
+	 * checks if SPARQL Query by throwing Exception otherwise.
 	 * 
 	 * @param str
 	 * @return
 	 */
 	public static boolean checkIfValidUpdate(String str) {
-		try{
+		try {
 			UpdateFactory.create(str);
 			return true;
-		}catch (UpdateException e) {
+		} catch (UpdateException e) {
 			return false;
-		}catch (QueryParseException e) {
+		} catch (QueryParseException e) {
 			return false;
-		}catch (Exception e) { //Still not sure what the updateException is called. 
+		} catch (Exception e) { // Still not sure what the updateException is called.
 			return false;
 		}
 	}

@@ -13,3 +13,7 @@ dist/
 .vscode/
 
 # Miscellaneous files/folders:
+*.geojson
+*.json
+!meta.json
+!tree.json

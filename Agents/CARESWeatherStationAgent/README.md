@@ -1,34 +1,35 @@
 # CARES Weather Station input agent
 
-This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the weather station located in the vicinity of the CARES Lab. It's only purpose is to retrieve new data (if available) from the API and download it into 
+This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the weather station located in the vicinity of the CARES Lab. Its only purpose is to retrieve new data (if available) from the API and download it into 
 the corresponding database, as well as, instantiating KG instances and connection when called for the first time. The 
 agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
-from the JPS base lib to interact with both the KG and database.
+from the JPS_BASE_LIB to interact with both the KG and database.
 
 Before explaining the usage of the agent, we will briefly summarize the weather station API that is
 contacted by one of the classes in this package to retrieve data.
 
 ## Weather Station API
 
-We will here briefly describe the weather station API. The official documentation can be found [here](https://docs.google.com/document/d/1eKCnKXI9xnoMGRRzOL1xPCBihNV2rOet08qpE_gArAY/edit), .
+Here, we will briefly describe the weather station API. The official documentation can be found at this [link](https://docs.google.com/document/d/1eKCnKXI9xnoMGRRzOL1xPCBihNV2rOet08qpE_gArAY/edit).
 
 
 ### Data retrieval
-The daily weather readings are returned with. A new reading is made by the sensor in an interval of 5 minutes.
+The daily weather readings are returned. A new reading is made by the sensor in an interval of 5 minutes.
 
 #### The endpoint
-The actual endpoint has the following structure and controls what type of data is retrieved and in which form:
+The actual endpoint has the following structure: 
 ```
 https://api.weather.com/v2/pws/observations/all/1day?stationId=[<stationId>]&format=json&units=s&numericPrecision=decimal&apiKey=[<apiKey>]
 ```
-where `[stationId]` is the id of the weather station which is taking the physical readings.  The  
-`[apiKey]` is the key needed to access the API. By setting `units=s` one ensures that the readings are returned in SI units. 
+where `[stationId]` is the id of the weather station which is taking the physical readings.  The `[apiKey]` is the key needed to access the API. By setting `units=s` one ensures that the values of the readings correspond to SI units. 
 Finally, the option `numericPrecision=decimal` enables the numerical readings to be returned in decimal values (unless according to the API the field under observation can only return an integer. See also the [API documentation](#Weather-Station-API)).
+The endpoint controls what type of data is retrieved and its form.
+
 #### Example readings
-Readings are returned in the response body in form of a JSON Object which consist of key-value pair. The JSONObject has the 
+Readings are returned to the response body in form of a JSON Object which consist of key-value pair. The JSONObject has the 
 key:"observations", which contains a JSONArray containing JSONObjects. Each of these individual JSONObjects found within the JSONArray
 provide the weather readings corresponding to a particular timestamp.
-The following examples of what the JSONObject looks like with the first and last image corresponding to the first and last entry of the JSONArray. The second image corresponds to weather data readings
+The following images are examples of what the JSONObject looks like with the first and last image corresponding to the first and last entry of the JSONArray. The second image corresponds to weather data readings
 taken at a timestamp between the first and third image.
 
 ![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading1.png "The earliest weather data reading")
@@ -57,7 +58,7 @@ The agent property file only needs to contain a single line:
 ```
 caresWeatherStation.mappingfolder=CARESWeatherStation_AGENT_MAPPINGS
 ```
-where `CARESWeatherStation_AGENT_MAPPINGS` is the environment variable pointing to the location of a folder containing JSON key to IRI mappings. An example property file can be found in the. An example property file can be found in the `config` folder under 
+where `CARESWeatherStation_AGENT_MAPPINGS` is the environment variable pointing to the location of a folder containing JSON key to IRI mappings.An example property file can be found in the `config` folder under 
 `agent.properties`. See [this section](#mapping-files) of the README for an explanation of the mapping files.
 
 #### Time-series client properties
@@ -72,11 +73,10 @@ More information can be found in the example property file `client.properties` i
 
 #### API properties
 The API properties contain the credentials to authorize access to the weather Station API (see the [API description](#Weather-Station-API)),
-as well as, the API URL and which pod index. It should contain the following keys:
+as well as, the url of the API and the identifier of the weather station. More specifically, the API properties file should contain the following keys:
 - `weather.api_key` the key needed to access the API.
 - `weather.stationId` the stationId associated with the sensor.
 - `weather.api_url` the URL to use for the API. (see [Data retrieval](#data-retrieval)). This property also allows to adjust the agent, if the URL should change in the future.
-
 
 More information can be found in the example property file `api.properties` in the `config` folder.
 
@@ -92,9 +92,9 @@ the same readings
 The mapping is achieved in this package by using one property file per group. Each property file contains one line per 
 JSON key that should be linked to an IRI, e.g. like:
 ```
-co_slope=http:/example/co_slope
+dewptAvg=http:/example/dewptAvg
 ```
-If the IRI is left empty (`co_slope=` in the example), i.e. because there is no instance that represents the measure yet, 
+If the IRI is left empty (`dewptAvg=` in the example), i.e. because there is no instance that represents the measure yet, 
 it will be automatically created when the agent is run for the first time. This automatically generated URI will have the
 following form:
 ```
@@ -134,6 +134,10 @@ To build and start the agent, open up the command prompt in the same directory a
 ```
 docker-compose up -d
 ```
+Note that when building the agent on the Claudius server use the following command
+```
+DOCKER_BUILDKIT=1 docker build .
+```
 
 The agent is reachable at "caresweatherstation-agent/retrieve" on localhost port 1080.
 
@@ -147,13 +151,17 @@ POST http://localhost:1080/caresweatherstation-agent/retrieve
 Content-Type: application/json
 {"agentProperties":"CARESWeatherStation_AGENTPROPERTIES","apiProperties":"CARESWeatherStation_APIPROPERTIES","clientProperties":"CARESWeatherStation_CLIENTPROPERTIES"}
 ```
+In curl syntax:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"CARESWeatherStation_AGENTPROPERTIES\",\"apiProperties\":\"CARESWeatherStation_APIPROPERTIES\",\"clientProperties\":\"CARESWeatherStation_CLIENTPROPERTIES\"}" http://localhost:1080/caresweatherstation-agent/retrieve
+```
 
-If the agent run successfully, you should see a JSON Object returned back that is similar to the one shown below.
+If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 ```
 {"Result":["Input agent object initialized.","Time series client object initialized.","API connector object initialized.","Retrieved 10 weather station readings.","Data updated with new readings from API.","Timeseries Data has been updated."]}
 ```
 
-If the JSON Object returned back is as shown below, it means that the request was written wrongly. Check whether the URL, keys and values are written correctly.
+If the returned JSON Object is as shown below, it means that the request was written wrongly. Check whether the URL, keys and values are written correctly.
 ```
 {"Result":"Request parameters are not defined correctly."}
 ```

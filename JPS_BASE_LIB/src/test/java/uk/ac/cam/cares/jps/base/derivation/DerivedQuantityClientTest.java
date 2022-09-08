@@ -271,6 +271,43 @@ public class DerivedQuantityClientTest {
 	}
 
 	@Test
+	public void testBulkCreateAsyncDerivationForNewInfo() {
+		List<String> agentIRIs = Arrays.asList(derivedAgentIRI, derivedAgentIRI2);
+		List<List<String>> agentInputs = Arrays.asList(entities, inputs);
+		List<String> createdDerivedList = devClient.bulkCreateAsyncDerivationsForNewInfo(agentIRIs, agentInputs);
+		OntModel testKG = mockClient.getKnowledgeBase();
+
+		for (int i = 0; i < createdDerivedList.size(); i++) {
+			String createdDerived = createdDerivedList.get(i);
+			Individual devIndividual = testKG.getIndividual(createdDerived);
+			Assert.assertNotNull(devIndividual);
+			Assert.assertEquals(DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
+					devIndividual.getRDFType().toString());
+
+			// check that NO entity is connected to the derived instance
+			Assert.assertTrue(devClient.sparqlClient.getDerivedEntities(createdDerived).isEmpty());
+
+			// checks for agent
+			Assert.assertTrue(testKG.contains(devIndividual,
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
+					testKG.getIndividual(agentIRIs.get(i))));
+
+			// checks for inputs
+			for (String input : agentInputs.get(i)) {
+				Assert.assertTrue(testKG.contains(devIndividual,
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+						ResourceFactory.createResource(input)));
+			}
+
+			// checks the status
+			Assert.assertEquals(StatusType.REQUESTED, devClient.getStatusType(createdDerived));
+
+			// checks the timestamp should be 0
+			Assert.assertEquals(0, devClient.sparqlClient.getTimestamp(createdDerived));
+		}
+	}
+
+	@Test
 	public void testCreateAsyncDerivationForMarkup() {
 		boolean forUpdate = false;
 		String createdDerived = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, forUpdate);
