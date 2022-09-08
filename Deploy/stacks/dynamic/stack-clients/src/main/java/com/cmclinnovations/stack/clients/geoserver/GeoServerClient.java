@@ -182,14 +182,21 @@ public class GeoServerClient extends ContainerClient {
                         ex);
             }
             try {
-                GSImageMosaicEncoder encoder = geoServerSettings.getDataStoreSettings();
-                encoder.setAllowMultithreading(true);
+                GSImageMosaicEncoder storeEncoder = geoServerSettings.getDataStoreSettings();
+                if (null == storeEncoder.getName()) {
+                    storeEncoder.setName(name);
+                }
+                storeEncoder.setAllowMultithreading(true);
+
                 GSLayerEncoder layerEncoder = geoServerSettings.getLayerSettings();
+                if (null == layerEncoder) {
+                    // TODO Work out how to set the layer title/display name
+                }
 
                 if (manager.getPublisher().publishExternalMosaic(
                         workspaceName, name,
                         geotiffDir.toFile(),
-                        encoder, layerEncoder)) {
+                        storeEncoder, layerEncoder)) {
                     logger.info("GeoServer coverage (datastore and layer) '{}' created.", name);
                 } else {
                     throw new RuntimeException(

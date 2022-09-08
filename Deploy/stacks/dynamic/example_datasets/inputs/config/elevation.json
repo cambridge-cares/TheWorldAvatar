@@ -7,7 +7,12 @@
         {
             "type": "Raster",
             "name": "elevation",
-            "skip": false
+            "skip": false,
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "dem"
+                }
+            }
         }
     ]
 }
