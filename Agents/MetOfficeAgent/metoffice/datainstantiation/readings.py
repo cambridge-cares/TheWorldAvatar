@@ -484,6 +484,8 @@ def retrieve_readings_data_per_station(metclient, station_id: str = None,
             #logger.error('Error while retrieving observation data from DataPoint API')
             raise APIException('Error while retrieving observation data from DataPoint API')
         observations = readings_dict_gen(obs)
+        # Skip entries with potentially missing data
+        observations = {k: v for k, v in observations.items() if v}
         available_obs = {key: condition_readings_data(observations[key], only_keys) for key in observations}
         if only_keys:
             available_obs = [(i, list(available_obs[i]['readings'].keys())) for i in available_obs.keys()]
@@ -499,6 +501,8 @@ def retrieve_readings_data_per_station(metclient, station_id: str = None,
             #logger.error('Error while retrieving observation data from DataPoint API')
             raise APIException('Error while retrieving observation data from DataPoint API')
         forecasts = readings_dict_gen(fc)
+        # Skip entries with potentially missing data
+        forecasts = {k: v for k, v in forecasts.items() if v}
         available_fcs = {key: condition_readings_data(forecasts[key], only_keys) for key in forecasts}
         if only_keys:
             available_fcs = [(i, list(available_fcs[i]['readings'].keys())) for i in available_fcs.keys()]

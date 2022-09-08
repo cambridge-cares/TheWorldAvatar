@@ -20,8 +20,7 @@ class KGClient:
         self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
         jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
-        # TODO replace RemoteStoreClient with AccessAgent/StoreClient once its
-        # tested and
+        # TODO replace RemoteStoreClient with AccessAgent/StoreClient once its tested
         # StoreRouter = jpsBaseLib_view.StoreRouter
         # # Get StoreClientInterface Java object to sparqlEndPoint with
         # # query operations enabled (True) and update operations disabled (False)

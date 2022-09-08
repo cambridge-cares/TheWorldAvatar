@@ -25,7 +25,6 @@ COPY ./tmp_stack ./tmp_stack
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
-COPY ./resources/metoffice.properties ./resources/metoffice.properties
 
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip

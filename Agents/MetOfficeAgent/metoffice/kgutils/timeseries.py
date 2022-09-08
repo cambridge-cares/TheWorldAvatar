@@ -7,11 +7,13 @@
 # the TimeSeriesClient from the JPS_BASE_LIB
 
 import os
-from pathlib import Path
 
 #import agentlogging
 from metoffice.errorhandling.exceptions import TSException
 from metoffice.kgutils.javagateway import jpsBaseLibGW
+from metoffice.kgutils.kgclient import KGClient
+from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+                                       DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")
@@ -21,7 +23,7 @@ class TSClient:
 
     @staticmethod
     def tsclient_with_default_settings():
-        # Initialise TimeSeriesClient with default properties from properties file
+        # Initialise TimeSeriesClient with default properties from environment variables
 
         # Create a JVM module view and use it to import the required java classes
         jpsBaseLibView = jpsBaseLibGW.createModuleView()
@@ -33,10 +35,11 @@ class TSClient:
         instant_class = Instant.now().getClass()
 
         # Define path to properties file
-        fp = os.path.join(Path(__file__).parent.parent.parent, "resources", "metoffice.properties" )
+        kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
         try:
-            ts_client = jpsBaseLibView.TimeSeriesClient(instant_class, fp)
+            ts_client = jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, instant_class, 
+                                                        DB_URL, DB_USER, DB_PASSWORD)
         except:
             #logger.error("Unable to initialise TS client")
             raise TSException("Unable to initialise TS client")
