@@ -18,9 +18,10 @@ from metoffice.dataretrieval.stations import *
 from metoffice.datainstantiation.stations import *
 from metoffice.kgutils.querytemplates import *
 from metoffice.kgutils.kgclient import KGClient
-from metoffice.kgutils.timeseries import TSClient
+from metoffice.kgutils.tsclient import TSClient
 from metoffice.errorhandling.exceptions import APIException
-from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
+from metoffice.utils.env_configs import DATAPOINT_API_KEY
+from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, COMPASS, \
                                              TIME_FORMAT, DATACLASS, VISIBILITY
 

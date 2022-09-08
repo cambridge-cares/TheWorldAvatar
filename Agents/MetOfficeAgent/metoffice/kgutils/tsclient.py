@@ -12,8 +12,8 @@ import os
 from metoffice.errorhandling.exceptions import TSException
 from metoffice.kgutils.javagateway import jpsBaseLibGW
 from metoffice.kgutils.kgclient import KGClient
-from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-                                       DB_URL, DB_USER, DB_PASSWORD
+from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+                                          DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

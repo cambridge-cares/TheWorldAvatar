@@ -16,7 +16,8 @@ from metoffice.dataretrieval.stations import get_all_metoffice_station_ids
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.errorhandling.exceptions import APIException
 from metoffice.datamodel.utils import PREFIXES
-from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT, DATAPOINT_API_KEY
+from metoffice.utils.env_configs import DATAPOINT_API_KEY
+from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 # Initialise logger
 #logger = agentlogging.get_logger("prod")

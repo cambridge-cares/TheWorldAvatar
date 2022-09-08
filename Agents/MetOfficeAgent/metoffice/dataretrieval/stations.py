@@ -15,9 +15,9 @@ import pandas as pd
 
 #import agentlogging
 from metoffice.kgutils.kgclient import KGClient
-from metoffice.kgutils.timeseries import TSClient
+from metoffice.kgutils.tsclient import TSClient
 from metoffice.kgutils.querytemplates import *
-from metoffice.utils.properties import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.errorhandling.exceptions import InvalidInput
 from metoffice.dataretrieval.readings import get_time_series_data
 from metoffice.utils.output_formatting import create_geojson_output, create_metadata_output
