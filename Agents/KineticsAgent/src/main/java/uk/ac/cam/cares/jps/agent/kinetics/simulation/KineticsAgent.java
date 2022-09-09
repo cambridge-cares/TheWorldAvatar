@@ -12,13 +12,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,7 +38,6 @@ import org.springframework.stereotype.Controller;
 
 import uk.ac.cam.cares.jps.agent.configuration.KineticsAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.KineticsAgentProperty;
-import uk.ac.cam.cares.jps.agent.utils.ZipUtility;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
@@ -65,7 +67,7 @@ public class KineticsAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(KineticsAgent.class);
 
 	private static final long serialVersionUID = -8669607645910441935L;
-	private Path workspace;
+	private static Path WORKSPACE;
 	public static ApplicationContext applicationContextKineticsAgent;
 	public static KineticsAgentProperty kineticsAgentProperty;
 
@@ -78,8 +80,36 @@ public class KineticsAgent extends JPSAgent {
 	public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
 
     static {
-        TempLogger.log("--- LOGGING STATEMENT ---");
-        System.out.println("--- PRINT STATEMENT ---");
+        try {
+            WORKSPACE = Paths.get(System.getProperty("user.home"), "KineticsAgent");
+            TempLogger.log("Using workspace: " + WORKSPACE);
+
+            if(!Files.exists(WORKSPACE)) {
+                Files.createDirectories(WORKSPACE);
+            }
+
+            Path running = Paths.get(WORKSPACE.toString(), "running");
+            if(!Files.exists(running)) {
+                Files.createDirectories(running);
+                TempLogger.log("Created 'running' directory");
+            }
+
+            Path completed = Paths.get(WORKSPACE.toString(), "completed");
+            if(!Files.exists(completed)) {
+                Files.createDirectories(completed);
+                TempLogger.log("Created 'completed' directory");
+            }
+
+            Path failed = Paths.get(WORKSPACE.toString(), "failed");
+            if(!Files.exists(failed)) {
+                Files.createDirectories(failed);
+                TempLogger.log("Created 'failed' directory");
+            }
+
+        } catch(IOException exception) {
+            TempLogger.log("Could not create directories!", exception);
+        }
+        TempLogger.log("--- @@@ ---");
     }
 
 	/**
@@ -128,24 +158,6 @@ public class KineticsAgent extends JPSAgent {
 	public void initAgentProperty() {
         TempLogger.log("Initialising the agent's properties...");
 
-        try {
-            workspace = Paths.get(System.getProperty("user.home"), "KineticsAgent");
-            if(!Files.exists(workspace)) {
-                Files.createDirectories(workspace);
-
-                Path running = Paths.get(workspace.toString(), "running");
-                if(!Files.exists(running)) Files.createDirectories(running);
-
-                Path completed = Paths.get(workspace.toString(), "completed");
-                if(!Files.exists(completed)) Files.createDirectories(completed);
-
-                Path failed = Paths.get(workspace.toString(), "failed");
-                if(!Files.exists(failed)) Files.createDirectories(failed);
-            }
-        } catch(IOException exception) {
-            TempLogger.log("COuld not create directories!", exception);
-        }
-
 		// initialising classes to read properties from the kinetics-agent.properites file
 		if (applicationContextKineticsAgent == null) {
 			applicationContextKineticsAgent = new AnnotationConfigApplicationContext(KineticsAgentConfiguration.class);
@@ -173,6 +185,7 @@ public class KineticsAgent extends JPSAgent {
 			try {
 				return setUpJob(requestParams.toString());
 			} catch (IOException | KineticsAgentException e) {
+                TempLogger.log("Exception!", e);
 				throw new JPSRuntimeException(e.getMessage());
 			}
 
@@ -237,14 +250,14 @@ public class KineticsAgent extends JPSAgent {
 	}
 
 	/**
-	 * Checks the presence of the requested job in the workspace.<br>
+	 * Checks the presence of the requested job in the WORKSPACE.<br>
 	 * If the job is available, it returns that the job is currently running.
 	 *
 	 * @param json
 	 * @return
 	 */
 	private JSONObject checkJobInWorkspace(String jobId) {
-        Path runningDir = Paths.get(workspace.toString(), "running");
+        Path runningDir = Paths.get(WORKSPACE.toString(), "running");
         Path runningJobDir = Paths.get(runningDir.toString(), jobId);
 
         if(Files.exists(runningJobDir)) {
@@ -262,7 +275,7 @@ public class KineticsAgent extends JPSAgent {
 	 * @return
 	 */
 	private JSONObject checkJobInCompletedJobs(String jobId) {
-        Path completedDir = Paths.get(workspace.toString(), "completed");
+        Path completedDir = Paths.get(WORKSPACE.toString(), "completed");
         Path completedJobDir = Paths.get(completedDir.toString(), jobId);
 
         if(Files.exists(completedDir)) {
@@ -292,7 +305,7 @@ public class KineticsAgent extends JPSAgent {
 	 * @return
 	 */
 	private JSONObject checkJobInFailedJobs(String jobId) {
-        Path failedDir = Paths.get(workspace.toString(), "failed");
+        Path failedDir = Paths.get(WORKSPACE.toString(), "failed");
         Path failedJobDir = Paths.get(failedDir.toString(), jobId);
 
         if(Files.exists(failedJobDir)) {
@@ -314,12 +327,39 @@ public class KineticsAgent extends JPSAgent {
 		processOutputs();
 	}
 
+    private boolean isFinished(String jobFolder) throws IOException {
+        Path logFile = Paths.get(jobFolder, "OutputCase00001Cyc0001.log");
+
+        if(Files.exists(logFile)) {
+            TempLogger.log("log exists");
+            String logContents = FileUtils.readFileToString(logFile.toFile(), StandardCharsets.UTF_8);
+            boolean contains = logContents.contains("Post-processing complete");
+            TempLogger.log("contains is " + contains);
+
+            if(!contains) {
+                // If not modified in 5 minutes, assume finished but failed 
+                BasicFileAttributes attr = Files.readAttributes(logFile, BasicFileAttributes.class);
+
+                LocalDateTime modified = LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
+                LocalDateTime now = LocalDateTime.now();
+                Duration duration = Duration.between(modified, now);
+                TempLogger.log("Duration is " + duration.getSeconds());
+                return duration.getSeconds() >= (5 * 60);
+            }
+            return true;
+        }
+        return false;
+    }
+
     private boolean wasSuccess(String jobFolder) throws IOException {
         Path logFile = Paths.get(jobFolder, "OutputCase00001Cyc0001.progress");
 
         if(Files.exists(logFile)) {
+            TempLogger.log("progress exists");
             String logContents = FileUtils.readFileToString(logFile.toFile(), StandardCharsets.UTF_8);
-            return logContents.contains("progress_cycle=1");
+            boolean contains = logContents.contains("progress_cycle=1");
+            TempLogger.log("contains is " + contains);
+            return contains;
         }
         return false;
     }
@@ -334,16 +374,23 @@ public class KineticsAgent extends JPSAgent {
         List<Path> forCompleted = new ArrayList<>();
         List<Path> forFailed = new ArrayList<>();
         
-        Path runningDir = Paths.get(workspace.toString(), "running");
-        try (Stream<Path> paths = Files.walk(runningDir)) {
+        Path runningDir = Paths.get(WORKSPACE.toString(), "running");
+        if(!Files.exists(runningDir)) return;
 
-            paths.forEach(path -> {
-                TempLogger.log("Checking status of " + path.toString());
+        File[] list = runningDir.toFile().listFiles();
 
-                try {
+        for(File file : list) {
+            Path path = Paths.get(file.getAbsolutePath());
+            TempLogger.log("Processing: " + path);
+
+            try {
+                // Has the simulation finished
+                if(isFinished(path.toString())) {
+                    TempLogger.log("Simulation finished at " + path);
+
                     // Was the simulation successful
                     boolean success = wasSuccess(path.toString());
-                    TempLogger.log("... was " + success);
+                    TempLogger.log("Success was " + success);
 
                     if(success) {
                         // Run post processing
@@ -363,29 +410,31 @@ public class KineticsAgent extends JPSAgent {
                         TempLogger.log("Moving to failed folder");
                         forFailed.add(path);
                     }
-                } catch(Exception exception) {
-                    TempLogger.log("Exception encountered when processing job outputs in folder: " + path, exception);
                 }
-            });
-        } catch (IOException exception) {
-            TempLogger.log("Exception when walking file tree!", exception);
+            } catch(Exception exception) {
+                TempLogger.log("Exception encountered when processing job outputs in folder: " + path, exception);
+            }
         }
 
         forCompleted.forEach(path -> {
-            try {
-                Path newPath = Paths.get(path.getParent().toString(), "completed", path.getFileName().toString());
-                Files.move(path, newPath);
-            } catch(IOException excep) {
-                TempLogger.log("Could not move to completed folder!", excep);
+            if(Files.exists(path)) {
+                try {
+                    Path newPath = Paths.get(WORKSPACE.toString(), "completed", path.getFileName().toString());
+                    Files.move(path, newPath);
+                } catch(IOException excep) {
+                    TempLogger.log("Could not move to completed folder!", excep);
+                }
             }
         });
 
         forFailed.forEach(path -> {
-            try {
-                Path newPath = Paths.get(path.getParent().toString(), "failed", path.getFileName().toString());
-                Files.move(path, newPath);
-            } catch(IOException excep) {
-                TempLogger.log("Could not move to failed folder!", excep);
+            if(Files.exists(path)) {
+                try {
+                    Path newPath = Paths.get(WORKSPACE.toString(), "failed", path.getFileName().toString());
+                    Files.move(path, newPath);
+                } catch(IOException excep) {
+                    TempLogger.log("Could not move to failed folder!", excep);
+                }
             }
         });
 	}
@@ -399,30 +448,24 @@ public class KineticsAgent extends JPSAgent {
 	 * @return true if post-processing is successful
 	 */
 	public boolean postProcessing(Path jobFolder) throws Exception {
-        TempLogger.log("Running postProcessing() method...");
+        TempLogger.log("Running postProcessing() method on folder " + jobFolder);
         
-		// Find the job results ZIP
-		Path archive = Paths.get(
-			jobFolder.toString(),
-			kineticsAgentProperty.getOutputFileName() + kineticsAgentProperty.getOutputFileExtension()
-		);
-		if (!Files.exists(archive)) throw new IOException("Cannot find expected archive at: " + archive);
+        Path outputsDir = Paths.get(jobFolder.toString(), "outputs");
+        Files.createDirectories(outputsDir);
 
-		// Unzip
-        TempLogger.log("Unzipping files...");
-		Path outputsDir = Paths.get(jobFolder.toString(), "outputs");
-		
-		ZipUtility zipper = new ZipUtility();
-		zipper.unzip(
-			archive.toString(),
-			outputsDir.toString()
-		);
+        String command = "cp " + jobFolder + "/Output* " + outputsDir;
+        TempLogger.log("Command: " + command);
+        Process proc = Runtime.getRuntime().exec(command, null, jobFolder.toFile());
+        try {
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+            errorReader.lines().forEach(line -> TempLogger.log("ERROR: " + line));
+        } catch(Exception excep) {
+            TempLogger.log("Exception when moving outputs", excep);
+        }
 
-        // Artificial delay to wait for the unzipping (not an ideal fudge,
-		// hence, needs to be modified in the future)
-        Thread.sleep(1500);
-        TempLogger.log("...files are unzipped.");
-        
+        Thread.sleep(3000);
+        TempLogger.log("Moved files to output dir");
+
 		// Get the location of the python scripts directory
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
@@ -554,14 +597,25 @@ public class KineticsAgent extends JPSAgent {
 
         // Prepare inputs
         File workingDir = getInputFile(jsonInput, jobFolderName);
-        TempLogger.log("Working directory is at " + workingDir);
+        TempLogger.log("Simulation directory is at " + workingDir);
 
-        String command = "./driver -w \"" + workingDir + "/\"";
+        Path srmDir = Paths.get(System.getProperty("user.home"), "srm-driver"); 
+        TempLogger.log("SRM directory is at " + srmDir);
+
+        String command = "./driver -w " + workingDir + "/";
         TempLogger.log("Using command " + command);
 
-        Path srmDir = Paths.get(System.getProperty("user.home"), "KineticsAgent", "srm-driver"); 
-        Runtime.getRuntime().exec(command, null, srmDir.toFile());
+        Process proc = Runtime.getRuntime().exec(command, null, srmDir.toFile());
+        try {
+            BufferedReader lineReader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            lineReader.lines().forEach(line -> TempLogger.log(line));
 
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+            errorReader.lines().forEach(line -> TempLogger.log("ERROR: " + line));
+
+        } catch(Exception excep) {
+            TempLogger.log("Exception when running SRM ", excep);
+        }
 
         return jobFolderName;
     }
@@ -576,12 +630,16 @@ public class KineticsAgent extends JPSAgent {
 	 * @throws KineticsAgentException
 	 */
 	private File getInputFile(String jsonInput, String jobId) throws IOException, KineticsAgentException {
+        TempLogger.log("Preparing input files for job " + jobId);
+
 		// Get the location of the python scripts directory
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
+        TempLogger.log("Scripts location is " + scriptsDir);
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
 
 		// Contains directories for each provided SRM simulation template
 		Path templatesDir = Paths.get(scriptsDir.toString(), "simulation_templates");
+        TempLogger.log("Templates location is " + templatesDir);
 		if (!Files.exists(templatesDir)) throw new IOException("Cannot find SRM templates directory at: " + templatesDir);
 
 		// Create a temporary folder in the user's home location
@@ -620,12 +678,14 @@ public class KineticsAgent extends JPSAgent {
 
 		// Location of SRM simulation templates folder
 		commands.add("-s");
-		commands.add("~/simulation_templates");
+		commands.add(templatesDir.toString());
 
 		// Location of temporary output folder
 		commands.add("-d");
 		commands.add(temporaryDirectory.toString());
 		builder.command(commands);
+
+        TempLogger.log("Commands: " + String.join(" ", commands));
 
 		// Could redirect the script's output here, looks like a logging system is required first
 		Process process = builder.start();
@@ -640,6 +700,7 @@ public class KineticsAgent extends JPSAgent {
                 }
             }
         } catch(Exception exception) {
+            TempLogger.log("Could not run process!", exception);
             throw new KineticsAgentException("Error encountered when running pre-processing script!");
         }
             
