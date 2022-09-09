@@ -18,5 +18,3 @@ ROOT_DIR = get_parent_path(PARENT_DIR)
 DATA_DIR = os.path.join(ROOT_DIR, 'DATA')
 DATASET_DIR = os.path.join(ROOT_DIR, r'Dataset/PubchemMiniFull')
 EMBEDDING_DIR = os.path.join(DATASET_DIR, 'embeddings/transe')
-
-print(EMBEDDING_DIR)

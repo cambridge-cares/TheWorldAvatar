@@ -12,7 +12,7 @@ class Dataset(torch.utils.data.Dataset):
     # in this case, each data unit contains a head, a rel, a tail
     # the output is the
 
-    def __init__(self, df):
+    def __init__(self, df, neg_rate=18):
         # TODO: make sure the
         e2i_path = open(os.path.join(DATA_DIR, 'entity2idx.pkl'), 'rb')
         self.entity2idx = pickle.load(e2i_path)
@@ -21,6 +21,7 @@ class Dataset(torch.utils.data.Dataset):
         self.df = df
         self.ent_num = len(self.entity2idx.keys())
         self.rel_num = len(self.relation2idx.keys())
+
 
     def __len__(self):
         return len(self.df)

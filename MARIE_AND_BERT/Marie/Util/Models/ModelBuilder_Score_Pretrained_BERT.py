@@ -18,6 +18,7 @@ from tqdm import tqdm
 from transformers import BertModel, BertTokenizer
 from Marie.Util.Models.ScoringModel_Dataset import Dataset
 from Marie.Util.location import DATA_DIR
+from Marie.Util.Models.StandAloneBERT import StandAloneBERT
 
 
 class ScoreModel(nn.Module):
@@ -30,31 +31,11 @@ class ScoreModel(nn.Module):
         self.criterion = MarginRankingLoss(margin=0)  # to make sure that the positive triplet always have smaller
         # distance than negative ones
         self.device = device
-        # create a stack for projecting bert results
-        self.bert_reduce_stack = nn.Sequential(
-            nn.Linear(768, 512),
-            # nn.ReLU(),
-            # nn.Dropout(dropout),
-            #
-            nn.Linear(512, 50),
-            # #  nn.ReLU(),
-            nn.Dropout(dropout),
-            # #
-            # # nn.Linear(256, 128),
-            # # nn.ReLU(),
-            # # nn.Dropout(dropout),
-            #
-            # nn.Linear(256, 50),
-            # # nn.ReLU(),
-            # nn.Dropout(dropout)
-        )
-
-        self.bert = BertModel.from_pretrained('bert-base-cased')
+        self.bert_with_reduction = StandAloneBERT(device=device)
+        self.bert_with_reduction.load_model()
         self.ent_embedding = ent_embedding
-        self.sigmoid = nn.Sigmoid()
-        self.dropout = nn.Dropout()
-        self.linear_1 = nn.Linear(1, 1)
-        # self.linear_2 = nn.Linear(1, 1)
+        self.rel_embedding = pd.read_csv(os.path.join(DATA_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
+        self.linear = nn.Linear(50, 50)
 
     def forward(self, positive_triplets, negative_triplets):
         """
@@ -67,43 +48,21 @@ class ScoreModel(nn.Module):
         nlp_components_pos = positive_triplets['question']
         nlp_components_neg = negative_triplets['question']
 
-        # print(nlp_components_pos['input_ids'].shape)
+        one_hot_pos = self.bert_with_reduction.forward(nlp_components_pos).requires_grad_(True)
+        rel_pos_idx = one_hot_pos.argmax(dim=1).cpu().detach().numpy()
+        emb_pos = self.rel_embedding.iloc[rel_pos_idx]
+        projected_rel_pos = torch.FloatTensor(emb_pos.values).to(self.device)
+        projected_rel_pos = self.linear(projected_rel_pos)
 
-        # make it a 64 * 20 x 12, squeeze dim 1?
-        # print(torch.reshape(nlp_components_pos['input_ids'], (-1, 12)).shape)
 
-        input_ids_pos = torch.reshape(nlp_components_pos['input_ids'], (-1, 12)).to(self.device)
-        attention_mask_pos = torch.reshape(nlp_components_pos["attention_mask"], (-1, 12)).to(self.device)
-        _, pooled_output_pos = self.bert(input_ids=input_ids_pos,
-                                         attention_mask=attention_mask_pos,
-                                         return_dict=False)
 
-        input_ids_neg = torch.reshape(nlp_components_neg['input_ids'], (-1, 12)).to(self.device)
-        attention_mask_neg = torch.reshape(nlp_components_neg["attention_mask"], (-1, 12)).to(self.device)
+        one_hot_neg = self.bert_with_reduction.forward(nlp_components_neg).requires_grad_(True)
+        rel_neg_idx = one_hot_neg.argmax(dim=1).cpu().detach().numpy()
+        emb_neg = self.rel_embedding.iloc[rel_neg_idx]
+        projected_rel_neg = torch.FloatTensor(emb_neg.values).to(self.device)
 
-        _, pooled_output_neg = self.bert(input_ids=input_ids_neg.to(self.device),
-                                         attention_mask=attention_mask_neg.to(self.device),
-                                         return_dict=False)
-
-        projected_rel_pos = self.bert_reduce_stack(pooled_output_pos)
-        projected_rel_neg = self.bert_reduce_stack(pooled_output_neg)
         dist_positive = self.distance(positive_triplets, projected_rel_pos)
         dist_negative = self.distance(negative_triplets, projected_rel_neg)
-
-
-        """
-            Insert a linear layer before sigmoid to adjust the scale of the distance  
-        """
-
-        """
-            Assume that the ideal dist for pos is 0, for neg is a large integer ... p = -1 
-            MarginRankingLoss max(0, -p * (x1 - x2)), with the assumption that x2 is larger than x1 
-            
-            max(0, (x1 - x2) + 1), if it is reversed, x1 = 1, x2 = 0, max(0, 2) = 2, x1 =1, x2 = 1, max(0,1) = 1
-            
-        """
-
-
         return self.loss(dist_positive, dist_negative)
 
     def loss(self, dist_positive, dist_negative):
@@ -121,65 +80,24 @@ class ScoreModel(nn.Module):
         return (head + projected_rel - tail).norm(p=1, dim=1).to(self.device)
 
     def predict(self, triplet):
-        # nlp_components = triplet['question']
-        #
-        # # input_ids = torch.reshape(nlp_components['input_ids'], (-1, 12)).to(self.device)
-        # # attention_mask = torch.reshape(nlp_components["attention_mask"], (-1, 12)).to(self.device)
-        #
-        # # input_ids = nlp_components['input_ids'].to(self.device)
-        # # attention_mask = nlp_components["attention_mask"].to(self.device)
-        #
-        # input_ids = torch.reshape(nlp_components['input_ids'], (-1, 12)).to(self.device)
-        # attention_mask = torch.reshape(nlp_components["attention_mask"], (-1, 12)).to(self.device)
-        #
-        # print(input_ids)
-        # print(attention_mask)
-        #
-        # _, pooled_output = self.bert(input_ids=input_ids.to(self.device),
-        #                              attention_mask=attention_mask.to(self.device))
-        # print('Base 0')
-        #
-        # projected_rel = self.bert_reduce_stack(pooled_output.to(self.device)).to(self.device)
-        #
-        # print('Base 1')
-        # predicted_distance = self.distance(triplet, projected_rel).to(self.device)
-        # print('Base 2')
-        # return predicted_distance
-
         nlp_components_pos = triplet['question']
-        # print(nlp_components_pos['input_ids'].shape)
 
-        # make it a 64 * 20 x 12, squeeze dim 1?
-        # print(torch.reshape(nlp_components_pos['input_ids'], (-1, 12)).shape)
-
-        input_ids_pos = torch.reshape(nlp_components_pos['input_ids'], (-1, 12)).to(self.device)
-        attention_mask_pos = torch.reshape(nlp_components_pos["attention_mask"], (-1, 12)).to(self.device)
-        _, pooled_output_pos = self.bert(input_ids=input_ids_pos,
-                                         attention_mask=attention_mask_pos,
-                                         return_dict=False)
-        pooled_output_pos = self.dropout(pooled_output_pos)
-        projected_rel_pos = self.bert_reduce_stack(pooled_output_pos)
-
-        # dist_positive = self.distance(positive_triplets, projected_rel_pos).unsqueeze(1).type(
-        # torch.FloatTensor).to(self.device) dist_negative = self.distance(negative_triplets,
-        # projected_rel_neg).unsqueeze(1).type(torch.FloatTensor).to(self.device)
+        one_hot_pos = self.bert_with_reduction.forward(nlp_components_pos)
+        rel_pos_idx = one_hot_pos.argmax(dim=1).cpu().detach().numpy()
+        emb_pos = self.rel_embedding.iloc[rel_pos_idx]
+        projected_rel_pos = torch.FloatTensor(emb_pos.values).to(self.device)
         dist_positive = self.distance(triplet, projected_rel_pos)
-        # print('========== from predict ============')
-        # print(dist_positive)
-        # dist_positive = self.linear_1(dist_positive.unsqueeze(1).type(torch.FloatTensor).to(self.device))
-        # print(dist_positive)
-
         return dist_positive
 
 
 class Trainer:
 
-    def __init__(self, epoches=20, negative_rate=20, learning_rate=5e-4, drop_out=0.1, resume=False, frac=0.1, batch_size = 8):
+    def __init__(self, epoches=20, negative_rate=20, learning_rate=5e-4, drop_out=0.1, resume=False, frac=0.1,
+                 batch_size=8):
         self.df_path = os.path.join(DATA_DIR, 'question_set_full')
         self.df = pd.read_csv(self.df_path, sep='\t')
         self.frac = frac
         self.df = self.df.sample(frac=self.frac)
-        self.df.to_csv('sample_df.csv')
 
         self.df_train, self.df_test = np.split(self.df.sample(frac=1, random_state=42), [int(.8 * len(self.df))])
 
@@ -226,7 +144,7 @@ class Trainer:
 
     def train(self):
         # TODO: Test with both Adam and SGD
-        with open(f'training_log_{str(datetime.datetime.now()).replace(" ","_").split(":")[0]}', 'w') as f:
+        with open(f'training_log_{str(datetime.datetime.now()).replace(" ", "_").split(":")[0]}', 'w') as f:
             f.write('started at:' + str(datetime.datetime.now()))
             f.write('\n')
             f.write(str(self.learning_rate))
@@ -369,17 +287,6 @@ class Trainer:
         print('ground truth', tmp3)
         return total_prediction_loss
 
-        #  print(f'total_prediction_loss: {total_prediction_loss}')
-
-        # print(f'hit_1 {hit_1_counter} out of {total_case_counter}, ratio: {hit_1_counter / total_case_counter}')
-        # print(f'hit_2 {hit_2_counter} out of {total_case_counter}, ratio: {hit_2_counter / total_case_counter}')
-        # print(f'total_prediction_loss: {total_prediction_loss}')
-        # print('example prediction', tmp)
-        # print('labels', tmp2)
-        # print('ground truth', tmp3)
-        # print('all possible', tmp4)
-        # print('all possible', [self.entity_labels[t] for t in tmp4])
-
 
 def grid_search():
     l_r_list = [5e-2, 5e-3, 5e-4, 5e-5, 5e-6]
@@ -440,11 +347,12 @@ def fine_tuning():
 
 def build_from_optimal_parameters():
     dropout = 0
-    neg_rate = 12
-    learning_rate = 1e-7
+    neg_rate = 1
+    learning_rate = 1e-24
     epochs = 300
     frac = 1
-    my_trainer = Trainer(epoches=epochs, negative_rate=neg_rate, learning_rate=learning_rate, drop_out=dropout, frac=frac)
+    my_trainer = Trainer(epoches=epochs, negative_rate=neg_rate, learning_rate=learning_rate, drop_out=dropout,
+                         frac=frac)
     train_loss, val_loss, init_train_loss, init_val_loss = my_trainer.train()
     write_log(my_trainer.learning_rate, my_trainer.neg_rate, my_trainer.drop_out, train_loss, val_loss, init_train_loss,
               init_val_loss)

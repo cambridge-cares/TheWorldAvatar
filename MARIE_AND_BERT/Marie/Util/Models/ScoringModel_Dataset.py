@@ -8,7 +8,7 @@ import pandas as pd
 import torch
 from transformers import BertTokenizer
 
-from Marie.Util.location import DATASET_DIR, DATA_DIR, EMBEDDING_DIR
+from Marie.Util.location import DATA_DIR
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 
@@ -23,7 +23,7 @@ class Dataset(torch.utils.data.Dataset):
         # self.df = df # TODO: remember to drop the index
         self.df = df
         self.df_pos = df[df['score'] == 1]
-        self.df_neg = df[df['score'] == 0]
+        # self.df_neg = df[df['score'] == 0]
         self.max_length = 12
         self.neg_sample_num = negative_rate
 
@@ -33,9 +33,13 @@ class Dataset(torch.utils.data.Dataset):
         self.relation2idx = pickle.load(r2i_path)
         self.ent_num = len(self.entity2idx.keys())
         self.rel_num = len(self.relation2idx.keys())
+        print('total entity number')
+        print(self.ent_num)
+        print('total triple number', len(self.df_pos))
+
 
         ent_embed_path = os.path.join(DATA_DIR, 'ent_embedding.tsv')
-        self.ent_embedding = pd.read_csv(ent_embed_path, sep='\t')
+        self.ent_embedding = pd.read_csv(ent_embed_path, sep='\t', header=None)
         self.all_entities = list(set(self.entity2idx.keys()))
         self.all_tails = [e for e in self.all_entities if '_' in e]
         # tokenized_question_pos =
@@ -118,7 +122,6 @@ if __name__ == '__main__':
     batch_size = 6
     df_path = os.path.join(DATA_DIR, 'question_set_full')
     df = pd.read_csv(df_path, sep='\t')
-    df = df.sample(frac=0.1)
     df_train, df_test = np.split(df.sample(frac=1, random_state=42), [int(.8 * len(df))])
 
     train_set = Dataset(df_train)
