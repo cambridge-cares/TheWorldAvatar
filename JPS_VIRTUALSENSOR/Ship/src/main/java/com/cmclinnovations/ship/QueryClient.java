@@ -1,6 +1,5 @@
 package com.cmclinnovations.ship;
 
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -23,7 +22,6 @@ import org.apache.logging.log4j.Logger;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,17 +44,19 @@ public class QueryClient {
     private DerivationClient derivationClient;
 
     static final String PREFIX = "http://www.theworldavatar.com/dispersion/";
-    static final Prefix P_DISP = SparqlBuilder.prefix("disp",iri(PREFIX));
-    private static final Prefix P_OM = SparqlBuilder.prefix("om",iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
+    private static final Prefix P_DISP = SparqlBuilder.prefix("disp",iri(PREFIX));
+    static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
+    private static final Prefix P_OM = SparqlBuilder.prefix("om",iri(OM_STRING));
 
     // classes
+    // as Iri classes for sparql updates sent directly from here
     private static final Iri SHIP = P_DISP.iri("Ship");
     private static final Iri SPEED = P_DISP.iri("Speed");
     private static final Iri COURSE_OVER_GROUND = P_DISP.iri("CourseOverGround");
     private static final Iri MMSI = P_DISP.iri("MMSI");
     private static final Iri LOCATION = P_DISP.iri("Location");
     private static final Iri SHIP_TYPE = P_DISP.iri("ShipType");
-    private static final Iri MEASURE = P_OM.iri("Measure");
+    private static final Iri MEASURE = P_DISP.iri("Measure");
 
     // properties
     private static final Iri HAS_MMSI = P_DISP.iri("hasMMSI");
@@ -67,10 +67,10 @@ public class QueryClient {
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
 
-    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient) {
+    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient, DerivationClient derivationClient) {
         this.storeClient = storeClient;
         this.tsClient = tsClient;
-        this.derivationClient = new DerivationClient(storeClient, PREFIX);
+        this.derivationClient = derivationClient;
     }
 
     /**
@@ -318,65 +318,22 @@ public class QueryClient {
      * @param ships
      */
     void createNewDerivations(List<Ship> ships) {
-        // CompletableFuture<Derivation> getAsync = null;
-
-        // for (Ship ship : ships) {
-        //     getAsync = CompletableFuture.supplyAsync(() -> {
-        //         Derivation derivation;
-        //         try {
-        //             derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
-        //         } catch (IOException e) {
-        //             throw new RuntimeException("Failed to create new derivation", e);
-        //         }
-        //         return derivation;
-        //     });
-        // }
+        CompletableFuture<Derivation> getAsync = null;
 
         for (Ship ship : ships) {
-            try {
-                Derivation derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            getAsync = CompletableFuture.supplyAsync(() -> {
+                Derivation derivation = null;
+                try {
+                    derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+                } catch (Exception e) {
+                    LOGGER.error("Failed to create new derivation for {}", ship.getIri());
+                }
+                return derivation;
+            });
         }
 
-        // if (getAsync != null) {
-        //     getAsync.join();
-        // }
-    }
-
-    /**
-     * used by Emissions agent to query a ship given an IRI
-     * @param shipIri
-     * @return
-     */
-    Ship getShip(String shipIri) {
-        // step 1: query measure IRIs for each ship and group them
-        SelectQuery query = Queries.SELECT();
-
-        Variable speed = query.var();
-        Variable shipType = query.var();
-
-        GraphPattern gp = iri(shipIri).has(PropertyPaths.path(HAS_SPEED,HAS_VALUE),speed)
-        .andHas(PropertyPaths.path(HAS_SHIPTYPE,HAS_VALUE,HAS_NUMERICALVALUE), shipType);
-
-        query.prefix(P_DISP,P_OM).where(gp);
-
-        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-
-        String speedMeasure;
-        int shipTypeInt;
-        if (queryResult.length() == 1) {
-            speedMeasure = queryResult.getJSONObject(0).getString(speed.getQueryString().substring(1));
-            shipTypeInt = queryResult.getJSONObject(0).getInt(shipType.getQueryString().substring(1));
-        } else {
-            throw new RuntimeException("Incorrect number of ships queried");
+        if (getAsync != null) {
+            getAsync.join();
         }
-
-        int shipSpeed = tsClient.getLatestData(speedMeasure).getValuesAsInteger(speedMeasure).get(0);
-        Ship ship = new Ship();
-        ship.setSpeed(shipSpeed);
-        ship.setShipType(shipTypeInt);
-        return ship;
     }
 }

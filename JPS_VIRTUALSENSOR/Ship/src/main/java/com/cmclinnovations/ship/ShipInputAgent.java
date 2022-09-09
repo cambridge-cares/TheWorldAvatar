@@ -33,10 +33,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-@WebServlet(urlPatterns = {"/ShipInputAgent"})
+@WebServlet(urlPatterns = {"/update"})
 public class ShipInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ShipInputAgent.class);
     private static final String JSON_EXT = ".json";
@@ -48,7 +49,8 @@ public class ShipInputAgent extends HttpServlet {
         EndpointConfig endpointConfig = new EndpointConfig(); 
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        QueryClient queryClient = new QueryClient(storeClient, tsClient);
+        DerivationClient derivationClient = new DerivationClient(storeClient, QueryClient.PREFIX);
+        QueryClient queryClient = new QueryClient(storeClient, tsClient, derivationClient);
 
         File dataDir = new File(EnvConfig.DATA_DIR);
 
@@ -153,10 +155,14 @@ public class ShipInputAgent extends HttpServlet {
             // query ship IRIs from the KG and set the IRIs in the object
             queryClient.setShipIRIs(ships);
 
-            // add a row in RDB time series data
+            // add a row in RDB time series data, also updates derivation timestamps
             queryClient.updateTimeSeriesData(ships);
 
+            // new derivations are created on the spot (request sent to agent immediately)
             queryClient.createNewDerivations(newlyCreatedShips);
+
+            // updates the rest (old ships)
+            derivationClient.updateAllSyncDerivations();
 
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
