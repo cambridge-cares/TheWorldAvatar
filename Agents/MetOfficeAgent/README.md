@@ -104,13 +104,15 @@ mvn -version
 # Install in case it is missing
 sudo apt install maven
 ```
-To prevent and identify potential permission issues on Linux machines, the following commands can be used to verify and manage permissions:
+To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
 
 ```bash
 # Check permissions
 ls -l <REPO NAME>
 # Grant permissions
 chmod -R +rwx <REPO NAME>
+# To prevent git from identifying all files as changed (due to changed permission rights), exclude file permission (chmod) changes from git
+git config core.fileMode false
 ```
 
 # How to use the Agent
