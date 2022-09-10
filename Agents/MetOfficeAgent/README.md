@@ -31,7 +31,11 @@ While building the Docker image of the agent, it also gets pushed to the [Contai
   $ <github_personal_access_token>
 ```
 
-### **3) VS Code specifics**
+### **3) Download JDBC driver**
+
+The agent requires JDBC access to the PostgreSQL/PostGIS database. The `JayDeBeApi` module is used for this and requires the [JDBC driver] to be available within the Docker image. Therefore, please download the driver .jar file (tested with version v42.5.0) and place it in the [resources] folder.
+
+### **4) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -154,6 +158,7 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2022
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 [http://localhost:5000/]: http://localhost:5000/
 [Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
+[JDBC driver]: https://jdbc.postgresql.org/download/ 
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [OntoEMS]: http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token

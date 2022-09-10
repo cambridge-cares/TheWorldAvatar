@@ -26,6 +26,7 @@ WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
 COPY ./resources/ontop.obda ./resources/ontop.obda
+COPY ./resources/postgresql-42.5.0.jar ./resources/postgresql-42.5.0.jar
 
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
