@@ -13,8 +13,8 @@ import json
 
 #import agentlogging
 from metoffice.errorhandling.exceptions import StackException
-from metoffice.kgutils.javagateway import stackClientsGw
-from metoffice.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
+from metoffice.kgutils.javagateway import stackClientsGw, jpsBaseLibGW
+from metoffice.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
 from metoffice.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
 
 # Initialise logger
@@ -22,6 +22,33 @@ from metoffice.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE
 
 
 class OntopClient:
+
+    def __init__(self, query_endpoint=ONTOP_URL):
+
+        # create a JVM module view and use it to import the required java classes
+        self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+        jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+
+        try:
+            # Initialise OntopClient as RemoteStoreClient
+            self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
+        except:
+            #logger.error("Unable to initialise OntopClient.")
+            raise StackException("Unable to initialise OntopClient.")
+    
+    def performQuery(self, query):
+        """
+            This function performs query to Ontop endpoint.
+            Arguments:
+                query - SPARQL Query string
+        """
+        try:
+            response = self.ontop_client.execute(query)
+        except:
+            #logger.error("SPARQL query not successful")
+            raise StackException("SPARQL query not successful")
+        return json.loads(response)
+
     
     @staticmethod
     def upload_ontop_mapping():
@@ -51,7 +78,12 @@ class PostGISClient:
         self.dbuser = dbuser
         self.dbpassword = dbpassword
         self.database = database
-        self.conn_props = self.connection_properties()
+        try:
+            # Retrieve JDBC connection properties
+            self.conn_props = self.connection_properties()
+        except:
+            #logger.error("Unable to retrieve JDBC connection properties.")
+            raise StackException("Unable to retrieve JDBC connection properties.")
 
     
     def connection_properties(self):
@@ -101,7 +133,7 @@ class PostGISClient:
             with jaydebeapi.connect(*self.conn_props) as conn:
                 with conn.cursor() as curs:
                     curs.execute(f'SELECT type=\'{feature_type}\' AND \
-                                   ST_Equals(wkb_geometry, ST_SetSRID(ST_POINT({lon},{lat}),4326)) from {table}')
+                                   ST_Equals(wkb_geometry, ST_SetSRID(ST_POINT({lon},{lat}), 4326)) from {table}')
                     # Fetching the SQL results from the cursor only works on first call
                     # Recurring calls return empty list and curs.execute needs to be run again
                     res = curs.fetchall()
@@ -149,8 +181,12 @@ class GdalClient:
         stackClientsView = stackClientsGw.createModuleView()
         stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.gdal.GDALClient")
         stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions")
-        self.client = stackClientsView.GDALClient()
-        self.orgoptions = stackClientsView.Ogr2OgrOptions()
+        try:
+            self.client = stackClientsView.GDALClient()
+            self.orgoptions = stackClientsView.Ogr2OgrOptions()
+        except:
+            #logger.error("Unable to initialise GdalClient.")
+            raise StackException("Unable to initialise GdalClient.")
 
 
     def uploadGeoJSON(self, geojson_string, database=DATABASE, table=LAYERNAME):
@@ -169,8 +205,12 @@ class GeoserverClient:
         stackClientsView = stackClientsGw.createModuleView()
         stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
         stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
-        self.client = stackClientsView.GeoServerClient()
-        self.vectorsettings = stackClientsView.GeoServerVectorSettings()
+        try:
+            self.client = stackClientsView.GeoServerClient()
+            self.vectorsettings = stackClientsView.GeoServerVectorSettings()
+        except:
+            #logger.error("Unable to initialise GeoServerClient.")
+            raise StackException("Unable to initialise GeoServerClient.")    
 
 
     def create_workspace(self, workspace=GEOSERVER_WORKSPACE):

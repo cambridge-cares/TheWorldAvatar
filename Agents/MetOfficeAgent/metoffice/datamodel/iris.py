@@ -6,8 +6,6 @@ RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
 GEO = 'http://www.opengis.net/ont/geosparql#'
-#TODO: Remove deprecated geo-representation
-GEOLIT = 'http://www.bigdata.com/rdf/geospatial/literals/v1#'
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 OWL = 'http://www.w3.org/2002/07/owl#'
 M3L = 'http://purl.org/iot/vocab/m3-lite#'
@@ -74,5 +72,7 @@ RDFS_LABEL = RDFS + 'label'
 XSD_STRING = XSD + 'string'
 XSD_FLOAT = XSD + 'float'
 XSD_DATETIME = XSD + 'dateTime'
-#TODO: Remove deprecated geo-representation
-GEOLIT_LAT_LON = GEOLIT + 'lat-lon'
+# GeoSPARQL
+GEO_FEATURE = GEO + 'Feature'
+GEO_HAS_GEOMETRY = GEO + 'hasGeometry'
+GEO_ASWKT = GEO + 'asWKT'

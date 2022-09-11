@@ -11,7 +11,7 @@
 //                         (i.e. observation types as defined by OntoEMS, either as full IRIs or shorthands)
 //    splitObsFcs ... Boolean flag whether to create joint or separate file sets for observations
 //                    and forecasts (default: single file for observations and forecasts)
-//    circleCenter ... Circle center as "latitude#longitude" for geospatial search within Blazegraph
+//    circleCenter ... Circle center as "latitude#longitude" in EPSG:4326 for geospatial search (via PostGIS)
 //                     (default: No geospatial search, retrieve all data)
 //    circleRadius ... Circle radius around center in km (default: None)
 //                     (circleCenter and circleRadius are only considered to retrieve data within

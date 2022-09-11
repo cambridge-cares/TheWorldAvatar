@@ -54,10 +54,13 @@ def instantiate_stations(station_data: list,
         # Extract station information from API result
         to_instantiate = _condition_metoffer_data(data)
         to_instantiate['station_iri'] = station_IRI
+        # Remove location info to be handled separately
+        lat, lon = to_instantiate.pop('location').split('#')
+
+        # Create SPARQL update for Blazegraph
         query_string += add_station_data(**to_instantiate)
 
         # Create GeoJSON file for upload to PostGIS
-        lat, lon = to_instantiate.get('location').split('#')
         lat = float(lat)
         lon = float(lon)
         station_name = feature_type + f' at {lat},{lon}' if not \

@@ -48,7 +48,7 @@ def instantiated_metoffice_stations(circle_center: str = None,
     
     # Construct query
     query = f"""
-        SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI_obs ?dataIRI_fc
+        SELECT ?stationID ?station
         WHERE {{
         {filter_expression}
         ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
@@ -71,7 +71,7 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
     
     # Construct query
     query = f"""
-        SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI_obs ?dataIRI_fc
+        SELECT ?stationID ?station ?label ?elevation ?dataIRI_obs ?dataIRI_fc
         WHERE {{
         {filter_expression}
         ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
@@ -88,17 +88,32 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
     return query
 
 
+def geospatial_station_info(station_iris: list = None):
+    # Returns query to retrieve geospatial station information (via Ontop)
+    if station_iris:
+        iris = ', '.join(['<'+iri+'>' for iri in station_iris])
+        filter_expression = f'FILTER (?station IN ({iris}) ) '
+    else:
+        filter_expression = ''
+    query = f"""
+        SELECT ?station ?wkt
+        WHERE {{
+           {filter_expression}
+           ?station <{RDF_TYPE}> <{GEO_FEATURE}> ;
+                    <{GEO_HAS_GEOMETRY}>/<{GEO_ASWKT}> ?wkt 
+        }}
+    """
+    return query
+
+
 def add_station_data(station_iri: str = None, dataSource: str = None, 
-                     label: str = None, id: str = None, location: str = None,
-                     elevation: float = None) -> str:
+                     label: str = None, id: str = None, elevation: float = None) -> str:
     if station_iri:
         # Returns triples to instantiate a measurement station according to OntoEMS
         triples = f"<{station_iri}> <{RDF_TYPE}> <{EMS_REPORTING_STATION}> . "
         if dataSource: triples += f"<{station_iri}> <{EMS_DATA_SOURCE}> \"{dataSource}\"^^<{XSD_STRING}> . "
         if label: triples += f"<{station_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
         if id: triples += f"<{station_iri}> <{EMS_HAS_IDENTIFIER}> \"{id}\"^^<{XSD_STRING}> . "
-        #TODO: Remove deprecated geo-representation
-        if location: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_LOCATION}> \"{location}\"^^<{GEOLIT_LAT_LON}> . "
         if elevation: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_ELEVATION}> \"{elevation}\"^^<{XSD_FLOAT}> . "
     else:
         triples = None

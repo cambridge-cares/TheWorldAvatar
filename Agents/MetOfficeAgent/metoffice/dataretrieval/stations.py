@@ -16,6 +16,7 @@ import pandas as pd
 #import agentlogging
 from metoffice.kgutils.kgclient import KGClient
 from metoffice.kgutils.tsclient import TSClient
+from metoffice.kgutils.stackclients import OntopClient
 from metoffice.kgutils.querytemplates import *
 from metoffice.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from metoffice.errorhandling.exceptions import InvalidInput
@@ -70,12 +71,12 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
 
     # Construct KG client with correct query
     query_string = instantiated_metoffice_stations(circle_center=circle_center,
-                                          circle_radius=circle_radius)
+                                                   circle_radius=circle_radius)
     kg_client = KGClient(query_endpoint, update_endpoint)
     # Execute query
     results = kg_client.performQuery(query=query_string)
     # Extract results in required format
-    res = [(r['id'], r['station']) for r in results]
+    res = [(r['stationID'], r['station']) for r in results]
     res = dict(res)
     
     return res
@@ -108,16 +109,28 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
             raise InvalidInput("Circle center coordinates shall be provided as " \
                                +"\"latitude#longitude\" in EPSG:4326 coordinates.")
 
-    # Construct KG client with correct query
-    query_string = instantiated_metoffice_stations_with_details(circle_center=circle_center,
-                                                                circle_radius=circle_radius)
+    # Construct KG client, set query and execute
+    kg_query = instantiated_metoffice_stations_with_details(circle_center=circle_center,
+                                                            circle_radius=circle_radius)                                            
     kg_client = KGClient(query_endpoint, update_endpoint)
-    # Execute query
-    results = kg_client.performQuery(query=query_string)
-    # Parse results into DataFrame
+    results = kg_client.performQuery(query=kg_query)
+
+    # Extract all (unique) station IRIs
+    station_iris = list(set([r['station'] for r in results]))
+    
+    # Construct Ontop client, set query and execute
+    ontop_query = geospatial_station_info(station_iris)
+    ontop_client = OntopClient()
+    res = ontop_client.performQuery(ontop_query)
+    # PostGIS documentation: For geodetic coordinates, X is longitude and Y is latitude
+    lonlat = {r['station']: r['wkt'][r['wkt'].rfind('(')+1:-1].split(' ') for r in res}
+    latlon = {k: '#'.join(v[::-1]) for k,v in lonlat.items()}
+
+    # Parse results into DataFrame and map geospatial information to station IRIs
     df = pd.DataFrame(columns=['stationID', 'station', 'label', 'latlon', 
                                'elevation', 'dataIRI_obs', 'dataIRI_fc'])
     df = df.append(results)
+    df['latlon'] = df['station'].map(latlon)
     # Add station classification (one hot encoded)
     df['obs_station'] = df['dataIRI_obs'].isna().apply(lambda x: 0 if x else 1)
     df['fcs_station'] = df['dataIRI_fc'].isna().apply(lambda x: 0 if x else 1)
