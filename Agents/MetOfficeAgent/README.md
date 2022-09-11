@@ -64,7 +64,9 @@ Simply execute the following command in the same folder as this `README` to buil
 ```bash
 # Compiling latest py4jps resources (JPS_BASE_LIB, Stack_Clients)
 build_py4jps_resources.sh
-# Deploying the agent
+# Buildings the agent Docker image and pushing it
+./stack.sh build
+# Deploying the agent (using pulled image)
 ./stack.sh start <STACK NAME>
 ```
 
