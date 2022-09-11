@@ -17,7 +17,7 @@ import warnings
 
 
 # Initialise global variables to be read from properties file
-global DATAPOINT_API_KEY, DATABASE, ONTOP_FILE
+global DATAPOINT_API_KEY, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE
 
 
 def retrieve_settings():
@@ -26,7 +26,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATAPOINT_API_KEY, DATABASE, ONTOP_FILE
+    global DATAPOINT_API_KEY, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE
 
     # Retrieve MetOffice API key
     DATAPOINT_API_KEY = os.getenv('API_KEY')    
@@ -48,6 +48,25 @@ def retrieve_settings():
     if DATABASE != 'postgres':
         #logger.warning(f'Provided "DATABASE" name {db_name} does not match default database name "postgres".')
         warnings.warn(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
+
+    # Retrieve PostgreSQL/PostGIS table name for geospatial information
+    # PostGIS table and Geoserver layer will have same name
+    LAYERNAME = os.getenv('LAYERNAME')
+    if LAYERNAME is None:
+        #logger.error('"LAYERNAME" is missing in environment variables.')
+        raise ValueError('"LAYERNAME" is missing in environment variables.')
+    if LAYERNAME == '':
+        #logger.error('No "LAYERNAME" value has been provided in environment variables.')
+        raise ValueError('No "LAYERNAME" value has been provided in environment variables.')
+
+    # Retrieve Geoserver workspace name
+    GEOSERVER_WORKSPACE = os.getenv('GEOSERVER_WORKSPACE')
+    if GEOSERVER_WORKSPACE is None:
+        #logger.error('"GEOSERVER_WORKSPACE" name is missing in environment variables.')
+        raise ValueError('"GEOSERVER_WORKSPACE" name is missing in environment variables.')
+    if GEOSERVER_WORKSPACE == '':
+        #logger.error('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
+        raise ValueError('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
 
     # Retrieve ONTOP mapping file
     ONTOP_FILE = os.getenv('ONTOP_FILE')
