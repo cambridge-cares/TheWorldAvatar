@@ -113,6 +113,33 @@ class PostGISClient:
             #logger.error(f'Unsuccessful JDBC interaction: {ex}')
             raise StackException(f'Unsuccessful JDBC interaction: {ex}')
 
+    def get_feature_iris_in_circle(self, lat: float, lon: float, radius: float,
+                                   table=LAYERNAME):
+        """
+            Retrieves IRIs of GeoFeatures within circle from given table
+
+            Arguments:
+                lat, lon - center coordinates in EPSG:4326
+                radius - circle radius in km
+        """
+        try:
+            with jaydebeapi.connect(*self.conn_props) as conn:
+                with conn.cursor() as curs:
+                    # PostGIS documentation:
+                    #   For geodetic coordinates, X is longitude and Y is latitude
+                    #   Radium for ST_DWithin in [m]
+                    curs.execute(f'SELECT iri from {table} WHERE \
+                                   ST_DWithin(wkb_geometry, \
+                                    ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography, \
+                                    {radius*1000})')
+                    res = curs.fetchall()
+                    # Extract results from tuples
+                    res = [r[0] for r in res]
+                    return res
+        except Exception as ex:
+            #logger.error(f'Unsuccessful JDBC interaction: {ex}')
+            raise StackException(f'Unsuccessful JDBC interaction: {ex}')
+
 
 class GdalClient:
     

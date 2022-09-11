@@ -51,22 +51,22 @@ def get_all_metoffice_stations(query_endpoint: str = QUERY_ENDPOINT,
         Returns dictionary with Met Office IDs as key and station IRI as value
 
         Arguments:
-            circle_center - center for Blazegraph's geo:search "inCircle" mode
-                            in WGS84 coordinates as 'latitude#longitude'
-            circle_radius - radius for geo:search in km
+            circle_center - center for geospatial 'inCircle' search (via PostGIS)
+                            coordinates as 'latitude#longitude' in EPSG:4326
+            circle_radius - radius in km
     """
     
     # Validate input
     if circle_center and not circle_radius or \
        circle_radius and not circle_center:
-        #logger.error("Circle center or radius is missing for geo:search.")
-        raise InvalidInput("Circle center or radius is missing for geo:search.")
+        #logger.error("Circle center or radius is missing for geospatial search.")
+        raise InvalidInput("Circle center or radius is missing for geospatial search.")
     if circle_center:
         if not re.findall(r'[\w\-\.]*#[\w\-\.]*', circle_center):
             #logger.error("Circle center coordinates shall be provided as " \
-            #              +"\"latitude#longitude\" in WGS84 coordinates.")
+            #              +"\"latitude#longitude\" in EPSG:4326 coordinates.")
             raise InvalidInput("Circle center coordinates shall be provided as " \
-                               +"\"latitude#longitude\" in WGS84 coordinates.")
+                               +"\"latitude#longitude\" in EPSG:4326 coordinates.")
 
     # Construct KG client with correct query
     query_string = instantiated_metoffice_stations(circle_center=circle_center,
@@ -91,22 +91,22 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
           'obs_station', 'fcs_station', 'dataIRI'])
 
         Arguments:
-            circle_center - center for Blazegraph's geo:search "inCircle" mode
-                            in WGS84 coordinates as 'latitude#longitude'
-            circle_radius - radius for geo:search in km
+            circle_center - center for geospatial 'inCircle' search (via PostGIS)
+                            coordinates as 'latitude#longitude' in EPSG:4326
+            circle_radius - radius in km
     """
 
     # Validate input
     if circle_center and not circle_radius or \
        circle_radius and not circle_center:
-        #logger.error("Circle center or radius is missing for geo:search.")
-        raise InvalidInput("Circle center or radius is missing for geo:search.")
+        #logger.error("Circle center or radius is missing for geospatial search.")
+        raise InvalidInput("Circle center or radius is missing for geospatial search.")
     if circle_center:
         if not re.findall(r'[\w\-\.]*#[\w\-\.]*', circle_center):
             #logger.error("Circle center coordinates shall be provided as " \
-            #              +"\"latitude#longitude\" in WGS84 coordinates.")
+            #              +"\"latitude#longitude\" in EPSG:4326 coordinates.")
             raise InvalidInput("Circle center coordinates shall be provided as " \
-                               +"\"latitude#longitude\" in WGS84 coordinates.")
+                               +"\"latitude#longitude\" in EPSG:4326 coordinates.")
 
     # Construct KG client with correct query
     query_string = instantiated_metoffice_stations_with_details(circle_center=circle_center,
@@ -150,9 +150,9 @@ def create_json_output_files(outdir: str, observation_types: list = None,
                                 for which to retrieve data (all if None)
             split_obs_fcs - boolean flag whether to create joint output files for
                             observations and forecasts or 2 separate sets 
-            circle_center - center for Blazegraph's geo:search "inCircle" mode
-                            in WGS84 coordinates as 'latitude#longitude'
-            circle_radius - radius for geo:search in km            
+            circle_center - center for geospatial 'inCircle' search (via PostGIS)
+                            coordinates as 'latitude#longitude' in EPSG:4326
+            circle_radius - radius in km         
             tmin - oldest time step for which to retrieve data
             tmax - latest time step for which to retrieve data
             split_obs_fcs - boolean flag
