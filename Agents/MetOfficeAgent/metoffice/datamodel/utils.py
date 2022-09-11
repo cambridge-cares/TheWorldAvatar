@@ -19,7 +19,7 @@ PREFIXES = {
     'rdfs': RDFS,
     'xsd':  XSD,
     'geo':  GEO,
-    #TODO: Remove outdated geo-representation
+    #TODO: Remove deprecated geo-representation
     'geolit': GEOLIT,
     'om' :  OM,
     'owl':  OWL,

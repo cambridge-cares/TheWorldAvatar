@@ -36,6 +36,7 @@ def instantiated_metoffice_stations(circle_center: str = None,
                 }}
         """
     else:
+        #TODO: To be updated when deprecated geo-representation gets removed
         # Retrieve only stations in provided circle (radius in km)
         query = f"""
             {create_sparql_prefix('geo')}
@@ -69,7 +70,6 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
                      <{EMS_HAS_IDENTIFIER}> ?stationID .
             OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
-            OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
             OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
             OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
             OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI_fc }}
@@ -77,6 +77,7 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
                 }}
         """
     else:
+        #TODO: To be updated when deprecated geo-representation gets removed
         # Retrieve only stations in provided circle (radius in km)
         query = f"""
             {create_sparql_prefix('geo')}
@@ -93,7 +94,6 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
                          <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
                          <{EMS_HAS_IDENTIFIER}> ?stationID .
                 OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
-                OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
                 OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
                 OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI_obs }}
                 OPTIONAL {{ ?station <{EMS_REPORTS}>/<{EMS_HAS_FORECASTED_VALUE}> ?dataIRI_fc }}
@@ -112,6 +112,7 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
         if dataSource: triples += f"<{station_iri}> <{EMS_DATA_SOURCE}> \"{dataSource}\"^^<{XSD_STRING}> . "
         if label: triples += f"<{station_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
         if id: triples += f"<{station_iri}> <{EMS_HAS_IDENTIFIER}> \"{id}\"^^<{XSD_STRING}> . "
+        #TODO: Remove deprecated geo-representation
         if location: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_LOCATION}> \"{location}\"^^<{GEOLIT_LAT_LON}> . "
         if elevation: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_ELEVATION}> \"{elevation}\"^^<{XSD_FLOAT}> . "
     else:

@@ -73,12 +73,12 @@ class PostGISClient:
         return conn
 
 
-    def check_table_exists(self, table: str):
+    def check_table_exists(self, table=LAYERNAME):
         """
             This function checks whether a given table exists in the database
         """
         try:
-            with jaydebeapi.connect(*p.conn_props) as conn:
+            with jaydebeapi.connect(*self.conn_props) as conn:
                 with conn.cursor() as curs:
                     curs.execute(f'SELECT COUNT(*) FROM information_schema.tables WHERE table_name = \'{table}\'')
                     res = curs.fetchone()
@@ -91,16 +91,17 @@ class PostGISClient:
             raise StackException(f'Unsuccessful JDBC interaction: {ex}')
 
 
-    def check_point_exists(self, lat, lon, table=LAYERNAME):
+    def check_point_feature_exists(self, lat, lon, feature_type, table=LAYERNAME):
         """
             This function checks whether an identical geo-feature already exists
             in PostGIS table
             Returns True if point already exists, False otherwise
         """
         try:
-            with jaydebeapi.connect(*p.conn_props) as conn:
+            with jaydebeapi.connect(*self.conn_props) as conn:
                 with conn.cursor() as curs:
-                    curs.execute(f'SELECT ST_Equals(wkb_geometry, ST_SetSRID(ST_POINT({lon},{lat}),4326)) from {table}')
+                    curs.execute(f'SELECT type=\'{feature_type}\' AND \
+                                   ST_Equals(wkb_geometry, ST_SetSRID(ST_POINT({lon},{lat}),4326)) from {table}')
                     # Fetching the SQL results from the cursor only works on first call
                     # Recurring calls return empty list and curs.execute needs to be run again
                     res = curs.fetchall()
@@ -161,8 +162,8 @@ class GeoserverClient:
                                        geoserver_layer, self.vectorsettings)
 
 
-def create_geojson_for_postgis(station_iri: str, station_name: str,
-                               lat: float, long: float, ):
+def create_geojson_for_postgis(station_iri: str, station_name: str, 
+                               station_type: str, lat: float, long: float, ):
     """
 
     """
@@ -174,7 +175,7 @@ def create_geojson_for_postgis(station_iri: str, station_name: str,
         'iri': station_iri,
         'name': station_name,
         'geom_iri': station_iri + '/geometry',
-        'type': 'MetOffice',
+        'type': station_type,
     }
 
     # Define geometry
@@ -188,26 +189,3 @@ def create_geojson_for_postgis(station_iri: str, station_name: str,
     geojson['geometry'] = geom
     
     return json.dumps(geojson)
-
-# TODO: Remove examples
-
-# OntopClient.upload_ontop_mapping()
-
-# p = PostGISClient()
-# p.check_table_exists('metoffice')
-
-# g1 = create_geojson_for_postgis('station1_iri', 'station1', 52, 0.5)
-# g2 = create_geojson_for_postgis('station2_iri', 'station2', 52, 0.6)
-# g3 = create_geojson_for_postgis('station3_iri', 'station3', 52, 0.5)
-
-# g = GdalClient()
-# g.uploadGeoJSON(g1)
-# g.uploadGeoJSON(g2)
-# g.uploadGeoJSON(g3)
-
-# p.check_table_exists('metoffice')
-# p.check_point_exists(52, 0.5, 'metoffice')
-
-# geo = GeoserverClient()
-# geo.create_workspace()
-# geo.create_postgis_layer()
