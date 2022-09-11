@@ -185,11 +185,11 @@
                 // If no options are provided here , any included in the root group of the first stack that responds and loads
                 // will be used (this is unreliable, so if visualising multiple stacks, I  recommend using this override). - Michael
                 let optionsOverride = {
-                    "center": [60, 37],
-                    "zoom": 2,
+                    "center": [-1.12187957763671875, 52.2040299172616],
+                    "zoom": 5,
                     "bearing": 0,
                     "pitch": 45,
-                    "style": "mapbox://styles/mapbox/light-v10?optimize=true"
+                    "style": "mapbox://styles/mapbox/outdoors-v10?optimize=true"
                 };
                 // ===== CUSTOMISABLE =====
 
@@ -199,18 +199,9 @@
                
                 // ===== CUSTOMISABLE =====
                 // Set the default content in the "General" tab of the side panel
-                manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
+                manager.getPanelHandler().setTitle("<h1>Power Line Visualisation</h1>");
                 manager.getPanelHandler().setContent(`
-                    <p>This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
-                    This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
-                    together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
-                    before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
-                    <p>This centralised framework expects users to have structured their data in a particular format, and provide a number of associated metadata files. 
-                    Before starting, ensure your data meets this format by reading the <a href="https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF-v2.0.0" target="_blank">GitHub wiki</a>. 
-                    This page also details how the framework functions, and how to configure your visualisation to use it.</p>
-                    <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect the most recent version of 
-                    the framework itself. It's also worth noting that this example uses the currently hosted version of the framework library (i.e. from the CMCL KG website), 
-                    not the files within the repository.</p>
+                    <p>This is a simple visualisation of the power lines and pylons used by the National Grid and UK Power Networks.</p>
                 `);
                 
                 // Use the local.js file to build the legend

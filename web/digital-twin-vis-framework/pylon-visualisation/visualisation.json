@@ -2,22 +2,254 @@
     "name": "All Data",
     "mapOptions": {
         "center": [0.12187957763671875, 52.2040299172616],
-        "zoom": 12,
+        "zoom": 5,
         "bearing": 0,
         "pitch": 45,
         "style": "mapbox://styles/mapbox/light-v10?optimize=true"
     },
     "groups": [
         {
-            "name": "UKPN 0.29",
-            "stack": "http://localhost:1234/ukpn-stack",
+            "name": "Vegetation",
+            "stack": "http://localhost:1234/veg-stack",
             "sources": [
                 {
-                    "id": "area-of-interest",
-                    "type": "geojson",
-                    "data": "data/ukpn/aoi.geojson",
-                    "generateId": true
+                    "id": "vegetation-bed-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_bed&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
                 },
+                {
+                    "id": "vegetation-buc-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_buc&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-cam-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_cam&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-lon-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_lon&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-esx-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_esx&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-ess-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_ess&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-hrt-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_hrt&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-ken-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_ken&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-nor-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_nor&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-suf-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_suf&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-sur-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_sur&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "vegetation-wsx-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap_wsx&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "vegetation-bed-layer",
+                    "type": "raster",
+                    "name": "Bedfordshire",
+                    "source": "vegetation-bed-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-buc-layer",
+                    "type": "raster",
+                    "name": "Buckinghamshire",
+                    "source": "vegetation-buc-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-cam-layer",
+                    "type": "raster",
+                    "name": "Cambridgeshire",
+                    "source": "vegetation-cam-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-lon-layer",
+                    "type": "raster",
+                    "name": "City and Greater London",
+                    "source": "vegetation-lon-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-esx-layer",
+                    "type": "raster",
+                    "name": "East_Sussex",
+                    "source": "vegetation-esx-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-ess-layer",
+                    "type": "raster",
+                    "name": "Essex",
+                    "source": "vegetation-ess-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-hrt-layer",
+                    "type": "raster",
+                    "name": "Hertfordshire",
+                    "source": "vegetation-hrt-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-ken-layer",
+                    "type": "raster",
+                    "name": "Kent",
+                    "source": "vegetation-ken-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-nor-layer",
+                    "type": "raster",
+                    "name": "NorFolk",
+                    "source": "vegetation-nor-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-suf-layer",
+                    "type": "raster",
+                    "name": "SufFolk",
+                    "source": "vegetation-suf-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-sur-layer",
+                    "type": "raster",
+                    "name": "Surrey",
+                    "source": "vegetation-sur-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "vegetation-wsx-layer",
+                    "type": "raster",
+                    "name": "West Sussex",
+                    "source": "vegetation-wsx-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Woodland",
+            "stack": "http://localhost:1234/woodland-stack",
+            "sources": [
+                {
+                    "id": "woodland-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:woodland&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "woodland-layer",
+                    "type": "raster",
+                    "name": "Woodland",
+                    "treeable": false,
+                    "source": "woodland-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "National Grid",
+            "stack": "http://localhost:1234/ng-stack",
+            "sources": [
                 {
                     "id": "national-grid-overhead-lines-source",
                     "type": "raster",
@@ -33,6 +265,51 @@
                     ]
                 },
                 {
+                    "id": "national-grid-poles-towers-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "national-grid-overhead-lines-layer",
+                    "type": "raster",
+                    "name": "National Grid Overhead Lines",
+                    "source": "national-grid-overhead-lines-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "national-grid-cables-layer",
+                    "type": "raster",
+                    "name": "National Grid Cables",
+                    "source": "national-grid-cables-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "national-grid-poles-towers-layer",
+                    "type": "raster",
+                    "name": "National Grid Pole Towers",
+                    "source": "national-grid-poles-towers-source",
+                    "minzoom": 11,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "UK Power Networks",
+            "stack": "http://localhost:1234/ukpn-stack",
+            "sources": [
+                {
                     "id": "132kv-overhead-lines-source",
                     "type": "raster",
                     "tiles": [
@@ -45,14 +322,7 @@
                     "tiles": [
                         "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:33kv-overhead-lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
-                }, 
-                {
-                    "id": "national-grid-poles-towers-source",
-                    "type": "raster",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
-                    ]
-                },               
+                },
                 {
                     "id": "132kv-poles-towers-source",
                     "type": "raster",
@@ -70,43 +340,6 @@
             ],
             "layers": [
                 {
-                    "id": "aoi-layer",
-                    "name": "Area of Interest", 
-                    "source": "area-of-interest",
-                    "type": "circle",
-                    "treeable": false,
-                    "maxzoom": 6,
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 2, 25, 4, 75],
-                        "circle-opacity": 0.25,
-                        "circle-color": "#800020",
-                        "circle-stroke-width": 0
-                    }
-                },
-                {
-                    "id": "national-grid-overhead-lines-layer",
-                    "type": "raster",
-                    "name": "National Grid Overhead Lines",
-                    "source": "national-grid-overhead-lines-source",
-                    "minzoom": 6,
-                    "layout": {
-                        "visibility": "visible"
-                    }
-                },
-                {
-                    "id": "national-grid-cables-layer",
-                    "type": "raster",
-                    "name": "National Grid Cables",
-                    "source": "national-grid-cables-source",
-                    "minzoom": 6,
-                    "layout": {
-                        "visibility": "visible"
-                    }
-                },
-                {
                     "id": "132kv-overhead-lines-layer",
                     "type": "raster",
                     "name": "132 kV Overhead Lines",
@@ -121,17 +354,7 @@
                     "type": "raster",
                     "name": "33 kV Overhead Lines",
                     "source": "33kv-overhead-lines-source",
-                    "minzoom": 10,
-                    "layout": {
-                        "visibility": "visible"
-                    }
-                },
-                {
-                    "id": "national-grid-poles-towers-layer",
-                    "type": "raster",
-                    "name": "National Grid Pole Towers",
-                    "source": "national-grid-poles-towers-source",
-                    "minzoom": 12,
+                    "minzoom": 7,
                     "layout": {
                         "visibility": "visible"
                     }
@@ -151,220 +374,9 @@
                     "type": "raster",
                     "name": "33 kV Pole Towers",
                     "source": "33kv-poles-towers-source",
-                    "minzoom": 14,
+                    "minzoom": 13,
                     "layout": {
                         "visibility": "visible"
-                    }
-                }
-            ]
-        },
-        {
-            "name": "UKPN 0.28",
-            "stack": "http://localhost:1234/ukpn-stack",
-            "sources": [
-                {
-                    "id": "area-of-interest",
-                    "type": "geojson",
-                    "data": "data/ukpn/aoi.geojson",
-                    "generateId": true
-                },
-                {
-                    "id": "132kv-overhead-lines-source",
-                    "type": "raster",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:132kv-overhead-lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
-                    ]
-                },
-                {
-                    "id": "33kv-overhead-lines-source",
-                    "type": "raster",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:33kv-overhead-lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
-                    ]
-                },                {
-                    "id": "132kv-poles-towers-source",
-                    "type": "raster",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:132kv-poles-towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
-                    ]
-                },                {
-                    "id": "33kv-poles-towers-source",
-                    "type": "raster",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:33kv-poles-towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
-                    ]
-                }
-            ],
-            "layers": [
-                {
-                    "id": "aoi-layer",
-                    "name": "Area of Interest", 
-                    "source": "area-of-interest",
-                    "type": "circle",
-                    "treeable": false,
-                    "maxzoom": 6,
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 2, 25, 4, 75],
-                        "circle-opacity": 0.25,
-                        "circle-color": "#800020",
-                        "circle-stroke-width": 0
-                    }
-                },
-                {
-                    "id": "132kv-overhead-lines-layer",
-                    "type": "raster",
-                    "name": "132 kV Overhead Lines",
-                    "source": "132kv-overhead-lines-source",
-                    "minzoom": 6,
-                    "layout": {
-                        "visibility": "visible"
-                    }
-                },
-                {
-                    "id": "33kv-overhead-lines-layer",
-                    "type": "raster",
-                    "name": "33 kV Overhead Lines",
-                    "source": "33kv-overhead-lines-source",
-                    "minzoom": 10,
-                    "layout": {
-                        "visibility": "visible"
-                    }
-                },
-                {
-                    "id": "132kv-poles-towers-layer",
-                    "type": "raster",
-                    "name": "132 kV Pole Towers",
-                    "source": "132kv-poles-towers-source",
-                    "minzoom": 12,
-                    "layout": {
-                        "visibility": "visible"
-                    }
-                },
-                {
-                    "id": "33kv-poles-towers-layer",
-                    "type": "raster",
-                    "name": "33 kV Pole Towers",
-                    "source": "33kv-poles-towers-source",
-                    "minzoom": 14,
-                    "layout": {
-                        "visibility": "visible"
-                    }
-                }
-            ]
-        },
-        {
-            "name": "Cambridge",
-            "stack": "http://localhost:1234/example-cambridge-stack",
-            "sources": [
-                {
-                    "id": "area-of-interest",
-                    "type": "geojson",
-                    "data": "data/cambridge/aoi.geojson",
-                    "generateId": true
-                },
-                {
-                    "id": "buildings",
-                    "type": "geojson",
-                    "data": "data/cambridge/buildings.geojson"
-                },
-                {
-                    "id": "colleges",
-                    "type": "geojson",
-                    "data": "data/cambridge/colleges.geojson",
-                    "cluster": true,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 40
-                }
-            ], 
-            "layers": [
-                {
-                    "id": "aoi-layer",
-                    "name": "Area of Interest", 
-                    "source": "area-of-interest",
-                    "type": "circle",
-                    "treeable": false,
-                    "maxzoom": 8,
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
-                        "circle-opacity": 0.25,
-                        "circle-color": "#000000",
-                        "circle-stroke-width": 0
-                    }
-                },
-                {
-                    "id": "buildings-layer",
-                    "name": "Buildings",
-                    "source": "buildings",
-                    "type": "fill-extrusion",
-                    "minzoom": 8, 
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "fill-extrusion-color": "#000000",
-                        "fill-extrusion-opacity": 0.33,
-                        "fill-extrusion-base": 0,
-                        "fill-extrusion-height": [
-                            "case",
-                            ["has", "building:levels"],
-                            ["*", 10, ["to-number", ["get", "building:levels"]]],
-                            8
-                        ]
-                    }
-                },
-                {
-                    "id": "buildings-outline-layer",
-                    "name": "Buildings",
-                    "source": "buildings",
-                    "type": "line",
-                    "minzoom": 8, 
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "line-color": "#000000",
-                        "line-opacity": 0.4
-                    }
-                },
-                {
-                    "id": "colleges-layer",
-                    "name": "Colleges",
-                    "source": "colleges",
-                    "type": "symbol",
-                    "filter": ["!", ["has", "point_count"]],
-                    "minzoom": 8, 
-                    "layout": {
-                        "visibility": "visible",
-                        "icon-image": ["get", "icon-image"],
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.25, 20, 0.5],
-                        "icon-allow-overlap": true,
-                        "icon-ignore-placement": true
-                    }
-                },
-                {
-                    "id": "colleges-layer_cluster",
-                    "name":  "Colleges",
-                    "source": "colleges",
-                    "type": "symbol",
-                    "filter": ["has", "point_count"],
-                    "minzoom": 8, 
-                    "layout": {
-                        "visibility": "visible",
-                        "icon-image": "empty",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.25, 20, 0.5],
-                        "icon-allow-overlap": true,
-                        "icon-ignore-placement": true,
-                        "text-field": "{point_count_abbreviated}",
-                        "text-font": ["Arial Unicode MS Bold"],
-                        "text-size": 12,
-                        "text-anchor": "center",
-                        "text-offset": [0, -0.15]
                     }
                 }
             ]

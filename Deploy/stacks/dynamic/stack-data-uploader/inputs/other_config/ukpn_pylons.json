@@ -1,0 +1,49 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "ukpn_pylons",
+    "dataSubsets": [
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "33kv-poles-towers",
+            "sql": "ALTER TABLE \"33kv-poles-towers\" ADD COLUMN IF NOT EXISTS iri varchar ; update \"33kv-poles-towers\" set iri  = CONCAT('http://theworldavatar.com/ontology/ontocredo/ontoukpn.owl#', SUBSTRING(system_fl,0,5), TRIM(leading '0' from SUBSTRING(system_fl, 6, 13)), TRIM(leading '0' from SUBSTRING(system_fl, 23))) ;",
+            "subdirectory": "ukpn-33kv-poles-towers"
+        }, 
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "33kv-overhead-lines",
+            "subdirectory": "33kv-overhead-lines",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": ["MULTILINESTRING"]
+                }
+            }
+        },
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "132kv-poles-towers",
+            "subdirectory": "132kv-poles-towers"
+        },
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "132kv-overhead-lines",
+            "subdirectory": "132kv-overhead-lines",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-nlt": ["MULTILINESTRING"]
+                }
+            }
+        }
+    ],
+    "mappings": [
+        "ukpn_ontop.obda"
+    ]
+}
