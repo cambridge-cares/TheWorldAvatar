@@ -76,6 +76,7 @@ public class TimeSeriesRDBClientTest {
         Assert.assertEquals(String.class, columnNameColumn.getType());
     }
 
+    @Deprecated
     @Test
     public void testSetAndGetRdbURL() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
@@ -84,6 +85,7 @@ public class TimeSeriesRDBClientTest {
         Assert.assertEquals("http://localhost:5342", client.getRdbURL());
     }
 
+    @Deprecated
     @Test
     public void testSetAndGetRdbUser() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
@@ -92,6 +94,7 @@ public class TimeSeriesRDBClientTest {
         Assert.assertEquals("postgres", client.getRdbUser());
     }
 
+    @Deprecated
     @Test
     public void testSetRdbPassword() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
@@ -105,6 +108,7 @@ public class TimeSeriesRDBClientTest {
         Assert.assertEquals("password", rdbPasswordField.get(client));
     }
 
+    @Deprecated
     @Test
     public void testLoadRdbConfig () throws IOException {
     	TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
@@ -165,7 +169,8 @@ public class TimeSeriesRDBClientTest {
     	Assert.assertEquals("test_url", client.getRdbURL());
     	Assert.assertEquals("test_user", client.getRdbUser());
     }
-    
+
+    @Deprecated
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
         // Overwrite potentially existing properties file
     	FileWriter writer = new FileWriter(filepath, false);
