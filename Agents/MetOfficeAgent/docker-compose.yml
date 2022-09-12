@@ -5,7 +5,7 @@ services:
     image: ghcr.io/cambridge-cares/metoffice_agent:1.0.0-SNAPSHOT
     environment:
       - STACK_NAME=${STACK_NAME}
-      - API_KEY=781fcade-8eaa-44c7-84e8-014f92857aa1
+      - API_KEY=
       # Layer name in geoserver, also table name in PostGIS
       - LAYERNAME=metoffice
       # Specify PostGIS/PostgreSQL database name
