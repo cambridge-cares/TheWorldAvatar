@@ -115,22 +115,33 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
     kg_client = KGClient(query_endpoint, update_endpoint)
     results = kg_client.performQuery(query=kg_query)
 
-    # Extract all (unique) station IRIs
-    station_iris = list(set([r['station'] for r in results]))
+    # Extract all (unique) station IRIs (neglect potential Nones)
+    station_iris = list(set([r.get('station') for r in results]))
+    station_iris = [s for s in station_iris if s is not None]
     
-    # Construct Ontop client, set query and execute
-    ontop_query = geospatial_station_info(station_iris)
+    # OntopClient seems to have issues with large queries; hence query in batches
     ontop_client = OntopClient()
-    res = ontop_client.performQuery(ontop_query)
-    # PostGIS documentation: For geodetic coordinates, X is longitude and Y is latitude
-    lonlat = {r['station']: r['wkt'][r['wkt'].rfind('(')+1:-1].split(' ') for r in res}
-    latlon = {k: '#'.join(v[::-1]) for k,v in lonlat.items()}
+    n = 500     # batch size
+    latlon_all = {}
+    station_iris = [station_iris[i:i + n] for i in range(0, len(station_iris), n)]
+
+    for iris in station_iris:
+        # Set query and execute
+        ontop_query = geospatial_station_info(iris)        
+        res = ontop_client.performQuery(ontop_query)
+        # PostGIS documentation: For geodetic coordinates, X is longitude and Y is latitude
+        lonlat = {r['station']: r['wkt'][r['wkt'].rfind('(')+1:-1].split(' ') for r in res}
+        latlon = {k: '#'.join(v[::-1]) for k,v in lonlat.items()}
+        # Append to overall dictionary
+        latlon_all.update(latlon)
 
     # Parse results into DataFrame and map geospatial information to station IRIs
     df = pd.DataFrame(columns=['stationID', 'station', 'label', 'latlon', 
                                'elevation', 'dataIRI_obs', 'dataIRI_fc'])
     df = df.append(results)
-    df['latlon'] = df['station'].map(latlon)
+    df['latlon'] = df['station'].map(latlon_all)
+    # Drop stations without geo
+    df = df.dropna(subset=['latlon'])
     # Add station classification (one hot encoded)
     df['obs_station'] = df['dataIRI_obs'].isna().apply(lambda x: 0 if x else 1)
     df['fcs_station'] = df['dataIRI_fc'].isna().apply(lambda x: 0 if x else 1)
