@@ -42,7 +42,6 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.base.util.TempLogger;
 
 /**
  * Kinetics Agent has implemented the processes to create input files for<p>
@@ -82,7 +81,7 @@ public class KineticsAgent extends JPSAgent {
     static {
         try {
             WORKSPACE = Paths.get(System.getProperty("user.home"), "KineticsAgent");
-            TempLogger.log("Using workspace: " + WORKSPACE);
+            LOGGER.info("Using workspace: " + WORKSPACE);
 
             if(!Files.exists(WORKSPACE)) {
                 Files.createDirectories(WORKSPACE);
@@ -91,25 +90,25 @@ public class KineticsAgent extends JPSAgent {
             Path running = Paths.get(WORKSPACE.toString(), "running");
             if(!Files.exists(running)) {
                 Files.createDirectories(running);
-                TempLogger.log("Created 'running' directory");
+                LOGGER.info("Created 'running' directory");
             }
 
             Path completed = Paths.get(WORKSPACE.toString(), "completed");
             if(!Files.exists(completed)) {
                 Files.createDirectories(completed);
-                TempLogger.log("Created 'completed' directory");
+                LOGGER.info("Created 'completed' directory");
             }
 
             Path failed = Paths.get(WORKSPACE.toString(), "failed");
             if(!Files.exists(failed)) {
                 Files.createDirectories(failed);
-                TempLogger.log("Created 'failed' directory");
+                LOGGER.info("Created 'failed' directory");
             }
 
         } catch(IOException exception) {
-            TempLogger.log("Could not create directories!", exception);
+            LOGGER.error("Could not create directories!", exception);
         }
-        TempLogger.log("--- @@@ ---");
+        LOGGER.info("--- @@@ ---");
     }
 
 	/**
@@ -118,7 +117,7 @@ public class KineticsAgent extends JPSAgent {
 	 * @throws KineticsAgentException
 	 */
 	public void init() throws ServletException {
-		TempLogger.log("----- Kinetics Agent has started -----");
+		LOGGER.info("----- Kinetics Agent has started -----");
 
         // Create new instance
 		KineticsAgent kineticsAgent = new KineticsAgent();
@@ -136,7 +135,7 @@ public class KineticsAgent extends JPSAgent {
                 try {
                     kineticsAgent.monitorJobs();
                 } catch (Exception exception) {
-                    TempLogger.log("Error in monitoring jobs!", exception);
+                    LOGGER.info("Error in monitoring jobs!", exception);
                 }
             },
             kineticsAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
@@ -144,7 +143,7 @@ public class KineticsAgent extends JPSAgent {
             TimeUnit.SECONDS
         );
 
-		TempLogger.log("----- Kinetics Agent jobs are being monitored  -----");
+		LOGGER.info("----- Kinetics Agent jobs are being monitored  -----");
 	}
 
 	/**
@@ -156,7 +155,7 @@ public class KineticsAgent extends JPSAgent {
 	 * through the KineticsAgent class.
 	 */
 	public void initAgentProperty() {
-        TempLogger.log("Initialising the agent's properties...");
+        LOGGER.info("Initialising the agent's properties...");
 
 		// initialising classes to read properties from the kinetics-agent.properites file
 		if (applicationContextKineticsAgent == null) {
@@ -166,7 +165,7 @@ public class KineticsAgent extends JPSAgent {
 			kineticsAgentProperty = applicationContextKineticsAgent.getBean(KineticsAgentProperty.class);
 		}
 
-        TempLogger.log("...properties have been initialised.");
+        LOGGER.info("...properties have been initialised.");
 	}
 
 	/**
@@ -177,26 +176,26 @@ public class KineticsAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-        TempLogger.log("A request has been receieved...");
+        LOGGER.info("A request has been receieved...");
 
 		if (path.equals(KineticsAgent.JOB_REQUEST_PATH)) {
-            TempLogger.log("...it's a '" + KineticsAgent.JOB_REQUEST_PATH + " request.");
+            LOGGER.info("...it's a '" + KineticsAgent.JOB_REQUEST_PATH + " request.");
 
 			try {
 				return setUpJob(requestParams.toString());
 			} catch (IOException | KineticsAgentException e) {
-                TempLogger.log("Exception!", e);
+                LOGGER.info("Exception!", e);
 				throw new JPSRuntimeException(e.getMessage());
 			}
 
 		} else if (path.equals(KineticsAgent.JOB_OUTPUT_REQUEST_PATH)) {
-            TempLogger.log("...it's a '" + KineticsAgent.JOB_OUTPUT_REQUEST_PATH + " request.");
+            LOGGER.info("...it's a '" + KineticsAgent.JOB_OUTPUT_REQUEST_PATH + " request.");
 
 			JSONObject result = getSimulationResults(requestParams);
 			return result;
 
 		} else {
-            TempLogger.log("...it's an unknown request path.");
+            LOGGER.error("...it's an unknown request path.");
 			throw new JPSRuntimeException(UNKNOWN_REQUEST);
 		}
 	}
@@ -208,7 +207,7 @@ public class KineticsAgent extends JPSAgent {
 	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 		if (requestParams.isEmpty()) {
-            TempLogger.log("Received a request with no parameters!");
+            LOGGER.info("Received a request with no parameters!");
 			throw new BadRequestException();
 		}
 		return true;
@@ -287,7 +286,7 @@ public class KineticsAgent extends JPSAgent {
                 return new JSONObject(FileUtil.inputStreamToString(inputStream));
 
             } catch (FileNotFoundException e) {
-                TempLogger.log("Could not find expected file at: " + inputJsonPath);
+                LOGGER.error("Could not find expected file at: " + inputJsonPath);
                 return json.put("message", "The job has been completed, but the file that contains results is not found.");
             }
         }
@@ -310,7 +309,7 @@ public class KineticsAgent extends JPSAgent {
 
         if(Files.exists(failedJobDir)) {
             JSONObject json = new JSONObject();
-            TempLogger.log("Job with id '" + jobId + "' returned an error");
+            LOGGER.info("Job with id '" + jobId + "' returned an error");
 		    return json.put("message",	"The job terminated with an error. Please check the failed jobs folder.");
         }
         return null;
@@ -331,10 +330,10 @@ public class KineticsAgent extends JPSAgent {
         Path logFile = Paths.get(jobFolder, "OutputCase00001Cyc0001.log");
 
         if(Files.exists(logFile)) {
-            TempLogger.log("log exists");
+            LOGGER.info("log exists");
             String logContents = FileUtils.readFileToString(logFile.toFile(), StandardCharsets.UTF_8);
             boolean contains = logContents.contains("Post-processing complete");
-            TempLogger.log("contains is " + contains);
+            LOGGER.info("contains is " + contains);
 
             if(!contains) {
                 // If not modified in 5 minutes, assume finished but failed 
@@ -343,7 +342,7 @@ public class KineticsAgent extends JPSAgent {
                 LocalDateTime modified = LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
                 LocalDateTime now = LocalDateTime.now();
                 Duration duration = Duration.between(modified, now);
-                TempLogger.log("Duration is " + duration.getSeconds());
+                LOGGER.info("Duration is " + duration.getSeconds());
                 return duration.getSeconds() >= (5 * 60);
             }
             return true;
@@ -355,10 +354,10 @@ public class KineticsAgent extends JPSAgent {
         Path logFile = Paths.get(jobFolder, "OutputCase00001Cyc0001.progress");
 
         if(Files.exists(logFile)) {
-            TempLogger.log("progress exists");
+            LOGGER.info("progress exists");
             String logContents = FileUtils.readFileToString(logFile.toFile(), StandardCharsets.UTF_8);
             boolean contains = logContents.contains("progress_cycle=1");
-            TempLogger.log("contains is " + contains);
+            LOGGER.info("contains is " + contains);
             return contains;
         }
         return false;
@@ -381,16 +380,16 @@ public class KineticsAgent extends JPSAgent {
 
         for(File file : list) {
             Path path = Paths.get(file.getAbsolutePath());
-            TempLogger.log("Processing: " + path);
+            LOGGER.info("Processing: " + path);
 
             try {
                 // Has the simulation finished
                 if(isFinished(path.toString())) {
-                    TempLogger.log("Simulation finished at " + path);
+                    LOGGER.info("Simulation finished at " + path);
 
                     // Was the simulation successful
                     boolean success = wasSuccess(path.toString());
-                    TempLogger.log("Success was " + success);
+                    LOGGER.info("Success was " + success);
 
                     if(success) {
                         // Run post processing
@@ -398,21 +397,21 @@ public class KineticsAgent extends JPSAgent {
 
                         if(postProcessing) {
                             // Move to completed
-                            TempLogger.log("Moving to completed folder");
+                            LOGGER.info("Moving to completed folder");
                             forCompleted.add(path);
                         } else {
                             // Move to failed
-                            TempLogger.log("Moving to failed folder");
+                            LOGGER.info("Moving to failed folder");
                             forFailed.add(path);
                         }
                     } else {
                         // Move to failed
-                        TempLogger.log("Moving to failed folder");
+                        LOGGER.info("Moving to failed folder");
                         forFailed.add(path);
                     }
                 }
             } catch(Exception exception) {
-                TempLogger.log("Exception encountered when processing job outputs in folder: " + path, exception);
+                LOGGER.error("Exception encountered when processing job outputs in folder: " + path, exception);
             }
         }
 
@@ -422,7 +421,7 @@ public class KineticsAgent extends JPSAgent {
                     Path newPath = Paths.get(WORKSPACE.toString(), "completed", path.getFileName().toString());
                     Files.move(path, newPath);
                 } catch(IOException excep) {
-                    TempLogger.log("Could not move to completed folder!", excep);
+                    LOGGER.error("Could not move to completed folder!", excep);
                 }
             }
         });
@@ -433,7 +432,7 @@ public class KineticsAgent extends JPSAgent {
                     Path newPath = Paths.get(WORKSPACE.toString(), "failed", path.getFileName().toString());
                     Files.move(path, newPath);
                 } catch(IOException excep) {
-                    TempLogger.log("Could not move to failed folder!", excep);
+                    LOGGER.error("Could not move to failed folder!", excep);
                 }
             }
         });
@@ -448,23 +447,23 @@ public class KineticsAgent extends JPSAgent {
 	 * @return true if post-processing is successful
 	 */
 	public boolean postProcessing(Path jobFolder) throws Exception {
-        TempLogger.log("Running postProcessing() method on folder " + jobFolder);
+        LOGGER.info("Running postProcessing() method on folder " + jobFolder);
         
         Path outputsDir = Paths.get(jobFolder.toString(), "outputs");
         Files.createDirectories(outputsDir);
 
         String command = "cp " + jobFolder + "/Output* " + outputsDir;
-        TempLogger.log("Command: " + command);
+        LOGGER.info("Command: " + command);
         Process proc = Runtime.getRuntime().exec(command, null, jobFolder.toFile());
         try {
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-            errorReader.lines().forEach(line -> TempLogger.log("ERROR: " + line));
+            errorReader.lines().forEach(line -> LOGGER.info("ERROR: " + line));
         } catch(Exception excep) {
-            TempLogger.log("Exception when moving outputs", excep);
+            LOGGER.error("Exception when moving outputs", excep);
         }
 
         Thread.sleep(3000);
-        TempLogger.log("Moved files to output dir");
+        LOGGER.info("Moved files to output dir");
 
 		// Get the location of the python scripts directory
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
@@ -491,11 +490,11 @@ public class KineticsAgent extends JPSAgent {
 		commands.add(outputsDir.toString());
 		
 		builder.command(commands);
-        TempLogger.log("Generated command line arguments are:");
-        TempLogger.log(String.join(" ", commands));
+        LOGGER.info("Generated command line arguments are:");
+        LOGGER.info(String.join(" ", commands));
         
 		// Could redirect the script's output here, looks like a logging system is required first
-        TempLogger.log("Running python script...");
+        LOGGER.info("Running python script...");
 		Process process = builder.start();
 
          try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -520,7 +519,7 @@ public class KineticsAgent extends JPSAgent {
 				return false;
 			}
 		}
-        TempLogger.log("...python script completed!");
+        LOGGER.info("...python script completed!");
 
 		// Check the outputs JSON file
 		String outputFilename = kineticsAgentProperty.getReferenceOutputJsonFile().trim();
@@ -549,10 +548,10 @@ public class KineticsAgent extends JPSAgent {
             if(temporaryDirectory != null && Files.exists(temporaryDirectory)) {
                 Thread.sleep(1000);
                 FileUtils.deleteDirectory(temporaryDirectory.toFile());
-                TempLogger.log("Deleted directory at: " + temporaryDirectory);
+                LOGGER.info("Deleted directory at: " + temporaryDirectory);
             }
         } catch(IOException ioException) {
-            TempLogger.log("Could not delete directory at: " + temporaryDirectory, ioException);
+            LOGGER.error("Could not delete directory at: " + temporaryDirectory, ioException);
         }
 		
 		// Success!
@@ -597,24 +596,24 @@ public class KineticsAgent extends JPSAgent {
 
         // Prepare inputs
         File workingDir = getInputFile(jsonInput, jobFolderName);
-        TempLogger.log("Simulation directory is at " + workingDir);
+        LOGGER.info("Simulation directory is at " + workingDir);
 
         Path srmDir = Paths.get(System.getProperty("user.home"), "srm-driver"); 
-        TempLogger.log("SRM directory is at " + srmDir);
+        LOGGER.info("SRM directory is at " + srmDir);
 
         String command = "./driver -w " + workingDir + "/";
-        TempLogger.log("Using command " + command);
+        LOGGER.info("Using command " + command);
 
         Process proc = Runtime.getRuntime().exec(command, null, srmDir.toFile());
         try {
             BufferedReader lineReader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            lineReader.lines().forEach(line -> TempLogger.log(line));
+            lineReader.lines().forEach(line -> LOGGER.info(line));
 
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-            errorReader.lines().forEach(line -> TempLogger.log("ERROR: " + line));
+            errorReader.lines().forEach(line -> LOGGER.info("ERROR: " + line));
 
         } catch(Exception excep) {
-            TempLogger.log("Exception when running SRM ", excep);
+            LOGGER.error("Exception when running SRM ", excep);
         }
 
         return jobFolderName;
@@ -630,16 +629,16 @@ public class KineticsAgent extends JPSAgent {
 	 * @throws KineticsAgentException
 	 */
 	private File getInputFile(String jsonInput, String jobId) throws IOException, KineticsAgentException {
-        TempLogger.log("Preparing input files for job " + jobId);
+        LOGGER.info("Preparing input files for job " + jobId);
 
 		// Get the location of the python scripts directory
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
-        TempLogger.log("Scripts location is " + scriptsDir);
+        LOGGER.info("Scripts location is " + scriptsDir);
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
 
 		// Contains directories for each provided SRM simulation template
 		Path templatesDir = Paths.get(scriptsDir.toString(), "simulation_templates");
-        TempLogger.log("Templates location is " + templatesDir);
+        LOGGER.info("Templates location is " + templatesDir);
 		if (!Files.exists(templatesDir)) throw new IOException("Cannot find SRM templates directory at: " + templatesDir);
 
 		// Create a temporary folder in the user's home location
@@ -685,7 +684,7 @@ public class KineticsAgent extends JPSAgent {
 		commands.add(temporaryDirectory.toString());
 		builder.command(commands);
 
-        TempLogger.log("Commands: " + String.join(" ", commands));
+        LOGGER.info("Commands: " + String.join(" ", commands));
 
 		// Could redirect the script's output here, looks like a logging system is required first
 		Process process = builder.start();
@@ -700,7 +699,7 @@ public class KineticsAgent extends JPSAgent {
                 }
             }
         } catch(Exception exception) {
-            TempLogger.log("Could not run process!", exception);
+            LOGGER.error("Could not run process!", exception);
             throw new KineticsAgentException("Error encountered when running pre-processing script!");
         }
             
@@ -713,7 +712,7 @@ public class KineticsAgent extends JPSAgent {
 			}
 		}
 
-        TempLogger.log("Inputs processing and ready for running at: " + temporaryDirectory.toString());
+        LOGGER.info("Inputs processing and ready for running at: " + temporaryDirectory.toString());
         return temporaryDirectory.toFile();
 	}
 
