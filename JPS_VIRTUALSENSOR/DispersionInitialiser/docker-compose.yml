@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  dispersion-initialiser:
+    image: docker.cmclinnovations.com/dispersion-initialiser:1.0.0-SNAPSHOT
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - DATABASE=postgres # currently ontop reads from the default database
+      - SCOPE_TABLE_NAME=scopes
+      - EPISODE_AGENT_IRI=http://theworldavatar.com/EpisodeAgent 
+      - EPISODE_AGENT_URL=http://host.docker.internal:8081/EpisodeAgent
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+    secrets:
+      - postgis_password
+      - geoserver_password
+    ports:
+      - "8084:8080"
+    volumes:
+      - logs:/root/.jps
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "logs"
+  misc:
+    name: "misc"
