@@ -31,11 +31,7 @@ While building the Docker image of the agent, it also gets pushed to the [Contai
   $ <github_personal_access_token>
 ```
 
-### **3) Download JDBC driver**
-
-The agent requires JDBC access to the PostgreSQL/PostGIS database. The `JayDeBeApi` module is used for this and requires the [JDBC driver] to be available within the Docker image. Therefore, please download the driver .jar file (tested with version v42.5.0) and place it in the [resources] folder.
-
-### **4) VS Code specifics**
+### **3) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
