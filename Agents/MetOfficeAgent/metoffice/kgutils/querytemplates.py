@@ -91,8 +91,12 @@ def instantiated_metoffice_stations_with_details(circle_center: str = None,
 def geospatial_station_info(station_iris: list = None):
     # Returns query to retrieve geospatial station information (via Ontop)
     if station_iris:
+        # Use FILTER IN expression
         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
         filter_expression = f'FILTER (?station IN ({iris}) ) '
+        # Use VALUES expression
+        # iris = ' '.join(['<'+iri+'>' for iri in station_iris])
+        # filter_expression = f'VALUES ?station {{ {iris} }} '
     else:
         filter_expression = ''
     query = f"""
