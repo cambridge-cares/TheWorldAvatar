@@ -27,14 +27,16 @@ import it.unibz.inf.ontop.spec.mapping.serializer.impl.OntopNativeMappingSeriali
 final class SQLPPMappingImplementation implements SQLPPMapping {
 
     // Matches comments that are on their own line
-    private static final Pattern WHOLE_LINE_COMMENT_PATTERN = Pattern.compile("^[\\t ]*#[\\t ]+.+\\r?\\n",
+    private static final Pattern WHOLE_LINE_COMMENT_PATTERN = Pattern.compile("^[\\t ]*#.*\\r?\\n",
             Pattern.MULTILINE);
     // Matches comments that are at the end of a line, after some actual content
     private static final Pattern END_OF_LINE_COMMENT_PATTERN = Pattern.compile("[\\t ]*#[\\t ]+.+(\\r?\\n)");
     // Matches newline characters that follow the standard turtle seperators ",",
     // ";" and "."
     private static final Pattern TARGET_LINES_PATTERN = Pattern.compile("([,;\\.])[\\t ]*\\r?\\n+[\\t ]+");
-
+    // Matches two newline characters seperated whitespace
+    private static final Pattern WHITESPACE_BETWEEN_MAPPINGS_PATTERN = Pattern.compile("(\\r?\\n)+\\s+\\r?\\n");
+    
     private final Map<String, String> prefixMap = new HashMap<>();
     private final Map<String, SQLPPTriplesMap> triplesMap = new HashMap<>();
 
@@ -69,6 +71,9 @@ final class SQLPPMappingImplementation implements SQLPPMapping {
         // so remove newline characters that follow the standard turtle seperators ",",
         // ";" and ".".
         transformedMappings = TARGET_LINES_PATTERN.matcher(transformedMappings).replaceAll("$1 ");
+        // Problems result if there are tabs between mappings so this replaces them with
+        // newline characters.
+        transformedMappings = WHITESPACE_BETWEEN_MAPPINGS_PATTERN.matcher(transformedMappings).replaceAll("$1$1");
         Files.writeString(tempFilePath.getPath(), transformedMappings);
         return tempFilePath;
     }
