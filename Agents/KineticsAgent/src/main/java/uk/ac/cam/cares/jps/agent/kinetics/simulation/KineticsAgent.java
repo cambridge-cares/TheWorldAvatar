@@ -8,9 +8,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -21,28 +27,20 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
-import org.apache.commons.io.FileUtils;
 
-import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import uk.ac.cam.cares.jps.agent.configuration.KineticsAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.KineticsAgentProperty;
-import uk.ac.cam.cares.jps.agent.utils.ZipUtility;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
-import uk.ac.cam.cares.jps.base.slurm.job.PostProcessing;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
-import uk.ac.cam.cares.jps.base.slurm.job.Status;
-import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /**
@@ -56,14 +54,19 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
  *
  */
 @Controller
-@WebServlet(urlPatterns = {KineticsAgent.JOB_REQUEST_PATH, KineticsAgent.JOB_STATISTICS_PATH,
-	KineticsAgent.JOB_OUTPUT_REQUEST_PATH})
+@WebServlet(urlPatterns = {
+    KineticsAgent.JOB_REQUEST_PATH,
+	KineticsAgent.JOB_OUTPUT_REQUEST_PATH
+})
 public class KineticsAgent extends JPSAgent {
 
+    /**
+     * Logger for reporting info/errors.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(KineticsAgent.class);
+
 	private static final long serialVersionUID = -8669607645910441935L;
-	private Logger logger = LoggerFactory.getLogger(KineticsAgent.class);
-	private File workspace;
-	static JobSubmission jobSubmission;
+	private static Path WORKSPACE;
 	public static ApplicationContext applicationContextKineticsAgent;
 	public static KineticsAgentProperty kineticsAgentProperty;
 
@@ -74,51 +77,39 @@ public class KineticsAgent extends JPSAgent {
 	public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
 	public static final String JOB_STATISTICS_PATH = "/job/statistics";
 	public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
-	
 
-	/**
-	 * Produces and returns the following statistics of Slurm jobs submitted<p>
-	 * to Kinetics Agent in JSON format:<p>
-	 * - Total number of jobs submitted<p> 
-	 * - Total number of jobs currently running<p>
-	 * - Total number of jobs successfully completed<p>
-	 * - Total number of jobs terminated with an error<p>
-	 * - Total number of jobs not started yet<p>
-	 *
-	 * @param input the JSON string specifying the return data format.
-	 * @return the statistics in JSON format if requested.
-	 */
-	public JSONObject produceStatistics(String input) throws IOException, KineticsAgentException {
-		System.out.println("Received a request to send statistics.\n");
-		logger.info("Received a request to send statistics.\n");
-		// Initialises all properties required for this agent to set-up<br>
-		// and run jobs. It will also initialise the unique instance of<br>
-		// Job Submission class.
-		initAgentProperty();
-		return jobSubmission.getStatistics(input);
-	}
+    static {
+        try {
+            WORKSPACE = Paths.get(System.getProperty("user.home"), "KineticsAgent");
+            LOGGER.info("Using workspace: " + WORKSPACE);
 
-	/**
-	 * Shows the following statistics of Slurm jobs submitted to Kinetics Agent.<br>
-	 * This method responds against the HTTP request for showing statistics<p>
-	 * which is not included in the list of URL patterns represented in the<p>
-	 * annotation of this class.
-	 * - Total number of jobs submitted<p>
-	 * - Total number of jobs currently running<p>
-	 * - Total number of jobs successfully completed<p>
-	 * - Total number of jobs terminated with an error<p>
-	 * - Total number of jobs not started yet<p>
-	 *
-	 * @return the statistics in HTML format.
-	 */
-	@RequestMapping(value = KineticsAgent.JOB_SHOW_STATISTICS_PATH, method = RequestMethod.GET)
-	@ResponseBody
-	public String showStatistics() throws IOException, KineticsAgentException {
-		System.out.println("Received a request to show statistics.\n");
-		logger.info("Received a request to show statistics.\n");
-		initAgentProperty();
-		return jobSubmission.getStatistics();
-	}
+            if(!Files.exists(WORKSPACE)) {
+                Files.createDirectories(WORKSPACE);
+            }
+
+            Path running = Paths.get(WORKSPACE.toString(), "running");
+            if(!Files.exists(running)) {
+                Files.createDirectories(running);
+                LOGGER.info("Created 'running' directory");
+            }
+
+            Path completed = Paths.get(WORKSPACE.toString(), "completed");
+            if(!Files.exists(completed)) {
+                Files.createDirectories(completed);
+                LOGGER.info("Created 'completed' directory");
+            }
+
+            Path failed = Paths.get(WORKSPACE.toString(), "failed");
+            if(!Files.exists(failed)) {
+                Files.createDirectories(failed);
+                LOGGER.info("Created 'failed' directory");
+            }
+
+        } catch(IOException exception) {
+            LOGGER.error("Could not create directories!", exception);
+        }
+        LOGGER.info("--- @@@ ---");
+    }
 
 	/**
 	 * Starts the asynchronous scheduler to monitor Slurm jobs.
@@ -126,29 +117,33 @@ public class KineticsAgent extends JPSAgent {
 	 * @throws KineticsAgentException
 	 */
 	public void init() throws ServletException {
-		logger.info("---------- Kinetics Simulation Agent has started ----------");
-		System.out.println("---------- Kinetics Simulation Agent has started ----------");
-		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+		LOGGER.info("----- Kinetics Agent has started -----");
+
+        // Create new instance
 		KineticsAgent kineticsAgent = new KineticsAgent();
+
 		// initialising classes to read properties from the kinetics-agent.properites file
 		initAgentProperty();
+
 		// In the following method call, the parameter getAgentInitialDelay-<br>
 		// ToStartJobMonitoring refers to the delay (in seconds) before<br>
 		// the job scheduler starts and getAgentPeriodicActionInterval<br>
 		// refers to the interval between two consecutive executions of<br>
 		// the scheduler.
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		executorService.scheduleAtFixedRate(() -> {
-			try {
-				kineticsAgent.monitorJobs();
-			} catch (SlurmJobException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}, kineticsAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
-			kineticsAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
-		logger.info("---------- Kinetics Simulation jobs are being monitored  ----------");
-		System.out.println("---------- Kinetics Simulation jobs are being monitored  ----------");
+                try {
+                    kineticsAgent.monitorJobs();
+                } catch (Exception exception) {
+                    LOGGER.info("Error in monitoring jobs!", exception);
+                }
+            },
+            kineticsAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
+            kineticsAgentProperty.getAgentPeriodicActionInterval(),
+            TimeUnit.SECONDS
+        );
 
+		LOGGER.info("----- Kinetics Agent jobs are being monitored  -----");
 	}
 
 	/**
@@ -160,39 +155,17 @@ public class KineticsAgent extends JPSAgent {
 	 * through the KineticsAgent class.
 	 */
 	public void initAgentProperty() {
-		// initialising classes to read properties from the kinetics-agent.properites
-		// file
+        LOGGER.info("Initialising the agent's properties...");
+
+		// initialising classes to read properties from the kinetics-agent.properites file
 		if (applicationContextKineticsAgent == null) {
 			applicationContextKineticsAgent = new AnnotationConfigApplicationContext(KineticsAgentConfiguration.class);
 		}
 		if (kineticsAgentProperty == null) {
 			kineticsAgentProperty = applicationContextKineticsAgent.getBean(KineticsAgentProperty.class);
 		}
-		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(kineticsAgentProperty.getAgentClass(), kineticsAgentProperty.getHpcAddress());
-			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(kineticsAgentProperty.getHpcServerLoginUserName());
-			jobSubmission.slurmJobProperty
-				.setHpcServerLoginUserPassword(kineticsAgentProperty.getHpcServerLoginUserPassword());
-			jobSubmission.slurmJobProperty.setAgentClass(kineticsAgentProperty.getAgentClass());
-			jobSubmission.slurmJobProperty
-				.setAgentCompletedJobsSpacePrefix(kineticsAgentProperty.getAgentCompletedJobsSpacePrefix());
-			jobSubmission.slurmJobProperty
-				.setAgentFailedJobsSpacePrefix(kineticsAgentProperty.getAgentFailedJobsSpacePrefix());
-			jobSubmission.slurmJobProperty.setHpcAddress(kineticsAgentProperty.getHpcAddress());
-			jobSubmission.slurmJobProperty.setInputFileName(kineticsAgentProperty.getInputFileName());
-			jobSubmission.slurmJobProperty.setInputFileExtension(kineticsAgentProperty.getInputFileExtension());
-			jobSubmission.slurmJobProperty.setOutputFileName(kineticsAgentProperty.getOutputFileName());
-			jobSubmission.slurmJobProperty.setOutputFileExtension(kineticsAgentProperty.getOutputFileExtension());
-			jobSubmission.slurmJobProperty.setJsonInputFileName(kineticsAgentProperty.getJsonInputFileName());
-			jobSubmission.slurmJobProperty.setJsonFileExtension(kineticsAgentProperty.getJsonFileExtension());
-			jobSubmission.slurmJobProperty.setJsonFileExtension(kineticsAgentProperty.getJsonFileExtension());
-			jobSubmission.slurmJobProperty.setSlurmScriptFileName(kineticsAgentProperty.getSlurmScriptFileName());
-			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(kineticsAgentProperty.getMaxNumberOfHPCJobs());
-			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(
-				kineticsAgentProperty.getAgentInitialDelayToStartJobMonitoring());
-			jobSubmission.slurmJobProperty
-				.setAgentPeriodicActionInterval(kineticsAgentProperty.getAgentPeriodicActionInterval());
-		}
+
+        LOGGER.info("...properties have been initialised.");
 	}
 
 	/**
@@ -203,24 +176,26 @@ public class KineticsAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		System.out.println("A request has been received..............................");
+        LOGGER.info("A request has been receieved...");
+
 		if (path.equals(KineticsAgent.JOB_REQUEST_PATH)) {
+            LOGGER.info("...it's a '" + KineticsAgent.JOB_REQUEST_PATH + " request.");
+
 			try {
 				return setUpJob(requestParams.toString());
-			} catch (SlurmJobException | IOException | KineticsAgentException e) {
+			} catch (IOException | KineticsAgentException e) {
+                LOGGER.info("Exception!", e);
 				throw new JPSRuntimeException(e.getMessage());
 			}
+
 		} else if (path.equals(KineticsAgent.JOB_OUTPUT_REQUEST_PATH)) {
+            LOGGER.info("...it's a '" + KineticsAgent.JOB_OUTPUT_REQUEST_PATH + " request.");
+
 			JSONObject result = getSimulationResults(requestParams);
 			return result;
-		} else if (path.equals(KineticsAgent.JOB_STATISTICS_PATH)) {
-			try {
-				return produceStatistics(requestParams.toString());
-			} catch (IOException | KineticsAgentException e) {
-				throw new JPSRuntimeException(e.getMessage());
-			}
+
 		} else {
-			System.out.println("Unknown request");
+            LOGGER.error("...it's an unknown request path.");
 			throw new JPSRuntimeException(UNKNOWN_REQUEST);
 		}
 	}
@@ -232,6 +207,7 @@ public class KineticsAgent extends JPSAgent {
 	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 		if (requestParams.isEmpty()) {
+            LOGGER.info("Received a request with no parameters!");
 			throw new BadRequestException();
 		}
 		return true;
@@ -251,9 +227,11 @@ public class KineticsAgent extends JPSAgent {
 	private JSONObject getSimulationResults(JSONObject requestParams) {
 		JSONObject json = new JSONObject();
 		String jobId = getJobId(requestParams);
+
 		if (jobId == null) {
 			return json.put("message", "jobId is not present in the request parameters.");
 		}
+
 		initAgentProperty();
 		JSONObject message = checkJobInWorkspace(jobId);
 		if (message != null) {
@@ -271,24 +249,20 @@ public class KineticsAgent extends JPSAgent {
 	}
 
 	/**
-	 * Checks the presence of the requested job in the workspace.<br>
+	 * Checks the presence of the requested job in the WORKSPACE.<br>
 	 * If the job is available, it returns that the job is currently running.
 	 *
 	 * @param json
 	 * @return
 	 */
 	private JSONObject checkJobInWorkspace(String jobId) {
-		JSONObject json = new JSONObject();
-		// The path to the set-up and running jobs folder.
-		workspace = jobSubmission.getWorkspaceDirectory();
-		if (workspace.isDirectory()) {
-			File[] jobFolders = workspace.listFiles();
-			for (File jobFolder : jobFolders) {
-				if (jobFolder.getName().equals(jobId)) {
-					return json.put("message", "The job is being executed.");
-				}
-			}
-		}
+        Path runningDir = Paths.get(WORKSPACE.toString(), "running");
+        Path runningJobDir = Paths.get(runningDir.toString(), jobId);
+
+        if(Files.exists(runningJobDir)) {
+            JSONObject json = new JSONObject();
+            return json.put("message", "The job is being executed.");
+        }
 		return null;
 	}
 
@@ -300,25 +274,23 @@ public class KineticsAgent extends JPSAgent {
 	 * @return
 	 */
 	private JSONObject checkJobInCompletedJobs(String jobId) {
-		JSONObject json = new JSONObject();
-		// The path to the completed jobs folder.
-		String completedJobsPath = workspace.getParent().concat(File.separator)
-			.concat(kineticsAgentProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName());
-		File completedJobsFolder = new File(completedJobsPath);
-		if (completedJobsFolder.isDirectory()) {
-			File[] jobFolders = completedJobsFolder.listFiles();
-			for (File jobFolder : jobFolders) {
-				if (jobFolder.getName().equals(jobId)) {
-					try {
-						String inputJsonPath = completedJobsPath.concat(File.separator).concat(jobFolder.getName()).concat(File.separator).concat(kineticsAgentProperty.getReferenceOutputJsonFile());
-						InputStream inputStream = new FileInputStream(inputJsonPath);
-						return new JSONObject(FileUtil.inputStreamToString(inputStream));
-					} catch (FileNotFoundException e) {
-						return json.put("message", "The job has been completed, but the file that contains results is not found.");
-					}
-				}
-			}
-		}
+        Path completedDir = Paths.get(WORKSPACE.toString(), "completed");
+        Path completedJobDir = Paths.get(completedDir.toString(), jobId);
+
+        if(Files.exists(completedDir)) {
+            JSONObject json = new JSONObject();
+            String inputJsonPath = completedJobDir.toString().concat(File.separator).concat(kineticsAgentProperty.getReferenceOutputJsonFile());
+
+            try {
+                InputStream inputStream = new FileInputStream(inputJsonPath);
+                return new JSONObject(FileUtil.inputStreamToString(inputStream));
+
+            } catch (FileNotFoundException e) {
+                LOGGER.error("Could not find expected file at: " + inputJsonPath);
+                return json.put("message", "The job has been completed, but the file that contains results is not found.");
+            }
+        }
+
 		return null;
 	}
 
@@ -332,21 +304,15 @@ public class KineticsAgent extends JPSAgent {
 	 * @return
 	 */
 	private JSONObject checkJobInFailedJobs(String jobId) {
-		JSONObject json = new JSONObject();
-		// The path to the failed jobs folder.
-		String failedJobsPath = workspace.getParent().concat(File.separator)
-			.concat(kineticsAgentProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName());
-		File failedJobsFolder = new File(failedJobsPath);
-		if (failedJobsFolder.isDirectory()) {
-			File[] jobFolders = failedJobsFolder.listFiles();
-			for (File jobFolder : jobFolders) {
-				if (jobFolder.getName().equals(jobId)) {
-					return json.put("message",
-						"The job terminated with an error. Please check the failed jobs folder.");
-				}
-			}
-		}
-		return null;
+        Path failedDir = Paths.get(WORKSPACE.toString(), "failed");
+        Path failedJobDir = Paths.get(failedDir.toString(), jobId);
+
+        if(Files.exists(failedJobDir)) {
+            JSONObject json = new JSONObject();
+            LOGGER.info("Job with id '" + jobId + "' returned an error");
+		    return json.put("message",	"The job terminated with an error. Please check the failed jobs folder.");
+        }
+        return null;
 	}
 
 	/**
@@ -354,11 +320,48 @@ public class KineticsAgent extends JPSAgent {
 	 *
 	 * @throws SlurmJobException
 	 */
-	private void monitorJobs() throws SlurmJobException {
-		//Configures all properties required for setting-up and running a Slurm job. 
-		jobSubmission.monitorJobs();
+	private void monitorJobs() throws IOException {
+		// Configures all properties required for setting-up and running a Slurm job. 
+		//jobSubmission.monitorJobs();
 		processOutputs();
 	}
+
+    private boolean isFinished(String jobFolder) throws IOException {
+        Path logFile = Paths.get(jobFolder, "OutputCase00001Cyc0001.log");
+
+        if(Files.exists(logFile)) {
+            LOGGER.info("log exists");
+            String logContents = FileUtils.readFileToString(logFile.toFile(), StandardCharsets.UTF_8);
+            boolean contains = logContents.contains("Post-processing complete");
+            LOGGER.info("contains is " + contains);
+
+            if(!contains) {
+                // If not modified in 5 minutes, assume finished but failed 
+                BasicFileAttributes attr = Files.readAttributes(logFile, BasicFileAttributes.class);
+
+                LocalDateTime modified = LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
+                LocalDateTime now = LocalDateTime.now();
+                Duration duration = Duration.between(modified, now);
+                LOGGER.info("Duration is " + duration.getSeconds());
+                return duration.getSeconds() >= (5 * 60);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean wasSuccess(String jobFolder) throws IOException {
+        Path logFile = Paths.get(jobFolder, "OutputCase00001Cyc0001.progress");
+
+        if(Files.exists(logFile)) {
+            LOGGER.info("progress exists");
+            String logContents = FileUtils.readFileToString(logFile.toFile(), StandardCharsets.UTF_8);
+            boolean contains = logContents.contains("progress_cycle=1");
+            LOGGER.info("contains is " + contains);
+            return contains;
+        }
+        return false;
+    }
 
 	/**
 	 * Monitors the currently running Slurm jobs to allow new jobs to start.</br>
@@ -366,40 +369,73 @@ public class KineticsAgent extends JPSAgent {
 	 * maximum number of jobs allowed to run at a time.
 	 *
 	 */
-	public void processOutputs() {
-		workspace = jobSubmission.getWorkspaceDirectory();
-		try {
-			if (workspace.isDirectory()) {
-				File[] jobFolders = workspace.listFiles();
-				for (File jobFolder : jobFolders) {
+	public void processOutputs() throws IOException {
+        List<Path> forCompleted = new ArrayList<>();
+        List<Path> forFailed = new ArrayList<>();
+        
+        Path runningDir = Paths.get(WORKSPACE.toString(), "running");
+        if(!Files.exists(runningDir)) return;
 
-					if (Utils.isJobCompleted(jobFolder) && !Utils.isJobOutputProcessed(jobFolder)) {
+        File[] list = runningDir.toFile().listFiles();
 
-                        boolean outcome = false;
-                        try {
-                            outcome = postProcessing(Paths.get(jobFolder.getAbsolutePath()));
-                        } catch(Exception exception) {
-                            exception.printStackTrace(System.out);
-                            outcome = false;
+        for(File file : list) {
+            Path path = Paths.get(file.getAbsolutePath());
+            LOGGER.info("Processing: " + path);
+
+            try {
+                // Has the simulation finished
+                if(isFinished(path.toString())) {
+                    LOGGER.info("Simulation finished at " + path);
+
+                    // Was the simulation successful
+                    boolean success = wasSuccess(path.toString());
+                    LOGGER.info("Success was " + success);
+
+                    if(success) {
+                        // Run post processing
+                        boolean postProcessing = postProcessing(path);
+
+                        if(postProcessing) {
+                            // Move to completed
+                            LOGGER.info("Moving to completed folder");
+                            forCompleted.add(path);
+                        } else {
+                            // Move to failed
+                            LOGGER.info("Moving to failed folder");
+                            forFailed.add(path);
                         }
+                    } else {
+                        // Move to failed
+                        LOGGER.info("Moving to failed folder");
+                        forFailed.add(path);
+                    }
+                }
+            } catch(Exception exception) {
+                LOGGER.error("Exception encountered when processing job outputs in folder: " + path, exception);
+            }
+        }
 
-						if (outcome) {
-							// Success
-							PostProcessing.updateJobOutputStatus(jobFolder);
-						} else {
-							// Failure
-							Utils.modifyStatus(
-								Utils.getStatusFile(jobFolder).getAbsolutePath(),
-								Status.JOB_LOG_MSG_ERROR_TERMINATION.getName()
-							);
-						}
-					}
-				}
-			}
-		} catch (IOException e) {
-			logger.error("KineticsAgent: IOException.".concat(e.getMessage()));
-			e.printStackTrace();
-		}
+        forCompleted.forEach(path -> {
+            if(Files.exists(path)) {
+                try {
+                    Path newPath = Paths.get(WORKSPACE.toString(), "completed", path.getFileName().toString());
+                    Files.move(path, newPath);
+                } catch(IOException excep) {
+                    LOGGER.error("Could not move to completed folder!", excep);
+                }
+            }
+        });
+
+        forFailed.forEach(path -> {
+            if(Files.exists(path)) {
+                try {
+                    Path newPath = Paths.get(WORKSPACE.toString(), "failed", path.getFileName().toString());
+                    Files.move(path, newPath);
+                } catch(IOException excep) {
+                    LOGGER.error("Could not move to failed folder!", excep);
+                }
+            }
+        });
 	}
 
 	/**
@@ -411,31 +447,24 @@ public class KineticsAgent extends JPSAgent {
 	 * @return true if post-processing is successful
 	 */
 	public boolean postProcessing(Path jobFolder) throws Exception {
-        System.out.println("Running postProcessing() method...");
+        LOGGER.info("Running postProcessing() method on folder " + jobFolder);
         
-		// Find the job results ZIP
-		Path archive = Paths.get(
-			jobFolder.toString(),
-			kineticsAgentProperty.getOutputFileName() + kineticsAgentProperty.getOutputFileExtension()
-		);
-		if (!Files.exists(archive)) throw new IOException("Cannot find expected archive at: " + archive);
+        Path outputsDir = Paths.get(jobFolder.toString(), "outputs");
+        Files.createDirectories(outputsDir);
 
-		// Unzip
-        System.out.println("Unzipping files...");
+        String command = "cp " + jobFolder + "/Output* " + outputsDir;
+        LOGGER.info("Command: " + command);
+        Process proc = Runtime.getRuntime().exec(command, null, jobFolder.toFile());
+        try {
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+            errorReader.lines().forEach(line -> LOGGER.info("ERROR: " + line));
+        } catch(Exception excep) {
+            LOGGER.error("Exception when moving outputs", excep);
+        }
 
-		Path outputsDir = Paths.get(jobFolder.toString(), "outputs");
-		
-		ZipUtility zipper = new ZipUtility();
-		zipper.unzip(
-			archive.toString(),
-			outputsDir.toString()
-		);
+        Thread.sleep(3000);
+        LOGGER.info("Moved files to output dir");
 
-        // Artificial delay to wait for the unzipping (not an ideal fudge,
-		// hence, needs to be modified in the future)
-        Thread.sleep(1000);
-        System.out.println("Unzipped files!");
-        
 		// Get the location of the python scripts directory
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
@@ -461,9 +490,11 @@ public class KineticsAgent extends JPSAgent {
 		commands.add(outputsDir.toString());
 		
 		builder.command(commands);
-        System.out.println("Built command line arguments...");
+        LOGGER.info("Generated command line arguments are:");
+        LOGGER.info(String.join(" ", commands));
         
 		// Could redirect the script's output here, looks like a logging system is required first
+        LOGGER.info("Running python script...");
 		Process process = builder.start();
 
          try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -488,8 +519,7 @@ public class KineticsAgent extends JPSAgent {
 				return false;
 			}
 		}
-        
-        System.out.println("Python script completed!");
+        LOGGER.info("...python script completed!");
 
 		// Check the outputs JSON file
 		String outputFilename = kineticsAgentProperty.getReferenceOutputJsonFile().trim();
@@ -507,7 +537,6 @@ public class KineticsAgent extends JPSAgent {
 		
 		// Copy the JSON up into the job folder just in case Feroz expects it there
         Path jsonCopy = Paths.get(jobFolder.toString(), outputFilename);
-        
         if(!Files.exists(jsonCopy)) {
             Files.copy(outputsJSON, jsonCopy);
         }
@@ -519,10 +548,10 @@ public class KineticsAgent extends JPSAgent {
             if(temporaryDirectory != null && Files.exists(temporaryDirectory)) {
                 Thread.sleep(1000);
                 FileUtils.deleteDirectory(temporaryDirectory.toFile());
-                System.out.println("Deleted directory at: " + temporaryDirectory);
+                LOGGER.info("Deleted directory at: " + temporaryDirectory);
             }
         } catch(IOException ioException) {
-            System.out.println("WARNING: Could not delete temporary directory at " + temporaryDirectory);
+            LOGGER.error("Could not delete directory at: " + temporaryDirectory, ioException);
         }
 		
 		// Success!
@@ -541,7 +570,7 @@ public class KineticsAgent extends JPSAgent {
 	 * @throws IOException
 	 * @throws KineticsAgentException
 	 */
-	public JSONObject setUpJob(String jsonString) throws IOException, KineticsAgentException, SlurmJobException {
+	public JSONObject setUpJob(String jsonString) throws IOException, KineticsAgentException {
 		String message = setUpJobOnAgentMachine(jsonString);
 		JSONObject obj = new JSONObject();
 		obj.put("jobId", message);
@@ -556,16 +585,39 @@ public class KineticsAgent extends JPSAgent {
 	 * @throws IOException
 	 * @throws KineticsAgentException
 	 */
-	private String setUpJobOnAgentMachine(String jsonInput) throws IOException, KineticsAgentException, SlurmJobException {
-		initAgentProperty();
-		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = getNewJobFolderName(kineticsAgentProperty.getHpcAddress(), timeStamp);
-		
-		return jobSubmission.setUpJob(
-			jsonInput, new File(getClass().getClassLoader()
-				.getResource(kineticsAgentProperty.getSlurmScriptFileName()).getPath()),
-			getInputFile(jsonInput, jobFolderName), timeStamp);
+	private String setUpJobOnAgentMachine(String jsonInput) throws IOException, KineticsAgentException {
+        return executeSRM(jsonInput);
 	}
+
+    private String executeSRM(String jsonInput) throws IOException, KineticsAgentException {
+        // Generate new job folder name.
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
+        String jobFolderName = "simdome-" + timeStamp;
+
+        // Prepare inputs
+        File workingDir = getInputFile(jsonInput, jobFolderName);
+        LOGGER.info("Simulation directory is at " + workingDir);
+
+        Path srmDir = Paths.get(System.getProperty("user.home"), "srm-driver"); 
+        LOGGER.info("SRM directory is at " + srmDir);
+
+        String command = "./driver -w " + workingDir + "/";
+        LOGGER.info("Using command " + command);
+
+        Process proc = Runtime.getRuntime().exec(command, null, srmDir.toFile());
+        try {
+            BufferedReader lineReader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            lineReader.lines().forEach(line -> LOGGER.info(line));
+
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+            errorReader.lines().forEach(line -> LOGGER.info("ERROR: " + line));
+
+        } catch(Exception excep) {
+            LOGGER.error("Exception when running SRM ", excep);
+        }
+
+        return jobFolderName;
+    }
 
 	/**
 	 * Prepares input files, bundles them in a zip file and returns the zip file to the calling method.
@@ -576,17 +628,21 @@ public class KineticsAgent extends JPSAgent {
 	 * @throws IOException
 	 * @throws KineticsAgentException
 	 */
-	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, KineticsAgentException {
+	private File getInputFile(String jsonInput, String jobId) throws IOException, KineticsAgentException {
+        LOGGER.info("Preparing input files for job " + jobId);
+
 		// Get the location of the python scripts directory
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
+        LOGGER.info("Scripts location is " + scriptsDir);
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
 
 		// Contains directories for each provided SRM simulation template
 		Path templatesDir = Paths.get(scriptsDir.toString(), "simulation_templates");
+        LOGGER.info("Templates location is " + templatesDir);
 		if (!Files.exists(templatesDir)) throw new IOException("Cannot find SRM templates directory at: " + templatesDir);
 
 		// Create a temporary folder in the user's home location
-		Path temporaryDirectory = Paths.get(System.getProperty("user.home"), "." + jobFolderName);
+		Path temporaryDirectory = Paths.get(System.getProperty("user.home"), "KineticsAgent", "running", jobId);
 		try {
 			Files.createDirectory(temporaryDirectory);
 
@@ -621,13 +677,14 @@ public class KineticsAgent extends JPSAgent {
 
 		// Location of SRM simulation templates folder
 		commands.add("-s");
-		commands.add("../../simulation_templates");
+		commands.add(templatesDir.toString());
 
 		// Location of temporary output folder
 		commands.add("-d");
 		commands.add(temporaryDirectory.toString());
-
 		builder.command(commands);
+
+        LOGGER.info("Commands: " + String.join(" ", commands));
 
 		// Could redirect the script's output here, looks like a logging system is required first
 		Process process = builder.start();
@@ -642,6 +699,7 @@ public class KineticsAgent extends JPSAgent {
                 }
             }
         } catch(Exception exception) {
+            LOGGER.error("Could not run process!", exception);
             throw new KineticsAgentException("Error encountered when running pre-processing script!");
         }
             
@@ -654,20 +712,8 @@ public class KineticsAgent extends JPSAgent {
 			}
 		}
 
-		// Compress all files in the temporary directory into a ZIP
-		Path zipFile = Paths.get(System.getProperty("user.home"), temporaryDirectory.getFileName().toString() + ".zip");
-		List<File> zipContents = new ArrayList<>();
-
-		Files.walk(temporaryDirectory)
-			.map(Path::toFile)
-			.forEach((File f) -> zipContents.add(f));
-		zipContents.remove(temporaryDirectory.toFile());
-
-		// Will throw an IOException if something goes wrong
-		new ZipUtility().zip(zipContents, zipFile.toString());
-
-		// Return the final ZIP file
-		return new File(zipFile.toString());
+        LOGGER.info("Inputs processing and ready for running at: " + temporaryDirectory.toString());
+        return temporaryDirectory.toFile();
 	}
 
 	/**
