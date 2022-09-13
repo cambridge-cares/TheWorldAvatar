@@ -1,18 +1,17 @@
 import os.path
-
 from Marie.EntityLinking.blink.common.params import BlinkParser
 from Marie.EntityLinking.blink.biencoder.eval_biencoder import main
 import yaml
 from Marie.EntityLinking.util.ParseResult import prase_inference
 from Marie.EntityLinking.chemspot.annotator import tag
 from Marie.EntityLinking.util.EntityDict import load_entity_dict
-from Marie.Util.location import DATA_DIR
+from Marie.Util.location import ENTITY_LINKING_CONF_DIR
 '''
 All files needed for Entity linking go to "MARIE_AND_BERT/DATA/EntityLinking"
 '''
 
 class NELInfer():
-    def __init__(self, config_path='conf/base500.yaml'):
+    def __init__(self, config_name='base500.yaml'):
         # Basic config to load NEL model
         parser = BlinkParser(add_model_args=True)
         parser.add_eval_args()
@@ -20,8 +19,8 @@ class NELInfer():
         self.params = args.__dict__
         self.params['mode'] = 'test'
         self.params['zeshel'] = False
-        if config_path is not None:
-            with open(os.path.join(DATA_DIR, 'base500.yaml'), "r") as f:
+        if config_name is not None:
+            with open(os.path.join(ENTITY_LINKING_CONF_DIR, config_name), "r") as f:
                 config = yaml.load(f, Loader=yaml.FullLoader)
                 for key in config:
                     self.params[key] = config[key]
@@ -69,7 +68,7 @@ if __name__ == '__main__':
     rawdata = [{"text": "what is the chemical formula of urea"}]
     # rawdata = load_mention_entries("data/pubchem/test.jsonl")
     # rawdata = [{"text":l+' '+m+' '+r} for m,l,r in rawdata]
-    model = NELInfer('conf/base500.yaml')
+    model = NELInfer('base500.yaml')
     # tagged = model.ner_tag(rawdata)
     # print(tagged)
     result = model.infer(rawdata, use_ner=True)
