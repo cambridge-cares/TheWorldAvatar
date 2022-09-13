@@ -1,2 +1,4 @@
-# PubChem Agent
-A python tool for retrieving chemical compound information from the knowledge graph and updating the missing information using the PubChem RUG REST API.
+# Description #
+
+The `PubChem Agent` is a simple API to communicate with The World Avatar knowledge to query for the requested information and autopopulate the missing data using the PubChem PUG REST API.
+
