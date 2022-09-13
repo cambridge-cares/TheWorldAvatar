@@ -66,7 +66,7 @@ public abstract class DataSubset {
                 }
             }
 
-            postGISClient.executeQuery(database, sql);
+            postGISClient.executeUpdate(database, sql);
         }
     }
 }

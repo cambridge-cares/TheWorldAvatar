@@ -5,7 +5,10 @@
 The purpose of the AccessAgent is to handle HTTP requests to perform SPARQL query and update operations on RDF resources in the knowledge graph. 
 The agent will also perform requests to "get" and "insert" entire graphs. This agent extends the JPSAgent framework and can be called using methods in the AccessAgentCaller class in jps_base_lib or by extending the JPSAgent class.
 
-## The AccessAgent dev stack
+<!------------------------------------------------------------->
+<!-- ACCESS AGENT DEV STACK ----------------------------------->
+<!------------------------------------------------------------->
+## Deploying a local AccessAgent
 
 The access-agent-dev-stack contains the Access Agent (on port 48888) and a Blazegraph (on port 48889). The purpose of the Blazegraph is to store routing information used by the access agent in your dev environment. 
 Routing information is stored in the default "kb" namespace and the access agent is configured to use this is as the STOREROUTER_ENDPOINT.
@@ -16,12 +19,12 @@ From the command line, in the access-agent-dev-stack directory, run:
 ```
 docker-compose up -d --no-build
 ```
-Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry. Note: Credentials are required to pull from the CMCL registry. 
+Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry. (Note: Credentials are required to pull from the CMCL registry. See https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry)
 
 ### Uploading routing information to the dev stack
 
 Populate the routing.json file in access-agent-dev-stack directory with the routing information you want to upload.
-You need to provide a "label", "queryEndpoint" and "updateEndpoint" for each store/namespace. (The routing.json template contains two examples.)
+You need to provide a "label", "queryEndpoint" and "updateEndpoint" for each store/namespace. The routing.json file contains two examples. Note: the host "localhost" in the endpoint url needs to be replaced by "host.docker.internal" (on Windows/Mac) or the docker network gateway IP (Windows/Mac/Linux).
 Then, run the bash script uploadRouting.sh.
 ```
 bash ./uploadRouting.sh
@@ -32,19 +35,22 @@ Note:
 
 ### Calling the Access Agent in your dev environment 
 
-The access agent is accessible on localhost:48888 (or host.docker.internal:48888 from a Docker container on Windows. On Linux/Windows the container name and port can be used i.e. access-agent:8080 as long as the container is on the same Docker network as the access-agent container.).
+The access agent is accessible at localhost:48888, or host.docker.internal:48888 from inside a Docker container (on Windows/Mac).
 
 The AccessAgent is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. Both methods take two arguments: the targetResourceID and the SPARQL query/update.
 
-There are two ways to call your local access agent:
-1. Set the ACCESSAGENT_HOST environment variable to localhost:48888 (or host.docker.internal:48888 or  access-agent:48888). This can be done in the docker-compose file. Then, only the label needs to be supplied as the targetResourceID
-2. Alternatively, a full URL containing the correct host:port can be supplied as the targetResourceID e.g.
+There are three ways to call your local access agent:
+1. Set url.accessagent.host in the jps.properties file in jps_base_lib.
+2. Set the ACCESSAGENT_HOST environment variable. This is recommended if running your code from a docker container and can be done in the docker-compose file.
+3. Alternatively, a full URL containing the correct host:port can be supplied as the targetResourceID e.g.
 ```
 http://localhost:48888/label or http://host.docker.internal:48888/label
 ```
 where the label corresponds to the label uploaded to the router.
 
-
+<!------------------------------------------------------------->
+<!-- BUILDING THE ACCESS AGENT -------------------------------->
+<!------------------------------------------------------------->
 ## Building the Access Agent
 
 The docker-compose and Dockerfile to build the Access Agent can be found in the docker-build directory.
@@ -56,7 +62,7 @@ When building a new version of the access agent remember:
 3. Also, please update the access agent image version in the dev stack to match the new version you are about to build and publish (../access-agent-dev-stack/docker-compose.yml)
 
 ### Building
-To build the Access Agent image, in docker-build directory run:
+To build the Access Agent image, in the docker-build directory run:
 ```
 docker-compose build
 ```
