@@ -23,18 +23,16 @@ from Marie.Util.Models.StandAloneBERT2Embedding import StandAloneBERT
 
 class ScoreModel(nn.Module):
 
-    def __init__(self, ent_embedding, device, dropout=0.1):
+    def __init__(self, device, model_name, dropout=0.1):
         super(ScoreModel, self).__init__()
-        # load the weights
-        # self.ent_embedding_torch = nn.Embedding()
-        model_name = 'bert_model_embedding_20_cosine_single_layer_pubchem500_no_eh'
         self.criterion = MarginRankingLoss(margin=1)  # to make sure that the positive triplet always have smaller
         # distance than negative ones
         self.device = device
         self.bert_with_reduction = StandAloneBERT(device=device)
+        self.bert_with_reduction = self.bert_with_reduction.to(self.device)
         self.bert_with_reduction.load_model(model_name)
-        self.ent_embedding = ent_embedding
         self.rel_embedding = pd.read_csv(os.path.join(DATA_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
+        self.ent_embedding = pd.read_csv(os.path.join(DATA_DIR, 'ent_embedding.tsv'), sep='\t', header=None)
 
     def forward(self, positive_triplets, negative_triplets):
         """
@@ -59,8 +57,8 @@ class ScoreModel(nn.Module):
         return self.criterion(dist_positive.to(self.device), dist_negative.to(self.device), target).to(self.device)
 
     def distance(self, triplets, projected_rel):
-        e_h_idx = triplets['e_h'].reshape(-1, 1).squeeze(1)
-        e_t_idx = triplets['e_t'].reshape(-1, 1).squeeze(1)
+        e_h_idx = triplets['e_h'].reshape(-1, 1).squeeze(1).cpu()
+        e_t_idx = triplets['e_t'].reshape(-1, 1).squeeze(1).cpu()
         head = torch.tensor(self.ent_embedding.iloc[e_h_idx].values).to(self.device)
         tail = torch.tensor(self.ent_embedding.iloc[e_t_idx].values).to(self.device)
 
@@ -72,18 +70,18 @@ class ScoreModel(nn.Module):
         nlp_components_pos = triplet['question']
         projected_rel_pos = self.bert_with_reduction.predict(nlp_components_pos)
         dist_positive = self.distance(triplet, projected_rel_pos)
-
         return dist_positive
 
 
 class Trainer:
 
     def __init__(self, epoches=20, negative_rate=20, learning_rate=5e-4, drop_out=0.1, resume=False, frac=0.1,
-                 batch_size=8):
+                 batch_size=8, model_name= 'bert_model_embedding_20_cosine_single_layer_pubchem500_no_eh', device = torch.device('cuda')):
         self.df_path = os.path.join(DATA_DIR, 'question_set_full')
         self.df = pd.read_csv(self.df_path, sep='\t')
         self.frac = frac
         self.df = self.df.sample(frac=self.frac)
+        self.device = device
 
         self.df_train, self.df_test = np.split(self.df.sample(frac=1, random_state=42), [int(.8 * len(self.df))])
 
@@ -95,23 +93,13 @@ class Trainer:
         self.drop_out = drop_out
 
         self.neg_rate = negative_rate
-
-        use_cuda = torch.cuda.is_available()
-        self.device = torch.device("cuda" if use_cuda else "cpu")
-        print(f'=========== USING {self.device} ===============')
-
         self.train_set = Dataset(self.df_train, negative_rate=self.neg_rate)
         self.test_set = Dataset(self.df_test, negative_rate=self.neg_rate)
         self.train_dataloader = torch.utils.data.DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True)
         self.test_dataloader = torch.utils.data.DataLoader(self.test_set, batch_size=self.batch_size, shuffle=True)
 
         self.ent_embedding = self.train_set.ent_embedding
-        self.model = ScoreModel(self.ent_embedding, device=self.device, dropout=self.drop_out)
-
-        if resume:
-            self.model.load_state_dict(torch.load(os.path.join(DATA_DIR, 'score_model')))
-            print('loaded pretrained model from', os.path.join(DATA_DIR, 'score_model'))
-
+        self.model = ScoreModel(model_name=model_name, device=self.device, dropout=self.drop_out)
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.entity_labels = list(self.train_set.entity2idx.keys())
 
@@ -132,19 +120,19 @@ class Trainer:
         with tqdm(total=self.epoches, unit=' epoch') as tepoch:
             model = self.model.cuda()
             for epoch_num in range(self.epoches):
-                # tepoch.set_description(f'Epoch {epoch_num}')
-                # model.train()
+                tepoch.set_description(f'Epoch {epoch_num}')
+                model.train()
                 total_loss_train = 0
-                # for positive_set, negative_set in tqdm(self.train_dataloader):
-                #     self.optimizer.zero_grad()
-                #     loss = model(positive_set, negative_set)
-                #     # loss.mean().backward()
-                #     loss.backward()
-                #     loss = loss.data.cuda()
-                #     self.optimizer.step()
-                #     self.step += 1
-                #     total_loss_train += loss.mean().item()
-                # print(f'total_loss_train: {total_loss_train}')
+                for positive_set, negative_set in tqdm(self.train_dataloader):
+                    self.optimizer.zero_grad()
+                    loss = model(positive_set, negative_set)
+                    # loss.mean().backward()
+                    loss.backward()
+                    loss = loss.data.cuda()
+                    self.optimizer.step()
+                    self.step += 1
+                    total_loss_train += loss.mean().item()
+                print(f'total_loss_train: {total_loss_train}')
 
                 if epoch_num % self.test_frequency == 0:
                     total_loss_val = self.evaluate()

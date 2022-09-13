@@ -91,9 +91,10 @@ class StandAloneBERT(nn.Module):
     def predict(self, question):
         input_ids = torch.reshape(question['input_ids'], (-1, max_len))
         attention_mask = torch.reshape(question['attention_mask'], (-1, max_len))
-        pooled_output = self.bert(input_ids=input_ids.to(self.device),
-                                  attention_mask=attention_mask.to(self.device),
-                                  return_dict=False)[1]
+        print(attention_mask)
+        pooled_output = self.bert(input_ids=input_ids,
+                                  attention_mask=attention_mask,
+                                  return_dict=False)[1].to(self.device)
 
         dropout_output = self.dropout(pooled_output)
         linear_output = self.linear(dropout_output)
