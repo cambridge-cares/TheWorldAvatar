@@ -1,7 +1,7 @@
 from pubchem.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from pubchem.kgoperations.querykg import querykg
 from pubchem.kgoperations.querytemplates import ontocompchem_data_query, \
-                                             ontospecies_data_query
+                                             ontospecies_data_query, spec_inchi_query
 import pubchem.unitconverter.unitconverter as unitconv
 
 def get_ontocompchem_data(ocIRI, osIRI):
@@ -51,3 +51,15 @@ def get_ontospecies_data(osIRI):
             tref_conv = unitconv.convertTemperatureUnitsToSI(enthalpy_ref_temp_unit)
             data['enthalpy_ref_temp'] = str(float(data['enthalpy_ref_temp']) * tref_conv[0] + tref_conv[1])
     return data, enthalpy_ref_data
+
+def get_iri_data(inchi):
+    query = spec_inchi_query(inchi_string=inchi)
+    sparqlendpoint = SPARQL_ENDPOINTS['ontospecies']
+    data = querykg(sparqlEndPoint=sparqlendpoint, queryStr=query)
+    iri = []
+    if data:
+        data = data[0]
+        iri.append(data['speciesIRI'])
+    return iri
+    
+    
