@@ -22,22 +22,22 @@ class TransE(nn.Module):
         self.ent_embedding = self._init_ent_embedding()
         self.rel_embedding = self._init_rel_embedding()
         if resume_training:
+            print('Loading pretrained embeddings')
             self.ent_embedding = self.load_ent_embedding()
             self.rel_embedding = self.load_rel_embedding()
 
         self.device = device
-        self.criterion = nn.MarginRankingLoss(margin=1, reduction='none').to(device)
+        self.criterion = nn.MarginRankingLoss(margin=5, reduction='none').to(device)
         self.norm = 1
 
-
     def load_ent_embedding(self):
-        tsv_file_ent = pandas.read_csv(os.path.join(DATA_DIR, 'ent_embedding.tsv'), sep='\t')
+        tsv_file_ent = pandas.read_csv(os.path.join(DATA_DIR, 'ent_embedding.tsv'), sep='\t', header=None)
         pretrained_ent_embedding = torch.FloatTensor(tsv_file_ent.values)
         self.ent_embedding = nn.Embedding.from_pretrained(pretrained_ent_embedding).requires_grad_(True)
         return self.ent_embedding
 
     def load_rel_embedding(self):
-        tsv_file_rel = pandas.read_csv(os.path.join(DATA_DIR, 'rel_embedding.tsv'), sep='\t')
+        tsv_file_rel = pandas.read_csv(os.path.join(DATA_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
         pretrained_rel_embedding = torch.FloatTensor(tsv_file_rel.values)
         self.rel_embedding = nn.Embedding.from_pretrained(pretrained_rel_embedding).requires_grad_(True)
         # self.rel_embedding.weight.data[:-1, :].div_(self.rel_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))

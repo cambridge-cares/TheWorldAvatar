@@ -1,12 +1,12 @@
 import os
-from .location import DATA_PATH
+from Marie.Util.location import DATA_DIR
 
 
 # we need a proper place to hold all the triples, currently in file form
 
 class SubgraphExtractor:
-    def __init__(self):
-        self.PUBCHEM_PATH = os.path.join(DATA_PATH, 'pubchemmedium.txt')
+    def __init__(self, dataset_name='pubchem500'):
+        self.PUBCHEM_PATH = os.path.join(DATA_DIR, f'{dataset_name}-train.txt')
         self.entity_dictionary = {}
         self.pubchem_triples = []
         self.load_pubchem()

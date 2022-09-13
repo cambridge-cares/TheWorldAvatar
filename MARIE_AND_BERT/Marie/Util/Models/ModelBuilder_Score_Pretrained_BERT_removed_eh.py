@@ -18,7 +18,7 @@ from tqdm import tqdm
 from transformers import BertModel, BertTokenizer
 from Marie.Util.Models.ScoringModel_Dataset import Dataset
 from Marie.Util.location import DATA_DIR
-from Marie.Util.Models.StandAloneBERT import StandAloneBERT
+from Marie.Util.Models.StandAloneBERT2Embedding import StandAloneBERT
 
 
 class ScoreModel(nn.Module):
@@ -27,15 +27,14 @@ class ScoreModel(nn.Module):
         super(ScoreModel, self).__init__()
         # load the weights
         # self.ent_embedding_torch = nn.Embedding()
-
-        self.criterion = MarginRankingLoss(margin=0)  # to make sure that the positive triplet always have smaller
+        model_name = 'bert_model_embedding_20_cosine_single_layer_pubchem500_no_eh'
+        self.criterion = MarginRankingLoss(margin=1)  # to make sure that the positive triplet always have smaller
         # distance than negative ones
         self.device = device
         self.bert_with_reduction = StandAloneBERT(device=device)
-        self.bert_with_reduction.load_model()
+        self.bert_with_reduction.load_model(model_name)
         self.ent_embedding = ent_embedding
         self.rel_embedding = pd.read_csv(os.path.join(DATA_DIR, 'rel_embedding.tsv'), sep='\t', header=None)
-        self.linear = nn.Linear(50, 50)
 
     def forward(self, positive_triplets, negative_triplets):
         """
@@ -48,18 +47,8 @@ class ScoreModel(nn.Module):
         nlp_components_pos = positive_triplets['question']
         nlp_components_neg = negative_triplets['question']
 
-        one_hot_pos = self.bert_with_reduction.forward(nlp_components_pos).requires_grad_(True)
-        rel_pos_idx = one_hot_pos.argmax(dim=1).cpu().detach().numpy()
-        emb_pos = self.rel_embedding.iloc[rel_pos_idx]
-        projected_rel_pos = torch.FloatTensor(emb_pos.values).to(self.device)
-        projected_rel_pos = self.linear(projected_rel_pos)
-
-
-
-        one_hot_neg = self.bert_with_reduction.forward(nlp_components_neg).requires_grad_(True)
-        rel_neg_idx = one_hot_neg.argmax(dim=1).cpu().detach().numpy()
-        emb_neg = self.rel_embedding.iloc[rel_neg_idx]
-        projected_rel_neg = torch.FloatTensor(emb_neg.values).to(self.device)
+        projected_rel_pos = self.bert_with_reduction.predict(nlp_components_pos)
+        projected_rel_neg = self.bert_with_reduction.predict(nlp_components_neg)
 
         dist_positive = self.distance(positive_triplets, projected_rel_pos)
         dist_negative = self.distance(negative_triplets, projected_rel_neg)
@@ -81,12 +70,9 @@ class ScoreModel(nn.Module):
 
     def predict(self, triplet):
         nlp_components_pos = triplet['question']
-
-        one_hot_pos = self.bert_with_reduction.forward(nlp_components_pos)
-        rel_pos_idx = one_hot_pos.argmax(dim=1).cpu().detach().numpy()
-        emb_pos = self.rel_embedding.iloc[rel_pos_idx]
-        projected_rel_pos = torch.FloatTensor(emb_pos.values).to(self.device)
+        projected_rel_pos = self.bert_with_reduction.predict(nlp_components_pos)
         dist_positive = self.distance(triplet, projected_rel_pos)
+
         return dist_positive
 
 
@@ -105,7 +91,7 @@ class Trainer:
         self.epoches = epoches
         self.learning_rate = learning_rate
         self.step = 0
-        self.test_frequency = 5
+        self.test_frequency = 1
         self.drop_out = drop_out
 
         self.neg_rate = negative_rate
@@ -120,14 +106,11 @@ class Trainer:
         self.test_dataloader = torch.utils.data.DataLoader(self.test_set, batch_size=self.batch_size, shuffle=True)
 
         self.ent_embedding = self.train_set.ent_embedding
-        self.ent_embedding.to_csv('ent_embedding.csv')
-
         self.model = ScoreModel(self.ent_embedding, device=self.device, dropout=self.drop_out)
 
         if resume:
             self.model.load_state_dict(torch.load(os.path.join(DATA_DIR, 'score_model')))
             print('loaded pretrained model from', os.path.join(DATA_DIR, 'score_model'))
-        # self.optimizer = optim.SGD(self.model.parameters(), lr=self.learning_rate)
 
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.entity_labels = list(self.train_set.entity2idx.keys())
@@ -144,36 +127,24 @@ class Trainer:
 
     def train(self):
         # TODO: Test with both Adam and SGD
-        with open(f'training_log_{str(datetime.datetime.now()).replace(" ", "_").split(":")[0]}', 'w') as f:
-            f.write('started at:' + str(datetime.datetime.now()))
-            f.write('\n')
-            f.write(str(self.learning_rate))
-            f.write('\n')
-            f.write(str(self.neg_rate))
-            f.write('\n')
-            f.write(str(self.drop_out))
-            f.write('\n')
-            f.write(str(self.frac))
-            f.write('\n')
-
         init_train_loss = 0
         init_val_loss = 0
         with tqdm(total=self.epoches, unit=' epoch') as tepoch:
             model = self.model.cuda()
             for epoch_num in range(self.epoches):
-                tepoch.set_description(f'Epoch {epoch_num}')
-                model.train()
+                # tepoch.set_description(f'Epoch {epoch_num}')
+                # model.train()
                 total_loss_train = 0
-                for positive_set, negative_set in tqdm(self.train_dataloader):
-                    self.optimizer.zero_grad()
-                    loss = model(positive_set, negative_set)
-                    # loss.mean().backward()
-                    loss.backward()
-                    loss = loss.data.cuda()
-                    self.optimizer.step()
-                    self.step += 1
-                    total_loss_train += loss.mean().item()
-                print(f'total_loss_train: {total_loss_train}')
+                # for positive_set, negative_set in tqdm(self.train_dataloader):
+                #     self.optimizer.zero_grad()
+                #     loss = model(positive_set, negative_set)
+                #     # loss.mean().backward()
+                #     loss.backward()
+                #     loss = loss.data.cuda()
+                #     self.optimizer.step()
+                #     self.step += 1
+                #     total_loss_train += loss.mean().item()
+                # print(f'total_loss_train: {total_loss_train}')
 
                 if epoch_num % self.test_frequency == 0:
                     total_loss_val = self.evaluate()
@@ -245,19 +216,17 @@ class Trainer:
                 val_batch_counter += 1
                 e_h = positive_triplet['e_h'][0]
                 e_t = positive_triplet['e_t'][0]
+                # ground_truth_score = self.model.predict(positive_triplet)
+                # print(ground_truth_score)
+
 
                 e_h_label = self.entity_labels[e_h]
                 e_t_label = self.entity_labels[e_t]
-                tmp2 = (e_h_label, e_t_label)
-
                 all_possible_e_t_idx = [self.entity_labels.index(e) for e in self.entity_labels
-                                        if '_' in e and e.startswith(e_h_label + '_')]
-
-                ground_truth_idx = all_possible_e_t_idx.index(e_t)
-                tmp3 = ground_truth_idx
+                                        if '_' in e and e.startswith(e_h_label + '_') and e!= e_t_label]
+                all_possible_e_t_idx = [e_t] + all_possible_e_t_idx
+                ground_truth_idx = 0
                 triplet_num = len(all_possible_e_t_idx)
-                tmp4 = all_possible_e_t_idx
-
                 e_h_batch = torch.tensor(e_h).repeat(triplet_num).type(torch.LongTensor)
                 e_t_batch = torch.tensor(all_possible_e_t_idx).type(torch.LongTensor)
 
@@ -354,8 +323,8 @@ def build_from_optimal_parameters():
     my_trainer = Trainer(epoches=epochs, negative_rate=neg_rate, learning_rate=learning_rate, drop_out=dropout,
                          frac=frac)
     train_loss, val_loss, init_train_loss, init_val_loss = my_trainer.train()
-    write_log(my_trainer.learning_rate, my_trainer.neg_rate, my_trainer.drop_out, train_loss, val_loss, init_train_loss,
-              init_val_loss)
+    # write_log(my_trainer.learning_rate, my_trainer.neg_rate, my_trainer.drop_out, train_loss, val_loss, init_train_loss,
+    #           init_val_loss)
 
 
 if __name__ == '__main__':

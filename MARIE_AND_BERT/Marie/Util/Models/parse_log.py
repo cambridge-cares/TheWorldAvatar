@@ -27,7 +27,7 @@ for attempt in attempt_list:
         elif 'negative rate' in line:
             n_r = float(line.replace('negative rate ', '').strip())
 
-    delta_val = delta_train
+    delta_val = v_l
 
     if n_r in negative_rate:
         negative_rate[n_r].append(delta_val)

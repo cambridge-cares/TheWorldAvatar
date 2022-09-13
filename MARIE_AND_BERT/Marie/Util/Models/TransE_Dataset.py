@@ -21,7 +21,7 @@ class Dataset(torch.utils.data.Dataset):
         self.df = df
         self.ent_num = len(self.entity2idx.keys())
         self.rel_num = len(self.relation2idx.keys())
-
+        self.candidates = [e for e in self.entity2idx.keys()]
 
     def __len__(self):
         return len(self.df)
@@ -39,8 +39,8 @@ class Dataset(torch.utils.data.Dataset):
     def get_fake_tail(self, head, tail):
         # return the fake tail
         # candidates = [e for e in self.entity2idx.keys() if e.startswith(head + '_') and e != tail]
-        candidates = [e for e in self.entity2idx.keys()]
-        return self.entity2idx[choice(candidates)]
+        # candidates = [e for e in self.entity2idx.keys()]
+        return self.entity2idx[choice(self.candidates)]
 
     def create_neg_triple(self, idx):
         pass
@@ -49,3 +49,4 @@ class Dataset(torch.utils.data.Dataset):
         START_TIME = time.time()
         positive_set, negative_set = self.triplet2idx(self.df[idx])
         return positive_set, negative_set
+

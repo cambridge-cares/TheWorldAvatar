@@ -36,7 +36,7 @@ class ScoreModel(nn.Module):
             # nn.ReLU(),
             # nn.Dropout(dropout),
             #
-            nn.Linear(512, 50),
+            nn.Linear(512, ent_embedding.shape[1]),
             # #  nn.ReLU(),
             nn.Dropout(dropout),
             # #
@@ -121,37 +121,8 @@ class ScoreModel(nn.Module):
         return (head + projected_rel - tail).norm(p=1, dim=1).to(self.device)
 
     def predict(self, triplet):
-        # nlp_components = triplet['question']
-        #
-        # # input_ids = torch.reshape(nlp_components['input_ids'], (-1, 12)).to(self.device)
-        # # attention_mask = torch.reshape(nlp_components["attention_mask"], (-1, 12)).to(self.device)
-        #
-        # # input_ids = nlp_components['input_ids'].to(self.device)
-        # # attention_mask = nlp_components["attention_mask"].to(self.device)
-        #
-        # input_ids = torch.reshape(nlp_components['input_ids'], (-1, 12)).to(self.device)
-        # attention_mask = torch.reshape(nlp_components["attention_mask"], (-1, 12)).to(self.device)
-        #
-        # print(input_ids)
-        # print(attention_mask)
-        #
-        # _, pooled_output = self.bert(input_ids=input_ids.to(self.device),
-        #                              attention_mask=attention_mask.to(self.device))
-        # print('Base 0')
-        #
-        # projected_rel = self.bert_reduce_stack(pooled_output.to(self.device)).to(self.device)
-        #
-        # print('Base 1')
-        # predicted_distance = self.distance(triplet, projected_rel).to(self.device)
-        # print('Base 2')
-        # return predicted_distance
 
         nlp_components_pos = triplet['question']
-        # print(nlp_components_pos['input_ids'].shape)
-
-        # make it a 64 * 20 x 12, squeeze dim 1?
-        # print(torch.reshape(nlp_components_pos['input_ids'], (-1, 12)).shape)
-
         input_ids_pos = torch.reshape(nlp_components_pos['input_ids'], (-1, 12)).to(self.device)
         attention_mask_pos = torch.reshape(nlp_components_pos["attention_mask"], (-1, 12)).to(self.device)
         _, pooled_output_pos = self.bert(input_ids=input_ids_pos,
@@ -159,16 +130,7 @@ class ScoreModel(nn.Module):
                                          return_dict=False)
         pooled_output_pos = self.dropout(pooled_output_pos)
         projected_rel_pos = self.bert_reduce_stack(pooled_output_pos)
-
-        # dist_positive = self.distance(positive_triplets, projected_rel_pos).unsqueeze(1).type(
-        # torch.FloatTensor).to(self.device) dist_negative = self.distance(negative_triplets,
-        # projected_rel_neg).unsqueeze(1).type(torch.FloatTensor).to(self.device)
         dist_positive = self.distance(triplet, projected_rel_pos)
-        # print('========== from predict ============')
-        # print(dist_positive)
-        # dist_positive = self.linear_1(dist_positive.unsqueeze(1).type(torch.FloatTensor).to(self.device))
-        # print(dist_positive)
-
         return dist_positive
 
 
@@ -260,7 +222,7 @@ class Trainer:
                 if epoch_num % self.test_frequency == 0:
                     total_loss_val = self.evaluate()
 
-                    torch.save(model.state_dict(), os.path.join(DATA_DIR, 'score_model'))
+                    torch.save(model.state_dict(), os.path.join(DATA_DIR, 'score_model_original'))
 
                     print('total_loss_val', total_loss_val)
 
@@ -315,12 +277,6 @@ class Trainer:
                 total_prediction_loss += self.model(positive_set, negative_set).mean().item()
                 # TODO: write the hit-k here
                 # TODO: concat the first positive and all the other negative samples without changing the shape
-                # self.model.predict(positive_set)
-                # for prediction_batch in self.make_prediction_batch(positive_set, negative_set):
-                #     print(prediction_batch)
-                #     predictions = self.model.predict(prediction_batch)
-                #     print(self.hit_at_k(predictions, 0, 10))
-
             val_batch_counter = 0
 
             for positive_triplet, _ in tqdm(self.sample_ds):
@@ -440,11 +396,11 @@ def fine_tuning():
 
 def build_from_optimal_parameters():
     dropout = 0
-    neg_rate = 12
+    neg_rate = 2
     learning_rate = 1e-7
     epochs = 300
     frac = 1
-    my_trainer = Trainer(epoches=epochs, negative_rate=neg_rate, learning_rate=learning_rate, drop_out=dropout, frac=frac)
+    my_trainer = Trainer(epoches=epochs, negative_rate=neg_rate, learning_rate=learning_rate, drop_out=dropout, frac=frac, batch_size=32)
     train_loss, val_loss, init_train_loss, init_val_loss = my_trainer.train()
     write_log(my_trainer.learning_rate, my_trainer.neg_rate, my_trainer.drop_out, train_loss, val_loss, init_train_loss,
               init_val_loss)

@@ -1,6 +1,7 @@
 import json
-def load_entity_dict(path, name_only=False):
 
+
+def load_entity_dict(path, name_only=False):
     assert path is not None, "Error! entity_dict_path is empty."
 
     entity_list = []

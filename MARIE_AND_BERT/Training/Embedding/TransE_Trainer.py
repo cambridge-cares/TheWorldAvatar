@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append('../../../')
 
 from torch.optim.lr_scheduler import ExponentialLR
@@ -11,21 +12,16 @@ from Marie.Util.Models.TransE import TransE
 from Marie.Util.Models.TransE_Dataset import Dataset
 
 
-
-
-# TODO: make the data builder based on the entity and rel mapping
-# This serves as the standard template for dataset processing
-
-
-class Trainer():
-    def __init__(self):
-        # previous optimal parameters , b = 128, l_r = 0.01 , dim = 50
-        self.batch_size = 128
-        self.epoches = 5000
+class Trainer:
+    def __init__(self, batch_size=128, epochs=5000, learning_rate=1, dataset_name='pubchem500',
+                 dim=20, mode='production', load_pretrained_embeddings = False):
+        self.batch_size = batch_size
+        self.epochs = epochs
         self.step = 0
-        self.learning_rate = 10
-        self.dim = 50
-        self.dataset_name  = 'pubchem5000'
+        self.learning_rate = learning_rate
+        self.dim = dim
+        self.dataset_name = dataset_name
+        self.mode = mode
 
         train_triplets = [line.split('\t') for line in
                           open(os.path.join(DATA_DIR, f'{self.dataset_name}-train.txt')).read().splitlines()]
@@ -43,7 +39,8 @@ class Trainer():
         device = torch.device("cuda" if use_cuda else "cpu")
         self.device = device
         print(f'=========== USING {device} ===============')
-        self.model = TransE(dim=self.dim, ent_num=self.e_num, rel_num=self.r_num, resume_training=False, device=device)
+        self.model = TransE(dim=self.dim, ent_num=self.e_num, rel_num=self.r_num,
+                            resume_training=load_pretrained_embeddings, device=device)
 
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
         self.scheduler = ExponentialLR(self.optimizer, gamma=0.999)
@@ -60,9 +57,9 @@ class Trainer():
 
     def train(self):
 
-        with tqdm(total=self.epoches, unit=' epoch') as tepoch:
+        with tqdm(total=self.epochs, unit=' epoch') as tepoch:
 
-            for epoch_num in range(self.epoches):
+            for epoch_num in range(self.epochs):
                 # init loss and accuracy numbers
                 total_loss_train = 0
                 tepoch.set_description(f"Epoch {epoch_num + 1} ")
@@ -104,14 +101,17 @@ class Trainer():
             r_line = '\t'.join([str(r) for r in embedding.tolist()])
             rel_lines.append(r_line)
         rel_content = '\n'.join(rel_lines)
-        with open(os.path.join(DATA_DIR,'rel_embedding.tsv'), 'w') as f:
+        with open(os.path.join(DATA_DIR, 'rel_embedding.tsv'), 'w') as f:
             f.write(rel_content)
             f.close()
 
     def save_model(self):
-        torch.save(self.model.state_dict(), '../../../Training/Embedding/playground/model')
-        self.export_embeddings()
-        print(f'saving the model and the embeddings')
+        # torch.save(self.model.state_dict(), '../../../Training/Embedding/playground/model')
+        if self.mode == 'test':
+            print('In test mode, embeddings will not be saved')
+        else:
+            self.export_embeddings()
+            print(f'saving the embeddings')
 
     def evaluate(self):
         total_loss_val = 0
@@ -120,7 +120,7 @@ class Trainer():
         hit_1 = 0
         total_case = 0
 
-        for positive_triplets, _ in self.test_dataloader:
+        for positive_triplets, _ in tqdm(self.test_dataloader):
             prediction = self.model.predict(positive_triplets).mean()
             total_loss_val += prediction
 
@@ -140,12 +140,13 @@ class Trainer():
                 hit_5 += self.hit_at_k(prediction.to(self.device), tail_true, k=5)
                 hit_1 += self.hit_at_k(prediction.to(self.device), tail_true, k=1)
 
+                # replace the make a list of stuff
+        '''
+        Add function to find out the hit rate within the subgraph 
+        '''
+        print('=======================================================================================================')
         print('Current Hit 10 rate:', hit_10, ' out of ', total_case, ' ratio is: ', hit_10 / total_case)
         print('Current Hit 5 rate:', hit_5, ' out of ', total_case, ' ratio is: ', hit_5 / total_case)
         print('Current Hit 1 rate:', hit_1, ' out of ', total_case, ' ratio is: ', hit_1 / total_case)
         print(f'total_loss_val {total_loss_val}')
-
-
-if __name__ == '__main__':
-    trainer = Trainer()
-    trainer.train()
+        return hit_1 / total_case,  total_loss_val

@@ -14,7 +14,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 
 
 class Dataset(torch.utils.data.Dataset):
-    def __init__(self, df, negative_rate=20):
+    def __init__(self, df, negative_rate=20, remove_eh=False):
         # TODO: load the entity2idx, rel2idx
         # entity2idx, from name to index
         # rel2idx, from name to index
@@ -37,7 +37,6 @@ class Dataset(torch.utils.data.Dataset):
         print(self.ent_num)
         print('total triple number', len(self.df_pos))
 
-
         ent_embed_path = os.path.join(DATA_DIR, 'ent_embedding.tsv')
         self.ent_embedding = pd.read_csv(ent_embed_path, sep='\t', header=None)
         self.all_entities = list(set(self.entity2idx.keys()))
@@ -46,6 +45,8 @@ class Dataset(torch.utils.data.Dataset):
         # tokenized_question_neg
         self.all_relations = list(set(self.relation2idx.keys()))
         self.fake_entity_mapping = self.create_fake_entity_mapping()
+
+        self.remove_eh = remove_eh
 
     def create_fake_entity_mapping(self):
         fake_entity_mapping = {}
@@ -60,13 +61,20 @@ class Dataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.df_pos)
 
-    def tokenize_question(self, df_subset):
-        return [tokenizer(text,
-                          padding='max_length', max_length=self.max_length, truncation=True,
-                          return_tensors="pt") for text in df_subset]
+    def tokenize_question(self, df_subset, eh=None):
+        eh = None
+        if eh is not None:
+
+            return [tokenizer(text.replace(eh, ''),
+                              padding='max_length', max_length=self.max_length, truncation=True,
+                              return_tensors="pt") for text in df_subset]
+        else:
+            return [tokenizer(text,
+                              padding='max_length', max_length=self.max_length, truncation=True,
+                              return_tensors="pt") for text in df_subset]
 
     def get_embedding(self, row):
-        tokenized_question_pos = self.tokenize_question(row['question'])[0]
+        tokenized_question_pos = self.tokenize_question(row['question'], eh=row['head'].values[0])[0]
         a_m_batch = torch.cat(self.neg_sample_num * [tokenized_question_pos['attention_mask']])
         i_i_batch = torch.cat(self.neg_sample_num * [tokenized_question_pos['input_ids']])
 
@@ -107,14 +115,6 @@ class Dataset(torch.utils.data.Dataset):
         # we need more neg samples, say, 20
 
         pos_set, neg_set = self.get_embedding(row_pos)
-
-        # start_time_2 = time.time()
-        # fake_entity = choice(self.fake_entity_mapping[row_pos['tail'].tolist()[0]])
-        # fake_dict = choice(({'e_t': fake_entity}, {'e_h': fake_entity}))
-        # row_neg = self.df_pos.iloc[[idx]].replace(fake_dict)
-        # tokenized_question_neg, e_h_neg, e_t_neg = self.get_embedding(row_neg, positive=False)
-        # return {'question': tokenized_question_pos, 'e_h': e_h_pos, 'e_t': e_t_pos}, \
-        #        {'question': tokenized_question_neg, 'e_h': e_h_neg, 'e_t': e_t_neg}
         return pos_set, neg_set
 
 
@@ -128,4 +128,3 @@ if __name__ == '__main__':
     test_set = Dataset(df_test)
     train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
     test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=batch_size, shuffle=True)
-
