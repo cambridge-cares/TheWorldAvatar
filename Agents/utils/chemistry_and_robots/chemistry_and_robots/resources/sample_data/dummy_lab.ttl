@@ -632,7 +632,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 :VapRS400_Price_Value
     a om:Measure;
     om:hasUnit om:SingaporeDollar;
-    om:hasNumericalValue "92,540.15"^^xsd:double;
+    om:hasNumericalValue "92540.15"^^xsd:double;
 .
 
 #:VapRS400_Weight; # TODO
@@ -806,12 +806,49 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     ontolab:hasPowerSupply :VapR2_1_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     ontovapourtec:locationID "A"^^xsd:string;
-    ontolab:specifiedBy :VapourtecR2_1_Dummy_Setting;
+    # NOTE this pump is set to have a ReagentBottle to test the mixed sourcing of input chemicals
+    ontovapourtec:hasReagentSource :ReagentBottle_1_Dummy;
 .
 
-:VapourtecR2_1_Dummy_Setting
-    ontolab:specifies :VapourtecR2_1_Dummy;
-    ontovapourtec:pumpsLiquidFrom :Site_1;
+:ReagentBottle_1_Dummy
+    a ontolab:ReagentBottle;
+    ontovapourtec:isFilledWith :ChemicalSolution_1;
+    ontovapourtec:hasMaxLevel :ReagentBottle_1_level_max;
+    ontovapourtec:hasWarningLevel :ReagentBottle_1_level_warning;
+    ontovapourtec:hasFillLevel :ReagentBottle_1_level_fill;
+.
+
+:ReagentBottle_1_level_max
+    a om:Volume;
+    om:hasValue :ReagentBottle_1_level_max_Value;
+.
+
+:ReagentBottle_1_level_max_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "1000"^^xsd:double;
+.
+
+:ReagentBottle_1_level_warning
+    a om:Volume;
+    om:hasValue :ReagentBottle_1_level_warning_Value;
+.
+
+:ReagentBottle_1_level_warning_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "100"^^xsd:double;
+.
+
+:ReagentBottle_1_level_fill
+    a om:Volume;
+    om:hasValue :ReagentBottle_1_level_fill_Value;
+.
+
+:ReagentBottle_1_level_fill_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "500"^^xsd:double;
 .
 
 #################################
@@ -855,6 +892,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     ontolab:isContainedIn :Laboratory_Dummy;
     ontolab:hasPowerSupply :AutoSampler_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
+    ontovapourtec:sampleLoopVolume :AutoSampler_Dummy_SampleLoopVolume;
     ontovapourtec:hasSite :Site_1;
     ontovapourtec:hasSite :Site_2;
     ontovapourtec:hasSite :Site_3;
@@ -1075,6 +1113,17 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     ontovapourtec:hasSite :Site_218;
     ontovapourtec:hasSite :Site_219;
     ontovapourtec:hasSite :Site_220;
+.
+
+:AutoSampler_Dummy_SampleLoopVolume
+    a om:Volume;
+    om:hasValue :AutoSampler_Dummy_SampleLoopVolume_value;
+.
+
+:AutoSampler_Dummy_SampleLoopVolume_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "2.0"^^xsd:double;
 .
 
 :Site_1

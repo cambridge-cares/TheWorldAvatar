@@ -104,3 +104,10 @@ class HPLC(LabEquipment):
     reportExtension: str # this should be DBPEDIA_WIKICATFILENAMEEXTENSIONS but we simplify as str
     hasJob: Optional[List[HPLCJob]]
     hasPastReport: Optional[List[HPLCReport]]
+
+    def is_suitable_for_reaction_experiment(self, rxn_exp: ReactionExperiment) -> bool:
+        # TODO [future work] add more checks given the reaction experiment
+        if self.isManagedBy is None:
+            # TODO [nice-to-have] here we can add functions to inform the owner of hardware to spin up agent for execution
+            return False
+        return True

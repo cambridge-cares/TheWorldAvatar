@@ -26,7 +26,7 @@ def get_unique_values_in_list_of_dict(list_of_dict: List[dict], key: str) -> lis
 def get_the_unique_value_in_list_of_dict(list_of_dict: List[dict], key: str) -> Any:
     list_unique_value = list(set(get_value_from_list_of_dict(list_of_dict, key)))
     if len(list_unique_value) != 1:
-        raise Exception(f"""Exactly one {key} is expected, but found: {list_unique_value}""")
+        raise Exception(f"""Exactly one '{key}' is expected, but found: {list_unique_value} in: {list_of_dict}""")
     return list_unique_value[0]
 
 def get_value_from_list_of_dict(list_of_dict: List[dict], key: str) -> list:

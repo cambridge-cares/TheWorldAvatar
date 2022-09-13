@@ -26,7 +26,6 @@ logging.getLogger('py4j').setLevel(logging.INFO)
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
-    # TODO add unit test
     def get_all_rxn_exp_given_chem_rxn(self, chem_rxn_iri: str):
         chem_rxn_iri = trimIRI(chem_rxn_iri)
         query = f"""SELECT DISTINCT ?rxn_exp
@@ -37,7 +36,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         response = self.performQuery(query)
         return [list(res.values())[0] for res in response]
 
-    # TODO add unit test
     def get_all_rxn_exp_with_target_perfind_given_chem_rxn(self, chem_rxn_iri: str, target_perfind_iri_or_lst: Union[str, list]):
         chem_rxn_iri = trimIRI(chem_rxn_iri)
         if not isinstance(target_perfind_iri_or_lst, list):
@@ -449,7 +447,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     if unique_state_of_aggregation_iri[0] == ONTOCAPE_LIQUID:
                         state_of_aggregation = OntoCAPE_liquid
                     else:
-                        # TODO add support for other phase (solid, gas)
+                        # TODO [future work] add support for other phase (solid, gas)
                         pass
 
                 unique_composition_iri = dal.get_unique_values_in_list_of_dict(list_om, 'composition')
@@ -468,7 +466,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         if r['concentration_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
                             concentration = OntoCAPE_Molarity(instance_iri=r['phase_component_concentration'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
                         else:
-                            # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+                            # TODO [future work] add support for other type of OntoCAPE_PhaseComponentConcentration
                             raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['concentration_type'])
                         list_phase_component_concentration.append(concentration)
                     else:
@@ -507,101 +505,90 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
             return lst_ontocape_material
 
+    def construct_query_for_autosampler(self, given_autosampler_iri: str = None) -> str:
+        query = f"""{PREFIX_RDF}
+                SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
+                ?sample_loop_volume ?sample_loop_volume_value ?sample_loop_volume_unit ?sample_loop_volume_num_val
+                ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
+                ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution
+                WHERE {{
+                    {'VALUES ?autosampler { <%s> }' % trimIRI(given_autosampler_iri) if given_autosampler_iri is not None else ""}
+                    ?autosampler rdf:type <{ONTOVAPOURTEC_AUTOSAMPLER}>;
+                                 <{DBPEDIA_MANUFACTURER}> ?autosampler_manufacturer;
+                                 <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
+                                 <{ONTOLAB_HASPOWERSUPPLY}> ?autosampler_power_supply;
+                                 <{ONTOVAPOURTEC_SAMPLELOOPVOLUME}> ?sample_loop_volume.
+                    ?sample_loop_volume <{OM_HASVALUE}> ?sample_loop_volume_value.
+                    ?sample_loop_volume_value <{OM_HASUNIT}> ?sample_loop_volume_unit;
+                                              <{OM_HASNUMERICALVALUE}> ?sample_loop_volume_num_val.
+                    ?autosampler <{ONTOVAPOURTEC_HASSITE}> ?site.
+                    ?site <{ONTOVAPOURTEC_HOLDS}> ?vial; <{ONTOVAPOURTEC_LOCATIONID}> ?loc.
+                    OPTIONAL {{
+                        ?vial <{ONTOVAPOURTEC_HASFILLLEVEL}> ?fill_level.
+                        ?fill_level <{OM_HASVALUE}> ?fill_level_om_value.
+                        ?fill_level_om_value <{OM_HASUNIT}> ?fill_level_unit;
+                                                <{OM_HASNUMERICALVALUE}> ?fill_level_num_val.
+                    }}
+                    OPTIONAL {{
+                        ?vial <{ONTOVAPOURTEC_HASMAXLEVEL}> ?max_level.
+                        ?max_level <{OM_HASVALUE}> ?max_level_om_value.
+                        ?max_level_om_value <{OM_HASUNIT}> ?max_level_unit;
+                                            <{OM_HASNUMERICALVALUE}> ?max_level_num_val.
+                    }}
+                    OPTIONAL {{?vial <{ONTOVAPOURTEC_ISFILLEDWITH}> ?chemical_solution.}}
+                }}"""
+        return query
+
     def get_all_autosampler_with_fill(self, given_autosampler_iri: str = None) -> List[AutoSampler]:
-        if given_autosampler_iri == None:
-            query = PREFIX_RDF + \
-                    """
-                    SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
-                    ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
-                    ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution
-                    WHERE {
-                        ?autosampler rdf:type <%s>; <%s> ?autosampler_manufacturer; <%s> ?laboratory; <%s> ?autosampler_power_supply.
-                        ?autosampler <%s> ?site.
-                        ?site <%s> ?vial; <%s> ?loc.
-                        OPTIONAL {
-                            ?vial <%s> ?fill_level.
-                            ?fill_level <%s> ?fill_level_om_value.
-                            ?fill_level_om_value <%s> ?fill_level_unit; <%s> ?fill_level_num_val.
-                        }
-                        OPTIONAL {
-                            ?vial <%s> ?max_level.
-                            ?max_level <%s> ?max_level_om_value.
-                            ?max_level_om_value <%s> ?max_level_unit; <%s> ?max_level_num_val.
-                        }
-                        OPTIONAL {?vial <%s> ?chemical_solution.}
-                    }
-                    """ % (
-                        ONTOVAPOURTEC_AUTOSAMPLER, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
-                        ONTOVAPOURTEC_HASSITE, ONTOVAPOURTEC_HOLDS, ONTOVAPOURTEC_LOCATIONID,
-                        ONTOVAPOURTEC_HASFILLLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
-                        ONTOVAPOURTEC_HASMAXLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
-                        ONTOVAPOURTEC_ISFILLEDWITH
-                    )
-
-            response = self.performQuery(query)
-
-            unique_autosampler_list = dal.get_unique_values_in_list_of_dict(response, 'autosampler')
-            logger.debug("The list of all available OntoVapourtec:AutoSampler in the knowledge graph (%s): %s" % (self.kg_client.getQueryEndpoint(), str(unique_autosampler_list)))
-        else:
-            given_autosampler_iri = trimIRI(given_autosampler_iri)
-            query = PREFIX_RDF + \
-                    """
-                    SELECT ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
-                    ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
-                    ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val ?chemical_solution
-                    WHERE {
-                        <%s> <%s> ?autosampler_manufacturer; <%s> ?laboratory; <%s> ?autosampler_power_supply.
-                        <%s> <%s> ?site.
-                        ?site <%s> ?vial; <%s> ?loc.
-                        OPTIONAL {
-                            ?vial <%s> ?fill_level.
-                            ?fill_level <%s> ?fill_level_om_value.
-                            ?fill_level_om_value <%s> ?fill_level_unit; <%s> ?fill_level_num_val.
-                        }
-                        OPTIONAL {
-                            ?vial <%s> ?max_level.
-                            ?max_level <%s> ?max_level_om_value.
-                            ?max_level_om_value <%s> ?max_level_unit; <%s> ?max_level_num_val.
-                        }
-                        OPTIONAL {?vial <%s> ?chemical_solution.}
-                    }
-                    """ % (
-                        given_autosampler_iri, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
-                        given_autosampler_iri, ONTOVAPOURTEC_HASSITE, ONTOVAPOURTEC_HOLDS, ONTOVAPOURTEC_LOCATIONID,
-                        ONTOVAPOURTEC_HASFILLLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
-                        ONTOVAPOURTEC_HASMAXLEVEL, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
-                        ONTOVAPOURTEC_ISFILLEDWITH
-                    )
-            response = self.performQuery(query)
-            unique_autosampler_list = [given_autosampler_iri]
+        query = self.construct_query_for_autosampler(given_autosampler_iri)
+        response = self.performQuery(query)
+        unique_autosampler_list = dal.get_unique_values_in_list_of_dict(response, 'autosampler')
 
         list_autosampler = []
         for specific_autosampler in unique_autosampler_list:
             info_of_specific_autosampler = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'autosampler', specific_autosampler) if given_autosampler_iri is None else response
 
-            unique_specific_autosampler_manufacturer_iri = dal.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'autosampler_manufacturer')
-            if len(unique_specific_autosampler_manufacturer_iri) > 1:
-                raise Exception("Multiple dbpedia:manufacturer identified (<%s>) in one instance of OntoVapourtec:AutoSampler %s is currently NOT supported." % ('>, <'.join(unique_specific_autosampler_manufacturer_iri), specific_autosampler))
-            elif len(unique_specific_autosampler_manufacturer_iri) < 1:
-                raise Exception("No instance of dbpedia:manufacturer was identified given instance of OntoVapourtec:AutoSampler: %s" % (specific_autosampler))
-            else:
-                unique_specific_autosampler_manufacturer_iri = unique_specific_autosampler_manufacturer_iri[0]
+            try:
+                unique_specific_autosampler_manufacturer_iri = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'autosampler_manufacturer')
+            except Exception as e:
+                logger.error(f"dbpedia:manufacturer is not correctly defined for {specific_autosampler}", exc_info=True)
+                raise e
 
-            unique_specific_autosampler_laboratory_iri = dal.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'laboratory')
-            if len(unique_specific_autosampler_laboratory_iri) > 1:
-                raise Exception("Multiple OntoLab:isContainedIn OntoLab:Laboratory identified (<%s>) for one instance of OntoVapourtec:AutoSampler %s." % ('>, <'.join(unique_specific_autosampler_laboratory_iri), specific_autosampler))
-            elif len(unique_specific_autosampler_laboratory_iri) < 1:
-                raise Exception("No instance of OntoLab:isContainedIn OntoLab:Laboratory was identified given instance of OntoVapourtec:AutoSampler: %s" % (specific_autosampler))
-            else:
-                unique_specific_autosampler_laboratory_iri = unique_specific_autosampler_laboratory_iri[0]
+            try:
+                unique_specific_autosampler_laboratory_iri = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'laboratory')
+            except Exception as e:
+                logger.error(f"OntoLab:isContainedIn is not correctly defined for {specific_autosampler}", exc_info=True)
+                raise e
 
-            unique_specific_autosampler_power_supply_iri = dal.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'autosampler_power_supply')
-            if len(unique_specific_autosampler_power_supply_iri) > 1:
-                raise Exception("Multiple OntoLab:hasPowerSupply OntoLab:PowerSupply identified (<%s>) for one instance of OntoVapourtec:AutoSampler %s is currently NOT supported." % ('>, <'.join(unique_specific_autosampler_power_supply_iri), specific_autosampler))
-            elif len(unique_specific_autosampler_power_supply_iri) < 1:
-                raise Exception("No instance of OntoLab:hasPowerSupply OntoLab:PowerSupply was identified given instance of OntoVapourtec:AutoSampler: %s" % (specific_autosampler))
-            else:
-                unique_specific_autosampler_power_supply_iri = unique_specific_autosampler_power_supply_iri[0]
+            try:
+                unique_specific_autosampler_power_supply_iri = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'autosampler_power_supply')
+            except Exception as e:
+                logger.error(f"OntoLab:hasPowerSupply is not correctly defined for {specific_autosampler}", exc_info=True)
+                raise e
+
+            try:
+                unique_sample_loop_volume_iri = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'sample_loop_volume')
+            except Exception as e:
+                logger.error(f"OntoVapourtec:sampleLoopVolume is not correctly defined for {specific_autosampler}", exc_info=True)
+                raise e
+
+            try:
+                unique_sample_loop_volume_value_iri = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'sample_loop_volume_value')
+            except Exception as e:
+                logger.error(f"OM:Measure of OntoVapourtec:sampleLoopVolume is not correctly defined for {specific_autosampler}", exc_info=True)
+                raise e
+
+            try:
+                unique_sample_loop_volume_unit = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'sample_loop_volume_unit')
+            except Exception as e:
+                logger.error(f"OM:Measure unit of OntoVapourtec:sampleLoopVolume is not correctly defined for {specific_autosampler}", exc_info=True)
+                raise e
+
+            try:
+                unique_sample_loop_volume_num_val = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'sample_loop_volume_num_val')
+            except Exception as e:
+                logger.error(f"OM:Measure num val of OntoVapourtec:sampleLoopVolume is not correctly defined for {specific_autosampler}", exc_info=True)
+                raise e
 
             logger.debug("The sublist of all information related to the specific instance of OntoVapourtec:AutoSampler <%s> in the knowledge graph (%s): %s" %
                 (specific_autosampler, self.kg_client.getQueryEndpoint(), str(info_of_specific_autosampler)))
@@ -609,22 +596,28 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             unique_site_list = dal.get_unique_values_in_list_of_dict(info_of_specific_autosampler, 'site')
             list_autosampler_site = []
             for specific_site in unique_site_list:
-                info_of_specific_site = dal.get_sublist_in_list_of_dict_matching_key_value(info_of_specific_autosampler, 'site', specific_site)[0] # TODO here we assume only one, but to be varified by checking length
-                # TODO add exceptions for lenth of the results, e.g. if len(info_of_specific_site) > 1:
-                # TODO add logger info/debug
+                info_of_specific_site = dal.get_sublist_in_list_of_dict_matching_key_value(info_of_specific_autosampler, 'site', specific_site)
+                if len(info_of_specific_site) > 1:
+                    raise Exception(f"Information for specific site is not correctly defined for {specific_site}, one set of information is expected, obtained: {info_of_specific_site}")
+                info_of_specific_site = info_of_specific_site[0]
+
                 if 'chemical_solution' in info_of_specific_site:
                     lst_referred_instance_of_ontocape_material = self.get_ontocape_material(info_of_specific_site['chemical_solution'], ONTOCAPE_REFERSTOMATERIAL)
-                    referred_instance_of_ontocape_material = lst_referred_instance_of_ontocape_material[0] if lst_referred_instance_of_ontocape_material is not None else None # TODO here we assume only one, but to be varified by checking length
+                    if lst_referred_instance_of_ontocape_material is None:
+                        referred_instance_of_ontocape_material = None
+                    elif len(lst_referred_instance_of_ontocape_material) > 1:
+                        raise Exception(f"There are more than one OntoCAPE:Material referred by OntoVapourtec:AutoSamplerSite <{specific_site}>: {lst_referred_instance_of_ontocape_material}.")
+                    else:
+                        referred_instance_of_ontocape_material = lst_referred_instance_of_ontocape_material[0]
                 else:
                     referred_instance_of_ontocape_material = None
-                # TODO add exceptions for lenth of the results, e.g. if len(referred_instance_of_ontocape_material) > 1:
                 vial = Vial(
                     instance_iri=info_of_specific_site['vial'],
                     isFilledWith=ChemicalSolution(
                         instance_iri=info_of_specific_site['chemical_solution'],
                         refersToMaterial=referred_instance_of_ontocape_material,
                         fills=info_of_specific_site['vial'],
-                        isPreparedBy=None # TODO add support for isPreparedBy
+                        isPreparedBy=None # TODO [future work] add support for isPreparedBy
                     ) if 'chemical_solution' in info_of_specific_site else None,
                     hasFillLevel=OM_Volume(
                         instance_iri=info_of_specific_site['fill_level'],
@@ -656,7 +649,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 manufacturer=unique_specific_autosampler_manufacturer_iri,
                 isContainedIn=unique_specific_autosampler_laboratory_iri,
                 hasPowerSupply=unique_specific_autosampler_power_supply_iri,
-                hasSite=list_autosampler_site
+                hasSite=list_autosampler_site,
+                sampleLoopVolume=OM_Volume(
+                    instance_iri=unique_sample_loop_volume_iri,
+                    hasValue=OM_Measure(
+                        instance_iri=unique_sample_loop_volume_value_iri,
+                        hasUnit=unique_sample_loop_volume_unit,
+                        hasNumericalValue=unique_sample_loop_volume_num_val
+                    )
+                )
             )
             list_autosampler.append(autosampler)
 
@@ -859,114 +860,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             return self.getReactionExperiment(response[0]['newexp'])[0]
         return None
 
-    def create_equip_settings_for_rs400_from_rxn_exp(self, rxnexp: ReactionExperiment, rs400: VapourtecRS400, preferred_r4_reactor: VapourtecR4Reactor) -> List[EquipmentSettings]:
-        list_equip_setting = []
-        reactor_setting = ReactorSettings(
-            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-            hasResidenceTimeSetting=ResidenceTimeSetting(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTOREACTION_RESIDENCETIME),
-                namespace_for_init=getNameSpace(rxnexp.instance_iri)
-            ),
-            hasReactorTemperatureSetting=ReactorTemperatureSetting(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                hasQuantity=self.get_rxn_con_or_perf_ind(rxnexp.hasReactionCondition, ONTOREACTION_REACTIONTEMPERATURE),
-                namespace_for_init=getNameSpace(rxnexp.instance_iri)
-            ),
-            namespace_for_init=getNameSpace(rxnexp.instance_iri),
-            specifies=preferred_r4_reactor,
-            wasGeneratedFor=rxnexp.instance_iri
-        )
-
-        list_equip_setting.append(reactor_setting)
-
-        # first identify the reference reactant
-        dict_stoi_ratio = {cond.indicatesMultiplicityOf:cond for cond in rxnexp.hasReactionCondition if cond.clz == ONTOREACTION_STOICHIOMETRYRATIO}
-        reference_input_chemical = [chem for chem in dict_stoi_ratio if abs(dict_stoi_ratio.get(chem).hasValue.hasNumericalValue - 1) < 0.000001]
-        if len(reference_input_chemical) > 1:
-            raise Exception("Multiple reference chemicals are identified: " + str(reference_input_chemical) + " for reaction experiment: " + str(rxnexp.dict()))
-        elif len(reference_input_chemical) < 1:
-            raise Exception("No reference chemicals are identified for reaction experiment: " + str(rxnexp.dict()))
-        else:
-            reference_input_chemical = reference_input_chemical[0]
-
-        reaction_scale = [cond for cond in rxnexp.hasReactionCondition if cond.clz == ONTOREACTION_REACTIONSCALE]
-        if len(reaction_scale) > 1:
-            raise Exception("Multiple reaction scale are identified: " + str(reaction_scale) + " for reaction experiment: " + str(rxnexp.dict()))
-        elif len(reaction_scale) < 1:
-            raise Exception("No reaction scale are identified for reaction experiment: " + str(rxnexp.dict()))
-        else:
-            reaction_scale = reaction_scale[0]
-
-        if reference_input_chemical != reaction_scale.indicateUsageOf:
-            raise Exception("Reference input chemical is specified as <%s>, however, the reaction scale is spedified for <%s> in reaction experiment <%s>." % (
-                reference_input_chemical, reaction_scale.indicateUsageOf, rxnexp.instance_iri))
-
-        dict_pumps = self.sort_r2_pumps_in_vapourtec_rs400(rs400)
-        reference_pump = dict_pumps.pop("A") # NOTE here we hardcode implicit knowledge that Pump A is the reference pump
-        autosampler = self.get_autosampler_from_vapourtec_rs400(rs400)
-        for input_chem in rxnexp.hasInputChemical:
-            # first get the AutoSamplerSite that contains the suitable chemical
-            autosamplersite = self.get_autosampler_site_given_input_chemical(autosampler, input_chem)
-
-            # then check if it's the reference reactant, if so, assign the reference pump
-            if input_chem.instance_iri == reference_input_chemical:
-                pump_setting = PumpSettings(
-                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                    namespace_for_init=getNameSpace(rxnexp.instance_iri),
-                    specifies=reference_pump,
-                    hasStoichiometryRatioSetting=StoichiometryRatioSetting(
-                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                        namespace_for_init=getNameSpace(rxnexp.instance_iri),
-                        hasQuantity=dict_stoi_ratio.get(input_chem.instance_iri)
-                    ),
-                    hasSampleLoopVolumeSetting=SampleLoopVolumeSetting( # this is specific setting that refers to the Pump A (reference pump)
-                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                        namespace_for_init=getNameSpace(rxnexp.instance_iri),
-                        hasQuantity=reaction_scale
-                    ),
-                    pumpsLiquidFrom=autosamplersite,
-                    wasGeneratedFor=rxnexp.instance_iri
-                )
-            else:
-                key = list(dict_pumps.keys())[0]
-                pump = dict_pumps.pop(key)
-                pump_setting = PumpSettings(
-                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                    namespace_for_init=getNameSpace(rxnexp.instance_iri),
-                    specifies=pump,
-                    hasStoichiometryRatioSetting=StoichiometryRatioSetting(
-                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                        namespace_for_init=getNameSpace(rxnexp.instance_iri),
-                        hasQuantity=dict_stoi_ratio.get(input_chem.instance_iri)
-                    ),
-                    pumpsLiquidFrom=autosamplersite,
-                    wasGeneratedFor=rxnexp.instance_iri
-                )
-            list_equip_setting.append(pump_setting)
-
-        return list_equip_setting
-
-    def get_autosampler_site_given_input_chemical(self, autosampler: AutoSampler, input_chem: InputChemical) -> AutoSamplerSite:
-        for site in autosampler.hasSite:
-            if site.holds.isFilledWith is not None:
-                if site.holds.isFilledWith.refersToMaterial is None:
-                    logger.warning("ChemicalSolution exist but NO Material is specified for autosampler site <%s>." % site.instance_iri)
-                elif site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour == input_chem.thermodynamicBehaviour:
-                    return site
-        return None
-
-    def get_autosampler_from_vapourtec_rs400(self, rs400: VapourtecRS400) -> AutoSampler:
-        # NOTE this method assumes there's only one AutoSampler associated with one VapourtecRS400 module
-        for equip in rs400.consistsOf:
-            if isinstance(equip, AutoSampler):
-                return equip
-        return None
-
-    def sort_r2_pumps_in_vapourtec_rs400(self, rs400: VapourtecRS400) -> Dict[str, VapourtecR2Pump]:
-        dict_pumps = {pump.locationID:pump for pump in rs400.consistsOf if isinstance(pump, VapourtecR2Pump)}
-        return {key:dict_pumps[key] for key in sorted(dict_pumps)}
-
     def collect_triples_for_equip_settings(self, equip_settings: List[EquipmentSettings], configure_digital_twin: bool):
         g = Graph()
         for es in equip_settings:
@@ -974,64 +867,23 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return g
 
-    def get_rxn_con_or_perf_ind(self, list_: List[ReactionCondition] or List[PerformanceIndicator], clz, positionalID=None):
-        var = []
-        for l in list_:
-            # TODO [modify when run in loop] what if unknown positionalID when calling this function? in fact, does positionalID matter?
-            logger.debug(l.__dict__)
-            if tuple((l.clz, l.positionalID)) == tuple((clz, positionalID)):
-                var.append(l)
-        if len(var) > 1:
-            raise Exception("Only one appearance should be allowed for a ReactionCondition/PerformanceIndicator to be set as a ParameterSetting, found: <%s>." % '>, <'.join(var))
-        elif len(var) < 1:
-            raise Exception("Class <%s> was not found." % clz)
-            # raise Exception(len(list_))
-        else:
-            logger.debug("Identified quantity")
-            logger.debug(var[0])
-            return var[0]
-
-    def get_preferred_vapourtec_rs400(self, rxnexp: ReactionExperiment) -> Tuple[VapourtecRS400, VapourtecR4Reactor, HPLC]:
+    def get_preferred_vapourtec_rs400(
+        self, rxnexp: ReactionExperiment,
+        list_of_labs: list=None
+    ) -> Tuple[VapourtecRS400, HPLC]:
         """ This function queries the digital twin of the most suitable VapourtecRS400 for the given reaction experiment."""
-        # first step: query if suitable chemicals given the experiment --> does the vial hold the chemicals that has the same thermodynamicBehaviour as the InputChemical of a reaction experiment
-        list_autosampler = self.get_all_autosampler_with_fill()
-        list_input_chemical = self.get_input_chemical_of_rxn_exp(rxnexp.instance_iri)
-        list_input_chemical_single_phase = [input_chem.thermodynamicBehaviour for input_chem in list_input_chemical]
-        for autosampler in list_autosampler:
-            list_chemical_solution_mat_single_phase = [site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour for site in autosampler.hasSite if site.holds.isFilledWith is not None]
-            logger.debug([sp.dict() for sp in list_chemical_solution_mat_single_phase])
-            logger.debug([sp.dict() for sp in list_input_chemical_single_phase])
-            if all(item in list_chemical_solution_mat_single_phase for item in list_input_chemical_single_phase):
-                # second step: query if the operation range covers the reaction condition
-                # NOTE here we only consider the reaction temperature at the moment, support for checking more reaction conditions (e.g. reactor material, autosampler liquid level, etc.) can be added later on
-                # get the reactor first, then get the temperature conditon (cached value), compare the value if in the range, if yes then carry out the next step (how many prior experiment), otherwise skip
-                vapourtec_rs400 = self.get_vapourtec_rs400_given_autosampler(autosampler)
-                list_reactor = [lab_equip for lab_equip in vapourtec_rs400.consistsOf if isinstance(lab_equip, VapourtecR4Reactor)]
+        # query the digital twin to get the list of VapourtecRS400 modules (if within the given list of labs)
+        list_vapourtec_rs400 = self.get_vapourtec_rs400(list_of_labs_as_constraint=list_of_labs)
 
-                temp_condition = [cond.hasValue.hasNumericalValue for cond in rxnexp.hasReactionCondition if cond.clz == ONTOREACTION_REACTIONTEMPERATURE]
-                if len(temp_condition) > 1:
-                    raise Exception("Multiple reaction temperature conditions are found in the given reaction experiment: %s" % rxnexp)
-                elif len(temp_condition) < 1:
-                    raise Exception("No reaction temperature conditions are found in the given reaction experiment: %s" % rxnexp)
-                else:
-                    temp_condition = temp_condition[0]
+        suitable_vapourtec_rs400 = [rs400 for rs400 in list_vapourtec_rs400 if rs400.is_suitable_for_reaction_experiment(rxnexp)]
+        for rs400 in suitable_vapourtec_rs400:
+            # for each suitable VapourtecRS400, query the KG to get the HPLC
+            # TODO [futre work] add support for other analytical instruments
+            associated_hplc = self.get_hplc_given_vapourtec_rs400(rs400.instance_iri)
+            if associated_hplc.is_suitable_for_reaction_experiment(rxnexp):
+                return rs400, associated_hplc
 
-                for reactor in list_reactor:
-                    # TODO NOTE here the temperature comparison need to be modified to support different temperature units
-                    if reactor.hasReactorTemperatureLowerLimit.hasValue.hasNumericalValue <= temp_condition <= reactor.hasReactorTemperatureUpperLimit.hasValue.hasNumericalValue:
-                        # here we also checks if the amount of InputChemical is less than the amount of VapourtecR2Pumps available
-                        if len(list_input_chemical) <= len([pump_ for pump_ in vapourtec_rs400.consistsOf if isinstance(pump_, VapourtecR2Pump)]):
-                            # return the first reactor that is idle
-                            # TODO future work should support recording of estimated time for the VapourtecR4Reactor to be available (just in case None of the reactor is available)
-                            # TODO maybe calculate based on residence time and other information {'labequip_1': 1, 'labequip_2': 2}
-                            if vapourtec_rs400.hasState.clz == ONTOVAPOURTEC_IDLE:
-                                # TODO here we may provide functions for other analytical equipment
-                                associated_hplc = self.get_hplc_given_vapourtec_rs400(vapourtec_rs400.instance_iri)
-                                if vapourtec_rs400.isManagedBy is not None and associated_hplc.isManagedBy is not None:
-                                    # TODO here we can add functions to inform the owner of hardware to spin up agent for execution
-                                    return vapourtec_rs400, reactor, associated_hplc
-
-        return None, None, None
+        return None, None
 
     def update_vapourtec_rs400_state(self, vapourtec_rs400_iri: str, target_state: str, timestamp: float):
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
@@ -1049,55 +901,71 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             raise Exception("Target state <%s> is not recognised as a valid state for VapourtecRS400, the intended instance of VapourtecRS400 is <%s>." % (target_state, vapourtec_rs400_iri))
 
     def get_autosampler(self, autosampler_iri: str) -> AutoSampler:
+        autosampler_iri = trimIRI(autosampler_iri)
         autosampler = self.get_all_autosampler_with_fill(given_autosampler_iri=autosampler_iri)
         if len(autosampler) == 1:
             return autosampler[0]
         else:
-            raise Exception("AutoSampler <%s> is not uniquely identified in the knowledge graph, retrieved results: %s" % (autosampler_iri, str(autosampler)))
+            raise Exception(f"AutoSampler <{autosampler_iri}> is not uniquely identified in the knowledge graph, retrieved results: {str(autosampler)} when querying {self.construct_query_for_autosampler(autosampler_iri)}")
 
-    def get_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> VapourtecRS400:
-        vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
-        query = PREFIX_RDF + \
-                """
-                SELECT ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state ?state_type ?last_update ?autosampler ?is_managed_by
-                WHERE { <%s> <%s> ?autosampler; <%s> ?rs400_manufacturer; <%s> ?laboratory; <%s> ?rs400_power_supply; <%s> ?state. ?state a ?state_type; <%s> ?last_update. ?autosampler rdf:type <%s>. 
-                OPTIONAL{<%s> <%s> ?is_managed_by.}
-                }""" % (
-                    vapourtec_rs400_iri, SAREF_CONSISTSOF, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, SAREF_HASSTATE, ONTOLAB_STATELASTUPDATEDAT, ONTOVAPOURTEC_AUTOSAMPLER,
-                    vapourtec_rs400_iri, ONTOLAB_ISMANAGEDBY
-                )
+    def get_vapourtec_rs400(
+        self,
+        list_vapourtec_rs400_iri: Union[str, list]=None,
+        list_of_labs_as_constraint: list=None
+    ) -> List[VapourtecRS400]:
+        list_vapourtec_rs400_iri = trimIRI([list_vapourtec_rs400_iri] if not isinstance(list_vapourtec_rs400_iri, list) else list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else None
+        list_of_labs_as_constraint = trimIRI(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else None
+        query = f"""SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state
+                           ?state_type ?last_update ?autosampler ?is_managed_by
+                WHERE {{
+                    {"VALUES ?rs400 { <%s> } ." % '> <'.join(list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else ""}
+                    {"VALUES ?laboratory { <%s> } ." % '> <'.join(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else ""}
+                    ?rs400 <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
+                           <{SAREF_CONSISTSOF}> ?autosampler;
+                           <{DBPEDIA_MANUFACTURER}> ?rs400_manufacturer;
+                           <{ONTOLAB_HASPOWERSUPPLY}> ?rs400_power_supply;
+                           <{SAREF_HASSTATE}> ?state.
+                    ?state a ?state_type; <{ONTOLAB_STATELASTUPDATEDAT}> ?last_update.
+                    ?autosampler a <{ONTOVAPOURTEC_AUTOSAMPLER}>.
+                OPTIONAL{{?rs400 <{ONTOLAB_ISMANAGEDBY}> ?is_managed_by.}}
+                }}"""
 
         response = self.performQuery(query)
 
-        # NOTE here we are assuming one VapourtecRS400 module has only ONE manufacturer, locates in only ONE laboratory, also has only ONE type of power supply
-        # NOTE this might not hold universally, but we will simplify for the moment
-        if len(response) > 1:
-            raise Exception("One VapourtecRS400 (%s) should only consist of one AutoSampler module. Identified multiple: %s" % (vapourtec_rs400_iri, str(response)))
-        elif len(response) < 1:
-            raise Exception("Information associated with VapourtecRS400 (%s) is not complete when querying: %s" % (vapourtec_rs400_iri, query))
-        else:
-            res = response[0]
+        if len(response) == 0: return None # TODO [nice-to-have] add more information and decide whether to throw an exception
 
-        list_vapourtec_reactor_and_pump = []
-        list_vapourtec_reactor_and_pump.append(self.get_autosampler(res['autosampler']))
-        list_vapourtec_reactor_and_pump += self.get_r4_reactor_given_vapourtec_rs400(vapourtec_rs400_iri)
-        list_vapourtec_reactor_and_pump += self.get_r2_pump_given_vapourtec_rs400(vapourtec_rs400_iri)
+        list_obtained_rs400_iri = dal.get_unique_values_in_list_of_dict(response, 'rs400')
+        list_vapourtec_rs400_instance = []
+        for rs400_iri in list_obtained_rs400_iri:
+            _info = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'rs400', rs400_iri)
+            # NOTE here we are assuming one VapourtecRS400 module has only ONE manufacturer, locates in only ONE laboratory, also has only ONE type of power supply
+            # NOTE this might not hold universally, but we will simplify for the moment
+            if len(_info) > 1:
+                raise Exception(f"One VapourtecRS400 ({rs400_iri}) should only consist of one AutoSampler module. Identified multiple: {str(_info)}")
+            else:
+                res = _info[0]
 
-        vapourtec_rs400 = VapourtecRS400(
-            instance_iri=vapourtec_rs400_iri,
-            manufacturer=res['rs400_manufacturer'],
-            isContainedIn=res['laboratory'],
-            hasPowerSupply=res['rs400_power_supply'],
-            isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
-            consistsOf=list_vapourtec_reactor_and_pump,
-            hasState=VapourtecState(
-                instance_iri=res['state'],
-                clz=res['state_type'],
-                stateLastUpdatedAt=res['last_update']
+            list_vapourtec_reactor_and_pump = []
+            list_vapourtec_reactor_and_pump.append(self.get_autosampler(res['autosampler']))
+            list_vapourtec_reactor_and_pump += self.get_r4_reactor_given_vapourtec_rs400(rs400_iri)
+            list_vapourtec_reactor_and_pump += self.get_r2_pump_given_vapourtec_rs400(rs400_iri)
+
+            vapourtec_rs400 = VapourtecRS400(
+                instance_iri=rs400_iri,
+                manufacturer=res['rs400_manufacturer'],
+                isContainedIn=res['laboratory'],
+                hasPowerSupply=res['rs400_power_supply'],
+                isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
+                consistsOf=list_vapourtec_reactor_and_pump,
+                hasState=VapourtecState(
+                    instance_iri=res['state'],
+                    clz=res['state_type'],
+                    stateLastUpdatedAt=res['last_update']
+                )
             )
-        )
+            list_vapourtec_rs400_instance.append(vapourtec_rs400)
 
-        return vapourtec_rs400
+        return list_vapourtec_rs400_instance
 
     def get_vapourtec_rs400_given_autosampler(self, autosampler: AutoSampler) -> VapourtecRS400:
         query = PREFIX_RDF + \
@@ -1242,11 +1110,16 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_r2_pump_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> List[VapourtecR2Pump]:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
-        query = PREFIX_RDF + \
-                """
-                SELECT ?r2_pump ?r2_pump_manufacturer ?laboratory ?r2_pump_power_supply ?loc
-                WHERE { <%s> <%s> ?r2_pump . ?r2_pump rdf:type <%s>; <%s> ?r2_pump_manufacturer; <%s> ?laboratory; <%s> ?r2_pump_power_supply; <%s> ?loc. }
-                """ % (vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOVAPOURTEC_VAPOURTECR2PUMP, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, ONTOVAPOURTEC_LOCATIONID)
+        query = f"""SELECT ?r2_pump ?r2_pump_manufacturer ?laboratory ?r2_pump_power_supply ?loc ?reagent_bottle
+                WHERE {{
+                    <{vapourtec_rs400_iri}> <{SAREF_CONSISTSOF}> ?r2_pump .
+                    ?r2_pump a <{ONTOVAPOURTEC_VAPOURTECR2PUMP}>;
+                             <{DBPEDIA_MANUFACTURER}> ?r2_pump_manufacturer;
+                             <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
+                             <{ONTOLAB_HASPOWERSUPPLY}> ?r2_pump_power_supply;
+                             <{ONTOVAPOURTEC_LOCATIONID}> ?loc.
+                    OPTIONAL{{?r2_pump <{ONTOVAPOURTEC_HASREAGENTSOURCE}> ?reagent_bottle.}}
+                }}"""
 
         response = self.performQuery(query)
         unique_r2_pump_list = dal.get_unique_values_in_list_of_dict(response, 'r2_pump')
@@ -1269,11 +1142,73 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 manufacturer=info_['r2_pump_manufacturer'],
                 isContainedIn=info_['laboratory'],
                 hasPowerSupply=info_['r2_pump_power_supply'],
-                locationID=info_['loc']
+                locationID=info_['loc'],
+                hasReagentSource=self.get_reagent_bottle(info_['reagent_bottle']) if 'reagent_bottle' in info_ else None,
             )
             list_r2_pump.append(r2_pump)
 
         return list_r2_pump
+
+    def get_reagent_bottle(self, reagent_bottle_iri: str) -> ReagentBottle:
+        reagent_bottle_iri = trimIRI(reagent_bottle_iri)
+        query = f"""SELECT ?reagent_bottle ?chemical_solution
+        ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
+        ?max_level ?max_level_om_value ?max_level_unit ?max_level_num_val
+        ?warn_level ?warn_level_om_value ?warn_level_unit ?warn_level_num_val
+        WHERE {{
+            ?reagent_bottle <{ONTOVAPOURTEC_HASFILLLEVEL}> ?fill_level.
+            ?fill_level <{OM_HASVALUE}> ?fill_level_om_value.
+            ?fill_level_om_value <{OM_HASUNIT}> ?fill_level_unit; <{OM_HASNUMERICALVALUE}> ?fill_level_num_val.
+
+            ?reagent_bottle <{ONTOVAPOURTEC_HASMAXLEVEL}> ?max_level.
+            ?max_level <{OM_HASVALUE}> ?max_level_om_value.
+            ?max_level_om_value <{OM_HASUNIT}> ?max_level_unit; <{OM_HASNUMERICALVALUE}> ?max_level_num_val.
+
+            ?reagent_bottle <{ONTOVAPOURTEC_HASWARNINGLEVEL}> ?warn_level.
+            ?warn_level <{OM_HASVALUE}> ?warn_level_om_value.
+            ?warn_level_om_value <{OM_HASUNIT}> ?warn_level_unit; <{OM_HASNUMERICALVALUE}> ?warn_level_num_val.
+
+            ?reagent_bottle <{ONTOVAPOURTEC_ISFILLEDWITH}> ?chemical_solution.
+        }}"""
+
+        response = self.performQuery(query)
+        if len(response) != 1:
+            raise Exception(f"ReagentBottle <{reagent_bottle_iri}> is not uniquely identified, found: {response}")
+        res = response[0]
+
+        return ReagentBottle(
+            instance_iri=res['reagent_bottle'],
+            isFilledWith=ChemicalSolution(
+                instance_iri=res['chemical_solution'],
+                refersToMaterial=self.get_ontocape_material(res['chemical_solution'], ONTOCAPE_REFERSTOMATERIAL, ONTOCAPE_MATERIAL)[0],
+                fills=res['reagent_bottle'],
+                isPreparedBy=None # TODO [future work] add support for isPreparedBy
+            ),
+            hasFillLevel=OM_Volume(
+                instance_iri=res['fill_level'],
+                hasValue=OM_Measure(
+                    instance_iri=res['fill_level_om_value'],
+                    hasUnit=res['fill_level_unit'],
+                    hasNumericalValue=res['fill_level_num_val']
+                )
+            ),
+            hasWarningLevel=OM_Volume(
+                instance_iri=res['warn_level'],
+                hasValue=OM_Measure(
+                    instance_iri=res['warn_level_om_value'],
+                    hasUnit=res['warn_level_unit'],
+                    hasNumericalValue=res['warn_level_num_val']
+                )
+            ),
+            hasMaxLevel=OM_Volume(
+                instance_iri=res['max_level'],
+                hasValue=OM_Measure(
+                    instance_iri=res['max_level_om_value'],
+                    hasUnit=res['max_level_unit'],
+                    hasNumericalValue=res['max_level_num_val']
+                )
+            ),
+        )
 
     def assign_rxn_exp_to_r4_reactor(self, rxn_exp_iri: str, r4_reactor_iri: str):
         rxn_exp_iri = trimIRI(rxn_exp_iri)
@@ -1292,7 +1227,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_prior_rxn_exp_in_queue(self, rxn_exp_iri: str, vapourtec_execution_agent_iri: str) -> Dict[str, int]:
         """This method queries the instances of ReactionExperiment that are prior in the queue for execution.
         NOTE: It is assumed there is only ONE possible OntoAgent:Service of DoE Agent. This can be extended if deemed necessary in the future."""
-        # TODO support query prior experiments in the situation of multiple DoE Agent available
+        # TODO [future work] support query prior experiments in the situation of multiple DoE Agent available
         rxn_exp_iri = trimIRI(rxn_exp_iri)
         vapourtec_execution_agent_iri = trimIRI(vapourtec_execution_agent_iri)
         query = PREFIX_RDF + """
@@ -1414,7 +1349,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         return remote_file_path, file_extension
 
     def get_matching_species_from_hplc_results(self, retention_time: RetentionTime, hplc_method: HPLCMethod) -> str:
-        # TODO here we took a shortcut, but in theory unit should also be checked - unit conversion is a generic problem that needs to be solved...
+        # TODO [future work] here we took a shortcut, but in theory unit should also be checked - unit conversion is a generic problem that needs to be solved...
         hplc_rt = {rt.refersToSpecies:rt.hasValue.hasNumericalValue for rt in hplc_method.hasRetentionTime}
         rt_diff = {key: abs(hplc_rt[key] - retention_time.hasValue.hasNumericalValue) for key in hplc_rt}
         key_min_rt_diff = min(rt_diff, key=rt_diff.get)
@@ -1448,7 +1383,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             concentration = OntoCAPE_Molarity(instance_iri=r['property'],
                 hasValue=OntoCAPE_ScalarValue(instance_iri=r['value'],numericalValue=r['num_val'],hasUnitOfMeasure=r['unit']))
         else:
-            # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+            # TODO [future work] add support for other type of OntoCAPE_PhaseComponentConcentration
             raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['property_type'])
         internal_standard = InternalStandard(
             instance_iri=r['is'],
@@ -1764,7 +1699,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             if r['conc_type'] == OntoCAPE_Molarity.__fields__['clz'].default:
                 concentration = OntoCAPE_Molarity(instance_iri=r['conc'],hasValue=OntoCAPE_ScalarValue(instance_iri=r['conc_value'],numericalValue=r['conc_num_val'],hasUnitOfMeasure=r['conc_unit']))
             else:
-                # TODO add support for other type of OntoCAPE_PhaseComponentConcentration
+                # TODO [future work] add support for other type of OntoCAPE_PhaseComponentConcentration
                 raise NotImplementedError("Support for <%s> as OntoCAPE_PhaseComponentConcentration is NOT implemented yet." % r['conc_type'])
             pt = ChromatogramPoint(
                 instance_iri=r['pt'],
@@ -2020,8 +1955,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasPowerSupply=res['hplc_power_supply'],
             isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
             reportExtension=res['report_extension'],
-            # hasJob=, # TODO add support
-            # hasPastReport=, # TODO add support
+            # hasJob=, # TODO [future work] add support
+            # hasPastReport=, # TODO [future work] add support
         )
         return hplc
 

@@ -85,6 +85,12 @@ class OntoCAPE_PhaseComponentConcentration(BaseOntology):
         g = self.hasValue.create_instance_for_kg(g)
         return g
 
+    def convert_to_unit(self, unit: str) -> OntoCAPE_PhaseComponentConcentration:
+        if unit == self.hasValue.hasUnitOfMeasure:
+            return self
+        else:
+            raise NotImplementedError(f"Conversion of unit for OntoCAPE_PhaseComponentConcentration from <{self.hasValue.hasUnitOfMeasure}> to <{unit}> is not implemented yet")
+
 class OntoCAPE_VolumeBasedConcentration(OntoCAPE_PhaseComponentConcentration):
     clz: str = ONTOCAPE_VOLUMEBASEDCONCENTRATION
 
@@ -139,7 +145,7 @@ class OntoCAPE_SinglePhase(BaseOntology):
     isComposedOfSubsystem: List[OntoCAPE_PhaseComponent]
     has_composition: OntoCAPE_Composition
     representsThermodynamicBehaviorOf: Union[str, OntoCAPE_Material] # NOTE here str is provided as an optional as it seems impossible to circular reference at instance level
-    # TODO assess if has_physical_context is needed
+    # TODO [future work] assess if has_physical_context is needed
 
     def _exclude_keys_for_compare_(self, *keys_to_exclude) -> Dict[str, Any]:
         return super()._exclude_keys_for_compare_('representsThermodynamicBehaviorOf', *keys_to_exclude)
@@ -167,7 +173,7 @@ class OntoCAPE_SinglePhase(BaseOntology):
         else:
             g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_REPRESENTSTHERMODYNAMICBEHAVIOROF), URIRef(self.representsThermodynamicBehaviorOf)))
 
-        # TODO add triples related to has_physical_context after it's been implemented
+        # TODO [future work] add triples related to has_physical_context after it's been implemented
 
         return g
 
@@ -186,6 +192,27 @@ class OntoCAPE_Material(BaseOntology):
 
 class InputChemical(OntoCAPE_Material):
     clz: str = ONTOREACTION_INPUTCHEMICAL
+
+    def get_concentration_of_species(self, species_iri: str, target_unit: str=None) -> OntoCAPE_PhaseComponentConcentration:
+        for pc in self.thermodynamicBehaviour.isComposedOfSubsystem:
+            if pc.representsOccurenceOf == species_iri:
+                if target_unit is None:
+                    return pc.hasProperty
+                else:
+                    return pc.hasProperty.convert_to_unit(target_unit)
+        raise ValueError(f"Species {species_iri} not found in InputChemical {self.instance_iri}")
+
+    def existing_species_in_given_list(self, lst_species: list) -> List[str]:
+        return [pc.representsOccurenceOf for pc in self.thermodynamicBehaviour.isComposedOfSubsystem if pc.representsOccurenceOf in lst_species]
+
+    def identify_solute_in_list(self, lst_species: list) -> str:
+        identified_solute = self.existing_species_in_given_list(lst_species)
+        if len(identified_solute) == 1:
+            return identified_solute[0]
+        elif len(identified_solute) == 0:
+            raise ValueError(f"No solute found in {self.instance_iri} given list of species {lst_species}")
+        else:
+            raise ValueError(f"Multiple solutes found in {self.instance_iri} given list of species {lst_species}")
 
 class OutputChemical(OntoCAPE_Material):
     clz: str = ONTOREACTION_OUTPUTCHEMICAL
@@ -227,6 +254,10 @@ class OntoCAPE_ChemicalReaction(BaseOntology):
             lst_of_species += self.hasCatalyst
         lst_of_species += self.hasSolvent
         return lst_of_species
+
+    def get_list_of_reactant_and_catalyst(self) -> List[str]:
+        species = self.hasReactant + self.hasCatalyst if self.hasCatalyst is not None else self.hasReactant
+        return [s.hasUniqueSpecies for s in species]
 
 class ReactionCondition(BaseOntology):
     objPropWithExp: List[str]
@@ -280,7 +311,7 @@ class ReactionCondition(BaseOntology):
         
         return g
 
-# TODO a design choice to be made: are below specific dataclass useful?
+# TODO [future work] a design choice to be made: are below specific dataclass useful?
 # @dataclass
 # class ResidenceTime(ReactionCondition):
 #     pass
@@ -338,7 +369,7 @@ class PerformanceIndicator(BaseOntology):
 
         return g
 
-# TODO same design choice: are below specific dataclass useful?
+# TODO [future work] same design choice: are below specific dataclass useful?
 # @dataclass
 # class EnvironmentalFactor(PerformanceIndicator):
 #     pass
@@ -382,7 +413,55 @@ class ReactionExperiment(BaseOntology):
                 )
         return values
 
-    def get_reaction_condition(self, clz: str, positional_id: int) -> ReactionCondition:
+    def get_reference_input_chemical(self) -> Optional[InputChemical]:
+        if self.hasInputChemical is None:
+            return None
+        reaction_scale = self.get_reaction_condition(ONTOREACTION_REACTIONSCALE)
+        for input_chemical in self.hasInputChemical:
+            if input_chemical.instance_iri == reaction_scale.indicateUsageOf:
+                return input_chemical
+        return None
+
+    def get_stoichiometry_ratio_of_input_chemical(self, input_chemical: InputChemical) -> float:
+        for reaction_condition in self.hasReactionCondition:
+            if reaction_condition.clz == ONTOREACTION_STOICHIOMETRYRATIO and reaction_condition.indicatesMultiplicityOf == input_chemical.instance_iri:
+                return reaction_condition.hasValue.hasNumericalValue
+
+    def calculate_volumetric_flow_rate_for_input_chemical(
+        self,
+        total_flowrate_unit: str,
+        total_flowrate_value: float,
+        all_solute: List[str]
+    ) -> Dict[str, OM_VolumetricFlowRate]:
+        """Calculate the volumetric flow rate for a given input chemical."""
+        dct_flow_ratio = self.compute_flow_ratio(all_solute)
+        sum_flow_ratio = sum(dct_flow_ratio.values())
+
+        return {input_chem.instance_iri:OM_VolumetricFlowRate(
+            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=getNameSpace(input_chem.instance_iri),
+            hasValue=OM_Measure(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(input_chem.instance_iri),
+                # NOTE the computed volumetric flow rate is in the unit of that of total_flowrate
+                hasUnit=total_flowrate_unit,
+                hasNumericalValue=dct_flow_ratio[input_chem.instance_iri] / sum_flow_ratio * total_flowrate_value,
+            )
+        ) for input_chem in self.hasInputChemical}
+
+    def compute_flow_ratio(self, all_solute: list) -> Dict[str, float]:
+        dct_input_chem_solute = self.identify_solute_in_input_chemical(all_solute)
+        ref_input_chemical = self.get_reference_input_chemical()
+        conc_ref_chem = ref_input_chemical.get_concentration_of_species(dct_input_chem_solute[ref_input_chemical.instance_iri])
+        return {input_chem.instance_iri:self.get_stoichiometry_ratio_of_input_chemical(
+            input_chem) * conc_ref_chem.hasValue.numericalValue / input_chem.get_concentration_of_species(
+                dct_input_chem_solute[input_chem.instance_iri]).convert_to_unit(
+                    conc_ref_chem.hasValue.hasUnitOfMeasure).hasValue.numericalValue for input_chem in self.hasInputChemical}
+
+    def identify_solute_in_input_chemical(self, all_solute: list) -> Dict[str, str]:
+        return {input_chem.instance_iri:input_chem.identify_solute_in_list(all_solute) for input_chem in self.hasInputChemical}
+
+    def get_reaction_condition(self, clz: str, positional_id: Optional[int]=None) -> Optional[ReactionCondition]:
         if self.hasReactionCondition is None: return None
         lst_rxn_cond = [rc for rc in self.hasReactionCondition if rc.clz == clz and rc.positionalID == positional_id]
         if len(lst_rxn_cond) > 1:
@@ -391,7 +470,7 @@ class ReactionExperiment(BaseOntology):
             ))
         return lst_rxn_cond[0]
 
-    def get_performance_indicator(self, clz: str, positional_id: int) -> PerformanceIndicator:
+    def get_performance_indicator(self, clz: str, positional_id: Optional[int]=None) -> Optional[PerformanceIndicator]:
         if self.hasPerformanceIndicator is None: return None
         lst_perf_ind = [pi for pi in self.hasPerformanceIndicator if pi.clz == clz and pi.positionalID == positional_id]
         if len(lst_perf_ind) == 0:
@@ -446,7 +525,7 @@ class ReactionExperiment(BaseOntology):
             # Add all other triples of the PerformanceIndicator instance
             g = perf.create_instance_for_kg(g)
         
-        # TODO add support for creating InputChemical and OutputChemical
+        # TODO [???] add support for creating InputChemical and OutputChemical
 
         return g
 

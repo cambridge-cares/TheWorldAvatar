@@ -156,3 +156,6 @@ class OM_SpecificAmountOfMoney(OM_Quantity):
 
 class OM_AmountOfSubstance(OM_Quantity):
     clz: str = OM_AMOUNTOFSUBSTANCE
+
+class OM_VolumetricFlowRate(OM_Quantity):
+    clz: str = OM_VOLUMETRICFLOWRATE

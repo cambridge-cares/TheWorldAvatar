@@ -345,22 +345,21 @@ def test_get_vapourtec_rs400_given_autosampler(initialise_triples):
     assert  response.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
 
 @pytest.mark.parametrize(
-    "new_rxn_exp_iri,list_r4_reactor_iri,vapourtec_rs400,agilent_hplc",
+    "new_rxn_exp_iri,vapourtec_rs400,agilent_hplc",
     [
-        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
-        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
-        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
     ],
 )
-def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, list_r4_reactor_iri, vapourtec_rs400, agilent_hplc):
+def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, vapourtec_rs400, agilent_hplc):
     sparql_client = initialise_triples
     response = sparql_client.getReactionExperiment(new_rxn_exp_iri)
     assert len(response) == 1
     assert response[0].instance_iri == new_rxn_exp_iri
-    preferred_rs400, preferred_r4_reactor, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
+    preferred_rs400, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
     # Should return None as none of the digital twin is managed by agent
     assert None == preferred_rs400
-    assert None == preferred_r4_reactor
     assert None == associated_agilent_hplc
 
     # Add agent to manage the digital twin
@@ -369,18 +368,16 @@ def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, list
     sparql_client.register_agent_with_hardware(temp_agent_1, vapourtec_rs400)
     sparql_client.register_agent_with_hardware(temp_agent_2, agilent_hplc)
     # Query again, should return digital twin now
-    preferred_rs400, preferred_r4_reactor, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
-    assert preferred_r4_reactor.instance_iri in list_r4_reactor_iri
+    preferred_rs400, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
     assert preferred_rs400.instance_iri == vapourtec_rs400
     assert associated_agilent_hplc.instance_iri == agilent_hplc
 
     # Change the status to Null
     sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_NULL, 0)
     # Now query again, should return None now
-    new_rs400, new_r4_reactor, new_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
+    new_rs400, new_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
     # Now perform the same checking, the returned values should be None, None
     assert None == new_rs400
-    assert None == new_r4_reactor
     assert None == new_hplc
 
     # Change back the status to Idle
@@ -666,7 +663,23 @@ def test_get_remote_hplc_report_path_given_local_file(initialise_triples, hplc_d
 
 def test_get_vapourtec_rs400(initialise_triples):
     sparql_client = initialise_triples
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    # this queries all vapourtec rs400s in the triplestore
+    vapourtec_rs400_list = sparql_client.get_vapourtec_rs400()
+    assert len(vapourtec_rs400_list) >= 1
+
+    # this queries all vapourtec rs400s in the triplestore that are located in a specific lab
+    vapourtec_rs400_list = sparql_client.get_vapourtec_rs400(
+        list_of_labs_as_constraint=[TargetIRIs.DUMMY_LAB_IRI.value]
+    )
+    assert len(vapourtec_rs400_list) >= 1
+    assert TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value in [vapourtec_rs400.instance_iri for vapourtec_rs400 in vapourtec_rs400_list]
+
+    # this queries a specific vapourtec rs400 in the triplestore
+    vapourtec_rs400_list = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )
+    assert len(vapourtec_rs400_list) == 1
+    vapourtec_rs400 = vapourtec_rs400_list[0]
     assert vapourtec_rs400.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
     assert vapourtec_rs400.manufacturer == TargetIRIs.VAPOURTEC_LTD.value
     assert vapourtec_rs400.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
@@ -680,7 +693,9 @@ def test_get_vapourtec_rs400(initialise_triples):
 def test_update_vapourtec_rs400_state(initialise_triples):
     sparql_client = initialise_triples
     # Before update, the state should be Idle
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )[0]
     assert vapourtec_rs400.hasState.clz == onto.ONTOVAPOURTEC_IDLE
     assert vapourtec_rs400.hasState.stateLastUpdatedAt == 0
 
@@ -688,7 +703,9 @@ def test_update_vapourtec_rs400_state(initialise_triples):
     chosen_state = random.choice(onto.LIST_ONTOVAPOURTEC_VALIDSTATE)
     sparql_client.update_vapourtec_rs400_state(
         TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, chosen_state, 1)
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )[0]
     assert vapourtec_rs400.hasState.clz == chosen_state
     assert vapourtec_rs400.hasState.stateLastUpdatedAt == 1
 
@@ -699,7 +716,9 @@ def test_update_vapourtec_rs400_state(initialise_triples):
         assert "is not recognised as a valid state" in str(e.value)
     sparql_client.update_vapourtec_rs400_state(
         TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, chosen_state, 1)
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )[0]
     assert vapourtec_rs400.hasState.clz == chosen_state
     assert vapourtec_rs400.hasState.stateLastUpdatedAt == 1
 
@@ -764,6 +783,12 @@ def test_get_autosampler(initialise_triples):
     assert autosampler.instance_iri == TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value
     assert autosampler.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
 
+    # Check autosampler sampleLoopVolume is correctly parsed
+    assert autosampler.sampleLoopVolume.instance_iri == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_IRI.value
+    assert autosampler.sampleLoopVolume.hasValue.instance_iri == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_MEASURE_IRI.value
+    assert autosampler.sampleLoopVolume.hasValue.hasUnit == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_MEASURE_UNIT.value
+    assert autosampler.sampleLoopVolume.hasValue.hasNumericalValue == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_MEASURE_NUM_VAL.value
+
     # Check all autosampler site is populated correctly
     autosampler_sites = autosampler.hasSite
     assert all([(site.holds.hasFillLevel.hasValue.hasNumericalValue - TargetIRIs.AUTOSAMPLER_LIQUID_LEVEL_DICT.value[site.instance_iri]) < 0.0001 for site in autosampler_sites])
@@ -773,20 +798,14 @@ def test_get_autosampler(initialise_triples):
     assert all([site.locationID == TargetIRIs.AUTOSAMPLER_SITE_LOC_DICT.value[site.instance_iri] for site in autosampler_sites])
 
 def test_get_autosampler_site_given_input_chemical(initialise_triples):
+    """This method tests the get_autosampler_site_given_input_chemical method in ontovapourtec.AutoSampler dataclass."""
     sparql_client = initialise_triples
     autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
     input_chem_lst = sparql_client.get_input_chemical_of_rxn_exp(TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value)
 
     for input_chem in input_chem_lst:
         assert input_chem.instance_iri == TargetIRIs.AUTOSAMPLER_SITE_CHEMICAL_MAPPING_DICT.value[
-            sparql_client.get_autosampler_site_given_input_chemical(autosampler=autosampler, input_chem=input_chem).instance_iri]
-
-def test_get_autosampler_from_vapourtec_rs400(initialise_triples):
-    sparql_client = initialise_triples
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
-    autosampler_from_rs400 = sparql_client.get_autosampler_from_vapourtec_rs400(vapourtec_rs400)
-    autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
-    assert autosampler_from_rs400 == autosampler
+            autosampler.get_autosampler_site_given_input_chemical(input_chem=input_chem).instance_iri]
 
 def test_update_vapourtec_autosampler_liquid_level_millilitre(initialise_triples):
     sparql_client = initialise_triples
@@ -950,17 +969,6 @@ def test_get_output_chemical_of_rxn_exp(initialise_triples, rxnexp_iri, output_c
     assert len(list_output_chemical) == len(output_chemical_iri)
     assert len(set(list_output_chemical).difference(set(output_chemical_iri))) == 0
 
-def test_sort_r2_pumps_in_vapourtec_rs400(initialise_triples):
-    sparql_client = initialise_triples
-
-    rs400 = sparql_client.get_vapourtec_rs400(vapourtec_rs400_iri=TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
-    dct_pumps = sparql_client.sort_r2_pumps_in_vapourtec_rs400(rs400)
-    assert len(dct_pumps) == 4
-    assert [key for key in dct_pumps] == ["A", "B", "C", "D"]
-    assert all([dct_pumps[key].locationID == key for key in dct_pumps])
-    assert [dct_pumps[key].instance_iri for key in dct_pumps] == [TargetIRIs.VAPOURTECR2PUMP_1_DUMMY_IRI.value,
-        TargetIRIs.VAPOURTECR2PUMP_2_DUMMY_IRI.value, TargetIRIs.VAPOURTECR2PUMP_3_DUMMY_IRI.value, TargetIRIs.VAPOURTECR2PUMP_4_DUMMY_IRI.value]
-
 @pytest.mark.parametrize(
     "rxn_exp_iri,rxn_con_list,perf_ind_list",
     [
@@ -975,6 +983,7 @@ def test_sort_r2_pumps_in_vapourtec_rs400(initialise_triples):
     ],
 )
 def test_get_rxn_con_or_perf_ind(initialise_triples, rxn_exp_iri, rxn_con_list, perf_ind_list):
+    """This test tests get_reaction_condition and get_performance_indicator of ontoreaction.ReactionExperiment dataclass."""
     sparql_client = initialise_triples
 
     rxn_exp = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
@@ -983,7 +992,7 @@ def test_get_rxn_con_or_perf_ind(initialise_triples, rxn_exp_iri, rxn_con_list, 
         onto.ONTOREACTION_REACTIONSCALE, onto.ONTOREACTION_REACTIONTEMPERATURE, onto.ONTOREACTION_STOICHIOMETRYRATIO]:
         positional_id_lst = TargetIRIs.RXN_EXP_REACTION_CONDITION_CLZ_POSITIONAL_ID_DICT.value[rxn_exp_iri][clz]
         for positional_id in positional_id_lst:
-            identified_cond = sparql_client.get_rxn_con_or_perf_ind(list_=rxn_exp.hasReactionCondition, clz=clz, positionalID=positional_id)
+            identified_cond = rxn_exp.get_reaction_condition(clz=clz, positional_id=positional_id)
             assert identified_cond.instance_iri in rxn_con_list
             assert identified_cond.positionalID == positional_id
             assert identified_cond.clz == clz
@@ -992,10 +1001,30 @@ def test_get_rxn_con_or_perf_ind(initialise_triples, rxn_exp_iri, rxn_con_list, 
 
     if perf_ind_list is not None:
         for clz in [onto.ONTOREACTION_YIELD, onto.ONTOREACTION_RUNMATERIALCOST]:
-            identified_ind = sparql_client.get_rxn_con_or_perf_ind(list_=rxn_exp.hasPerformanceIndicator, clz=clz, positionalID=None)
+            identified_ind = rxn_exp.get_performance_indicator(clz=clz, positional_id=None)
             assert identified_ind.instance_iri in perf_ind_list
             assert identified_ind.positionalID == None
             assert identified_ind.clz == clz
+
+def test_get_reagent_bottle(initialise_triples):
+    sparql_client = initialise_triples
+
+    reagent_bottle = sparql_client.get_reagent_bottle(TargetIRIs.REAGENTBOTTLE_1_DUMMY_IRI.value)
+    assert reagent_bottle.instance_iri == TargetIRIs.REAGENTBOTTLE_1_DUMMY_IRI.value
+    assert reagent_bottle.isFilledWith.instance_iri is not None
+    assert reagent_bottle.hasFillLevel.hasValue.hasNumericalValue > 0
+    assert reagent_bottle.hasFillLevel.hasValue.hasUnit == onto.OM_MILLILITRE
+    assert reagent_bottle.hasWarningLevel.hasValue.hasNumericalValue > 0
+    assert reagent_bottle.hasWarningLevel.hasValue.hasUnit == onto.OM_MILLILITRE
+    assert reagent_bottle.hasMaxLevel.hasValue.hasNumericalValue > 0
+    assert reagent_bottle.hasMaxLevel.hasValue.hasUnit == onto.OM_MILLILITRE
+    assert reagent_bottle.hasFillLevel.hasValue.hasNumericalValue <= reagent_bottle.hasMaxLevel.hasValue.hasNumericalValue
+
+def test_get_all_rxn_exp_given_chem_rxn(initialise_triples):
+    sparql_client = initialise_triples
+
+    lst_rxn_exp = sparql_client.get_all_rxn_exp_given_chem_rxn(TargetIRIs.CHEMICAL_REACTION_IRI.value)
+    assert dal.check_if_two_lists_equal(lst_rxn_exp, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value + TargetIRIs.LIST_NEW_RXN_EXP.value)
 
 def test_get_r4_reactor_rxn_exp_assigned_to(initialise_triples):
     sparql_client = initialise_triples
@@ -1010,18 +1039,15 @@ def test_get_r4_reactor_rxn_exp_assigned_to(initialise_triples):
     assert reactor_iri == sparql_client.get_r4_reactor_rxn_exp_assigned_to(rxn_exp_iri=rxn_exp_iri)
 
 def test_create_equip_settings_for_rs400_from_rxn_exp(initialise_triples):
+    """This method tests create_equip_settings_for_rs400_from_rxn_exp method of ontovapoutrec.VapourtecRS400 dataclass."""
     sparql_client = initialise_triples
 
-    rxn_exp = sparql_client.getReactionExperiment(TargetIRIs.NEW_RXN_EXP_1_IRI.value)[0]
-    rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
-    lst_reactor = sparql_client.get_r4_reactor_given_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
-    preferred_r4_reactor = lst_reactor[0] # Just retrieve the first reactor
+    rxn_exp = sparql_client.getReactionExperiment(TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value)[0]
+    rs400 = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )[0]
 
-    lst_equip_settings = sparql_client.create_equip_settings_for_rs400_from_rxn_exp(
-        rxnexp=rxn_exp,
-        rs400=rs400,
-        preferred_r4_reactor=preferred_r4_reactor
-    )
+    lst_equip_settings = rs400.create_equip_settings_for_rs400_from_rxn_exp(rxn_exp=rxn_exp)
 
     # Generated equip settings should be generated for the reaction experiment
     assert all([stg.wasGeneratedFor == rxn_exp.instance_iri for stg in lst_equip_settings])
@@ -1221,6 +1247,10 @@ def test_collect_triples_for_chromatogram_point(initialise_triples):
     for pt in lst_chromatogram_point:
         assert (URIRef(hplc_report_iri), URIRef(onto.ONTOHPLC_RECORDS), URIRef(pt.instance_iri)) in g
         assert if_object_collected_in_graph(g, pt)
+
+@pytest.mark.skip(reason="TODO")
+def test_get_all_rxn_exp_with_target_perfind_given_chem_rxn(initialise_triples):
+    pass
 
 @pytest.mark.skip(reason="TODO after proper representation of species density")
 def test_get_species_density(initialise_triples):

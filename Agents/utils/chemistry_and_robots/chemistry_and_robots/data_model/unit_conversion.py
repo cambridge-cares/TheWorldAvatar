@@ -1,8 +1,13 @@
-from chemistry_and_robots.data_model import *
+import pydantic
+
+from chemistry_and_robots.data_model.iris import *
 
 class DimensionalQuantity(pydantic.BaseModel):
     hasUnit: str
     hasNumericalValue: float
+
+    def convert_to(self, new_unit: str):
+        return unit_conversion_dq(self, new_unit)
 
 class UnitConversionError(Exception):
     def __init__(self, current_unit: str, target_unit: str) -> None:
