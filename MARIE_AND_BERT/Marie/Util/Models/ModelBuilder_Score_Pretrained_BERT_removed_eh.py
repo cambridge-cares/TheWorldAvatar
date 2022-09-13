@@ -245,63 +245,6 @@ class Trainer:
         return total_prediction_loss
 
 
-def grid_search():
-    l_r_list = [5e-2, 5e-3, 5e-4, 5e-5, 5e-6]
-    n_r_list = [x for x in range(2, 20, 2)]
-    dropout = [x / 10 for x in range(1, 9)]
-    with open('training_log', 'w') as f:
-        f.write('started at:' + str(datetime.datetime.now()))
-        f.write('\n')
-        f.write(json.dumps(l_r_list))
-        f.write('\n')
-        f.write(json.dumps(n_r_list))
-        f.write('\n')
-        f.write(json.dumps(dropout))
-        f.write('\n')
-
-    total_comb = len(l_r_list) * len(n_r_list) * len(dropout)
-    print(total_comb)
-    for l_r in l_r_list:
-        for n_r in n_r_list:
-            for d_r in dropout:
-                # trainer = Trainer()
-                # trainer.train()
-
-                pass
-
-
-def write_log(l_r, n_r, d_r, train_loss, val_loss, init_train_loss, init_val_loss):
-    START_TIME = time.time()
-    meta_data = f' learning rate {l_r}\n' \
-                f' negative rate {n_r}\n' \
-                f' dropout {d_r}\n'
-
-    results = f' train loss {train_loss}\n' \
-              f' val loss {val_loss}\n' \
-              f' init_train_loss {init_train_loss}\n' \
-              f' init_val_loss {init_val_loss}\n' \
-              f' delta train {init_train_loss - train_loss}\n' \
-              f' delta val {init_val_loss - val_loss}\n'
-
-    content = meta_data + '\n' + results + '\n' + f'time taken {time.time() - START_TIME}\n'
-    with open('training_log', 'a') as f:
-        f.write(content)
-        f.write('=========================================\n')
-
-
-def fine_tuning():
-    """
-    Only search dropout > 0.5, there is clearly some overfitting
-    negative rate set to be max 18
-    learning rate to be decided
-    :return:
-    """
-
-    dropout_list = [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
-    negative_rate = [n_r for n_r in range(4, 18, 2)]
-    print(negative_rate)
-
-
 def build_from_optimal_parameters():
     dropout = 0
     neg_rate = 1
@@ -311,11 +254,6 @@ def build_from_optimal_parameters():
     my_trainer = Trainer(epoches=epochs, negative_rate=neg_rate, learning_rate=learning_rate, drop_out=dropout,
                          frac=frac)
     train_loss, val_loss, init_train_loss, init_val_loss = my_trainer.train()
-    # write_log(my_trainer.learning_rate, my_trainer.neg_rate, my_trainer.drop_out, train_loss, val_loss, init_train_loss,
-    #           init_val_loss)
-
 
 if __name__ == '__main__':
-    # grid_search()
     build_from_optimal_parameters()
-    # 12 + 1 = 13, not working well ...

@@ -6,9 +6,11 @@ from Marie.EntityLinking.util.ParseResult import prase_inference
 from Marie.EntityLinking.chemspot.annotator import tag
 from Marie.EntityLinking.util.EntityDict import load_entity_dict
 from Marie.Util.location import ENTITY_LINKING_CONF_DIR
+
 '''
 All files needed for Entity linking go to "MARIE_AND_BERT/DATA/EntityLinking"
 '''
+
 
 class NELInfer():
     def __init__(self, config_name='base500.yaml'):
