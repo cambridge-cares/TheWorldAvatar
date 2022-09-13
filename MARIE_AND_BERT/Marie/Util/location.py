@@ -26,13 +26,12 @@ EMBEDDING_DIR = os.path.join(DATASET_DIR, 'embeddings/transe')
 #Everything about chemspot
 #your JAVA_PATH
 JAVA_PATH = r'C:\Program Files\Java\jdk1.8.0_111\jre\bin\java.exe'
-CHEMSPOT_DIR = os.path.join(ENTITY_LINKING_DIR, 'chemspot')
-PY4J_JAR_PATH = os.path.join(CHEMSPOT_DIR, r'bin/py4j-0.10.9.5.jar')
-CHEMSPOT_JAR_PATH = os.path.join(CHEMSPOT_DIR, r'bin/chemspot.jar')
+PY4J_JAR_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'bin/py4j-0.10.9.5.jar')
+CHEMSPOT_JAR_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'bin/chemspot.jar')
 
-DICT_ZIP_PATH = os.path.join(CHEMSPOT_DIR, r'bin/dict.zip')
-IDS_ZIP_PATH = os.path.join(CHEMSPOT_DIR, r'bin/ids.zip')
-MULTICLASS_BIN_PATH = os.path.join(CHEMSPOT_DIR, r'bin/multiclass.bin')
+DICT_ZIP_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'bin/dict.zip')
+IDS_ZIP_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'bin/ids.zip')
+MULTICLASS_BIN_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'bin/multiclass.bin')
 PUBCHEM500_JSONL_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'pubchem500.jsonl')
 
 

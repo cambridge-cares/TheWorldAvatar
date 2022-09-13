@@ -3,7 +3,7 @@ from py4j.java_gateway import JavaGateway
 # read from the list
 # process one by one and write to output (save ckg also)
 from Marie.EntityLinking.util.EntityDict import load_entity_dict
-from  Marie.Util.location import CHEMSPOT_DIR, PY4J_JAR_PATH, CHEMSPOT_JAR_PATH, JAVA_PATH,\
+from  Marie.Util.location import  PY4J_JAR_PATH, CHEMSPOT_JAR_PATH, JAVA_PATH,\
     DICT_ZIP_PATH, IDS_ZIP_PATH, MULTICLASS_BIN_PATH, PUBCHEM500_JSONL_PATH
 
 import fuzzyset
