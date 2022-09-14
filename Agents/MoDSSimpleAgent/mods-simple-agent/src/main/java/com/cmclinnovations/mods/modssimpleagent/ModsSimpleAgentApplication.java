@@ -48,9 +48,9 @@ public class ModsSimpleAgentApplication {
 
         Request request = OBJECT_MAPPER.readValue(config, Request.class);
 
-        // System.out.println(request.getJobID());
-
         Simulation sim = Simulation.createSimulation(request);
+
+        sim.load();
 
         sim.run();
 

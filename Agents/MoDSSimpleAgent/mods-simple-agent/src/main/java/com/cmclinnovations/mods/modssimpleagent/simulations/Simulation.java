@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.io.FileUtils;
+
 import com.cmclinnovations.mods.modssimpleagent.BackendInputFile;
 import com.cmclinnovations.mods.modssimpleagent.CSVDataFile;
 import com.cmclinnovations.mods.modssimpleagent.CSVDataSeparateFiles;
@@ -33,6 +35,10 @@ public class Simulation {
     public static final String DEFAULT_CASEGROUP_NAME = "CaseGroup";
 
     public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
+
+    private static final String DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = ".\\Saved_Surrogates\\";
+
+    private static final String DEFAULT_SURROGATE_DIRECTORY_NAME = "GenSurrogateAlg";
 
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
 
@@ -258,9 +264,43 @@ public class Simulation {
     public void save() throws FileGenerationException{
         for(Algorithm algorithm : request.getAlgorithms()) {
             if(algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()){
-                System.out.println(modsBackend.getSimDir());
-            };}
+                try{
+
+                    File saveDirectory = new File(DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH + modsBackend.getJobID() + "\\" + DEFAULT_SURROGATE_DIRECTORY_NAME);
+                    File surrogateDirectory = new File(modsBackend.getSimDir().toString() + "\\" + DEFAULT_SURROGATE_DIRECTORY_NAME);
+
+                    if (!saveDirectory.exists()) {
+                        saveDirectory.mkdir();
+                    };
+
+                    FileUtils.copyDirectory(surrogateDirectory, saveDirectory);
+                } catch (IOException ex) {
+                    throw new FileGenerationException(
+                            "Failed to save surrogate.", ex);
+                }
+                
+            };
+        }
     }
+
+    public void load() throws FileGenerationException{
+        for(Algorithm algorithm : request.getAlgorithms()) {
+            if(algorithm.getLoadSurrogate() != null){
+                try{
+
+                    File loadDirectory = new File(modsBackend.getSimDir().toString());
+                    File surrogateDirectory = new File(DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH + algorithm.getLoadSurrogate());
+
+                    FileUtils.copyDirectory(surrogateDirectory, loadDirectory);
+                } catch (IOException ex) {
+                    throw new FileGenerationException(
+                            "Failed to load surrogate.", ex);
+                }
+                
+            };
+        }
+    }
+
 
     public final Request getResponse() {
         Request response = new Request();

@@ -9,6 +9,7 @@ public class Algorithm {
     private List<Variable> variables;
     private int maxNumberOfResults = Integer.MAX_VALUE;
     private Boolean saveSurrogate;
+    private String loadSurrogate;
 
     public String getName() {
         return name;
@@ -44,5 +45,13 @@ public class Algorithm {
 
     public void getSaveSurrogate(Boolean saveSurrogate) {
         this.saveSurrogate = saveSurrogate;
+    }
+
+    public String getLoadSurrogate() {
+        return loadSurrogate;
+    }
+
+    public void getLoadSurrogate(String loadSurrogate) {
+        this.loadSurrogate = loadSurrogate;
     }
 }
