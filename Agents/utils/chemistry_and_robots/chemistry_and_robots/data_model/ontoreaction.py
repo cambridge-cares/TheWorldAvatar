@@ -445,7 +445,10 @@ class ReactionExperiment(BaseOntology):
                 namespace_for_init=getNameSpace(input_chem.instance_iri),
                 # NOTE the computed volumetric flow rate is in the unit of that of total_flowrate
                 hasUnit=total_flowrate_unit,
-                hasNumericalValue=dct_flow_ratio[input_chem.instance_iri] / sum_flow_ratio * total_flowrate_value,
+                # NOTE the computed volumetric flow rate is rounded to 3 decimal places
+                # this is to make it consistent with the FlowCommander
+                # TODO [next iteration] store "3" as a constant somewhere with other decimal places of FlowCommander
+                hasNumericalValue=round(dct_flow_ratio[input_chem.instance_iri] / sum_flow_ratio * total_flowrate_value, 3),
             )
         ) for input_chem in self.hasInputChemical}
 
