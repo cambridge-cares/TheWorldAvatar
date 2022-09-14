@@ -36,7 +36,6 @@ class MapHandler_Cesium extends MapHandler {
                 + MapHandler.MAP_API;
 
             // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
-            // @ts-ignore
             MapHandler.MAP = new Cesium.Viewer('map', {
                 timeline: false,
                 animation: false,
@@ -52,7 +51,6 @@ class MapHandler_Cesium extends MapHandler {
 
             // Remove any existing imagery providers and add our own
             MapHandler.MAP.imageryLayers.removeAll(true);
-            // @ts-ignore
             let imageryProvider = new Cesium.UrlTemplateImageryProvider({
                 url: tileURL,
                 credit: "mapbox"
@@ -61,9 +59,7 @@ class MapHandler_Cesium extends MapHandler {
 
             // Override mouse controls 
             let controller = MapHandler.MAP.scene.screenSpaceCameraController;
-            // @ts-ignore
             controller.tiltEventTypes = [Cesium.CameraEventType.RIGHT_DRAG];
-            // @ts-ignore
             controller.zoomEventTypes = controller.zoomEventTypes.filter(item => item !== Cesium.CameraEventType.RIGHT_DRAG);
 
             // Dodgy, but the only way to change the zoom increment
@@ -78,14 +74,10 @@ class MapHandler_Cesium extends MapHandler {
             handler.setInputAction(event => this.handleMouse(event), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
             MapHandler.MAP.camera.setView({
-                // @ts-ignore
                 destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
                 orientation: {
-                    // @ts-ignore
                     heading: Cesium.Math.toRadians(mapOptions["heading"]),
-                    // @ts-ignore
                     pitch: Cesium.Math.toRadians(mapOptions["pitch"]),
-                    // @ts-ignore
                     roll: Cesium.Math.toRadians(mapOptions["roll"])
                 }
             });
@@ -93,14 +85,10 @@ class MapHandler_Cesium extends MapHandler {
 
         } else {
             MapHandler.MAP.camera.setView({
-                // @ts-ignore
                 destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
                 orientation: {
-                    // @ts-ignore
                     heading: Cesium.Math.toRadians(mapOptions["heading"]),
-                    // @ts-ignore
                     pitch: Cesium.Math.toRadians(mapOptions["pitch"]),
-                    // @ts-ignore
                     roll: Cesium.Math.toRadians(mapOptions["roll"])
                 }
             });
@@ -206,7 +194,6 @@ class MapHandler_Cesium extends MapHandler {
                 this.plotLayer(rootGroup, layer);
             });
         });
-        console.log("Finished adding data to map");
     }
 
     /**
