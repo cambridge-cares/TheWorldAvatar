@@ -34,9 +34,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 	//private static final String dbURL = "jdbc:postgresql:timeseries";
 	private static final String user = "postgres";
 	private static final String password = "postgres";
-	
-	private static Connection conn;
-	private static DSLContext context;
+
 	private static RDBStoreClient rdbStoreClient;
 
 	// RDB client
@@ -57,8 +55,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 	private static List<List<?>> dataToAdd_2;
 
 	@BeforeClass
-	// Connect to the database before any test (will spin up the Docker container for the database)
-	public static void connect() throws SQLException, ClassNotFoundException {
+	public static void initialiseRDBStoreClient() {
 		//initialize RDBStoreClient
 		rdbStoreClient = new RDBStoreClient(dbURL, user, password);
 	}
@@ -360,23 +357,22 @@ public class TimeSeriesRDBClientIntegrationTest {
 	
 	@Test
 	public void testGetTimeseriesExceptions() throws SQLException {
-
-			try(Connection conn = rdbStoreClient.getConnection()) {
-				// Get time series data for non-initialised time series and central table
-				JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> client.getTimeSeries(dataIRI_1, conn));
-				Assert.assertEquals("TimeSeriesRDBClient: Central RDB lookup table has not been initialised yet", e.getMessage());
-				// Get time series data for non-initialised time series
-				client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3, conn);
-				e = Assert.assertThrows(JPSRuntimeException.class, () -> client.getTimeSeries(dataIRI_1, conn));
-				Assert.assertTrue(e.getMessage().contains("> does not have an assigned time series instance"));
-				// Get time series data which is not in same table
-				client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1, conn);
-				List<String> dataIRIs = new ArrayList<>();
-				dataIRIs.addAll(dataIRI_1);
-				dataIRIs.addAll(dataIRI_3);
-				e = Assert.assertThrows(JPSRuntimeException.class, () -> client.getTimeSeries(dataIRIs, conn));
-				Assert.assertEquals("TimeSeriesRDBClient: Provided data is not within the same RDB table", e.getMessage());
-			}
+		try(Connection conn = rdbStoreClient.getConnection()) {
+			// Get time series data for non-initialised time series and central table
+			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> client.getTimeSeries(dataIRI_1, conn));
+			Assert.assertEquals("TimeSeriesRDBClient: Central RDB lookup table has not been initialised yet", e.getMessage());
+			// Get time series data for non-initialised time series
+			client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3, conn);
+			e = Assert.assertThrows(JPSRuntimeException.class, () -> client.getTimeSeries(dataIRI_1, conn));
+			Assert.assertTrue(e.getMessage().contains("> does not have an assigned time series instance"));
+			// Get time series data which is not in same table
+			client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1, conn);
+			List<String> dataIRIs = new ArrayList<>();
+			dataIRIs.addAll(dataIRI_1);
+			dataIRIs.addAll(dataIRI_3);
+			e = Assert.assertThrows(JPSRuntimeException.class, () -> client.getTimeSeries(dataIRIs, conn));
+			Assert.assertEquals("TimeSeriesRDBClient: Provided data is not within the same RDB table", e.getMessage());
+		}
 	}
 	
 	@Test
@@ -439,7 +435,6 @@ public class TimeSeriesRDBClientIntegrationTest {
 	
 	@Test
 	public void testGetAggregates() throws SQLException {
-
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series table
 			client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1, conn);
