@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,9 +25,6 @@ public class TimeSeriesPostGISIntegrationTest {
 	private static final String dbURL = "jdbc:tc:postgis:14-3.2:///timeseries";
 	private static final String user = "postgres";
 	private static final String password = "postgres";
-
-	private static Connection conn;
-    private static DSLContext context;
 
     private String tableName;
 
