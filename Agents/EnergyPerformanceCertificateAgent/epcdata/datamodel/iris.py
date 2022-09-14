@@ -7,6 +7,8 @@ GEO = 'http://www.opengis.net/ont/geosparql#'
 ICONTACT = 'http://ontology.eil.utoronto.ca/icontact.owl#'
 LRPPI = 'http://landregistry.data.gov.uk/def/ppi/'
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
+ONS1 = 'http://statistics.data.gov.uk/def/statistical-geography#'
+ONS2 = 'http://statistics.data.gov.uk/def/hierarchy/best-fit#'
 OWL = 'http://www.w3.org/2002/07/owl#'
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
@@ -21,7 +23,8 @@ KB = 'https://www.theworldavatar.com/kg/ontoems/'
 
 ###--- IRIs for OntoBuiltEnv TBox ---###
 # http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
-
+OBE_ADMIN_DISTRICT = OBE + 'AdministrativeDistrict'
+OBE_POSTALCODE = OBE + 'PostalCode'
 
 ###--- IRIs for OntoBuiltEnv ABox ---###
 # http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl
@@ -76,6 +79,7 @@ RDF_TYPE = RDF + 'type'
 RDFS_COMMENT = RDFS + 'comment'
 RDFS_LABEL = RDFS + 'label'
 OWL_VERSION = OWL + 'versionInfo'
+OWL_SAMEAS = OWL + 'sameAs'
 
 # Data types
 XSD_STRING = XSD + 'string'
@@ -88,3 +92,8 @@ XSD_DATETIMESTAMP = XSD + 'dateTimeStamp'
 GEO_FEATURE = GEO + 'Feature'
 GEO_HAS_GEOMETRY = GEO + 'hasGeometry'
 GEO_ASWKT = GEO + 'asWKT'
+
+# Office for National Statistics (ONS)
+ONS_GEOGRAPGY = ONS1 + 'Statistical-Geography'
+ONS_NAME = ONS1 + 'officialname'
+ONS_BEST_LOCAL_AUTHORITY = ONS2 + 'localauthoritydistrict'

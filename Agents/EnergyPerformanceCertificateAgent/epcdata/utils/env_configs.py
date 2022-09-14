@@ -79,4 +79,3 @@ def retrieve_settings():
 
 # Run when module is imported
 retrieve_settings()
-
