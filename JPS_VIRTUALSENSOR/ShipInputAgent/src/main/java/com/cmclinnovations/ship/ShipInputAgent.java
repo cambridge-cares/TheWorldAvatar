@@ -161,9 +161,6 @@ public class ShipInputAgent extends HttpServlet {
             // new derivations are created on the spot (request sent to agent immediately)
             queryClient.createNewDerivations(newlyCreatedShips);
 
-            // updates the rest (old ships)
-            derivationClient.updateAllSyncDerivations();
-
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
             createGeoServerLayer(averageTimestamp);
