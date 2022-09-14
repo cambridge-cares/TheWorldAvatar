@@ -14,8 +14,16 @@ ${EXECUTABLE} pull -q docker.cmclinnovations.com/geoserver:2.20.4
 # Remove existing services started from this directory
 "${SCRIPTS_DIR}/stop.sh" "${STACK_NAME}"
 
-if [[ $# -eq 2 ]]; then
-    export DEBUG_PORT=${2}
+while (( $# >= 1 )); do 
+    case $1 in
+    --debug-port) DEBUG_PORT=$2; shift;;
+    *) export EXTERNAL_PORT=${1};;
+    esac;
+    shift
+done
+
+if [[ -n "${DEBUG_PORT}" ]]; then
+    export DEBUG_PORT
     DEBUG_COMPOSE_FILE="--compose-file=docker-compose-debug.yml"
 fi
 

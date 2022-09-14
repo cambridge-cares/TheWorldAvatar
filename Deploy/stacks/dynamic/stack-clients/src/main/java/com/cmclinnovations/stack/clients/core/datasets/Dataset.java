@@ -21,6 +21,8 @@ public class Dataset {
 
     private String database;
 
+    private List<String> externalDatasets;
+
     private List<DataSubset> dataSubsets;
 
     private List<GeoServerStyle> geoserverStyles;
@@ -34,6 +36,7 @@ public class Dataset {
             @JsonProperty(value = "datasetDirectory") Path datasetDirectory,
             @JsonProperty(value = "workspace") String workspaceName,
             @JsonProperty(value = "database") String database,
+            @JsonProperty(value = "externalDatasets") List<String> externalDatasets,
             @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
             @JsonProperty(value = "mappings") List<String> ontopMappings,
@@ -42,10 +45,27 @@ public class Dataset {
         this.datasetDirectory = (null != datasetDirectory) ? datasetDirectory : Path.of(name);
         this.workspaceName = (null != workspaceName) ? workspaceName : name;
         this.database = database;
+        this.externalDatasets = (null != externalDatasets) ? externalDatasets : new ArrayList<>();
         this.dataSubsets = (null != dataSubsets) ? dataSubsets : new ArrayList<>();
         this.geoserverStyles = (null != geoserverStyles) ? geoserverStyles : new ArrayList<>();
         this.ontopMappings = (null != ontopMappings) ? ontopMappings : new ArrayList<>();
         this.skip = skip;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<String> getExternalDatasets() {
+        return externalDatasets;
+    }
+
+    public boolean isSkip() {
+        return skip;
     }
 
     public void loadData() {
@@ -58,10 +78,16 @@ public class Dataset {
             Path fullDatasetDir = Path.of("/inputs", "data").resolve(datasetDirectory);
             String fullDatasetDirStr = fullDatasetDir.toString();
 
-            postGISClient.createDatabase(database);
-            geoServerClient.createWorkspace(workspaceName);
+            if (null != database) {
+                postGISClient.createDatabase(database);
+            }
 
-            geoserverStyles.forEach(style -> geoServerClient.loadStyle(style, workspaceName));
+            if (dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).count() > 0
+                    || !geoserverStyles.isEmpty()) {
+                geoServerClient.createWorkspace(workspaceName);
+
+                geoserverStyles.forEach(style -> geoServerClient.loadStyle(style, workspaceName));
+            }
 
             dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).forEach(
                     subset -> {
