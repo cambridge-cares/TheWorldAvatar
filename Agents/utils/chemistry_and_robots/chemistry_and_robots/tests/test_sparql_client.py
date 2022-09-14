@@ -38,7 +38,10 @@ def test_getDesignVariables(initialise_triples):
     design_var_iri_list = [var.instance_iri for var in design_var_list]
     assert len(design_var_iri_list) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(iri in design_var_iri_list for iri in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
-    assert all(all([isinstance(var, onto.ContinuousVariable), var.refersTo is not None, var.upperLimit > var.lowerLimit]) for var in design_var_list)
+    assert all(all([isinstance(var, onto.ContinuousVariable),
+                    var.refersTo is not None,
+                    var.refersTo.hasUnit is not None,
+                    var.upperLimit > var.lowerLimit]) for var in design_var_list)
 
 @pytest.mark.parametrize(
     "sys_res_iri,maximise",
@@ -87,7 +90,10 @@ def test_getDoEDomain(initialise_triples):
     lst_var = [v.instance_iri for v in doe_domain_instance.hasDesignVariable]
     assert len(lst_var) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(var in lst_var for var in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
-    assert all(all([isinstance(var, onto.ContinuousVariable), var.refersTo is not None, var.upperLimit > var.lowerLimit]) for var in doe_domain_instance.hasDesignVariable)
+    assert all(all([isinstance(var, onto.ContinuousVariable),
+                    var.refersTo is not None,
+                    var.refersTo.hasUnit is not None,
+                    var.upperLimit > var.lowerLimit]) for var in doe_domain_instance.hasDesignVariable)
 
 @pytest.mark.parametrize(
     "rxnexp_iri,rxnexp_condition_iri",
@@ -257,7 +263,10 @@ def test_get_doe_instance(initialise_triples):
     lst_var = [v.instance_iri for v in doe_instance.hasDomain.hasDesignVariable]
     assert len(lst_var) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(var in lst_var for var in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
-    assert all(all([isinstance(var, onto.ContinuousVariable), var.refersTo is not None, var.upperLimit > var.lowerLimit]) for var in doe_instance.hasDomain.hasDesignVariable)
+    assert all(all([isinstance(var, onto.ContinuousVariable),
+                    var.refersTo is not None,
+                    var.refersTo.hasUnit is not None,
+                    var.upperLimit > var.lowerLimit]) for var in doe_instance.hasDomain.hasDesignVariable)
     # Check SystemResponse
     assert all(all([isinstance(r, onto.SystemResponse), r.refersTo is not None]) for r in doe_instance.hasSystemResponse)
     dct_m = {s.instance_iri:s.maximise for s in doe_instance.hasSystemResponse}

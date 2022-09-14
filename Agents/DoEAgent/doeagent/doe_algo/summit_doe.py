@@ -91,7 +91,7 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Li
         for first_rxn_exp_con in first_rxn_exp.hasReactionCondition:
             var_loc = []
             for design_var in doe.hasDomain.hasDesignVariable:
-                if tuple((design_var.refersTo, design_var.positionalID)) == tuple((first_rxn_exp_con.clz, first_rxn_exp_con.positionalID)):
+                if tuple((design_var.refersTo.clz, design_var.positionalID)) == tuple((first_rxn_exp_con.clz, first_rxn_exp_con.positionalID)):
                     var_loc.append(design_var.name)
             if len(var_loc) > 1:
                 raise Exception(
@@ -195,20 +195,13 @@ def constructPreviousResultsTable(doe: DesignOfExperiment) -> DataSet_summit:
         data = []
         for exp in doe.utilisesHistoricalData.refersTo:
             # locate the value of the DesignVariable in each historical experiment
-            var_val = []
-            for con in exp.hasReactionCondition:
-                if (con.clz == var.refersTo) and (con.positionalID == var.positionalID):
-                    var_val.append(con.hasValue.hasNumericalValue)
-            
-            # raise Exception if there's more than one appearance of ReactionCondition that matches the DesignVariable
-            if len(var_val) > 1:
-                raise Exception(
-                        """Only one appearance should be allowed for a ReactionCondition to be a DesignVariable within one ReactionExperiment/ReactionVariation. \
-                        If you intend to use ReactionCondition that instantiated from same class for different variables, please consider use positionalID to distinguish.
-                        """)
-            
+            con = exp.get_reaction_condition(var.refersTo.clz, var.positionalID)
+
+            if con is None:
+                raise Exception(f"No ReactionCondition found for the DesignVariable (refersTo clz: {var.refersTo.clz} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
+
             # append the collected value in the experiment
-            data.append({'rxnexp': exp.instance_iri, var.name: var_val[0]})
+            data.append({'rxnexp': exp.instance_iri, var.name: con.hasValue.hasNumericalValue})
         # the prepared data will be converted from a dict to a pandas.DataFrame and added to a list
         _to_df = {}
         for k in data[0]:
@@ -221,20 +214,13 @@ def constructPreviousResultsTable(doe: DesignOfExperiment) -> DataSet_summit:
         data = []
         for exp in doe.utilisesHistoricalData.refersTo:
             # locate the value of the SystemResponse in each historical experiment
-            var_val = []
-            for indi in exp.hasPerformanceIndicator:
-                if (indi.clz == var.refersTo) and (indi.positionalID == var.positionalID):
-                    var_val.append(indi.hasValue.hasNumericalValue)
-            
-            # raise Exception if there's more than one appearance of PerformanceIndicator that matches the SystemResponse
-            if len(var_val) > 1:
-                raise Exception(
-                        """Only one appearance should be allowed for a PerformanceIndicator to be a SystemResponse within one ReactionExperiment/ReactionVariation. \
-                        If you intend to use PerformanceIndicator that instantiated from same class for different variables, please consider use positionalID to distinguish.
-                        """)
-            
+            indi = exp.get_performance_indicator(var.refersTo, var.positionalID)
+
+            if indi is None:
+                raise Exception(f"No PerformanceIndicator found for the SystemResponse (refersTo clz: {var.refersTo} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
+
             # append the collected value in the experiment
-            data.append({'rxnexp': exp.instance_iri, var.name: var_val[0]})
+            data.append({'rxnexp': exp.instance_iri, var.name: indi.hasValue.hasNumericalValue})
         # the prepared data will be converted from a dict to a pandas.DataFrame and added to a list
         _to_df = {}
         for k in data[0]:

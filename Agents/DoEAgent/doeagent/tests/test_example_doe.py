@@ -3,6 +3,8 @@ import time
 
 import doeagent.tests.utils as utils
 
+import logging
+logging.getLogger('chemistry_and_robots_sparql_client').setLevel(logging.ERROR)
 
 @pytest.mark.parametrize(
     "doe_iri,derivation_inputs,local_agent_test",
@@ -51,7 +53,7 @@ def test_example_doe(
     # Check if all the suggested conditions are within the DoE range
     for design_variable in new_doe_instance.hasDomain.hasDesignVariable:
         if isinstance(design_variable, utils.cf.ContinuousVariable):
-            rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersTo, design_variable.positionalID)
+            rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersTo.clz, design_variable.positionalID)
             assert rxn_cond.hasValue.hasNumericalValue <= design_variable.upperLimit
             assert design_variable.lowerLimit <= rxn_cond.hasValue.hasNumericalValue
         else:

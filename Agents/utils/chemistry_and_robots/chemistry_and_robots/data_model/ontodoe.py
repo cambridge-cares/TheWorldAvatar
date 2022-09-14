@@ -36,7 +36,7 @@ class TSEMO(Strategy):
 class LHS(Strategy):
     clz: str = ONTODOE_LHS
     seed: int
-    # TODO add support for object property <hasCriterion> <OntoDoE:Criterion>
+    # TODO [future work] add support for object property <hasCriterion> <OntoDoE:Criterion>
 
 class DesignVariable(BaseOntology):
     clz: str = ONTODOE_DESIGNVARIABLE
@@ -47,11 +47,11 @@ class DesignVariable(BaseOntology):
 
 class ContinuousVariable(DesignVariable):
     clz: str = ONTODOE_CONTINUOUSVARIABLE
+    name: str=None # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
     upperLimit: float
     lowerLimit: float
     positionalID: Optional[int]
-    # instead of the actual class, str is used to host the concept IRI of om:Quantity for simplicity
-    refersTo: str
+    refersTo: OM_Quantity
 
     def create_instance_for_kg(self, g: Graph):
         g = super().create_instance_for_kg(g)
@@ -59,7 +59,14 @@ class ContinuousVariable(DesignVariable):
         g.add((URIRef(self.instance_iri), URIRef(ONTODOE_LOWERLIMIT), Literal(self.lowerLimit)))
         if self.positionalID is not None:
             g.add((URIRef(self.instance_iri), URIRef(ONTODOE_POSITIONALID), Literal(self.positionalID)))
-        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(self.refersTo)))
+
+        # <continuous_variable> <OntoDoE:refersTo> <quantity>
+        # <quantity> <rdf:type> <QuantityType>
+        # <quantity> <OntoDoE:hasUnit> <unit>
+        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(self.refersTo.instance_iri)))
+        g.add((URIRef(self.refersTo.instance_iri), RDF.type, URIRef(self.refersTo.clz)))
+        g.add((URIRef(self.refersTo.instance_iri), URIRef(OM_HASUNIT), URIRef(self.refersTo.hasUnit)))
+
         return g
 
     @pydantic.root_validator
@@ -70,6 +77,14 @@ class ContinuousVariable(DesignVariable):
             raise Exception(
                 'ContinuousVariable <%s> has an UpperLimit %s that is smaller then its LowerLimit %s.' 
                 % (values.get('instance_iri'), values.get('upperLimit'), values.get('lowerLimit')))
+        return values
+
+    @pydantic.root_validator
+    @classmethod
+    def refers_to_quantity_unit(cls, values):
+        # validate the unit exist for the OM:Quantity that refersTo
+        if values.get('refersTo').hasUnit is None:
+            raise Exception(f"ContinuousVariable {values.get('instance_iri')} refersTo an OM:Quantity {values.get('refersTo').instance_iri} that has no unit.")
         return values
 
 class CategoricalVariable(DesignVariable):
@@ -93,6 +108,7 @@ class Domain(BaseOntology):
 
 class SystemResponse(BaseOntology):
     clz: str = ONTODOE_SYSTEMRESPONSE
+    name: str=None # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
     maximise: bool
     positionalID: Optional[int]
     # instead of the actual class, str is used to host the concept IRI of om:Quantity for simplicity

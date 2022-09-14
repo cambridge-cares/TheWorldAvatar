@@ -1,5 +1,5 @@
 import pydantic
-from typing import Any, Dict
+from typing import Any, Optional
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF
 
@@ -125,7 +125,8 @@ class OM_Measure(BaseOntology):
 
 class OM_Quantity(BaseOntology):
     clz: str = OM_QUANTITY
-    hasValue: OM_Measure
+    hasValue: Optional[OM_Measure]
+    hasUnit: Optional[str]
 
 class OM_Volume(OM_Quantity):
     clz: str = OM_VOLUME

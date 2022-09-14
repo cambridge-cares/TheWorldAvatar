@@ -6,6 +6,7 @@
 @prefix exp4:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_4/> .
 @prefix exp5:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/> .
 @prefix exp6:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_6/> .
+@prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
 @prefix rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:           <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
@@ -47,7 +48,7 @@ OntoDoE:TSEMO
 
 :ContinuousVariable_1
     rdf:type OntoDoE:ContinuousVariable;
-    OntoDoE:refersTo OntoRxn:StoichiometryRatio;
+    OntoDoE:refersTo :StoiRatio;
     OntoDoE:positionalID "2"^^xsd:integer;
     OntoDoE:upperLimit "10"^^xsd:double;
     OntoDoE:lowerLimit "1"^^xsd:double;
@@ -55,24 +56,39 @@ OntoDoE:TSEMO
 
 :ContinuousVariable_2
     rdf:type OntoDoE:ContinuousVariable;
-    OntoDoE:refersTo OntoRxn:StoichiometryRatio;
+    OntoDoE:refersTo :StoiRatio;
     OntoDoE:positionalID "3"^^xsd:integer;
     OntoDoE:upperLimit "0.2"^^xsd:double;
     OntoDoE:lowerLimit "0.02"^^xsd:double;
 .
 
+:StoiRatio
+    rdf:type OntoRxn:StoichiometryRatio;
+    om:hasUnit om:one;
+.
+
 :ContinuousVariable_3
     rdf:type OntoDoE:ContinuousVariable;
-    OntoDoE:refersTo OntoRxn:ResidenceTime;
+    OntoDoE:refersTo :ResTime;
     OntoDoE:upperLimit "15"^^xsd:double;
     OntoDoE:lowerLimit "5"^^xsd:double;
 .
 
+:ResTime
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasUnit om:minute-Time;
+.
+
 :ContinuousVariable_4
     rdf:type OntoDoE:ContinuousVariable;
-    OntoDoE:refersTo OntoRxn:ReactionTemperature;
+    OntoDoE:refersTo :RxnTemp;
     OntoDoE:upperLimit "70"^^xsd:double;
     OntoDoE:lowerLimit "30"^^xsd:double;
+.
+
+:RxnTemp
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasUnit om:degreeCelsius;
 .
 
 :SystemResponse_1

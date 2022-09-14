@@ -128,14 +128,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         # TODO add support for CategoricalVariable
         # Prepare query string
-        query = """SELECT DISTINCT ?var ?clz ?id ?lower ?upper \
-                WHERE { \
-                    <%s> <%s> ?var . \
-                    ?var <%s> ?clz . \
-                    OPTIONAL {?var <%s> ?id . } \
-                    OPTIONAL {?var <%s> ?lower . } \
-                    OPTIONAL {?var <%s> ?upper . } \
-                }""" % (domain_iri, ONTODOE_HASDESIGNVARIABLE, ONTODOE_REFERSTO, ONTODOE_POSITIONALID, ONTODOE_LOWERLIMIT, ONTODOE_UPPERLIMIT)
+        query = f"""SELECT DISTINCT ?var ?quantity ?clz ?unit ?id ?lower ?upper
+                WHERE {{
+                    <{domain_iri}> <{ONTODOE_HASDESIGNVARIABLE}> ?var .
+                    ?var <{ONTODOE_REFERSTO}> ?quantity .
+                    ?quantity a ?clz; <{OM_HASUNIT}> ?unit.
+                    OPTIONAL {{?var <{ONTODOE_POSITIONALID}> ?id . }}
+                    OPTIONAL {{?var <{ONTODOE_LOWERLIMIT}> ?lower . }}
+                    OPTIONAL {{?var <{ONTODOE_UPPERLIMIT}> ?upper . }}
+                }}"""
         
         # Perform query
         response = self.performQuery(query)
@@ -146,11 +147,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             list_var.append(
                 ContinuousVariable(
                     instance_iri=res['var'],
-                    name=getShortName(res['var']),
+                    name=getShortName(res['var']), # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
                     upperLimit=res['upper'],
                     lowerLimit=res['lower'],
                     positionalID=res['id'] if 'id' in res else None,
-                    refersTo=res['clz']
+                    refersTo=OM_Quantity(
+                        instance_iri=res['quantity'],
+                        clz=res['clz'],
+                        hasUnit=res['unit']
+                    )
                 )
             )
 
@@ -184,7 +189,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             list_sys.append(
                 SystemResponse(
                     instance_iri=sys_ins,
-                    name=getShortName(sys_ins),
+                    name=getShortName(sys_ins), # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
                     maximise=response[0]['maximise'],
                     positionalID=response[0]['id'] if 'id' in response[0] else None,
                     refersTo=response[0]['clz']
