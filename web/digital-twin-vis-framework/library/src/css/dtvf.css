@@ -1141,3 +1141,23 @@ label[for="select-feature"] {
 #finderContainer.collapsed {
     width: calc(100% - 90px);
 }
+
+#cesiumMetaBox {
+    width: 200px;
+    height: 30px;
+    bottom: 100px;
+    left: 100px;
+
+    font-family: "Inter", sans-serif !important;
+    font-size: 11pt;
+    text-align: center;
+    line-height: 30px;
+
+    border-radius: 3px;
+    background-color: linear-gradient(#f5f5ff, #e1e1eb);
+    color: black;
+    position: absolute;
+    box-shadow: 3px 3px 3px black;
+  
+    display: none;
+}

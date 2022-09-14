@@ -163,8 +163,6 @@ class TreeHandler {
                 break;
 
                 case MapProvider.CESIUM:
-                    console.log("cesium provider");
-
                     // Cesium layers always visible by default
                     preCheck.push(dataID);
                 break;

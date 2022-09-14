@@ -192,27 +192,50 @@ class PanelHandler {
      * @param endpoint 
      * @returns 
      */
-    public addSupportingData(feature: Object) {
-        console.log("Getting metadata and timeseries...");
-        
+    public addSupportingData(feature, properties) {
         // Get required details
-        let iri = feature["properties"]["iri"];
-        let stack = Manager.findStack(feature);
+        let iri = properties["iri"];
+        let stack = Manager.findStack(feature, properties);
 
-        if(iri === undefined || stack === undefined) {
-            console.error("Feature is missing required information to get metadata/timeseries!");
+        if(iri == null || stack == null) {
+            console.warn("Feature is missing required information to get metadata/timeseries, will show in-model content instead...");
+
+            // ===== DEVELOPMENT TESTING ONLY =====
+            this.prepareMetaContainers(true, true);
+
+            // Render metadata tree
+            document.getElementById("metaTreeContainer").innerHTML = "";
+
+            // @ts-ignore
+            let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
+            // @ts-ignore
+            JsonView.expandChildren(metaTree);
+            // @ts-ignore
+            JsonView.selectiveCollapse(metaTree);
+
+            let self = this;
+            CesiumUtils.mockTimeseries().then(data => {
+                self.timeseriesHandler.parseData(data);
+                self.timeseriesHandler.showData("metaTimeContainer");
+
+                // Auto-select the first option in the dropdown
+                let select = document.getElementById("time-series-select") as HTMLInputElement;
+                select.onchange(null);
+            });
+            // ===== DEVELOPMENT TESTING ONLY =====
+
             return;
         }
+
+        // Proceed to contact agent for metadata and timeseries
         this.prepareMetaContainers(true, true);
 
         // Build the request to the FeatureInfoAgent
         let agentURL = stack + "/feature-info-agent/get";
-        console.log("Contacting: " + agentURL);
         let params = { "iri": iri };
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(json) {
-            console.log("Got a response");
             // Get results
             let meta = json["meta"];
             let time = json["time"];

@@ -14,7 +14,7 @@
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/2.1.0/dtvf.min.js"></script>
+        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.0.0/dtvf.min.js"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
@@ -26,7 +26,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="https://kg.cmclinnovations.com/cdn/dtvf/2.1.0/dtvf.min.css" rel="stylesheet" />
+        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.0.0/dtvf.min.css" rel="stylesheet" />
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -40,6 +40,9 @@
 
         <!-- Element for depth of field overlay -->
         <div id="tiltShift"></div>
+
+        <!-- Pop up box for hover-over effecrs -->
+        <div id="cesiumMetaBox"></div>
 
         <!-- Element the map controls will be added to (normally on the left) -->
         <div id="controlsContainer">
@@ -150,10 +153,8 @@
             $("#sidePanelInner").tabs();
 
             // ===== CUSTOMISABLE =====
-
             // Enter Mapbox API key here, even in Cesium visualisations!
             MapHandler.MAP_API = "pk.eyJ1IjoibWhpbGxtYW4iLCJhIjoiY2t1NW5wMDF3MnBzaDJ2cWhyZ2MxbHh4diJ9.TPv5CXdhGvFPkL28tTeXTA";
-
             // ===== CUSTOMISABLE =====
 
             // Create a new manager instance

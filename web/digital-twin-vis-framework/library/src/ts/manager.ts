@@ -223,7 +223,7 @@ class Manager {
     public async featureSelectChange(select: HTMLInputElement) {
         if(window.selectFeatures !== null && window.selectFeatures !== undefined) {
             let feature = window.selectFeatures[select.value];
-            this.showFeature(feature);
+            this.showFeature(feature, feature["properties"]);
         } else {
             console.error("Could not find feature cached with key: " + select.value);
         }
@@ -235,25 +235,28 @@ class Manager {
     /**
      * Fires when an individual feature is selected.
      */
-    public showFeature(feature: Object) {
+    public showFeature(feature, properties) {
         console.log(feature);
-        return;
-
-
+        console.log(properties);
 
         // Title
-        let name = feature["properties"]["name"];
-        if(name === null || name === undefined) {
-            name = "Feature " + feature["id"];
+        let name = null;
+        if(properties.hasOwnProperty("name")) {
+            name = properties["name"];
+        } else {
+            if(feature.hasOwnProperty("id")) {
+                name = "Feature " + feature["id"];
+            } else {
+                name = "Selected Feature";
+            }
         }
         this.panelHandler.setTitle("<h3>" + name + "</h2");
         document.getElementById("titleContainer").classList.add("clickable");
 
-
         // Description
-        let desc = feature["properties"]["description"];
-        if(desc === null && feature["properties"]["desc"]) {
-            desc = feature["properties"]["desc"];
+        let desc = properties["description"];
+        if(desc === null && properties["desc"]) {
+            desc = properties["desc"];
         }
         if(desc !== null && desc !== undefined) {
             this.panelHandler.setContent("<div class='description'>" + desc + "</div>");
@@ -261,9 +264,10 @@ class Manager {
             this.panelHandler.setContent("");
         }
 
-        // TODO
-        this.panelHandler.addSupportingData(feature);
+        // Retrieve and display meta and timeseries data
+        this.panelHandler.addSupportingData(feature, properties);
 
+        // Update buttons accordingly
         let metaTreeButton = document.getElementById("treeButton");
         let timeseriesButton = document.getElementById("timeButton");
 
@@ -503,14 +507,26 @@ class Manager {
      * @param feature 
      * @returns 
      */
-    public static findStack(feature: Object) {
-        let layer = feature["layer"]["id"];
+    public static findStack(feature, properties) {
+        // @ts-ignore
+        if(feature instanceof Cesium.Cesium3DTileFeature) {
+            // Feature within 3D tileset
+            let tileset = feature.tileset;
 
-        if(layer !== null && layer !== undefined) {
+        } else if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
+            // WMS feature on cesium
+            return null;
 
-            for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
-                let layers = value as string[];
-                if(layers.includes(layer)) return stack;
+        } else {
+            // MapBox or WMS feature?
+            let layer = feature["layer"]["id"];
+
+            if(layer !== null && layer !== undefined) {
+
+                for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                    let layers = value as string[];
+                    if(layers.includes(layer)) return stack;
+                }
             }
         }
 

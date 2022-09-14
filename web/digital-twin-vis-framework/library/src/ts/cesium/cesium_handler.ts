@@ -1,6 +1,6 @@
 /**
  * Concrete implementation of the MapHandler class that handles
- * a single MapBox map instance.
+ * a single CesiumJS map instance.
  */
 class MapHandler_Cesium extends MapHandler {
 
@@ -46,7 +46,8 @@ class MapHandler_Cesium extends MapHandler {
                 navigationHelpButton: false,
                 projectionPicker: false,
                 fullscreenButton: false,
-                geocoder: false
+                geocoder: false,
+                selectionIndicator: false
             }); 
 
             // Remove any existing imagery providers and add our own
@@ -68,15 +69,13 @@ class MapHandler_Cesium extends MapHandler {
             // Dodgy, but the only way to change the zoom increment
             controller._zoomFactor = 2;
 
-            // TEMPORARY: FOR DEVELOPMENT TESTING ONLY
-            MapHandler.MAP.scene.debugShowFramesPerSecond = true;
-
             // Enable picking
-            // @ts-ignore
             let handler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
-
-            // @ts-ignore
             handler.setInputAction(event => this.handleClick(event), Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+            // Enable hover-over silhouette
+            CesiumUtils.enableSilhouettes();
+            handler.setInputAction(event => this.handleMouse(event), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
             MapHandler.MAP.camera.setView({
                 // @ts-ignore
@@ -118,124 +117,32 @@ class MapHandler_Cesium extends MapHandler {
         if(!MapHandler.ALLOW_CLICKS) return;
 
         // Get the feature at the click point
-        const feature = MapHandler.MAP.scene.pick(event.position);
-
-        if(feature === null || feature === undefined) {
-            // Probably a WMS feature, need to get info differently
-
-            var pickRay = MapHandler.MAP.camera.getPickRay(event.position);
-            var featuresPromise = MapHandler.MAP.imageryLayers.pickImageryLayerFeatures(pickRay, MapHandler.MAP.scene);
-
-            // @ts-ignore
-            if (Cesium.defined(featuresPromise)) {
-                let self = this;
-
-                // @ts-ignore
-                Promise.resolve(featuresPromise).then(function(features) {
-                    if(features.length > 0) {
-                        // TODO: Stuff
-                        let feature = features[0];
-                        self.manager.showFeature(feature);
-                    }
-                });
+        let self = this;
+        CesiumUtils.getFeature(event, function(feature) {
+            if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
+                // 2D WMS feature
+                let properties = {...feature.data.properties};
+                self.manager.showFeature(feature, properties);
+            } else {
+                // 3D feature
+                let properties = {};
+                let contentMetadata = feature?.content?.metadata;
+    
+                // Transform properties for compatability with manager code
+                if (Cesium.defined(contentMetadata)) {
+                    contentMetadata.getPropertyIds().forEach(id => {
+                        properties[id] = contentMetadata.getProperty(id);
+                    });
+                } else {
+                    feature.getPropertyIds().forEach(id => {
+                        properties[id] = feature.getProperty(id);
+                    });
+                }
+    
+                self.manager.showFeature(feature, properties);
+                CesiumUtils.setSelectedSilhouette(feature, event);
             }
-        } else {
-            // 3D entity
-            const contentMetadata = feature?.content?.metadata;
-
-            // @ts-ignore
-            if (Cesium.defined(contentMetadata)) {
-                // Convert to JSON for library compatability
-                let newFeature = {};
-                contentMetadata.getPropertyIds().forEach(id => {
-                    newFeature[id] = contentMetadata.getProperty(id);
-                });
-                this.manager.showFeature(newFeature);
-            }
-        }
-    }
-
-    /**
-     * Triggered when the user clicks on the map and multiple features are underneath
-     * (these could be overlapping individual features or cluster points).
-     * 
-     * @param features list of features/clusters under mouse
-     */
-    private async clickMultiple(features: Array<Object>) {
-        let leafs = [];
-        await MapBoxUtils.recurseFeatures(leafs, features);
-
-        // Cache features offered by the select box
-        window.selectFeatures = {};
-
-        // Sort the leafs by layer name
-        let sortedLeafs = {};
-
-        // Group the features by layer
-        for(let i = 0; i < leafs.length; i++) {
-            let leaf = leafs[i];
-            let layerID = leaf["layer"]["id"];
-            let layer = Manager.DATA_STORE.getLayerWithID(layerID);
-
-            let clickable = layer.definition["clickable"];
-            if(clickable !== null && clickable === false) {
-                // No mouse interaction
-                continue;
-            }
-
-            if(sortedLeafs[layer.name] === null || sortedLeafs[layer.name] === undefined) {
-                sortedLeafs[layer.name] = [];
-            }
-            sortedLeafs[layer.name].push(leaf);
-        }
-
-        // Build drop down
-        let html = `
-            <p>
-                Multiple closely spaced features are located at these coordinates. 
-                <br/><br/>
-                Please choose which individual feature you'd like to select using the drop-down box below. 
-                Features are grouped by their containing layer.
-            </p>
-            </br>
-            <div id="featureSelectContainer">
-                <select name="features" id="featureSelect" onchange="manager.featureSelectChange(this)">
-                    <option value="" disabled selected>Select a feature from a layer...</option>
-        `;
-
-        // Add option header for each layer
-        for(const [key, value] of Object.entries(sortedLeafs)) {
-            let leafs = value as Array<Object>;
-            html += "<optgroup label='" + key + "'>";
-
-            // Add option for each feature
-            leafs.forEach(leaf => {
-                let featureName = (leaf["properties"]["name"] !== null && leaf["properties"]["name"] !== undefined) ? leaf["properties"]["name"] : "Feature #" + leaf["id"];
-                let layerID = leaf["layer"]["id"];
-                let value = leaf["id"] + "@" + layerID;
-
-                let optionHTML = `
-                    <option value="` + value + `">` + 
-                    featureName +
-                    `</option>
-                `;
-                html += optionHTML;
-
-                // Cache feature
-                window.selectFeatures[value] = leaf;
-            });
-            html += "</optgroup>";
-        }
-
-        // Close HTML
-        html += `
-                </select>
-            </div>
-        `;
-
-        // Update the side panel
-        document.getElementById("titleContainer").innerHTML = "<h2>Multiple locations...</h2>";
-        document.getElementById("contentContainer").innerHTML = html;
+        });
     }
 
     /**
@@ -244,38 +151,48 @@ class MapHandler_Cesium extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
-        console.log("BUTTOCKS");
-        return;
+        if(!MapHandler.ALLOW_CLICKS) return;
+        let metaBox = document.getElementById("cesiumMetaBox");
+        metaBox.style.display = "none";
 
-        // Get a list of features under the mouse
-        let features = MapHandler.MAP.queryRenderedFeatures(event.point);
-        features = features.filter(feature => {
-            return MapBoxUtils.isCMCLLayer(feature);
-        });
+        // Get the feature at the click point
+        CesiumUtils.getFeature(event, function(feature) {
 
-        if(features.length === 0) {
-            // Mouse no longer over any features
-            MapHandler.MAP.getCanvas().style.cursor = '';
-            if(MapHandler_MapBox.POPUP !== null) MapHandler_MapBox.POPUP.remove();
+            if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
+                // 2D WMS feature
+                let properties = {...feature.data.properties};
 
-        } else if(features.length > 0) {
-            // Mouse over single feature
-            let feature = features[0];
-            let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
+                if(properties.hasOwnProperty("name")) {
+                    metaBox.style.display = "block";
+                    metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
+                    metaBox.style.left = `${event.endPosition.x - 100}px`;
+                    metaBox.innerHTML = properties["name"];
+                } 
 
-            let clickable = layer.definition["clickable"];
-            if(clickable !== null && clickable === false) {
-                // No mouse interaction
-                return;
+            } else {
+                // 3D feature
+                let properties = {};
+                let contentMetadata = feature?.content?.metadata;
+    
+                // Transform properties for compatability with manager code
+                if (Cesium.defined(contentMetadata)) {
+                    contentMetadata.getPropertyIds().forEach(id => {
+                        properties[id] = contentMetadata.getProperty(id);
+                    });
+                } else {
+                    feature.getPropertyIds().forEach(id => {
+                        properties[id] = feature.getProperty(id);
+                    });
+                }
+
+                if(properties.hasOwnProperty("name")) {
+                    metaBox.style.display = "block";
+                    metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
+                    metaBox.style.left = `${event.endPosition.x - 100}px`;
+                    metaBox.innerHTML = properties["name"];
+                }
             }
-
-            // Change cursor
-            MapHandler.MAP.getCanvas().style.cursor = 'pointer';
-
-            if(layer != null && layer instanceof MapBoxLayer) {
-                if(feature !== null) MapBoxUtils.showPopup(event, feature);
-            } 
-        } 
+        });
     }
 
     /**
@@ -325,65 +242,45 @@ class MapHandler_Cesium extends MapHandler {
      * @param layer layer to add.
      */
     private addLayer(layer: DataLayer) {
-        // TODO - Check for a collision
+        let source = layer.source.definition;
 
+        // Check the required parameters for ALL types
+        let dataURI = source["uri"];
+        if(dataURI === null || dataURI === undefined) {
+            console.error("Cannot plot a data source that has no 'uri' parameter");
+        }
 
-        let source = layer.source;
+        switch(source["type"].toLowerCase()) {
+            // 2D data from geoserver
+            case "wms":
+            case "geoserver": {
+                this.addGeoserver(source, layer.id);
+            }
+            break;
 
-        switch(source.type.toLowerCase()) {
-
-            // Individual KML files
+            // Individual, non-tiled, KML files
             case "kml": {
-                let locations = source.definition["data"];
+                this.addKMLFile(source, layer.id);
+            }
+            break;
 
-                if(Array.isArray(locations)) {
-                    locations.forEach(location => {
-                        this.addKMLFile(location, layer.id);
-                    });
-                } else {
-                    let kmlSource = this.addKMLFile(locations, layer.id);
-                    MapHandler.MAP.zoomTo(kmlSource);
-                }
+            // Individual, non-tiled, glTF/glB files
+            case "glb":
+            case "gltf": {
+                this.addGLTFFile(source, layer.id);
             }
             break;
 
             // 3D tiles
             case "tile":
             case "tiles": {
-                let locations = source.definition["data"];
-                let centers = source.definition["center"];
-
-                if(Array.isArray(locations) && Array.isArray(centers)) {
-
-                    for(let i = 0; i < locations.length; i++) {
-                        this.addTileset(locations[i], centers[i], layer.id);
-                    }
-                } else {
-                    this.addTileset(locations, centers, layer.id);
-                }
-            }
-            break;
-
-            // 2D data from geoserver
-            case "wms":
-            case "geoserver": {
-                let urls = source.definition["data"];
-                let layerNames = source.definition["layerName"];
-                let transparencies = source.definition["transparency"];
-
-                if(Array.isArray(urls)) {
-                    for(let i = 0; i < urls.length; i++) {
-                        this.addGeoserver(urls[i], layerNames[i], transparencies[i], layer.id);
-                    }
-                } else {
-                    this.addGeoserver(urls, layerNames, transparencies, layer.id);
-                }
+                this.addTileset(source, layer.id);
             }
             break;
 
             // Anything else
             default: {
-                console.warn("Unknown source type '" + source.type + "', skipping data.");
+                console.warn("Unknown type '" + source["type"] + "', skipping this data source.");
             }
             break;
         }
@@ -393,12 +290,12 @@ class MapHandler_Cesium extends MapHandler {
     /**
      * Adds an individual KML file to the map.
      * 
-     * @param fileLocation location of KML file. 
+     * @param source JSON definition of source data.
      * @param layerID ID of layer upon the map.
      */
-    private addKMLFile(fileLocation: string, layerID: string) {
+    private addKMLFile(source: Object, layerID: string) {
         // @ts-ignore
-        let sourceKML = Cesium.KmlDataSource.load(fileLocation);
+        let sourceKML = Cesium.KmlDataSource.load(source["uri"]);
 
         // TODO: Investigate if camera and canvas options are actually required here.
         MapHandler.MAP.dataSources.add(
@@ -418,27 +315,87 @@ class MapHandler_Cesium extends MapHandler {
     }
 
     /**
-     * Adds a 3D tileset to the map.
+     * Adds an individual, non-tiled, glTF/glB file to the map.
      * 
-     * @param fileLocation location of tileset JSON file. 
-     * @param position x,y,z position of tileset center (in degrees).
+     * @param source JSON definition of source data. 
      * @param layerID ID of layer upon the map.
      */
-    private addTileset(fileLocation: string, position: number[], layerID: string) {
-        // @ts-ignore
-        let centerCartesian = Cesium.Cartesian3.fromDegrees(position[0], position[1], position[2]);
-        // @ts-ignore
-        let centerTransform = Cesium.Transforms.eastNorthUpToFixedFrame(centerCartesian);
+    private addGLTFFile(source: Object,  layerID: string) {
+        // Check the position
+        let position = source["position"];
+        if(position === null || position === undefined) {
+            console.error("Cannot plot a glTF/glB data source that has no 'position' parameter");
+        }
+
+        // Check the orientation
+        let orientation = [0, 0, 0];
+        if(source.hasOwnProperty("orientation")) {
+            orientation = source["orientation"];
+        }
+
+        // @ts-ignore - Generate final position
+        let finalPosition = Cesium.Cartesian3.fromDegrees(position[0], position[1])
+
+        // @ts-ignore - Generate final orientation
+        let finalOrientation = Cesium.Transforms.headingPitchRollQuaternion(
+            // @ts-ignore
+            finalPosition,
+            // @ts-ignore
+            new Cesium.HeadingPitchRoll(orientation[0], orientation[1], orientation[2])
+        );
+
+        // @ts-ignore - Define the entity before adding to the map
+        let sourceEntity = {
+            position: finalPosition,
+            orientation: finalOrientation,
+            model: {
+                uri: source["uri"],
+                scale: source.hasOwnProperty("scale") ? source["scale"] : 1.0
+            }
+        };
+
+        MapHandler.MAP.entities.add(sourceEntity);
+        console.info("Added glTF/glB source to map with layer ID: "+ layerID);
+
+        // Cache knowledge of this source, keyed by layer id
+        if(MapHandler_Cesium.DATA_SOURCES[layerID] === null || MapHandler_Cesium.DATA_SOURCES[layerID] === undefined) {
+            MapHandler_Cesium.DATA_SOURCES[layerID] = [];
+        }
+        MapHandler_Cesium.DATA_SOURCES[layerID].push(sourceEntity);
+    }
+
+    /**
+     * Adds a 3D tileset to the map.
+     * 
+     * @param source JSON definition of source data. 
+     * @param layerID ID of layer upon the map.
+     */
+    private addTileset(source: Object,  layerID: string) {
+        console.log("ADDING TILE SET!");
+
+        // Check the position (if set)
+        let position = source["position"];
+        if(position !== null && position !== undefined) {
+            // @ts-ignore
+            let centerCartesian = Cesium.Cartesian3.fromDegrees(position[0], position[1], position[2]);
+            // @ts-ignore
+            position = Cesium.Transforms.eastNorthUpToFixedFrame(centerCartesian);
+        }
+
+        // Define tileset options
+        let options = {
+            url: source["uri"],
+        };
+
+        console.log(options);
+        if(position !== null && position !== undefined) options["modelMatrix"] = position;
 
         // @ts-ignore
-        let tileset = new Cesium.Cesium3DTileset({
-            url: fileLocation,
-            modelMatrix: centerTransform
-        });
+        let tileset = new Cesium.Cesium3DTileset(options);
 
         // Add the tileset to the map
         MapHandler.MAP.scene.primitives.add(tileset);
-        console.info("Added tileset source to map with layer ID: "+ layerID);
+        console.info("Added 3D tileset source to map with layer ID: "+ layerID);
 
         // Cache knowledge of this source, keyed by layer id
         if(MapHandler_Cesium.DATA_SOURCES[layerID] === null || MapHandler_Cesium.DATA_SOURCES[layerID] === undefined) {
@@ -452,46 +409,32 @@ class MapHandler_Cesium extends MapHandler {
      * @param url 
      * @param layerID 
      */
-    private addGeoserver(url: string, layerName: string, transparency: boolean, layerID: string) {
-        let layers = MapHandler.MAP.imageryLayers;
+    private addGeoserver(source: Object, layerID: string) {
+        // Check the geoserver layer name
+        let wmsLayer = source["wmsLayer"];
+        if(wmsLayer === null || wmsLayer === undefined) {
+            console.error("Cannot plot a WMS data source that has no 'wmsLayer' parameter");
+        }
 
         // @ts-ignore
         let provider = new Cesium.WebMapServiceImageryProvider({
-            url: url,
-            layers: layerName,
+            url: source["uri"],
+            layers: wmsLayer,
             parameters: {
-                transparent: transparency,
-                format: "image/png"
+                transparent: source.hasOwnProperty("transparency") ? source["transparency"] : false,
+                format: source.hasOwnProperty("format") ? source["format"] : "image/png"
             },
             credit: layerID
         });
 
+        let layers = MapHandler.MAP.imageryLayers;
         layers.addImageryProvider(provider);
-        // todo - request render?
+
+        // Cache knowledge of this source, keyed by layer id
+        if(MapHandler_Cesium.DATA_SOURCES[layerID] === null || MapHandler_Cesium.DATA_SOURCES[layerID] === undefined) {
+            MapHandler_Cesium.DATA_SOURCES[layerID] = [];
+        }
+        MapHandler_Cesium.DATA_SOURCES[layerID].push(provider);
     }
 
-    /**
-     * Adds icons to the map
-     */
-    public addIcons(iconFile: string) {
-        return $.getJSON(iconFile, function(json) {
-            return json;
-        })
-        .fail(() => {
-            console.warn("Could not read icons.json, skipping.");
-        })
-        .done((json) => {
-            if(json === null || json === undefined) return;
-
-            let promises = [];
-            let iconHandler = new IconHandler();
-            for (var key of Object.keys(json)) {
-                promises.push(iconHandler.loadIcon(key, json[key]));
-            }
-
-            return Promise.all(promises).then(() => {
-                console.info("All images have been registered.");
-            });
-        });
-    }
 }

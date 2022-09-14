@@ -101,7 +101,9 @@ class DataGroup {
                     layer = new CesiumLayer(layerID, node["name"], source);
 
                     // Register this layer to this connected stack
-                    Manager.STACK_LAYERS[stack].push(layerID);
+                    if(Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+                        Manager.STACK_LAYERS[stack].push(layerID);
+                    }
                 break;
 
                 default:

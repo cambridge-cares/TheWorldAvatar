@@ -3,6 +3,9 @@
  */
 class CesiumUtils {
     
+    private static OUTLINE_BLUE;
+    private static OUTLINE_GREEN;
+
     /**
      * Returns the visibility state of the layer with the input ID.
      * 
@@ -29,14 +32,29 @@ class CesiumUtils {
 	 * @param {boolean} visible desired visibility.
 	 */
     public static toggleLayer(layerID, visible) {
+        // Get sources of data for this layer
         let dataSources = MapHandler_Cesium.DATA_SOURCES[layerID];
-        if(dataSources === null || dataSources === undefined) return;
 
-        for(let i = 0; i < dataSources.length; i++) {
-            let dataSource = dataSources[i];
-            dataSource.show = visible;
-        }
+        if(dataSources !== null) {
+            for(let i = 0; i < dataSources.length; i++) {
+                let dataSource = dataSources[i];
 
+                if(dataSource instanceof Cesium.WebMapServiceImageryProvider) {
+                    // 2D data, need to find imageryLayers using this provider
+                    let layers = MapHandler.MAP.imageryLayers;
+                    
+                    for(let i = 0; i < layers.length; i++) {
+                        if(layers.get(i).imageryProvider === dataSource) {
+                            layers.get(i).show = visible;
+                        }
+                    }
+                } else {
+                    // 3D data
+                    dataSource.show = visible;
+                }
+            }
+        } 
+       
         MapHandler.MAP.scene.requestRender();
     }
 
@@ -137,53 +155,122 @@ class CesiumUtils {
         } 
     }
 
-    // public static addTerrainClipping() {
-    //     let mapOptions = MapHandler.MAP_OPTIONS;
-    //     let globe = MapHandler.MAP.scene.globe;
-    //     let distance = 1000.0;
+    /**
+     * Enables hover-over silhouettes for 3D entities.
+     * 
+     * This is copied from the "3D Tiles Feature Picking" example on Cesium Sandcastle.
+     */
+    public static enableSilhouettes() {
+        if (!Cesium.PostProcessStageLibrary.isSilhouetteSupported(MapHandler.MAP.scene)) return;
 
-    //     // @ts-ignore
-    //     const position = Cesium.Cartographic.toCartesian(
-    //         // @ts-ignore
-    //         new Cesium.Cartographic.fromDegrees(103.77398, 1.30411, 0)
-    //     );
+        // Information about the currently selected feature
+        const selected = {
+            feature: undefined,
+            originalColor: new Cesium.Color(),
+        };
 
-    //     // @ts-ignore
-    //     const boundingSphere = new Cesium.BoundingSphere(position, distance);
+        CesiumUtils.OUTLINE_BLUE = Cesium.PostProcessStageLibrary.createEdgeDetectionStage();
+        CesiumUtils.OUTLINE_BLUE.uniforms.color = Cesium.Color.CORNFLOWERBLUE;
+        CesiumUtils.OUTLINE_BLUE.uniforms.length = 0.01;
+        CesiumUtils.OUTLINE_BLUE.selected = [];
 
-    //     // @ts-ignore
-    //     globe.clippingPlanes = new Cesium.ClippingPlaneCollection({
-    //         // @ts-ignore
-    //         modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(position),
-    //         unionClippingRegions: true,
-    //         edgeWidth: 1.0,
-    //         // @ts-ignore
-    //         edgeColor: Cesium.Color.WHITE,
-    //         enabled: true,
-    //         planes: [
-    //             // @ts-ignore
-    //             new Cesium.ClippingPlane(new Cesium.Cartesian3(1.0, 0.0, 0.0), distance),
-    //             // @ts-ignore
-    //             new Cesium.ClippingPlane(new Cesium.Cartesian3(-1.0, 0.0, 0.0), distance),
-    //             // @ts-ignore
-    //             new Cesium.ClippingPlane(new Cesium.Cartesian3(0.0, 1.0, 0.0), distance),
-    //             // @ts-ignore
-    //             new Cesium.ClippingPlane(new Cesium.Cartesian3(0.0, -1.0, 0.0), distance)
-    //         ]
-    //       });
-    //       globe.backFaceCulling = false;
-    //       globe.showSkirts = false;
-        
-    //       MapHandler.MAP.camera.viewBoundingSphere(
-    //         boundingSphere,
-    //         // @ts-ignore
-    //         new Cesium.HeadingPitchRange(0.5, -0.5, boundingSphere.radius * 5.0)
-    //       );
-    //       // @ts-ignore
-    //       MapHandler.MAP.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+        CesiumUtils.OUTLINE_GREEN = Cesium.PostProcessStageLibrary.createEdgeDetectionStage();
+        CesiumUtils.OUTLINE_GREEN.uniforms.color = Cesium.Color.MEDIUMSEAGREEN  ;
+        CesiumUtils.OUTLINE_GREEN.uniforms.length = 0.01;
+        CesiumUtils.OUTLINE_GREEN.selected = [];
 
-    //       // Turn off Sky Atmosphere
-    //       MapHandler.MAP.scene.skyAtmosphere.show = false;
-    // }
+        MapHandler.MAP.scene.postProcessStages.add(
+            Cesium.PostProcessStageLibrary.createSilhouetteStage([
+                CesiumUtils.OUTLINE_BLUE,
+                CesiumUtils.OUTLINE_GREEN,
+            ])
+        );
+
+        // Silhouette a feature blue on hover.
+        MapHandler.MAP.screenSpaceEventHandler.setInputAction(function onMouseMove(movement) {
+                // If a feature was previously highlighted, undo the highlight
+                CesiumUtils.OUTLINE_BLUE.selected = [];
+
+                // Pick a new feature
+                const pickedFeature = MapHandler.MAP.scene.pick(movement.endPosition);
+
+                if (!Cesium.defined(pickedFeature)) return;
+
+                // Highlight the feature if it's not already selected.
+                if (pickedFeature !== selected.feature) {
+                    CesiumUtils.OUTLINE_BLUE.selected = [pickedFeature];
+                }
+            },
+            Cesium.ScreenSpaceEventType.MOUSE_MOVE
+        );
+    }
+
+    /**
+     * Highlights the selected 3D entity with it's own silhouette.
+     * 
+     * @param feature selected feature
+     * @param event mouse click event
+     */
+    public static setSelectedSilhouette(feature, event) {
+        if (!Cesium.PostProcessStageLibrary.isSilhouetteSupported(MapHandler.MAP.scene)) return;
+
+        // If a feature was previously selected, undo the highlight
+        CesiumUtils.OUTLINE_GREEN.selected = [];
+
+        // Select the feature if it's not already selected
+        if (CesiumUtils.OUTLINE_GREEN.selected[0] === feature) return;
+
+        // Save the selected feature's original color
+        const highlightedFeature = CesiumUtils.OUTLINE_GREEN.selected[0];
+        if (feature === highlightedFeature) {
+            CesiumUtils.OUTLINE_GREEN.selected = [];
+        }
+
+        // Highlight newly selected feature
+        CesiumUtils.OUTLINE_GREEN.selected = [feature];
+    }
+
+    public static mockTimeseries() {
+        var promise = $.getJSON("https://kg.cmclinnovations.com/cdn/dtvf/3.0.0/timeseries.json", function(json) {
+            return json;
+        });
+
+        return promise;
+    }
+
+
+    /**
+     * Given a mouse event, this utils method returns the top-level feature under the mouse (if any is present).
+     * 
+     * @param event mouse location
+     * @param callback callback that feature will be passed to
+     * 
+     * @returns resulting feature (or null);
+     */
+    public static getFeature(event, callback) {
+        if(!callback) {
+            throw "Callback function is required!";
+        }
+
+        // Get the feature at the click point
+        const feature = MapHandler.MAP.scene.pick((!event.position) ? event.endPosition : event.position);
+
+        if(feature === null || feature === undefined) {
+            // Probably a WMS feature, need to get info differently
+            var pickRay = MapHandler.MAP.camera.getPickRay((!event.position) ? event.endPosition : event.position);
+            var featuresPromise = MapHandler.MAP.imageryLayers.pickImageryLayerFeatures(pickRay, MapHandler.MAP.scene);
+
+            if (Cesium.defined(featuresPromise)) {
+                Promise.resolve(featuresPromise).then(function(features) {
+                    if(features.length > 0) {
+                        // Only return the first for now
+                        callback(features[0]);
+                    }
+                });
+            }
+        } else {
+            callback(feature);
+        }
+    }
 
 }
