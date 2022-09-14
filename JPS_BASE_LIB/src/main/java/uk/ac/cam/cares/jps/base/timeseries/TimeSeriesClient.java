@@ -236,7 +236,7 @@ public class TimeSeriesClient<T> {
 		} catch (Exception e_RdfDelete) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", e_RdfDelete);
 		}
-		
+
 		// Step2: Try to delete corresponding entries in central table and the time series table in relational database
 		try {
 			// Retrieve example dataIRI needed to delete RDB related information
@@ -244,13 +244,19 @@ public class TimeSeriesClient<T> {
 		} catch (JPSRuntimeException e_RdbDelete) {
 			// For exceptions thrown when deleting RDB elements in relational database,
 			// try to revert previous knowledge base deletion
-    		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
-    		//		a different exception depending on what the problem was, and how it should be handled
+			// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
+			//		a different exception depending on what the problem was, and how it should be handled
 			try {
-				rdfClient.initTS(tsIRI, dataIRIs, conn.getMetaData().getURL(), timeUnit);
+				String rdbUrl;
+				if (conn.isClosed()) {
+					rdbUrl = ""; // setting dummy url, is not used in practice anyway
+				} else {
+					rdbUrl = conn.getMetaData().getURL();
+				}
+				rdfClient.initTS(tsIRI, dataIRIs, rdbUrl, timeUnit);
 			} catch (Exception e_RdfCreate) {
 				throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
-						" , as database related deletion failed but KG triples were deleted.");
+						" , as database related deletion failed but KG triples were deleted.", e_RdfCreate);
 			}
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries " + tsIRI + " was not deleted!", e_RdbDelete);
 		}
@@ -715,6 +721,7 @@ public class TimeSeriesClient<T> {
 		rdbClient.addTimeSeriesData(ts_list);
 	}
 
+	@Deprecated
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
 		// Delete RDB time series table rows between lower and upper Bound
 		// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
