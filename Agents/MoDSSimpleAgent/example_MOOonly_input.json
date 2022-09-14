@@ -1,0 +1,59 @@
+{
+	"SimulationType": "MOOonly",
+	"Algorithms": [{
+			"name": "algorithm1",
+			"type": "MOOonly",
+			"maxNumberOfResults": 10,
+			"loadSurrogate": "mods-sim-2620877660752367456",
+			"variables": [{
+					"name": "var1",
+					"type": "input"
+				}, {
+					"name": "var2",
+					"type": "input"
+				}, {
+					"name": "var3",
+					"type": "input"
+				}, {
+					"name": "var4",
+					"type": "output",
+					"objective": "Maximise",
+					"minimum": 0.5,
+					"weight": 0.5
+				}, {
+					"name": "var5",
+					"type": "output",
+					"objective": "Minimise",
+					"maximum": 1.5,
+					"weight": 0.1
+				}, {
+					"name": "var6",
+					"type": "output",
+					"objective": "Maximise",
+					"minimum": 2.5,
+					"weight": 0.7
+				}
+			]
+		}
+	],
+	"Inputs": [{
+			"name": "var1",
+			"values": ["0.0"]
+		}, {
+			"name": "var2",
+			"values": ["0.0"]
+		}, {
+			"name": "var3",
+			"values": ["0.0"]
+		}, {
+			"name": "var4",
+			"values": ["0.0"]
+		}, {
+			"name": "var5",
+			"values": ["0.0"]
+		}, {
+			"name": "var6",
+			"values": ["0.0"]
+		}
+	]
+}

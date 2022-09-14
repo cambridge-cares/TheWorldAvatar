@@ -1,8 +1,8 @@
 {
-	"SimulationType": "HDMR",
+	"SimulationType": "MOO",
 	"Algorithms": [{
 			"name": "algorithm1",
-			"type": "HDMR",
+			"type": "MOO",
 			"maxNumberOfResults": 10,
 			"variables": [{
 					"name": "var1",
@@ -15,13 +15,22 @@
 					"type": "input"
 				}, {
 					"name": "var4",
-					"type": "output"
+					"type": "output",
+					"objective": "Maximise",
+					"minimum": 0.5,
+					"weight": 0.5
 				}, {
 					"name": "var5",
-					"type": "output"
+					"type": "output",
+					"objective": "Minimise",
+					"maximum": 1.5,
+					"weight": 0.1
 				}, {
 					"name": "var6",
-					"type": "output"
+					"type": "output",
+					"objective": "Maximise",
+					"minimum": 2.5,
+					"weight": 0.7
 				}
 			]
 		}
