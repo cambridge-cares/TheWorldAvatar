@@ -5,7 +5,7 @@ import yaml
 from Marie.EntityLinking.util.ParseResult import prase_inference
 from Marie.EntityLinking.chemspot.annotator import tag
 from Marie.EntityLinking.util.EntityDict import load_entity_dict
-from Marie.Util.location import ENTITY_LINKING_CONF_DIR
+from Marie.Util.location import ENTITY_LINKING_CONF_DIR, ENTITY_LINKING_DATA_DIR
 
 '''
 All files needed for Entity linking go to "MARIE_AND_BERT/DATA/EntityLinking"
@@ -27,6 +27,11 @@ class NELInfer():
                 for key in config:
                     self.params[key] = config[key]
         # entity dictionary for reading labels from id
+        self.params['path_to_model'] = os.path.join(ENTITY_LINKING_DATA_DIR, self.params['path_to_model'])
+        self.params['cand_encode_path'] = os.path.join(ENTITY_LINKING_DATA_DIR, self.params['cand_encode_path'])
+        self.params['entity_dict_path'] = os.path.join(ENTITY_LINKING_DATA_DIR, self.params['entity_dict_path'])
+        self.params['output_path'] = os.path.join(ENTITY_LINKING_DATA_DIR, self.params['output_path'])
+
         self.entity_dict = load_entity_dict(self.params['entity_dict_path'])
 
     def infer(self, mention_data, use_ner=False):

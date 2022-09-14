@@ -1,9 +1,9 @@
 #path
-path_to_model: DATA/EntityLinking/pytorch_model.bin
+path_to_model: pytorch_model.bin
 #data_path: data/pubchem/test.jsonl #path for data to be inferred
-output_path: DATA/EntityLinking/models
-cand_encode_path: DATA/EntityLinking/embeddingbase.pt
-entity_dict_path: DATA/EntityLinking/pubchem500.jsonl
+output_path: models
+cand_encode_path: embeddingbase.pt
+entity_dict_path: pubchem500.jsonl
 
 #model_spec
 encode_batch_size: 8
