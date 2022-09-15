@@ -50,7 +50,7 @@ class ContinuousVariable(DesignVariable):
     name: str=None # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
     upperLimit: float
     lowerLimit: float
-    positionalID: Optional[int]
+    positionalID: Optional[str]
     refersTo: OM_Quantity
 
     def create_instance_for_kg(self, g: Graph):
@@ -87,6 +87,25 @@ class ContinuousVariable(DesignVariable):
             raise Exception(f"ContinuousVariable {values.get('instance_iri')} refersTo an OM:Quantity {values.get('refersTo').instance_iri} that has no unit.")
         return values
 
+class FixedParameter(BaseOntology):
+    clz: str = ONTODOE_FIXEDPARAMETER
+    positionalID: Optional[str]
+    refersTo: OM_Quantity
+
+    def create_instance_for_kg(self, g: Graph):
+        if self.positionalID is not None:
+            g.add((URIRef(self.instance_iri), URIRef(ONTODOE_POSITIONALID), Literal(self.positionalID)))
+
+        # <fixed_parameter> <OntoDoE:refersTo> <quantity>
+        # <quantity> <rdf:type> <QuantityType>
+        # <quantity> <OntoDoE:hasUnit> <unit>
+        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(self.refersTo.instance_iri)))
+        g.add((URIRef(self.refersTo.instance_iri), RDF.type, URIRef(self.refersTo.clz)))
+        g.add((URIRef(self.refersTo.instance_iri), URIRef(OM_HASVALUE), URIRef(self.refersTo.hasValue.instance_iri)))
+        g = self.refersTo.hasValue.create_instance_for_kg(g)
+
+        return g
+
 class CategoricalVariable(DesignVariable):
     clz: str = ONTODOE_CATEGORICALVARIABLE
     pass
@@ -94,6 +113,7 @@ class CategoricalVariable(DesignVariable):
 class Domain(BaseOntology):
     clz: str = ONTODOE_DOMAIN
     hasDesignVariable: List[DesignVariable]
+    hasFixedParameter: Optional[List[FixedParameter]]
 
     def create_instance_for_kg(self, g: Graph):
         # create instance for Domain
@@ -104,13 +124,19 @@ class Domain(BaseOntology):
             design_variable.create_instance_for_kg(g)
             g.add((URIRef(self.instance_iri), URIRef(ONTODOE_HASDESIGNVARIABLE), URIRef(design_variable.instance_iri)))
 
+        # create instance for each FixedParameter
+        if self.hasFixedParameter is not None:
+            for fixed_parameter in self.hasFixedParameter:
+                fixed_parameter.create_instance_for_kg(g)
+                g.add((URIRef(self.instance_iri), URIRef(ONTODOE_HASFIXEDPARAMETER), URIRef(fixed_parameter.instance_iri)))
+
         return g
 
 class SystemResponse(BaseOntology):
     clz: str = ONTODOE_SYSTEMRESPONSE
     name: str=None # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
     maximise: bool
-    positionalID: Optional[int]
+    positionalID: Optional[str]
     # instead of the actual class, str is used to host the concept IRI of om:Quantity for simplicity
     refersTo: str
 
@@ -124,17 +150,19 @@ class SystemResponse(BaseOntology):
 
 class HistoricalData(BaseOntology):
     clz: str = ONTODOE_HISTORICALDATA
-    refersTo: List[ReactionExperiment]
+    refersTo: Optional[List[ReactionExperiment]]
     numOfNewExp: int = 1
 
     def create_instance_for_kg(self, g: Graph):
         # create instance for HistoricalData
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
 
-        # add connection to each ReactionExperiment
-        # NOTE here we don't collect triples for each ReactionExperiment, we only make the connection
-        for reaction_experiment in self.refersTo:
-            g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(reaction_experiment.instance_iri)))
+        # only add connection if previous data is available
+        if self.refersTo is not None:
+            # add connection to each ReactionExperiment
+            # NOTE here we don't collect triples for each ReactionExperiment, we only make the connection
+            for reaction_experiment in self.refersTo:
+                g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(reaction_experiment.instance_iri)))
 
         # add number of new experiments
         g.add((URIRef(self.instance_iri), URIRef(ONTODOE_NUMOFNEWEXP), Literal(self.numOfNewExp)))
@@ -148,6 +176,7 @@ class DesignOfExperiment(BaseOntology):
     hasSystemResponse: List[SystemResponse]
     utilisesHistoricalData: HistoricalData
     proposesNewExperiment: Optional[ReactionExperiment]
+    designsChemicalReaction: str # NOTE this should be pointing to OntoCAPE:ChemicalReaction instance, here simplified
 
     def create_instance_for_kg(self, g: Graph):
         # create an instance of DesignOfExperiment
@@ -169,5 +198,10 @@ class DesignOfExperiment(BaseOntology):
         # add the historical data
         g.add((URIRef(self.instance_iri), URIRef(ONTODOE_UTILISESHISTORICALDATA), URIRef(self.utilisesHistoricalData.instance_iri)))
         g = self.utilisesHistoricalData.create_instance_for_kg(g)
+
+        # designsChemicalReaction
+        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_DESIGNSCHEMICALREACTION), URIRef(self.designsChemicalReaction)))
+
+        # NOTE the proposed new experiment is not added here, as this method should be called when the new experiment is not yet suggested
 
         return g

@@ -40,6 +40,7 @@ DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOEAGENT_ENV).DERIVATION_
 DOE_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1'
 DERIVATION_INPUTS = [DOE_IRI]
 
+DOE_NO_PRIOR_EXPERIMENT_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_no_prior_data/DoE_1'
 
 # ----------------------------------------------------------------------------------
 # Pytest session related functions

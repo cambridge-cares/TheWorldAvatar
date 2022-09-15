@@ -116,6 +116,20 @@ class AutoSamplerSite(BaseOntology):
     holds: Vial
     locationID: str
 
+    # TODO change this to list of chemical species
+    def get_ontocape_material_given_chemical_species(
+        self,
+        solute: str,
+        solvent_as_constraint: List[str]=None,
+        species_to_exclude: List[str]=None,
+    ) -> Optional[OntoCAPE_Material]:
+        if self.holds is not None:
+            if self.holds.isFilledWith is not None:
+                if self.holds.isFilledWith.refersToMaterial is not None:
+                    if self.holds.isFilledWith.refersToMaterial.contains_chemical_species(solute, solvent_as_constraint, species_to_exclude):
+                        return self.holds.isFilledWith.refersToMaterial
+        return None
+
 class AutoSampler(LabEquipment):
     clz: str = ONTOVAPOURTEC_AUTOSAMPLER
     hasSite: List[AutoSamplerSite]
@@ -185,6 +199,44 @@ class VapourtecRS400(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECRS400
     hasState: VapourtecState
 
+    def has_access_to_chemical_species(
+        self,
+        solute: str,
+        solvent_as_constraint: List[str]=None,
+        species_to_exclude: List[str]=None,
+    ) -> OntoCAPE_Material:
+        # first check if any of the reagent bottles contains the chemical species
+        reagent_bottle = self.get_reagent_bottle_of_r2_pumps()
+        if bool(reagent_bottle):
+            lst_material = [
+                reagent_bottle.isFilledWith.refersToMaterial for reagent_bottle in reagent_bottle if reagent_bottle.contains_chemical_species(
+                    solute=solute,
+                    solvent_as_constraint=solvent_as_constraint,
+                    species_to_exclude=species_to_exclude,
+                )
+            ]
+            if bool(lst_material):
+                return lst_material[0]
+
+        # then only if there is pump sourcing from autosampler
+        # check if the chemical species can be provided by the autosampler
+        if bool(self.get_r2_pump_source_from_autosampler()):
+            # if yes, can return now
+            lst_material = [
+                site.get_ontocape_material_given_chemical_species(
+                    solute=solute,
+                    solvent_as_constraint=solvent_as_constraint,
+                    species_to_exclude=species_to_exclude,
+                ) for site in self.get_autosampler().hasSite if site.get_ontocape_material_given_chemical_species(
+                    solute=solute,
+                    solvent_as_constraint=solvent_as_constraint,
+                    species_to_exclude=species_to_exclude,
+                ) is not None]
+            if bool(lst_material):
+                return lst_material[0]
+
+        return None
+
     def is_suitable_for_reaction_experiment(self, rxn_exp: ReactionExperiment) -> bool:
         # first check the reactor, if no reactor is suitable, then return False
         if self.get_suitable_r4_reactor_for_reaction_experiment(rxn_exp) is None:
@@ -235,6 +287,9 @@ class VapourtecRS400(LabEquipment):
     def get_r2_pump_source_from_autosampler(self) -> Optional[List[VapourtecR2Pump]]:
         # any pump that not sourcing from a reagent bottle is considered as sourcing from the autosampler
         return [pump for pump in self.get_r2_pumps() if pump.hasReagentSource is None]
+
+    def get_reagent_bottle_of_r2_pumps(self):
+        return [pump.hasReagentSource for pump in self.get_r2_pumps() if pump.hasReagentSource is not None]
 
     def locate_r2_pump_given_input_chemical(
         self,

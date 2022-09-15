@@ -12,7 +12,7 @@ import doeagent.tests.conftest as cf
 # Utility functions
 # ----------------------------------------------------------------------------------
 
-def initialise_triples(generate_random_download_path, sparql_client, derivation_client):
+def initialise_triples(sparql_client, derivation_client, derivation_inputs):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
@@ -21,16 +21,18 @@ def initialise_triples(generate_random_download_path, sparql_client, derivation_
         os.mkdir(cf.DOWNLOADED_DIR)
 
 	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
-    for f in ['sample_data/doe.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_lab.ttl']:
+    for f in [
+        'sample_data/doe.ttl', # for normal DoE test
+        'sample_data/rxn_data.ttl', # historical data for DoE test
+        'sample_data/dummy_lab.ttl', # lab information
+        'sample_data/doe_no_prior_data.ttl' # for DoE test without prior experiment data
+    ]:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
-        filePath = generate_random_download_path("ttl")
-        g.serialize(filePath, format='ttl')
-        sparql_client.uploadOntology(filePath)
-        # the serialised files will be deleted at the end of testing session
+        sparql_client.uploadGraph(g)
 
     # Add timestamp to pure inputs
-    for input in cf.DERIVATION_INPUTS:
+    for input in derivation_inputs:
         derivation_client.addTimeInstance(input)
         derivation_client.updateTimestamp(input)
 

@@ -11,16 +11,18 @@ logging.getLogger('chemistry_and_robots_sparql_client').setLevel(logging.ERROR)
     [
         (utils.cf.DOE_IRI, utils.cf.DERIVATION_INPUTS, True), # local agent instance test
         (utils.cf.DOE_IRI, utils.cf.DERIVATION_INPUTS, False), # deployed docker agent test
+        (utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI], True), # local agent instance test
+        (utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI], False), # deployed docker agent test
     ],
 )
 def test_example_doe(
-    generate_random_download_path, initialise_clients, create_doe_agent,
+    initialise_clients, create_doe_agent,
     doe_iri, derivation_inputs, local_agent_test
 ):
     sparql_client, derivation_client = initialise_clients
 
     # Initialise all triples in the knowledge graph
-    utils.initialise_triples(generate_random_download_path, sparql_client, derivation_client)
+    utils.initialise_triples(sparql_client, derivation_client, derivation_inputs)
 
     # Create agent instance, register agent in KG
     doe_agent = create_doe_agent(register_agent=True, random_agent_iri=local_agent_test)
@@ -59,6 +61,11 @@ def test_example_doe(
         else:
             # TODO add checks for CategoricalVariable
             pass
+    # Check if all the fixed parameters are the same as the DoE instance
+    if new_doe_instance.hasDomain.hasFixedParameter is not None:
+        for fixed_parameter in new_doe_instance.hasDomain.hasFixedParameter:
+            rxn_cond = new_exp_instance.get_reaction_condition(fixed_parameter.refersTo.clz, fixed_parameter.positionalID)
+            assert rxn_cond.hasValue.hasNumericalValue == fixed_parameter.refersTo.hasValue.hasNumericalValue
     print("All check passed.")
 
     # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)

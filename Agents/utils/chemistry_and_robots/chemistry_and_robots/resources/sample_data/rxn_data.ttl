@@ -289,7 +289,7 @@ exp1:StoiRatio_1_Measure_1
 
 exp1:StoiRatio_2
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "2"^^xsd:integer;
+    OntoDoE:positionalID "2"^^xsd:string;
     om:hasPhenomenon exp1:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp1:InputChemical_2;
     om:hasValue exp1:StoiRatio_2_Measure_1;
@@ -303,7 +303,7 @@ exp1:StoiRatio_2_Measure_1
 
 exp1:StoiRatio_3
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "3"^^xsd:integer;
+    OntoDoE:positionalID "3"^^xsd:string;
     om:hasPhenomenon exp1:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp1:InputChemical_3;
     om:hasValue exp1:StoiRatio_3_Measure_1;
@@ -444,7 +444,7 @@ exp2:StoiRatio_1_Measure_1
 
 exp2:StoiRatio_2
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "2"^^xsd:integer;
+    OntoDoE:positionalID "2"^^xsd:string;
     om:hasPhenomenon exp2:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp2:InputChemical_2;
     om:hasValue exp2:StoiRatio_2_Measure_1;
@@ -458,7 +458,7 @@ exp2:StoiRatio_2_Measure_1
 
 exp2:StoiRatio_3
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "3"^^xsd:integer;
+    OntoDoE:positionalID "3"^^xsd:string;
     om:hasPhenomenon exp2:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp2:InputChemical_3;
     om:hasValue exp2:StoiRatio_3_Measure_1;
@@ -599,7 +599,7 @@ exp3:StoiRatio_1_Measure_1
 
 exp3:StoiRatio_2
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "2"^^xsd:integer;
+    OntoDoE:positionalID "2"^^xsd:string;
     om:hasPhenomenon exp3:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp3:InputChemical_2;
     om:hasValue exp3:StoiRatio_2_Measure_1;
@@ -613,7 +613,7 @@ exp3:StoiRatio_2_Measure_1
 
 exp3:StoiRatio_3
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "3"^^xsd:integer;
+    OntoDoE:positionalID "3"^^xsd:string;
     om:hasPhenomenon exp3:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp3:InputChemical_3;
     om:hasValue exp3:StoiRatio_3_Measure_1;
@@ -754,7 +754,7 @@ exp4:StoiRatio_1_Measure_1
 
 exp4:StoiRatio_2
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "2"^^xsd:integer;
+    OntoDoE:positionalID "2"^^xsd:string;
     om:hasPhenomenon exp4:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp4:InputChemical_2;
     om:hasValue exp4:StoiRatio_2_Measure_1;
@@ -768,7 +768,7 @@ exp4:StoiRatio_2_Measure_1
 
 exp4:StoiRatio_3
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "3"^^xsd:integer;
+    OntoDoE:positionalID "3"^^xsd:string;
     om:hasPhenomenon exp4:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp4:InputChemical_3;
     om:hasValue exp4:StoiRatio_3_Measure_1;
@@ -909,7 +909,7 @@ exp5:StoiRatio_1_Measure_1
 
 exp5:StoiRatio_2
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "2"^^xsd:integer;
+    OntoDoE:positionalID "2"^^xsd:string;
     om:hasPhenomenon exp5:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp5:InputChemical_2;
     om:hasValue exp5:StoiRatio_2_Measure_1;
@@ -923,7 +923,7 @@ exp5:StoiRatio_2_Measure_1
 
 exp5:StoiRatio_3
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "3"^^xsd:integer;
+    OntoDoE:positionalID "3"^^xsd:string;
     om:hasPhenomenon exp5:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp5:InputChemical_3;
     om:hasValue exp5:StoiRatio_3_Measure_1;

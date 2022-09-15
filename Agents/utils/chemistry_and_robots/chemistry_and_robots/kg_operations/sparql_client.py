@@ -80,18 +80,23 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_doe_instance(self, doe_iri) -> DesignOfExperiment:
         doe_iri = trimIRI(doe_iri)
-        query_1 = """SELECT ?strategy ?domain ?hist_data WHERE { <%s> <%s> ?strategy; <%s> ?domain; <%s> ?hist_data. }""" % (
-            doe_iri, ONTODOE_USESSTRATEGY, ONTODOE_HASDOMAIN, ONTODOE_UTILISESHISTORICALDATA)
+        query_1 = f"""SELECT ?strategy ?domain ?hist_data ?chem_rxn
+                      WHERE {{
+                          <{doe_iri}> <{ONTODOE_USESSTRATEGY}> ?strategy;
+                                      <{ONTODOE_HASDOMAIN}> ?domain;
+                                      <{ONTODOE_UTILISESHISTORICALDATA}> ?hist_data;
+                                      <{ONTODOE_DESIGNSCHEMICALREACTION}> ?chem_rxn.
+                      }}"""
         response_1 = self.performQuery(query_1)
         if len(response_1) > 1:
-            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is associated with multiple entries of OntoDoE:Strategy/Domain/HistoricalData: %s" % (
+            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is associated with multiple entries of OntoDoE:Strategy/Domain/HistoricalData/OntoCAPE:ChemicalReaction: %s" % (
                 doe_iri, str(response_1)))
         elif len(response_1) < 1:
-            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is NOT associated with any entries of OntoDoE:Strategy/Domain/HistoricalData" % (doe_iri))
+            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is NOT associated with any entries of OntoDoE:Strategy/Domain/HistoricalData/OntoCAPE:ChemicalReaction" % (doe_iri))
         else:
             r = response_1[0]
 
-        query_2 = """SELECT ?sys_res WHERE { <%s> <%s> ?sys_res. }""" % (doe_iri, ONTODOE_HASSYSTEMRESPONSE)
+        query_2 = f"""SELECT ?sys_res WHERE {{ <{doe_iri}> <{ONTODOE_HASSYSTEMRESPONSE}> ?sys_res. }}"""
         response_2 = self.performQuery(query_2)
 
         doe_instance = DesignOfExperiment(
@@ -100,7 +105,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasDomain=self.getDoEDomain(r['domain']),
             hasSystemResponse=self.getSystemResponses([list(res.values())[0] for res in response_2]),
             utilisesHistoricalData=self.getDoEHistoricalData(r['hist_data']),
-            proposesNewExperiment=self.getNewExperimentFromDoE(doe_iri)
+            proposesNewExperiment=self.getNewExperimentFromDoE(doe_iri),
+            designsChemicalReaction=r['chem_rxn'],
         )
         return doe_instance
 
@@ -113,8 +119,42 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         """
         # Delete "<" and ">" around the IRI
         domain_iri = trimIRI(domain_iri)
-        domain_instance = Domain(instance_iri=domain_iri, hasDesignVariable=self.getDesignVariables(domain_iri))
+        domain_instance = Domain(
+            instance_iri=domain_iri,
+            hasDesignVariable=self.getDesignVariables(domain_iri),
+            hasFixedParameter=self.get_fixed_parameters(domain_iri),
+        )
         return domain_instance
+
+    def get_fixed_parameters(self, domain_iri: str) -> Optional[List[FixedParameter]]:
+        domain_iri = trimIRI(domain_iri)
+        query = f"""SELECT ?param ?quantity ?clz ?measure ?unit ?value ?id
+                    WHERE {{
+                        <{domain_iri}> <{ONTODOE_HASFIXEDPARAMETER}> ?param.
+                        ?param <{ONTODOE_REFERSTO}> ?quantity .
+                        ?quantity a ?clz; <{OM_HASVALUE}> ?measure.
+                        ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?value.
+                        OPTIONAL {{?param <{ONTODOE_POSITIONALID}> ?id . }}
+                    }}"""
+        response = self.performQuery(query)
+
+        list_param = []
+        for res in response:
+            list_param.append(FixedParameter(
+                instance_iri=res['param'],
+                positionalID=res['id'] if 'id' in res else None,
+                refersTo=OM_Quantity(
+                    instance_iri=res['quantity'],
+                    clz=res['clz'],
+                    hasValue=OM_Measure(
+                        instance_iri=res['measure'],
+                        hasUnit=res['unit'],
+                        hasNumericalValue=res['value']
+                    )
+                )
+            ))
+
+        return list_param if len(list_param) > 0 else None
 
     def getDesignVariables(self, domain_iri: str) -> List[DesignVariable]:
         """
@@ -208,28 +248,29 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Delete "<" and ">" around the IRI
         historicalData_iri = trimIRI(historicalData_iri)
 
-        query = """SELECT DISTINCT ?exp ?numOfNewExp \
-                WHERE { \
-                <%s> <%s> ?exp . \
-                OPTIONAL {<%s> <%s> ?numOfNewExp .} \
-                }""" % (historicalData_iri, ONTODOE_REFERSTO, historicalData_iri, ONTODOE_NUMOFNEWEXP)
-        
+        query = f"""SELECT DISTINCT ?exp ?numOfNewExp
+                WHERE {{
+                    OPTIONAL {{<{historicalData_iri}> <{ONTODOE_REFERSTO}> ?exp .}}
+                    OPTIONAL {{<{historicalData_iri}> <{ONTODOE_NUMOFNEWEXP}> ?numOfNewExp .}}
+                }}"""
+
         response = self.performQuery(query)
 
-        num_ = [res['numOfNewExp'] for res in response]
+        num_ = [res['numOfNewExp'] for res in response if 'numOfNewExp' in res]
         if num_.count(num_[0]) != len(num_):
             raise Exception("There are multiple instances of numOfNewExp associated with OntoDoE:HistoricalData instance <" + historicalData_iri + ">: " + collections.Counter(num_).keys)
 
-        rxnexp_iris = [res['exp'] for res in response]
+        rxnexp_iris = [res['exp'] for res in response if 'exp' in res]
 
         historicalData_instance = HistoricalData(
             instance_iri=historicalData_iri,
-            numOfNewExp=num_[0], # TODO [when run in loop] what if no instance is in place?
-            refersTo=self.getReactionExperiment(rxnexp_iris)
-            )
+            numOfNewExp=int(num_[0]) if bool(num_) else HistoricalData.__fields__.get('numOfNewExp').default,
+            refersTo=self.getReactionExperiment(rxnexp_iris) if bool(rxnexp_iris) else None,
+        )
+
         return historicalData_instance
 
-    def getReactionExperiment(self, rxnexp_iris: str or list) -> List[ReactionExperiment]:
+    def getReactionExperiment(self, rxnexp_iris: Union[str, list]) -> List[ReactionExperiment]:
         """
             This method retrieves information given a list of instance iri of OntoReaction:ReactionExperiment.
 
@@ -326,6 +367,63 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
 
         return chem_rxn
+
+    def get_chemical_reaction_given_iri(self, chem_rxn_iri: str) -> OntoCAPE_ChemicalReaction:
+        chem_rxn_iri = trimIRI(chem_rxn_iri)
+        query = f"""{PREFIX_RDF}
+                SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
+                ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species
+                WHERE {{
+                    VALUES ?reac_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_REACTANT}>}}.
+                    VALUES ?prod_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_PRODUCT}> <{ONTOREACTION_TARGETPRODUCT}> <{ONTOREACTION_IMPURITY}>}}.
+                    VALUES ?chem_rxn {{<{chem_rxn_iri}>}}.
+                    ?chem_rxn <{ONTOCAPE_HASREACTANT}> ?reactant; <{ONTOCAPE_HASPRODUCT}> ?product.
+                    ?reactant rdf:type ?reac_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?reac_species.
+                    ?product rdf:type ?prod_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?prod_species.
+                    optional{{VALUES ?cata_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_CATALYST}>}}. ?chem_rxn <{ONTOCAPE_CATALYST}> ?catalyst. ?catalyst rdf:type ?cata_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?cata_species.}}
+                    optional{{VALUES ?solv_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_SOLVENT}>}}. ?chem_rxn <{ONTOREACTION_HASSOLVENT}> ?solvent. ?solvent rdf:type ?solv_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?solv_species.}}
+                }}"""
+        response = self.performQuery(query)
+        logger.debug(response)
+
+        chem_rxn = OntoCAPE_ChemicalReaction(
+            instance_iri=chem_rxn_iri,
+            hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
+            hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
+            hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
+            hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species')
+        )
+
+        return chem_rxn
+
+    def locate_possible_input_chemical(
+        self,
+        solute: str,
+        solvent_as_constraint: List[str]=None,
+        species_to_exclude: List[str]=None,
+        list_vapourtec_rs400_iri: Union[str, list]=None,
+        list_of_labs_as_constraint: list=None
+    ) -> Optional[InputChemical]:
+        list_vapourtec_rs400 = self.get_vapourtec_rs400(
+            list_vapourtec_rs400_iri=list_vapourtec_rs400_iri,
+            list_of_labs_as_constraint=list_of_labs_as_constraint
+        )
+        for vapourtec_rs400 in list_vapourtec_rs400:
+            material = vapourtec_rs400.has_access_to_chemical_species(
+                solute=solute,
+                solvent_as_constraint=solvent_as_constraint,
+                species_to_exclude=species_to_exclude,
+            )
+            if material is None:
+                continue
+            else:
+                # TODO [future work, nice-to-have] return a new created instance of InputChemical (new IRIs) with the same phase composition
+                # this will make it robust against ppl deleting chemical solution related data in lab when they are consumed
+                return InputChemical(
+                    instance_iri=material.instance_iri,
+                    thermodynamicBehaviour=material.thermodynamicBehaviour,
+                )
+        return None
 
     def get_ontokin_species_from_chem_rxn(self, list_of_dict: List[Dict], species_role: str, species_type: str, ontospecies_key: str) -> List[OntoKin_Species]:
         """Example: species_role='reactant', species_type='reac_type', species_key='reac_species'"""

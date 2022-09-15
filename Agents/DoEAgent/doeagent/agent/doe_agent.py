@@ -12,6 +12,7 @@ from doeagent.doe_algo import *
 # Disable excessive debug logging from numba module
 import logging
 logging.getLogger("numba").setLevel(logging.WARNING)
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 
 class DoEAgent(DerivationAgent):
@@ -42,7 +43,7 @@ class DoEAgent(DerivationAgent):
         self.logger.info(json.dumps(doe_instance.dict()))
 
         # Call function to suggest the new experiment and return an instance of dataclass OntoDoE.NewExperiment
-        new_rxn_exp = suggest(doe_instance)
+        new_rxn_exp = suggest(doe_instance, sparql_client=self.sparql_client)
 
         # Upload the created OntoRxn:ReactionVariation triples to KG
         # Also update the triple between OntoDoE:DesignOfExperiment and OntoRxn:ReactionVariation
@@ -52,7 +53,10 @@ class DoEAgent(DerivationAgent):
         derivation_outputs.addGraph(g)
 
 
-def suggest(doe_instance: DesignOfExperiment) -> List[ReactionExperiment]:
+def suggest(
+    doe_instance: DesignOfExperiment,
+    sparql_client: ChemistryAndRobotsSparqlClient
+) -> List[ReactionExperiment]:
     """
         This method suggests the new experiment given information provided for design of experiment exercise.
 
@@ -61,7 +65,7 @@ def suggest(doe_instance: DesignOfExperiment) -> List[ReactionExperiment]:
     """
 
     # TODO this method calls summit doe, can be expanded in the future
-    new_exp = proposeNewExperiment(doe_instance)
+    new_exp = proposeNewExperiment(doe_instance, sparql_client)
 
     return new_exp
 

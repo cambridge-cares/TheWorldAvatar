@@ -43,6 +43,26 @@ def test_getDesignVariables(initialise_triples):
                     var.refersTo.hasUnit is not None,
                     var.upperLimit > var.lowerLimit]) for var in design_var_list)
 
+def test_get_fixed_parameters(initialise_triples):
+    sparql_client = initialise_triples
+    param_list = sparql_client.get_fixed_parameters(TargetIRIs.DOE_NO_PRIOR_DATA_DOMAIN_IRI.value)
+    param_iri_list = [param.instance_iri for param in param_list]
+    assert dal.check_if_two_lists_equal(
+        param_iri_list,
+        TargetIRIs.DOE_NO_PRIOR_DATA_FIXED_PARAM_IRI_LIST.value
+    )
+    assert all(
+        all(
+            [
+                isinstance(param, onto.FixedParameter),
+                param.refersTo is not None,
+                param.refersTo.hasValue is not None,
+                param.refersTo.hasValue.hasUnit is not None,
+                param.refersTo.hasValue.hasNumericalValue is not None
+            ]
+        ) for param in param_list
+    )
+
 @pytest.mark.parametrize(
     "sys_res_iri,maximise",
     [# here we are testing that the function should work wether the passed in iri is already a list or not
@@ -475,6 +495,28 @@ def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_r
         chem_rxn = sparql_client.get_chemical_reaction_of_rxn_variation(rxn_exp_iri)
     else:
         assert False
+    assert chem_rxn.instance_iri == chem_rxn_iri
+    dict_reactant = {reactant.instance_iri:reactant.hasUniqueSpecies for reactant in chem_rxn.hasReactant}
+    assert dict_reactant == reactant
+    dict_product = {product.instance_iri:product.hasUniqueSpecies for product in chem_rxn.hasProduct}
+    assert dict_product == product
+    dict_catalyst = {catalyst.instance_iri:catalyst.hasUniqueSpecies for catalyst in chem_rxn.hasCatalyst}
+    assert dict_catalyst == catalyst
+    dict_solvent = {solvent.instance_iri:solvent.hasUniqueSpecies for solvent in chem_rxn.hasSolvent}
+    assert dict_solvent == solvent
+
+@pytest.mark.parametrize(
+    "chem_rxn_iri,reactant,product,catalyst,solvent",
+    [
+        (TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+    ],
+)
+def test_get_chemical_reaction_given_iri(initialise_triples, chem_rxn_iri, reactant, product, catalyst, solvent):
+    sparql_client = initialise_triples
+    chem_rxn = sparql_client.get_chemical_reaction_given_iri(chem_rxn_iri)
+
     assert chem_rxn.instance_iri == chem_rxn_iri
     dict_reactant = {reactant.instance_iri:reactant.hasUniqueSpecies for reactant in chem_rxn.hasReactant}
     assert dict_reactant == reactant
@@ -1259,6 +1301,10 @@ def test_collect_triples_for_chromatogram_point(initialise_triples):
 
 @pytest.mark.skip(reason="TODO")
 def test_get_all_rxn_exp_with_target_perfind_given_chem_rxn(initialise_triples):
+    pass
+
+@pytest.mark.skip(reason="TODO")
+def test_locate_possible_input_chemical(initialise_triples):
     pass
 
 @pytest.mark.skip(reason="TODO after proper representation of species density")

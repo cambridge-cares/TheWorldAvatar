@@ -152,3 +152,15 @@ class ReagentBottle(BaseOntology):
     hasFillLevel: OM_Volume
     hasWarningLevel: OM_Volume
     hasMaxLevel: OM_Volume
+
+    def contains_chemical_species(
+        self,
+        solute: str,
+        solvent_as_constraint: List[str]=None,
+        species_to_exclude: List[str]=None,
+    ) -> bool:
+        if self.isFilledWith is not None:
+            if self.isFilledWith.refersToMaterial is not None:
+                if self.isFilledWith.refersToMaterial.contains_chemical_species(solute, solvent_as_constraint, species_to_exclude):
+                    return True
+        return False
