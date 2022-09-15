@@ -1,0 +1,674 @@
+* Main CityChem version 1.0 input data file
+* CityChem is a version of Episode, property of NILU (Kjeller,Norway)
+*
+* Comments in this runscript are indicated by'*' in first column
+* Leaving an empty space in first column causes the file 
+* in the same line not to be used by CityChem
+*
+*
+* MAIN DATA
+*
+* Unique ID for Simulation, Blank indicate no ID given. 
+* Must be 38 characters long including left and right parenthesis.
+{SIMUL-HamburgCity--yougiveaname-0001}
+*
+* Testbench log file
+  testbench_log_is_not_created.txt
+*
+* Run log file (written for airquis)
+* this log-file is not created by CityChem
+../OUTPUT/CITYCHEM_Yourmachine_log.txt
+*
+* LHS example of new INFO-file
+  out_xxxnn/EPISODE_another_dummyfile.txt
+*
+*
+*
+* SITE DATA
+*
+* pisiteexternaldata = 0 to 3.  If 0 then read from external file inside of EPISODE.
+*                               If 1 then read from Integrated AirQUIS/McWIND.
+*                               If 2 then linked with   UM Met-input.
+*                               If 3 then linked with TAPM Met-input.
+* Only options 1, 2 and 3 can be used with CityChem
+3
+*
+* Name of site
+"Hamburg"
+*
+* Site latitude and longitude (deg) of the meteo observation station
+53.60833,9.925000
+*
+* Number of observation sites (listed in receptor station file)
+20
+*
+* Grid origo in (truncated) UTM coordinates (m) for the MAIN DOMAIN GRID
+551750,5918656
+*
+* UTM zone of the site (e.g. 32N)
+"32N"
+*
+* EPSG number, spatial reference epsg projection (http://spatialreference.org/ref/epsg/)
+"32632"
+*
+* Number of Main and Boundary grid cells in the MAIN DOMAIN GRID: NX,NY,NZ,NBCX,NBCY,NBCZ
+* NBCX,NBCY,NBCZ are set to 1
+30,30,24,1,1,1
+*
+* Angle between grid x-axis and UTM x-axis (deg) in the MAIN DOMAIN GRID
+0.0
+*
+* Length of MAIN DOMAIN GRID cells DX,DY,DZ(1:NZ) (m) in the MAIN DOMAIN GRID
+1000.0, 1000.0, 17.50,20.00,25.00,25.00,37.50,50.00,50.00,50.00,50.00,50.00,50.00,50.00,75.00,125.00,200.00,250.00,250.00,250.00,250.00,250.00,250.00,375.00,500.00,500.00        
+*
+* Main grid topography file/value
+../INPUT/tapm/topo_20130701_20130731.asc
+*
+* Surface roughness file/value (constant value)
+../INPUT/other/surfrough_episode_20130701_20130731.asc
+*
+* Surface Albedo file/value (1 = Total reflection; 0 = Black body) Default 0.3?
+  inp_xxxnn/albedo.fld
+*
+* Receptor points file/value
+* receptor stations and receptor raster grid 100x100 m2  (in total 20+90000 points)
+* format: 1) list of observation sites, 2) raster points of 100 m grid
+../INPUT/other/receptor_stations_raster.txt
+*
+* Exporting both receptor and building conc. (1) or just receptor conc. (0) to the receptor-files
+* If 1 the receptor-concentrations are written vertically.
+* option is not used
+2
+*
+* Gridded values of total-population (the building population is subtracted from this)
+* dummy file is not used
+  inp_xxxnn/population.txt
+*
+*
+* TIME DATA
+*
+* LTOGMT is the number of hours between LOCAL TIME and GMT.
+*   Examples:  LTOGMT = -1  for Germany/Norway in wintertime (CET).
+*              LTOGMT = -2  for Germany/Norway in summertime (CEST).
+*              LTOGMT = -4  for ABU DHABI.
+-2
+*
+* Begin year,month,day,hour(0-23)
+2013,07,01,00
+*
+* End   year,month,day,hour(0-23)
+2013,07,31,23
+*
+* Timestep factor
+1.0 NB! Should not be changed! 0.5 will apply half allowed DT-value.
+*
+* Simulation time between results output
+* do not change
+3600.0
+*
+*
+* METEOROLOGICAL DATA
+*
+* pimeteexternaldata = 0 to 3.  If 0 then read from external file inside of EPISODE.
+*                               If 1 then read from McWIND wind field.
+*                               If 2 then read from   UM Met-input.
+*                               If 3 then read from TAPM Met-input.
+3
+*
+*
+* ITURB (= 1 If Delta-T, = 2 Global-radiation data) Applied in case of Integrated AirQUIS/McWIND simulations. (Default = 1)
+1
+*
+* IVERTDIFF vertical eddy diffusivity (1 = NILU Standard (NILU_METHOD 4), 2 = New Urban (NILU_METHOD 6))
+2
+*
+* ZT_LOWER  ZT_UPPER  (NB: ZT_LOWER can not be equal to 0) Default values should be given.
+8.0  25.0
+*
+* McWIND, TAPM or UM Temperature (degC) and vertical temperature gradient (homogeneous and constant data) (or 2-values) 
+../INPUT/tapm/T_and_dtdz_20130701_20130731.asc
+*
+* iant_comp  = 2 if u and v, = 3 if u, v and w
+3
+*
+* McWIND, TAPM or UM  Wind u- and v- (and possibly w-) components in NZ layers (or 2*NZ-values)
+../INPUT/tapm/wind_20130701_20130731.asc
+*
+* TAPM turbulence sigma-vw file
+* missing data is tolerated
+  inp_xxxnn/sigmavw.fld
+*
+* TAPM aerodynamic resistance file
+* missing data is tolerated
+  inp_xxxnn/aeroresist.fld
+*
+* TAPM or UM Mixing height (m) (or 1 value)
+* missing data is tolerated
+../INPUT/tapm/hmix_20130701_20130731.asc
+*
+* TAPM 2D Surface (Scalar) Friction velocity field (m/s) (or 1 value)
+* missing data is tolerated
+../INPUT/tapm/ustar_20130701_20130731.asc
+*
+* TAPM or UM 2D Surface Sensible Heat Flux field (W/m2) (or 1 value)
+* missing data is tolerated
+../INPUT/tapm/sens_heatfl_20130701_20130731.asc
+*
+* TAPM or UM 2D Surface Latent (Evaporative) Heat Flux field (W/m2) (or 1 value)
+* missing data is tolerated
+../INPUT/tapm/evap_heatfl_20130701_20130731.asc
+*
+* TAPM or UM Land use data [Variable: LANU(nx,ny) ]  (or 1 value)
+* missing data is tolerated
+../INPUT/other/landuse_episode_20130701_20130731.asc
+*
+* TAPM or UM 3D-temperature field (K) (or NZ-values)
+* missing data is tolerated
+../INPUT/tapm/temp_20130701_20130731.asc
+*
+* TAPM 3D Potential temperature field (K) (or NZ-values)
+* missing data is tolerated
+../INPUT/tapm/pot_T_20130701_20130731.asc
+*
+* TAPM 3D (layer mid)? "geopot height"-equivalent (m) (or NZ-values)
+* missing data is tolerated
+../INPUT/tapm/3D_EPISODE_z_abg_20130701_20130731.asc
+*
+* UM 2D Surface Moisture Flux field (kg m-2 s-1) (or 1 value)
+* missing data is tolerated
+  inp_xxxnn/mflx_episode.fld
+*
+* UM 2D-Vector surface momentum stress "taus_x" and "taus_y" (N/m2) (or 2-values)
+* missing data is tolerated
+  inp_xxxnn/sfws_episode.fld
+*
+* TAPM 2D Surface (Scalar) Potential temperature scale field (m/s) (or 1 value)
+* missing data is tolerated
+../INPUT/tapm/ptstar_20130701_20130731.asc
+*
+* TAPM 2D Surface (Scalar) Potential Virtual temperature scale field (m/s) (or 1 value)
+* missing data is tolerated
+../INPUT/tapm/pvstar_20130701_20130731.asc
+*
+* TAPM 2D Surface (Scalar) convective velocity scale field (m/s) (or 1 value)
+* missing data is tolerated
+../INPUT/tapm/wstar_20130701_20130731.asc
+*
+* McWIND or TAPM 2D Surface (Scalar) Total solar radiation field {Global radiation??} (W/m2) (or 1 value)
+../INPUT/tapm/tot_solar_rad_20130701_20130731.asc
+*
+* UM 2D Ground temperature field (Deg. C) (or 1 value)
+* missing data is tolerated
+../INPUT/tapm/T_surf_20130701_20130731.asc
+*
+* McWIND, TAPM or UM  Precipitation (rainfall) (mm/h) (or 1 value)
+../INPUT/tapm/prec_20130701_20130731.asc
+*
+* McWIND, TAPM or UM  Relative humidity (0-1) (or 1 value)
+../INPUT/tapm/RH_screen_20130701_20130731.asc
+*
+* McWIND, TAPM or UM  Cloud cover (0=Clear sky, 1=Overcast) (or 1 value)
+../INPUT/other/clou_episode_20130701_20130731.asc
+*
+*
+* CONCENTRATION DATA
+*
+* Number of compounds
+22
+*
+* Number of above compounds which is not included in the chemical scheme  (n_nochem)
+* NSPEC in grid box chemistry is NC - n_nochem
+2
+*
+* Number of additional compounds that are transported  (n_advect)
+* should be the same as n_nochem, so that unreactive species are transported
+2
+*
+* Compound name, unit, indicators for output of concentration, dry and wet deposition,
+* molecular weight, dry deposition velocity, wet deposition scavenging ratio and
+* compound half-value time (half-life) (-9900 means no radioactive decay).
+* WdepSR
+* wet scavenging ratio WdepSR = WdepCoeff * (P(mm/h)/(1 mm/h))
+* WdepCoeff (rain) SO2: 3.e-5, SO4: 1.e-4, HNO3: 1.e-4
+* typical P: 796 mm/yr / 3192 h/yr = 0.25 mm/h (Cologne, Germany, 133 rain days)
+* WdepSR  SO2: 7.5e-6 (EMEP: 0.5e-6), SO4: 2.5e-5, HNO3: 2.5e-5
+* But here WdepSR looks more like fraction scavenged (1.0 for SO4 and HNO3)
+* WdepSR  SO2: 7.5/25 = 0.3, PM2.5 = SO4 = 1.0, H2O2 = HNO3 = 1.0 
+*
+* DDepV in cm/s
+*
+*PM2.5 MW and DDepV are pure guesses (not included in chemistry)
+*
+*Id-nr Compound Unit ConI DDepI WDepI  MolW   DDepV  WDepSR   THalf/Kcoag
+4    'O3         '   'ug/m3     '    1     1     1    48     0.2E+00  0.0E+00   0.0E+00
+7    'NO         '   'ug/m3     '    1     0     0    30     0.0E+00  0.0E+00   0.0E+00
+8    'NO2        '   'ug/m3     '    1     1     1    46     0.2E+00  0.0E+00   0.0E+00
+6    'H2O2       '   'ug/m3     '    0     1     0    34     0.5E+00  1.0E+00   0.0E+00
+10   'N2O5       '   'ug/m3     '    0     0     0   108     0.0E+00  0.0E+00   0.0E+00
+11   'HNO3       '   'ug/m3     '    1     1     1    63     1.0E+00  1.0E+00   0.0E+00
+14   'HONO       '   'ug/m3     '    1     1     1    47     1.0E+00  1.0E+00   0.0E+00
+12   'SO2        '   'ug/m3     '    0     1     1    64     0.2E+00  0.3E+00   0.0E+00
+13   'Sulphate   '   'ug/m3     '    1     1     1    96     0.1E+00  1.0E+00   0.0E+00
+20   'CO         '   'ug/m3     '    1     0     0    28     0.0E+00  0.0E+00   0.0E+00
+21   'C2H6       '   'ug/m3     '    0     0     0    30     0.0E+00  0.0E+00   0.0E+00
+17   'HCHO       '   'ug/m3     '    1     0     0    30     0.0E+00  0.0E+00   0.0E+00
+23   'CH3CHO     '   'ug/m3     '    0     0     0    44     0.0E+00  0.0E+00   0.0E+00
+32   'C2H4       '   'ug/m3     '    0     0     0    28     0.0E+00  0.0E+00   0.0E+00
+25   'PAN        '   'ug/m3     '    1     0     1   121     0.0E+00  0.0E+00   0.0E+00
+27   'nC4H10     '   'ug/m3     '    1     0     0    58     0.0E+00  0.0E+00   0.0E+00
+29   'CH3COC2H5  '   'ug/m3     '    0     0     0    72     0.0E+00  0.0E+00   0.0E+00
+34   'C3H6       '   'ug/m3     '    0     0     0    42     0.0E+00  0.0E+00   0.0E+00
+36   'oXylene    '   'ug/m3     '    0     0     0   106     0.0E+00  0.0E+00   0.0E+00
+44   'isoprene   '   'ug/m3     '    0     0     0    68     0.0E+00  0.0E+00   0.0E+00
+69   'PM2.5      '   'ug/m3     '    1     1     1    90     0.2E+00  1.0E+00   0.0E+00
+70   'PM10       '   'ug/m3     '    1     1     1    90     0.2E+00  1.0E+00   0.0E+00
+*
+* Particle number concentrations, three size categories
+*43   'pnc1      '   'num/cm3   '    1     1     1 -9900     0.904    0.4   6.31E-9
+*44   'pnc2      '   'num/cm3   '    1     1     1 -9900     0.202    0.4   5.58E-9
+*45   'pnc3      '   'num/cm3   '    1     1     1 -9900     0.032    0.4   8.82E-10
+*
+* Instantaneous (0) or NTS-Averaged (1) output of Main grid concentrations
+0
+*
+* NETCDF FILE
+* Main grid hourly concentrations file
+* Total concentration 3D-field C() instantaneous
+../OUTPUT/concmhour.nc
+*
+* Receptors concentrations file
+  res_xxxnn/concr_no2.asc
+*
+* Line source receptors concentrations file
+  res_xxxnn/concl_no2.asc
+*
+*
+* DEPOSITION DATA
+*
+* Main grid dry deposition file
+* res_xxxnn/ddepm_o3.prn
+*
+* Main grid wet deposition file 
+* Wet deposition is not wanted for now
+* res_xxxnn/wdepm_o3.prn
+*
+* Receptor point dry deposition file
+ res_xxxnn/ddepr_no2.prn
+*
+* Receptor point wet deposition file
+ res_xxxnn/wdepr_no2.prn
+*
+* Line sources dry deposition file
+ res_xxxnn/ddepl_no2.prn
+*
+* Line sources wet deposition file
+ res_xxxnn/wdepl_no2.prn
+*
+*
+* STAT MODEL DATA AND EXPOSURE USER INPUT
+*
+* "pxlimitvh": Hourly limit value (pnc) in (ug/m3)
+* 50.0
+*
+* "pinallowh": Number of hours allowed above the hourly limit value
+* 3
+*
+* "nhighh": Number of highest hourly concentration values stored on STAT_C... files
+4
+* "nhighd": Number of highest daily  concentration values
+2
+*
+* Main grid nhighh-concentrations file
+* res_xxxnn/statcmhighh_no2.txt
+*
+* Receptors nhighh-concentrations file
+* res_xxxnn/statcrhighh_no2.txt
+*
+* Line source receptors nhighh-concentrations file
+* res_xxxnn/statclhighh_no2.txt
+*
+* Calculate daily mean indicator (1=Yes,0=No)
+1
+*
+* Calculate overall mean indicator (1=Yes,0=No)
+1
+*
+* Main grid nhighd-concentrations file (If "nhighd"=0, then blank in first coloumn)
+* res_xxxnn/statcmhighd_no2.txt
+*
+* Receptors nhighd-concentrations file
+* res_xxxnn/statcrhighd_no2.txt
+*
+* Line source receptors nhighd-concentrations file
+* res_xxxnn/statclhighd_no2.txt
+*
+* NETCDF FILES
+* hourly and daily average netCDF files
+*
+* Main grid hourly average concentrations file
+../OUTPUT/statmainhour.nc
+*
+* Receptors hourly average concentrations file
+../OUTPUT/statrecphour.nc
+../OUTPUT/statmonihour.nc
+*
+* Line source receptors daily average concentrations file
+../OUTPUT/statclaved_no2.txt
+*
+* Calculate daily statistics indicator (1=Yes,0=No)
+1
+*
+* NETCDF FILES
+* Overall average netCDF files
+* Main grid overall average concentrations file
+../OUTPUT/statmain.nc
+* Receptors overall average concentrations file
+../OUTPUT/statrecp.nc
+* Stations overall average concentrations file
+../OUTPUT/statmoni.nc
+*
+*
+*
+*
+*
+* PHOT MODEL DATA (Defined inside EPISODE if "defined airquis" and nc == 3. See RPHOTO)
+*
+* Photochemical scheme (0 or 1)
+* this is used for receptor and line source points 
+* can be combined with EMEP schemes for Eulerian grid below
+* 0 for NOx-simulation
+* 1 for NO2,NO,O3 simple Photochemical equilibrium
+* 3 for EP-10 basic photochemistry solver
+1
+*
+*
+* GRID MODEL DATA
+*
+* Add grid model to results
+1
+*
+* Horizontal numerical advection scheme(s) 1:nc
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 NB! (0/1/2) means (no horizontal advection/pos def Bott/pos.def. and monotone Bott) included!
+*
+* Horizontal numerical diffusion scheme(s) 1:nc
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 NB! (0/1) means that horizontal diffusion (is not/is) included!
+*
+* Vertical numerical adv./diff. scheme(s) 1:nc
+* option 1 is combined up-stream and diffusion, takes long
+* option 2 is very time consuming
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3 NB! (0 or 1/2/3) means that vertical advection and diffusion (is not/is) included!
+*
+* Dry deposition scheme(s) 1:nc
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+*
+* Wet deposition scheme(s) 1:nc
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+*
+* Photochemical scheme [only used in AirQuis version], give same number as above
+* 0 for PMxx-, NOx- etc. dispersion w/o photochemistry (AirQuis default)
+* 1 for standard NO2/NO/O3-photoequilibrium simulation (not used)
+* 2 for EMEP03 (only work with nc=3, O3 NO NO2)
+* 3 for EmChem03mod
+* 4 for EmChem09mod (new: EmChem09-HET)
+4
+*
+* INPUT Background concentration unit: 1 = ug/m3, 2 = molecules/cm3, 4 = num/cm3
+*4
+* simply use same UNIT as in the list of chemicals
+*
+* INPUT Background concentrations file format: 1 = Hourly scalar,  2 = Hourly vertical vector, 3 = Hourly 3D-field
+* 1: constant value
+* 3: 3D BC file
+3
+*
+* INPUT Background concentrations file/value
+../testdata/cmaq/cbg_o3.fld
+../testdata/cmaq/cbg_no.fld      
+../testdata/cmaq/cbg_no2.fld     
+../testdata/cmaq/cbg_h2o2.fld
+../testdata/cmaq/cbg_n2o5.fld
+../testdata/cmaq/cbg_hno3.fld
+../testdata/cmaq/cbg_hono.fld 
+../testdata/cmaq/cbg_so2.fld
+../testdata/cmaq/cbg_sulphate.fld
+../testdata/cmaq/cbg_co.fld
+../testdata/cmaq/cbg_c2h6.fld
+../testdata/cmaq/cbg_hcho.fld
+../testdata/cmaq/cbg_ch3cho.fld
+../testdata/cmaq/cbg_c2h4.fld
+../testdata/cmaq/cbg_pan.fld
+../testdata/cmaq/cbg_nc4h10.fld
+../testdata/cmaq/cbg_ch3coc2h5.fld
+../testdata/cmaq/cbg_c3h6.fld
+../testdata/cmaq/cbg_oxylen.fld
+../testdata/cmaq/cbg_isoprene.fld
+../testdata/cmaq/cbg_pm25.fld
+../testdata/cmaq/cbg_pm10.fld
+*
+* OFFSET Ozone (O3) in BCON file in ug/m^3
+10.0
+* OFFSET PM (PM2.5 & PM10) in BCON file in ug/m^3
+10.0
+*
+* RESTART option for multi-month runs
+* 0: No Restart (use the BCON (background) values)
+* 1: Restart    (use 3-D ICON files listed below)
+0
+* RESTART initial conditions
+* INPUT Old 3D concentrations files
+* Must be provided if Restart option is 1
+* If Restart option is 0 or files are missing, background values are used
+ ../INPUT/other/icmhour_20130630.nc
+*
+* Last simulation hour instantaneous concentration 3D-field C()
+* THIS WILL BE THE IC FILE FOR THE RESTART
+../OUTPUT/icmhour_20130731.nc
+*
+* DIAGNOSTIC Output of photochemistry on main grid
+../OUTPUT/photmhour.nc
+*
+*
+*
+* AREA SOURCES MODEL DATA
+*
+* Add area sources subgrid model to results
+*0 NB! Should not be changed!
+0
+*
+* Number of area sources
+4
+*
+* Area sources upper level (domestic heating) emissions files/values
+  emis_xxxnn/asrc_domestic_uple_20130701_20130731_o3.txt
+../INPUT/emis/asrc_domestic_no_20130701_20130731.txt
+../INPUT/emis/asrc_domestic_no2_20130701_20130731.txt
+  emis_xxxnn/asrc_domestic_uple_20130701_20130731_h2o2.txt
+  emis_xxxnn/asrc_domestic_uple_20130701_20130731_n2o5.txt
+  emis_xxxnn/asrc_domestic_uple_20130701_20130731_hno3.txt
+  emis_xxxnn/asrc_domestic_uple_20130701_20130731_hono.txt
+../INPUT/emis/asrc_domestic_so2_20130701_20130731.txt
+  emis_xxxnn/area/asrc_domestic_uple_20130701_20130731_sulphate.txt
+  emis_xxxnn/area/asrc_domestic_uple_20130701_20130731_co.txt
+../INPUT/emis/asrc_domestic_c2h6_20130701_20130731.txt
+../INPUT/emis/asrc_domestic_hcho_20130701_20130731.txt
+../INPUT/emis/asrc_domestic_ch3cho_20130701_20130731.txt
+../INPUT/emis/asrc_domestic_c2h4_20130701_20130731.txt
+  emis_xxxnn/asrc_domestic_uple_20130701_20131231_pan.txt
+../INPUT/emis/asrc_domestic_nc4h10_20130701_20130731.txt
+../INPUT/emis/asrc_domestic_ch3coc2h5_20130701_20130731.txt
+../INPUT/emis/asrc_domestic_c3h6_20130701_20130731.txt
+../INPUT/emis/asrc_domestic_oxylen_20130701_20130731.txt
+  emis_xxxnn/area/asrc_domestic_uple_20130701_20130731_isoprene.txt
+../INPUT/emis/asrc_domestic_pm2.5_20130701_20130731.txt
+../INPUT/emis/asrc_domestic_pm10_20130701_20130731.txt
+*
+* Area sources ground level (traffic) emissions files/values (zero)
+ emis_xxxnn/area/asrc_solvent_uple_20130701_20130731_o3.txt
+../INPUT/emis/asrc_solvent_no_20130701_20130731.txt
+../INPUT/emis/asrc_solvent_no2_20130701_20130731.txt
+  emis_xxxnn/area/asrc_solvent_uple_20130701_20130731_h2o2.txt
+  emis_xxxnn/area/asrc_solvent_uple_20130701_20130731_n2o5.txt
+  emis_xxxnn/area/asrc_solvent_uple_20130701_20130731_hno3.txt
+  emis_xxxnn/area/asrc_solvent_uple_20130701_20130731_hono.txt
+../INPUT/emis/asrc_solvent_so2_20130701_20130731.txt
+  emis_xxxnn/area/asrc_solvent_uple_20130701_20130731_sulphate.txt
+../INPUT/emis/asrc_solvent_co_20130701_20130731.txt
+../INPUT/emis/asrc_solvent_c2h6_20130701_20130731.txt
+../INPUT/emis/asrc_solvent_hcho_20130701_20130731.txt
+../INPUT/emis/asrc_solvent_ch3cho_20130701_20130731.txt
+../INPUT/emis/asrc_solvent_c2h4_20130701_20130731.txt
+  emis_xxxnn/area/asrc_solvent_uple_20130701_20130731_pan.txt
+../INPUT/emis/asrc_solvent_nc4h10_20130701_20130731.txt
+../INPUT/emis/asrc_solvent_ch3coc2h5_20130701_20130731.txt
+../INPUT/emis/asrc_solvent_c3h6_20130701_20130731.txt
+../INPUT/emis/asrc_solvent_oxylen_20130701_20130731.txt
+  emis_xxxnn/area/asrc_solvent_uple_20130701_20130731_isoprene.txt
+../INPUT/emis/asrc_solvent_pm2.5_20130701_20130731.txt
+../INPUT/emis/asrc_solvent_pm10_20130701_20130731.txt
+*
+* Area sources ground level (other) emissions files/values
+  emis_xxxnn/asrc_other_lole_20130701_20130731_o3.txt
+../INPUT/emis/asrc_other_no_20130701_20130731.txt
+../INPUT/emis/asrc_other_no2_20130701_20130731.txt
+  emis_xxxnn/asrc_other_lole_20130701_20130731_h2o2.txt
+  emis_xxxnn/asrc_other_lole_20130701_20130731_n2o5.txt
+  emis_xxxnn/asrc_other_lole_20130701_20130731_hno3.txt
+  emis_xxxnn/asrc_other_lole_20130701_20130731_hono.txt
+../INPUT/emis/asrc_other_so2_20130701_20130731.txt
+  emis_xxxnn/asrc_other_lole_20130701_20130731_sulphate.txt
+  emis_xxxnn/asrc_other_lole_20130701_20130731_co.txt
+../INPUT/emis/asrc_other_c2h6_20130701_20130731.txt
+../INPUT/emis/asrc_other_hcho_20130701_20130731.txt
+../INPUT/emis/asrc_other_ch3cho_20130701_20130731.txt
+../INPUT/emis/asrc_other_c2h4_20130701_20130731.txt
+  emis_xxxnn/asrc_other_lole_20130701_20130731_pan.txt
+../INPUT/emis/asrc_other_nc4h10_20130701_20130731.txt
+../INPUT/emis/asrc_other_ch3coc2h5_20130701_20130731.txt
+../INPUT/emis/asrc_other_c3h6_20130701_20130731.txt
+../INPUT/emis/asrc_other_oxylen_20130701_20130731.txt
+../INPUT/emis/asrc_other_isoprene_20130701_20130731.txt
+../INPUT/emis/asrc_other_pm2.5_20130701_20130731.txt
+../INPUT/emis/asrc_other_pm10_20130701_20130731.txt
+*
+* Area source 50:50 level 1+2 (shipping) emissions files/values
+ emis_xxxnn/area/asrc_shipping_lole_20130701_20130731_o3.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_no.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_no2.txt
+  emis_xxxnn/area/asrc_shipping_lole_20130701_20130731_h2o2.txt
+  emis_xxxnn/area/asrc_shipping_lole_20130701_20130731_n2o5.txt
+  emis_xxxnn/area/asrc_shipping_lole_20130701_20130731_hno3.txt
+  emis_xxxnn/area/asrc_shipping_lole_20130701_20130731_hono.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_so2.txt
+  emis_xxxnn/area/asrc_shipping_lole_20130701_20130731_sulphate.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_co.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_c2h6.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_hcho.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_ch3cho.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_c2h4.txt
+  emis_xxxnn/area/asrc_shipping_lole_20130701_20130731_pan.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_nc4h10.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_ch3coc2h5.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_c3h6.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_oxylen.txt
+  emis_xxxnn/area/asrc_shipping_lole_20130701_20130731_isoprene.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_pm25.txt
+../INPUT/emis/ships/asrc_shipping_hhport_20130701_20130731_pm10.txt
+*
+* Minimum windspeed for subgrid scale area source model
+0.4
+*
+* Output total area source emissions in netCDF file
+../OUTPUT/asrcmhour.nc
+*
+*
+* POINT SOURCES MODEL DATA
+*
+* Point sources subgrid model type (0 = Inject into grid after plume height calc.; 1 = Segmented Plume; 2,3,5 = Inpuff variants)
+1
+*
+* Add point sources subgrid model to results
+*1 NB! Should not be changed!
+1
+*
+* Point source files
+*
+* Filename of one Point Source Data File (include all point sources with compound emis for every hour)
+../INPUT/emis/pointsrc_20130701_20130731.txt
+*
+* Old plume segments file
+../INPUT/other/old_plume.dat
+*
+* New plume segments file
+../OUTPUT/plume_segments.dat
+*
+* Plume segment redirection limit
+30.0
+*
+* Maximum plume segment fractions YLF,ZLF(1:NZ)
+* NB! Should be changed when changing vertical resolution!
+0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25
+*
+* Minimum windspeed for subgrid scale point source model
+0.4
+*
+*
+*
+* LINE SOURCES MODEL DATA
+*
+* Add line sources subgrid model to results
+1 NB! Should not be changed!
+*
+* Static data (meta data of the line sources)
+../INPUT/emis/linesrc_meta_20130701_20130731.txt
+*
+* Variable emission data
+  emis_xxxnn/lsrv_traffic_line_20130701_20130731_o3.txt
+../INPUT/emis/linesrc_traffic_no_20130701_20130731.txt
+../INPUT/emis/linesrc_traffic_no2_20130701_20130731.txt
+   emis_xxxnn/line/lsrv_traffic_line_20130701_20130731_h2o2.txt
+   emis_xxxnn/line/lsrv_traffic_line_20130701_20130731_n2o5.txt
+   emis_xxxnn/line/lsrv_traffic_line_20130701_20130731_hno3.txt
+   emis_xxxnn/line/lsrv_traffic_line_20130701_20130731_hono.txt
+../INPUT/emis/linesrc_traffic_so2_20130701_20130731.txt
+   emis_xxxnn/line/lsrv_traffic_line_20130701_20130731_sulphate.txt
+../INPUT/emis/linesrc_traffic_co_20130701_20130731.txt
+../INPUT/emis/linesrc_traffic_c2h6_20130701_20130731.txt
+../INPUT/emis/linesrc_traffic_hcho_20130701_20130731.txt
+../INPUT/emis/linesrc_traffic_ch3cho_20130701_20130731.txt
+../INPUT/emis/linesrc_traffic_c2h4_20130701_20130731.txt
+   emis_xxxnn/lsrv_traffic_line_20130701_20130731_pan.txt
+../INPUT/emis/linesrc_traffic_nc4h10_20130701_20130731.txt
+../INPUT/emis/linesrc_traffic_ch3coc2h5_20130701_20130731.txt
+../INPUT/emis/linesrc_traffic_c3h6_20130701_20130731x.txt
+../INPUT/emis/linesrc_traffic_oxylen_20130701_20130731.txt
+   emis_xxxnn/lsrv_traffic_line_20130701_20130731_isoprene.txt
+../INPUT/emis/linesrc_traffic_pm2.5_20130701_20130731.txt
+../INPUT/emis/linesrc_traffic_pm10_20130701_20130731.txt
+*
+* Data on line source is in the static metadata
+*
+* Emission scale factor for subgrid line source model, scales all above emissions
+* New scaling for Hamburg:
+1.20
+*
+* Street Canyon option
+* 0: No Canyon  (default)
+* 1: Canyon     (check land use value)
+1
+* Calculate line source associated concentrations (1 = For all; 0 = For none; -1 = For some.
+* If 0 or -1  then -9900.0 is written to the concl-files if they are defined.
+* 0
+*
+* Absolute maximum value for the "maximum influence distance" (in meters). ORG = 500.0
+* 500.0
+*
+* Minimum distance from receptor to road side:
+* 5.0
+*
+* Distance from road side to line source associated receptor point:
+* 20.0
+*
+* Minimum windspeed for subgrid scale line source model (m/s)
+1.0
+*
+* End of main_episode_tapm,.txt

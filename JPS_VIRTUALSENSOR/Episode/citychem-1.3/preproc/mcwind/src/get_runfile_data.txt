@@ -1,0 +1,288 @@
+
+       subroutine get_runfile_data
+
+! *** Global declarations:
+      
+      integer :: i_met_unit           = 13
+      integer :: i_topores_unit       = 14
+      integer :: i_surfroughres_unit  = 15
+      integer :: i_windres_unit       = 16
+      integer :: i_tempres_unit       = 17
+      integer :: i_rhumres_unit       = 18  
+      integer :: i_precres_unit       = 19
+      integer :: i_cloures_unit       = 20
+     
+      integer :: n,i,j,ix,iy,iz,ii,jj,iaa,imm,idd,ihh
+      logical :: export_w
+      
+      character(len=10)  :: text1,text2
+      character(len=256) :: textstr
+
+      integer :: iv_number_of_days      
+      integer :: iv_nmax_windfields
+
+
+
+! *** Declaration of all variables that are sent as input to McWIND:
+
+! *** ----------------------------------------------------------------------------------------------------------
+! *** Interface-variables of: Subroutine SendFilesDefinitions(cv_fname_log,iv_fname_log_len)
+!
+      integer            :: iv_fname_log_len  ! Length of log-file name.
+      character(len=250) :: cv_fname_log      ! Name of log-file.
+! *** ----------------------------------------------------------------------------------------------------------
+
+
+! *** Interface-variables of "module_mc_wind_domain.for":
+
+      real :: rv_clon = 10.0   ! Real variable containing the longitude of the model origo.  
+      real :: rv_clat = 60.0   ! Real variable containing the latitude  of the model origo.   
+
+      integer, parameter :: iv_im = 22   ! Integer variable giving the number of grid cells in the x-direction.
+      integer, parameter :: iv_jm = 18   ! Integer variable giving the number of grid cells in the x-direction.
+      
+! *************************************************************************************************************
+!_Run_1_and_06Jan2005:
+!      integer, parameter :: iv_km = 17   ! Integer variable giving the number of grid cells in the x-direction.
+!_Run_2:
+!      integer, parameter :: iv_km = 10   ! Integer variable giving the number of grid cells in the x-direction.
+!_Run_X:
+      integer, parameter :: iv_km = 8   ! Integer variable giving the number of grid cells in the x-direction.
+! **************************************************************************************************************
+
+      real :: rv_dx = 1.0      ! Real variable containg the grid distance in the x-direction (in km).
+      real :: rv_dy = 1.0      ! Real variable containg the grid distance in the y-direction (in km).
+
+      real :: rav1_ds(iv_km)                    ! 1-D real array containg the height of the sigma layers (in m).
+
+      real :: rav2_in_top(iv_im,iv_jm)          ! 2-D real array containing the topography height (in m).
+
+      real :: rav2_in_surfrough(iv_im,iv_jm)    ! 2-D real array containing the surface roughness (in m).
+
+
+! *** Interface-variables of: Subroutine SendDomainAdvanced(rv_stretch_factor,rv_first_layer_depth)
+      
+! *** Variable explanation and Default values:
+! *** ----------------------------------------
+! ***
+      real :: rv_stretch_factor    = -1.0  ! If positive it indicate the stretch-factor of the 
+! ***                                      ! thickness of the vertical layers. User defined 
+! ***                                      ! thicknesses applied if negative.
+! ***
+      real :: rv_first_layer_depth =  0.0  ! Vertical thickness of first layer. Not applied if 
+! ***                                      ! the "rv_stretch_factor" is negative.
+
+
+! *** ----------------------------------------------------------------------------------------------------------
+
+! *** Interface-variables of "module_mc_wind_met.for":
+
+! **************************************************************************************************************
+!_Run_1:
+!      integer, parameter :: iv_n_surface_stat = 7  ! Integer variable with the number of surface meteorological 
+! ***                                              ! measurement stations. All of these stations should measure
+! ***                                              ! at least the wind speed (m/s) and wind direction (deg).
+! ***
+!_Run_06Jan2005:
+      integer, parameter :: iv_n_surface_stat = 1  ! Integer variable with the number of surface meteorological 
+! ***                                              ! measurement stations. All of these stations should measure
+! ***                                              ! at least the wind speed (m/s) and wind direction (deg).
+! ***
+
+
+
+
+! **************************************************************************************************************
+      integer :: iav1_surface_stat_id(iv_n_surface_stat)    ! 1-D integer array with ID-numbers of the
+! ***                                                       ! "iv_n_surface_stat" surface met. stations.
+! ***
+      real :: rav1_surface_stat_posx(iv_n_surface_stat)     ! 1-D real array containing the x-position 
+! ***                                                       ! (in km) from origo of the various surface
+! ***                                                       ! met. stations.
+! ***                                                            
+      real :: rav1_surface_stat_posy(iv_n_surface_stat)     ! 1-D real array containing the y-position 
+! ***                                                       ! (in km) from origo of the various surface
+! ***                                                       ! met. stations.
+! ***
+      real :: rav1_surface_stat_hgt_vel(iv_n_surface_stat)  ! 1-D real array containing the measurment
+! ***                                                       ! height (in m) of the wind (speed and dir)
+! ***                                                       ! measurements at the various surface met.
+! ***                                                       ! stations. 
+! ***
+      real :: rv_surface_stat_hgt_tmp     ! Real variable containing the measurment height (in m) of 
+! ***                                     ! the temperature measurement at the main surface met. station.
+! ***
+      real :: rv_surface_stat_hgt_dtup    ! Real variable giving the upper measurement height (in m) of 
+! ***                                     ! the Delta-T measurement at the main surface met. station.
+! ***
+      real :: rv_surface_stat_hgt_dtlo    ! Real variable giving the lower measurement height (in m) of
+! ***                                     ! the Delta-T measurement at the main surface met. station.
+! ***
+      integer, parameter :: iv_n_geostrophic_stat = 1    ! Integer variable with the number of upper
+! ***                                                    ! geostrophic wind obs. (default = 1).
+! ***      
+      integer :: iav1_geostrophic_stat_id(iv_n_geostrophic_stat)  ! 1-D integer array with ID-numbers of
+! ***                                                             ! the "iv_n_geostrophic_stat" upper
+! ***                                                             ! geostrophic wind observations.
+! ***      
+      real :: rav1_geostrophic_stat_posx(iv_n_geostrophic_stat)   ! 1-D real array containing the 
+! ***                                                             ! x-position (in km) from origo of 
+! ***                                                             ! the "iv_n_geostrophic_stat" upper
+! ***                                                             ! geostrophic wind observations.
+      real :: rav1_geostrophic_stat_posy(iv_n_geostrophic_stat)   ! 1-D real array containing the 
+! ***                                                             ! y-position (in km) from origo of 
+! ***                                                             ! the "iv_n_geostrophic_stat" upper
+! ***                                                             ! geostrophic wind observations.
+
+! *** Time dependent data:
+
+     
+      real :: rav1_surface_stat_wspeed(iv_n_surface_stat) ! 1-D real array containing the windspeed
+! ***                                                     ! (m/s) observed at the "iv_n_surface_stat"
+! ***                                                     ! surface meteorological stations.
+! *** 
+      real :: rav1_surface_stat_wdir(iv_n_surface_stat)   ! 1-D real array containing the direction
+! ***                                                     ! (deg) of the wind velocity observed at 
+! ***                                                     ! the "iv_n_surface_stat" surface
+! ***                                                     ! meteorological stations.
+! ***      
+      real :: rv_surface_stat_tmp      ! Real variable containg the temperature (C)
+! ***                                  ! measured at the main met. station.
+! ***
+      real :: rv_surface_stat_dt       ! Real variable containg the temperaturedifference (K) 
+! ***                                  ! measured at the main met. station.
+! ***
+      real :: rv_surface_stat_press    ! Real variable containg the atmospheric
+! ***                                  ! pressure (1013 mb) measured at the
+! ***                                  ! main met. station.
+       
+      real :: rv_surface_stat_rh       ! Real variable containg the relative
+! ***                                  ! humidity (79 %) measured at the
+! ***                                  ! main met. station.
+! ***
+      real :: rv_surface_stat_mm       ! Real variable containg the precipitation (0 mm/h) 
+! ***                                  ! measured at the main met. station.
+
+! *** ----------------------------------------------------------------------------------------------------------
+! ***
+! *** Interface-variables of: Subroutine SendMetAdvanced(iv_i_surface_prof_method,
+! ***                        &                           iv_nst_method,
+! ***                        &                           iv_nust_method,
+! ***                        &                           bv_const_ref_height,
+! ***                        &                           rv_surf_obs_ref_height,
+! ***                        &                           rv_minimum_obs_windspeed,
+! ***                        &                           rv_maximum_obs_windspeed,
+! ***                        &                           rv_lower_lim_L,
+! ***                        &                           rv_lower_lim_hmix,
+! ***                        &                           bv_analytic)
+
+! *** Variable explanation and Default values:
+! *** ----------------------------------------
+! ***
+      integer :: iv_i_surface_prof_method = 2    ! Selection of profile formula applied above the 
+! ***                                            ! surface observations:
+! ***                                            ! 1 = Power-law formula;  
+! ***                                            ! 2 = Zilitinkevich vertical profile.
+! ***
+      integer :: iv_nst_method   = 2             ! Selection of PBL-height formula applied for 
+! ***                                            ! stable and neutral conditions.
+! ***
+      integer :: iv_nust_method  = 4             ! Selection of PBL-height formula applied for 
+! ***                                            ! unstable conditions.
+! ***
+      logical :: bv_const_ref_height  = .FALSE.  ! If "bv_const_ref_height" = .false. the horizontal 
+! ***                                            ! interpolation of the surface wind is done along 
+! ***                                            ! the variable mid-point height of the first 
+! ***                                            ! sigma layer.
+! ***
+      real :: rv_surf_obs_ref_height = 10.0      ! If "bv_const_ref_height" = .true. the horizontal 
+! ***                                            ! interpolation of the surface wind is done at the 
+! ***                                            ! constant height "rv_surf_obs_ref_height" above 
+! ***                                            ! ground level.
+! ***
+      real :: rv_minimum_obs_windspeed = 0.2     ! Minimum accepted value (m/s)of obs. wind speed.
+      real :: rv_maximum_obs_windspeed = 40.0    ! Maximum accepted value (m/s)of obs. wind speed.
+! ***
+      real :: rv_lower_lim_L    = 20.0           ! Lower limit value (m) for positive values of the 
+! ***                                            ! estimated value of the Monin-Obukhov length, L.   
+! ***
+      real :: rv_lower_lim_hmix = 50.0           ! Lower limit value (m) of the estimated hmix.
+! ***
+      logical :: bv_analytic  = .TRUE.           ! If .true. the analytic solution is applied in 
+! ***                                            ! SUBROUTINE TURB1 for very stable conditions.
+
+! *** ----------------------------------------------------------------------------------------------------------
+
+! *** Interface-variables of "module_mc_wind_adjust.for":
+! ***
+! *** Interface-variables of: Subroutine SendAdjustAdvanced(bv_adjust,
+! ***                        &                              iv_method_alfa,
+! ***                        &                              rv_constant_alfa,
+! ***                        &                              iv_max_iter,
+! ***                        &                              iv_lim_iter,
+! ***                        &                              rv_rel_par,
+! ***                        &                              rv_tolerance,
+! ***                        &                              rv_rel_tolerance,
+! ***                        &                              rv_lim_rel_par,
+! ***                        &                              rv_lim_tolerance,
+! ***                        &                              rv_lim_rel_tolerance,
+! ***                        &                              iv_method_adjust)
+
+! *** Variable explanation and Default values:
+! *** ----------------------------------------
+! ***
+! ***
+      logical :: bv_adjust = .true.       ! Deciding whether adjustment of the first guess field
+! ***                                     ! is to be performed.
+! ***
+      integer :: iv_method_alfa = 2       ! Selection of the applied alfa-values: 
+! ***                                     ! 1 = Apply values as defined in MATHEW. 
+! ***                                     ! 2 = Apply values as defined in WINDS.
+! ***                                     ! 4 = Apply constant alfa-value.
+! ***
+      real :: rv_constant_alfa = 1.0      ! The constant Alfa-value applied if "iv_method_alfa" 
+! ***                                     ! is equal to 4.
+! ***
+      integer :: iv_max_iter   = 500      ! The maximum number iterations applied for the 
+! ***                                     ! iterative SOR-procedure.
+      integer :: iv_lim_iter   = 300      ! The number of iterations that are applied with the
+! ***                                     ! most restrictive absolute tolerance, rv_tolerance.
+      real :: rv_rel_par       = 1.78     ! Value of the SOR relaxation parameter for the first
+! ***                                     ! "iv_lim_iter" iterations.
+      real :: rv_tolerance     = 0.01     ! Abs tolerance for the first "iv_lim_iter" iterations.
+      real :: rv_rel_tolerance = 0.01     ! Rel tolerance for the first "iv_lim_iter" iterations.
+      real :: rv_lim_rel_par   = 1.0      ! Value of the SOR relaxation parameter after 
+! ***                                     ! "iv_lim_iter" iterations.
+      real :: rv_lim_tolerance     = 0.01 ! Abs tolerance after "iv_lim_iter" iterations.
+      real :: rv_lim_rel_tolerance = 0.01 ! Rel tolerance after "iv_lim_iter" iterations.
+! ***
+      integer :: iv_method_adjust = 1     ! Deciding wheter the vertical OMEGA-values are to 
+! ***                                     ! calculated from the continuity equation or directly 
+! ***                                     ! from the LAMBDA-values:
+! ***                                     ! 1 = from the continuity eq. 
+! ***                                     ! 2 = from the LAMBDA-values.
+
+! *** ----------------------------------------------------------------------------------------------------------
+
+! *** Declaration of all variables that are received as output from McWIND: "module_mc_wind_winds.for".
+
+      real :: rav3_u(iv_im,iv_jm,iv_km)      ! 3-D real array containing the x-component of the final
+! ***                                        ! adjusted (divergence free) wind field. This is the 
+! ***                                        ! linearly interpolated value valid in the centerpoint of
+! ***                                        ! the grid cells.
+! ***
+      real :: rav3_v(iv_im,iv_jm,iv_km)      ! 3-D real array containing the y-component of the final
+! ***                                        ! adjusted (divergence free) wind field. This is the 
+! ***                                        ! linearly interpolated value valid in the centerpoint of
+! ***                                        ! the grid cells.
+      real :: rav3_w(iv_im,iv_jm,iv_km)      ! 3-D real array containing the z-component of the final
+! ***                                        ! adjusted (divergence free) wind field. This is the 
+! ***                                        ! linearly interpolated value valid in the centerpoint of
+! ***                                        ! the grid cells.
+
+      real :: rav2_temp(iv_im,iv_jm)
+      real :: rav2_tempgrad(iv_im,iv_jm)
+      real :: rav2_rhum(iv_im,iv_jm)
+      real :: rav2_prec(iv_im,iv_jm)
+      real :: rav2_clou(iv_im,iv_jm)
+! **************************************************************************************************************

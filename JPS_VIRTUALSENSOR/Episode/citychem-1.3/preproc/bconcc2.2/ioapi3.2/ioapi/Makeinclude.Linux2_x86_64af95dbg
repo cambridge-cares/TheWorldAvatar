@@ -1,0 +1,27 @@
+# VERSION "$Id: Makeinclude.Linux2_x86_64af95dbg 1 2017-06-10 18:05:20Z coats $"
+#
+# Flags for Absoft "f95" on Opteron in 64-bit mode using native
+# Absoft name mangling
+
+AR   = ar
+CC   = gcc
+CXX  = g++
+FC   = f95
+M4   = m4
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -p
+
+OMPFLAGS  = # -mp
+OMPLIBS   = # -lmp
+COPTFLAGS = -g -mcpu=opteron -march=opteron
+FOPTFLAGS = -g -ggdb -cpu:host -mcmodel=medium
+FPPFLAGS  = -DF90=1 
+FSFLAGS   = -s
+ARCHFLAGS = -DABSFT=1 -DAUTO_ARRAYS=1 -m64
+PARFLAGS  =
+ARCHLIB   = -lc -lU77
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

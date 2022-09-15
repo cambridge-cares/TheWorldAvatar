@@ -1,0 +1,25 @@
+# VERSION "$Id: Makeinclude.HPUX 1 2017-06-10 18:05:20Z coats $"
+#
+AR   = ar
+CC   = c89
+FC   = f90
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -I       ## Module-include-directory command
+
+MFLAGS    = 
+
+OMPFLAGS  = # -mp -mpio
+OMPLIBS   = -L/opt/fortran90/lib/libp/ -lU77
+COPTFLAGS = -O2 ${MFLAGS}
+FOPTFLAGS = -O2 +Onolimit ${MFLAGS}
+FPPFLAGS  = +cpp=yes
+FSFLAGS   = +save
+ARCHFLAGS = -DAUTO_ARRAYS=1 -DF90=1
+PARFLAGS  =
+ARCHLIB   = 
+
+M4DEFFILE = # $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

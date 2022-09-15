@@ -1,0 +1,2 @@
+# @author msff2
+# path = citychem-1.3/INPUT/mcwind

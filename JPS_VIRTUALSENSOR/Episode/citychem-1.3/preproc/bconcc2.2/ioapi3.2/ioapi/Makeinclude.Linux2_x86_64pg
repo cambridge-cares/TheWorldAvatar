@@ -1,0 +1,55 @@
+# VERSION "$Id: Makeinclude.Linux2_x86_64pg 1 2017-06-10 18:05:20Z coats $"
+#
+#  In some ways, this is the most problematical install, because of 
+#  the way  various compilers create linker-visible object names for
+#  the code they compile.  The default flags assume that you are using
+#  the Gnu "gcc" (and maybe "g77") to compile other libraries such as
+#  "libnetcdf.a" and "libpvm3.a"  -- note that  vendor-distributed
+#  libraries that may come with your Linux system are built this way...
+#  Alternatively, you may use "pgf90" and "pgcc" to build the entire
+#  system (where you use "-DpgiFortran=1" in your netCDF build), and
+#  then may use the alternate set of ARCHFLAGS.
+#
+#  The important thing is that _all_ the compilations for building an
+#  executable must use consistent linker-visible object names.  Any
+#  "could not find" error messages when linking a program probably
+#  come from this kind of problem; the fix is to rebuild everything
+#  with a consistent set of compiler-flags.  You may use the script
+#  "nm_test.csh" and/or "make nametest" to help with this determination.
+#
+#  Note all the variant files "Makeinclude.Linux2_x86pg*": copy the
+#  appropriate one to "Makeinclude.Linux2_x86pg"; further ensure that
+#  the compilation-flags for your model-code match the flags therein.
+#
+#  CREDITS:  Prakash Doraiswamy and Winston Hao, 
+#  Atmospheric Sciences Research Center, SUNY Albany and
+#  New York State Department of Environmental Conservation and
+#  
+
+AR   = ar
+CC   = pgcc
+CXX  = pg++
+FC   = pgf90
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -module ## Module-include-directory command
+E132 = -extend
+
+MFLAGS    = -fast # -Mnoupcase
+
+OMPFLAGS  = # -mp
+OMPLIBS   = # -lmp
+COPTFLAGS = -O2
+FOPTFLAGS = -O2 -V -Mnosecond_underscore
+FPPFLAGS  = -DF90=1 
+FSFLAGS   = -Msave
+ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1 -DF90=1 -DNDEBUG
+PARFLAGS  = 
+LIBDIR    = $(SRCDIR)/../lib
+BINDIR    = $(SRCDIR)/../bin
+ARCHLIB   = 
+
+# PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3
+# M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4

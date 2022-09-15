@@ -1,0 +1,26 @@
+ '{SHEBA-HamburgCity--testwithtapm-0001}'                ! Simulation-ID, exact 38 characters long
+ '../testdata/tapm_1km_20130701_20130801.outa'      ! Input path of TAPM tapm_YYYYMMDD_YYYYMMDD.outa file ('' if not available)
+ ''                                                      ! Input path of CMAQ CONC.surface.YYYYJJJ files       ('' if not available)
+ './uect2.3/input/points_hamburg_2013_new.csv'           ! Filename of csv-file containing point source yearly emission data (full path)
+ './uect2.3/input/lines_hamburg_2013_rev.csv'            ! Filename of csv-file containing line source yearly emission data  (full path)
+ './uect2.3/input/areas_hamburg_2013.csv'                ! Filename of csv-file containing area source yearly emission data  (full path)
+ '../INPUT/tapm/'                                        ! Output files path name
+ 'user_log_tapm.txt'                                     ! Log file (in output path) 
+ 'CC'                                                    ! City-scale model choice ['CC'=CityChem, 'TP'=TAPM]
+ 'ASE'                                                   ! Output type choice      ['PSE'=points, 'LSE'=lines, 'ASE'=areas, 'ALL'=all]
+ 1                                                       ! Output for CityChem as ASCII or Binary [1=ASCII, 2=Binary, 3=netCDF]
+ 744                 		                         ! Number of hours for output, one month (e.g. 744)
+ '20130701'                                              ! Start date of input FORMAT='YYYYMMDD'
+ '20130731'                                              ! End data of input   FORMAT='YYYYMMDD'
+ 2013,07,01                                              ! Start date of input FORMAT=YYYY,MM,DD
+ 2013,07,31                                              ! End date of input   FORMAT=YYYY,MM,DD
+ 30                                                      ! Number grid cells in x-direction of the model domain
+ 30                                                      ! Number grid cells in y-direction of the model domain
+ 200.0                                                   ! Horizontal resolution (grid width dx) in meters of gridded area source input
+ 1000.0                                                  ! Horizontal resolution (grid width dx) in meters of the model domain
+ 551750,5918656                                          ! Grid Origo (south-west corner) in (truncated) UTM coordinates (x,y) of the model domain
+ '32N'                                                   ! UTM zone, e.g. '35N' 
+ 699                                                     ! Number of sources in the point input
+ 15838                                                   ! Number of sources in the line input
+ 2397                                                    ! Number of sources in the area input
+ 0                                                       ! Output netCDF area sources choice  [1=Yes, 0=No]

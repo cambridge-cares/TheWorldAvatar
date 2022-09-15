@@ -1,0 +1,46 @@
+
+!.........................................................................
+! Version "$Id: STATE3V.EXT 1 2017-06-10 18:05:20Z coats $"
+! EDSS/Models-3 I/O API.  Copyright (C) 1992-2002 MCNC
+! Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
+! See file "LGPL.txt" for conditions of use.
+!....................................................................
+!  INCLUDE FILE  STATE3V.EXT
+!
+!
+!  DO NOT EDIT !!
+!
+!       The EDSS/Models-3 I/O API depends in an essential manner
+!       upon the contents of this INCLUDE file.  ANY CHANGES are
+!       likely to result in very obscure, difficult-to-diagnose
+!       bugs caused by an inconsistency between standard "libioapi.a"
+!       object-libraries and whatever code is compiled with the
+!       resulting modified INCLUDE-file.
+!
+!       By making any changes to this INCLUDE file, the user
+!       explicitly agrees that in the case any assistance is 
+!       required of MCNC or of the I/O API author, Carlie J. Coats, Jr.
+!       as a result of such changes, THE USER AND/OR HIS PROJECT OR
+!       CONTRACT AGREES TO REIMBURSE MCNC AND/OR THE I/O API AUTHOR,
+!       CARLIE J. COATS, JR., AT A RATE TRIPLE THE NORMAL CONTRACT
+!       RATE FOR THE SERVICES REQUIRED.
+!
+!  CONTAINS:  Common  CSTATE3V  which store new data structures
+!       needed ONLY for virtual files.!  DEPENDENT UPON:  PARMS3.EXT
+!
+!  REFERENCED BY:  IOAPI routines (assume that it is referenced by all
+!                  of them.
+!
+!     ---->>  PRIVATE TO IO API; NOT TO BE USED BY APPLICATIONS !!!!!
+!
+!  REVISION HISTORY:
+!       Extracted 3/2002 from "virtual mode" STATE3.EXT for I.O API V2.2
+!       by Carlie J. Coats, Jr., MCNC Environmental Modeling Center!....................................................................
+!....................................................................
+
+        CHARACTER*256 PLIST3( MXFILE3 ) ! physical file name table
+
+        COMMON  / CSTATE3V / PLIST3 ! character-string portion of virtual
+        SAVE    / CSTATE3V /
+        
+!................   end   STATE3V.EXT   ....................................
