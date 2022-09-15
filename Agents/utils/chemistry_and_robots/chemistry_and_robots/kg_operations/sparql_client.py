@@ -331,39 +331,43 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_chemical_reaction(self, rxnexp_iri: str) -> OntoCAPE_ChemicalReaction:
         rxnexp_iri = trimIRI(rxnexp_iri)
-        query = PREFIX_RDF + """SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
-                   ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species
-                   WHERE {
-                       VALUES ?reac_type {<%s> <%s>}.
-                       VALUES ?prod_type {<%s> <%s> <%s> <%s>}.
-                       <%s> <%s> ?chem_rxn.
-                       ?chem_rxn <%s> ?reactant; <%s> ?product.
-                       ?reactant rdf:type ?reac_type; <%s> ?reac_species.
-                       ?product rdf:type ?prod_type; <%s> ?prod_species.
-                       optional{VALUES ?cata_type {<%s> <%s>}. ?chem_rxn <%s> ?catalyst. ?catalyst rdf:type ?cata_type; <%s> ?cata_species.}
-                       optional{VALUES ?solv_type {<%s> <%s>}. ?chem_rxn <%s> ?solvent. ?solvent rdf:type ?solv_type; <%s> ?solv_species.}
-                   }""" % (ONTOKIN_SPECIES, ONTOKIN_REACTANT, ONTOKIN_SPECIES, ONTOKIN_PRODUCT, ONTOREACTION_TARGETPRODUCT, ONTOREACTION_IMPURITY,
-                   rxnexp_iri, ONTOREACTION_ISOCCURENCEOF, ONTOCAPE_HASREACTANT, ONTOCAPE_HASPRODUCT,
-                   ONTOSPECIES_HASUNIQUESPECIES, ONTOSPECIES_HASUNIQUESPECIES,
-                   ONTOKIN_SPECIES, ONTOREACTION_CATALYST, ONTOCAPE_CATALYST, ONTOSPECIES_HASUNIQUESPECIES,
-                   ONTOKIN_SPECIES, ONTOREACTION_SOLVENT, ONTOREACTION_HASSOLVENT, ONTOSPECIES_HASUNIQUESPECIES)
+        query = f"""{PREFIX_RDF}
+                    SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
+                    ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?doe_template
+                    WHERE {{
+                        VALUES ?reac_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_REACTANT}>}}.
+                        VALUES ?prod_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_PRODUCT}> <{ONTOREACTION_TARGETPRODUCT}> <{ONTOREACTION_IMPURITY}>}}.
+                        <{rxnexp_iri}> <{ONTOREACTION_ISOCCURENCEOF}> ?chem_rxn.
+                        ?chem_rxn <{ONTOCAPE_HASREACTANT}> ?reactant; <{ONTOCAPE_HASPRODUCT}> ?product.
+                        ?reactant rdf:type ?reac_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?reac_species.
+                        ?product rdf:type ?prod_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?prod_species.
+                        OPTIONAL{{
+                            VALUES ?cata_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_CATALYST}>}}.
+                            ?chem_rxn <{ONTOCAPE_CATALYST}> ?catalyst.
+                            ?catalyst rdf:type ?cata_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?cata_species.
+                        }}
+                        OPTIONAL{{
+                            VALUES ?solv_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_SOLVENT}>}}.
+                            ?chem_rxn <{ONTOREACTION_HASSOLVENT}> ?solvent.
+                            ?solvent rdf:type ?solv_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?solv_species.
+                        }}
+                        OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
+                    }}"""
         response = self.performQuery(query)
         logger.debug(response)
 
-        unique_chem_rxn = dal.get_unique_values_in_list_of_dict(response, 'chem_rxn')
-        if len(unique_chem_rxn) > 1:
-            raise Exception("Multiple OntoCAPE:ChemicalReaction identified for reaction experiment <%s>: %s" % (rxnexp_iri, str(unique_chem_rxn)))
-        elif len(unique_chem_rxn) < 1:
-            raise Exception("Reaction experiment <%s> is missing OntoCAPE:ChemicalReaction." % (rxnexp_iri))
-        else:
-            unique_chem_rxn = unique_chem_rxn[0]
+        try:
+            unique_chem_rxn = dal.get_the_unique_value_in_list_of_dict(response, 'chem_rxn')
+        except Exception as e:
+            raise Exception(f"OntoCAPE:ChemicalReaction is not correctly identified for ReactionExperiment <{rxnexp_iri}>: {dal.get_unique_values_in_list_of_dict(response, 'chem_rxn')}.")
 
         chem_rxn = OntoCAPE_ChemicalReaction(
             instance_iri=unique_chem_rxn,
             hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
             hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
             hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
-            hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species')
+            hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species'),
+            hasDoETemplate=dal.get_the_unique_value_in_list_of_dict(response, 'doe_template'),
         )
 
         return chem_rxn
@@ -372,7 +376,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         chem_rxn_iri = trimIRI(chem_rxn_iri)
         query = f"""{PREFIX_RDF}
                 SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
-                ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species
+                ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?doe_template
                 WHERE {{
                     VALUES ?reac_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_REACTANT}>}}.
                     VALUES ?prod_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_PRODUCT}> <{ONTOREACTION_TARGETPRODUCT}> <{ONTOREACTION_IMPURITY}>}}.
@@ -380,8 +384,17 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?chem_rxn <{ONTOCAPE_HASREACTANT}> ?reactant; <{ONTOCAPE_HASPRODUCT}> ?product.
                     ?reactant rdf:type ?reac_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?reac_species.
                     ?product rdf:type ?prod_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?prod_species.
-                    optional{{VALUES ?cata_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_CATALYST}>}}. ?chem_rxn <{ONTOCAPE_CATALYST}> ?catalyst. ?catalyst rdf:type ?cata_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?cata_species.}}
-                    optional{{VALUES ?solv_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_SOLVENT}>}}. ?chem_rxn <{ONTOREACTION_HASSOLVENT}> ?solvent. ?solvent rdf:type ?solv_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?solv_species.}}
+                    OPTIONAL{{
+                        VALUES ?cata_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_CATALYST}>}}.
+                        ?chem_rxn <{ONTOCAPE_CATALYST}> ?catalyst.
+                        ?catalyst rdf:type ?cata_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?cata_species.
+                    }}
+                    OPTIONAL{{
+                        VALUES ?solv_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_SOLVENT}>}}.
+                        ?chem_rxn <{ONTOREACTION_HASSOLVENT}> ?solvent.
+                        ?solvent rdf:type ?solv_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?solv_species.
+                    }}
+                    OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                 }}"""
         response = self.performQuery(query)
         logger.debug(response)
@@ -391,7 +404,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
             hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
             hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
-            hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species')
+            hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species'),
+            hasDoETemplate=dal.get_the_unique_value_in_list_of_dict(response, 'doe_template'),
         )
 
         return chem_rxn
@@ -1459,6 +1473,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         if rt_diff.get(key_min_rt_diff) < hplc.RETENTION_TIME_MATCH_THRESHOLD:
             return key_min_rt_diff
         else:
+            # TODO instead of raising an exception, we should return write this information to KG and return None
             raise Exception("No OntoSpecies:Species identified for OntoHPLC:RetentionTime instance (%s) given RETENTION_TIME_MATCH_THRESHOLD of %s and OntoHPLC:HPLCMethod (%s)" % (
                 retention_time, hplc.RETENTION_TIME_MATCH_THRESHOLD, hplc_method))
 

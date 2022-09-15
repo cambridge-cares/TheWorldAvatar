@@ -18,7 +18,7 @@ class RxnOptGoalIterAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(RxnOptGoalIterSparqlClient)
 
     def agent_input_concepts(self) -> list:
-        return [ONTOGOAL_GOALSET, ONTOREACTION_REACTIONEXPERIMENT]
+        return [ONTOGOAL_GOALSET, ONTOCAPE_CHEMICALREACTION, ONTOREACTION_REACTIONEXPERIMENT]
 
     def agent_output_concepts(self) -> list:
         return [ONTOGOAL_RESULT]
@@ -35,14 +35,30 @@ class RxnOptGoalIterAgent(DerivationAgent):
         goal_set_instance = self.sparql_client.get_goal_set_instance(goal_set_iri)
 
 
-        # II. Get the reaction experiment
+        # II. Get the chemical reaction and reaction experiment
+        # NOTE reaction experiment might not in the derivation inputs as this might be the first reaction where no prior data is available
         # Check if the input is in correct format, and return OntoReaction.ReactionExperiment/ReactionVariation instance
-        list_rxn_exp_instance = self.sparql_client.getReactionExperiment(derivation_inputs.getIris(ONTOREACTION_REACTIONEXPERIMENT))
+        list_chemical_reaction_iri = derivation_inputs.getIris(ONTOCAPE_CHEMICALREACTION)
+        if len(list_chemical_reaction_iri) != 1:
+            raise Exception(f"Exactly one chemical reaction is expected, but found: {list_chemical_reaction_iri}")
+        chem_rxn_iri = list_chemical_reaction_iri[0]
+        chem_rxn_instance = self.sparql_client.get_chemical_reaction_given_iri(chem_rxn_iri)
+        if chem_rxn_instance.hasDoETemplate is None:
+            raise Exception(f"ChemicalReaction {chem_rxn_iri} does not have a DoE template")
+
+        _full_derivation_inputs = derivation_inputs.getInputs()
+        list_rxn_exp_instance = None
+        if ONTOREACTION_REACTIONEXPERIMENT in _full_derivation_inputs:
+            list_rxn_exp_instance = self.sparql_client.getReactionExperiment(derivation_inputs.getIris(ONTOREACTION_REACTIONEXPERIMENT))
 
 
         # III. Create a set of derivations
         # Create and upload the DesignOfExperiment triples to triple store as pure input, and add timestamp
-        doe_instance = self.sparql_client.generate_doe_instance_from_goal(goal_set_instance, list_rxn_exp_instance)
+        doe_instance = self.sparql_client.generate_doe_instance_from_goal(
+            goal_set=goal_set_instance,
+            chem_rxn=chem_rxn_instance,
+            rxn_exp_as_beliefs=list_rxn_exp_instance,
+        )
         g = Graph()
         g = doe_instance.create_instance_for_kg(g)
         self.sparql_client.uploadGraph(g)

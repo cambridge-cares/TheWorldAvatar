@@ -213,7 +213,7 @@ def initialise_test_triples(initialise_triple_store):
             DERIVATION_INSTANCE_BASE_URL
         )
 
-        initialise_triples(sparql_client, derivation_client)
+        initialise_triples(sparql_client, derivation_client, IRIs.DERIVATION_INPUTS.value)
 
         yield sparql_client, derivation_client
 
@@ -296,16 +296,24 @@ class IRIs(Enum):
     EXAMPLE_RXN_EXP_4_IRI = EXP_4_BASE_IRI + 'RxnExp_1'
     EXAMPLE_RXN_EXP_5_IRI = EXP_5_BASE_IRI + 'RxnExp_1'
 
+    CHEMICAL_REACTION_IRI = 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/ChemRxn_1'
+
     DERIVATION_INPUTS = [GOALSET_1, EXAMPLE_RXN_EXP_1_IRI, EXAMPLE_RXN_EXP_2_IRI,
-        EXAMPLE_RXN_EXP_3_IRI, EXAMPLE_RXN_EXP_4_IRI, EXAMPLE_RXN_EXP_5_IRI]
+        EXAMPLE_RXN_EXP_3_IRI, EXAMPLE_RXN_EXP_4_IRI, EXAMPLE_RXN_EXP_5_IRI, CHEMICAL_REACTION_IRI]
 
+    DERIVATION_INPUTS_NO_PRIOR_DATA = [GOALSET_1, CHEMICAL_REACTION_IRI]
 
-def initialise_triples(sparql_client, derivation_client):
+def initialise_triples(sparql_client, derivation_client, derivation_inputs):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
 	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
-    for f in ['sample_data/rxn_data.ttl', 'sample_data/new_exp_data.ttl', 'sample_data/dummy_lab.ttl']:
+    for f in [
+        'sample_data/rxn_data.ttl', # previous experiment data
+        'sample_data/new_exp_data.ttl', # new experiment data
+        'sample_data/dummy_lab.ttl', # lab hardware and other information
+        'sample_data/doe_template.ttl', # DOE template
+    ]:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
         sparql_client.uploadGraph(g)
@@ -316,7 +324,7 @@ def initialise_triples(sparql_client, derivation_client):
         sparql_client.uploadOntology(str(path))
 
     # Add timestamp to pure inputs
-    for input in IRIs.DERIVATION_INPUTS.value:
+    for input in derivation_inputs:
         derivation_client.addTimeInstance(input)
         derivation_client.updateTimestamp(input)
 

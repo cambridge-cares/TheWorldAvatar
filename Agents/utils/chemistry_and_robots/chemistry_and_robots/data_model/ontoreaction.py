@@ -288,6 +288,9 @@ class OntoCAPE_ChemicalReaction(BaseOntology):
     hasProduct: List[OntoKin_Species]
     hasCatalyst: Optional[List[OntoKin_Species]]
     hasSolvent: Optional[List[OntoKin_Species]]
+    # NOTE here we simplify the implementation by using str instead of the actual OntoDoE:DesignOfExperiment
+    # NOTE this is to prevent circular import error
+    hasDoETemplate: Optional[str]
 
     def get_list_of_occurring_species(self) -> List[OntoKin_Species]:
         lst_of_species = []

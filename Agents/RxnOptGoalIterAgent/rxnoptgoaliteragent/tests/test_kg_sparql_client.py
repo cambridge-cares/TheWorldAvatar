@@ -139,3 +139,8 @@ def test_generate_doe_instance_from_goal(initialise_test_triples):
     #     self, goal_set: GoalSet, rxn_exp_as_beliefs: List[ReactionExperiment]
     # ) -> DesignOfExperiment:
     pass
+
+@pytest.mark.skip(reason="TODO")
+def test_get_goal_plan(initialise_test_triples):
+    sparql_client, derivation_client = initialise_test_triples
+    pass

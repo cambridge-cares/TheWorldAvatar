@@ -17,6 +17,8 @@ logging.getLogger("chemistry_and_robots_sparql_client").setLevel(logging.INFO)
     [
         (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS.value, True), # local agent instance test
         # (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS.value, False), # deployed docker agent test
+        (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS_NO_PRIOR_DATA.value, True), # local agent instance test
+        # (cf.IRIs.GOALSET_1.value, [cf.IRIs.RESULT_QUANTITY_1.value], cf.IRIs.DERIVATION_INPUTS_NO_PRIOR_DATA.value, False), # deployed docker agent test
     ],
 )
 def test_rogi_agent(
@@ -26,7 +28,7 @@ def test_rogi_agent(
     sparql_client, derivation_client = initialise_clients
 
     # Initialise all triples in the knowledge graph
-    cf.initialise_triples(sparql_client, derivation_client)
+    cf.initialise_triples(sparql_client, derivation_client, derivation_inputs)
 
     # Create agent instance, register agent in KG
     rogi_agent = create_rogi_agent(register_agent=True, random_agent_iri=local_agent_test)
@@ -59,7 +61,7 @@ def test_rogi_agent(
         currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
 
     # Query the output triples about OntoGoal:Result of the derivation
-    lst_new_result = cf.get_result_from_rogi_derivation(derivation_iri)
+    lst_new_result = cf.get_result_from_rogi_derivation(derivation_iri, sparql_client)
     lst_new_result_quantity = [r.refersTo for r in lst_new_result]
     # Query the new goal set instance, the each new result should be connected to corresponding goal
     new_goal_set_instance = sparql_client.get_goal_set_instance(goal_set_iri)

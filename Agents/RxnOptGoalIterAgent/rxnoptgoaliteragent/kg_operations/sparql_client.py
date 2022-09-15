@@ -162,25 +162,60 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
         )
         return goal_set_instance
 
-    # TODO: implement
     def generate_doe_instance_from_goal(
-        self, goal_set: GoalSet, rxn_exp_as_beliefs: List[ReactionExperiment]
+        self,
+        goal_set: GoalSet,
+        chem_rxn: OntoCAPE_ChemicalReaction,
+        rxn_exp_as_beliefs: List[ReactionExperiment]=None,
     ) -> DesignOfExperiment:
+        # get the doe template
+        doe_template = self.get_doe_instance(chem_rxn.hasDoETemplate)
+
         # process design variables
         list_design_variables = []
-        # NOTE here we take the reaction confition from the first reaction experiment as design variables
-        # TODO [must] how to decide which one to optimise?
-        for rxn_cond in rxn_exp_as_beliefs[0].hasReactionCondition:
-            design_var = ContinuousVariable(
+        # NOTE here we are taking the design variables from the doe template
+        for var in doe_template.hasDomain.hasDesignVariable:
+            if isinstance(var, ContinuousVariable):
+                design_var = ContinuousVariable(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=getNameSpace(var.instance_iri),
+                    upperLimit=var.upperLimit,
+                    lowerLimit=var.lowerLimit,
+                    positionalID=var.positionalID,
+                    refersTo=OM_Quantity(
+                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                        namespace_for_init=getNameSpace(var.refersTo.instance_iri),
+                        clz=var.refersTo.clz,
+                        hasUnit=var.refersTo.hasUnit,
+                    ),
+                )
+                list_design_variables.append(design_var)
+            elif isinstance(var, CategoricalVariable):
+                # TODO [future work]: implement
+                raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
+            else:
+                raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
+
+        # process fixed parameters
+        list_fixed_parameters = []
+        for param in doe_template.hasDomain.hasFixedParameter:
+            fixed_param = FixedParameter(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                namespace_for_init=getNameSpace(goal_set.instance_iri),
-                # TODO: [must] think about how to pass upper and lower limits information to this agent
-                upperLimit=10, # TODO [must] get this from KG
-                lowerLimit=1, # TODO [must] get this from KG
-                positionalID=rxn_cond.positionalID,
-                refersTo=rxn_cond.clz,
+                namespace_for_init=getNameSpace(param.instance_iri),
+                positionalID=param.positionalID,
+                refersTo=OM_Quantity(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=getNameSpace(param.refersTo.instance_iri),
+                    clz=param.refersTo.clz,
+                    hasValue=OM_Measure(
+                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                        namespace_for_init=getNameSpace(param.refersTo.hasValue.instance_iri),
+                        hasUnit=param.refersTo.hasValue.hasUnit,
+                        hasNumericalValue=param.refersTo.hasValue.hasNumericalValue,
+                    ),
+                )
             )
-            list_design_variables.append(design_var)
+            list_fixed_parameters.append(fixed_param)
 
         # process system responses
         list_system_responses = []
@@ -190,12 +225,12 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
                 maximise=boolean_maximise,
-                # positionalID=None, # TODO: double-check this
+                # positionalID=None, # TODO [only when we are supporting same type of goal]
                 refersTo=goal.desires().clz,
             )
             list_system_responses.append(sys_res)
 
-        logger.info(f"Reaction experiments as beliefs:{[rxn.instance_iri for rxn in rxn_exp_as_beliefs]}")
+        logger.info(f"Reaction experiments as beliefs:{[rxn.instance_iri for rxn in rxn_exp_as_beliefs] if rxn_exp_as_beliefs is not None else None}")
         # construct design of experiment instance
         doe_instance = DesignOfExperiment(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
@@ -210,6 +245,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
                 hasDesignVariable=list_design_variables,
+                hasFixedParameter=list_fixed_parameters,
             ),
             hasSystemResponse=list_system_responses,
             utilisesHistoricalData=HistoricalData(
@@ -218,6 +254,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 refersTo=rxn_exp_as_beliefs,
                 # NOTE in utilisesHistoricalData, the default value 1 is used for numOfNewExp
             ),
+            designsChemicalReaction=chem_rxn.instance_iri,
         )
 
         return doe_instance
@@ -248,7 +285,6 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             is expected to be identified by <{response[0]['rxn_exp']}>, but found: {rxn_exp_instance}""")
         return rxn_exp_instance[0]
 
-    # TODO add unit test
     def get_goal_plan(self, goal_plan_iri_or_list: str or list) -> List[Plan]:
         goal_plan_iri_or_list = trimIRI(goal_plan_iri_or_list)
         if not isinstance(goal_plan_iri_or_list, list):

@@ -458,35 +458,43 @@ def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_e
     assert all(item in [*rxn_exp_queue] for item in prior_rxn_exp)
 
 @pytest.mark.parametrize(
-    "rxn_exp_iri,rxn_type,chem_rxn_iri,reactant,product,catalyst,solvent",
+    "rxn_exp_iri,rxn_type,chem_rxn_iri,reactant,product,catalyst,solvent,doe_template_iri",
     [
         (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.NEW_RXN_EXP_1_IRI.value, onto.ONTOREACTION_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.NEW_RXN_EXP_2_IRI.value, onto.ONTOREACTION_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.NEW_RXN_EXP_3_IRI.value, onto.ONTOREACTION_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
     ],
 )
-def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_rxn_iri, reactant, product, catalyst, solvent):
+def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_rxn_iri, reactant, product, catalyst, solvent, doe_template_iri):
     """NOTE get_ontokin_species_from_chem_rxn is tested as part of testing get_chemical_reaction."""
     sparql_client = initialise_triples
     if rxn_type == onto.ONTOREACTION_REACTIONEXPERIMENT:
@@ -504,16 +512,18 @@ def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_r
     assert dict_catalyst == catalyst
     dict_solvent = {solvent.instance_iri:solvent.hasUniqueSpecies for solvent in chem_rxn.hasSolvent}
     assert dict_solvent == solvent
+    assert chem_rxn.hasDoETemplate == doe_template_iri
 
 @pytest.mark.parametrize(
-    "chem_rxn_iri,reactant,product,catalyst,solvent",
+    "chem_rxn_iri,reactant,product,catalyst,solvent,doe_template_iri",
     [
         (TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
     ],
 )
-def test_get_chemical_reaction_given_iri(initialise_triples, chem_rxn_iri, reactant, product, catalyst, solvent):
+def test_get_chemical_reaction_given_iri(initialise_triples, chem_rxn_iri, reactant, product, catalyst, solvent, doe_template_iri):
     sparql_client = initialise_triples
     chem_rxn = sparql_client.get_chemical_reaction_given_iri(chem_rxn_iri)
 
@@ -526,6 +536,7 @@ def test_get_chemical_reaction_given_iri(initialise_triples, chem_rxn_iri, react
     assert dict_catalyst == catalyst
     dict_solvent = {solvent.instance_iri:solvent.hasUniqueSpecies for solvent in chem_rxn.hasSolvent}
     assert dict_solvent == solvent
+    assert chem_rxn.hasDoETemplate == doe_template_iri
 
 def test_get_internal_standard(initialise_triples):
     sparql_client = initialise_triples
