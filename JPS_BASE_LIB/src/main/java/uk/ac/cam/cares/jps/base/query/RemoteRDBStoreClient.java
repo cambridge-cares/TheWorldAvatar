@@ -4,13 +4,13 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.sql.*;
 
 /**
- * This class allows to establish connection with relational databases (RDBs)
+ * This class allows to establish connection with postgresql relational databases (RDBs)
  * to perform query and update operations.
  *
  * It is also used to obtain the connection object after the connection to the RDB
  * has been established.
  *
- * It requires to set the URL and credentials for the database.
+ * It requires to set the URL and credentials for the postgresql database.
  * Example URL: jdbc:postgresql://host.docker.internal:5432/timeseries
  *
  * @author Mehal Agarwal (ma988@cam.ac.uk)
@@ -48,8 +48,10 @@ public class RemoteRDBStoreClient {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
             stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-        } catch (SQLException | ClassNotFoundException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
+        } catch (SQLException e) {
+            throw new JPSRuntimeException("The connection attempt failed", e);
+        } catch (ClassNotFoundException e){
+            throw new JPSRuntimeException("Failed to load postgresql", e);
         }
         return conn;
     }
