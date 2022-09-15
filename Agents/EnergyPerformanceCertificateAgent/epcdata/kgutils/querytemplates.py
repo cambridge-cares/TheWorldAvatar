@@ -90,6 +90,20 @@ def instantiate_postcodes_for_district(local_authority_district: str,
     return query
 
 
+def instantiated_postalcodes() -> str:
+    # Retrieve all instantiated postal codes (per OntoBuiltEnv)
+    query = f"""
+        SELECT ?postcode
+        WHERE {{
+        ?pc <{RDF_TYPE}> <{OBE_POSTALCODE}> ;
+            <{RDFS_LABEL}> ?postcode
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
 # def all_metoffice_station_ids() -> str:
 #     # Returns query to retrieve all identifiers of instantiated stations
 #     query = f"""

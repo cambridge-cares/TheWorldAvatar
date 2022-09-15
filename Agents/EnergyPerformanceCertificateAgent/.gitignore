@@ -16,3 +16,6 @@ assets
 ## User defined
 *.egg-info
 
+## Directories
+data/*
+!.gitkeep

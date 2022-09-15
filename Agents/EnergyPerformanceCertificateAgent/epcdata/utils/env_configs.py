@@ -16,7 +16,7 @@ logger = agentlogging.get_logger("prod")
 
 
 # Initialise global variables to be read from properties file
-global DATAPOINT_API_KEY, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE
+global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE
 
 
 def retrieve_settings():
@@ -25,16 +25,16 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATAPOINT_API_KEY, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE
+    global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE
 
     # Retrieve MetOffice API key
-    DATAPOINT_API_KEY = os.getenv('API_KEY')    
-    if DATAPOINT_API_KEY is None:
-        logger.error('"API_KEY" is missing in environment variables.')
-        raise ValueError('"API_KEY" is missing in environment variables.')
-    if DATAPOINT_API_KEY == '':
-        logger.error('No "API_KEY" value has been provided in environment variables.')
-        raise ValueError('No "API_KEY" value has been provided in environment variables.')
+    API_TOKEN = os.getenv('API_AUTH')    
+    if API_TOKEN is None:
+        logger.error('"API_AUTH" is missing in environment variables.')
+        raise ValueError('"API_AUTH" is missing in environment variables.')
+    if API_TOKEN == '':
+        logger.error('No "API_AUTH" value has been provided in environment variables.')
+        raise ValueError('No "API_AUTH" value has been provided in environment variables.')
 
     # Retrieve PostgreSQL/PostGIS database name
     DATABASE = os.getenv('DATABASE')
