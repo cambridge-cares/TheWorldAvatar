@@ -1,5 +1,3 @@
-from epcdata.datamodel.usage_types import *
-
 ###--- Common Base URLs ---###
 # External ontologies
 DABGEO = 'http://www.purl.org/oema/infrastructure/'
@@ -124,6 +122,9 @@ OM_NUM_VALUE = OM + 'hasNumericalValue'
 OM_HAS_UNIT = OM + 'hasUnit'
 OM_UNIT = OM + 'Unit'
 OM_SYMBOL = OM + 'symbol'
+OM_M = OM + 'metre'
+OM_M2 = OM + 'squareMetre'
+OM_GBP = OM + 'poundSterling'
 
 # GeoSPARQL
 GEO_FEATURE = GEO + 'Feature'

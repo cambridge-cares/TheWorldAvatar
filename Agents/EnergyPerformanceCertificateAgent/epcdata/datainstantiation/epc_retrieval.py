@@ -3,8 +3,8 @@
 # Date: 15 Sep 2022                            #
 ################################################
 
-# The purpose of this module is to instantiate data retrieved
-# from the domestic energy performance certificates
+# The purpose of this module is to retrieved energy performance 
+# certificates data from the EPC API endpoints
 
 import requests
 import pandas as pd
@@ -15,7 +15,7 @@ import agentlogging
 from epcdata.datamodel.iris import *
 from epcdata.kgutils.querytemplates import *
 from epcdata.kgutils.kgclient import KGClient
-from epcdata.errorhandling.exceptions import APIException, InvalidInput
+from epcdata.errorhandling.exceptions import APIException
 from epcdata.utils.api_endpoints import *
 from epcdata.utils.env_configs import API_TOKEN
 from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
@@ -23,6 +23,59 @@ from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
+
+
+def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
+    """
+        Retrieves EPC data for provided certificate from given endpoint
+
+        Arguments:
+            lmk_key - certificate id (i.e. individual lodgement identifier)
+            endpoint (str) - EPC endpoint from which to retrieve data
+                             ['domestic', 'non-domestic', 'display']
+        Returns:
+            Dictionary of relevant EPC data (empty dictionary if no data available)
+    """
+    # Get EPC API endpoint
+    endpoints = {'domestic': EPC_DOMESTIC_CERT,
+                'non-domestic': EPC_NON_DOMESTIC_CERT,
+                'display': EPC_DISPLAY_CERT}
+    url = endpoints.get(endpoint)
+    if not url:
+        logger.error('Invalid endpoint (i.e. EPC type) provided.')
+        raise ValueError('Invalid endpoint (i.e. EPC type) provided.')
+
+    # Prepare API request
+    url += str(lmk_key)
+    headers = {'Authorization': 'Basic {}'.format(API_TOKEN),
+               'Accept': 'application/json'}
+    # Retrieve EPC data
+    try:
+        res = requests.get(url=url, headers=headers)
+        if res.status_code == 200:
+            epc = res.json()
+        elif res.status_code == 404:
+            logger.info('No data available for provided certificate lodgement identifier.')
+            epc = None
+    except:
+        logger.error('Error retrieving EPC data from API.')
+        raise APIException('Error retrieving EPC data from API.')
+    
+    # Extract relevant EPC data
+    relevant = ['lmk-key', 'address1', 'address2', 'address3',
+                'postcode', 'local-authority', 'uprn',
+                'built-form', 'property-type', 'construction-age-band',
+                'current-energy-rating', 'number-habitable-rooms', 'total-floor-area', 
+                'floor-description', 'roof-description', 'walls-description',
+                'windows-description']
+
+    try:
+        epc_data = epc['rows'][0]
+        epc_data = {r:epc_data[r] for r in relevant if r in epc_data}
+    except:
+        epc_data = {}
+
+    return epc_data
 
 
 def download_all_data(endpoint='domestic', rel_file_path='../../data/'):
@@ -38,24 +91,24 @@ def download_all_data(endpoint='domestic', rel_file_path='../../data/'):
 
     # Verify provided EPC type
     if endpoint == 'domestic':
-        url = EPC_DOMESTIC
+        url = EPC_DOMESTIC_SEARCH
         fn = 'domestic_epcs.csv'
     elif endpoint == 'non-domestic':
-        url = EPC_NON_DOMESTIC
+        url = EPC_NON_DOMESTIC_SEARCH
         fn = 'nondomestic_epcs.csv'
     elif endpoint == 'display':
-        url = EPC_DISPLAY
+        url = EPC_DISPLAY_SEARCH
         fn = 'display_epcs.csv'
     else:
         logger.error('Invalid endpoint (i.e. EPC type) provided.')
-        raise InvalidInput('Invalid endpoint (i.e. EPC type) provided.')
+        raise ValueError('Invalid endpoint (i.e. EPC type) provided.')
 
     # Verify that file path exists
     root = Path(__file__).parent
     file_path = Path.joinpath(root, rel_file_path)
     if not file_path.exists():
         logger.error('Invalid file path provided.')
-        raise InvalidInput('Invalid file path provided.')
+        raise ValueError('Invalid file path provided.')
     # Add file name to path
     file_path = Path.joinpath(file_path, fn)
 
@@ -114,3 +167,4 @@ if __name__ == '__main__':
     # Download and store all Domestic EPC data from API for data analysis
     download_all_data('display')
 
+    #obtain_data_for_certificate('fadff9d58f3539ef0096883e195bbe93e00fc7eb4af4ecf824e991a429335557')
