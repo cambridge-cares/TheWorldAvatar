@@ -2,10 +2,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 
 import org.jooq.SQLDialect;
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Test;
-
-import org.junit.rules.TemporaryFolder;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
@@ -15,10 +12,6 @@ import java.time.Instant;
  */
 
 public class TimeSeriesRDBClientTest {
-
-    // Temporary folder to place a properties file (same file for all potential tests)
-    @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void testConstructor() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
