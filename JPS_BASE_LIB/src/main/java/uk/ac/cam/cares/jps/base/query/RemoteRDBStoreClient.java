@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.base.query;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.sql.*;
 
-public class RDBStoreClient {
+public class RemoteRDBStoreClient {
 
     private Connection conn;
     Statement stmt;
@@ -12,7 +12,7 @@ public class RDBStoreClient {
     private String rdbUser;
     private String rdbPassword;
 
-    public RDBStoreClient(String rdbURL, String user, String password) {
+    public RemoteRDBStoreClient(String rdbURL, String user, String password) {
         this.rdbURL = rdbURL;
         this.rdbUser = user;
         this.rdbPassword = password;

@@ -15,7 +15,7 @@ import org.jooq.impl.DSL;
 import static org.jooq.impl.DSL.selectFrom;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 /**
  * This class provides integration tests for the TimeSeriesRDBClient class
@@ -35,7 +35,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 	private static final String user = "postgres";
 	private static final String password = "postgres";
 
-	private static RDBStoreClient rdbStoreClient;
+	private static RemoteRDBStoreClient rdbStoreClient;
 
 	// RDB client
 	private TimeSeriesRDBClient<Instant> client;
@@ -56,8 +56,8 @@ public class TimeSeriesRDBClientIntegrationTest {
 
 	@BeforeClass
 	public static void initialiseRDBStoreClient() {
-		//initialize RDBStoreClient
-		rdbStoreClient = new RDBStoreClient(dbURL, user, password);
+		//initialize RemoteRDBStoreClient
+		rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
 	}
 	
 	@BeforeClass
