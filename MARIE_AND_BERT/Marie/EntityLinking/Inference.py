@@ -1,9 +1,11 @@
 import os.path
+#import sys
+#sys.path.append("C:/Users/Shaocong/Documents/GitHub/TheWorldAvatar/MARIE_AND_BERT")
 from Marie.EntityLinking.blink.common.params import BlinkParser
-from Marie.EntityLinking.blink.biencoder.eval_biencoder import main
+from Marie.EntityLinking.blink.biencoder.eval_biencoder import NEL
 import yaml
 from Marie.EntityLinking.util.ParseResult import prase_inference
-from Marie.EntityLinking.chemspot.annotator import tag
+from Marie.EntityLinking.chemspot.annotator import Annotator
 from Marie.EntityLinking.util.EntityDict import load_entity_dict
 from Marie.Util.location import ENTITY_LINKING_CONF_DIR, ENTITY_LINKING_DATA_DIR
 
@@ -33,14 +35,14 @@ class NELInfer():
         self.params['output_path'] = os.path.join(ENTITY_LINKING_DATA_DIR, self.params['output_path'])
 
         self.entity_dict = load_entity_dict(self.params['entity_dict_path'])
+        self.annotator = Annotator()
+        self.nel = NEL(self.params)
 
     def infer(self, mention_data, use_ner=False):
         if use_ner:
             mention_data = self.ner_tag(mention_data)
-            print("processed {}".format(mention_data))
-        self.params["mention_data"] = mention_data
         # run main function
-        result_path = main(self.params)
+        result_path = self.nel.infer(mention_data)
         # parse topk result to entity id&label
         inferred = prase_inference(self.entity_dict, result_path)
         return inferred
@@ -52,9 +54,9 @@ class NELInfer():
         processed = []
         for entry in raw_data:
             entry = entry["text"].lower()
-            tagged = tag(entry)
+            tagged = self.annotator.tag(entry)
             if tagged:
-                start, end, mention = tag(entry)
+                start, end, mention = tagged
                 marked_entry = {}
                 marked_entry["mention"] = mention
                 marked_entry["context_left"] = entry[:start]
@@ -72,11 +74,14 @@ if __name__ == '__main__':
 
     # read a test file
     testdata = [{"mention": "urea", "context_left": "what is the chemical formula of", "context_right": ""}]
-    rawdata = [{"text": "what is the chemical formula of urea"}]
+    rawdata = [{"text": "what is the chemical formula of urea"}, {"text":"what is the chemical formula of benzene"}]
     # rawdata = load_mention_entries("data/pubchem/test.jsonl")
     # rawdata = [{"text":l+' '+m+' '+r} for m,l,r in rawdata]
     model = NELInfer('base500.yaml')
     # tagged = model.ner_tag(rawdata)
-    # print(tagged)
+    import time
+    start = time.time()
+    print('start')
     result = model.infer(rawdata, use_ner=True)
     print(result)
+    print(time.time() - start)
