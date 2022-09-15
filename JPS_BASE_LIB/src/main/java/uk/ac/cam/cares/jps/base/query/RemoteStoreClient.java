@@ -533,6 +533,9 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         return builder.build();
     }
 
+    /**
+     * Establishes connection to triple store and sets the Statement Object
+     */
     protected void connect(){
         try {
             if (this.conn == null || this.conn.isClosed()) {
