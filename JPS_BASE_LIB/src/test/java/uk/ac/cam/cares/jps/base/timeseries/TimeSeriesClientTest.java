@@ -111,8 +111,6 @@ public class TimeSeriesClientTest {
         timecolumn.setAccessible(true);
         org.jooq.Field timeColumnField = (org.jooq.Field) timecolumn.get(rdbClient);
         Assert.assertEquals("time", timeColumnField.getName());
-//        Assert.assertEquals("jdbc:postgresql:timeseries", rdbClient.getRdbURL());
-//        Assert.assertEquals("postgres", rdbClient.getRdbUser());
     }
 
 
