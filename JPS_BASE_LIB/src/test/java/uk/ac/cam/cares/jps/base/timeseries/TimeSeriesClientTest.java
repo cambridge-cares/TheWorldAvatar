@@ -15,13 +15,12 @@ import org.mockito.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.RDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -30,7 +29,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -44,8 +42,8 @@ public class TimeSeriesClientTest {
     private TimeSeriesClient<Instant> testClient;
     // Instance of the class to test with mocked sub-clients
     private TimeSeriesClient<Instant> testClientWithMocks;
-    // RDBStoreClient
-    private RDBStoreClient rdbStoreClient;
+    // RemoteRDBStoreClient
+    private RemoteRDBStoreClient rdbStoreClient;
     // Time series test data
     private List<String> dataIRIs;
     private List<Class<?>> dataClasses;
@@ -67,7 +65,7 @@ public class TimeSeriesClientTest {
         kbClient.setUpdateEndpoint("sparql_update");
         testClient = new TimeSeriesClient<>(kbClient, Instant.class);
         testClientWithMocks = new TimeSeriesClient<>(kbClient, Instant.class);
-        rdbStoreClient = new RDBStoreClient(dbURL, user, password);
+        rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
     }
     
     @Before

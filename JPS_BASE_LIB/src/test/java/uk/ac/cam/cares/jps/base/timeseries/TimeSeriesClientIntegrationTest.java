@@ -16,7 +16,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import uk.ac.cam.cares.jps.base.query.RDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -34,7 +34,7 @@ public class TimeSeriesClientIntegrationTest {
 	// TimeSeries client (with RDB and Sparql client)
 	private static TimeSeriesClient<Instant> tsClient;
 
-	private static RDBStoreClient rdbStoreClient;
+	private static RemoteRDBStoreClient rdbStoreClient;
 	
 	// Time series test data
 	private static List<String> dataIRI_1, dataIRI_2;
@@ -103,7 +103,7 @@ public class TimeSeriesClientIntegrationTest {
     	tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
 
 	    // Configure database access
-		rdbStoreClient = new RDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+		rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
 	}
 
 	// Cleaning up containers after each test, otherwise unused containers will first be killed when all tests finished

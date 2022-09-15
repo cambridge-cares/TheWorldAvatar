@@ -17,7 +17,7 @@ import org.postgis.Point;
 import org.postgis.Polygon;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class TimeSeriesPostGISIntegrationTest {
 	// Using special testcontainers URL that will spin up a Docker container when accessed by a driver
@@ -30,14 +30,14 @@ public class TimeSeriesPostGISIntegrationTest {
 
 	// RDB client
 	private TimeSeriesRDBClient<Integer> tsClient;
-    //RDBStoreClient
-    private static  RDBStoreClient rdbStoreClient;
+    //RemoteRDBStoreClient
+    private static RemoteRDBStoreClient rdbStoreClient;
 
     @BeforeClass
-	// Initialise RDBStoreClient before any test
+	// Initialise RemoteRDBStoreClient before any test
 	public static void initialiseRDBStoreClient() throws SQLException, ClassNotFoundException {
-        //RDBStoreClient
-        rdbStoreClient = new RDBStoreClient(dbURL, user, password);
+        //RemoteRDBStoreClient
+        rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
 	}
 
     @Before
