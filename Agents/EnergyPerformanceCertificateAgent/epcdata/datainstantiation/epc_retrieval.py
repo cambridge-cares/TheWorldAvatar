@@ -166,5 +166,3 @@ if __name__ == '__main__':
 
     # Download and store all Domestic EPC data from API for data analysis
     download_all_data('display')
-
-    #obtain_data_for_certificate('fadff9d58f3539ef0096883e195bbe93e00fc7eb4af4ecf824e991a429335557')

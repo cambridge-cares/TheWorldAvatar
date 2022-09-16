@@ -157,13 +157,13 @@ def add_epc_data(property_iri: str = None, uprn: str = None,
     
     if property_iri and uprn:
         # Start INSERT query
-        query = f"""
+        triples = f"""
             INSERT DATA {{
         """
 
         # Returns triples to instantiate EPC data for single property
         if 'Building' in property_iri:
-            triples = f"<{property_iri}> <{RDF_TYPE}> <{OBE_BUILDING}> . "
+            triples += f"<{property_iri}> <{RDF_TYPE}> <{OBE_BUILDING}> . "
             if built_form_iri: triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
         else:
             triples = f"<{property_iri}> <{RDF_TYPE}> <{OBE_FLAT}> . "
@@ -233,15 +233,15 @@ def add_epc_data(property_iri: str = None, uprn: str = None,
                            """
 
         # Literals
-        if uprn: f"<{property_iri}> <{OBE_HAS_IDENTIFIER}> \"{uprn}\"^^<{XSD_STRING}> . "
-        if epc_rating: f"<{property_iri}> <{OBE_HAS_ENERGYRATING}> \"{epc_rating}\"^^<{XSD_STRING}> . "
-        if rooms: f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{uprn}\"^^<{XSD_INTEGER}> . "
-        if epc_lmkkey: f"<{property_iri}> <{OBE_HAS_LATEST_EPC}> \"{epc_lmkkey}\"^^<{XSD_STRING}> . "
+        if uprn:  triples += f"<{property_iri}> <{OBE_HAS_IDENTIFIER}> \"{uprn}\"^^<{XSD_STRING}> . "
+        if epc_rating:  triples += f"<{property_iri}> <{OBE_HAS_ENERGYRATING}> \"{epc_rating}\"^^<{XSD_STRING}> . "
+        if rooms:  triples += f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{rooms}\"^^<{XSD_INTEGER}> . "
+        if epc_lmkkey:  triples += f"<{property_iri}> <{OBE_HAS_LATEST_EPC}> \"{epc_lmkkey}\"^^<{XSD_STRING}> . "
 
         # Close query
-        query += f"}}"
+        triples += f"}}"
         # Remove unnecessary whitespaces
-        query = ' '.join(query.split())
+        triples = ' '.join(triples.split())
 
     else:
         triples = None

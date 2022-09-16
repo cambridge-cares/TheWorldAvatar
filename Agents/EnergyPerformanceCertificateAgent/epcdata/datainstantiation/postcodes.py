@@ -139,3 +139,8 @@ def initialise_postcodes(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_E
         n = instantiate_postcodes(kgclient, data, local_authority_district)
         
         return n
+
+if __name__ == '__main__':
+
+    # Instantiate postcodes for King's Lynn and West Norfolk
+    initialise_postcodes()

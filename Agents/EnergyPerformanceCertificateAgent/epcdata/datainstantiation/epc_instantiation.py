@@ -28,7 +28,8 @@ def instantiate_data_for_certificate(lmk_key: str, endpoint='domestic',
                                      query_endpoint=QUERY_ENDPOINT, 
                                      update_endpoint=UPDATE_ENDPOINT):
     """
-    Retrieves EPC data for provided certificate from given endpoint
+    Retrieves EPC data for provided certificate from given endpoint and 
+    instantiates it in the KG according to OntoBuiltEnv
 
     Arguments:
         lmk_key - certificate id (i.e. individual lodgement identifier)
@@ -54,11 +55,12 @@ def instantiate_data_for_certificate(lmk_key: str, endpoint='domestic',
         query = instantiated_epc_for_uprn(uprn)
         res = kgclient.performQuery(query)
 
-        # are 3 different cases:
+        # There are 3 different cases:
         if res and res[0].get('certificate') == lmk_key:
             # 1) EPC data up to date --> Do nothing
+            logger.info('EPC data for UPRN still up to date. No update needed.')
             pass
-        #else:
+        else:
             # 2) & 3) Data not instantiated at all or outdated --> condition data
             data_to_instantiate = condition_epc_data(epc_data)
             # Add postcode and district IRIs
@@ -71,26 +73,15 @@ def instantiate_data_for_certificate(lmk_key: str, endpoint='domestic',
                     data_to_instantiate['postcode_iri'] = res[0].get('postcode')
                     data_to_instantiate['district_iri'] = res[0].get('district')
 
-            insert_query = add_epc_data(**data_to_instantiate)
-            
-            if not res:
-            # 2) No EPC data instantiated yet --> Instantiate data
-                pass
+            if not res[0].get('certificate'):
+                # 2) No EPC data instantiated yet --> Instantiate data
+                logger.info('No EPC data instantiated for UPRN. Instantiate data ... ')
+                insert_query = add_epc_data(**data_to_instantiate)
+                kgclient.performUpdate(insert_query)
             else:
-            # 3) EPC data instantiated, but outdated --> Update data
+                # 3) EPC data instantiated, but outdated --> Update data
+                logger.info('Instantiated EPC data for UPRN outdated. Updated data ... ')
                 pass
-
-        if res:
-            logger.info('Provided certificate lodgement identifier already instantiated.')
-        else:
-
-            # Condition data
-            pass
-            
-            # Map data to OntoBuiltEnv data model
-
-        
-            # Create instantiation query
 
 
 def condition_epc_data(data):
