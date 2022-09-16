@@ -6,13 +6,18 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
+import uuid
 import pandas as pd
 
-from epcdata.datamodel import *
+from epcdata.datamodel.iris import *
+from epcdata.datamodel.data_mapping import UNITS_MAPPING
 #from epcdata.kgutils.stackclients import PostGISClient
 
 
-def ons_postcodes_per_localauthority(local_authority_district) -> str:
+#
+# EXTERNAL SPARQL QUERIES
+#
+def ons_postcodes_per_localauthority(local_authority_district: str) -> str:
     # Retrieve postcodes for given local authority district from ONS
     query = f"""
         SELECT DISTINCT *
@@ -28,8 +33,10 @@ def ons_postcodes_per_localauthority(local_authority_district) -> str:
     query = ' '.join(query.split())
     return query
 
-
-def check_instantiated_local_authority(local_authority_district) -> str:
+#
+# SPARQL QUERIES
+#
+def check_instantiated_local_authority(local_authority_district: str) -> str:
     # Check if local authority district is instantiated (per OntoBuiltEnv)
     query = f"""
         SELECT ?district_iri
@@ -44,6 +51,53 @@ def check_instantiated_local_authority(local_authority_district) -> str:
     return query
 
 
+def instantiated_postalcodes() -> str:
+    # Retrieve all instantiated postal codes (per OntoBuiltEnv)
+    query = f"""
+        SELECT ?postcode
+        WHERE {{
+        ?pc <{RDF_TYPE}> <{OBE_POSTALCODE}> ;
+            <{RDFS_LABEL}> ?postcode
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
+def instantiated_epc_for_uprn(uprn: str) -> str:
+    # Get latest instantiated epc (i.e. individual lodgement identifier) for UPRN
+    query = f"""
+        SELECT ?uprn ?certificate
+        WHERE {{
+            VALUES ?uprn {{ "{uprn}" }}
+            ?property <{OBE_HAS_IDENTIFIER}> ?uprn ;
+                      <{OBE_HAS_LATEST_EPC}> ?certificate
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
+def get_postcode_and_district_iris(postcode: str, local_authority_code: str) -> str:
+    # Get IRIs of postcode and local authority district with given codes
+    query = f"""
+        SELECT ?postcode ?district
+        WHERE {{
+            ?postcode <{RDF_TYPE}> <{OBE_POSTALCODE}> ;
+                      <{RDFS_LABEL}> "{postcode}" .
+            ?district <{RDF_TYPE}> <{OBE_ADMIN_DISTRICT}> ;
+                      <{OWL_SAMEAS}>/<{ONS_NAME}> "{local_authority_code}"
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+#
+# SPARQL UPDATES
+#
 def instantiate_postcodes_for_district(local_authority_district: str,
                                        district_data: pd.DataFrame,
                                        postcode_data: pd.DataFrame)-> str:
@@ -90,31 +144,109 @@ def instantiate_postcodes_for_district(local_authority_district: str,
     return query
 
 
-def instantiated_postalcodes() -> str:
-    # Retrieve all instantiated postal codes (per OntoBuiltEnv)
-    query = f"""
-        SELECT ?postcode
-        WHERE {{
-        ?pc <{RDF_TYPE}> <{OBE_POSTALCODE}> ;
-            <{RDFS_LABEL}> ?postcode
-        }}
-    """
-    # Remove unnecessary whitespaces
-    query = ' '.join(query.split())
-    return query
+def add_epc_data(property_iri: str = None, uprn: str = None,
+                 address_iri: str = None, addr_street: str = '', addr_number: str = '',
+                 postcode_iri:str = None, district_iri: str = None,
+                 built_form_iri: str = None, property_type_iri: str = None,
+                 usage_iri: str = None, usage_label: str = None,
+                 construction_start: str = None, construction_end: str = None,
+                 floor_description: str = None, roof_description: str = None, 
+                 wall_description: str = None, windows_description: str = None,  
+                 floor_area: float = None, rooms: int = None,
+                 epc_rating: str = None, epc_lmkkey: str = None) -> str:
+    
+    if property_iri and uprn:
+        # Start INSERT query
+        query = f"""
+            INSERT DATA {{
+        """
 
+        # Returns triples to instantiate EPC data for single property
+        if 'Building' in property_iri:
+            triples = f"<{property_iri}> <{RDF_TYPE}> <{OBE_BUILDING}> . "
+            if built_form_iri: triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
+        else:
+            triples = f"<{property_iri}> <{RDF_TYPE}> <{OBE_FLAT}> . "
 
-# def all_metoffice_station_ids() -> str:
-#     # Returns query to retrieve all identifiers of instantiated stations
-#     query = f"""
-#         SELECT ?id
-#         WHERE {{
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-#                      <{EMS_HAS_IDENTIFIER}> ?id 
-#               }}
-#     """
-#     return query
+        # Postal code and admin district
+        if address_iri: 
+            triples += f"""<{property_iri}> <{OBE_HAS_ADDRESS}> <{address_iri}> . 
+                           <{address_iri}> <{RDF_TYPE}> <{ICONTACT_ADDRESS}> .  
+                           <{address_iri}> <{ICONTACT_HAS_STREET}> \"{addr_street}\"^^<{XSD_STRING}> .
+                           <{address_iri}> <{OBE_HAS_PROPERTYNUMBER}> \"{addr_number}\"^^<{XSD_STRING}> . """
+            if postcode_iri: triples += f"<{address_iri}> <{OBE_HAS_POSTALCODE}> <{postcode_iri}> . "
+            if district_iri: triples += f"<{address_iri}> <{OBE_HAS_ADMIN_DISTRICT}> <{district_iri}> . "
+        if district_iri: triples += f"<{property_iri}> <{OBE_LOCATEDIN}> <{district_iri}> . "
+        
+        # Instances        
+        if property_type_iri: triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{property_type_iri}> . "
+        if usage_iri: 
+            triples += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
+            if usage_label: triples += f"<{usage_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+        if construction_start or construction_end:
+            #TODO: Potentially include relevant construction time bands in ABox
+            interval_iri = KB + 'Interval_' + str(uuid.uuid4())
+            triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_DATE}> <{interval_iri}> . 
+                           <{interval_iri}> <{RDF_TYPE}> <{TIME_INTERVAL}> . """
+            if construction_start:
+                instant_iri = KB + 'Instant_' + str(uuid.uuid4())
+                triples += f"""<{interval_iri}> <{TIME_HAS_BEGINNING}> <{instant_iri}> . 
+                               <{instant_iri}> <{RDF_TYPE}> <{TIME_INSTANT}> . 
+                               <{instant_iri}> <{TIME_IN_DATETIME_STAMP}> \"{construction_start}\"^^<{XSD_DATETIMESTAMP}> . """
+            if construction_end:
+                instant_iri = KB + 'Instant_' + str(uuid.uuid4())
+                triples += f"""<{interval_iri}> <{TIME_HAS_END}> <{instant_iri}> . 
+                               <{instant_iri}> <{RDF_TYPE}> <{TIME_INSTANT}> . 
+                               <{instant_iri}> <{TIME_IN_DATETIME_STAMP}> \"{construction_end}\"^^<{XSD_DATETIMESTAMP}> . """
+        if floor_description: 
+            floor_iri = OBE_FLOOR + '_' + str(uuid.uuid4())
+            triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{floor_iri}> . 
+                           <{floor_iri}> <{RDF_TYPE}> <{OBE_FLOOR}> . 
+                           <{floor_iri}> <{RDFS_COMMENT}> \"{floor_description}\"^^<{XSD_STRING}> . """
+        if roof_description: 
+            roof_iri = OBE_ROOF + '_' + str(uuid.uuid4())
+            triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{roof_iri}> . 
+                           <{roof_iri}> <{RDF_TYPE}> <{OBE_ROOF}> . 
+                           <{roof_iri}> <{RDFS_COMMENT}> \"{roof_description}\"^^<{XSD_STRING}> . """
+        if wall_description: 
+            wall_iri = OBE_WALL + '_' + str(uuid.uuid4())
+            triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{wall_iri}> . 
+                           <{wall_iri}> <{RDF_TYPE}> <{OBE_WALL}> . 
+                           <{wall_iri}> <{RDFS_COMMENT}> \"{wall_description}\"^^<{XSD_STRING}> . """
+        if windows_description: 
+            windows_iri = OBE_WINDOWS + '_' + str(uuid.uuid4())
+            triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{windows_iri}> . 
+                           <{windows_iri}> <{RDF_TYPE}> <{OBE_WINDOWS}> . 
+                           <{windows_iri}> <{RDFS_COMMENT}> \"{windows_description}\"^^<{XSD_STRING}> . """
+        if floor_area:
+            area_iri = KB + 'FloorArea_' + str(uuid.uuid4())
+            measure_iri = KB + 'Measure_' + str(uuid.uuid4())
+            unit_iri = UNITS_MAPPING[OM_AREA][0]
+            unit_symbol = UNITS_MAPPING[OM_AREA][1]
+            triples += f"""<{property_iri}> <{OBE_HAS_TOTAL_FLOOR_AREA}> <{area_iri}> . 
+                           <{area_iri}> <{RDF_TYPE}> <{OM_AREA}> . 
+                           <{area_iri}> <{OM_HAS_VALUE}> <{measure_iri}> . 
+                           <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> . 
+                           <{measure_iri}> <{OM_NUM_VALUE}> \"{floor_area}\"^^<{XSD_FLOAT}> .
+                           <{measure_iri}> <{OM_HAS_UNIT}> <{unit_iri}> . 
+                           <{unit_iri}> <{OM_SYMBOL}> \"{unit_symbol}\"^^<{XSD_STRING}> .
+                           """
+
+        # Literals
+        if uprn: f"<{property_iri}> <{OBE_HAS_IDENTIFIER}> \"{uprn}\"^^<{XSD_STRING}> . "
+        if epc_rating: f"<{property_iri}> <{OBE_HAS_ENERGYRATING}> \"{epc_rating}\"^^<{XSD_STRING}> . "
+        if rooms: f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{uprn}\"^^<{XSD_INTEGER}> . "
+        if epc_lmkkey: f"<{property_iri}> <{OBE_HAS_LATEST_EPC}> \"{epc_lmkkey}\"^^<{XSD_STRING}> . "
+
+        # Close query
+        query += f"}}"
+        # Remove unnecessary whitespaces
+        query = ' '.join(query.split())
+
+    else:
+        triples = None
+    
+    return triples
 
 
 # def filter_stations_in_circle(circle_center: str, circle_radius: str):
@@ -129,29 +261,6 @@ def instantiated_postalcodes() -> str:
 #     filter_expression = f'FILTER ( ?station IN ({iris}) )'
     
 #     return filter_expression
-
-
-# def instantiated_metoffice_stations(circle_center: str = None,
-#                                     circle_radius: str = None) -> str:
-#     if circle_center and circle_radius:
-#         # Retrieve only stations in provided circle (radius in km)
-#         filter_expression = filter_stations_in_circle(circle_center, circle_radius)
-#     else:
-#         # Returns query to retrieve all instantiated station details
-#         filter_expression = ''
-    
-#     # Construct query
-#     query = f"""
-#         SELECT ?stationID ?station
-#         WHERE {{
-#         {filter_expression}
-#         ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                     <{EMS_DATA_SOURCE}> "Met Office DataPoint" ;
-#                     <{EMS_HAS_IDENTIFIER}> ?stationID .
-#             }}
-#     """
-    
-#     return query
 
 
 # def instantiated_metoffice_stations_with_details(circle_center: str = None,
@@ -179,173 +288,6 @@ def instantiated_postalcodes() -> str:
 #             }}
 #     """
     
-#     return query
-
-
-# def geospatial_station_info(station_iris: list = None):
-#     # Returns query to retrieve geospatial station information (via Ontop)
-#     if station_iris:
-#         # Use FILTER IN expression
-#         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-#         filter_expression = f'FILTER (?station IN ({iris}) ) '
-#         # Use VALUES expression
-#         # iris = ' '.join(['<'+iri+'>' for iri in station_iris])
-#         # filter_expression = f'VALUES ?station {{ {iris} }} '
-#     else:
-#         filter_expression = ''
-#     query = f"""
-#         SELECT ?station ?wkt
-#         WHERE {{
-#            {filter_expression}
-#            ?station <{RDF_TYPE}> <{GEO_FEATURE}> ;
-#                     <{GEO_HAS_GEOMETRY}>/<{GEO_ASWKT}> ?wkt 
-#         }}
-#     """
-#     return query
-
-
-# def add_station_data(station_iri: str = None, dataSource: str = None, 
-#                      label: str = None, id: str = None, elevation: float = None) -> str:
-#     if station_iri:
-#         # Returns triples to instantiate a measurement station according to OntoEMS
-#         triples = f"<{station_iri}> <{RDF_TYPE}> <{EMS_REPORTING_STATION}> . "
-#         if dataSource: triples += f"<{station_iri}> <{EMS_DATA_SOURCE}> \"{dataSource}\"^^<{XSD_STRING}> . "
-#         if label: triples += f"<{station_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
-#         if id: triples += f"<{station_iri}> <{EMS_HAS_IDENTIFIER}> \"{id}\"^^<{XSD_STRING}> . "
-#         if elevation: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_ELEVATION}> \"{elevation}\"^^<{XSD_FLOAT}> . "
-#     else:
-#         triples = None
-    
-#     return triples
-
-
-# def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
-#                     data_iri_type, unit, symbol, is_observation: bool, 
-#                     creation_time=None, comment=None):
-#     """
-#         Create triples to instantiate station measurements
-#     """
-#     # Create triple for measure vs. forecast
-#     if is_observation:
-#         triple = f"""<{quantity_iri}> <{OM_HAS_VALUE}> <{data_iri}> . """
-        
-#     else:
-#         triple = f"<{quantity_iri}> <{EMS_HAS_FORECASTED_VALUE}> <{data_iri}> . "
-#         if creation_time: triple += f"<{data_iri}> <{EMS_CREATED_ON}> \"{creation_time}\"^^<{XSD_DATETIME}> . "
-
-#     # Create triples to instantiate station measurement according to OntoEMS
-#     triples = f"""
-#         <{station_iri}> <{EMS_REPORTS}> <{quantity_iri}> . 
-#         <{quantity_iri}> <{RDF_TYPE}> <{quantity_type}> . 
-#         <{data_iri}> <{RDF_TYPE}> <{data_iri_type}> . 
-#         <{data_iri}> <{OM_HAS_UNIT}> <{unit}> . 
-#         <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . 
-#         <{unit}> <{OM_SYMBOL}> "{symbol}"^^<{XSD_STRING}> . 
-#     """
-#     triples += triple
-
-#     # Create optional comment to quantity
-#     if comment:
-#         triples += f"""<{quantity_iri}> <{RDFS_COMMENT}> "{comment}"^^<{XSD_STRING}> . """
-
-#     return triples
-
-
-# def instantiated_observations(station_iris: list = None):
-#     # Returns query to retrieve (all) instantiated observation types per station
-#     if station_iris:
-#         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-#         substring = f"""FILTER (?station IN ({iris}) ) """
-#     else:
-#         substring = f"""
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-#     query = f"""
-#         SELECT ?station ?stationID ?quantityType
-#         WHERE {{
-#             ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-#                      <{EMS_REPORTS}> ?quantity .
-#             {substring}                     
-#             ?quantity <{OM_HAS_VALUE}> ?measure ;
-#                       <{RDF_TYPE}> ?quantityType .
-#         }}
-#         ORDER BY ?station
-#     """
-#     return query
-
-
-# def instantiated_forecasts(station_iris: list = None):
-#     # Returns query to retrieve (all) instantiated forecast types per station
-#     if station_iris:
-#         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-#         substring = f"""FILTER (?station IN ({iris}) ) """
-#     else:
-#         substring = f"""
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-#     query = f"""
-#         SELECT ?station ?stationID ?quantityType
-#         WHERE {{
-#             ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-#                      <{EMS_REPORTS}> ?quantity .
-#             {substring} 
-#             ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?forecast ;
-#                       <{RDF_TYPE}> ?quantityType .
-#         }}
-#         ORDER BY ?station
-#     """
-#     return query
-
-
-# def instantiated_observation_timeseries(station_iris: list = None):
-#     # Returns query to retrieve (all) instantiated observation time series per station
-#     if station_iris:
-#         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-#         substring = f"""FILTER (?station IN ({iris}) ) """
-#     else:
-#         substring = f"""
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-#     query = f"""
-#         SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI 
-#         WHERE {{
-#             ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-#                      <{EMS_REPORTS}> ?quantity .
-#             {substring} 
-#             ?quantity <{OM_HAS_VALUE}> ?dataIRI ;
-#                       <{RDF_TYPE}> ?quantityType .
-#             ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI ;   
-#                      <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit .
-#             ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
-#         }}
-#         ORDER BY ?tsIRI
-#     """
-#     return query
-
-
-# def instantiated_forecast_timeseries(station_iris: list = None):
-#     # Returns query to retrieve (all) instantiated forecast time series per station
-#     if station_iris:
-#         iris = ', '.join(['<'+iri+'>' for iri in station_iris])
-#         substring = f"""FILTER (?station IN ({iris}) ) """
-#     else:
-#         substring = f"""
-#             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-#                      <{EMS_DATA_SOURCE}> "Met Office DataPoint" . """
-#     query = f"""
-#         SELECT ?station ?stationID ?quantityType ?dataIRI ?unit ?tsIRI
-#         WHERE {{
-#             ?station <{EMS_HAS_IDENTIFIER}> ?stationID ;
-#                      <{EMS_REPORTS}> ?quantity .
-#             {substring} 
-#             ?quantity <{EMS_HAS_FORECASTED_VALUE}> ?dataIRI ;
-#                       <{RDF_TYPE}> ?quantityType .
-#             ?dataIRI <{TS_HAS_TIMESERIES}> ?tsIRI ;
-#                      <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit .
-#             ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
-#         }}
-#         ORDER BY ?tsIRI
-#     """
 #     return query
 
 
@@ -379,18 +321,3 @@ def instantiated_postalcodes() -> str:
 #         queries.append(query)
     
 #     return queries
-
-
-# def update_forecast_creation_datetime(issue_time: str):
-#     # Returns beginning of update query to update forecast creation times
-#     query = f"""
-#         DELETE {{
-# 	        ?forecast <{EMS_CREATED_ON}> ?old }}
-#         INSERT {{
-# 	        ?forecast <{EMS_CREATED_ON}> \"{issue_time}\"^^<{XSD_DATETIME}> }}
-#         WHERE {{
-# 	        ?forecast <{EMS_CREATED_ON}> ?old .
-#             FILTER ( ?forecast IN (
-#     """
-
-#     return query

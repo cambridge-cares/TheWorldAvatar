@@ -9,6 +9,49 @@
 import uuid
 import metoffer
 
+def retrieve_station_data_from_api(api_key: str = None) -> list:
+    """
+        Retrieve station data from Met Office DataPoint via MetOffer wrapper
+
+        Arguments:
+            api_key - API key for MetOffice DataPoint
+        Returns:
+            List of dicts with station data as returned by MetOffer wrapper
+    """
+
+    # Create MetOffice client
+    if not api_key:
+        #logger.error("No Met Office DataPoint API key provided.")
+        raise APIException("No Met Office DataPoint API key provided.")
+    else:
+        # Initialise MetOffer client
+        metclient = metoffer.MetOffer(api_key)
+        obs_sites = fcs_sites = []
+        try:
+            print('Retrieving station data from API ...')
+            #logger.info('Retrieving station data from API ...')
+            # 1) Get all observations sites
+            sites = metclient.loc_observations(metoffer.SITELIST)
+            obs_sites = sites['Locations']['Location']
+            # 2) Get all forecasts sites
+            sites = metclient.loc_forecast(metoffer.SITELIST, metoffer.THREE_HOURLY)
+            fcs_sites = sites['Locations']['Location']
+            print('Station data successfully retrieved.')
+            #logger.info('Station data successfully retrieved.')
+        except Exception as ex:
+            #logger.error("Error while retrieving station data from DataPoint.")
+            raise APIException("Error while retrieving station data from DataPoint")
+        sites = []
+        sites += obs_sites 
+        sites += fcs_sites
+        # Remove potential duplicates
+        unique_sites = [s for n, s in enumerate(sites) if s not in sites[n + 1:]]
+    
+    return unique_sites
+
+stations = retrieve_station_data_from_api('781fcade-8eaa-44c7-84e8-014f92857aa1')
+print('')
+
 #import agentlogging
 from metoffice.kgutils.querytemplates import *
 from metoffice.datamodel.utils import create_sparql_prefix
@@ -55,45 +98,7 @@ def instantiate_stations(station_data: list,
     kg_client.performUpdate(query_string)
 
 
-def retrieve_station_data_from_api(api_key: str = None) -> list:
-    """
-        Retrieve station data from Met Office DataPoint via MetOffer wrapper
 
-        Arguments:
-            api_key - API key for MetOffice DataPoint
-        Returns:
-            List of dicts with station data as returned by MetOffer wrapper
-    """
-
-    # Create MetOffice client
-    if not api_key:
-        #logger.error("No Met Office DataPoint API key provided.")
-        raise APIException("No Met Office DataPoint API key provided.")
-    else:
-        # Initialise MetOffer client
-        metclient = metoffer.MetOffer(api_key)
-        obs_sites = fcs_sites = []
-        try:
-            print('Retrieving station data from API ...')
-            #logger.info('Retrieving station data from API ...')
-            # 1) Get all observations sites
-            sites = metclient.loc_observations(metoffer.SITELIST)
-            obs_sites = sites['Locations']['Location']
-            # 2) Get all forecasts sites
-            sites = metclient.loc_forecast(metoffer.SITELIST, metoffer.THREE_HOURLY)
-            fcs_sites = sites['Locations']['Location']
-            print('Station data successfully retrieved.')
-            #logger.info('Station data successfully retrieved.')
-        except Exception as ex:
-            #logger.error("Error while retrieving station data from DataPoint.")
-            raise APIException("Error while retrieving station data from DataPoint")
-        sites = []
-        sites += obs_sites 
-        sites += fcs_sites
-        # Remove potential duplicates
-        unique_sites = [s for n, s in enumerate(sites) if s not in sites[n + 1:]]
-    
-    return unique_sites
 
 
 def instantiate_all_stations(api_key: str = DATAPOINT_API_KEY,

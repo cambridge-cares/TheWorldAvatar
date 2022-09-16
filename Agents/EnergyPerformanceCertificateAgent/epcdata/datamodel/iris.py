@@ -17,7 +17,7 @@ OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#'
 UOM = 'http://theworldavatar.com/resource/ontouom/'
 # Knowledge base
-KB = 'https://www.theworldavatar.com/kg/ontoems/'
+KB = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 
 ###--- IRIs for OntoBuiltEnv TBox ---###
 # http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
