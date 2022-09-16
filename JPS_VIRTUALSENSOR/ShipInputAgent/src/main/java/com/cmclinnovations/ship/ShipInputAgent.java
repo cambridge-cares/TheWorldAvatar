@@ -27,6 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import org.apache.commons.io.FilenameUtils;
@@ -137,6 +138,7 @@ public class ShipInputAgent extends HttpServlet {
                 }
             }
 
+            boolean initialiseObda = false;
             if (!queryClient.initialised()) {
                 PostGISClient postGISClient = new PostGISClient();
                 Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
@@ -148,6 +150,7 @@ public class ShipInputAgent extends HttpServlet {
                     LOGGER.error(e.getMessage());
                 }
                 postGISClient.executeUpdate(EnvConfig.DATABASE, sqlFunction);
+                initialiseObda = true;
             }
             // initialise both triples and time series if ship is new
             List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
@@ -164,6 +167,13 @@ public class ShipInputAgent extends HttpServlet {
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
             createGeoServerLayer(averageTimestamp);
+
+            // first time adding ontop mapping
+            if (initialiseObda) {
+                // add ontop mapping
+                Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
+                new OntopClient().updateOBDA(obdaFile);
+            }
         }
     }
 

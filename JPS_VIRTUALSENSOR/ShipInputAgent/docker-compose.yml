@@ -22,6 +22,7 @@ services:
       - postgis
       - blazegraph
       - geoserver
+      - ontop
     secrets:
       - postgis_password
       - geoserver_password

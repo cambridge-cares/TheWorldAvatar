@@ -30,6 +30,9 @@ configs:
   geoserver:
     name: ${STACK_NAME}_geoserver
     external: true
+  ontop:
+    name: ${STACK_NAME}_ontop
+    external: true
 
 networks:
   stack:
