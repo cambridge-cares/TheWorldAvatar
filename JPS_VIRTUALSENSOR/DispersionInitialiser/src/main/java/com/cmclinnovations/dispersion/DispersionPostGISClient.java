@@ -83,8 +83,8 @@ public class DispersionPostGISClient {
     String addScope(Polygon polygon, Connection conn) {
         String scopeIri = null;
         try {
-            if (polygon.getSrid() != 32630) {
-                LOGGER.error("Unsupported SRID, only 32630 is supported");
+            if (polygon.getSrid() != 4326) {
+                LOGGER.error("Unsupported SRID, only 4326 is supported");
             } else {
                 scopeIri = QueryClient.PREFIX + UUID.randomUUID();
                 String geomIri = QueryClient.PREFIX + UUID.randomUUID();

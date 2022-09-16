@@ -32,7 +32,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 /**
- * a separate mapping is required for each SRID, currently only supports 32630
+ * a separate mapping is required for each SRID, currently only supports 4326
  */
 @WebServlet(urlPatterns = {"/InitialiseSimulation"})
 public class InitialiseSimulation extends HttpServlet {

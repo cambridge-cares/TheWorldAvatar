@@ -326,6 +326,7 @@ public class QueryClient {
                 try {
                     derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
                 } catch (Exception e) {
+                    LOGGER.error(e.getMessage());
                     LOGGER.error("Failed to create new derivation for {}", ship.getIri());
                 }
                 return derivation;
